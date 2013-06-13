@@ -47,18 +47,18 @@ public class ProductQuantitiesServiceImplBPCOverrideAspect {
     @Autowired
     private ProductQuantitiesServiceImplBPCOverrideUtil productQuantitiesServiceImplBPCOverrideUtil;
 
-    @Pointcut("execution(private java.util.Map<com.qcadoo.model.api.Entity, java.math.BigDecimal> com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl.getProductComponentWithQuantitiesForOrders(..)) "
-            + "&& args(orders, operationRuns, nonComponents)")
+    @Pointcut("execution(private java.util.Map<Long, java.math.BigDecimal> com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl.getProductComponentWithQuantitiesForOrders(..)) "
+            + "&& args(orders, operationRuns, nonComponents, onTheFly)")
     public void getProductComponentWithQuantitiesForOrdersExecution(final List<Entity> orders,
-            final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents) {
+            final Map<Long, BigDecimal> operationRuns, final Set<Long> nonComponents, final boolean onTheFly) {
     }
 
-    @Around("getProductComponentWithQuantitiesForOrdersExecution(orders, operationRuns, nonComponents)")
-    public Map<Entity, BigDecimal> aroundGetProductComponentWithQuantitiesForOrdersExecution(final ProceedingJoinPoint pjp,
-            final List<Entity> orders, final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents)
-            throws Throwable {
+    @Around("getProductComponentWithQuantitiesForOrdersExecution(orders, operationRuns, nonComponents, onTheFly)")
+    public Map<Long, BigDecimal> aroundGetProductComponentWithQuantitiesForOrdersExecution(final ProceedingJoinPoint pjp,
+            final List<Entity> orders, final Map<Long, BigDecimal> operationRuns, final Set<Long> nonComponents,
+            final boolean onTheFly) throws Throwable {
         return productQuantitiesServiceImplBPCOverrideUtil.getProductComponentWithQuantitiesForOrders(orders, operationRuns,
-                nonComponents);
+                nonComponents, onTheFly);
     }
 
 }

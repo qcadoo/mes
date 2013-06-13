@@ -155,7 +155,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     public Map<Entity, Map<String, String>> getValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
+        Map<Long, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
 
         for (Entity order : orders) {
             Entity technology = order.getBelongsToField(TECHNOLOGY);
@@ -194,7 +194,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         }
     }
 
-    private void fillPlannedQuantities(final Entity technology, final Map<Entity, BigDecimal> productQuantities,
+    private void fillPlannedQuantities(final Entity technology, final Map<Long, BigDecimal> productQuantities,
             final Map<Entity, Map<String, String>> valuesMap) {
         // TODO mici, change those to technologyInstanceOperationComponents?
         EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS);
@@ -213,7 +213,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
                 initMap(valuesMap, productComponent);
 
                 String unit = productComponent.getBelongsToField(MODEL_PRODUCT).getStringField(UNIT);
-                String quantityString = numberService.format(productQuantities.get(productComponent)) + " " + unit;
+                String quantityString = numberService.format(productQuantities.get(productComponent.getId())) + " " + unit;
                 valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
             }
 
@@ -221,7 +221,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
                 initMap(valuesMap, productComponent);
 
                 String unit = productComponent.getBelongsToField(MODEL_PRODUCT).getStringField(UNIT);
-                String quantityString = numberService.format(productQuantities.get(productComponent)) + " " + unit;
+                String quantityString = numberService.format(productQuantities.get(productComponent.getId())) + " " + unit;
                 valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
             }
         }

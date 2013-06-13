@@ -91,11 +91,11 @@ public class CostNormsForMaterialsService {
 
         List<Entity> inputProducts = Lists.newArrayList();
 
-        Map<Entity, BigDecimal> productQuantities = getProductQuantitiesFromTechnology(technologyId);
+        Map<Long, BigDecimal> productQuantities = getProductQuantitiesFromTechnology(technologyId);
 
         if (!productQuantities.isEmpty()) {
-            for (Map.Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
-                Entity product = productQuantity.getKey();
+            for (Map.Entry<Long, BigDecimal> productQuantity : productQuantities.entrySet()) {
+                Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
                 BigDecimal quantity = productQuantity.getValue();
 
                 Entity operationProductInComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -111,7 +111,7 @@ public class CostNormsForMaterialsService {
         grid.setEntities(inputProducts);
     }
 
-    public Map<Entity, BigDecimal> getProductQuantitiesFromTechnology(final Long technologyId) {
+    public Map<Long, BigDecimal> getProductQuantitiesFromTechnology(final Long technologyId) {
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
 
@@ -121,7 +121,7 @@ public class CostNormsForMaterialsService {
             try {
                 BigDecimal giventQty = technologyService.getProductCountForOperationComponent(operationComponentRoot);
 
-                Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                Map<Long, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                         giventQty, COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
 
                 return productQuantities;

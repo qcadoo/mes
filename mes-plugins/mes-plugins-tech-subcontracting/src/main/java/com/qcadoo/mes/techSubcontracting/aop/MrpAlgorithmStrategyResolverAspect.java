@@ -35,7 +35,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
 import com.qcadoo.mes.technologies.MrpAlgorithmStrategy;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
 
 @Aspect
@@ -43,23 +42,23 @@ public abstract class MrpAlgorithmStrategyResolverAspect {
 
     protected abstract MrpAlgorithmStrategy getAlgorithmService();
 
-    @Pointcut("execution(private java.util.Map<com.qcadoo.model.api.Entity, java.math.BigDecimal> com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl.getProductWithQuantities(..)) "
+    @Pointcut("execution(private java.util.Map<Long, java.math.BigDecimal> com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl.getProductWithQuantities(..)) "
             + "&& args(productComponentWithQuantities, nonComponents, mrpAlgorithm, operationProductComponentModelName)")
-    public void getProductsMethodExecution(final Map<Entity, BigDecimal> productComponentWithQuantities,
-            final Set<Entity> nonComponents, final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) {
+    public void getProductsMethodExecution(final Map<Long, BigDecimal> productComponentWithQuantities,
+            final Set<Long> nonComponents, final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) {
     }
 
     @SuppressWarnings("unchecked")
     @Around("getProductsMethodExecution(productComponentWithQuantities, nonComponents, mrpAlgorithm, operationProductComponentModelName)")
-    public Map<Entity, BigDecimal> aroundGetProductsMethodExecution(final ProceedingJoinPoint pjp,
-            final Map<Entity, BigDecimal> productComponentWithQuantities, final Set<Entity> nonComponents,
+    public Map<Long, BigDecimal> aroundGetProductsMethodExecution(final ProceedingJoinPoint pjp,
+            final Map<Long, BigDecimal> productComponentWithQuantities, final Set<Long> nonComponents,
             final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) throws Throwable {
         if (PluginUtils.isEnabled(TechSubcontractingConstants.PLUGIN_IDENTIFIER)
                 && getAlgorithmService().isApplicableFor(mrpAlgorithm)) {
             return getAlgorithmService().perform(productComponentWithQuantities, nonComponents, mrpAlgorithm,
                     operationProductComponentModelName);
         } else {
-            return (Map<Entity, BigDecimal>) pjp.proceed();
+            return (Map<Long, BigDecimal>) pjp.proceed();
         }
     }
 

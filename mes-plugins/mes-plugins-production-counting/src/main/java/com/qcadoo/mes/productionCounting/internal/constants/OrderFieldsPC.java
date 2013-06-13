@@ -44,4 +44,9 @@ public final class OrderFieldsPC {
     public static final String ALLOW_TO_CLOSE = "allowToClose";
 
     public static final String AUTO_CLOSE_ORDER = "autoCloseOrder";
+
+    public static final String PRODUCTION_RECORDS = "productionRecords";
+
+    public static final String PRODUCTION_COUNTINGS = "productionCountings";
+
 }

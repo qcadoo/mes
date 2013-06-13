@@ -41,6 +41,7 @@
 							<option type="orderable" value="name" />
 							<option type="expression" value="#name" />
 							<option type="fieldCode" value="name" />
+							<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers" method="showPatternTechnology" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">

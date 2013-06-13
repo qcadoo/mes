@@ -51,6 +51,7 @@
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
 						<option type="required" value="true" />
+						<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers" method="showPatternTechnology" />
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.technologies.listeners.TechnologyReferenceTechnologyComponentDetailsListeners"
 							method="disabledSaveBackButton" />

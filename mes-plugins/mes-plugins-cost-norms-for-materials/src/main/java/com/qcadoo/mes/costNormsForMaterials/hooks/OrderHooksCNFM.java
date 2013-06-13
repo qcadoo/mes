@@ -28,6 +28,7 @@ import static com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMateria
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -51,6 +53,9 @@ public class OrderHooksCNFM {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
+
     public void fillOrderOperationProductsInComponents(final DataDefinition orderDD, final Entity order) {
         Entity technology = order.getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGY);
 
@@ -59,12 +64,12 @@ public class OrderHooksCNFM {
 
             Long technologyId = technology.getId();
 
-            Map<Entity, BigDecimal> productQuantities = costNormsForMaterialsService
+            Map<Long, BigDecimal> productQuantities = costNormsForMaterialsService
                     .getProductQuantitiesFromTechnology(technologyId);
 
             if (!productQuantities.isEmpty()) {
-                for (Map.Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
-                    Entity product = productQuantity.getKey();
+                for (Entry<Long, BigDecimal> productQuantity : productQuantities.entrySet()) {
+                    Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
 
                     Entity technologyInstOperProductInComp = dataDefinitionService.get(
                             CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,

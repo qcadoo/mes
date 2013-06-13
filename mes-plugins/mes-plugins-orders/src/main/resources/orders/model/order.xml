@@ -58,10 +58,19 @@
 		<enum name="state"
 			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
 			required="true" />
+			
+		<enum name="orderType"
+			values="01withPatternTechnology,02withOwnTechnology"
+			default="01withPatternTechnology" required="true" />
+			
 		<belongsTo name="company" plugin="basic" model="company" />
 		<belongsTo name="product" plugin="basic" model="product"
 			required="true" />
+			
 		<belongsTo name="technology" plugin="technologies" model="technology" />
+		
+		<belongsTo name="technologyPrototype" plugin="technologies" model="technology" />
+		
 		<belongsTo name="productionLine" plugin="productionLines"
 			model="productionLine" required="true" />
 
@@ -84,7 +93,7 @@
 		<tree name="technologyInstanceOperationComponents" copyable="true"
 			joinField="order" model="technologyInstanceOperationComponent"
 			plugin="technologies" cascade="delete" />
-			
+
 		<decimal name="commissionedPlannedQuantity">
 			<validatesRange from="0" exclusively="false" />
 			<validatesUnscaledValue max="5" />
@@ -130,8 +139,7 @@
 		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="setCommissionedPlannedQuantity" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
-		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder"
-			method="createTechnologyInstanceForOrder" />
+
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate" />
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate" />
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyProductQuantity" />
@@ -139,6 +147,9 @@
 		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
 		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="clearOrSetSpecyfiedValueOrderFieldsOnCopy" />
 		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setProductQuantity" />
+		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setCopyOfTechnology" />
+		<onSave class="com.qcadoo.mes.orders.TechnologyServiceO"
+			method="createOrUpdateTechnology" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

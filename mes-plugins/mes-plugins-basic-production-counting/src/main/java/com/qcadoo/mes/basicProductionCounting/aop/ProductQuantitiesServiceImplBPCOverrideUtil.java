@@ -57,9 +57,9 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public Map<Entity, BigDecimal> getProductComponentWithQuantitiesForOrders(final List<Entity> orders,
-            final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents) {
-        Map<Long, Map<Entity, BigDecimal>> productComponentWithQuantitiesForOrders = Maps.newHashMap();
+    public Map<Long, BigDecimal> getProductComponentWithQuantitiesForOrders(final List<Entity> orders,
+            final Map<Long, BigDecimal> operationRuns, final Set<Long> nonComponents, final boolean onTheFly) {
+        Map<Long, Map<Long, BigDecimal>> productComponentWithQuantitiesForOrders = Maps.newHashMap();
 
         for (Entity order : orders) {
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
@@ -70,9 +70,10 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
                 throw new IllegalStateException("Order doesn't contain technology.");
             }
 
-            if (OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))
-                    || OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE))
-                    || OrderStateStringValues.INTERRUPTED.equals(order.getStringField(OrderFields.STATE))) {
+            if (!onTheFly
+                    && (OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))
+                            || OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE)) || OrderStateStringValues.INTERRUPTED
+                                .equals(order.getStringField(OrderFields.STATE)))) {
                 productComponentWithQuantitiesForOrders.put(order.getId(), getProductComponentWithQuantities(order));
 
                 fillOperationRuns(operationRuns, order);
@@ -87,8 +88,8 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
         return productQuantitiesServiceImpl.groupProductComponentWithQuantities(productComponentWithQuantitiesForOrders);
     }
 
-    private Map<Entity, BigDecimal> getProductComponentWithQuantities(final Entity order) {
-        Map<Entity, BigDecimal> productComponentWithQuantities = Maps.newHashMap();
+    private Map<Long, BigDecimal> getProductComponentWithQuantities(final Entity order) {
+        Map<Long, BigDecimal> productComponentWithQuantities = Maps.newHashMap();
 
         List<Entity> productionCountingQuantities = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
@@ -102,9 +103,9 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
 
             if ((operationProductInComponent != null) || (operationProductOutComponent != null)) {
                 if (operationProductInComponent != null) {
-                    productComponentWithQuantities.put(operationProductInComponent, plannedQuantity);
+                    productComponentWithQuantities.put(operationProductInComponent.getId(), plannedQuantity);
                 } else if (operationProductOutComponent != null) {
-                    productComponentWithQuantities.put(operationProductOutComponent, plannedQuantity);
+                    productComponentWithQuantities.put(operationProductOutComponent.getId(), plannedQuantity);
                 }
             }
         }
@@ -112,7 +113,7 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
         return productComponentWithQuantities;
     }
 
-    private void fillOperationRuns(final Map<Entity, BigDecimal> operationRuns, final Entity order) {
+    private void fillOperationRuns(final Map<Long, BigDecimal> operationRuns, final Entity order) {
         List<Entity> productionCountingOperationRuns = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_OPERATON_RUN).find()
@@ -123,11 +124,11 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
                     .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
             BigDecimal runs = productionCountingOperationRun.getDecimalField(RUNS);
 
-            operationRuns.put(technologyOperationComponent, runs);
+            operationRuns.put(technologyOperationComponent.getId(), runs);
         }
     }
 
-    private void fillNonComponents(final Set<Entity> nonComponents, final Entity order) {
+    private void fillNonComponents(final Set<Long> nonComponents, final Entity order) {
         List<Entity> productionCountingQuantities = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY).find()
@@ -140,9 +141,9 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
 
             if ((operationProductInComponent != null) || (operationProductOutComponent != null)) {
                 if (operationProductInComponent != null) {
-                    nonComponents.add(operationProductInComponent);
+                    nonComponents.add(operationProductInComponent.getId());
                 } else if (operationProductOutComponent != null) {
-                    nonComponents.add(operationProductOutComponent);
+                    nonComponents.add(operationProductOutComponent.getId());
                 }
             }
         }

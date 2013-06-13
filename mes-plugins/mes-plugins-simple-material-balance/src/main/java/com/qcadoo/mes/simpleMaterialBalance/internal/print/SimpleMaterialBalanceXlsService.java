@@ -38,12 +38,10 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
-import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsHelper;
 
@@ -114,27 +112,34 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS);
         MrpAlgorithm mrpAlgorithm = MrpAlgorithm.parseString(simpleMaterialBalance.getStringField("mrpAlgorithm"));
 
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantitiesForComponents(
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantitiesForComponents(
                 simpleMaterialBalanceOrdersComponents, mrpAlgorithm);
 
         List<Entity> simpleMaterialBalanceLocationComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS);
-        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
-        for (Entry<Entity, BigDecimal> product : products.entrySet()) {
+
+        // TODO LUPO fix comparator
+        // neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
+
+        for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
+
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(product.getKey().getField(L_NUMBER).toString());
-            row.createCell(1).setCellValue(product.getKey().getField(L_NAME).toString());
-            row.createCell(2).setCellValue(product.getKey().getField(L_UNIT).toString());
-            row.createCell(3).setCellValue(numberService.format(product.getValue()));
+            row.createCell(0).setCellValue(product.getField(L_NUMBER).toString());
+            row.createCell(1).setCellValue(product.getField(L_NAME).toString());
+            row.createCell(2).setCellValue(product.getField(L_UNIT).toString());
+            row.createCell(3).setCellValue(numberService.format(neededProductQuantity.getValue()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity simpleMaterialBalanceLocationComponent : simpleMaterialBalanceLocationComponents) {
                 available = available.add(materialFlowService.calculateShouldBeInLocation(simpleMaterialBalanceLocationComponent
-                        .getBelongsToField(L_LOCATION).getId(), product.getKey().getId(), (Date) simpleMaterialBalance
-                        .getField(L_DATE)), numberService.getMathContext());
+                        .getBelongsToField(L_LOCATION).getId(), product.getId(), (Date) simpleMaterialBalance.getField(L_DATE)),
+                        numberService.getMathContext());
             }
             row.createCell(4).setCellValue(numberService.format(available));
-            row.createCell(5).setCellValue(
-                    numberService.format(available.subtract(product.getValue(), numberService.getMathContext())));
+            row.createCell(5)
+                    .setCellValue(
+                            numberService.format(available.subtract(neededProductQuantity.getValue(),
+                                    numberService.getMathContext())));
         }
         sheet.autoSizeColumn((short) 0);
         sheet.autoSizeColumn((short) 1);

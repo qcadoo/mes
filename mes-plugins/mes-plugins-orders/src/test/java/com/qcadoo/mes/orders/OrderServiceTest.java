@@ -409,7 +409,7 @@ public class OrderServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
+        given(viewDefinitionState.getComponentByReference("technologyPrototype")).willReturn(technology);
         given(viewDefinitionState.getComponentByReference("plannedQuantity")).willReturn(plannedQuantity);
         given(product.getFieldValue()).willReturn(null);
 
@@ -433,7 +433,7 @@ public class OrderServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
+        given(viewDefinitionState.getComponentByReference("technologyPrototype")).willReturn(technology);
         given(viewDefinitionState.getComponentByReference("plannedQuantity")).willReturn(plannedQuantity);
         given(product.getFieldValue()).willReturn(117L);
 
@@ -467,7 +467,7 @@ public class OrderServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
+        given(viewDefinitionState.getComponentByReference("technologyPrototype")).willReturn(technology);
         given(viewDefinitionState.getComponentByReference("plannedQuantity")).willReturn(plannedQuantity);
         given(product.getFieldValue()).willReturn(117L);
 

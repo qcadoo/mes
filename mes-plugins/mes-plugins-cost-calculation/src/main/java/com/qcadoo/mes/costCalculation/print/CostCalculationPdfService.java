@@ -62,7 +62,6 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
-import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -71,7 +70,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
-import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.utils.TimeConverterService;
@@ -403,20 +401,23 @@ public class CostCalculationPdfService extends PdfDocumentService {
         }
 
         BigDecimal givenQty = (BigDecimal) costCalculation.getField(QUANTITY);
-        Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                givenQty, COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
-        neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
 
-        for (Entry<Entity, BigDecimal> productWithNeededQuantity : neededProductQuantities.entrySet()) {
-            Entity productEntity = productsCostCalculationService.getAppropriateCostNormForProduct(
-                    productWithNeededQuantity.getKey(), order, costCalculation.getStringField("sourceOfMaterialCosts"));
-            BigDecimal productQuantity = productWithNeededQuantity.getValue();
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, givenQty,
+                COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
 
-            materialsTable.addCell(new Phrase(productWithNeededQuantity.getKey().getStringField(NUMBER), FontUtils
-                    .getDejavuRegular9Dark()));
+        // TODO LUPO fix comparator
+        // neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
+
+        for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
+
+            Entity productEntity = productsCostCalculationService.getAppropriateCostNormForProduct(product, order,
+                    costCalculation.getStringField("sourceOfMaterialCosts"));
+            BigDecimal productQuantity = neededProductQuantity.getValue();
+
+            materialsTable.addCell(new Phrase(product.getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
             materialsTable.addCell(new Phrase(numberService.format(productQuantity), FontUtils.getDejavuRegular9Dark()));
-            materialsTable.addCell(new Phrase(productWithNeededQuantity.getKey().getStringField(L_UNIT), FontUtils
-                    .getDejavuRegular9Dark()));
+            materialsTable.addCell(new Phrase(product.getStringField(L_UNIT), FontUtils.getDejavuRegular9Dark()));
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
             BigDecimal costs = productsCostCalculationService.calculateProductCostForGivenQuantity(productEntity,
@@ -478,23 +479,25 @@ public class CostCalculationPdfService extends PdfDocumentService {
         }
 
         BigDecimal givenQty = (BigDecimal) costCalculation.getField(QUANTITY);
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(technology, givenQty,
+
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, givenQty,
                 COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
 
-        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
+        // TODO LUPO fix comparator
+        // neededProductQuantities = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
 
         PdfPTable printCostNormsOfMaterialTable = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
                 false);
-        for (Entry<Entity, BigDecimal> product : products.entrySet()) {
-            printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils
-                    .getDejavuRegular9Dark()));
-            printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NAME), FontUtils
-                    .getDejavuRegular9Dark()));
-            Entity entityProduct = productsCostCalculationService.getAppropriateCostNormForProduct(product.getKey(), order,
+        for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
+
+            printCostNormsOfMaterialTable.addCell(new Phrase(product.getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
+            printCostNormsOfMaterialTable.addCell(new Phrase(product.getStringField(NAME), FontUtils.getDejavuRegular9Dark()));
+            Entity entityProduct = productsCostCalculationService.getAppropriateCostNormForProduct(product, order,
                     costCalculation.getStringField("sourceOfMaterialCosts"));
             BigDecimal toDisplay = (BigDecimal) entityProduct.getField(costModeName.get("costMode"));
-            BigDecimal quantity = (BigDecimal) product.getKey().getField(L_COST_FOR_NUMBER);
-            String unit = (String) product.getKey().getStringField(L_UNIT);
+            BigDecimal quantity = (BigDecimal) product.getField(L_COST_FOR_NUMBER);
+            String unit = (String) product.getStringField(L_UNIT);
 
             printCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " " + " / " + quantity + " " + unit, FontUtils
                     .getDejavuRegular9Dark()));

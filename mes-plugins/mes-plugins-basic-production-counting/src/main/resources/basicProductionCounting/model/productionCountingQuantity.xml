@@ -28,15 +28,31 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="order" model="order" plugin="orders" required="true" />
-		<belongsTo name="operationProductInComponent"
-			model="operationProductInComponent" plugin="technologies" />
-		<belongsTo name="operationProductOutComponent"
-			model="operationProductOutComponent" plugin="technologies" />
-		<belongsTo name="product" model="product" plugin="basic" required="true" />
-		<decimal name="plannedQuantity" required="true" />
+		<belongsTo name="order" model="order" plugin="orders"
+			required="true" />
+		<belongsTo name="technologyOperationComponent" model="technologyOperationComponent"
+			plugin="technologies" />
+		<belongsTo name="operationProductInComponent" model="operationProductInComponent"
+			plugin="technologies" />
+		<belongsTo name="operationProductOutComponent" model="operationProductOutComponent"
+			plugin="technologies" />
+		<belongsTo name="product" model="product" plugin="basic"
+			required="true" />
+		<belongsTo name="basicProductionCounting" model="basicProductionCounting"
+			plugin="basicProductionCounting" />
+		<enum name="role" values="01used,02produced" default="01used"
+			required="true" />
+		<enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
+			default="01component" required="true" />
 		<boolean name="isNonComponent" default="false" required="true" />
+		<decimal name="plannedQuantity" required="true" />
+		<decimal name="usedQuantity" persistent="false" />
+		<decimal name="producedQuantity" persistent="false" />
 	</fields>
-	
-	<hooks />
+
+	<hooks>
+		<onCreate
+			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityHooks"
+			method="onCreate" />
+	</hooks>
 </model>

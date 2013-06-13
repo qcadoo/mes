@@ -131,6 +131,7 @@
 		<view:view-tab resource="view/tabExtensions/productDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+		<view:view-tab resource="view/tabExtensions/copyOfTechnologyDetails.xml" />
 		
 		<view:view-hook plugin="technologies" view="technologyDetails"
 			type="afterInitialize" class="com.qcadoo.mes.genealogies.GenealogyTechnologyService"
@@ -140,6 +141,14 @@
 			component="product" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
 
+		<view:view-hook plugin="orders" view="copyOfTechnologyDetails"
+			type="afterInitialize" class="com.qcadoo.mes.genealogies.GenealogyTechnologyService"
+			method="checkAttributesReq" />
+
+		<view:view-listener plugin="orders" view="copyOfTechnologyDetails"
+			component="product" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
+			
 		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="grid" event="showGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
 			method="showGenealogy" />

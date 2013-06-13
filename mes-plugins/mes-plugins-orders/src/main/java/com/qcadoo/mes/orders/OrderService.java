@@ -146,7 +146,7 @@ public class OrderService {
         }
 
         FieldComponent productField = (FieldComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
-        FieldComponent technologyField = (FieldComponent) view.getComponentByReference(TECHNOLOGY);
+        FieldComponent technologyField = (FieldComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent name = (FieldComponent) view.getComponentByReference(NAME);
 
         if (technologyField.getFieldValue() == null || productField.getFieldValue() == null
@@ -227,7 +227,7 @@ public class OrderService {
 
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state) {
         FieldComponent product = (FieldComponent) state.getComponentByReference(BASIC_MODEL_PRODUCT);
-        FieldComponent technology = (FieldComponent) state.getComponentByReference(TECHNOLOGY);
+        FieldComponent technology = (FieldComponent) state.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference(DEFAULT_TECHNOLOGY);
         FieldComponent plannedQuantity = (FieldComponent) state.getComponentByReference(PLANNED_QUANTITY);
 
@@ -432,7 +432,7 @@ public class OrderService {
     }
 
     public boolean checkIfTechnologyIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        Entity technology = entity.getBelongsToField(TECHNOLOGY);
+        Entity technology = entity.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
         if (technology == null || technology.getId() == null) {
             return true;
@@ -443,7 +443,7 @@ public class OrderService {
 
         if (technologyEntity == null) {
             entity.addGlobalError("qcadooView.message.belongsToNotFound");
-            entity.setField(TECHNOLOGY, null);
+            entity.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
             return false;
         } else {
             return true;
@@ -456,14 +456,15 @@ public class OrderService {
         }
 
         if (order.isActive()) {
-            Entity technology = order.getBelongsToField(TECHNOLOGY);
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
             if (technology == null) {
                 return true;
             }
             TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(STATE));
 
             if (TechnologyState.CHECKED != technologyState && TechnologyState.ACCEPTED != technologyState) {
-                order.addError(orderDD.getField(TECHNOLOGY), "orders.validate.technology.error.wrongState.checked");
+                order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE),
+                        "orders.validate.technology.error.wrongState.checked");
                 return false;
             }
         }

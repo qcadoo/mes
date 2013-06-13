@@ -108,7 +108,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
-    private Map<Entity, BigDecimal> operationsRuns = new HashMap<Entity, BigDecimal>();
+    private Map<Entity, BigDecimal> operationsRuns = Maps.newHashMap();
 
     private static final Logger LOG = LoggerFactory.getLogger(OperationsCostCalculationServiceImpl.class);
 
@@ -144,7 +144,15 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyFromOrder.getId());
         }
-        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationsRuns);
+
+        // TODO LUPO fix problem with operationRuns
+        final Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
+
+        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRunsFromProductionQuantities);
+
+        operationsRuns = productQuantitiesService
+                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
+
         if (CalculateOperationCostMode.PIECEWORK.equals(mode)) {
             if (calculationOperationComponents.isEmpty()) {
                 entity.addError(entity.getDataDefinition().getField(L_ORDER), "costCalculation.lackOfTreeComponents");

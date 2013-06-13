@@ -48,7 +48,15 @@ public class BasicProductionCountingHooks {
     @Autowired
     private NumberService numberService;
 
-    public void fillPlannedQuantity(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
+    public boolean validatesWith(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
+        return checkValueOfQuantity(basicProductionCountingDD, basicProductionCounting);
+    }
+
+    public void onView(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
+        fillPlannedQuantity(basicProductionCountingDD, basicProductionCounting);
+    }
+
+    private void fillPlannedQuantity(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
         basicProductionCounting.setField(PLANNED_QUANTITY, numberService.setScale(getPlannedQuantity(basicProductionCounting)));
     }
 

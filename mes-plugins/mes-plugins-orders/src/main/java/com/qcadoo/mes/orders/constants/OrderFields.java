@@ -105,4 +105,7 @@ public final class OrderFields {
 
     public static final String REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END = "reasonTypesDeviationsOfEffectiveEnd";
 
+    public static final String ORDER_TYPE = "orderType";
+
+    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
 }

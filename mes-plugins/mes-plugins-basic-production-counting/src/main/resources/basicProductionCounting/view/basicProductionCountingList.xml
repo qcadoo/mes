@@ -33,13 +33,53 @@
 		<ribbon>
 			<group template="navigation" />
 
-			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
+			<template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete" />
+			
+			<group name="productionCounting">
+				<bigButton name="showDetailedProductionCountingAndProgress"
+					icon="genealogyIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{order}.performEvent('showDetailedProductionCountingAndProgress', []);
+									}
+								}
+							});		
+						]]>
+					</script>
+				</bigButton>
+				<bigButton name="showDetailedProductionCounting"
+					icon="genealogyIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{order}.performEvent('showDetailedProductionCounting', []);
+									}
+								}
+							});		
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 
-		<component type="form" name="order" reference="order" />
+		<component type="form" name="order" reference="order">
+			<listener 
+				event="showDetailedProductionCountingAndProgress" 
+				class="com.qcadoo.mes.basicProductionCounting.listeners.BasicProductionCountingListListeners" 
+				method="showDetailedProductionCountingAndProgress" />
+			<listener 
+				event="showDetailedProductionCounting" 
+				class="com.qcadoo.mes.basicProductionCounting.listeners.BasicProductionCountingListListeners" 
+				method="showDetailedProductionCounting" />
+		</component>
 		<component type="form" name="basicProductionCounting"
 			reference="form">
-			<component type="grid" name="countingList" reference="grid"
+			<component type="grid" name="basicProductionCountings" reference="grid"
 				source="#{order}.basicProductionCountings">
 				<option type="column" name="productNumber" fields="product"
 					expression="#product['number']" link="true" />
@@ -48,7 +88,7 @@
 				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
 				<option type="column" name="producedQuantity" fields="producedQuantity" />
 				<option type="column" name="usedQuantity" fields="usedQuantity" />
-				<option type="column" name="unit" fields="product"
+				<option type="column" name="productUnit" fields="product"
 					expression="#product['unit']" />
 
 				<option type="order" column="productType" direction="desc" />
@@ -69,7 +109,10 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingListHooks"
-			method="setUneditableGridWhenOrderTypeRecordingIsBasic" />
+			method="updateRibbonState" />
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingListHooks"
+			method="setGridEditableDependsOfOrderState" />
 	</hooks>
 
 </view>

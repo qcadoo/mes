@@ -56,6 +56,7 @@ public class OrderHooksBPC {
             } else {
                 if (checkIfProductionCountingQuantitiesAndOperationsRunsAreEmpty(order)) {
                     basicProductionCountingService.createProductionCountingQuantitiesAndOperationRuns(order);
+                    basicProductionCountingService.associateProductionCountingQuantitiesWithBasicProductionCountings(order);
                 }
             }
         }

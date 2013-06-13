@@ -46,6 +46,7 @@ public class BpcOrderStateListenerService {
         } else {
             basicProductionCountingService.createProductionCountingQuantitiesAndOperationRuns(order);
             basicProductionCountingService.createBasicProductionCountings(order);
+            basicProductionCountingService.associateProductionCountingQuantitiesWithBasicProductionCountings(order);
         }
     }
 

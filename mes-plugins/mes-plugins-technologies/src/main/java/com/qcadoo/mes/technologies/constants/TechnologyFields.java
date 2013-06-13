@@ -47,4 +47,8 @@ public final class TechnologyFields {
 
     public static final String TECHNOLOGY_GROUP = "technologyGroup";
 
+    public static final String TECHNOLOGY_TYPE = "technologyType";
+
+    public static final String PATTERN_TECHNOLOGY = "patternTechnology";
+
 }

@@ -29,7 +29,6 @@ import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponent
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,6 +37,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.MrpAlgorithmStrategy;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
@@ -54,12 +54,13 @@ public class MrpAlgorithmStrategyTS implements MrpAlgorithmStrategy {
         return MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS.equals(mrpAlgorithm);
     }
 
-    public Map<Entity, BigDecimal> perform(final Map<Entity, BigDecimal> productComponentWithQuantities,
-            final Set<Entity> nonComponents, final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) {
-        Map<Entity, BigDecimal> productWithQuantities = new HashMap<Entity, BigDecimal>();
+    public Map<Long, BigDecimal> perform(final Map<Long, BigDecimal> productComponentWithQuantities,
+            final Set<Long> nonComponents, final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) {
+        Map<Long, BigDecimal> productWithQuantities = Maps.newHashMap();
 
-        for (Entry<Entity, BigDecimal> productComponentWithQuantity : productComponentWithQuantities.entrySet()) {
-            Entity operationProductComponent = productComponentWithQuantity.getKey();
+        for (Entry<Long, BigDecimal> productComponentWithQuantity : productComponentWithQuantities.entrySet()) {
+            Entity operationProductComponent = productQuantitiesService.getOperationProductComponent(productComponentWithQuantity
+                    .getKey());
 
             if (operationProductComponentModelName.equals(operationProductComponent.getDataDefinition().getName())) {
                 if (nonComponents.contains(operationProductComponent)) {

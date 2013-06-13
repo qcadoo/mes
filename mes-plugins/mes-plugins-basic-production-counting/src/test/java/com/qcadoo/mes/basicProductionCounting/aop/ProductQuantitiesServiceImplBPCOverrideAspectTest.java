@@ -44,7 +44,7 @@ public class ProductQuantitiesServiceImplBPCOverrideAspectTest {
         Class<?> clazz = ProductQuantitiesServiceImpl.class;
         assertEquals("com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl", clazz.getCanonicalName());
         final Method method = clazz.getDeclaredMethod("getProductComponentWithQuantitiesForOrders", List.class, Map.class,
-                Set.class);
+                Set.class, boolean.class);
         assertNotNull(method);
         assertTrue(Modifier.isPrivate(method.getModifiers()));
         assertEquals(Map.class, method.getReturnType());

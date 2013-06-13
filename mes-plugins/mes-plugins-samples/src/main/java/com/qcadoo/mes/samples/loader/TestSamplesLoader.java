@@ -214,11 +214,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         } else if (L_GENEALOGY_TABLES.equals(type)) {
             addGenealogyTables(values);
         } else if (L_QUALITY_CONTROLS.equals(type)) {
-            addQualityControl(values);
+            // addQualityControl(values);
         } else if (L_MATERIAL_REQUIREMENTS.equals(type)) {
             addMaterialRequirements(values);
         } else if (L_WORK_PLANS.equals(type)) {
-            addWorkPlan(values);
+            // addWorkPlan(values);
         } else if (L_PRODUCTION_RECORD.equals(type)) {
             addProductionRecord(values);
         } else if (RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT.equals(type)) {
@@ -693,7 +693,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         order.setField("externalSynchronized", true);
 
         Entity technology = getTechnologyByNumber(values.get("tech_nr"));
-        order.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
+        order.setField("technologyPrototype", technology);
         order.setField(L_NAME,
                 (values.get(L_NAME).isEmpty() || values.get(L_NAME) == null) ? values.get(L_ORDER_NR) : values.get(L_NAME));
         order.setField(L_NUMBER, values.get(L_ORDER_NR));
@@ -747,6 +747,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     + order.getField("trackingRecordTreatment") + ", state=" + order.getField(L_ORDER_STATE) + "}");
         }
 
+        order.setField("orderType", "01withPatternTechnology");
         dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
     }
 
@@ -1006,23 +1007,32 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void addRecordOperationProductInComponent(final Map<String, String> values) {
         DataDefinition productInComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT);
+
         Entity productInComponent = productInComponentDD.find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
-                .uniqueResult();
-        productInComponent.setField("usedQuantity", values.get("usedquantity"));
-        productInComponent.setField(L_BALANCE, values.get(L_BALANCE));
-        productInComponentDD.save(productInComponent);
+                .setMaxResults(1).uniqueResult();
+
+        if (productInComponent != null) {
+            productInComponent.setField("usedQuantity", values.get("usedquantity"));
+            productInComponent.setField(L_BALANCE, values.get(L_BALANCE));
+            productInComponentDD.save(productInComponent);
+        }
     }
 
-    private Entity addRecordOperationProductOutComponent(final Map<String, String> values) {
+    private void addRecordOperationProductOutComponent(final Map<String, String> values) {
         DataDefinition productOutComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT);
+
         Entity productOutComponent = productOutComponentDD.find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
-                .uniqueResult();
-        productOutComponent.setField("usedQuantity", values.get("usedquantity"));
-        productOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
-        return productOutComponentDD.save(productOutComponent);
+                .setMaxResults(1).uniqueResult();
+
+        if (productOutComponent != null) {
+            productOutComponent.setField("usedQuantity", values.get("usedquantity"));
+            productOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
+
+            productOutComponentDD.save(productOutComponent);
+        }
     }
 
     private void addOperationComponent(final Map<String, String> values) {

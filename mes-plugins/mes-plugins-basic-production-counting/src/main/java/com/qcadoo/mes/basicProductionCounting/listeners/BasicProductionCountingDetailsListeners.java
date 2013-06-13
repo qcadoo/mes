@@ -33,8 +33,7 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -47,16 +46,15 @@ public class BasicProductionCountingDetailsListeners {
     private static final String L_FORM = "form";
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private BasicProductionCountingService basicProductionCountingService;
 
-    public void fillDoneQuantityField(final ViewDefinitionState viewState, final ComponentState triggerState, final String[] args) {
-        FormComponent form = (FormComponent) viewState.getComponentByReference(L_FORM);
-        FieldComponent producedQuantity = (FieldComponent) viewState.getComponentByReference(PRODUCED_QUANTITY);
+    public void fillDoneQuantityField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent producedQuantity = (FieldComponent) view.getComponentByReference(PRODUCED_QUANTITY);
         Long basicProductionCountingId = form.getEntityId();
 
         if (basicProductionCountingId != null) {
-            final Entity basicProductionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                    BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(basicProductionCountingId);
+            Entity basicProductionCounting = basicProductionCountingService.getBasicProductionCounting(basicProductionCountingId);
 
             Entity order = basicProductionCounting.getBelongsToField(ORDER);
             Entity product = basicProductionCounting.getBelongsToField(PRODUCT);

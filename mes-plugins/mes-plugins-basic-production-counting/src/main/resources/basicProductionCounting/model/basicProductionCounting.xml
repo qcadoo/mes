@@ -33,14 +33,17 @@
 		<decimal name="plannedQuantity" persistent="false" />
 		<decimal name="usedQuantity" />
 		<decimal name="producedQuantity" />
+	
+		<hasMany name="productionCountingQuantities" model="productionCountingQuantity"
+			plugin="basicProductionCounting" joinField="basicProductionCounting" cascade="delete" />
 	</fields>
 	
 	<hooks>
 		<validatesWith
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingHooks"
-			method="checkValueOfQuantity" />
+			method="validatesWith" />
 		<onView 
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingHooks"
-			method="fillPlannedQuantity" />
+			method="onView" />
 	</hooks>
 </model>
