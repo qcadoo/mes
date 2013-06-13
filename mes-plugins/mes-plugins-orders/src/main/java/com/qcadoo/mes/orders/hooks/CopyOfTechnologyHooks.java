@@ -40,6 +40,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks;
 import com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -72,14 +73,14 @@ public class CopyOfTechnologyHooks {
         if (form.getEntityId() == null) {
             return;
         }
-        Entity copyOfTechnology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(form.getEntityId());
 
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                .add(SearchRestrictions.belongsTo(OrderFields.COPY_OF_TECHNOLOGY, copyOfTechnology)).uniqueResult();
+                .add(SearchRestrictions.belongsTo(OrderFields.TECHNOLOGY, technology)).uniqueResult();
 
         String orderType = order.getStringField(OrderFields.ORDER_TYPE);
-        fillFileds(view, copyOfTechnology);
+        fillFileds(view, technology);
         enableFileds(view, orderType);
         disableRibbonItem(view, orderType);
         setVisibleFileds(view, orderType);
@@ -87,32 +88,36 @@ public class CopyOfTechnologyHooks {
         technologyDetailsViewHooks.filterStateChangeHistory(view);
         technologyDetailsViewHooks.setTreeTabEditable(view);
         technologyDetailsListeners.setGridEditable(view);
-        disableForm(view, order);
+        disableForm(view, order, technology);
 
     }
 
-    private void disableForm(final ViewDefinitionState view, final Entity order) {
+    private void disableForm(final ViewDefinitionState view, final Entity order, final Entity technologyEntity) {
 
-        FormComponent copyOfTechnology = (FormComponent) view.getComponentByReference(FIELD_FORM);
+        FormComponent technology = (FormComponent) view.getComponentByReference(FIELD_FORM);
         boolean disabled = true;
 
-        if (copyOfTechnology.getEntityId() != null) {
+        if (technology.getEntityId() != null) {
             if (order == null) {
                 return;
             }
             String state = order.getStringField(STATE);
+            String technolgyState = technologyEntity.getStringField(STATE);
             if (OrderState.PENDING.getStringValue().equals(state)) {
                 disabled = false;
             }
+            if (TechnologyState.CHECKED.getStringValue().equals(technolgyState)) {
+                disabled = true;
+            }
         }
 
-        copyOfTechnology.setFormEnabled(!disabled);
+        technology.setFormEnabled(!disabled);
         technologyDetailsViewHooks.setTreeTabEditable(view, !disabled);
 
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view, final Entity order) {
-        LookupComponent patternTechnologyLookup = (LookupComponent) view.getComponentByReference("patternTechnology");
+        LookupComponent patternTechnologyLookup = (LookupComponent) view.getComponentByReference("technologyPrototype");
         FilterValueHolder holder = patternTechnologyLookup.getFilterValue();
         holder.put(TechnologyCriteriaModifires.PRODUCT_PARAMETER, order.getBelongsToField(OrderFields.PRODUCT).getId());
         patternTechnologyLookup.setFilterValue(holder);
@@ -131,7 +136,7 @@ public class CopyOfTechnologyHooks {
     }
 
     private void enableFileds(final ViewDefinitionState view, final String orderType) {
-        LookupComponent patternTechnologyLookup = (LookupComponent) view.getComponentByReference("patternTechnology");
+        LookupComponent patternTechnologyLookup = (LookupComponent) view.getComponentByReference("technologyPrototype");
         if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
             patternTechnologyLookup.setEnabled(true);
 
@@ -143,7 +148,7 @@ public class CopyOfTechnologyHooks {
     }
 
     private void setVisibleFileds(final ViewDefinitionState view, final String orderType) {
-        LookupComponent patternTechnologyLookup = (LookupComponent) view.getComponentByReference("patternTechnology");
+        LookupComponent patternTechnologyLookup = (LookupComponent) view.getComponentByReference("technologyPrototype");
         if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(orderType)) {
             patternTechnologyLookup.setVisible(false);
 
@@ -151,11 +156,10 @@ public class CopyOfTechnologyHooks {
 
     }
 
-    private void fillFileds(final ViewDefinitionState view, final Entity copyOfTechnology) {
+    private void fillFileds(final ViewDefinitionState view, final Entity technology) {
 
         FieldComponent field = (FieldComponent) view.getComponentByReference("typeOfTechnology");
-        if (TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue().equals(
-                copyOfTechnology.getField(TechnologyFields.TECHNOLOGY_TYPE))) {
+        if (TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue().equals(technology.getField(TechnologyFields.TECHNOLOGY_TYPE))) {
             field.setFieldValue(translationService.translate("orders.technology.own", view.getLocale()));
         } else {
             field.setFieldValue(translationService.translate("orders.technology.pattern", view.getLocale()));

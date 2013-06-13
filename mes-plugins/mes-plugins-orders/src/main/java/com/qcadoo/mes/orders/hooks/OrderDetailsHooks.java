@@ -41,7 +41,6 @@ import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTIO
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
@@ -94,7 +93,7 @@ public class OrderDetailsHooks {
 
     private static final String L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END = "commentReasonTypeDeviationsOfEffectiveEnd";
 
-    private static final List<String> PREDEFINED_TECHNOLOGY_FIELDS = Arrays.asList("defaultTechnology", "technology",
+    private static final List<String> PREDEFINED_TECHNOLOGY_FIELDS = Arrays.asList("defaultTechnology", "technologyPrototype",
             "predefinedTechnology");
 
     @Autowired
@@ -330,7 +329,7 @@ public class OrderDetailsHooks {
         changeFieldsVisibility(view, PREDEFINED_TECHNOLOGY_FIELDS, selectForPatternTechnology);
         if (selectForPatternTechnology) {
             LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
-            FieldComponent technology = (FieldComponent) view.getComponentByReference(TECHNOLOGY);
+            FieldComponent technology = (FieldComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
             FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
 
             Entity product = productLookup.getEntity();

@@ -41,7 +41,7 @@
 		<belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
 			lazy="false" />
 			
-		<belongsTo name="patternTechnology" model="technology" />
+		<belongsTo name="technologyPrototype" model="technology" />
 				
 		<boolean name="master" default="false" />
 		<string name="description">

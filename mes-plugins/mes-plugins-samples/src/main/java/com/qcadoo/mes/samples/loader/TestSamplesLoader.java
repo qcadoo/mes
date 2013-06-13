@@ -693,7 +693,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         order.setField("externalSynchronized", true);
 
         Entity technology = getTechnologyByNumber(values.get("tech_nr"));
-        order.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
+        order.setField("technologyPrototype", technology);
         order.setField(L_NAME,
                 (values.get(L_NAME).isEmpty() || values.get(L_NAME) == null) ? values.get(L_ORDER_NR) : values.get(L_NAME));
         order.setField(L_NUMBER, values.get(L_ORDER_NR));

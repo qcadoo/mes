@@ -87,7 +87,7 @@ public class OrderStateValidationService {
         checkArgument(stateChangeContext != null, ENTITY_IS_NULL);
 
         final Entity order = stateChangeContext.getOwner();
-        final Entity technology = order.getBelongsToField(OrderFields.COPY_OF_TECHNOLOGY);
+        final Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         if (technology == null) {
             return;
         }

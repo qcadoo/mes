@@ -141,8 +141,8 @@
 							reference="typeOfTechnology" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="lookup" name="patternTechnology" reference="patternTechnology"
-							field="patternTechnology" defaultEnabled="false">
+						<component type="lookup" name="technologyPrototype" reference="technologyPrototype"
+							field="technologyPrototype" defaultEnabled="false">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
 							<option type="searchable" value="name,number" />

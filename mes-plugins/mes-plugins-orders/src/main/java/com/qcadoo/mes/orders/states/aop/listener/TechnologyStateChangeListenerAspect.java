@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.orders.states.aop.listener;
 
+import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -36,6 +37,7 @@ import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangePhase;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
@@ -55,18 +57,11 @@ public class TechnologyStateChangeListenerAspect extends AbstractStateListenerAs
     }
 
     @RunInPhase(TechnologyStateChangePhase.LAST)
-    @RunForStateTransition(sourceState = TechnologyStateStringValues.CHECKED, targetState = TechnologyStateStringValues.DRAFT)
-    @After(PHASE_EXECUTION_POINTCUT)
-    public void afterChangeFromCheckedToDraft(final StateChangeContext stateChangeContext, final int phase) {
-        technologyStateChangeListener.deleteCheckedTechnologyFromOrder(stateChangeContext);
-    }
-
-    @RunInPhase(TechnologyStateChangePhase.LAST)
     @RunForStateTransition(targetState = TechnologyStateStringValues.CHECKED)
     @After(PHASE_EXECUTION_POINTCUT)
     public void afterChangeToChecked(final StateChangeContext stateChangeContext, final int phase) {
         Entity technology = stateChangeContext.getOwner();
-        if (technology.getBelongsToField("patternTechnology") == null) {
+        if (!StringUtils.isNotBlank(technology.getStringField(TechnologyFields.TECHNOLOGY_TYPE))) {
             stateChangeContext.addMessage("orders.order.technology.info.aboutChecked", StateMessageType.INFO, false);
         }
 

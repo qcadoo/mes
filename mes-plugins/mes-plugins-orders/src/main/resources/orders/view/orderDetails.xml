@@ -98,7 +98,24 @@
 			</group>
 			<group name="export">
 				<bigButton name="print" icon="pdfIcon24.png"
-					action="#{form}.generateReportForEntity('orders','order','pdf')" />
+					action="#{form}.generateReportForEntity('orders','order','pdf')" >
+					<script>
+						<![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (! value || ! value.content) {
+										return;
+									}
+									if (! value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});					
+						]]>
+					</script>
+				</bigButton>
 			</group>
 			<group name="orderCopyOfTechnology">
 				<bigButton name="orderCopyOfTechnology" icon="settingsIcon24.png"
@@ -353,8 +370,8 @@
 									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="2">
-								<component type="lookup" name="technology" reference="technology"
-									field="technology" source="#{product}.technologies">
+								<component type="lookup" name="technology" reference="technologyPrototype"
+									field="technologyPrototype" source="#{product}.technologies">
 									<option type="column" name="name" fields="name" link="true"
 									width="300" />
 

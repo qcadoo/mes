@@ -27,7 +27,6 @@ import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
 
 import java.util.Map;
@@ -78,7 +77,8 @@ public class OrderDetailsListeners {
 
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
             if (order.getField(OrderFields.ORDER_TYPE).equals(OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue())) {
-                LookupComponent patternTechnologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
+                LookupComponent patternTechnologyLookup = (LookupComponent) view
+                        .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
                 if (patternTechnologyLookup.getEntity() == null) {
 
                     componentState.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
@@ -86,9 +86,9 @@ public class OrderDetailsListeners {
                 }
 
             }
-            Long copyOfTechnologyId = order.getBelongsToField(OrderFields.COPY_OF_TECHNOLOGY).getId();
+            Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
             Map<String, Object> parameters = Maps.newHashMap();
-            parameters.put("form.id", copyOfTechnologyId);
+            parameters.put("form.id", technologyId);
 
             String url = "../page/orders/copyOfTechnologyDetails.html";
             view.redirectTo(url, false, true, parameters);
@@ -180,17 +180,21 @@ public class OrderDetailsListeners {
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        LookupComponent productLookup = (LookupComponent) viewDefinitionState.getComponentByReference(OrderFields.PRODUCT);
-        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY);
-        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
+        FieldComponent orderType = (FieldComponent) viewDefinitionState.getComponentByReference("orderType");
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType.getFieldValue())) {
+            LookupComponent productLookup = (LookupComponent) viewDefinitionState.getComponentByReference(OrderFields.PRODUCT);
+            FieldComponent technology = (FieldComponent) viewDefinitionState
+                    .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+            FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
 
-        Entity product = productLookup.getEntity();
-        defaultTechnology.setFieldValue("");
-        technology.setFieldValue(null);
-        if (product != null) {
-            Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
-            if (defaultTechnologyEntity != null) {
-                technology.setFieldValue(defaultTechnologyEntity.getId());
+            Entity product = productLookup.getEntity();
+            defaultTechnology.setFieldValue("");
+            technology.setFieldValue(null);
+            if (product != null) {
+                Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
+                if (defaultTechnologyEntity != null) {
+                    technology.setFieldValue(defaultTechnologyEntity.getId());
+                }
             }
         }
     }

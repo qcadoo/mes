@@ -107,5 +107,5 @@ public final class OrderFields {
 
     public static final String ORDER_TYPE = "orderType";
 
-    public static final String COPY_OF_TECHNOLOGY = "copyOfTechnology";
+    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
 }

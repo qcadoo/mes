@@ -447,10 +447,10 @@ public class OrderHooks {
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
         Entity copyOfTechnology = technologyDD.create();
-        copyOfTechnology = technologyDD.copy(order.getBelongsToField(OrderFields.COPY_OF_TECHNOLOGY).getId()).get(0);
+        copyOfTechnology = technologyDD.copy(order.getBelongsToField(OrderFields.TECHNOLOGY).getId()).get(0);
         copyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
                 TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
         copyOfTechnology.getDataDefinition().save(copyOfTechnology);
-        order.setField(OrderFields.COPY_OF_TECHNOLOGY, copyOfTechnology);
+        order.setField(OrderFields.TECHNOLOGY, copyOfTechnology);
     }
 }
