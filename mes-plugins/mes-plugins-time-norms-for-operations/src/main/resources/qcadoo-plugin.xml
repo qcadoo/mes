@@ -63,6 +63,8 @@
 	<modules>
 		<localization:translation path="locales" />
 		
+		<model:model model="techOperCompTimeCalculations" resource="model/techOperCompTimeCalculations.xml" />
+		
 		<model:model-field plugin="technologies" model="operation">
 			<model:integer name="tpz" required="true" default="0" />
 		</model:model-field>
@@ -281,7 +283,11 @@
 			<model:integer name="laborWorkTime" required="true"
 				default="0" />
 		</model:model-field>
-
+		
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:belongsTo name="techOperCompTimeCalculations" plugin="timeNormsForOperations" model="techOperCompTimeCalculations" />
+		</model:model-field>
+		
 		<model:model-hook model="technology" plugin="technologies">
 			<model:onSave
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyModelHooksTNFO"
@@ -377,6 +383,11 @@
 			method="copyTimeNormsFromOperation" />
 
 		<view:view-listener plugin="technologies" view="technologyDetails"
+			component="form" event="save"
+			class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyListenersTN"
+			method="checkOperationOutputQuantities" />
+		
+		<view:view-listener plugin="orders" view="copyOfTechnologyDetails"
 			component="form" event="save"
 			class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyListenersTN"
 			method="checkOperationOutputQuantities" />

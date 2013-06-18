@@ -49,8 +49,9 @@
 							defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="2" row="1" width="2">
-						<component type="grid" name="technologyInstanceOperationComponents"
-							reference="technologyInstanceOperationComponents" source="#{form}.technologyInstanceOperationComponents">
+						
+							<component type="grid" name="technologyOperationComponents"
+                                    source="#{technology}.operationComponents">
 							<option type="column" name="nodeNumber" fields="nodeNumber" />
 							<option type="column" name="operationNumber" fields="operation"
 								expression="#operation['number']" />
@@ -73,6 +74,6 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.costNormsForOperationInOrder.hooks.HourlyCostNormsInOrderDetailsHooks"
-			method="setLastUpdateDateTioc" />
+			method="onBeforeRender" />
 	</hooks>
 </view>

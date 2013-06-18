@@ -82,7 +82,6 @@
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml" />
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
-
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="showCostCalculateFromOrder"
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
@@ -96,6 +95,7 @@
 		<view:view-hook plugin="technologies" view="technologyDetails"
 			type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologyDetailsHooksCC"
 			method="updateViewCostsCalculationButtonState" />
+			
 	</modules>
 
 	<features>
