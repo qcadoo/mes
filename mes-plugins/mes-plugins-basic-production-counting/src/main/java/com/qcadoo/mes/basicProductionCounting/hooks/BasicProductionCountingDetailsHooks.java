@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCED_QUANTITY;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.USED_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +31,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -56,6 +51,12 @@ public class BasicProductionCountingDetailsHooks {
 
     private static final String L_PRODUCT_NAME_AND_NUMBER = "productNameAndNumber";
 
+    private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUnit";
+
+    private static final String L_USED_QUANTITY_UNIT = "usedQuantityUnit";
+
+    private static final String L_PRODUCED_QUANTITY_UNIT = "producedQuantityUnit";
+
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
@@ -64,8 +65,10 @@ public class BasicProductionCountingDetailsHooks {
 
     public void disableUsedProducedFieldDependsOfProductType(final ViewDefinitionState view) {
         FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
-        FieldComponent producedField = (FieldComponent) view.getComponentByReference(PRODUCED_QUANTITY);
-        FieldComponent usedField = (FieldComponent) view.getComponentByReference(USED_QUANTITY);
+        FieldComponent producedQuantityField = (FieldComponent) view
+                .getComponentByReference(BasicProductionCountingFields.PRODUCED_QUANTITY);
+        FieldComponent usedQuantityField = (FieldComponent) view
+                .getComponentByReference(BasicProductionCountingFields.USED_QUANTITY);
 
         Long basicProductionCountingId = basicProductionCountingForm.getEntityId();
 
@@ -73,20 +76,20 @@ public class BasicProductionCountingDetailsHooks {
             final Entity basicProductionCounting = basicProductionCountingService
                     .getBasicProductionCounting(basicProductionCountingId);
 
-            Entity order = basicProductionCounting.getBelongsToField(ORDER);
-            Entity technology = order.getBelongsToField(TECHNOLOGY);
-            Entity product = basicProductionCounting.getBelongsToField(PRODUCT);
+            Entity order = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
 
             if (L_FINAL_PRODUCT.equals(technologyService.getProductType(product, technology))) {
-                usedField.setEnabled(false);
+                usedQuantityField.setEnabled(false);
             } else {
-                usedField.setEnabled(true);
+                usedQuantityField.setEnabled(true);
 
             }
             if (L_COMPONENT.equals(technologyService.getProductType(product, technology))) {
-                producedField.setEnabled(false);
+                producedQuantityField.setEnabled(false);
             } else {
-                producedField.setEnabled(true);
+                producedQuantityField.setEnabled(true);
             }
         }
     }
@@ -136,7 +139,7 @@ public class BasicProductionCountingDetailsHooks {
             return;
         }
 
-        for (String reference : Arrays.asList("plannedQuantityUnit", "usedQuantityUnit", "producedQuantityUnit")) {
+        for (String reference : Arrays.asList(L_PLANNED_QUANTITY_UNIT, L_USED_QUANTITY_UNIT, L_PRODUCED_QUANTITY_UNIT)) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(product.getField(ProductFields.UNIT));
             field.requestComponentUpdateState();

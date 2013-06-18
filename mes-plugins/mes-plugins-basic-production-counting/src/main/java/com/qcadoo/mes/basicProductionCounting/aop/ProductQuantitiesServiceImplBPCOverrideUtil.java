@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting.aop;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields.RUNS;
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields.TECHNOLOGY_OPERATION_COMPONENT;
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.IS_NON_COMPONENT;
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT;
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT;
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.PLANNED_QUANTITY;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
@@ -62,18 +56,19 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
         Map<Long, Map<Long, BigDecimal>> productComponentWithQuantitiesForOrders = Maps.newHashMap();
 
         for (Entity order : orders) {
-            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+            BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
-            Entity technology = order.getBelongsToField("technology");
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
             if (technology == null) {
                 throw new IllegalStateException("Order doesn't contain technology.");
             }
 
+            String state = order.getStringField(OrderFields.STATE);
+
             if (!onTheFly
-                    && (OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))
-                            || OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE)) || OrderStateStringValues.INTERRUPTED
-                                .equals(order.getStringField(OrderFields.STATE)))) {
+                    && (OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED
+                            .equals(state))) {
                 productComponentWithQuantitiesForOrders.put(order.getId(), getProductComponentWithQuantities(order));
 
                 fillOperationRuns(operationRuns, order);
@@ -97,9 +92,12 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order)).list().getEntities();
 
         for (Entity productionCountingQuantity : productionCountingQuantities) {
-            Entity operationProductInComponent = productionCountingQuantity.getBelongsToField(OPERATION_PRODUCT_IN_COMPONENT);
-            Entity operationProductOutComponent = productionCountingQuantity.getBelongsToField(OPERATION_PRODUCT_OUT_COMPONENT);
-            BigDecimal plannedQuantity = productionCountingQuantity.getDecimalField(PLANNED_QUANTITY);
+            Entity operationProductInComponent = productionCountingQuantity
+                    .getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT);
+            Entity operationProductOutComponent = productionCountingQuantity
+                    .getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT);
+            BigDecimal plannedQuantity = productionCountingQuantity
+                    .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
 
             if ((operationProductInComponent != null) || (operationProductOutComponent != null)) {
                 if (operationProductInComponent != null) {
@@ -121,8 +119,8 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
 
         for (Entity productionCountingOperationRun : productionCountingOperationRuns) {
             Entity technologyOperationComponent = productionCountingOperationRun
-                    .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
-            BigDecimal runs = productionCountingOperationRun.getDecimalField(RUNS);
+                    .getBelongsToField(ProductionCountingOperationRunFields.TECHNOLOGY_OPERATION_COMPONENT);
+            BigDecimal runs = productionCountingOperationRun.getDecimalField(ProductionCountingOperationRunFields.RUNS);
 
             operationRuns.put(technologyOperationComponent.getId(), runs);
         }
@@ -133,11 +131,13 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY).find()
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
-                .add(SearchRestrictions.eq(IS_NON_COMPONENT, true)).list().getEntities();
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.IS_NON_COMPONENT, true)).list().getEntities();
 
         for (Entity productionCountingQuantity : productionCountingQuantities) {
-            Entity operationProductInComponent = productionCountingQuantity.getBelongsToField(OPERATION_PRODUCT_IN_COMPONENT);
-            Entity operationProductOutComponent = productionCountingQuantity.getBelongsToField(OPERATION_PRODUCT_OUT_COMPONENT);
+            Entity operationProductInComponent = productionCountingQuantity
+                    .getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT);
+            Entity operationProductOutComponent = productionCountingQuantity
+                    .getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT);
 
             if ((operationProductInComponent != null) || (operationProductOutComponent != null)) {
                 if (operationProductInComponent != null) {

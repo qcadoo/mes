@@ -23,15 +23,12 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -42,6 +39,8 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class BasicProductionCountingListHooks {
+
+    private static final String L_ORDER = "order";
 
     private static final String L_WINDOW = "window";
 
@@ -54,10 +53,10 @@ public class BasicProductionCountingListHooks {
     private static final String L_SHOW_DETAILED_PRODUCTION_COUNTING = "showDetailedProductionCounting";
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private OrderService orderService;
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(ORDER);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_ORDER);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup technologies = (RibbonGroup) window.getRibbon().getGroupByName(L_PRODUCTION_COUNTING);
@@ -68,11 +67,12 @@ public class BasicProductionCountingListHooks {
                 .getItemByName(L_SHOW_DETAILED_PRODUCTION_COUNTING);
 
         Long orderId = orderForm.getEntityId();
+
         if (orderId == null) {
             return;
         }
 
-        Entity order = getOrderFromDB(orderId);
+        Entity order = orderService.getOrder(orderId);
 
         boolean isSaved = (order != null);
         boolean isForEach = false;
@@ -91,7 +91,7 @@ public class BasicProductionCountingListHooks {
     }
 
     public void setGridEditableDependsOfOrderState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(ORDER);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_ORDER);
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
 
         Long orderId = orderForm.getEntityId();
@@ -99,24 +99,20 @@ public class BasicProductionCountingListHooks {
             return;
         }
 
-        Entity order = getOrderFromDB(orderId);
+        Entity order = orderService.getOrder(orderId);
 
         if (order == null) {
             return;
         }
 
-        String orderState = order.getStringField(STATE);
+        String state = order.getStringField(OrderFields.STATE);
 
-        if (OrderStateStringValues.ACCEPTED.equals(orderState) || OrderStateStringValues.IN_PROGRESS.equals(orderState)
-                || OrderStateStringValues.INTERRUPTED.equals(orderState)) {
+        if (OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state)
+                || OrderStateStringValues.INTERRUPTED.equals(state)) {
             grid.setEditable(true);
         } else {
             grid.setEditable(false);
         }
-    }
-
-    private Entity getOrderFromDB(Long orderId) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
     }
 
 }

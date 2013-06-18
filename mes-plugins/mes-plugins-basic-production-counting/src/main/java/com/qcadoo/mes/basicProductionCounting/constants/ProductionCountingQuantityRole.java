@@ -36,14 +36,14 @@ public enum ProductionCountingQuantityRole {
         return productionCountingQuantityRole;
     }
 
-    public static ProductionCountingQuantityRole parseString(final String productionCountingQuantityRole) {
-        if ("01used".equals(productionCountingQuantityRole)) {
+    public static ProductionCountingQuantityRole parseString(final String string) {
+        if ("01used".equals(string)) {
             return USED;
-        } else if ("02produced".equals(productionCountingQuantityRole)) {
+        } else if ("02produced".equals(string)) {
             return PRODUCED;
         }
 
-        throw new IllegalStateException("Unsupported ProductionCountingQuantityRole: " + productionCountingQuantityRole);
+        throw new IllegalStateException("Unsupported ProductionCountingQuantityRole: " + string);
     }
 
 }

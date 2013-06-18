@@ -23,20 +23,15 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PLANNED_QUANTITY;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCED_QUANTITY;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.USED_QUANTITY;
-import static com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES;
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT;
-
 import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -57,21 +52,23 @@ public class BasicProductionCountingHooks {
     }
 
     private void fillPlannedQuantity(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
-        basicProductionCounting.setField(PLANNED_QUANTITY, numberService.setScale(getPlannedQuantity(basicProductionCounting)));
+        basicProductionCounting.setField(BasicProductionCountingFields.PLANNED_QUANTITY,
+                numberService.setScale(getPlannedQuantity(basicProductionCounting)));
     }
 
     private BigDecimal getPlannedQuantity(final Entity basicProductionCounting) {
         BigDecimal plannedQuantity = BigDecimal.ZERO;
 
-        Entity order = basicProductionCounting.getBelongsToField(ORDER);
-        Entity product = basicProductionCounting.getBelongsToField(PRODUCT);
+        Entity order = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
+        Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
 
-        List<Entity> productionCountingQuantities = order.getHasManyField(PRODUCTION_COUNTING_QUANTITIES).find()
-                .add(SearchRestrictions.isNull(OPERATION_PRODUCT_OUT_COMPONENT))
-                .add(SearchRestrictions.belongsTo(PRODUCT, product)).list().getEntities();
+        List<Entity> productionCountingQuantities = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).find()
+                .add(SearchRestrictions.isNull(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product)).list().getEntities();
 
         for (Entity productionCountingQuantity : productionCountingQuantities) {
-            BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity.getDecimalField(PLANNED_QUANTITY);
+            BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity
+                    .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
 
             if (productionCountingQuantityPlannedQuantity != null) {
                 plannedQuantity = plannedQuantity.add(productionCountingQuantityPlannedQuantity, numberService.getMathContext());
@@ -82,20 +79,20 @@ public class BasicProductionCountingHooks {
     }
 
     public boolean checkValueOfQuantity(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
-        BigDecimal usedQuantity = (BigDecimal) basicProductionCounting.getField(USED_QUANTITY);
-        BigDecimal producedQuantity = (BigDecimal) basicProductionCounting.getField(PRODUCED_QUANTITY);
+        BigDecimal usedQuantity = basicProductionCounting.getDecimalField(BasicProductionCountingFields.USED_QUANTITY);
+        BigDecimal producedQuantity = basicProductionCounting.getDecimalField(BasicProductionCountingFields.PRODUCED_QUANTITY);
 
-        if (usedQuantity == null && producedQuantity == null) {
+        if ((usedQuantity == null) && (producedQuantity == null)) {
             return true;
         }
 
-        if (usedQuantity != null && usedQuantity.compareTo(BigDecimal.ZERO) == -1) {
-            basicProductionCounting.addError(basicProductionCountingDD.getField(USED_QUANTITY),
+        if ((usedQuantity != null) && (usedQuantity.compareTo(BigDecimal.ZERO) == -1)) {
+            basicProductionCounting.addError(basicProductionCountingDD.getField(BasicProductionCountingFields.USED_QUANTITY),
                     "basic.production.counting.value.lower.zero");
         }
 
-        if (producedQuantity != null && producedQuantity.compareTo(BigDecimal.ZERO) == -1) {
-            basicProductionCounting.addError(basicProductionCountingDD.getField(PRODUCED_QUANTITY),
+        if ((producedQuantity != null) && (producedQuantity.compareTo(BigDecimal.ZERO) == -1)) {
+            basicProductionCounting.addError(basicProductionCountingDD.getField(BasicProductionCountingFields.PRODUCED_QUANTITY),
                     "basic.production.counting.value.lower.zero");
         }
 

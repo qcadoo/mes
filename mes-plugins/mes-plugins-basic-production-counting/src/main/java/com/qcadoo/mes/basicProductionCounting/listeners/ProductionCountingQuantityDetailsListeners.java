@@ -37,11 +37,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 @Service
 public class ProductionCountingQuantityDetailsListeners {
 
+    private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUnit";
+
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        List<String> referenceNames = Lists.newArrayList("plannedQuantityUnit");
+        List<String> referenceNames = Lists.newArrayList(L_PLANNED_QUANTITY_UNIT);
 
         basicProductionCountingService.fillUnitFields(view, ProductionCountingQuantityFields.PRODUCT, referenceNames);
     }

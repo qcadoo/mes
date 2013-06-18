@@ -36,19 +36,19 @@ public enum ProductionCountingQuantityTypeOfMaterial {
         return productionCountingQuantityTypeOfMaterial;
     }
 
-    public static ProductionCountingQuantityTypeOfMaterial parseString(final String productionCountingQuantityTypeOfMaterial) {
-        if ("01component".equals(productionCountingQuantityTypeOfMaterial)) {
+    public static ProductionCountingQuantityTypeOfMaterial parseString(final String string) {
+        if ("01component".equals(string)) {
             return COMPONENT;
-        } else if ("02intermediate".equals(productionCountingQuantityTypeOfMaterial)) {
+        } else if ("02intermediate".equals(string)) {
             return INTERMEDIATE;
-        } else if ("03finalProduct".equals(productionCountingQuantityTypeOfMaterial)) {
+        } else if ("03finalProduct".equals(string)) {
             return FINAL_PRODUCT;
-        } else if ("04waste".equals(productionCountingQuantityTypeOfMaterial)) {
+        } else if ("04waste".equals(string)) {
             return WASTE;
         }
 
         throw new IllegalStateException("Unsupported ProductionCountingQuantityTypeOfMaterial: "
-                + productionCountingQuantityTypeOfMaterial);
+                + string);
     }
 
 }

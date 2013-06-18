@@ -47,6 +47,12 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
 
     private static final String L_FORM = "form";
 
+    private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUnit";
+
+    private static final String L_USED_QUANTITY_UNIT = "usedQuantityUnit";
+
+    private static final String L_PRODUCED_QUANTITY_UNIT = "producedQuantityUnit";
+
     private static final String L_USED_QUANTITY_GRID_LAYOUT = "usedQuantityGridLayout";
 
     private static final String L_PRODUCED_QUANTITY_GRID_LAYOUT = "producedQuantityGridLayout";
@@ -128,7 +134,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
-        List<String> referenceNames = Lists.newArrayList("plannedQuantityUnit", "usedQuantityUnit", "producedQuantityUnit");
+        List<String> referenceNames = Lists.newArrayList(L_PLANNED_QUANTITY_UNIT, L_USED_QUANTITY_UNIT, L_PRODUCED_QUANTITY_UNIT);
 
         basicProductionCountingService.fillUnitFields(view, ProductionCountingQuantityFields.PRODUCT, referenceNames);
     }

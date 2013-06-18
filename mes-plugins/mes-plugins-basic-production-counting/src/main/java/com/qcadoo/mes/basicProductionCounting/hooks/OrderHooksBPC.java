@@ -23,10 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS;
-import static com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES;
-import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -34,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
@@ -46,11 +43,12 @@ public class OrderHooksBPC {
     private BasicProductionCountingService basicProductionCountingService;
 
     public void updateProductionCountingQuantitiesAndOperationRuns(final DataDefinition orderDD, final Entity order) {
-        BigDecimal plannedQuantity = order.getDecimalField(PLANNED_QUANTITY);
+        BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
-        if (OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))
-                || OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE))
-                || OrderStateStringValues.INTERRUPTED.equals(order.getStringField(OrderFields.STATE))) {
+        String state = order.getStringField(OrderFields.STATE);
+
+        if (OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state)
+                || OrderStateStringValues.INTERRUPTED.equals(state)) {
             if (hasPlannedQuantityChanged(order, plannedQuantity)) {
                 basicProductionCountingService.updateProductionCountingQuantitiesAndOperationRuns(order);
             } else {
@@ -69,7 +67,7 @@ public class OrderHooksBPC {
             return false;
         }
 
-        BigDecimal existingOrderPlannedQuantity = existingOrder.getDecimalField(PLANNED_QUANTITY);
+        BigDecimal existingOrderPlannedQuantity = existingOrder.getDecimalField(OrderFields.PLANNED_QUANTITY);
         if (existingOrderPlannedQuantity == null) {
             return true;
         }
@@ -85,8 +83,8 @@ public class OrderHooksBPC {
     }
 
     boolean checkIfProductionCountingQuantitiesAndOperationsRunsAreEmpty(final Entity order) {
-        List<Entity> productionCountingQuantities = order.getHasManyField(PRODUCTION_COUNTING_QUANTITIES);
-        List<Entity> productionCountingOperationRuns = order.getHasManyField(PRODUCTION_COUNTING_OPERATION_RUNS);
+        List<Entity> productionCountingQuantities = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES);
+        List<Entity> productionCountingOperationRuns = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS);
 
         return (((productionCountingQuantities == null) || (productionCountingQuantities.isEmpty())) && ((productionCountingOperationRuns == null) || (productionCountingOperationRuns
                 .isEmpty())));
