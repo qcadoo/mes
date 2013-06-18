@@ -25,16 +25,16 @@ package com.qcadoo.mes.productionCountingWithCosts.hooks;
 
 import static com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode.COST_FOR_ORDER;
 import static com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT;
-import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
-import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.PIECEWORK;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PIECEWORK;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PRODUCTION_TIME;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.GENERATED;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
-import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
+import static com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode.HOURLY;
+import static com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode.PIECEWORK;
+import static com.qcadoo.mes.productionCounting.constants.OrderFieldsPC.REGISTER_PIECEWORK;
+import static com.qcadoo.mes.productionCounting.constants.OrderFieldsPC.REGISTER_PRODUCTION_TIME;
+import static com.qcadoo.mes.productionCounting.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
+import static com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields.GENERATED;
+import static com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields.ORDER;
+import static com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording.CUMULATED;
+import static com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording.FOR_EACH;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.ADDITIONAL_OVERHEAD;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST;
@@ -54,9 +54,9 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.productionCounting.internal.ProductionBalanceService;
-import com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
+import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -66,7 +66,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class ProductionBalanceDetailsViewHooks {
+public class ProductionBalanceDetailsHooksPCWC {
 
     private static final String L_ASSUMPTIONS_BORDER_LAYOUT = "assumptionsBorderLayout";
 
@@ -103,16 +103,16 @@ public class ProductionBalanceDetailsViewHooks {
             L_PIECEWORK_COSTS_BORDER_LAYOUT, L_OPERATIONS_PIECEWORK_COST_GRID);
 
     @Autowired
-    private ProductionBalanceService productionBalanceService;
-
-    @Autowired
-    private ProductionBalanceViewService productionBalanceViewService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private CurrencyService currencyService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private ProductionCountingService productionCountingService;
+
+    @Autowired
+    private OrderService orderService;
 
     public void changeFieldsAndGridsVisibility(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
@@ -120,7 +120,7 @@ public class ProductionBalanceDetailsViewHooks {
         FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
 
         if ((form == null) || (form.getEntityId() == null) || (generated == null) || "0".equals(generated.getFieldValue())) {
-            productionBalanceViewService.setComponentsVisibility(viewDefinitionState, COST_GRIDS_AND_LAYOUTS, false, false);
+            productionCountingService.setComponentsVisibility(viewDefinitionState, COST_GRIDS_AND_LAYOUTS, false, false);
 
             return;
         }
@@ -133,12 +133,12 @@ public class ProductionBalanceDetailsViewHooks {
         Long orderId = (Long) orderLookup.getFieldValue();
 
         if (orderId == null) {
-            productionBalanceViewService.setComponentsVisibility(viewDefinitionState, COST_GRIDS_AND_LAYOUTS, false, false);
+            productionCountingService.setComponentsVisibility(viewDefinitionState, COST_GRIDS_AND_LAYOUTS, false, false);
 
             return;
         }
 
-        Entity order = productionBalanceService.getOrderFromDB(orderId);
+        Entity order = orderService.getOrder(orderId);
 
         if ("1".equals(generated.getFieldValue()) && (calculateOperationCostMode != null) && (order != null)) {
             viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(true);
@@ -201,7 +201,7 @@ public class ProductionBalanceDetailsViewHooks {
             return;
         }
 
-        Entity order = productionBalanceService.getOrderFromDB(orderId);
+        Entity order = orderService.getOrder(orderId);
 
         if ((order != null) && HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
                 && CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
@@ -265,11 +265,11 @@ public class ProductionBalanceDetailsViewHooks {
         FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
 
         if ((generated != null) && (generated.getFieldValue() != null) && "1".equals(generated.getFieldValue())) {
-            productionBalanceViewService.setComponentsState(viewDefinitionState, COST_FIELDS, false, true);
-            productionBalanceViewService.setComponentsState(viewDefinitionState, COST_GRIDS, false, false);
+            productionCountingService.setComponentsState(viewDefinitionState, COST_FIELDS, false, true);
+            productionCountingService.setComponentsState(viewDefinitionState, COST_GRIDS, false, false);
         } else {
-            productionBalanceViewService.setComponentsState(viewDefinitionState, COST_FIELDS, true, true);
-            productionBalanceViewService.setComponentsState(viewDefinitionState, COST_GRIDS, true, false);
+            productionCountingService.setComponentsState(viewDefinitionState, COST_FIELDS, true, true);
+            productionCountingService.setComponentsState(viewDefinitionState, COST_GRIDS, true, false);
         }
     }
 

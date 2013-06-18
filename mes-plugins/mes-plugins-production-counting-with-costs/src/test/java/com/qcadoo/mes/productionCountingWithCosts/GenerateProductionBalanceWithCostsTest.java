@@ -42,7 +42,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.costCalculation.CostCalculationService;
-import com.qcadoo.mes.productionCounting.internal.ProductionBalanceService;
+import com.qcadoo.mes.productionCounting.ProductionBalanceService;
 import com.qcadoo.mes.productionCountingWithCosts.pdf.ProductionBalanceWithCostsPdfService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;

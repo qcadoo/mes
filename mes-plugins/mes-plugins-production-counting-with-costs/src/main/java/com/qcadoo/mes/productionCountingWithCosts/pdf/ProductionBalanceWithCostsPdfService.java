@@ -23,13 +23,9 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.pdf;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRODUCT;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,12 +44,14 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.print.CostCalculationPdfService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
-import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
-import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
-import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.print.ProductionBalancePdfService;
+import com.qcadoo.mes.productionCounting.print.utils.EntityProductInOutComparator;
+import com.qcadoo.mes.productionCounting.print.utils.EntityProductionRecordOperationComparator;
 import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
+import com.qcadoo.mes.productionCountingWithCosts.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
@@ -90,7 +88,8 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             throws DocumentException {
         String documentTitle = translationService.translate("productionCounting.productionBalance.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, (Date) productionBalance.getField("date"));
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor,
+                productionBalance.getDateField(ProductionBalanceFields.DATE));
 
         PdfPTable topTable = pdfHelper.createPanelTable(2);
         topTable.addCell(productionBalancePdfService.createLeftPanel(productionBalance, locale));
@@ -103,7 +102,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         document.add(parametersForCostsPanel);
 
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
-        String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
+        String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         String calculationMode = productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
 
         final boolean isTypeHourly = CalculateOperationCostMode.parseString(calculationMode).equals(
@@ -224,8 +223,8 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             String currency = " " + currencyService.getCurrencyAlphabeticCode();
 
             for (Entity product : products) {
-                productsTable.addCell(new Phrase(product.getBelongsToField(PRODUCT).getStringField("number"), FontUtils
-                        .getDejavuRegular9Dark()));
+                productsTable.addCell(new Phrase(product.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT)
+                        .getStringField("number"), FontUtils.getDejavuRegular9Dark()));
 
                 String plannedCost = numberService.format(product.getField("plannedCost"));
                 productsTable.addCell(new Phrase((plannedCost == null) ? NULL_OBJECT : (plannedCost + currency), FontUtils
@@ -240,17 +239,17 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
             productsTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
                     locale), FontUtils.getDejavuRegular9Dark()));
-            String plannedComponentsCosts = numberService.format((BigDecimal) productionBalance
-                    .getField(ProductionBalanceFieldsPCWC.PLANNED_COMPONENTS_COSTS));
+            String plannedComponentsCosts = numberService.format(productionBalance
+                    .getDecimalField(ProductionBalanceFieldsPCWC.PLANNED_COMPONENTS_COSTS));
             productsTable.addCell(new Phrase(
                     (plannedComponentsCosts == null) ? NULL_OBJECT : (plannedComponentsCosts + currency), FontUtils
                             .getDejavuRegular9Dark()));
-            String componentsCosts = numberService.format((BigDecimal) productionBalance
-                    .getField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS));
+            String componentsCosts = numberService.format(productionBalance
+                    .getDecimalField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS));
             productsTable.addCell(new Phrase((componentsCosts == null) ? NULL_OBJECT : (componentsCosts + currency), FontUtils
                     .getDejavuRegular9Dark()));
-            String componentsCostsBalance = numberService.format((BigDecimal) productionBalance
-                    .getField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS_BALANCE));
+            String componentsCostsBalance = numberService.format(productionBalance
+                    .getDecimalField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS_BALANCE));
             productsTable.addCell(new Phrase(
                     (componentsCostsBalance == null) ? NULL_OBJECT : (componentsCostsBalance + currency), FontUtils
                             .getDejavuRegular9Dark()));
@@ -321,14 +320,14 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                     locale), FontUtils.getDejavuRegular9Dark()));
             costsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
 
-            String plannedCosts = numberService.format((BigDecimal) productionBalance.getField("planned"
+            String plannedCosts = numberService.format(productionBalance.getDecimalField("planned"
                     + upperCaseFirstLetter(type, locale) + L_COSTS));
             costsTable.addCell(new Phrase((plannedCosts == null) ? NULL_OBJECT : (plannedCosts + currency), FontUtils
                     .getDejavuRegular9Dark()));
-            String registeredCosts = numberService.format((BigDecimal) productionBalance.getField(type + L_COSTS));
+            String registeredCosts = numberService.format(productionBalance.getDecimalField(type + L_COSTS));
             costsTable.addCell(new Phrase((registeredCosts == null) ? NULL_OBJECT : (registeredCosts + currency), FontUtils
                     .getDejavuRegular9Dark()));
-            String costsBalance = numberService.format((BigDecimal) productionBalance.getField(type + "CostsBalance"));
+            String costsBalance = numberService.format(productionBalance.getDecimalField(type + "CostsBalance"));
             costsTable.addCell(new Phrase((costsBalance == null) ? NULL_OBJECT : (costsBalance + currency), FontUtils
                     .getDejavuRegular9Dark()));
 
@@ -376,13 +375,13 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         PdfPTable content = pdfHelper.createPanelTable(2);
         content.setTableEvent(null);
 
-        BigDecimal averageMachineHourlyCost = (BigDecimal) productionBalance.getField("averageMachineHourlyCost");
+        BigDecimal averageMachineHourlyCost = productionBalance.getDecimalField("averageMachineHourlyCost");
         String averageMachineHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageMachineHourlyCost.label", locale);
         pdfHelper.addTableCellAsTable(content, averageMachineHourlyCostLabel, numberService.format(averageMachineHourlyCost),
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
 
-        BigDecimal averageLaborHourlyCost = (BigDecimal) productionBalance.getField("averageLaborHourlyCost");
+        BigDecimal averageLaborHourlyCost = productionBalance.getDecimalField("averageLaborHourlyCost");
         String averageLaborHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageLaborHourlyCost.label", locale);
         pdfHelper.addTableCellAsTable(content, averageLaborHourlyCostLabel, numberService.format(averageLaborHourlyCost),

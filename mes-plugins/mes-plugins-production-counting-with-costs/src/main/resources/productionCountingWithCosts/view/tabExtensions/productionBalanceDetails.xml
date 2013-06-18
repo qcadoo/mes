@@ -48,7 +48,7 @@
 								field="#{form}.sourceOfMaterialCosts" reference="sourceOfMaterialCosts">
 								
 								<listener event="onSelectedEntityChange"
-									class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+									class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 									method="checkIfOptionsAreAvailable" />
 							</component>
 						</layoutElement>
@@ -57,7 +57,7 @@
 								field="#{form}.calculateMaterialCostsMode" reference="calculateMaterialCostsMode">
 								
 								<listener event="onSelectedEntityChange"
-									class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+									class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 									method="checkIfOptionsAreAvailable" />
 							</component>
 						</layoutElement>

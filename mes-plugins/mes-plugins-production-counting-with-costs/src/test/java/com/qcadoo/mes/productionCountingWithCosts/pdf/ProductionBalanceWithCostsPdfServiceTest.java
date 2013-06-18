@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.pdf;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -43,9 +43,9 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.costCalculation.print.CostCalculationPdfService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
-import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.print.ProductionBalancePdfService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.pdf.PdfHelper;

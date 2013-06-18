@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.validators;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
+import static com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode.HOURLY;
+import static com.qcadoo.mes.productionCounting.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
+import static com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields.ORDER;
+import static com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE;

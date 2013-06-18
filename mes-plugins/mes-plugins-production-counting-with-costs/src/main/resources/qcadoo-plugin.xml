@@ -349,27 +349,27 @@
 		
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
-			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="changeFieldsAndGridsVisibility" />
 		
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
-			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="changeAssumptionsVisibility" />
 			
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
-			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="fillCurrencyAndUnitFields" />
 		
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
-			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="disableFieldsAndGridsWhenGenerated" />
 		
 		<view:view-listener plugin="productionCounting" view="productionBalanceDetails"
 			component="calculateOperationCostsMode" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="changeAssumptionsVisibility" />
 			
 		<custom:custom
