@@ -11,7 +11,7 @@
 
 	<groupId>com.qcadoo.mes</groupId>
 	<artifactId>mes</artifactId>
-	<version>1.2.1-SNAPSHOT</version>
+	<version>1.2.1-SNAPSHOT-DEV</version>
 	<packaging>pom</packaging>
 
 	<name>Qcadoo MES</name>
@@ -44,7 +44,6 @@
 		<qcadoo.plugin.version>1.2.1</qcadoo.plugin.version>
 		<qcadoo.saas.version>1.2.1-SNAPSHOT</qcadoo.saas.version>
 		<qcadoo.maven.plugin.version>1.2.1-SNAPSHOT</qcadoo.maven.plugin.version>
-		<mes.commercial.plugins.version>1.2.1-SNAPSHOT</mes.commercial.plugins.version>
 		<profile.name>default</profile.name>
 	</properties>
 
