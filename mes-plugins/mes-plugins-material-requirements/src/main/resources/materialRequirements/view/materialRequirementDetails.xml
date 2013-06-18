@@ -24,12 +24,12 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="materialRequirementDetails"
-	modelName="materialRequirement">
-	
+	name="materialRequirementDetails" modelName="materialRequirement">
+
 	<component type="window" name="window" reference="window">
+
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="generate">
@@ -38,13 +38,14 @@
 			</group>
 			<group name="export">
 				<smallButton name="pdf" icon="pdfIcon16.png"
-					action="#{form}.fireEvent(printMaterialRequirement,pdf);" state="disabled" />
+					action="#{form}.fireEvent(printMaterialRequirement, pdf);" state="disabled" />
 				<smallButton name="xls" icon="xlsIcon16.png"
-					action="#{form}.fireEvent(printMaterialRequirement,xls);" state="disabled" />
+					action="#{form}.fireEvent(printMaterialRequirement, xls);" state="disabled" />
 			</group>
 		</ribbon>
-		<component type="form" name="materialRequirement"
-			reference="form">
+
+		<component type="form" name="materialRequirement" reference="form">
+
 			<script>
 				<![CDATA[
 					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
@@ -72,7 +73,8 @@
 							updateRibbon();
 						}
 					});
-					#{materialRequirementComponents}.addOnChangeListener({
+					
+					#{orders}.addOnChangeListener({
 						onSetValue: function(value) {
 							if (value.content.totalEntities > 0) {
 								containsAtLeastOneOrder = true;
@@ -88,6 +90,7 @@
 							var isGeneratedCheckboxValue = #{generated}.getValue();
 							var generated = false;
 							copyRibbonItem.enable();
+							
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 								var generated = true;
 								xlsRibbonItem.enable();
@@ -98,23 +101,22 @@
 								saveNew.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 								cancelRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							} else {
-							
-							if(containsAtLeastOneOrder && !generated){
-								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								generateRibbonItem.enable();
-								saveRibbonItem.enable();
-								saveBack.enable();
-								saveNew.enable();
-								cancelRibbonItem.enable(); } else
-								{
-								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								generateRibbonItem.disable();
-								saveRibbonItem.enable();
-								saveBack.enable();
-								saveNew.enable();
-								cancelRibbonItem.enable();
+								if (containsAtLeastOneOrder && !generated) {
+									xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									generateRibbonItem.enable();
+									saveRibbonItem.enable();
+									saveBack.enable();
+									saveNew.enable();
+									cancelRibbonItem.enable(); 
+								} else {
+									xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									generateRibbonItem.disable();
+									saveRibbonItem.enable();
+									saveBack.enable();
+									saveNew.enable();
+									cancelRibbonItem.enable();
 								}
 							}
 						} else {
@@ -130,7 +132,9 @@
 					}
 				]]>
 			</script>
-			<component type="gridLayout" name="gridLayout" columns="3" rows="7">
+
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="7">
 				<layoutElement column="1" row="1">
 					<component type="checkbox" name="generated" reference="generated"
 						field="generated" defaultEnabled="false">
@@ -149,7 +153,7 @@
 						<option type="textRepresentationOnDisabled" value="false" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="4" >
+				<layoutElement column="1" row="4">
 					<component type="input" name="number" reference="number"
 						field="number" />
 				</layoutElement>
@@ -158,53 +162,69 @@
 						field="name" />
 				</layoutElement>
 				<layoutElement column="1" row="7">
-					<component type="select" name="mrpAlgorithm"
-						reference="mrpAlgorithm" field="mrpAlgorithm">
+					<component type="select" name="mrpAlgorithm" reference="mrpAlgorithm"
+						field="mrpAlgorithm">
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1" width="2" height="6">
-					<component type="lookup" name="order" reference="orderLookup" field="orders" defaultVisible="false" persistent="false" hasLabel="false">
+					<component type="lookup" name="order" reference="orderLookup"
+						field="orders" defaultVisible="false" persistent="false" hasLabel="false">
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
 						<option type="column" name="dateFrom" fields="dateFrom"
 							link="false" width="100" />
+
 						<option type="searchable" value="number,name" />
 						<option type="orderable" value="number,name" />
+
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
 						<option type="multiselect" value="true" />
 					</component>
-					<component type="grid" name="materialRequirementComponents"
-						reference="materialRequirementComponents" source="#{form}.orders" defaultEnabled="false">
+					
+					<component type="grid" name="orders"
+						reference="orders" source="#{form}.orders"
+						defaultEnabled="false">
 						<option type="column" name="number" fields="number" width="50" />
 						<option type="column" name="name" fields="name" />
+
 						<option type="order" column="number" direction="desc" />
 
 						<option type="paginable" value="false" />
 						<option type="multiselect" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
+
 						<option type="height" value="200" />
 						<option type="width" value="450" />
-						
+
 						<option type="weakRelation" value="true" />
 						<option type="correspondingLookup" value="orderLookup" />
 					</component>
 				</layoutElement>
 			</component>
+
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
+
 			<listener event="printMaterialRequirement"
-				class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl" method="printMaterialRequirement" />
+				class="com.qcadoo.mes.materialRequirements.listeners.MaterialRequirementDetailsListeners"
+				method="printMaterialRequirement" />
 			<listener event="generateMaterialRequirement"
-				class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl" method="generateMaterialRequirement" />
+				class="com.qcadoo.mes.materialRequirements.listeners.MaterialRequirementDetailsListeners"
+				method="generateMaterialRequirement" />
 		</component>
+		
 	</component>
+
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl"
+		<beforeRender
+			class="com.qcadoo.mes.materialRequirements.hooks.MaterialRequirementDetailsHooks"
+			method="generateMaterialRequirementNumber" />
+		<beforeRender
+			class="com.qcadoo.mes.materialRequirements.hooks.MaterialRequirementDetailsHooks"
 			method="disableFormForExistingMaterialRequirement" />
-		<beforeRender class="com.qcadoo.mes.materialRequirements.internal.hooks.MaterialRequirementDetailsHooks"
-			method="generateProductNumber" />
 	</hooks>
+	
 </view>
