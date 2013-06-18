@@ -23,48 +23,45 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC.ALLOW_TO_CLOSE;
-import static com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC.AUTO_CLOSE_ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC.JUST_ONE;
-import static com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC.REGISTER_PIECEWORK;
-import static com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC.REGISTER_PRODUCTION_TIME;
-import static com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC.REGISTER_QUANTITY_IN_PRODUCT;
-import static com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT;
-import static com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
-
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class ParameterHooksPC {
 
-    public void setParameterWithDefaultProductionCountingValues(final DataDefinition parameterDD, final Entity parameter) {
-        if (parameter.getStringField(TYPE_OF_PRODUCTION_RECORDING) == null) {
-            parameter.setField(TYPE_OF_PRODUCTION_RECORDING, CUMULATED.getStringValue());
+    public void onCreate(final DataDefinition parameterDD, final Entity parameter) {
+        setParameterWithDefaultProductionCountingValues(parameterDD, parameter);
+    }
+
+    private void setParameterWithDefaultProductionCountingValues(final DataDefinition parameterDD, final Entity parameter) {
+        if (parameter.getStringField(ParameterFieldsPC.TYPE_OF_PRODUCTION_RECORDING) == null) {
+            parameter.setField(ParameterFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
+                    TypeOfProductionRecording.CUMULATED.getStringValue());
         }
-        if (parameter.getField(REGISTER_PRODUCTION_TIME) == null) {
-            parameter.setField(REGISTER_PRODUCTION_TIME, true);
+        if (parameter.getField(ParameterFieldsPC.REGISTER_PRODUCTION_TIME) == null) {
+            parameter.setField(ParameterFieldsPC.REGISTER_PRODUCTION_TIME, true);
         }
-        if (parameter.getField(REGISTER_PIECEWORK) == null) {
-            parameter.setField(REGISTER_PIECEWORK, false);
+        if (parameter.getField(ParameterFieldsPC.REGISTER_PIECEWORK) == null) {
+            parameter.setField(ParameterFieldsPC.REGISTER_PIECEWORK, false);
         }
-        if (parameter.getField(REGISTER_QUANTITY_IN_PRODUCT) == null) {
-            parameter.setField(REGISTER_QUANTITY_IN_PRODUCT, true);
+        if (parameter.getField(ParameterFieldsPC.REGISTER_QUANTITY_IN_PRODUCT) == null) {
+            parameter.setField(ParameterFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, true);
         }
-        if (parameter.getField(REGISTER_QUANTITY_OUT_PRODUCT) == null) {
-            parameter.setField(REGISTER_QUANTITY_OUT_PRODUCT, true);
+        if (parameter.getField(ParameterFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT) == null) {
+            parameter.setField(ParameterFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, true);
         }
-        if (parameter.getField(JUST_ONE) == null) {
-            parameter.setField(JUST_ONE, false);
+        if (parameter.getField(ParameterFieldsPC.JUST_ONE) == null) {
+            parameter.setField(ParameterFieldsPC.JUST_ONE, false);
         }
-        if (parameter.getField(ALLOW_TO_CLOSE) == null) {
-            parameter.setField(ALLOW_TO_CLOSE, false);
+        if (parameter.getField(ParameterFieldsPC.ALLOW_TO_CLOSE) == null) {
+            parameter.setField(ParameterFieldsPC.ALLOW_TO_CLOSE, false);
         }
-        if (parameter.getField(AUTO_CLOSE_ORDER) == null) {
-            parameter.setField(AUTO_CLOSE_ORDER, false);
+        if (parameter.getField(ParameterFieldsPC.AUTO_CLOSE_ORDER) == null) {
+            parameter.setField(ParameterFieldsPC.AUTO_CLOSE_ORDER, false);
         }
     }
 

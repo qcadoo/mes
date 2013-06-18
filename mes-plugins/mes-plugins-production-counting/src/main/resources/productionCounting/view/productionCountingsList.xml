@@ -24,9 +24,12 @@
     ***************************************************************************
 
 -->
-<view name="productionCountingsList" modelName="productionCounting" menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view name="productionCountingsList" modelName="productionCounting"
+	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
 	<component type="window" name="window" reference="window">
+
 		<ribbon>
 			<template name="standardGridTemplate" />
 			<group name="export">
@@ -35,22 +38,10 @@
 					message="qcadooView.message.noRecordSelected" />
 			</group>
 		</ribbon>
-		<component type="grid" name="productionCountingsList" reference="grid">
-			<option type="column" name="name" fields="name" link="true" />
-			<option type="column" name="order" fields="order" link="true" width="250" expression="#order['name']" />
-			<option type="column" name="product" fields="product" link="true" width="250" expression="#product['name']"/>
-			<option type="column" name="generated" fields="generated" width="150" />
-			<option type="column" name="date" fields="date" width="175" />
-			<option type="column" name="worker" fields="worker" width="150" />
-			<option type="order" column="order" direction="asc" />
-			<option type="correspondingView" value="productionCounting/productionCountingDetails" />
-			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="name,order,product,generated,date,worker" />
-			<option type="orderable" value="name,order,product,generated,date,worker" />
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
-			<listener event="printProductionCounting"
-				class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService" method="printProductionCounting" />
+
+		<component type="grid" name="productionCountingsList"
+			reference="grid">
+
 			<script>
 				<![CDATA[
 					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
@@ -68,13 +59,40 @@
 							}
 						}
 					}
+					
 					this.addOnChangeListener(listener);
 				]]>
 			</script>
+
+			<option type="column" name="name" fields="name" link="true" />
+			<option type="column" name="order" fields="order" link="true"
+				width="250" expression="#order['name']" />
+			<option type="column" name="product" fields="product" link="true"
+				width="250" expression="#product['name']" />
+			<option type="column" name="generated" fields="generated"
+				width="150" />
+			<option type="column" name="date" fields="date" width="175" />
+			<option type="column" name="worker" fields="worker" width="150" />
+
+			<option type="correspondingView" value="productionCounting/productionCountingDetails" />
+			<option type="correspondingComponent" value="form" />
+
+			<option type="order" column="order" direction="asc" />
+
+			<option type="searchable" value="name,order,product,generated,date,worker" />
+			<option type="orderable" value="name,order,product,generated,date,worker" />
+
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+
+
+			<listener event="printProductionCounting"
+				class="com.qcadoo.mes.productionCounting.ProductionCountingService"
+				method="printProductionCounting" />
 		</component>
+
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
-	<hooks>
-	</hooks>
+
 </view>

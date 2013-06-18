@@ -36,8 +36,9 @@
 				<component type="select" name="typeOfProductionRecording"
 					reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
 					default="01basic">
+					
 					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+						class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
 						method="disableFields" />
 				</component>
 			</layoutElement>
@@ -72,4 +73,5 @@
 			</layoutElement>
 		</component>
 	</windowTab>
+	
 </windowTabExtension>

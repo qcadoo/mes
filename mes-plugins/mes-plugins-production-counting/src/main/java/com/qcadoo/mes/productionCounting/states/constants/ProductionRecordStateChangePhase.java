@@ -37,4 +37,5 @@ public final class ProductionRecordStateChangePhase {
     public static int getNumOfPhases() {
         return LAST;
     }
+
 }

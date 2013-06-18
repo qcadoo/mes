@@ -29,11 +29,12 @@
 	name="recordOperationProductOutComponentDetails" modelName="recordOperationProductOutComponent">
 
 	<component type="window" name="window">
+
 		<ribbon>
 			<group template="navigation" />
 			<group template="formSaveAction" />
 		</ribbon>
-		
+
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
 				columns="6" rows="6" hasBorders="false">
@@ -53,28 +54,31 @@
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-				<layoutElement column="6" row="3" >
-					<component type="input" name="plannedQuantityUNIT" 
-						reference="plannedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
+				<layoutElement column="6" row="3">
+					<component type="input" name="plannedQuantityUNIT"
+						reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
 				</layoutElement>
 				<layoutElement column="1" row="4" width="5">
 					<component type="input" name="usedQuantity" field="usedQuantity">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-				<layoutElement column="6" row="4" >
-					<component type="input" name="usedQuantityUNIT" 
-						reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+				<layoutElement column="6" row="4">
+					<component type="input" name="usedQuantityUNIT"
+						reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
 				</layoutElement>
 			</component>
+
 			<option type="header" value="true" />
 			<option type="expression" value="#product['name']" />
 		</component>
+
 	</component>
-	
+
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-			method="fillFieldFromProduct" />
+			class="com.qcadoo.mes.productionCounting.hooks.RecordOperationProductOutComponentDetailsHooks"
+			method="fillFieldsFromProduct" />
 	</hooks>
+
 </view>

@@ -23,39 +23,56 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields.PLANNED_QUANTITY;
-import static com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields.USED_QUANTITY;
-
 import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.productionCounting.ProductionRecordService;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionRecordFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ProductionRecordDetailsListeners {
 
     private static final String L_FORM = "form";
 
+    private static final String L_PLANNED_QUANTITY = "plannedQuantity";
+
+    private static final String L_USED_QUANTITY = "usedQuantity";
+
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private ProductionRecordService productionRecordService;
+
+    public void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        productionRecordService.fillShiftAndDivisionField(view);
+    }
+
+    public final void fillDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        productionRecordService.fillDivisionField(view);
+    }
+
     public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Long productionRecordId = productionRecordForm.getEntityId();
 
-        if (productionRecordId == null) {
+        if (productionRecordForm.getEntityId() == null) {
             return;
         }
 
-        Entity productionRecord = productionRecordForm.getEntity().getDataDefinition().get(productionRecordId);
+        Entity productionRecord = productionRecordForm.getEntity();
 
         copyPlannedQuantityToUsedQuantity(productionRecord
                 .getHasManyField(ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS));
@@ -65,16 +82,65 @@ public class ProductionRecordDetailsListeners {
 
     private void copyPlannedQuantityToUsedQuantity(List<Entity> recordOperationProductComponents) {
         for (Entity recordOperationProductComponent : recordOperationProductComponents) {
-            BigDecimal plannedQuantity = recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY);
+            BigDecimal plannedQuantity = recordOperationProductComponent.getDecimalField(L_PLANNED_QUANTITY);
 
             if (plannedQuantity == null) {
                 plannedQuantity = BigDecimal.ZERO;
             }
 
-            recordOperationProductComponent.setField(USED_QUANTITY, numberService.setScale(plannedQuantity));
+            recordOperationProductComponent.setField(L_USED_QUANTITY, numberService.setScale(plannedQuantity));
 
             recordOperationProductComponent.getDataDefinition().save(recordOperationProductComponent);
         }
+    }
+
+    public void clearFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(ProductionRecordFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        technologyOperationComponentLookup.setFieldValue(null);
+
+        if (productionRecordForm.getEntityId() == null) {
+            return;
+        }
+
+        GridComponent recordOperationProductInComponentsGrid = (GridComponent) view
+                .getComponentByReference(ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS);
+        GridComponent recordOperationProductOutComponentGrid = (GridComponent) view
+                .getComponentByReference(ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS);
+
+        List<Entity> emptyList = Lists.newArrayList();
+
+        recordOperationProductOutComponentGrid.setEntities(emptyList);
+        recordOperationProductInComponentsGrid.setEntities(emptyList);
+    }
+
+    public void enabledOrDisableFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionRecordFields.ORDER);
+        Entity order = orderLookup.getEntity();
+
+        if (order == null) {
+            return;
+        }
+
+        productionRecordService.setTimeAndPieceworkComponentsVisible(view, order);
+    }
+
+    public void checkJustOne(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FieldComponent lastRecord = (FieldComponent) view.getComponentByReference(ProductionRecordFields.LAST_RECORD);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionRecordFields.ORDER);
+        Entity order = orderLookup.getEntity();
+
+        if (order == null) {
+            return;
+        }
+
+        boolean isJustOne = order.getBooleanField(OrderFieldsPC.JUST_ONE);
+
+        lastRecord.setFieldValue(isJustOne);
+        lastRecord.setEnabled(!isJustOne);
+        lastRecord.requestComponentUpdateState();
     }
 
 }

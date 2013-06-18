@@ -73,15 +73,15 @@
 			model="operationPieceworkComponent" cascade="delete" />
 	</fields>
 	<hooks>
-		<onSave
-			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
-			method="updateRecordsNumber" />
-		<onCopy
-			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
-			method="clearGeneratedOnCopy" />
 		<validatesWith
-			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
-			method="validateOrder" />
+			class="com.qcadoo.mes.productionCounting.validators.ProductionBalanceValidators"
+			method="validatesWith" />
+		<onSave
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceHooks"
+			method="onSave" />
+		<onCopy
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceHooks"
+			method="onCopy" />
 	</hooks>
 	<identifier expression="#name" />
 </model>

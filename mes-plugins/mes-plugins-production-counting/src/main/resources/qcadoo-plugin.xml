@@ -24,10 +24,11 @@
     ***************************************************************************
 
 -->
-<plugin plugin="productionCounting" group="tracking" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+<plugin plugin="productionCounting" group="tracking"
+	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
@@ -50,7 +51,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Use production records to track how much products did you really produce/use and how much work did you put into them. Sum them all up and analyse in the production balance report.</description>
-		<license>AGPL</license>	
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -187,15 +188,16 @@
 		<model:model-hook model="parameter" plugin="basic">
 			<model:onCreate
 				class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
-				method="setParameterWithDefaultProductionCountingValues" />
+				method="onCreate" />
 		</model:model-hook>
-		
+
 		<model:model-hook model="order" plugin="orders">
 			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC"
-				method="setOrderWithDefaultProductionCountingValues" />
+				method="onCreate" />
 		</model:model-hook>
-		
-		<model:model-hook model="productionCountingQuantity" plugin="basicProductionCounting">
+
+		<model:model-hook model="productionCountingQuantity"
+			plugin="basicProductionCounting">
 			<model:onView
 				class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
 				method="onView" />
@@ -208,23 +210,21 @@
 		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
 			method="checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse" />
+
 		<view:view-hook plugin="orders" view="orderDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-			method="setOrderDefaultValue" />
+			type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
+			method="setOrderDefaultValues" />
 		<view:view-hook plugin="orders" view="orderDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
 			method="checkTypeOfProductionRecording" />
 		<view:view-hook plugin="orders" view="orderDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-			method="changeProducedQuantityFieldState" />
+			type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
+			method="changeDoneQuantityAndAmountOfProducedQuantityFieldState" />
 
 		<custom:custom
 			class="com.qcadoo.mes.productionCounting.states.module.ProductionRecordStateServiceRegisterModule" />
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>

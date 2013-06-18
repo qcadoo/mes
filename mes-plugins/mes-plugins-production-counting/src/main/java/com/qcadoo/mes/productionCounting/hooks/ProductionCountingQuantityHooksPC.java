@@ -30,9 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.RecordOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.RecordOperationProductOutComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;

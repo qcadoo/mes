@@ -29,7 +29,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.states.aop.ProductionRecordStateChangeAspect;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordStateChangePhase;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordStateStringValues;

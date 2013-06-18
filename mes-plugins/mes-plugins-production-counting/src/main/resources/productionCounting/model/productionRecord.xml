@@ -33,7 +33,7 @@
 		</string>
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
-		<belongsTo name="technologyInstanceOperationComponent" model="technologyInstanceOperationComponent"
+		<belongsTo name="technologyOperationComponent" model="technologyOperationComponent"
 			plugin="technologies" />
 		<belongsTo name="shift" model="shift" plugin="basic" />
 
@@ -65,33 +65,18 @@
 			joinField="productionRecord" cascade="delete" />
 	</fields>
 	<hooks>
+		<validatesWith
+			class="com.qcadoo.mes.productionCounting.validators.ProductionRecordValidators"
+			method="validatesWith" />
 		<onCreate 
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordModelHooks" 
-			method="setInitialState" />
-		<onCopy 
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordModelHooks" 
-			method="setInitialState" />
-		<onCopy 
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordModelHooks" 
-			method="clearLaborAndMachineTime" />
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordHooks" 
+			method="onCreate" />
 		<onSave
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="generateData" />
-		<onSave
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="copyProductsFromOrderOperation" />
-		<validatesWith
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="checkTypeOfProductionRecording" />
-		<validatesWith
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="willOrderAcceptOneMore" />
-		<validatesWith
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="checkIfOrderIsStarted" />
-		<validatesWith
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="checkIfOperationIsSet" />
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordHooks"
+			method="onSave" />
+		<onCopy 
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordHooks" 
+			method="onCopy" />
 	</hooks>
 	<identifier expression="#number" />
 </model>

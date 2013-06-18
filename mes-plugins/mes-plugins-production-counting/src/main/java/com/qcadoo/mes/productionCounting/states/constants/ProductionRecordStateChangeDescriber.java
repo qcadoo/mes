@@ -23,13 +23,10 @@
  */
 package com.qcadoo.mes.productionCounting.states.constants;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD_STATE_CHANGE;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PLUGIN_IDENTIFIER;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.states.AbstractStateChangeDescriber;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.model.api.DataDefinition;
@@ -43,7 +40,8 @@ public final class ProductionRecordStateChangeDescriber extends AbstractStateCha
 
     @Override
     public DataDefinition getDataDefinition() {
-        return dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD_STATE_CHANGE);
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_RECORD_STATE_CHANGE);
     }
 
     @Override
@@ -58,7 +56,8 @@ public final class ProductionRecordStateChangeDescriber extends AbstractStateCha
 
     @Override
     public DataDefinition getOwnerDataDefinition() {
-        return dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD);
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_RECORD);
     }
 
 }

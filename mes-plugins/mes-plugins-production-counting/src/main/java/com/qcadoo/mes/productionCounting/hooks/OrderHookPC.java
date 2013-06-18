@@ -23,33 +23,34 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.ALLOW_TO_CLOSE;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.AUTO_CLOSE_ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.JUST_ONE;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PIECEWORK;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PRODUCTION_TIME;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-
-import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class OrderHookPC {
 
+    private List<String> orderFieldNames = Lists.newArrayList(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
+            OrderFieldsPC.REGISTER_PIECEWORK, OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
+            OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.JUST_ONE, OrderFieldsPC.ALLOW_TO_CLOSE,
+            OrderFieldsPC.AUTO_CLOSE_ORDER, OrderFieldsPC.REGISTER_PRODUCTION_TIME);
+
     @Autowired
     private ParameterService parameterService;
 
-    public void setOrderWithDefaultProductionCountingValues(final DataDefinition dataDefinition, final Entity order) {
-        for (String fieldName : Arrays.asList(TYPE_OF_PRODUCTION_RECORDING, REGISTER_PIECEWORK, REGISTER_QUANTITY_IN_PRODUCT,
-                REGISTER_QUANTITY_OUT_PRODUCT, JUST_ONE, ALLOW_TO_CLOSE, AUTO_CLOSE_ORDER, REGISTER_PRODUCTION_TIME)) {
+    public void onCreate(final DataDefinition orderDD, final Entity order) {
+        setOrderWithDefaultProductionCountingValues(orderDD, order);
+    }
+
+    public void setOrderWithDefaultProductionCountingValues(final DataDefinition orderDD, final Entity order) {
+        for (String fieldName : orderFieldNames) {
             if (order.getField(fieldName) == null) {
                 order.setField(fieldName, parameterService.getParameter().getField(fieldName));
             }

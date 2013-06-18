@@ -41,12 +41,12 @@
 		<string name="fileName" />
 	</fields>
 	<hooks>
-		<onCopy
-			class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService"
-			method="clearGeneratedOnCopy" />
 		<validatesWith
-			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
-			method="validateOrder" />
+			class="com.qcadoo.mes.productionCounting.validators.ProductionCountingValidators"
+			method="validatesWith" />
+		<onCopy
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingHooks"
+			method="onCopy" />
 	</hooks>
 	<identifier expression="#name" />
 </model>

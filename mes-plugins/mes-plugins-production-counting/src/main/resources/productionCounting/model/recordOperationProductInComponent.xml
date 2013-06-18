@@ -39,6 +39,6 @@
 	<hooks>
 		<onView
 			class="com.qcadoo.mes.productionCounting.hooks.RecordOperationProductInComponentHooks"
-			method="fillPlannedQuantity" />
+			method="onView" />
 	</hooks>
 </model>

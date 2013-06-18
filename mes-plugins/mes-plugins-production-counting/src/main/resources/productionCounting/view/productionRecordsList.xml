@@ -27,10 +27,12 @@
 <view name="productionRecordsList" modelName="productionRecord"
 	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
 	<component type="window" name="window" reference="window">
+
 		<ribbon>
 			<template name="standardGridTemplate" />
-				<group name="status">
+			<group name="status">
 				<smallButton name="acceptRecord" icon="startIcon16.png"
 					state="disabled">
 					<script>
@@ -61,10 +63,12 @@
 				</smallButton>
 			</group>
 		</ribbon>
+
 		<component type="grid" name="productionRecordsList"
 			reference="grid">
+
 			<script>
-			<![CDATA[ 
+				<![CDATA[ 
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
 					var copyButton = #{window}.getRibbonItem("actions.copy");
 					var acceptRecord = #{window}.getRibbonItem("status.acceptRecord");
@@ -79,10 +83,10 @@
 								copyButton.disable();
 								acceptRecord.disable();
 								cancelRecord.disable();
-							}else{
+							} else {
 								var noDifferentStates = true;
 								
-								if(selectedEntitiesArray.length > 1)
+								if (selectedEntitiesArray.length > 1)
 								{
 									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
 										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
@@ -92,29 +96,24 @@
 									}
 								} 
 								
-								
 								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
 									var state = selectedEntitiesArray[0].fields.state;
 									
 									if (state == "01draft") {
-											acceptRecord.enable();
-											cancelRecord.enable();
-										} else if (state == "02accepted") {
-											deleteButton.disable();
-											cancelRecord.enable();
-										} else if ((state == "03declined")) {
-											deleteButton.enable();
-										} else{
-											cancelRecord.enable();
-										}
-									
-									
-									} else {
+										acceptRecord.enable();
+										cancelRecord.enable();
+									} else if (state == "02accepted") {
+										deleteButton.disable();
+										cancelRecord.enable();
+									} else if ((state == "03declined")) {
+										deleteButton.enable();
+									} else{
+										cancelRecord.enable();
+									}
+								} else {
 									acceptRecord.disable("#{translate(productionCounting.productionRecordsList.ribbon.message.productionRecordWithDifferentStatesSelected)}");
 									cancelRecord.disable("#{translate(productionCounting.productionRecordsList.ribbon.message.productionRecordWithDifferentStatesSelected)}");
 								}
-								
-								
 								
 								for (var i in selectedEntitiesArray) {
 									console.log(selectedEntitiesArray[i].fields);
@@ -132,39 +131,36 @@
 										break;
 									}}
 								
-								if(deleteable == false){
+								if (deleteable == false) {
 									deleteButton.disable("#{translate(productionCounting.productionRecordsList.window.mainTab.productionRecordsList.grid.error.delete)}");
-								}else{
+								} else {
 									deleteButton.enable();
 								}
 								
-								if(copyable == false){
+								if (copyable == false) {
 									copyButton.disable("#{translate(productionCounting.productionRecordsList.window.mainTab.productionRecordsList.grid.error.copy)}");
-								}else{
-									copyButton.enable();}
+								} else {
+									copyButton.enable();
+								}
 							}
 						}
 					}
-
 					
 					this.addOnChangeListener(listener);
-					
-		
 				]]>
 			</script>
-			<listener event="changeState"
-				class="com.qcadoo.mes.productionCounting.states.client.ProductionRecordStateChangeViewClient"
-				method="changeState" />
+
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
 			<option type="column" name="order" fields="order" link="true"
 				width="250" expression="#order['number']" />
-			<option type="column" name="technologyInstanceOperationComponent"
-				fields="technologyInstanceOperationComponent" link="true" width="250"
-				expression="(#technologyInstanceOperationComponent != null) ? #technologyInstanceOperationComponent['nodeNumber'] + ' ' + #technologyInstanceOperationComponent['operation']['name'] : ''" />
+			<option type="column" name="technologyOperationComponent"
+				fields="technologyOperationComponent" link="true" width="250"
+				expression="(#technologyOperationComponent != null) ? #technologyOperationComponent['nodeNumber'] + ' ' + #technologyOperationComponent['operation']['name'] : ''" />
 			<option type="column" name="shift" fields="shift" link="true"
 				width="100" expression="#shift['name']" />
-			<option type="column" name="worker" fields="createUser" link="true" width="200" />
+			<option type="column" name="worker" fields="createUser" link="true"
+				width="200" />
 			<option type="column" name="state" fields="state" reference="state"
 				width="150" />
 			<option type="column" name="createDate" fields="createDate"
@@ -173,7 +169,9 @@
 				expression="(#order == null) ? '' : #order['state']" />
 			<option type="column" name="lastRecord" fields="lastRecord"
 				expression="#lastRecord" />
+
 			<option type="order" column="number" direction="asc" />
+
 			<option type="searchable" value="number,order,shift,state" />
 			<option type="orderable" value="number,order,shift,state" />
 
@@ -182,8 +180,14 @@
 
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
+
+			<listener event="changeState"
+				class="com.qcadoo.mes.productionCounting.states.client.ProductionRecordStateChangeViewClient"
+				method="changeState" />
 		</component>
+
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
+
 </view>

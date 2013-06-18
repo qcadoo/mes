@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.states.listener;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
-import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.AUTO_CLOSE_ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
-import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
@@ -43,7 +33,13 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordStateStringValues;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -73,6 +69,9 @@ public final class ProductionRecordBasicListenerService {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private ProductionCountingService productionCountingService;
+
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity productionRecord = stateChangeContext.getOwner();
         updateBasicProductionCounting(productionRecord, new Addition());
@@ -88,17 +87,17 @@ public final class ProductionRecordBasicListenerService {
 
     public void checkIfExistsFinalRecord(final StateChangeContext stateChangeContext) {
         final Entity productionRecord = stateChangeContext.getOwner();
-        final Entity order = productionRecord.getBelongsToField(ORDER);
-        final String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
+        final Entity order = productionRecord.getBelongsToField(ProductionRecordFields.ORDER);
+        final String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
         final SearchCriteriaBuilder searchBuilder = productionRecord.getDataDefinition().find();
-        searchBuilder.add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue()));
-        searchBuilder.add(SearchRestrictions.belongsTo(ORDER, order));
-        searchBuilder.add(SearchRestrictions.eq(LAST_RECORD, true));
+        searchBuilder.add(SearchRestrictions.eq(ProductionRecordFields.STATE, ProductionRecordStateStringValues.ACCEPTED));
+        searchBuilder.add(SearchRestrictions.belongsTo(ProductionRecordFields.ORDER, order));
+        searchBuilder.add(SearchRestrictions.eq(ProductionRecordFields.LAST_RECORD, true));
 
-        if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
-            searchBuilder.add(SearchRestrictions.belongsTo(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
-                    productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)));
+        if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
+            searchBuilder.add(SearchRestrictions.belongsTo(ProductionRecordFields.TECHNOLOGY_OPERATION_COMPONENT,
+                    productionRecord.getBelongsToField(ProductionRecordFields.TECHNOLOGY_OPERATION_COMPONENT)));
         }
         if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
             stateChangeContext.addValidationError("productionCounting.record.messages.error.finalExists");
@@ -107,18 +106,18 @@ public final class ProductionRecordBasicListenerService {
 
     public void closeOrder(final StateChangeContext stateChangeContext) {
         final Entity productionRecord = stateChangeContext.getOwner();
-        final Entity order = productionRecord.getBelongsToField(ORDER);
+        final Entity order = productionRecord.getBelongsToField(ProductionRecordFields.ORDER);
 
         if (order == null) {
             return;
         }
 
-        Boolean autoCloseOrder = order.getBooleanField(AUTO_CLOSE_ORDER);
-        if (autoCloseOrder && productionRecord.getBooleanField(LAST_RECORD)) {
-            order.setField(STATE, COMPLETED.getStringValue());
+        Boolean autoCloseOrder = order.getBooleanField(OrderFieldsPC.AUTO_CLOSE_ORDER);
+        if (autoCloseOrder && productionRecord.getBooleanField(ProductionRecordFields.LAST_RECORD)) {
+            order.setField(OrderFields.STATE, OrderStateStringValues.COMPLETED);
             Entity orderFromDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(
                     order);
-            if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
+            if (OrderStateStringValues.COMPLETED.equals(orderFromDB.getStringField(OrderFields.STATE))) {
                 stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
             } else {
                 stateChangeContext.addMessage("productionCounting.order.orderCannotBeClosed", StateMessageType.FAILURE, false);
@@ -158,7 +157,7 @@ public final class ProductionRecordBasicListenerService {
         BigDecimal producedQuantity = BigDecimal.ZERO;
 
         for (Entity basicProductionCounting : basicProductionCountings) {
-            BigDecimal qty = (BigDecimal) basicProductionCounting.getField(L_PRODUCED_QUANTITY);
+            BigDecimal qty = basicProductionCounting.getDecimalField(L_PRODUCED_QUANTITY);
             if (qty == null) {
                 qty = BigDecimal.ZERO;
             }
@@ -252,8 +251,8 @@ public final class ProductionRecordBasicListenerService {
                 continue;
             }
 
-            final BigDecimal usedQuantity = (BigDecimal) basicProductionCounting.getField(L_USED_QUANTITY);
-            final BigDecimal productQuantity = (BigDecimal) productIn.getField(L_USED_QUANTITY);
+            final BigDecimal usedQuantity = basicProductionCounting.getDecimalField(L_USED_QUANTITY);
+            final BigDecimal productQuantity = productIn.getDecimalField(L_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             basicProductionCounting.setField(L_USED_QUANTITY, result);
             basicProductionCounting = basicProductionCounting.getDataDefinition().save(basicProductionCounting);
@@ -268,8 +267,8 @@ public final class ProductionRecordBasicListenerService {
                 continue;
             }
 
-            final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField(L_PRODUCED_QUANTITY);
-            final BigDecimal productQuantity = (BigDecimal) productOut.getField(L_USED_QUANTITY);
+            final BigDecimal usedQuantity = productionCounting.getDecimalField(L_PRODUCED_QUANTITY);
+            final BigDecimal productQuantity = productOut.getDecimalField(L_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             productionCounting.setField(L_PRODUCED_QUANTITY, result);
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);

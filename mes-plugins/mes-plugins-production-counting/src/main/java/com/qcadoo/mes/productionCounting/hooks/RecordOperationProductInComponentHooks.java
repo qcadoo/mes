@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PLANNED_QUANTITY;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
-import static com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES;
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
-import static com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields.PRODUCTION_RECORD;
-import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
-import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -40,6 +30,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.constants.RecordOperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -51,42 +47,50 @@ public class RecordOperationProductInComponentHooks {
     @Autowired
     private NumberService numberService;
 
-    public void fillPlannedQuantity(final DataDefinition recordOperationProductInComponentDD,
+    public void onView(final DataDefinition recordOperationProductInComponentDD, final Entity recordOperationProductInComponent) {
+        fillPlannedQuantity(recordOperationProductInComponentDD, recordOperationProductInComponent);
+    }
+
+    private void fillPlannedQuantity(final DataDefinition recordOperationProductInComponentDD,
             final Entity recordOperationProductInComponent) {
-        recordOperationProductInComponent.setField(PLANNED_QUANTITY,
+        recordOperationProductInComponent.setField(RecordOperationProductInComponentFields.PLANNED_QUANTITY,
                 numberService.setScale(getPlannedQuantity(recordOperationProductInComponent)));
     }
 
     private BigDecimal getPlannedQuantity(final Entity recordOperationProductInComponent) {
         BigDecimal plannedQuantity = BigDecimal.ZERO;
 
-        Entity productionRecord = recordOperationProductInComponent.getBelongsToField(PRODUCTION_RECORD);
-        Entity product = recordOperationProductInComponent.getBelongsToField(PRODUCT);
+        Entity productionRecord = recordOperationProductInComponent
+                .getBelongsToField(RecordOperationProductInComponentFields.PRODUCTION_RECORD);
+        Entity product = recordOperationProductInComponent.getBelongsToField(RecordOperationProductInComponentFields.PRODUCT);
 
-        Entity order = productionRecord.getBelongsToField(ORDER);
-        Entity technologyInstanceOperationComponent = productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+        Entity order = productionRecord.getBelongsToField(ProductionRecordFields.ORDER);
+        Entity technologyOperationComponent = productionRecord
+                .getBelongsToField(ProductionRecordFields.TECHNOLOGY_OPERATION_COMPONENT);
 
         List<Entity> productionCountingQuantities = Lists.newArrayList();
 
-        if (technologyInstanceOperationComponent == null) {
-            productionCountingQuantities = order.getHasManyField(PRODUCTION_COUNTING_QUANTITIES).find()
-                    .add(SearchRestrictions.isNotNull(OPERATION_PRODUCT_IN_COMPONENT))
-                    .add(SearchRestrictions.belongsTo(PRODUCT, product)).list().getEntities();
+        if (technologyOperationComponent == null) {
+            productionCountingQuantities = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).find()
+                    .add(SearchRestrictions.isNotNull(ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT))
+                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product)).list().getEntities();
         } else {
-            Entity technologyOperationComponent = technologyInstanceOperationComponent
-                    .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
-
             Entity operationProductInComponent = getOperationProductInComponent(technologyOperationComponent, product);
 
             if (operationProductInComponent != null) {
-                productionCountingQuantities = order.getHasManyField(PRODUCTION_COUNTING_QUANTITIES).find()
-                        .add(SearchRestrictions.belongsTo(OPERATION_PRODUCT_IN_COMPONENT, operationProductInComponent))
-                        .add(SearchRestrictions.belongsTo(PRODUCT, product)).list().getEntities();
+                productionCountingQuantities = order
+                        .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+                        .find()
+                        .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT,
+                                operationProductInComponent))
+                        .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product)).list()
+                        .getEntities();
             }
         }
 
         for (Entity productionCountingQuantity : productionCountingQuantities) {
-            BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity.getDecimalField(PLANNED_QUANTITY);
+            BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity
+                    .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
 
             if (productionCountingQuantityPlannedQuantity != null) {
                 plannedQuantity = plannedQuantity.add(productionCountingQuantityPlannedQuantity, numberService.getMathContext());
@@ -97,8 +101,9 @@ public class RecordOperationProductInComponentHooks {
     }
 
     private Entity getOperationProductInComponent(final Entity technologyOperationComponent, final Entity product) {
-        return technologyOperationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS).find()
-                .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
+        return technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)
+                .find().add(SearchRestrictions.belongsTo(OperationProductInComponentFields.PRODUCT, product)).setMaxResults(1)
+                .uniqueResult();
     }
 
 }
