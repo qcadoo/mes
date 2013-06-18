@@ -24,6 +24,7 @@
 package com.qcadoo.mes.productionCounting.internal;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -35,6 +36,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
@@ -97,5 +99,26 @@ public class ProductionRecordServiceTest {
         // then
         assertFalse(canIAdd);
         verify(productionRecord).addError(operationField, "productionCounting.record.messages.error.operationFinal");
+    }
+
+    @Test
+    public final void shouldRecognizeIfOrderWasStarted() {
+        mustNotBeStarted(null);
+        mustNotBeStarted(OrderState.PENDING.getStringValue());
+        mustNotBeStarted(OrderState.ACCEPTED.getStringValue());
+        mustNotBeStarted(OrderState.DECLINED.getStringValue());
+        mustNotBeStarted(OrderState.ABANDONED.getStringValue());
+
+        mustBeStarted(OrderState.IN_PROGRESS.getStringValue());
+        mustBeStarted(OrderState.COMPLETED.getStringValue());
+        mustBeStarted(OrderState.INTERRUPTED.getStringValue());
+    }
+
+    private void mustBeStarted(final String state) {
+        assertTrue(productionRecordService.isOrderStarted(state));
+    }
+
+    private void mustNotBeStarted(final String state) {
+        assertFalse(productionRecordService.isOrderStarted(state));
     }
 }

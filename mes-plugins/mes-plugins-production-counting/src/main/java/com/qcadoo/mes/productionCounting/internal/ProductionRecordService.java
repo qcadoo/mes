@@ -28,10 +28,7 @@ import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_SHIFT;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_STAFF;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_WORKSTATION_TYPE;
 import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.PRODUCT;
-import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
-import static com.qcadoo.mes.orders.states.constants.OrderState.DECLINED;
-import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
@@ -62,6 +59,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -77,7 +76,8 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class ProductionRecordService {
 
-    private static final String L_STATE = "state";
+    private static final Set<String> ORDER_STARTED_STATES = Sets.newHashSet(OrderState.IN_PROGRESS.getStringValue(),
+            OrderState.COMPLETED.getStringValue(), OrderState.INTERRUPTED.getStringValue());
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -151,13 +151,16 @@ public class ProductionRecordService {
 
     public boolean checkIfOrderIsStarted(final DataDefinition dd, final Entity entity) {
         boolean isStarted = true;
-        final String orderState = entity.getBelongsToField(ORDER).getStringField(L_STATE);
-        if (orderState == null || PENDING.getStringValue().equals(orderState) || ACCEPTED.getStringValue().equals(orderState)
-                || DECLINED.getStringValue().equals(orderState) || ABANDONED.getStringValue().equals(orderState)) {
+        final String orderState = entity.getBelongsToField(ORDER).getStringField(OrderFields.STATE);
+        if (!isOrderStarted(orderState)) {
             entity.addError(dd.getField(ORDER), "productionCounting.record.messages.error.orderIsNotStarted");
             isStarted = false;
         }
         return isStarted;
+    }
+
+    public boolean isOrderStarted(final String orderState) {
+        return ORDER_STARTED_STATES.contains(orderState);
     }
 
     public void copyProductsFromOrderOperation(final DataDefinition productionRecordDD, final Entity productionRecord) {
