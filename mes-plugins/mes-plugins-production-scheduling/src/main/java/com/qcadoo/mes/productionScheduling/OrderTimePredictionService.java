@@ -163,11 +163,13 @@ public class OrderTimePredictionService {
 
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntity().getId());
-        Entity technology = order.getBelongsToField("technology");
+        // copy of technology from order
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Validate.notNull(technology, "technology is null");
         BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                 viewDefinitionState.getLocale());
 
+        // Included in work time
         Boolean includeTpz = "1".equals(viewDefinitionState.getComponentByReference("includeTpz").getFieldValue());
         Boolean includeAdditionalTime = "1".equals(viewDefinitionState.getComponentByReference("includeAdditionalTime")
                 .getFieldValue());
@@ -186,7 +188,7 @@ public class OrderTimePredictionService {
 
         order = getActualOrderWithChanges(order);
         int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(
-                order.getTreeField("technologyInstanceOperationComponents").getRoot(), quantity, includeTpz,
+                technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
                 includeAdditionalTime, productionLine);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
