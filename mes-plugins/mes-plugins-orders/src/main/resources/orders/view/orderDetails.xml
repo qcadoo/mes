@@ -374,7 +374,7 @@
 									field="technologyPrototype" source="#{product}.technologies">
 									<option type="column" name="name" fields="name" link="true"
 									width="300" />
-
+									<option type="column" name="state" fields="state" />
 									<option type="searchable" value="name,number" />
 									<option type="orderable" value="name,number" />
 

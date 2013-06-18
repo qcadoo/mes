@@ -89,10 +89,14 @@
 			<model:hasMany name="orders" plugin="orders" model="order"
 				joinField="technology" cascade="nullify" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 		    <model:belongsTo name="order" plugin="orders" model="order" required="true"/>
 		</model:model-field>
 	
+		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
+		    <model:belongsTo name="order" plugin="orders" model="order" required="true"/>
+		</model:model-field>
+		
 		<model:model-field plugin="basic" model="parameter">
 		    <model:boolean name="reasonNeededWhenCorrectingDateFrom" default="false" />
 		</model:model-field>

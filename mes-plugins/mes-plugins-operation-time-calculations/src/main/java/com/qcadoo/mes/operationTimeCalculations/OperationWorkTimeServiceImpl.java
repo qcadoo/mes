@@ -181,7 +181,9 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     @Override
     public OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Entity, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine, final boolean saved) {
-        List<Entity> operationComponents = order.getHasManyField("technologyInstanceOperationComponents");
+        List<Entity> operationComponents = order.getBelongsToField("technology").getHasManyField(
+                TechnologyFields.OPERATION_COMPONENTS);
+        // order.getHasManyField("technologyInstanceOperationComponents");
         Map<Entity, Integer> workstations = getWorkstationsFromOrder(order);
 
         return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
