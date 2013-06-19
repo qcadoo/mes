@@ -387,11 +387,6 @@
 			class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyListenersTN"
 			method="checkOperationOutputQuantities" />
 		
-		<view:view-listener plugin="orders" view="copyOfTechnologyDetails"
-			component="form" event="save"
-			class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyListenersTN"
-			method="checkOperationOutputQuantities" />
-		
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"
 			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks"
