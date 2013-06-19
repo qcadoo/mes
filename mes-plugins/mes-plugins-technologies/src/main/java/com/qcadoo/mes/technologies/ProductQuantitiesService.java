@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesAndOperationRuns;
 import com.qcadoo.model.api.Entity;
 
 public interface ProductQuantitiesService {
@@ -51,6 +52,8 @@ public interface ProductQuantitiesService {
      */
     Map<Long, BigDecimal> getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity,
             Map<Long, BigDecimal> operationRuns);
+
+    ProductQuantitiesAndOperationRuns getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity);
 
     /**
      * 

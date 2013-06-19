@@ -52,6 +52,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesAndOperationRuns;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -65,6 +66,13 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Override
+    public ProductQuantitiesAndOperationRuns getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity) {
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+        Map<Long, BigDecimal> productQuantities = getProductComponentQuantities(technology, givenQuantity, operationRuns);
+        return new ProductQuantitiesAndOperationRuns(operationRuns, productQuantities);
+    }
 
     @Override
     public Map<Long, BigDecimal> getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity,
