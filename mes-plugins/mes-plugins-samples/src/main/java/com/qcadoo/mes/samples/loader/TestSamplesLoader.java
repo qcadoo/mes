@@ -131,8 +131,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             readDataFromXML(dataset, L_PRODUCTION_RECORD, locale);
             readDataFromXML(dataset, RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT, locale);
             readDataFromXML(dataset, RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT, locale);
-            readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
-            readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
+            // readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
+            // readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
         }
 
         if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY)) {
@@ -814,7 +814,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .find().add(SearchRestrictions.belongsTo(L_PRODUCT, product)).setMaxResults(1).uniqueResult();
         Entity technologyInstanceOperationComponent = dataDefinitionService
                 .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
-                        SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
+                        SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
                 .find()
                 .add(SearchRestrictions.and(SearchRestrictions.belongsTo(ORDERS_MODEL_ORDER, order),
                         SearchRestrictions.belongsTo(TECHNOLOGY_MODEL_TECHNOLOGY, technology),
@@ -826,8 +826,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .find()
                 .add(SearchRestrictions.and(SearchRestrictions.belongsTo("trackingRecord", trackingRecord), SearchRestrictions
                         .belongsTo("productInComponent", operationProdInComp), SearchRestrictions.belongsTo(
-                        SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, technologyInstanceOperationComponent)))
-                .setMaxResults(1).uniqueResult();
+                        SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
+                        technologyInstanceOperationComponent))).setMaxResults(1).uniqueResult();
         return genealogyProductInComponent;
     }
 
@@ -1167,9 +1167,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     void addProductionRecord(final Map<String, String> values) {
-
         Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
+
         productionRecord.setField(L_NUMBER, values.get(L_NUMBER));
         productionRecord.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
         productionRecord.setField(L_LAST_RECORD, values.get("lastrecord"));
@@ -1179,17 +1179,16 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productionRecord.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         productionRecord.setField(L_WORKSTATION_TYPE, getWorkstationTypeByNumber(values.get("workstationtype")));
         productionRecord.setField(L_DIVISION, getDivisionByNumber(values.get(L_DIVISION)));
-        productionRecord.setField(L_TECHNOLOGY_ISTANCE_OPERATION_COMPONENT,
-                getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION), getOrderByNumber(values.get(L_ORDER))));
+        productionRecord.setField(L_TECHNOLOGY_OPERATION_COMPONENT,
+                getTechnologyOperationComponentByNumber(values.get(L_OPERATION), getOrderByNumber(values.get(L_ORDER))));
 
         String typeOfProductionRecording = productionRecord.getBelongsToField(L_ORDER)
                 .getStringField("typeOfProductionRecording");
-        Object orderOperation = getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION),
-                getOrderByNumber(values.get(L_ORDER)));
-        if (!(orderOperation == null && "03forEach".equals(typeOfProductionRecording))) {
+        Entity technologyOperationComponent = productionRecord.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT);
+
+        if ((technologyOperationComponent != null) && !("03forEach".equals(typeOfProductionRecording))) {
             productionRecord.getDataDefinition().save(productionRecord);
         }
-
     }
 
     private void prepareProductionRecords(final Map<String, String> values) {
@@ -1339,13 +1338,27 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
     }
 
+    private Entity getTechnologyOperationComponentByNumber(final String number, final Entity order) {
+        Entity operation = dataDefinitionService
+                .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER, SamplesConstants.TECHNOLOGY_MODEL_OPERATION).find()
+                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
+        Entity technology = order.getBelongsToField(TECHNOLOGY_MODEL_TECHNOLOGY);
+
+        return dataDefinitionService
+                .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
+                        SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
+                .add(SearchRestrictions.belongsTo(L_TECHNOLOGY, technology))
+                .add(SearchRestrictions.belongsTo(L_OPERATION, operation)).setMaxResults(1).uniqueResult();
+    }
+
     private Entity getTechnologyInstanceOperationComponentByNumber(final String number, final Entity order) {
         Entity operation = dataDefinitionService
                 .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER, SamplesConstants.TECHNOLOGY_MODEL_OPERATION).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
+
         return dataDefinitionService
                 .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
-                        SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).find()
+                        SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).find()
                 .add(SearchRestrictions.belongsTo(L_ORDER, order)).add(SearchRestrictions.belongsTo(L_OPERATION, operation))
                 .setMaxResults(1).uniqueResult();
     }

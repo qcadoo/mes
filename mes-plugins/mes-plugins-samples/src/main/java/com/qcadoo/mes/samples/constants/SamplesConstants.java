@@ -98,11 +98,13 @@ public final class SamplesConstants {
 
     public static final String ORDERS_MODEL_ORDER = "order";
 
-    public static final String MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
+    public static final String TECHNOLOGY_MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
     public static final String TECHNOLOGIES_PLUGIN_IDENTIFIER = "technologies";
 
     public static final String TECHNOLOGY_MODEL_TECHNOLOGY = "technology";
+
+    public static final String L_TECHNOLOGY = "technology";
 
     public static final String TECHNOLOGY_MODEL_OPERATION = "operation";
 
@@ -111,6 +113,8 @@ public final class SamplesConstants {
     public static final String TECHNOLOGY_MODEL_OPERATION_PROD_OUT_COMP = "operationProductOutComponent";
 
     public static final String TECHNOLOGY_MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
+    public static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     public static final String STATE_DRAFT = "01draft";
 
