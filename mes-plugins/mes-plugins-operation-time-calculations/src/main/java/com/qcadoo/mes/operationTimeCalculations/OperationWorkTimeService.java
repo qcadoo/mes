@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.model.api.Entity;
 
 public interface OperationWorkTimeService {
@@ -40,6 +41,10 @@ public interface OperationWorkTimeService {
     Map<Entity, OperationWorkTime> estimateOperationsWorkTime(final List<Entity> operationComponents,
             Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Map<Entity, Integer> workstations, final boolean saved);
+
+    OperationTimesContainer estimateOperationsWorkTime(final List<Entity> operationComponents,
+            Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Map<Long, Integer> workstations, final boolean saved);
 
     Map<Entity, OperationWorkTime> estimateOperationsWorkTime(final List<Entity> operationComponents,
             Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
