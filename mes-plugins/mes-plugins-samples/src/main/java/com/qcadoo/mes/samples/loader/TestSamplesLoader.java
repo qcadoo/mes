@@ -116,7 +116,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         if (isEnabledOrEnabling(L_QUALITY_CONTROLS)) {
-            readDataFromXML(dataset, L_QUALITY_CONTROLS, locale);
+            // readDataFromXML(dataset, L_QUALITY_CONTROLS, locale);
         }
 
         if (isEnabledOrEnabling(L_MATERIAL_REQUIREMENTS)) {
@@ -124,15 +124,15 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         if (isEnabledOrEnabling(L_WORK_PLANS)) {
-            readDataFromXML(dataset, L_WORK_PLANS, locale);
+            // readDataFromXML(dataset, L_WORK_PLANS, locale);
         }
 
         if (isEnabledOrEnabling(L_PRODUCTION_COUNTING)) {
             readDataFromXML(dataset, L_PRODUCTION_RECORD, locale);
             readDataFromXML(dataset, RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT, locale);
             readDataFromXML(dataset, RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT, locale);
-            // readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
-            // readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
+            readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
+            readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
         }
 
         if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY)) {
@@ -214,11 +214,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         } else if (L_GENEALOGY_TABLES.equals(type)) {
             addGenealogyTables(values);
         } else if (L_QUALITY_CONTROLS.equals(type)) {
-            // addQualityControl(values);
+            addQualityControl(values);
         } else if (L_MATERIAL_REQUIREMENTS.equals(type)) {
             addMaterialRequirements(values);
         } else if (L_WORK_PLANS.equals(type)) {
-            // addWorkPlan(values);
+            addWorkPlan(values);
         } else if (L_PRODUCTION_RECORD.equals(type)) {
             addProductionRecord(values);
         } else if (RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT.equals(type)) {
@@ -1170,8 +1170,12 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
 
+        Entity order = getOrderByNumber(values.get(L_ORDER));
+        Entity operation = getOperationByNumber(values.get(L_OPERATION));
+        Entity technologyOperationComponent = getTechnologyOperationComponentByNumber(order, operation);
+
         productionRecord.setField(L_NUMBER, values.get(L_NUMBER));
-        productionRecord.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
+        productionRecord.setField(L_ORDER, order);
         productionRecord.setField(L_LAST_RECORD, values.get("lastrecord"));
         productionRecord.setField(L_MACHINE_TIME, values.get("machinetime"));
         productionRecord.setField(L_LABOR_TIME, values.get("labortime"));
@@ -1179,14 +1183,12 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productionRecord.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         productionRecord.setField(L_WORKSTATION_TYPE, getWorkstationTypeByNumber(values.get("workstationtype")));
         productionRecord.setField(L_DIVISION, getDivisionByNumber(values.get(L_DIVISION)));
-        productionRecord.setField(L_TECHNOLOGY_OPERATION_COMPONENT,
-                getTechnologyOperationComponentByNumber(values.get(L_OPERATION), getOrderByNumber(values.get(L_ORDER))));
+        productionRecord.setField(L_TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 
         String typeOfProductionRecording = productionRecord.getBelongsToField(L_ORDER)
                 .getStringField("typeOfProductionRecording");
-        Entity technologyOperationComponent = productionRecord.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT);
 
-        if ((technologyOperationComponent != null) && !("03forEach".equals(typeOfProductionRecording))) {
+        if ((technologyOperationComponent != null) || !("03forEach".equals(typeOfProductionRecording))) {
             productionRecord.getDataDefinition().save(productionRecord);
         }
     }
@@ -1274,8 +1276,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             qualitycontrol.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
             qualitycontrol.setField(
                     L_OPERATION,
-                    getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION),
-                            getOrderByNumber(values.get(L_ORDER))));
+                    getTechnologyInstanceOperationComponentByNumber(getOrderByNumber(values.get(L_ORDER)),
+                            getOperationByNumber(values.get(L_OPERATION))));
             qualitycontrol.setField("ControlResult", values.get("controlresult"));
             qualitycontrol.setField(L_COMMENT, values.get(L_COMMENT));
             qualitycontrol.setField(L_CLOSED, values.get(L_CLOSED));
@@ -1338,10 +1340,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
     }
 
-    private Entity getTechnologyOperationComponentByNumber(final String number, final Entity order) {
-        Entity operation = dataDefinitionService
-                .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER, SamplesConstants.TECHNOLOGY_MODEL_OPERATION).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
+    private Entity getTechnologyOperationComponentByNumber(final Entity order, final Entity operation) {
         Entity technology = order.getBelongsToField(TECHNOLOGY_MODEL_TECHNOLOGY);
 
         return dataDefinitionService
@@ -1351,11 +1350,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .add(SearchRestrictions.belongsTo(L_OPERATION, operation)).setMaxResults(1).uniqueResult();
     }
 
-    private Entity getTechnologyInstanceOperationComponentByNumber(final String number, final Entity order) {
-        Entity operation = dataDefinitionService
-                .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER, SamplesConstants.TECHNOLOGY_MODEL_OPERATION).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
-
+    private Entity getTechnologyInstanceOperationComponentByNumber(final Entity order, final Entity operation) {
         return dataDefinitionService
                 .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
                         SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).find()
