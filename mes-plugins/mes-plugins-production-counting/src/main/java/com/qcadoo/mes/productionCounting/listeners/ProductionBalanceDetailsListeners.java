@@ -154,6 +154,8 @@ public class ProductionBalanceDetailsListeners {
                 fillReportValues(productionBalance);
 
                 fillFieldsAndGrids(productionBalance);
+
+                productionBalance.getDataDefinition().save(productionBalance);
             }
 
             productionBalance = productionCountingService.getProductionBalance(productionBalanceId);
@@ -292,8 +294,6 @@ public class ProductionBalanceDetailsListeners {
 
         productionBalance.setField(balanceOperationProductComponentsModel,
                 Lists.newArrayList(balanceOperationProductComponents.values()));
-
-        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     private void addBalanceOperationComponent(final Map<Long, Entity> balanceOperationProductComponents,
@@ -394,8 +394,6 @@ public class ProductionBalanceDetailsListeners {
 
         productionBalance.setField(ProductionBalanceFields.LABOR_TIME, laborTime);
         productionBalance.setField(ProductionBalanceFields.LABOR_TIME_BALANCE, laborTimeBalance);
-
-        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     private void fillOperationTimeComponents(final Entity productionBalance,
@@ -446,8 +444,6 @@ public class ProductionBalanceDetailsListeners {
         }
 
         productionBalance.setField(ProductionBalanceFields.OPERATION_TIME_COMPONENTS, operationTimeComponents);
-
-        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     private void fillOperationPieceworkComponents(final Entity productionBalance,
@@ -510,8 +506,6 @@ public class ProductionBalanceDetailsListeners {
         }
 
         productionBalance.setField(ProductionBalanceFields.OPERATION_PIECEWORK_COMPONENTS, operationPieceworkComponents);
-
-        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     private Entity getTechnologyOperationComponentFromDB(final Long technologyOperationComponentId) {

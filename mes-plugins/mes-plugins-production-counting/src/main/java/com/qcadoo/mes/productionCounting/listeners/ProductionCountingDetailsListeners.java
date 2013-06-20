@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.listeners;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -67,9 +68,9 @@ public class ProductionCountingDetailsListeners {
     @Autowired
     private ProductionCountingPdfService productionCountingPdfService;
 
-    public void fillProductAndProductionRecordWhenOrderChanged(final ViewDefinitionState view, final ComponentState state,
+    public void fillProductAndProductionRecordsWhenOrderChanged(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        productionCountingService.fillFieldsFromProduct(view);
+        productionCountingService.fillProductField(view);
         productionCountingService.fillProductionRecordsGrid(view);
 
         addErrorWhenOrderWithoutRecordingType(view);
@@ -113,12 +114,14 @@ public class ProductionCountingDetailsListeners {
 
             if (!productionCounting.getBooleanField(ProductionCountingFields.GENERATED)) {
                 fillReportValues(productionCounting);
+
+                productionCounting.getDataDefinition().save(productionCounting);
             }
 
-            productionCounting = productionCountingService.getProductionBalance(productionCountingId);
+            productionCounting = productionCountingService.getProductionCounting(productionCountingId);
 
             try {
-                generateProductionCountingDocuments(state, productionCounting);
+                generateProductionCountingDocuments(productionCounting, state.getLocale());
 
                 state.performEvent(view, "reset", new String[0]);
 
@@ -140,15 +143,15 @@ public class ProductionCountingDetailsListeners {
         productionCounting.setField(ProductionCountingFields.WORKER, securityService.getCurrentUserName());
     }
 
-    private void generateProductionCountingDocuments(final ComponentState state, final Entity productionCounting)
-            throws IOException, DocumentException {
+    private void generateProductionCountingDocuments(final Entity productionCounting, final Locale locale) throws IOException,
+            DocumentException {
         String localePrefix = "productionCounting.productionCounting.report.fileName";
 
         Entity productionCountingWithFileName = fileService.updateReportFileName(productionCounting,
                 ProductionCountingFields.DATE, localePrefix);
 
         try {
-            productionCountingPdfService.generateDocument(productionCountingWithFileName, state.getLocale());
+            productionCountingPdfService.generateDocument(productionCountingWithFileName, locale);
         } catch (IOException e) {
             throw new IllegalStateException("Problem with saving productionCounting report");
         } catch (DocumentException e) {

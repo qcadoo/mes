@@ -59,6 +59,24 @@ public interface ProductionCountingService {
     Entity getProductionBalance(final Long productionBalanceId);
 
     /**
+     * Gets record operation product in component
+     * 
+     * @param recordOperationProductInComponentId
+     * 
+     * @return record operation product in component
+     */
+    Entity getRecordOperationProductInComponent(final Long recordOperationProductInComponentId);
+
+    /**
+     * Gets record operation product out component
+     * 
+     * @param recordOperationProductOutComponentId
+     * 
+     * @return record operation product out component
+     */
+    Entity getRecordOperationProductOutComponent(final Long recordOperationProductOutComponentId);
+
+    /**
      * Gets production counting data definition
      * 
      * @return production counting data definition
@@ -78,6 +96,20 @@ public interface ProductionCountingService {
      * @return production balance data definition
      */
     DataDefinition getProductionBalanceDD();
+
+    /**
+     * Gets record operation product in component data definition
+     * 
+     * @return record operation product in component data definition
+     */
+    DataDefinition getRecordOperationProductInComponentDD();
+
+    /**
+     * Gets record operation product out component data definition
+     * 
+     * @return record operation product out component data definition
+     */
+    DataDefinition getRecordOperationProductOutComponentDD();
 
     /**
      * Gets production records for order
@@ -203,8 +235,10 @@ public interface ProductionCountingService {
      * 
      * @param view
      *            view
+     * @param recordOperationProductComponentDD
+     *            record operation product component data definition
      */
-    void fillFieldsFromProduct(final ViewDefinitionState view);
+    void fillFieldsFromProduct(final ViewDefinitionState view, final DataDefinition recordOperationProductComponentDD);
 
     /**
      * Fills product field

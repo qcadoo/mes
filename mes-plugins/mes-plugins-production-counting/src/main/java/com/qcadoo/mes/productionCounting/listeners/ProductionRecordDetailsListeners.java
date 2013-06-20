@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.ProductionRecordService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionRecordFields;
@@ -55,6 +56,9 @@ public class ProductionRecordDetailsListeners {
     private NumberService numberService;
 
     @Autowired
+    private ProductionCountingService productionCountingService;
+
+    @Autowired
     private ProductionRecordService productionRecordService;
 
     public void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
@@ -68,11 +72,13 @@ public class ProductionRecordDetailsListeners {
     public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        if (productionRecordForm.getEntityId() == null) {
+        Long productionCountingId = productionRecordForm.getEntityId();
+
+        if (productionCountingId == null) {
             return;
         }
 
-        Entity productionRecord = productionRecordForm.getEntity();
+        Entity productionRecord = productionCountingService.getProductionRecord(productionCountingId);
 
         copyPlannedQuantityToUsedQuantity(productionRecord
                 .getHasManyField(ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS));
@@ -116,8 +122,9 @@ public class ProductionRecordDetailsListeners {
         recordOperationProductInComponentsGrid.setEntities(emptyList);
     }
 
-    public void enabledOrDisableFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void enableOrDisableFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionRecordFields.ORDER);
+
         Entity order = orderLookup.getEntity();
 
         if (order == null) {
@@ -130,6 +137,7 @@ public class ProductionRecordDetailsListeners {
     public void checkJustOne(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FieldComponent lastRecord = (FieldComponent) view.getComponentByReference(ProductionRecordFields.LAST_RECORD);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionRecordFields.ORDER);
+
         Entity order = orderLookup.getEntity();
 
         if (order == null) {

@@ -36,7 +36,7 @@ public class RecordOperationProductInComponentDetailsHooks {
     private ProductionCountingService productionCountingService;
 
     public void fillFieldsFromProduct(final ViewDefinitionState view) {
-        productionCountingService.fillFieldsFromProduct(view);
+        productionCountingService.fillFieldsFromProduct(view, productionCountingService.getRecordOperationProductInComponentDD());
     }
 
 }

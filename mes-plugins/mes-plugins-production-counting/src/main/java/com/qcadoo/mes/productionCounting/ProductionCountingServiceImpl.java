@@ -94,6 +94,16 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
+    public Entity getRecordOperationProductInComponent(final Long recordOperationProductInComponentId) {
+        return getRecordOperationProductInComponentDD().get(recordOperationProductInComponentId);
+    }
+
+    @Override
+    public Entity getRecordOperationProductOutComponent(final Long recordOperationProductOutComponentId) {
+        return getRecordOperationProductOutComponentDD().get(recordOperationProductOutComponentId);
+    }
+
+    @Override
     public DataDefinition getProductionCountingDD() {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_PRODUCTION_COUNTING);
@@ -109,6 +119,18 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     public DataDefinition getProductionBalanceDD() {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_PRODUCTION_BALANCE);
+    }
+
+    @Override
+    public DataDefinition getRecordOperationProductInComponentDD() {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
+    }
+
+    @Override
+    public DataDefinition getRecordOperationProductOutComponentDD() {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
     }
 
     @Override
@@ -253,12 +275,26 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
-    public void fillFieldsFromProduct(final ViewDefinitionState view) {
+    public void fillFieldsFromProduct(final ViewDefinitionState view, final DataDefinition recordOperationProductComponentDD) {
         FormComponent recordOperationProductComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        Entity recordOperationProductComponent = recordOperationProductComponentForm.getEntity();
+        Long recordOperationProductComponentId = recordOperationProductComponentForm.getEntityId();
+
+        if (recordOperationProductComponentId == null) {
+            return;
+        }
+
+        Entity recordOperationProductComponent = recordOperationProductComponentDD.get(recordOperationProductComponentId);
+
+        if (recordOperationProductComponent == null) {
+            return;
+        }
 
         Entity product = recordOperationProductComponent.getBelongsToField(L_PRODUCT);
+
+        if (product == null) {
+            return;
+        }
 
         view.getComponentByReference(L_NUMBER).setFieldValue(product.getField(ProductFields.NUMBER));
         view.getComponentByReference(L_NAME).setFieldValue(product.getField(ProductFields.NAME));

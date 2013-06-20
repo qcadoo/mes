@@ -152,9 +152,9 @@
 
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
-			<option type="column" name="order" fields="order" link="true"
+			<option type="column" name="orderNumber" fields="order" link="true"
 				width="250" expression="#order['number']" />
-			<option type="column" name="technologyOperationComponent"
+			<option type="column" name="technologyOperationComponentNumber"
 				fields="technologyOperationComponent" link="true" width="250"
 				expression="(#technologyOperationComponent != null) ? #technologyOperationComponent['nodeNumber'] + ' ' + #technologyOperationComponent['operation']['name'] : ''" />
 			<option type="column" name="shift" fields="shift" link="true"
@@ -172,8 +172,8 @@
 
 			<option type="order" column="number" direction="asc" />
 
-			<option type="searchable" value="number,order,shift,state" />
-			<option type="orderable" value="number,order,shift,state" />
+			<option type="searchable" value="number,orderNumber,shift,state" />
+			<option type="orderable" value="number,orderNumber,shift,state" />
 
 			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
 			<option type="correspondingComponent" value="form" />

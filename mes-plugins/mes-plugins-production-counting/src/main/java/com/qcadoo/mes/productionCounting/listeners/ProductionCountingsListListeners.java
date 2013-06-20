@@ -21,23 +21,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.hooks;
+package com.qcadoo.mes.productionCounting.listeners;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.report.api.ReportService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class RecordOperationProductOutComponentDetailsHooks {
+public class ProductionCountingsListListeners {
 
     @Autowired
-    private ProductionCountingService productionCountingService;
+    private ReportService reportService;
 
-    public void fillFieldsFromProduct(final ViewDefinitionState view) {
-        productionCountingService
-                .fillFieldsFromProduct(view, productionCountingService.getRecordOperationProductOutComponentDD());
+    public void printProductionCounting(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        reportService.printGeneratedReport(view, state, new String[] { args[0], ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_COUNTING });
     }
 
 }

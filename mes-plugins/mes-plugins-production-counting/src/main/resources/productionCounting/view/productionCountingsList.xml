@@ -87,7 +87,7 @@
 
 
 			<listener event="printProductionCounting"
-				class="com.qcadoo.mes.productionCounting.ProductionCountingService"
+				class="com.qcadoo.mes.productionCounting.listeners.ProductionCountingsListListeners"
 				method="printProductionCounting" />
 		</component>
 

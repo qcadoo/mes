@@ -58,7 +58,11 @@ public class ProductionRecordDetailsHooks {
 
     private static final String L_ACTIONS = "actions";
 
+    private static final String L_PRODUCTS_QUANTITIES = "productsQuantities";
+
     private static final String L_COPY = "copy";
+
+    private static final String L_COPY_PLANNED_QUANTITY_TO_USED_QUANTITY = "copyPlannedQuantityToUsedQuantity";
 
     private static final String L_IS_DISABLED = "isDisabled";
 
@@ -103,10 +107,10 @@ public class ProductionRecordDetailsHooks {
         productionRecordService.setTimeAndPieceworkComponentsVisible(view, order);
     }
 
-    public void disabledFieldWhenStateNotDraft(final ViewDefinitionState view) {
+    public void disableFieldsWhenStateNotDraft(final ViewDefinitionState view) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        if (productionRecordForm.getEntityId() == null) {
+        if (productionRecordForm.getEntity() == null) {
             return;
         }
 
@@ -139,26 +143,34 @@ public class ProductionRecordDetailsHooks {
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup actions = window.getRibbon().getGroupByName(L_ACTIONS);
+        RibbonGroup productsQuantities = window.getRibbon().getGroupByName(L_PRODUCTS_QUANTITIES);
+
         RibbonActionItem copy = actions.getItemByName(L_COPY);
+        RibbonActionItem copyPlannedQuantityToUsedQuantity = productsQuantities
+                .getItemByName(L_COPY_PLANNED_QUANTITY_TO_USED_QUANTITY);
 
         if (productionRecordForm.getEntityId() == null) {
             return;
         }
 
         Entity productionRecord = productionRecordForm.getEntity();
-
         Entity order = productionRecord.getBelongsToField(ProductionRecordFields.ORDER);
 
         if (order == null) {
             return;
         }
 
-        String state = order.getStringField(OrderFields.STATE);
+        String state = productionRecord.getStringField(ProductionRecordFields.STATE);
+        String orderState = order.getStringField(OrderFields.STATE);
 
-        boolean isInProgress = OrderStateStringValues.IN_PROGRESS.equals(state);
+        boolean isInProgress = OrderStateStringValues.IN_PROGRESS.equals(orderState);
+        boolean isDraft = ProductionRecordStateStringValues.DRAFT.equals(state);
 
         copy.setEnabled(isInProgress);
         copy.requestUpdate(true);
+
+        copyPlannedQuantityToUsedQuantity.setEnabled(isDraft);
+        copyPlannedQuantityToUsedQuantity.requestUpdate(true);
     }
 
     public void filterStateChangeHistory(final ViewDefinitionState view) {

@@ -229,8 +229,10 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     }
 
     private void countTimeOperation(final Map<String, Integer> plannedTimes, final OperationWorkTime durationOfOperation) {
-        Integer plannedMachineTime = plannedTimes.get(L_PLANNED_MACHINE_TIME) + durationOfOperation.getMachineWorkTime();
-        Integer plannedLaborTime = plannedTimes.get(L_PLANNED_LABOR_TIME) + durationOfOperation.getLaborWorkTime();
+        Integer plannedMachineTime = IntegerUtils.convertNullToZero(plannedTimes.get(L_PLANNED_MACHINE_TIME))
+                + IntegerUtils.convertNullToZero(durationOfOperation.getMachineWorkTime());
+        Integer plannedLaborTime = IntegerUtils.convertNullToZero(plannedTimes.get(L_PLANNED_LABOR_TIME))
+                + IntegerUtils.convertNullToZero(durationOfOperation.getLaborWorkTime());
 
         plannedTimes.put(L_PLANNED_MACHINE_TIME, plannedMachineTime);
         plannedTimes.put(L_PLANNED_LABOR_TIME, plannedLaborTime);

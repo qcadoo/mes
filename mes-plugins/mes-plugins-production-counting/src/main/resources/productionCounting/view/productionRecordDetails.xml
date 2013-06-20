@@ -39,9 +39,9 @@
 				<smallButton name="cancelRecord" icon="deleteIcon16.png"
 					state="disabled" action="#{form}.changeRecordState(cancelRecord)" />
 			</group>
-			<group name="copy">
+			<group name="productsQuantities">
 				<bigButton name="copyPlannedQuantityToUsedQuantity" icon="copyIcon24.png"
-					action="#{form}.fireEvent(copyPlannedQuantityToUsedQuantity);" />
+					state="disabled" action="#{form}.fireEvent(copyPlannedQuantityToUsedQuantity);" />
 			</group>
 		</ribbon>
 
@@ -128,7 +128,7 @@
 								method="clearFields" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.listeners.ProductionRecordDetailsListeners"
-								method="enabledOrDisableFields" />
+								method="enableOrDisableFields" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.listeners.ProductionRecordDetailsListeners"
 								method="checkJustOne" />
@@ -442,7 +442,7 @@
 			method="initializeRecordDetailsView" />
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordDetailsHooks"
-			method="disabledFieldWhenStateNotDraft" />
+			method="disableFieldsWhenStateNotDraft" />
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordDetailsHooks"
 			method="updateRibbonState" />
