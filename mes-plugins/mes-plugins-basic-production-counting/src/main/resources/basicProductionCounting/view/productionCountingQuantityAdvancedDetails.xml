@@ -53,7 +53,7 @@
 						<option type="fieldCode" value="nodeNumber" />
 
 						<option type="required" value="true" />
-
+						
 						<criteriaModifier
 							class="com.qcadoo.mes.basicProductionCounting.criteriaModifiers.TechnologyOperationComponentLookupCriteriaModifier"
 							method="restrictTechnologyOperationComponentsToOrderTechnology" />
@@ -152,7 +152,7 @@
 			</component>
 
 			<option type="header" value="true" />
-			<option type="expression" value="" />
+			<option type="expression" value="#product['name']" />
 		</component>
 
 	</component>
