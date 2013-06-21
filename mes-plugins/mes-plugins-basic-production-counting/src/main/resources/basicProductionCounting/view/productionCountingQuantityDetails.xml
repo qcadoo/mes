@@ -52,8 +52,6 @@
 						<option type="expression" value="#operation.get('name')" />
 						<option type="fieldCode" value="nodeNumber" />
 
-						<option type="required" value="true" />
-
 						<criteriaModifier
 							class="com.qcadoo.mes.basicProductionCounting.criteriaModifiers.TechnologyOperationComponentLookupCriteriaModifier"
 							method="restrictTechnologyOperationComponentsToOrderTechnology" />
