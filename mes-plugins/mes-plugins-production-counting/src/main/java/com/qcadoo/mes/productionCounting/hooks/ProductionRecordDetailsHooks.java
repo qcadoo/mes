@@ -66,7 +66,7 @@ public class ProductionRecordDetailsHooks {
 
     private static final String L_IS_DISABLED = "isDisabled";
 
-    private List<String> productionRecordFieldNames = Lists.newArrayList(ProductionRecordFields.LAST_RECORD,
+    private static final List<String> L_PRODUCTION_RECORD_FIELD_NAMES = Lists.newArrayList(ProductionRecordFields.LAST_RECORD,
             ProductionRecordFields.NUMBER, ProductionRecordFields.ORDER, ProductionRecordFields.TECHNOLOGY_OPERATION_COMPONENT,
             ProductionRecordFields.STAFF, ProductionRecordFields.SHIFT, ProductionRecordFields.WORKSTATION_TYPE,
             ProductionRecordFields.DIVISION, ProductionRecordFields.LABOR_TIME, ProductionRecordFields.MACHINE_TIME,
@@ -124,7 +124,7 @@ public class ProductionRecordDetailsHooks {
     }
 
     private void setFieldComponentsEnabledAndGridsEditable(final ViewDefinitionState view, final boolean isEnabled) {
-        productionCountingService.setComponentsState(view, productionRecordFieldNames, isEnabled, true);
+        productionCountingService.setComponentsState(view, L_PRODUCTION_RECORD_FIELD_NAMES, isEnabled, true);
 
         GridComponent recordOperationProductInComponentsGrid = (GridComponent) view
                 .getComponentByReference(ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS);

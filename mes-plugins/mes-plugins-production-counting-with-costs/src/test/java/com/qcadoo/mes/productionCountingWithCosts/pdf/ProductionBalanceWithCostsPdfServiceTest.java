@@ -28,7 +28,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
@@ -99,10 +99,10 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         given(pdfHelper.createPanelTable(1)).willReturn(singleColumnTable);
         given(pdfHelper.createPanelTable(3)).willReturn(threeColumnTable);
 
-        List<Entity> technologyInstanceOperProdInComps = new LinkedList<Entity>();
+        List<Entity> technologyInstanceOperProdInComps = Lists.newLinkedList();
         given(balance.getField("technologyInstOperProductInComps")).willReturn(technologyInstanceOperProdInComps);
 
-        List<Entity> operationComponents = new LinkedList<Entity>();
+        List<Entity> operationComponents = Lists.newLinkedList();
         given(balance.getField("operationCostComponents")).willReturn(operationComponents);
         given(balance.getField("operationPieceworkCostComponents")).willReturn(operationComponents);
 

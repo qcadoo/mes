@@ -72,8 +72,8 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
     private static final String L_PRODUCTION_RECORDS = "productionRecords";
 
-    private List<String> recordOperationProductFields = Lists.newArrayList(L_NUMBER, L_NAME, L_PLANNED_QUANTITY_UNIT,
-            L_USED_QUANTITY_UNIT);
+    private static final List<String> L_RECORD_OPERATION_PRODUCT_FIELD_NAMES = Lists.newArrayList(L_NUMBER, L_NAME,
+            L_PLANNED_QUANTITY_UNIT, L_USED_QUANTITY_UNIT);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -302,7 +302,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
         view.getComponentByReference(L_USED_QUANTITY_UNIT).setFieldValue(product.getStringField(ProductFields.UNIT));
         view.getComponentByReference(L_PLANNED_QUANTITY_UNIT).setFieldValue(product.getStringField(ProductFields.UNIT));
 
-        for (String fieldComponentNames : recordOperationProductFields) {
+        for (String fieldComponentNames : L_RECORD_OPERATION_PRODUCT_FIELD_NAMES) {
             ((FieldComponent) view.getComponentByReference(fieldComponentNames)).requestComponentUpdateState();
         }
     }

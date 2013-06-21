@@ -51,6 +51,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -90,14 +91,14 @@ public class ProductionBalanceDetailsHooksPCWC {
 
     private static final String L_OPERATIONS_PIECEWORK_COST_GRID = "operationsPieceworkCostGrid";
 
-    private static final List<String> COST_FIELDS = Arrays.asList(PRINT_COST_NORMS_OF_MATERIALS, SOURCE_OF_MATERIAL_COSTS,
+    private static final List<String> L_COST_FIELDS = Arrays.asList(PRINT_COST_NORMS_OF_MATERIALS, SOURCE_OF_MATERIAL_COSTS,
             CALCULATE_MATERIAL_COSTS_MODE, AVERAGE_MACHINE_HOURLY_COST, AVERAGE_LABOR_HOURLY_COST, PRODUCTION_COST_MARGIN,
             MATERIAL_COST_MARGIN, ADDITIONAL_OVERHEAD);
 
-    private static final List<String> COST_GRIDS = Arrays.asList(L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_GRID,
+    private static final List<String> L_COST_GRIDS = Arrays.asList(L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_GRID,
             L_OPERATIONS_COST_GRID);
 
-    private static final List<String> COST_GRIDS_AND_LAYOUTS = Arrays.asList(L_MATERIAL_COSTS_GRID_LAYOUT,
+    private static final List<String> L_COST_GRIDS_AND_LAYOUTS = Arrays.asList(L_MATERIAL_COSTS_GRID_LAYOUT,
             L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT, L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_GRID, L_WORK_COSTS_GRID_LAYOUT,
             L_MACHINE_COSTS_BORDER_LAYOUT, L_LABOR_COSTS_BORDER_LAYOUT, L_OPERATIONS_COST_GRID, L_PIECEWORK_COSTS_GRID_LAYOUT,
             L_PIECEWORK_COSTS_BORDER_LAYOUT, L_OPERATIONS_PIECEWORK_COST_GRID);
@@ -120,7 +121,7 @@ public class ProductionBalanceDetailsHooksPCWC {
         FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
 
         if ((form == null) || (form.getEntityId() == null) || (generated == null) || "0".equals(generated.getFieldValue())) {
-            productionCountingService.setComponentsVisibility(viewDefinitionState, COST_GRIDS_AND_LAYOUTS, false, false);
+            productionCountingService.setComponentsVisibility(viewDefinitionState, L_COST_GRIDS_AND_LAYOUTS, false, false);
 
             return;
         }
@@ -133,7 +134,7 @@ public class ProductionBalanceDetailsHooksPCWC {
         Long orderId = (Long) orderLookup.getFieldValue();
 
         if (orderId == null) {
-            productionCountingService.setComponentsVisibility(viewDefinitionState, COST_GRIDS_AND_LAYOUTS, false, false);
+            productionCountingService.setComponentsVisibility(viewDefinitionState, L_COST_GRIDS_AND_LAYOUTS, false, false);
 
             return;
         }
@@ -214,11 +215,11 @@ public class ProductionBalanceDetailsHooksPCWC {
     public void fillCurrencyAndUnitFields(final ViewDefinitionState viewDefinitionState) {
         String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
 
-        List<String> currencyFieldNames = Arrays.asList("averageMachineHourlyCostCurrency", "averageLaborHourlyCostCurrency",
-                "additionalOverheadCurrency", "plannedComponentsCostsCurrency", "componentsCostsCurrency",
-                "componentsCostsBalanceCurrency", "plannedMachineCostsCurrency", "machineCostsCurrency",
-                "machineCostsBalanceCurrency", "plannedLaborCostsCurrency", "laborCostsCurrency", "laborCostsBalanceCurrency",
-                "plannedCyclesCostsCurrency", "cyclesCostsCurrency", "cyclesCostsBalanceCurrency",
+        List<String> currencyFieldNames = Lists.newArrayList("averageMachineHourlyCostCurrency",
+                "averageLaborHourlyCostCurrency", "additionalOverheadCurrency", "plannedComponentsCostsCurrency",
+                "componentsCostsCurrency", "componentsCostsBalanceCurrency", "plannedMachineCostsCurrency",
+                "machineCostsCurrency", "machineCostsBalanceCurrency", "plannedLaborCostsCurrency", "laborCostsCurrency",
+                "laborCostsBalanceCurrency", "plannedCyclesCostsCurrency", "cyclesCostsCurrency", "cyclesCostsBalanceCurrency",
                 "registeredTotalTechnicalProductionCostsCurrency", "totalTechnicalProductionCostsCurrency",
                 "balanceTechnicalProductionCostsCurrency", "productionCostMarginValueCurrency",
                 "materialCostMarginValueCurrency", "additionalOverheadValueCurrency", "totalOverheadCurrency",
@@ -265,11 +266,11 @@ public class ProductionBalanceDetailsHooksPCWC {
         FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
 
         if ((generated != null) && (generated.getFieldValue() != null) && "1".equals(generated.getFieldValue())) {
-            productionCountingService.setComponentsState(viewDefinitionState, COST_FIELDS, false, true);
-            productionCountingService.setComponentsState(viewDefinitionState, COST_GRIDS, false, false);
+            productionCountingService.setComponentsState(viewDefinitionState, L_COST_FIELDS, false, true);
+            productionCountingService.setComponentsState(viewDefinitionState, L_COST_GRIDS, false, false);
         } else {
-            productionCountingService.setComponentsState(viewDefinitionState, COST_FIELDS, true, true);
-            productionCountingService.setComponentsState(viewDefinitionState, COST_GRIDS, true, false);
+            productionCountingService.setComponentsState(viewDefinitionState, L_COST_FIELDS, true, true);
+            productionCountingService.setComponentsState(viewDefinitionState, L_COST_GRIDS, true, false);
         }
     }
 

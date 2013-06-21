@@ -58,16 +58,16 @@ public class ProductionBalanceDetailsHooks {
 
     private static final String L_OPERATIONS_PIECEWORK_GRID = "operationsPieceworkGrid";
 
-    private static final List<String> FIELDS_AND_CHECKBOXES = Arrays.asList(ProductionBalanceFields.ORDER,
+    private static final List<String> L_FIELDS_AND_CHECKBOXES = Arrays.asList(ProductionBalanceFields.ORDER,
             ProductionBalanceFields.NAME, ProductionBalanceFields.DESCRIPTION, ProductionBalanceFields.PRINT_OPERATION_NORMS,
             ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE, ProductionBalanceFields.INCLUDE_TPZ,
             ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
 
-    private static final List<String> FIELDS = FIELDS_AND_CHECKBOXES.subList(0, FIELDS_AND_CHECKBOXES.size() - 2);
+    private static final List<String> L_FIELDS = L_FIELDS_AND_CHECKBOXES.subList(0, L_FIELDS_AND_CHECKBOXES.size() - 2);
 
-    private static final List<String> GRIDS = Arrays.asList(L_INPUT_PRODUCTS_GRID, L_OUTPUT_PRODUCTS_GRID);
+    private static final List<String> L_GRIDS = Arrays.asList(L_INPUT_PRODUCTS_GRID, L_OUTPUT_PRODUCTS_GRID);
 
-    private static final List<String> GRIDS_AND_LAYOUTS = Arrays.asList(L_INPUT_PRODUCTS_GRID, L_OUTPUT_PRODUCTS_GRID,
+    private static final List<String> L_GRIDS_AND_LAYOUTS = Arrays.asList(L_INPUT_PRODUCTS_GRID, L_OUTPUT_PRODUCTS_GRID,
             L_TIME_GRID_LAYOUT, L_MACHINE_TIME_BORDER_LAYOUT, L_LABOR_TIME_BORDER_LAYOUT, L_OPERATIONS_TIME_GRID,
             L_OPERATIONS_PIECEWORK_GRID);
 
@@ -91,13 +91,13 @@ public class ProductionBalanceDetailsHooks {
         String generated = (String) generatedField.getFieldValue();
 
         if ((productionBalanceForm.getEntityId() == null) || "0".equals(generated)) {
-            productionCountingService.setComponentsVisibility(view, GRIDS_AND_LAYOUTS, false, false);
+            productionCountingService.setComponentsVisibility(view, L_GRIDS_AND_LAYOUTS, false, false);
         }
 
         Long orderId = (Long) orderLookup.getFieldValue();
 
         if (orderId == null) {
-            productionCountingService.setComponentsVisibility(view, GRIDS_AND_LAYOUTS, false, false);
+            productionCountingService.setComponentsVisibility(view, L_GRIDS_AND_LAYOUTS, false, false);
 
             return;
         }
@@ -155,11 +155,11 @@ public class ProductionBalanceDetailsHooks {
         String generated = (String) generatedField.getFieldValue();
 
         if ((generated != null) && "1".equals(generated)) {
-            productionCountingService.setComponentsState(view, FIELDS_AND_CHECKBOXES, false, true);
-            productionCountingService.setComponentsState(view, GRIDS, false, false);
+            productionCountingService.setComponentsState(view, L_FIELDS_AND_CHECKBOXES, false, true);
+            productionCountingService.setComponentsState(view, L_GRIDS, false, false);
         } else {
-            productionCountingService.setComponentsState(view, FIELDS, true, true);
-            productionCountingService.setComponentsState(view, GRIDS, true, false);
+            productionCountingService.setComponentsState(view, L_FIELDS, true, true);
+            productionCountingService.setComponentsState(view, L_GRIDS, true, false);
         }
     }
 

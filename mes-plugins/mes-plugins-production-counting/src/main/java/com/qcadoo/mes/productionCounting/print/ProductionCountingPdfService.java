@@ -34,6 +34,7 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
@@ -304,7 +305,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         document.add(new Paragraph(translationService
                 .translate("productionCounting.productionCounting.report.paragraph2", locale), FontUtils.getDejavuBold11Dark()));
 
-        List<String> inputProductsTableHeader = new ArrayList<String>();
+        List<String> inputProductsTableHeader = Lists.newArrayList();
+
         inputProductsTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.number", locale));
         inputProductsTableHeader.add(translationService.translate(
@@ -358,7 +360,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         document.add(new Paragraph(translationService
                 .translate("productionCounting.productionCounting.report.paragraph3", locale), FontUtils.getDejavuBold11Dark()));
 
-        List<String> outputProductsTableHeader = new ArrayList<String>();
+        List<String> outputProductsTableHeader = Lists.newArrayList();
+
         outputProductsTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.number", locale));
         outputProductsTableHeader.add(translationService.translate(

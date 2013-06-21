@@ -24,7 +24,6 @@
 package com.qcadoo.mes.materialRequirements.print.pdf;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -93,7 +93,8 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah",
                 locale), FontUtils.getDejavuBold11Dark()));
 
-        List<String> orderHeader = new ArrayList<String>();
+        List<String> orderHeader = Lists.newArrayList();
+
         orderHeader.add(translationService.translate("orders.order.number.label", locale));
         orderHeader.add(translationService.translate("orders.order.name.label", locale));
         orderHeader.add(translationService.translate("orders.order.product.label", locale));
@@ -104,7 +105,8 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah2",
                 locale), FontUtils.getDejavuBold11Dark()));
 
-        List<String> productHeader = new ArrayList<String>();
+        List<String> productHeader = Lists.newArrayList();
+
         productHeader.add(translationService.translate("basic.product.number.label", locale));
         productHeader.add(translationService.translate("basic.product.name.label", locale));
         productHeader.add(translationService.translate("basic.product.unit.label", locale));

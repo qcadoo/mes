@@ -25,7 +25,6 @@ package com.qcadoo.mes.productionCounting.print;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -277,7 +276,8 @@ public class ProductionBalancePdfService extends PdfDocumentService {
     public void addInputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
 
-        List<String> inputProductsTableHeader = new ArrayList<String>();
+        List<String> inputProductsTableHeader = Lists.newArrayList();
+
         inputProductsTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.number", locale));
         inputProductsTableHeader.add(translationService.translate(
@@ -338,7 +338,8 @@ public class ProductionBalancePdfService extends PdfDocumentService {
     public void addOutputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
 
-        List<String> outputProductsTableHeader = new ArrayList<String>();
+        List<String> outputProductsTableHeader = Lists.newArrayList();
+
         outputProductsTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.number", locale));
         outputProductsTableHeader.add(translationService.translate(
@@ -403,7 +404,8 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 translationService.translate("productionCounting.productionBalance.report.paragraph3", locale), FontUtils
                         .getDejavuBold11Dark()));
 
-        List<String> operationsTimeTableHeader = new ArrayList<String>();
+        List<String> operationsTimeTableHeader = Lists.newArrayList();
+
         operationsTimeTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.operationLevel", locale));
         operationsTimeTableHeader.add(translationService.translate(
@@ -457,7 +459,8 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 translationService.translate("productionCounting.productionBalance.report.paragraph4", locale), FontUtils
                         .getDejavuBold11Dark()));
 
-        List<String> operationsTimeTableHeader = new ArrayList<String>();
+        List<String> operationsTimeTableHeader = Lists.newArrayList();
+
         operationsTimeTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.operationLevel", locale));
         operationsTimeTableHeader.add(translationService.translate(
@@ -511,7 +514,8 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 translationService.translate("productionCounting.productionBalance.report.paragraph5", locale), FontUtils
                         .getDejavuBold11Dark()));
 
-        List<String> operationsTimeTableHeader = new ArrayList<String>();
+        List<String> operationsTimeTableHeader = Lists.newArrayList();
+
         operationsTimeTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.operationLevel", locale));
         operationsTimeTableHeader.add(translationService.translate(

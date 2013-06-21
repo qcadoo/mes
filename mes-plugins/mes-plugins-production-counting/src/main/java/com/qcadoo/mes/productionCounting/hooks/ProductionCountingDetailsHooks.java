@@ -38,7 +38,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class ProductionCountingDetailsHooks {
 
-    private List<String> productionCountingFieldNames = Lists.newArrayList(ProductionCountingFields.ORDER,
+    private static final List<String> L_PRODUCTION_COUNTING_FIELD_NAMES = Lists.newArrayList(ProductionCountingFields.ORDER,
             ProductionCountingFields.NAME, ProductionCountingFields.DESCRIPTION);
 
     @Autowired
@@ -58,7 +58,7 @@ public class ProductionCountingDetailsHooks {
             isEnabled = true;
         }
 
-        productionCountingService.setComponentsState(view, productionCountingFieldNames, isEnabled, true);
+        productionCountingService.setComponentsState(view, L_PRODUCTION_COUNTING_FIELD_NAMES, isEnabled, true);
     }
 
 }

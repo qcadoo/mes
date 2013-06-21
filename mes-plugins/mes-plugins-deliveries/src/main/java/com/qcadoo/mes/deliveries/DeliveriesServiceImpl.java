@@ -36,7 +36,6 @@ import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCR
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
 
 import java.math.BigDecimal;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -112,8 +111,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public List<Entity> getColumnsForOrders() {
-
-        List<Entity> columns = new LinkedList<Entity>();
+        List<Entity> columns = Lists.newLinkedList();
         List<Entity> columnComponents = getColumnForOrdersDD().find()
                 .addOrder(SearchOrders.asc(ColumnForOrdersFields.SUCCESSION)).list().getEntities();
 

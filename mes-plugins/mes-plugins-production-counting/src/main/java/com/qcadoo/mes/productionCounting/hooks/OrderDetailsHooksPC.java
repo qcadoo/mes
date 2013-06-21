@@ -42,7 +42,7 @@ public class OrderDetailsHooksPC {
 
     private static final String L_FORM = "form";
 
-    private List<String> orderFields = Lists.newArrayList(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
+    private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
             OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME,
             OrderFieldsPC.REGISTER_PIECEWORK, OrderFieldsPC.JUST_ONE, OrderFieldsPC.ALLOW_TO_CLOSE,
             OrderFieldsPC.AUTO_CLOSE_ORDER);
@@ -62,7 +62,7 @@ public class OrderDetailsHooksPC {
             return;
         }
 
-        for (String fieldComponentName : orderFields) {
+        for (String fieldComponentName : L_ORDER_FIELD_NAMES) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldComponentName);
 
             if (fieldComponent.getFieldValue() == null) {
@@ -94,7 +94,7 @@ public class OrderDetailsHooksPC {
 
         if (StringUtils.isEmpty(typeOfProductionRecording)
                 || productionCountingService.isTypeOfProductionRecordingBasic(typeOfProductionRecording)) {
-            productionCountingService.setComponentsState(view, orderFields, false, true);
+            productionCountingService.setComponentsState(view, L_ORDER_FIELD_NAMES, false, true);
         } else if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
             setRegisterPieceworkEnabledAndValue(view, false, false);
         }

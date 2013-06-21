@@ -37,7 +37,7 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class OrderHookPC {
 
-    private List<String> orderFieldNames = Lists.newArrayList(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
+    private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
             OrderFieldsPC.REGISTER_PIECEWORK, OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
             OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.JUST_ONE, OrderFieldsPC.ALLOW_TO_CLOSE,
             OrderFieldsPC.AUTO_CLOSE_ORDER, OrderFieldsPC.REGISTER_PRODUCTION_TIME);
@@ -50,7 +50,7 @@ public class OrderHookPC {
     }
 
     public void setOrderWithDefaultProductionCountingValues(final DataDefinition orderDD, final Entity order) {
-        for (String fieldName : orderFieldNames) {
+        for (String fieldName : L_ORDER_FIELD_NAMES) {
             if (order.getField(fieldName) == null) {
                 order.setField(fieldName, parameterService.getParameter().getField(fieldName));
             }

@@ -24,7 +24,6 @@
 package com.qcadoo.mes.productionCountingWithCosts.pdf;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -183,7 +182,8 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
     private void addMaterialCost(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
 
-        List<String> materialCostTableHeader = new ArrayList<String>();
+        List<String> materialCostTableHeader = Lists.newArrayList();
+
         materialCostTableHeader
                 .add(translationService
                         .translate(
@@ -261,7 +261,8 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
     private void addCostsBalance(final String type, final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
 
-        List<String> tableHeader = new ArrayList<String>();
+        List<String> tableHeader = Lists.newArrayList();
+
         tableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column.operationLevel", locale));
         tableHeader.add(translationService.translate(

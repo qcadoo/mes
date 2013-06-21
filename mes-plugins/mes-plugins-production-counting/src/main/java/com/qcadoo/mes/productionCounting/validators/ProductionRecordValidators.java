@@ -28,6 +28,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
@@ -40,6 +41,9 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductionRecordValidators {
+
+    private static final List<String> L_ORDER_STARTED_STATES = Lists.newArrayList(OrderStateStringValues.IN_PROGRESS,
+            OrderStateStringValues.COMPLETED, OrderStateStringValues.INTERRUPTED);
 
     @Autowired
     private ProductionCountingService productionCountingService;
@@ -123,8 +127,7 @@ public class ProductionRecordValidators {
         Entity order = productionRecord.getBelongsToField(ProductionRecordFields.ORDER);
         String state = order.getStringField(OrderFields.STATE);
 
-        if ((state == null) || OrderStateStringValues.PENDING.equals(state) || OrderStateStringValues.ACCEPTED.equals(state)
-                || OrderStateStringValues.DECLINED.equals(state) || OrderStateStringValues.ABANDONED.equals(state)) {
+        if (!isOrderStarted(state)) {
             productionRecord.addError(productionRecordDD.getField(ProductionRecordFields.ORDER),
                     "productionCounting.record.messages.error.orderIsNotStarted");
 
@@ -132,6 +135,10 @@ public class ProductionRecordValidators {
         }
 
         return isStarted;
+    }
+
+    private boolean isOrderStarted(final String state) {
+        return L_ORDER_STARTED_STATES.contains(state);
     }
 
     private boolean checkIfOperationIsSet(final DataDefinition productionRecordDD, final Entity productionRecord) {
