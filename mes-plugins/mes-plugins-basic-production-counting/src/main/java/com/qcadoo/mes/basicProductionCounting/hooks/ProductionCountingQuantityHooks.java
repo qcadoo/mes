@@ -77,11 +77,16 @@ public class ProductionCountingQuantityHooks {
             String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
             String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
 
-            if ((technologyOperationComponent != null) && !checkIfIsFinalProduct(typeOfMaterial) && checkIfIsUsed(role)) {
+            if (checkIfShouldFillOperationProductInComponent(technologyOperationComponent, product, typeOfMaterial, role)) {
                 productionCountingQuantity.setField(ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT,
                         getOperationProductInComponent(technologyOperationComponent, product));
             }
         }
+    }
+
+    private boolean checkIfShouldFillOperationProductInComponent(final Entity technologyOperationComponent, final Entity product,
+            final String typeOfMaterial, final String role) {
+        return ((technologyOperationComponent != null) && (product != null) && !checkIfIsFinalProduct(typeOfMaterial) && checkIfIsUsed(role));
     }
 
     private Entity getOperationProductInComponent(final Entity technologyOperationComponent, final Entity product) {
@@ -99,11 +104,16 @@ public class ProductionCountingQuantityHooks {
             String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
             String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
 
-            if ((technologyOperationComponent != null) && !checkIfIsFinalProduct(typeOfMaterial) && checkIfIsProduced(role)) {
+            if (checkIfShouldFillOperationProductOutComponent(technologyOperationComponent, product, typeOfMaterial, role)) {
                 productionCountingQuantity.setField(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT,
                         getOperationProductOutComponent(technologyOperationComponent, product));
             }
         }
+    }
+
+    private boolean checkIfShouldFillOperationProductOutComponent(final Entity technologyOperationComponent,
+            final Entity product, final String typeOfMaterial, final String role) {
+        return ((technologyOperationComponent != null) && (product != null) && !checkIfIsFinalProduct(typeOfMaterial) && checkIfIsProduced(role));
     }
 
     private Entity getOperationProductOutComponent(final Entity technologyOperationComponent, final Entity product) {
@@ -118,11 +128,15 @@ public class ProductionCountingQuantityHooks {
             Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
-            if (!checkIfBasicProductionCountingIsEmpty(order)) {
+            if (checkIfShouldFillBasicProductionCounting(order, product)) {
                 productionCountingQuantity.setField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING,
                         fillBasicProductionCounting(order, product));
             }
         }
+    }
+
+    private boolean checkIfShouldFillBasicProductionCounting(final Entity order, final Entity product) {
+        return ((order != null) && (product != null) && !checkIfBasicProductionCountingIsEmpty(order));
     }
 
     private boolean checkIfBasicProductionCountingIsEmpty(final Entity order) {
