@@ -53,7 +53,7 @@
 						<option type="fieldCode" value="nodeNumber" />
 
 						<criteriaModifier
-							class="com.qcadoo.mes.basicProductionCounting.criteriaModifiers.TechnologyOperationComponentLookupCriteriaModifier"
+							class="com.qcadoo.mes.basicProductionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersBPC"
 							method="restrictTechnologyOperationComponentsToOrderTechnology" />
 					</component>
 				</layoutElement>
@@ -158,13 +158,13 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
+			method="setCriteriaModifierParameters" />
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
 			method="disableFieldsDependsOfState" />
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
 			method="hideFieldsDependsOfState" />
-		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
-			method="setCriteriaModifierParameters" />
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
 			method="fillUnitFields" />

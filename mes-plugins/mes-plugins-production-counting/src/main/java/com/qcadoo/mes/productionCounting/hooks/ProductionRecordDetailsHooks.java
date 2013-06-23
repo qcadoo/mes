@@ -46,6 +46,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 
@@ -80,6 +81,27 @@ public class ProductionRecordDetailsHooks {
 
     @Autowired
     private ProductionRecordService productionRecordService;
+
+    public void setCriteriaModifierParameters(final ViewDefinitionState view) {
+        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(ProductionRecordFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        Entity productionRecord = productionRecordForm.getEntity();
+
+        Entity order = productionRecord.getBelongsToField(ProductionRecordFields.ORDER);
+
+        if (order != null) {
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+            if (technology != null) {
+                FilterValueHolder filterValueHolder = technologyOperationComponentLookup.getFilterValue();
+                filterValueHolder.put(OrderFields.TECHNOLOGY, technology.getId());
+
+                technologyOperationComponentLookup.setFilterValue(filterValueHolder);
+            }
+        }
+    }
 
     public void initializeRecordDetailsView(final ViewDefinitionState view) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);

@@ -60,6 +60,27 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
+    public void setCriteriaModifierParameters(final ViewDefinitionState view) {
+        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        Entity productionCountingQuantity = productionCountingQuantityForm.getEntity();
+
+        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+
+        if (order != null) {
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+            if (technology != null) {
+                FilterValueHolder filterValueHolder = technologyOperationComponentLookup.getFilterValue();
+                filterValueHolder.put(OrderFields.TECHNOLOGY, technology.getId());
+
+                technologyOperationComponentLookup.setFilterValue(filterValueHolder);
+            }
+        }
+    }
+
     public void disableFieldsDependsOfState(final ViewDefinitionState view) {
         FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionCountingQuantityFields.PRODUCT);
@@ -110,27 +131,6 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
 
     private void updateComponentState(final ComponentState componentState, final boolean isVisible) {
         componentState.setVisible(isVisible);
-    }
-
-    public void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
-        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-
-        Entity productionCountingQuantity = productionCountingQuantityForm.getEntity();
-
-        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-
-        if (order != null) {
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-
-            if (technology != null) {
-                FilterValueHolder filterValueHolder = technologyOperationComponentLookup.getFilterValue();
-                filterValueHolder.put(OrderFields.TECHNOLOGY, technology.getId());
-
-                technologyOperationComponentLookup.setFilterValue(filterValueHolder);
-            }
-        }
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {

@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basicProductionCounting.criteriaModifiers;
+package com.qcadoo.mes.productionCounting.criteriaModifiers;
 
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
-public class TechnologyOperationComponentLookupCriteriaModifier {
+public class TechnologyOperationComponentCriteriaModifiersPC {
 
     private static final String L_ID = "id";
 

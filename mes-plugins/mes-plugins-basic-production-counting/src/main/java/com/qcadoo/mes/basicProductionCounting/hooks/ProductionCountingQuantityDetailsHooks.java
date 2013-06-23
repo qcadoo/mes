@@ -48,30 +48,6 @@ public class ProductionCountingQuantityDetailsHooks {
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
-    public void disableFieldsDependsOfState(final ViewDefinitionState view) {
-        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionCountingQuantityFields.PRODUCT);
-        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-        FieldComponent typeOfMaterialField = (FieldComponent) view
-                .getComponentByReference(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
-        FieldComponent roleField = (FieldComponent) view.getComponentByReference(ProductionCountingQuantityFields.ROLE);
-
-        Long productionCountingQuantityId = productionCountingQuantityForm.getEntityId();
-
-        boolean isEnabled = (productionCountingQuantityId == null);
-
-        updateFieldComponentState(productLookup, isEnabled);
-        updateFieldComponentState(technologyOperationComponentLookup, isEnabled);
-        updateFieldComponentState(typeOfMaterialField, isEnabled);
-        updateFieldComponentState(roleField, isEnabled);
-    }
-
-    private void updateFieldComponentState(final FieldComponent filedComponent, final boolean isEnabled) {
-        filedComponent.setEnabled(isEnabled);
-        filedComponent.requestComponentUpdateState();
-    }
-
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
         FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
@@ -112,6 +88,30 @@ public class ProductionCountingQuantityDetailsHooks {
                 }
             }
         }
+    }
+
+    public void disableFieldsDependsOfState(final ViewDefinitionState view) {
+        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionCountingQuantityFields.PRODUCT);
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+        FieldComponent typeOfMaterialField = (FieldComponent) view
+                .getComponentByReference(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+        FieldComponent roleField = (FieldComponent) view.getComponentByReference(ProductionCountingQuantityFields.ROLE);
+
+        Long productionCountingQuantityId = productionCountingQuantityForm.getEntityId();
+
+        boolean isEnabled = (productionCountingQuantityId == null);
+
+        updateFieldComponentState(productLookup, isEnabled);
+        updateFieldComponentState(technologyOperationComponentLookup, isEnabled);
+        updateFieldComponentState(typeOfMaterialField, isEnabled);
+        updateFieldComponentState(roleField, isEnabled);
+    }
+
+    private void updateFieldComponentState(final FieldComponent filedComponent, final boolean isEnabled) {
+        filedComponent.setEnabled(isEnabled);
+        filedComponent.requestComponentUpdateState();
     }
 
     public void fillProductField(final ViewDefinitionState view) {

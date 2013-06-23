@@ -29,7 +29,7 @@
 	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
 	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
 	xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
 		http://schema.qcadoo.org/plugin.xsd 
@@ -39,8 +39,6 @@
 		http://schema.qcadoo.org/modules/view.xsd 
 		http://schema.qcadoo.org/modules/localization 
 		http://schema.qcadoo.org/modules/localization.xsd 
-		http://schema.qcadoo.org/modules/report 
-		http://schema.qcadoo.org/modules/report.xsd 
 		http://schema.qcadoo.org/modules/menu 
 		http://schema.qcadoo.org/modules/menu.xsd 
 		http://schema.qcadoo.org/modules/custom 
@@ -92,12 +90,13 @@
 				model="productionCountingQuantity" plugin="basicProductionCounting"
 				joinField="technologyOperationComponent" cascade="delete" />
 		</model:model-field>
-		<model:model-field model="technologyOperationComponent" plugin="technologies">
+		<model:model-field model="technologyOperationComponent"
+			plugin="technologies">
 			<model:hasMany name="productionCountingOperationRuns"
 				model="productionCountingOperationRun" plugin="basicProductionCounting"
 				joinField="technologyOperationComponent" cascade="delete" />
 		</model:model-field>
-		
+
 		<model:model-field model="operationProductInComponent"
 			plugin="technologies">
 			<model:hasMany name="productionCountingQuantities"

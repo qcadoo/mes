@@ -146,6 +146,10 @@
 
 							<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
 							<option type="fieldCode" value="nodeNumber" />
+							
+							<criteriaModifier
+								class="com.qcadoo.mes.productionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersPC"
+								method="restrictTechnologyOperationComponentsToOrderTechnology" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
@@ -437,6 +441,9 @@
 	</component>
 
 	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordDetailsHooks"
+			method="setCriteriaModifierParameters" />
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordDetailsHooks"
 			method="initializeRecordDetailsView" />
