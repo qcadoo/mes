@@ -31,7 +31,8 @@
 	<component type="window" name="window">
 
 		<ribbon>
-			<template name="standardFormTemplate" excludeItems="actions.copy,actions.delete,actions.cancel,actions.refresh" />
+			<template name="standardFormTemplate"
+				excludeItems="actions.copy,actions.delete,actions.cancel,actions.refresh" />
 		</ribbon>
 
 		<component type="form" name="productionCountingQuantityDetails"
@@ -74,25 +75,19 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="gridLayout" name="quantitiesGridLayout"
-						columns="1" rows="1" hasBorders="false">
-						<layoutElement column="1" row="1">
-							<component type="gridLayout" name="plannedQuantityGridLayout"
-								reference="plannedQuantityGridLayout" columns="4" rows="1"
-								hasBorders="false">
-								<layoutElement column="1" row="1" width="3">
-									<component type="input" name="plannedQuantity" field="plannedQuantity"
-										reference="plannedQuantity">
-										<option type="alignment" value="right" />
-										<option type="labelWidth" value="40" />
-									</component>
-								</layoutElement>
-								<layoutElement column="4" row="1">
-									<component type="input" name="plannedQuantityUnit"
-										reference="plannedQuantityUnit" defaultEnabled="false"
-										hasLabel="false">
-									</component>
-								</layoutElement>
+					<component type="gridLayout" name="plannedQuantityGridLayout"
+						reference="plannedQuantityGridLayout" columns="4" rows="1"
+						hasBorders="false">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="plannedQuantity" field="plannedQuantity"
+								reference="plannedQuantity">
+								<option type="alignment" value="right" />
+								<option type="labelWidth" value="40" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="plannedQuantityUnit"
+								reference="plannedQuantityUnit" defaultEnabled="false" hasLabel="false">
 							</component>
 						</layoutElement>
 					</component>
