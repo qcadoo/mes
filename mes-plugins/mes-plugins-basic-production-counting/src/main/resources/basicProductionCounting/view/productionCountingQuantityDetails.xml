@@ -31,12 +31,12 @@
 	<component type="window" name="window">
 
 		<ribbon>
-			<template name="standardFormTemplate" />
+			<template name="standardFormTemplate" excludeItems="actions.copy,actions.delete,actions.cancel,actions.refresh" />
 		</ribbon>
 
 		<component type="form" name="productionCountingQuantityDetails"
 			reference="form">
-			<component type="gridLayout" name="gridLayout" columns="3"
+			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="5" hasBorders="false">
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="technologyOperationComponent"
@@ -84,7 +84,7 @@
 									<component type="input" name="plannedQuantity" field="plannedQuantity"
 										reference="plannedQuantity">
 										<option type="alignment" value="right" />
-										<option type="labelWidth" value="50" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="1">
@@ -99,15 +99,11 @@
 				</layoutElement>
 				<layoutElement column="1" row="4">
 					<component type="select" name="role" field="role"
-						reference="role">
-						<option type="labelWidth" value="60" />
-					</component>
+						reference="role" />
 				</layoutElement>
 				<layoutElement column="1" row="5">
 					<component type="select" name="typeOfMaterial" field="typeOfMaterial"
-						reference="typeOfMaterial">
-						<option type="labelWidth" value="60" />
-					</component>
+						reference="typeOfMaterial" />
 				</layoutElement>
 			</component>
 

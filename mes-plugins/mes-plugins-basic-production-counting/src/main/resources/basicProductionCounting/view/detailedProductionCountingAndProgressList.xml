@@ -68,7 +68,8 @@
 				<option type="correspondingView"
 					value="basicProductionCounting/productionCountingQuantityAdvancedDetails" />
 				<option type="correspondingComponent" value="form" />
-
+				<option type="correspondingViewInModal" value="true" />
+				
 				<option type="creatable" value="true" />
 				<option type="deletable" value="true" />
 				<option type="fullscreen" value="true" />
