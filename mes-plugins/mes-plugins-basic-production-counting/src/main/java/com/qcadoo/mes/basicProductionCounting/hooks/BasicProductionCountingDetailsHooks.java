@@ -43,9 +43,13 @@ public class BasicProductionCountingDetailsHooks {
 
     private static final String L_FORM = "form";
 
+    private static final String L_BASIC = "01basic";
+
     private static final String L_COMPONENT = "01component";
 
     private static final String L_FINAL_PRODUCT = "03finalProduct";
+
+    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     private static final String L_PRODUCT = "product";
 
@@ -73,23 +77,28 @@ public class BasicProductionCountingDetailsHooks {
         Long basicProductionCountingId = basicProductionCountingForm.getEntityId();
 
         if (basicProductionCountingId != null) {
-            final Entity basicProductionCounting = basicProductionCountingService
-                    .getBasicProductionCounting(basicProductionCountingId);
+            Entity basicProductionCounting = basicProductionCountingService.getBasicProductionCounting(basicProductionCountingId);
 
             Entity order = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
+            String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
             Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
 
-            if (L_FINAL_PRODUCT.equals(technologyService.getProductType(product, technology))) {
-                usedQuantityField.setEnabled(false);
-            } else {
-                usedQuantityField.setEnabled(true);
+            if (L_BASIC.equals(typeOfProductionRecording)) {
+                if (L_FINAL_PRODUCT.equals(technologyService.getProductType(product, technology))) {
+                    usedQuantityField.setEnabled(false);
+                } else {
+                    usedQuantityField.setEnabled(true);
+                }
 
-            }
-            if (L_COMPONENT.equals(technologyService.getProductType(product, technology))) {
-                producedQuantityField.setEnabled(false);
+                if (L_COMPONENT.equals(technologyService.getProductType(product, technology))) {
+                    producedQuantityField.setEnabled(false);
+                } else {
+                    producedQuantityField.setEnabled(true);
+                }
             } else {
-                producedQuantityField.setEnabled(true);
+                usedQuantityField.setEnabled(false);
+                producedQuantityField.setEnabled(false);
             }
         }
     }
