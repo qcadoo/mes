@@ -68,6 +68,7 @@ public class CopyOfTechnDetailsListeners {
             DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY);
             order.setField(OrderFields.TECHNOLOGY, null);
+            order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
             order.getDataDefinition().save(order);
 
             technologyDD.delete(technology.getId());
@@ -117,6 +118,7 @@ public class CopyOfTechnDetailsListeners {
             newCopyOfTechnology = newCopyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
             order.setField(OrderFields.TECHNOLOGY, newCopyOfTechnology);
             order.getDataDefinition().save(order);
+            // technologyServiceO.setQuantityOfWorkstationTypes(order, newCopyOfTechnology);
             componentState.setFieldValue(newCopyOfTechnology.getId());
             final FormComponent form = (FormComponent) componentState;
             form.setEntity(newCopyOfTechnology);

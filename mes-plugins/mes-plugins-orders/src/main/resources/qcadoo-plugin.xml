@@ -89,10 +89,6 @@
 			<model:hasMany name="orders" plugin="orders" model="order"
 				joinField="technology" cascade="nullify" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
-		    <model:belongsTo name="order" plugin="orders" model="order" required="true"/>
-		</model:model-field>
-	
 		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
 		    <model:belongsTo name="order" plugin="orders" model="order" required="true"/>
 		</model:model-field>

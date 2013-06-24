@@ -203,8 +203,21 @@ public class OrderDetailsListeners {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
     }
 
-    public void setFieldsVisibility(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void onOrderTypeChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+
         orderDetailsHooks.setFieldsVisibilityAndFill(view);
+
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
+        Long orderId = orderForm.getEntityId();
+        if (orderId != null) {
+            FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
+
+            boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(
+                    orderType.getFieldValue());
+            if (selectForPatternTechnology) {
+                orderForm.addMessage("order.orderType.changeOrderType", MessageType.INFO);
+            }
+        }
     }
 
 }

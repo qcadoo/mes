@@ -276,7 +276,7 @@
 							reference="orderType" hasDescription="true" >
 						<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-								method="setFieldsVisibility" />
+								method="onOrderTypeChange" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
