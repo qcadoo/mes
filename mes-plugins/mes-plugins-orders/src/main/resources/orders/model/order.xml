@@ -120,7 +120,6 @@
 
 		<hasMany name="typeOfCorrectionCauses" joinField="order" model="typeOfCorrectionCauses"
 			cascade="delete" />
-			
 		<hasMany name="reasonTypesCorrectionDateFrom" model="reasonTypeCorrectionDateFrom"
 			joinField="order" cascade="delete" />
 		<hasMany name="reasonTypesCorrectionDateTo" model="reasonTypeCorrectionDateTo"

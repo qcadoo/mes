@@ -82,7 +82,7 @@ public class CopyOfTechnologyHooks {
         String orderType = order.getStringField(OrderFields.ORDER_TYPE);
         fillFileds(view, technology);
         enableFileds(view, orderType);
-        disableRibbonItem(view, orderType);
+        disableRibbonItem(view, orderType, order);
         setVisibleFileds(view, orderType);
         setCriteriaModifierParameters(view, order);
         technologyDetailsViewHooks.filterStateChangeHistory(view);
@@ -124,14 +124,30 @@ public class CopyOfTechnologyHooks {
 
     }
 
-    private void disableRibbonItem(final ViewDefinitionState view, final String orderType) {
+    private void disableRibbonItem(final ViewDefinitionState view, final String orderType, final Entity order) {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         Ribbon ribbon = window.getRibbon();
         RibbonActionItem clearAndLoadPatternTechnology = ribbon.getGroupByName("technology").getItemByName(
                 "clearAndLoadPatternTechnology");
+        RibbonActionItem clearTechnology = ribbon.getGroupByName("technology").getItemByName("clearTechnology");
+        RibbonActionItem checkTechnology = ribbon.getGroupByName("status").getItemByName("checkTechnology");
+
         if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(orderType)) {
             clearAndLoadPatternTechnology.setEnabled(false);
             clearAndLoadPatternTechnology.requestUpdate(true);
+        }
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+            clearTechnology.setEnabled(false);
+            clearTechnology.requestUpdate(true);
+        }
+        String state = order.getStringField(STATE);
+        if (!OrderState.PENDING.getStringValue().equals(state)) {
+            clearAndLoadPatternTechnology.setEnabled(false);
+            clearAndLoadPatternTechnology.requestUpdate(true);
+            clearTechnology.setEnabled(false);
+            clearTechnology.requestUpdate(true);
+            checkTechnology.setEnabled(false);
+            checkTechnology.requestUpdate(true);
         }
     }
 

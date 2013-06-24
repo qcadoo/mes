@@ -9,12 +9,16 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionLines.ProductionLinesService;
+import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -27,6 +31,9 @@ public class TechnologyServiceO {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private ProductionLinesService productionLinesService;
 
     public Entity getDefaultTechnology(final Entity product) {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -75,6 +82,7 @@ public class TechnologyServiceO {
                             TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
                     newCopyOfTechnology = newCopyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
                     order.setField(OrderFields.TECHNOLOGY, newCopyOfTechnology);
+                    // setQuantityOfWorkstationTypes(order, technology);
 
                 } else if (technologyWasChanged(order)) {
                     Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
@@ -95,6 +103,7 @@ public class TechnologyServiceO {
                             TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
                     newCopyOfTechnology = newCopyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
                     order.setField(OrderFields.TECHNOLOGY, newCopyOfTechnology);
+                    // setQuantityOfWorkstationTypes(order, technology);
 
                 }
 
@@ -108,7 +117,11 @@ public class TechnologyServiceO {
                     technology
                             .setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
                     technology = technology.getDataDefinition().save(technology);
+                    // EntityTree technologyOperationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+                    // technologyOperationComponents.getRoot();
                     order.setField(OrderFields.TECHNOLOGY, technology);
+                    // setQuantityOfWorkstationTypes(order, technology);
+
                 }
             }
         } else if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))) {
@@ -148,6 +161,8 @@ public class TechnologyServiceO {
                     if (prototypeTechnology != null) {
                         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
                     }
+                    // setQuantityOfWorkstationTypes(order, technology);
+
                 } else if (getExistingOrder(order).getBelongsToField(OrderFields.TECHNOLOGY) == null) {
                     Entity technology = technologyDD.create();
                     technology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
@@ -166,11 +181,44 @@ public class TechnologyServiceO {
                     if (prototypeTechnology != null) {
                         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
                     }
+                    // setQuantityOfWorkstationTypes(order, technology);
 
                 }
             }
 
         }
+
+    }
+
+    public void setQuantityOfWorkstationTypes(Entity order, final Entity technology) {
+        DataDefinition quantityOfWorkstationTypesDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
+                "techOperCompWorkstation");
+        Entity technologyOperation = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        technologyOperation.getId();
+        EntityTree technologyOperationComponents = order.getBelongsToField(OrderFields.TECHNOLOGY).getTreeField(
+                TechnologyFields.OPERATION_COMPONENTS);
+        if (technologyOperationComponents == null) {
+            return;
+        }
+
+        EntityTreeNode operationComponentRoot = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+        Entity techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
+        techOperCompWorkstation.setField("quantityOfWorkstationTypes", productionLinesService.getWorkstationTypesCount(
+                operationComponentRoot, order.getBelongsToField("productionLine")));
+        quantityOfWorkstationTypesDD.save(techOperCompWorkstation);
+        operationComponentRoot.getDataDefinition().save(operationComponentRoot);
+
+        // Entity techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
+        // for (Entity child : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
+        // techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
+        // techOperCompWorkstation.setField("quantityOfWorkstationTypes",
+        // productionLinesService.getWorkstationTypesCount(child, order.getBelongsToField("productionLine")));
+        // techOperCompWorkstation = quantityOfWorkstationTypesDD.save(techOperCompWorkstation);
+        // child.setField("techOperCompWorkstation", techOperCompWorkstation);
+        //
+        // child = child.getDataDefinition().save(child);
+        //
+        // }
 
     }
 
