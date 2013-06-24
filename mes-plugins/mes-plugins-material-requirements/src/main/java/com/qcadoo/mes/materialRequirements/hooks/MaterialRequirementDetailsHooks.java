@@ -31,6 +31,7 @@ import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementsConstan
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -47,29 +48,26 @@ public class MaterialRequirementDetailsHooks {
     }
 
     public void disableFormForExistingMaterialRequirement(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        if (form.getEntityId() == null) {
+        if (materialRequirementForm.getEntityId() == null) {
             return;
         }
 
-        FieldComponent name = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.NAME);
-        FieldComponent mrpAlgorithm = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.MRP_ALGORITHM);
-        FieldComponent orders = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.ORDERS);
-        FieldComponent number = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.NUMBER);
-        FieldComponent generated = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.GENERATED);
+        FieldComponent generatedField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.GENERATED);
+        FieldComponent numberField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.NUMBER);
+        FieldComponent nameField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.NAME);
+        FieldComponent mrpAlgorithmField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.MRP_ALGORITHM);
 
-        if ("1".equals(generated.getFieldValue())) {
-            number.setEnabled(false);
-            name.setEnabled(false);
-            mrpAlgorithm.setEnabled(false);
-            orders.setEnabled(false);
-        } else {
-            number.setEnabled(true);
-            name.setEnabled(true);
-            mrpAlgorithm.setEnabled(true);
-            orders.setEnabled(true);
-        }
+        GridComponent ordersGrid = (GridComponent) view.getComponentByReference(MaterialRequirementFields.ORDERS);
+
+        boolean isGenerated = "1".equals(generatedField.getFieldValue());
+
+        numberField.setEnabled(!isGenerated);
+        nameField.setEnabled(!isGenerated);
+        mrpAlgorithmField.setEnabled(!isGenerated);
+
+        ordersGrid.setEnabled(!isGenerated);
     }
 
 }
