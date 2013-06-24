@@ -104,8 +104,8 @@
 
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingListHooks"
-			method="setUneditableGridWhenOrderTypeRecordingIsBasic" />
+			class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"
+			method="setGridEditableDependsOfOrderState" />
 	</hooks>
 
 </view>
