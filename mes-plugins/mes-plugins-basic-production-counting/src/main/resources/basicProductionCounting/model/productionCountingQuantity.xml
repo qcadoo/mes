@@ -54,5 +54,8 @@
 		<onCreate
 			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityHooks"
 			method="onCreate" />
+		<onDelete
+			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityHooks"
+			method="onDelete" />
 	</hooks>
 </model>

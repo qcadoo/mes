@@ -55,6 +55,26 @@ public class ProductionCountingQuantityHooks {
         fillIsNonComponent(productionCountingQuantityDD, productionCountingQuantity);
     }
 
+    public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+        boolean isDeleted = true;
+
+        Entity basicProductionCounting = productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING);
+
+        if ((basicProductionCounting != null) && checkIfItIsLastProductionCountingQuantity(basicProductionCounting)) {
+            productionCountingQuantity.setField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING, null);
+            productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
+
+            isDeleted = basicProductionCounting.getDataDefinition().delete(basicProductionCounting.getId()).isSuccessfull();
+        }
+
+        return isDeleted;
+    }
+
+    private boolean checkIfItIsLastProductionCountingQuantity(final Entity basicProductionCounting) {
+        return (basicProductionCounting.getHasManyField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES).size() == 1);
+    }
+
     private void fillOrder(final DataDefinition producionCountingQuantityDD, final Entity productionCountingQuantity) {
         if (productionCountingQuantity.getField(ProductionCountingQuantityFields.ORDER) == null) {
             Entity basicProductionCounting = productionCountingQuantity
