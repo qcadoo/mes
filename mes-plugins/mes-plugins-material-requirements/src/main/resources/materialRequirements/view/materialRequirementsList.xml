@@ -93,7 +93,7 @@
 			<option type="multiselect" value="true" />
 			
 			<listener event="printMaterialRequirement"
-				class="com.qcadoo.mes.materialRequirements.MaterialRequirementServiceImpl"
+				class="com.qcadoo.mes.materialRequirements.listeners.MaterialRequirementsListListeners"
 				method="printMaterialRequirement" />
 		</component>
 		
