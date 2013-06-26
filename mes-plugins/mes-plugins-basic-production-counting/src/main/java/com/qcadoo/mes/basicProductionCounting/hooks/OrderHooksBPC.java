@@ -86,8 +86,8 @@ public class OrderHooksBPC {
         List<Entity> productionCountingQuantities = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES);
         List<Entity> productionCountingOperationRuns = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS);
 
-        return (((productionCountingQuantities == null) || (productionCountingQuantities.isEmpty())) && ((productionCountingOperationRuns == null) || (productionCountingOperationRuns
-                .isEmpty())));
+        return (((productionCountingQuantities == null) || productionCountingQuantities.isEmpty()) && ((productionCountingOperationRuns == null) || productionCountingOperationRuns
+                .isEmpty()));
     }
 
 }

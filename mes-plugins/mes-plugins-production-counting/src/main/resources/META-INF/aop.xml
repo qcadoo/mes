@@ -27,8 +27,8 @@
         "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
 	<aspects>
-		<aspect name="com.qcadoo.mes.productionCounting.states.aop.ProductionRecordStateChangeAspect" />
-		<aspect name="com.qcadoo.mes.productionCounting.states.aop.listener.ProductionRecordBasicListenerAspect" />
+		<aspect name="com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect" />
+		<aspect name="com.qcadoo.mes.productionCounting.states.aop.listener.ProductionTrackingListenerAspect" />
 		
 		<aspect name="com.qcadoo.mes.productionCounting.states.aop.listener.ProductionCountingOrderStatesListenerAspect" />
 	</aspects>

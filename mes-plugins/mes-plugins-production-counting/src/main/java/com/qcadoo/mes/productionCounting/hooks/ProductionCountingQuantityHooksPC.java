@@ -31,8 +31,8 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.RecordOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.RecordOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -40,9 +40,9 @@ import com.qcadoo.model.api.NumberService;
 @Service
 public class ProductionCountingQuantityHooksPC {
 
-    private static final String L_RECORD_OPERATION_IN_QUANTITY_QUERY = "SELECT '' AS nullResultProtector, r.usedQuantity AS usedQuantity FROM #productionCounting_productionRecord pr, #productionCounting_recordOperationProductInComponent r WHERE r.productionRecord.id = pr.id AND pr.id = %s AND r.product.id = %s";
+    private static final String L_TRACKING_OPERATION_IN_QUANTITY_QUERY = "SELECT '' AS nullResultProtector, t.usedQuantity AS usedQuantity FROM #productionCounting_productionTracking pt, #productionCounting_trackingOperationProductInComponent t WHERE t.productionTracking.id = pt.id AND pt.id = %s AND t.product.id = %s";
 
-    private static final String L_RECORD_OPERATION_OUT_QUANTITY_QUERY = "SELECT '' AS nullResultProtector, r.usedQuantity AS usedQuantity FROM #productionCounting_productionRecord pr, #productionCounting_recordOperationProductOutComponent r WHERE r.productionRecord.id = pr.id AND pr.id = %s AND r.product.id = %s";
+    private static final String L_TRACKING_OPERATION_OUT_QUANTITY_QUERY = "SELECT '' AS nullResultProtector, t.usedQuantity AS usedQuantity FROM #productionCounting_productionTracking pt, #productionCounting_trackingOperationProductOutComponent t WHERE t.productionTracking.id = pt.id AND pt.id = %s AND t.product.id = %s";
 
     @Autowired
     private NumberService numberService;
@@ -68,10 +68,10 @@ public class ProductionCountingQuantityHooksPC {
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
         Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
-        List<Entity> productionRecords = getProductionRecords(order);
+        List<Entity> productionTrackings = getProductionTrackings(order);
 
-        for (Entity productionRecord : productionRecords) {
-            BigDecimal quantity = getRecordOperationProductInComponentQuantity(productionRecord, product);
+        for (Entity productionTracking : productionTrackings) {
+            BigDecimal quantity = getTrackingOperationProductInComponentQuantity(productionTracking, product);
 
             if (quantity != null) {
                 usedQuantity = usedQuantity.add(quantity, numberService.getMathContext());
@@ -81,23 +81,23 @@ public class ProductionCountingQuantityHooksPC {
         return usedQuantity;
     }
 
-    private BigDecimal getRecordOperationProductInComponentQuantity(final Entity productionRecord, final Entity product) {
-        Entity result = productionRecord.getDataDefinition()
-                .find(getRecordOperationProductInComponentQuantityQuery(productionRecord.getId(), product.getId()))
+    private BigDecimal getTrackingOperationProductInComponentQuantity(final Entity productionTracking, final Entity product) {
+        Entity result = productionTracking.getDataDefinition()
+                .find(getTrackingOperationProductInComponentQuantityQuery(productionTracking.getId(), product.getId()))
                 .setMaxResults(1).uniqueResult();
 
         if (result != null) {
-            return result.getDecimalField(RecordOperationProductInComponentFields.USED_QUANTITY);
+            return result.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
         }
 
         return null;
     }
 
-    private String getRecordOperationProductInComponentQuantityQuery(final Long productionRecordId, final Long productId) {
-        String recordOperationProductInComponentQuantityQuery = String.format(L_RECORD_OPERATION_IN_QUANTITY_QUERY,
-                productionRecordId, productId);
+    private String getTrackingOperationProductInComponentQuantityQuery(final Long productionTrackingId, final Long productId) {
+        String trackingOperationProductInComponentQuantityQuery = String.format(L_TRACKING_OPERATION_IN_QUANTITY_QUERY,
+                productionTrackingId, productId);
 
-        return recordOperationProductInComponentQuantityQuery;
+        return trackingOperationProductInComponentQuantityQuery;
     }
 
     private BigDecimal getProducedQuantity(final Entity productionCountingQuantity) {
@@ -106,10 +106,10 @@ public class ProductionCountingQuantityHooksPC {
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
         Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
-        List<Entity> productionRecords = getProductionRecords(order);
+        List<Entity> productionTrackings = getProductionTrackings(order);
 
-        for (Entity productionRecord : productionRecords) {
-            BigDecimal quantity = getRecordOperationProductOutComponentQuantity(productionRecord, product);
+        for (Entity productionTracking : productionTrackings) {
+            BigDecimal quantity = getTrackingOperationProductOutComponentQuantity(productionTracking, product);
 
             if (quantity != null) {
                 producedQuantity = producedQuantity.add(quantity, numberService.getMathContext());
@@ -119,27 +119,27 @@ public class ProductionCountingQuantityHooksPC {
         return producedQuantity;
     }
 
-    private BigDecimal getRecordOperationProductOutComponentQuantity(final Entity productionRecord, final Entity product) {
-        Entity result = productionRecord.getDataDefinition()
-                .find(getRecordOperationProductOutComponentQuantityQuery(productionRecord.getId(), product.getId()))
+    private BigDecimal getTrackingOperationProductOutComponentQuantity(final Entity productionTracking, final Entity product) {
+        Entity result = productionTracking.getDataDefinition()
+                .find(getTrackingOperationProductOutComponentQuantityQuery(productionTracking.getId(), product.getId()))
                 .setMaxResults(1).uniqueResult();
 
         if (result != null) {
-            return result.getDecimalField(RecordOperationProductOutComponentFields.USED_QUANTITY);
+            return result.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
         }
 
         return null;
     }
 
-    private String getRecordOperationProductOutComponentQuantityQuery(final Long productionRecordId, final Long productId) {
-        String recordOperationProductOutComponentQuantityQuery = String.format(L_RECORD_OPERATION_OUT_QUANTITY_QUERY,
-                productionRecordId, productId);
+    private String getTrackingOperationProductOutComponentQuantityQuery(final Long productionTrackingId, final Long productId) {
+        String trackingOperationProductOutComponentQuantityQuery = String.format(L_TRACKING_OPERATION_OUT_QUANTITY_QUERY,
+                productionTrackingId, productId);
 
-        return recordOperationProductOutComponentQuantityQuery;
+        return trackingOperationProductOutComponentQuantityQuery;
     }
 
-    private List<Entity> getProductionRecords(final Entity order) {
-        return order.getHasManyField(OrderFieldsPC.PRODUCTION_RECORDS).find().list().getEntities();
+    private List<Entity> getProductionTrackings(final Entity order) {
+        return order.getHasManyField(OrderFieldsPC.PRODUCTION_TRACKINGS).find().list().getEntities();
     }
 
 }

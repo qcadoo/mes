@@ -38,7 +38,7 @@
 		</string>
 		<datetime name="date" />
 		<string name="worker" />
-		<integer name="recordsNumber">
+		<integer name="trackingsNumber">
 			<validatesRange from="0" />
 		</integer>
 		<string name="description" />

@@ -64,10 +64,6 @@ public final class SamplesConstants {
 
     public static final String MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER = "materialRequirements";
 
-    public static final String PRODUCTIONBALANCE_MODEL_PRODUCTIONBALANCE = "productionBalance";
-
-    public static final String PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD = "productionRecord";
-
     public static final String PRODUCTION_LINES_PLUGIN_IDENTIFIER = "productionLines";
 
     public static final String PRODUCTION_LINES_MODEL_PRODUCTION_LINE = "productionLine";
@@ -88,11 +84,15 @@ public final class SamplesConstants {
 
     public static final String WAGE_GROUPS_MODEL_IDENTIFIER = "wageGroup";
 
-    public static final String RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT = "recordOperationProductInComponent";
+    public static final String PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING = "productionTracking";
 
-    public static final String RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT = "recordOperationProductOutComponent";
+    public static final String PRODUCTIONCOUNTING_MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT = "trackingOperationProductInComponent";
 
-    public static final String PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING = "productionCounting";
+    public static final String PRODUCTIONCOUNTING_MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT = "trackingOperationProductOutComponent";
+
+    public static final String PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING_REPORT = "productionTrackingReport";
+
+    public static final String PRODUCTIONCOUNTING_MODEL_PRODUCTION_BALANCE = "productionBalance";
 
     public static final String ORDERS_PLUGIN_IDENTIFIER = "orders";
 
@@ -204,8 +204,6 @@ public final class SamplesConstants {
 
     public static final String L_PRODUCTION_COUNTING = "productionCounting";
 
-    public static final String L_PRODUCTION_RECORD = "productionRecord";
-
     public static final String L_PRODUCTION_BALANCE = "productionBalance";
 
     public static final String L_BATCHES = "batches";
@@ -232,7 +230,9 @@ public final class SamplesConstants {
 
     public static final String L_WORKSTATION_TYPE = "workstationType";
 
-    public static final String L_LAST_RECORD = "lastRecord";
+    public static final String L_LAST_TRACKING = "lastTracking";
+
+    public static final String L_TRACKINGS_NUMBER = "trackingsNumber";
 
     public static final String L_MACHINE_TIME = "machineTime";
 

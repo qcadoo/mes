@@ -66,7 +66,7 @@ public class OrderDetailsHooksPC {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldComponentName);
 
             if (fieldComponent.getFieldValue() == null) {
-                fieldComponent.setFieldValue(getDefaultValueForProductionRecordFromParameter(fieldComponentName));
+                fieldComponent.setFieldValue(getDefaultValueForProductionCountingFromParameter(fieldComponentName));
                 fieldComponent.requestComponentUpdateState();
             }
 
@@ -79,7 +79,7 @@ public class OrderDetailsHooksPC {
         }
     }
 
-    private boolean getDefaultValueForProductionRecordFromParameter(final String fieldName) {
+    private boolean getDefaultValueForProductionCountingFromParameter(final String fieldName) {
         return parameterService.getParameter().getBooleanField(fieldName);
     }
 

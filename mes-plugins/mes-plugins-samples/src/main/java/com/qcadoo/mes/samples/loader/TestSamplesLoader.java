@@ -77,9 +77,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         readDataFromXML(dataset, L_COMPANY, locale);
         readDataFromXML(dataset, "defaultParameters", locale);
         readDataFromXML(dataset, L_WORKSTATION_TYPES, locale);
+
         if (isEnabledOrEnabling(WAGE_GROUPS_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, L_WAGE_GROUP, locale);
         }
+
         readDataFromXML(dataset, BASIC_MODEL_STAFF, locale);
         readDataFromXML(dataset, "conversionItem", locale);
         readDataFromXML(dataset, PRODUCTS_PLUGIN_IDENTIFIER, locale);
@@ -128,11 +130,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         if (isEnabledOrEnabling(L_PRODUCTION_COUNTING)) {
-            readDataFromXML(dataset, L_PRODUCTION_RECORD, locale);
-            readDataFromXML(dataset, RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT, locale);
-            readDataFromXML(dataset, RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT, locale);
-            readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
-            readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
+            readDataFromXML(dataset, PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING, locale);
+            readDataFromXML(dataset, PRODUCTIONCOUNTING_MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT, locale);
+            readDataFromXML(dataset, PRODUCTIONCOUNTING_MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT, locale);
+            readDataFromXML(dataset, PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING_REPORT, locale);
+            readDataFromXML(dataset, PRODUCTIONCOUNTING_MODEL_PRODUCTION_BALANCE, locale);
         }
 
         if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY)) {
@@ -156,7 +158,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             readDataFromXML(dataset, L_OFFER, locale);
             readDataFromXML(dataset, L_OFFER_PRODUCTS, locale);
             readDataFromXML(dataset, L_OFFER_STATE_CHANGES, locale);
-
         }
 
         if (isEnabledOrEnabling(L_DELIVERY)) {
@@ -219,16 +220,16 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addMaterialRequirements(values);
         } else if (L_WORK_PLANS.equals(type)) {
             addWorkPlan(values);
-        } else if (L_PRODUCTION_RECORD.equals(type)) {
-            addProductionRecord(values);
-        } else if (RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT.equals(type)) {
-            addRecordOperationProductInComponent(values);
-        } else if (RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT.equals(type)) {
-            addRecordOperationProductOutComponent(values);
-        } else if (L_PRODUCTION_COUNTING.equals(type)) {
-            prepareProductionRecords(values);
-            addProductionCounting(values);
-        } else if (L_PRODUCTION_BALANCE.equals(type)) {
+        } else if (PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING.equals(type)) {
+            addProductionTracking(values);
+        } else if (PRODUCTIONCOUNTING_MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT.equals(type)) {
+            addTrackingOperationProductInComponent(values);
+        } else if (PRODUCTIONCOUNTING_MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT.equals(type)) {
+            addTrackingOperationProductOutComponent(values);
+        } else if (PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING_REPORT.equals(type)) {
+            prepareProductionTrackings(values);
+            addProductionTrackingReport(values);
+        } else if (PRODUCTIONCOUNTING_MODEL_PRODUCTION_BALANCE.equals(type)) {
             addProductionBalance(values);
         } else if (L_WAGE_GROUP.equals(type)) {
             addWageGroups(values);
@@ -1004,34 +1005,36 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
     }
 
-    private void addRecordOperationProductInComponent(final Map<String, String> values) {
-        DataDefinition productInComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
-                SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT);
+    private void addTrackingOperationProductInComponent(final Map<String, String> values) {
+        DataDefinition trackingOperationProductInComponentDD = dataDefinitionService.get(
+                SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.PRODUCTIONCOUNTING_MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT);
 
-        Entity productInComponent = productInComponentDD.find()
+        Entity trackingOperationProductInComponent = trackingOperationProductInComponentDD.find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
                 .setMaxResults(1).uniqueResult();
 
-        if (productInComponent != null) {
-            productInComponent.setField("usedQuantity", values.get("usedquantity"));
-            productInComponent.setField(L_BALANCE, values.get(L_BALANCE));
-            productInComponentDD.save(productInComponent);
+        if (trackingOperationProductInComponent != null) {
+            trackingOperationProductInComponent.setField("usedQuantity", values.get("usedquantity"));
+            trackingOperationProductInComponent.setField(L_BALANCE, values.get(L_BALANCE));
+            trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);
         }
     }
 
-    private void addRecordOperationProductOutComponent(final Map<String, String> values) {
-        DataDefinition productOutComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
-                SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT);
+    private void addTrackingOperationProductOutComponent(final Map<String, String> values) {
+        DataDefinition trackingOperationProductOutComponentDD = dataDefinitionService.get(
+                SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.PRODUCTIONCOUNTING_MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT);
 
-        Entity productOutComponent = productOutComponentDD.find()
+        Entity trackingOperationProductOutComponent = trackingOperationProductOutComponentDD.find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
                 .setMaxResults(1).uniqueResult();
 
-        if (productOutComponent != null) {
-            productOutComponent.setField("usedQuantity", values.get("usedquantity"));
-            productOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
+        if (trackingOperationProductOutComponent != null) {
+            trackingOperationProductOutComponent.setField("usedQuantity", values.get("usedquantity"));
+            trackingOperationProductOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
 
-            productOutComponentDD.save(productOutComponent);
+            trackingOperationProductOutComponent.getDataDefinition().save(trackingOperationProductOutComponent);
         }
     }
 
@@ -1166,83 +1169,83 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .save(workPlan);
     }
 
-    void addProductionRecord(final Map<String, String> values) {
-        Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
-                SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
+    void addProductionTracking(final Map<String, String> values) {
+        Entity productionTracking = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING).create();
 
         Entity order = getOrderByNumber(values.get(L_ORDER));
         Entity operation = getOperationByNumber(values.get(L_OPERATION));
         Entity technologyOperationComponent = getTechnologyOperationComponentByNumber(order, operation);
 
-        productionRecord.setField(L_NUMBER, values.get(L_NUMBER));
-        productionRecord.setField(L_ORDER, order);
-        productionRecord.setField(L_LAST_RECORD, values.get("lastrecord"));
-        productionRecord.setField(L_MACHINE_TIME, values.get("machinetime"));
-        productionRecord.setField(L_LABOR_TIME, values.get("labortime"));
-        productionRecord.setField(L_STAFF, getStaffByNumber(values.get(L_STAFF)));
-        productionRecord.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
-        productionRecord.setField(L_WORKSTATION_TYPE, getWorkstationTypeByNumber(values.get("workstationtype")));
-        productionRecord.setField(L_DIVISION, getDivisionByNumber(values.get(L_DIVISION)));
-        productionRecord.setField(L_TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
+        productionTracking.setField(L_NUMBER, values.get(L_NUMBER));
+        productionTracking.setField(L_ORDER, order);
+        productionTracking.setField(L_LAST_TRACKING, values.get("lasttracking"));
+        productionTracking.setField(L_MACHINE_TIME, values.get("machinetime"));
+        productionTracking.setField(L_LABOR_TIME, values.get("labortime"));
+        productionTracking.setField(L_STAFF, getStaffByNumber(values.get(L_STAFF)));
+        productionTracking.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
+        productionTracking.setField(L_WORKSTATION_TYPE, getWorkstationTypeByNumber(values.get("workstationtype")));
+        productionTracking.setField(L_DIVISION, getDivisionByNumber(values.get(L_DIVISION)));
+        productionTracking.setField(L_TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 
-        String typeOfProductionRecording = productionRecord.getBelongsToField(L_ORDER)
-                .getStringField("typeOfProductionRecording");
+        String typeOfProductionRecording = productionTracking.getBelongsToField(L_ORDER).getStringField(
+                "typeOfProductionRecording");
 
         if ((technologyOperationComponent != null) || !("03forEach".equals(typeOfProductionRecording))) {
-            productionRecord.getDataDefinition().save(productionRecord);
+            productionTracking.getDataDefinition().save(productionTracking);
         }
     }
 
-    private void prepareProductionRecords(final Map<String, String> values) {
+    private void prepareProductionTrackings(final Map<String, String> values) {
         Entity order = getOrderByNumber(values.get(L_ORDER));
-        for (Entity productionRecord : order.getHasManyField("productionRecords")) {
-            getStateChangeSamplesClient().changeState(productionRecord, STATE_ACCEPTED);
+        for (Entity productionTracking : order.getHasManyField("productionTrackings")) {
+            getStateChangeSamplesClient().changeState(productionTracking, STATE_ACCEPTED);
         }
     }
 
-    void addProductionCounting(final Map<String, String> values) {
-        Entity productionCounting = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
-                SamplesConstants.PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING).create();
-        productionCounting.setField(L_GENERATED, values.get(L_GENERATED));
-        productionCounting.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-        productionCounting.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
-        productionCounting.setField(L_NAME, values.get(L_NAME));
-        productionCounting.setField(L_DATE, values.get(L_DATE));
-        productionCounting.setField(L_WORKER, values.get(L_WORKER));
-        productionCounting.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
-        productionCounting.setField(L_FILE_NAME, values.get("filename"));
+    void addProductionTrackingReport(final Map<String, String> values) {
+        Entity productionTrackingReport = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING_REPORT).create();
 
-        dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
-                SamplesConstants.PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING).save(productionCounting);
+        productionTrackingReport.setField(L_GENERATED, values.get(L_GENERATED));
+        productionTrackingReport.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
+        productionTrackingReport.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
+        productionTrackingReport.setField(L_NAME, values.get(L_NAME));
+        productionTrackingReport.setField(L_DATE, values.get(L_DATE));
+        productionTrackingReport.setField(L_WORKER, values.get(L_WORKER));
+        productionTrackingReport.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
+        productionTrackingReport.setField(L_FILE_NAME, values.get("filename"));
+
+        productionTrackingReport.getDataDefinition().save(productionTrackingReport);
     }
 
     void addProductionBalance(final Map<String, String> values) {
-        Entity productionbalance = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
-                SamplesConstants.PRODUCTIONBALANCE_MODEL_PRODUCTIONBALANCE).create();
-        productionbalance.setField(L_GENERATED, values.get(L_GENERATED));
-        productionbalance.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-        productionbalance.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
-        productionbalance.setField(L_NAME, values.get(L_NAME));
-        productionbalance.setField(L_DATE, values.get(L_DATE));
-        productionbalance.setField(L_WORKER, values.get(L_WORKER));
-        productionbalance.setField("recordsNumber", values.get("recordsnumber"));
-        productionbalance.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
-        productionbalance.setField(L_FILE_NAME, values.get("filename"));
-        productionbalance.setField("calculateOperationCostsMode", values.get("calculateoperationcostsmode"));
+        Entity productionBalance = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.PRODUCTIONCOUNTING_MODEL_PRODUCTION_BALANCE).create();
+
+        productionBalance.setField(L_GENERATED, values.get(L_GENERATED));
+        productionBalance.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
+        productionBalance.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
+        productionBalance.setField(L_NAME, values.get(L_NAME));
+        productionBalance.setField(L_DATE, values.get(L_DATE));
+        productionBalance.setField(L_WORKER, values.get(L_WORKER));
+        productionBalance.setField(L_TRACKINGS_NUMBER, values.get("trackingsnumber"));
+        productionBalance.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
+        productionBalance.setField(L_FILE_NAME, values.get("filename"));
+        productionBalance.setField("calculateOperationCostsMode", values.get("calculateoperationcostsmode"));
 
         if (isEnabledOrEnabling("productionCountingWithCosts")) {
-            productionbalance.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
-            productionbalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
+            productionBalance.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
+            productionBalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
 
-            productionbalance.setField("averageMachineHourlyCost", values.get("averagemachinehourlycost"));
-            productionbalance.setField("averageLaborHourlyCost", values.get("averagelaborhourlycost"));
+            productionBalance.setField("averageMachineHourlyCost", values.get("averagemachinehourlycost"));
+            productionBalance.setField("averageLaborHourlyCost", values.get("averagelaborhourlycost"));
         }
 
-        productionbalance.getDataDefinition().save(productionbalance);
+        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     void addQualityControl(final Map<String, String> values) {
-
         Entity qualitycontrol = dataDefinitionService.get(SamplesConstants.QUALITYCONTROL_PLUGIN_IDENTIFIER,
                 SamplesConstants.QUALITYCONTROL_MODEL_QUALITYCONTROL).create();
 

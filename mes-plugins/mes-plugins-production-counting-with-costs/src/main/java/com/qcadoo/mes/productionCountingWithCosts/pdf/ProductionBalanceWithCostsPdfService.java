@@ -48,7 +48,7 @@ import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.print.ProductionBalancePdfService;
 import com.qcadoo.mes.productionCounting.print.utils.EntityProductInOutComparator;
-import com.qcadoo.mes.productionCounting.print.utils.EntityProductionRecordOperationComparator;
+import com.qcadoo.mes.productionCounting.print.utils.EntityProductionTrackingOperationComparator;
 import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
 import com.qcadoo.mes.productionCountingWithCosts.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.model.api.Entity;
@@ -293,7 +293,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
             // FIXME mici, had to generate a new linked list in order to sort it.
             operationComponents = Lists.newLinkedList(operationComponents);
-            Collections.sort(operationComponents, new EntityProductionRecordOperationComparator());
+            Collections.sort(operationComponents, new EntityProductionTrackingOperationComparator());
 
             PdfPTable costsTable = pdfHelper.createTableWithHeader(5, tableHeader, false);
 

@@ -29,8 +29,6 @@ public final class BalanceOperationProductOutComponentFields {
 
     }
 
-    public static final String PRODUCTION_RECORD = "productionRecord";
-
     public static final String PRODUCTION_BALANCE = "productionBalance";
 
     public static final String PRODUCT = "product";
