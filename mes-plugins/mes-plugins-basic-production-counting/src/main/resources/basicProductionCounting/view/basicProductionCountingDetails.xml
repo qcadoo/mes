@@ -39,81 +39,62 @@
 			<component type="form" name="basicProductionCountingDetails"
 				reference="form">
 				<component type="gridLayout" name="mainTabGridLayout"
-					columns="3" rows="2" hasBorders="false">
+					columns="3" rows="1" hasBorders="false">
 					<layoutElement column="1" row="1">
-						<component type="input" name="product" reference="product"
-							defaultEnabled="false">
-							<option type="labelWidth" value="40" />
+						<component type="gridLayout" name="plannedQuantityGridLayout"
+							reference="plannedQuantityGridLayout" columns="4" rows="1"
+							hasBorders="false">
+							<layoutElement column="1" row="1" width="3">
+								<component type="input" name="plannedQuantity"
+									field="plannedQuantity" reference="plannedQuantity"
+									defaultEnabled="false">
+									<option type="alignment" value="right" />
+									<option type="labelWidth" value="50" />
+								</component>
+							</layoutElement>
+							<layoutElement column="4" row="1">
+								<component type="input" name="plannedQuantityUnit"
+									reference="plannedQuantityUnit" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
 						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2">
-						<component type="borderLayout" name="quantities">
-							<component type="gridLayout" name="quantitiesGridLayout"
-								columns="1" rows="3" hasBorders="false">
-								<layoutElement column="1" row="1">
-									<component type="gridLayout" name="plannedQuantityGridLayout"
-										reference="plannedQuantityGridLayout" columns="4" rows="1"
-										hasBorders="false">
-										<layoutElement column="1" row="1" width="3">
-											<component type="input" name="plannedQuantity"
-												field="plannedQuantity" reference="plannedQuantity"
-												defaultEnabled="false">
-												<option type="alignment" value="right" />
-												<option type="labelWidth" value="50" />
-											</component>
-										</layoutElement>
-										<layoutElement column="4" row="1">
-											<component type="input" name="plannedQuantityUnit"
-												reference="plannedQuantityUnit" defaultEnabled="false"
-												hasLabel="false">
-												<option type="textRepresentationOnDisabled" value="true" />
-											</component>
-										</layoutElement>
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="2">
-									<component type="gridLayout" name="usedQuantityGridLayout"
-										reference="usedQuantityGridLayout" columns="4" rows="1"
-										hasBorders="false">
-										<layoutElement column="1" row="1" width="3">
-											<component type="input" name="usedQuantity" field="usedQuantity"
-												reference="usedQuantity">
-												<option type="alignment" value="right" />
-												<option type="labelWidth" value="50" />
-											</component>
-										</layoutElement>
-										<layoutElement column="4" row="1">
-											<component type="input" name="usedQuantityUnit"
-												reference="usedQuantityUnit" defaultEnabled="false"
-												hasLabel="false">
-												<option type="textRepresentationOnDisabled" value="true" />
-											</component>
-										</layoutElement>
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="3">
-									<component type="gridLayout" name="producedQuantityGridLayout"
-										reference="producedQuantityGridLayout" columns="4" rows="1"
-										hasBorders="false">
-										<layoutElement column="1" row="1" width="3">
-											<component type="input" name="producedQuantity"
-												field="producedQuantity" reference="producedQuantity">
-												<option type="alignment" value="right" />
-												<option type="labelWidth" value="50" />
-											</component>
-										</layoutElement>
-										<layoutElement column="4" row="1">
-											<component type="input" name="producedQuantityUnit"
-												reference="producedQuantityUnit" defaultEnabled="false"
-												hasLabel="false">
-												<option type="textRepresentationOnDisabled" value="true" />
-											</component>
-										</layoutElement>
-									</component>
-								</layoutElement>
-							</component>
-
-							<option type="label" value="quantitiesLabel" />
+						<component type="gridLayout" name="usedQuantityGridLayout"
+							reference="usedQuantityGridLayout" columns="4" rows="1"
+							hasBorders="false">
+							<layoutElement column="1" row="1" width="3">
+								<component type="input" name="usedQuantity" field="usedQuantity"
+									reference="usedQuantity">
+									<option type="alignment" value="right" />
+									<option type="labelWidth" value="50" />
+								</component>
+							</layoutElement>
+							<layoutElement column="4" row="1">
+								<component type="input" name="usedQuantityUnit"
+									reference="usedQuantityUnit" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+						</component>
+						<component type="gridLayout" name="producedQuantityGridLayout"
+							reference="producedQuantityGridLayout" columns="4" rows="1"
+							hasBorders="false">
+							<layoutElement column="1" row="1" width="3">
+								<component type="input" name="producedQuantity"
+									field="producedQuantity" reference="producedQuantity">
+									<option type="alignment" value="right" />
+									<option type="labelWidth" value="50" />
+								</component>
+							</layoutElement>
+							<layoutElement column="4" row="1">
+								<component type="input" name="producedQuantityUnit"
+									reference="producedQuantityUnit" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
 						</component>
 					</layoutElement>
 				</component>
@@ -129,14 +110,8 @@
 
 		<windowTab name="details">
 			<component type="gridLayout" name="detailsGridLayout"
-				columns="3" rows="2" hasBorders="false">
-				<layoutElement column="1" row="1">
-					<component type="input" name="productNameAndNumber"
-						reference="productNameAndNumber" defaultEnabled="false">
-						<option type="labelWidth" value="40" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" width="3">
+				columns="3" rows="1" hasBorders="false">
+				<layoutElement column="1" row="1" width="3">
 					<component type="grid" name="productionCountingQuantities"
 						reference="productionCountingQuantities" source="#{form}.productionCountingQuantities">
 						<option type="column" name="nodeNumber" fields="technologyOperationComponent"
@@ -180,9 +155,6 @@
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
 			method="disableUsedProducedFieldDependsOfProductType" />
-		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
-			method="fillProductNameAndNumberFields" />
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
 			method="fillUnitFields" />

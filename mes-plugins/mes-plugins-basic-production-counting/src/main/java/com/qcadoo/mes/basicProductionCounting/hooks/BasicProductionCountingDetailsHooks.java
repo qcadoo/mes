@@ -51,10 +51,6 @@ public class BasicProductionCountingDetailsHooks {
 
     private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
-    private static final String L_PRODUCT = "product";
-
-    private static final String L_PRODUCT_NAME_AND_NUMBER = "productNameAndNumber";
-
     private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUnit";
 
     private static final String L_USED_QUANTITY_UNIT = "usedQuantityUnit";
@@ -101,33 +97,6 @@ public class BasicProductionCountingDetailsHooks {
                 producedQuantityField.setEnabled(false);
             }
         }
-    }
-
-    public void fillProductNameAndNumberFields(final ViewDefinitionState view) {
-        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
-        FieldComponent productField = (FieldComponent) view.getComponentByReference(L_PRODUCT);
-        FieldComponent productNameAndNumberField = (FieldComponent) view.getComponentByReference(L_PRODUCT_NAME_AND_NUMBER);
-
-        Long basicProductionCoutningId = basicProductionCountingForm.getEntityId();
-
-        if (basicProductionCoutningId == null) {
-            return;
-        }
-
-        Entity basicProductionCounting = basicProductionCountingService.getBasicProductionCounting(basicProductionCoutningId);
-
-        if (basicProductionCounting == null) {
-            return;
-        }
-
-        Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
-
-        String productNameAndNumber = product.getStringField(ProductFields.NUMBER) + " - " + product.getField(ProductFields.NAME);
-
-        productField.setFieldValue(productNameAndNumber);
-        productField.requestComponentUpdateState();
-        productNameAndNumberField.setFieldValue(productNameAndNumber);
-        productNameAndNumberField.requestComponentUpdateState();
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
