@@ -38,9 +38,9 @@
 			</group>
 			<group name="export">
 				<smallButton name="pdf" icon="pdfIcon16.png"
-					action="#{form}.fireEvent(printMaterialRequirement, pdf);" state="disabled" />
+					action="#{form}.fireEvent(printMaterialRequirement,pdf);" state="disabled" />
 				<smallButton name="xls" icon="xlsIcon16.png"
-					action="#{form}.fireEvent(printMaterialRequirement, xls);" state="disabled" />
+					action="#{form}.fireEvent(printMaterialRequirement,xls);" state="disabled" />
 			</group>
 		</ribbon>
 
