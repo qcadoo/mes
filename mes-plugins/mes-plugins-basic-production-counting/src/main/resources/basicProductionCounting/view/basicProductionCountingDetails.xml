@@ -66,6 +66,7 @@
 											<component type="input" name="plannedQuantityUnit"
 												reference="plannedQuantityUnit" defaultEnabled="false"
 												hasLabel="false">
+												<option type="textRepresentationOnDisabled" value="true" />
 											</component>
 										</layoutElement>
 									</component>
@@ -85,6 +86,7 @@
 											<component type="input" name="usedQuantityUnit"
 												reference="usedQuantityUnit" defaultEnabled="false"
 												hasLabel="false">
+												<option type="textRepresentationOnDisabled" value="true" />
 											</component>
 										</layoutElement>
 									</component>
@@ -104,6 +106,7 @@
 											<component type="input" name="producedQuantityUnit"
 												reference="producedQuantityUnit" defaultEnabled="false"
 												hasLabel="false">
+												<option type="textRepresentationOnDisabled" value="true" />
 											</component>
 										</layoutElement>
 									</component>
@@ -160,7 +163,7 @@
 							value="basicProductionCounting/productionCountingQuantityDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
-						
+
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
