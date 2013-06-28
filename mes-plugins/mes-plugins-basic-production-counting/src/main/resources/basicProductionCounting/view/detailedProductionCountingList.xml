@@ -62,7 +62,10 @@
 					expression="#product['unit']" />
 
 				<option type="order" column="nodeNumber" direction="desc" />
-
+				
+				<option type="searchable" value="productNumber,productName,nodeNumber,operationNumber,operationName,role,typeOfMaterial,plannedQuantity,productUnit" />
+				<option type="orderable" value="productNumber,productName,nodeNumber,operationNumber,operationName,role,typeOfMaterial,plannedQuantity,productUnit" />
+				
 				<option type="correspondingView"
 					value="basicProductionCounting/productionCountingQuantityDetails" />
 				<option type="correspondingComponent" value="form" />
@@ -73,25 +76,6 @@
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 				<option type="fixedHeight" value="true" />
-				
-				<option type="hasPredefinedFilters" value="true" />
-			
-				<predefinedFilters>
-					<predefinedFilter name="all">
-					</predefinedFilter>
-					<predefinedFilter name="components">
-						<filterRestriction column="typeOfMaterial" value="01component" />
-					</predefinedFilter>
-					<predefinedFilter name="intermediates">
-						<filterRestriction column="typeOfMaterial" value="02intermediate" />
-					</predefinedFilter>
-					<predefinedFilter name="finalProduct">
-						<filterRestriction column="typeOfMaterial" value="03finalProduct" />
-					</predefinedFilter>
-					<predefinedFilter name="wastes">
-						<filterRestriction column="typeOfMaterial" value="04waste" />
-					</predefinedFilter>
-				</predefinedFilters>
 			</component>
 		</component>
 
