@@ -122,6 +122,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityDetailsHooks"
 			method="fillUnitFields" />
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityDetailsHooks"
+			method="setOperationFieldRequiredDependsOfOrder" />
 	</hooks>
 
 </view>

@@ -40,7 +40,7 @@
 	
 	<hooks>
 		<validatesWith
-			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingHooks"
+			class="com.qcadoo.mes.basicProductionCounting.validators.BasicProductionCountingValidators"
 			method="validatesWith" />
 		<onView 
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingHooks"

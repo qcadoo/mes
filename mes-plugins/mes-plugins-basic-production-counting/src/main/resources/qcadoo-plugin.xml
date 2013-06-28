@@ -124,7 +124,7 @@
 		<model:model-hook model="order" plugin="orders">
 			<model:onSave
 				class="com.qcadoo.mes.basicProductionCounting.hooks.OrderHooksBPC"
-				method="updateProductionCountingQuantitiesAndOperationRuns" />
+				method="onSave" />
 		</model:model-hook>
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
