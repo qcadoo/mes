@@ -129,10 +129,8 @@
 
 						<option type="order" column="nodeNumber" direction="desc" />
 
-						<option type="searchable"
-							value="nodeNumber,operationName,role,typeOfMaterial,plannedQuantity,productUnit" />
-						<option type="orderable"
-							value="nodeNumber,operationName,role,typeOfMaterial,plannedQuantity,productUnit" />
+						<option type="searchable" value="role,typeOfMaterial,plannedQuantity,productUnit" />
+						<option type="orderable" value="role,typeOfMaterial,plannedQuantity,productUnit" />
 
 						<option type="correspondingView"
 							value="basicProductionCounting/productionCountingQuantityDetails" />
