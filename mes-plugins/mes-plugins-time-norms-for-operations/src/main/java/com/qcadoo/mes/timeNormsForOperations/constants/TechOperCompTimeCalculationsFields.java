@@ -37,10 +37,6 @@ public class TechOperCompTimeCalculationsFields {
 
     public static final String OPERATION_OFF_SET = "operationOffSet";
 
-    public static final String PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
-
-    public static final String PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
-
     public static final String DURATION = "duration";
 
     public static final String MACHINE_WORK_TIME = "machineWorkTime";

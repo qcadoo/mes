@@ -27,13 +27,28 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class TechnologyOperationComponentHooksTNFO {
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    public void createTechOperCompTimeCalculations(final DataDefinition dd, final Entity technologyOperationComponent) {
+        DataDefinition techOperCompTimeCalculationsDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
+                TimeNormsConstants.MODEL_TECH_OPER_COMP_TIME_CALCULATIONS);
+        Entity techOperCompTimeCalculations = techOperCompTimeCalculationsDD.create();
+        techOperCompTimeCalculations = techOperCompTimeCalculationsDD.save(techOperCompTimeCalculations);
+        technologyOperationComponent.setField("techOperCompTimeCalculations", techOperCompTimeCalculations);
+        // technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
+    }
 
     public void copyTimeNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {
         if ("referenceTechnology".equals(technologyOperationComponent.getField("entityType"))) {

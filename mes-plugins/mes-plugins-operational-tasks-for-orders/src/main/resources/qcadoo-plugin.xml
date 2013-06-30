@@ -58,6 +58,8 @@
 
 	<modules>
 		<localization:translation path="locales" />
+		
+		<model:model model="techOperCompOperationalTasks" resource="model/techOperCompOperationalTasks.xml" />
 
 		<model:model-field model="operationalTask" plugin="operationalTasks">
 			<model:belongsTo name="order" model="order" plugin="orders" />
@@ -65,6 +67,10 @@
 		<model:model-field model="operationalTask" plugin="operationalTasks">
 			<model:belongsTo name="technologyInstanceOperationComponent"
 				model="technologyInstanceOperationComponent" plugin="technologies" />
+		</model:model-field>
+		<model:model-field model="operationalTask" plugin="operationalTasks">
+			<model:belongsTo name="techOperCompOperationalTasks"
+				model="techOperCompOperationalTasks" plugin="operationalTasksForOrders" />
 		</model:model-field>
 		<model:model-enum-value model="operationalTask"
 			plugin="operationalTasks" value="02executionOperationInOrder" enum="typeTask" />

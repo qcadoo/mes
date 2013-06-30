@@ -206,28 +206,42 @@
 						</component>
 					</component>
 				</layoutElement>
+				<layoutElement column="1" row="8">
+					<component type="lookup" name="technology" field="#{form}.technology"
+						reference="technology" defaultVisible="false">
+						<option type="searchable" value="name" />
+						<option type="orderable" value="name" />
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+					</component>
+				</layoutElement>
 				<layoutElement column="2" row="1" height="6" width="2">
 					<component type="gridLayout" name="technologyGridLayout"
 						columns="1" rows="1">
 						<layoutElement column="1" row="1">
-							<component type="grid" name="operations" reference="grid"
-								source="#{form}.technologyInstanceOperationComponents">
+							<component type="grid" name="technologyOperationComponents"
+                                    source="#{technology}.operationComponents">
 								<option type="column" name="nodeNumber" fields="nodeNumber" 
 								     link="true" />
 								<option type="column" name="number" fields="operation"
 									expression="#operation['number']" link="true" />
 								<option type="column" name="name" fields="operation"
 									expression="#operation['name']" link="true" />
-								<option type="column" name="dateFrom" fields="effectiveDateFrom" />	
-								<option type="column" name="dateTo" fields="effectiveDateTo" />	
-								<option type="column" name="workstations" fields="quantityOfWorkstationTypes" />
+							
+								<option type="column" name="dateFrom" fields="operation" 
+									expression="#techOperCompTimeCalculations['effectiveDateFrom']" link="true"/>     
+                                <option type="column" name="dateTo" fields="operation" 
+									expression="#techOperCompTimeCalculations['effectiveDateTo']" /> 
+								<option type="column" name="techOperCompWorkstationT" fields="techOperCompWorkstation" 
+									expression="#techOperCompWorkstation['quantityOfWorkstationTypes']" />
+									
  								<option type="column" name="laborWorkTime"
-									fields="laborWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"/>
+									fields="laborWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculations['laborWorkTime'])"/>
  								<option type="column" name="machineWorkTime"
-									fields="machineWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"/>
+									fields="machineWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculations['machineWorkTime'])"/>
 								<option type="order" column="number" direction="asc" />
 								<option type="correspondingView"
-									value="technologies/technologyInstanceOperationComponentDetails" />
+									value="technologies/technologyOperationComponentDetails" />
 								<option type="correspondingComponent" value="form" />
 								<option type="searchable" value="number, name" />
 								<option type="orderable" value="number, name,dateFrom,dateTo" />

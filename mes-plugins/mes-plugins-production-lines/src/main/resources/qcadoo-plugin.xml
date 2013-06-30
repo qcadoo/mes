@@ -67,6 +67,7 @@
 
 		<model:model model="productionLine" resource="model/productionLine.xml" />
 		<model:model model="workstationTypeComponent" resource="model/workstationTypeComponent.xml" />
+		<model:model model="techOperCompWorkstation" resource="model/techOperCompWorkstation.xml" />
 		
 		<model:model-field plugin="basic" model="parameter">
 		    <model:belongsTo name="defaultProductionLine" plugin="productionLines" model="productionLine" required="true" />
@@ -88,6 +89,12 @@
 				<validatesRange from="0" exclusively="true" />
 			</model:integer>
 		</model:model-field>
+		
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
+		    <model:belongsTo name="techOperCompWorkstation" plugin="productionLines" model="techOperCompWorkstation" />
+		</model:model-field>
+		
 		
 		<model:model-hook model="parameter" plugin="basic">
 		    <model:onCreate class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter"/>

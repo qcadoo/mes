@@ -36,6 +36,7 @@ import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -132,7 +133,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     public Map<Entity, OperationWorkTime> estimateOperationsWorkTime(final List<Entity> operationComponents,
             final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine, final boolean saved) {
-        Map<Entity, Integer> workstations = getWorkstationsMapsForOperationsComponent(operationComponents, productionLine);
+        Map<Entity, Integer> workstations = getWorkstationsForOperationsComponent(operationComponents, productionLine);
         return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
                 saved);
     }
@@ -159,8 +160,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     @Override
     public OperationWorkTime estimateTotalWorkTime(final List<Entity> operationComponents,
-            final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
-            final Map<Entity, Integer> workstations, final boolean saved) {
+            final Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Map<Long, Integer> workstations, final boolean saved) {
         OperationWorkTime totalWorkTime = new OperationWorkTime();
         Integer totalLaborWorkTime = Integer.valueOf(0);
         Integer totalMachineWorkTime = Integer.valueOf(0);
@@ -168,8 +169,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         for (Entity operationComponent : operationComponents) {
             Entity operComp = operationComponent;
             OperationWorkTime abstractOperationWorkTime = estimateOperationWorkTime(operComp,
-                    getOperationRuns(operationRuns, operationComponent), includeTpz, includeAdditionalTime,
-                    getWorkstationsQuantity(workstations, operationComponent), saved);
+                    getOperationRunsFromMap(operationRuns, operationComponent), includeTpz, includeAdditionalTime,
+                    getWorkstationsQuantityFromMap(workstations, operationComponent), saved);
             totalLaborWorkTime += abstractOperationWorkTime.getLaborWorkTime();
             totalMachineWorkTime += abstractOperationWorkTime.getMachineWorkTime();
             duration += abstractOperationWorkTime.getDuration();
@@ -183,42 +184,58 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     private void savedWorkTime(final Entity entity, final Integer machineWorkTime, final Integer laborWorkTime,
             final Integer duration) {
-        DataDefinition operCompDD = entity.getDataDefinition();
-        entity.setField("machineWorkTime", machineWorkTime);
-        entity.setField("laborWorkTime", laborWorkTime);
-        entity.setField("duration", duration);
-        operCompDD.save(entity);
+        DataDefinition techOperCompTimeCalculationsDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
+                TimeNormsConstants.MODEL_TECH_OPER_COMP_TIME_CALCULATIONS);
+        Entity techOperCompTimeCalculations = entity.getBelongsToField("techOperCompTimeCalculations");
+
+        techOperCompTimeCalculations.setField("machineWorkTime", machineWorkTime);
+        techOperCompTimeCalculations.setField("laborWorkTime", laborWorkTime);
+        techOperCompTimeCalculations.setField("duration", duration);
+        techOperCompTimeCalculations = techOperCompTimeCalculationsDD.save(techOperCompTimeCalculations);
     }
 
     @Override
     public OperationWorkTime estimateTotalWorkTime(final List<Entity> operationComponents,
-            final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine, final boolean saved) {
-        Map<Entity, Integer> workstations = getWorkstationsMapsForOperationsComponent(operationComponents, productionLine);
+        Map<Long, Integer> workstations = getWorkstationsMapsForOperationsComponent(operationComponents, productionLine);
         return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
     }
 
     @Override
-    public OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Entity, BigDecimal> operationRuns,
+    public OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = order.getBelongsToField("technology").getHasManyField(
                 TechnologyFields.OPERATION_COMPONENTS);
-        // order.getHasManyField("technologyInstanceOperationComponents");
-        Map<Entity, Integer> workstations = getWorkstationsFromOrder(order);
+        Map<Long, Integer> workstations = getWorkstationsMapFromOrder(order);
 
         return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
     }
 
     @Override
     public OperationWorkTime estimateTotalWorkTimeForTechnology(final Entity technology,
-            final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
-        Map<Entity, Integer> workstations = getWorkstationsFromTechnology(technology, productionLine);
+        Map<Long, Integer> workstations = getWorkstationsMapFromTechnology(technology, productionLine);
         return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
     }
 
-    private Map<Entity, Integer> getWorkstationsMapsForOperationsComponent(final List<Entity> operationsComponents,
+    private Map<Long, Integer> getWorkstationsMapsForOperationsComponent(final List<Entity> operationsComponents,
+            final Entity productionLine) {
+        Map<Long, Integer> workstations = new HashMap<Long, Integer>();
+        for (Entity operComp : operationsComponents) {
+            String entityType = operComp.getDataDefinition().getName();
+            if (!L_TECHNOLOGY_OPERATION_COMPONENT.equals(entityType)) {
+                operComp = operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getDataDefinition()
+                        .get(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
+            }
+            workstations.put(operComp.getId(), productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+        }
+        return workstations;
+    }
+
+    private Map<Entity, Integer> getWorkstationsForOperationsComponent(final List<Entity> operationsComponents,
             final Entity productionLine) {
         Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
         for (Entity operComp : operationsComponents) {
@@ -272,6 +289,14 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         return workstations.get(operComp.getId());
     }
 
+    private Map<Long, Integer> getWorkstationsMapFromTechnology(final Entity technology, final Entity productionLine) {
+        Map<Long, Integer> workstations = new HashMap<Long, Integer>();
+        for (Entity operComp : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
+            workstations.put(operComp.getId(), productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+        }
+        return workstations;
+    }
+
     private Map<Entity, Integer> getWorkstationsFromTechnology(final Entity technology, final Entity productionLine) {
         Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
         for (Entity operComp : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
@@ -280,11 +305,24 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         return workstations;
     }
 
+    private Map<Long, Integer> getWorkstationsMapFromOrder(final Entity order) {
+        Map<Long, Integer> workstations = new HashMap<Long, Integer>();
+        for (Entity operComp : order.getBelongsToField("technology").getHasManyField("operationComponents")) {
+            workstations
+                    .put(operComp.getId(),
+                            getIntegerValue(operComp.getBelongsToField("techOperCompWorkstation").getField(
+                                    "quantityOfWorkstationTypes")));
+        }
+        return workstations;
+    }
+
     private Map<Entity, Integer> getWorkstationsFromOrder(final Entity order) {
         Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
-        for (Entity operComp : order.getHasManyField("technologyInstanceOperationComponents")) {
-            workstations.put(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT),
-                    getIntegerValue(operComp.getField("quantityOfWorkstationTypes")));
+        for (Entity operComp : order.getBelongsToField("technology").getHasManyField("operationComponents")) {
+            workstations
+                    .put(operComp,
+                            getIntegerValue(operComp.getBelongsToField("techOperCompWorkstation").getField(
+                                    "quantityOfWorkstationTypes")));
         }
         return workstations;
     }

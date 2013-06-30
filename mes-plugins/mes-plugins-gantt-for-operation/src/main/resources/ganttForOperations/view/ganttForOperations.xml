@@ -26,8 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="ganttForOperations" modelName="shift" modelPlugin="basic"
-	windowHeight="750" windowWidth="900">
+	name="ganttForOperations" modelName="shift" modelPlugin="basic">
 
 	<component type="window" name="window" reference="window">
 		<ribbon>

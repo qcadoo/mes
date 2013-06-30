@@ -300,7 +300,14 @@
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 				method="copyTimeNormsToTechnologyOperationComponent" />
 		</model:model-hook>
-
+		
+		<model:model-hook model="technologyOperationComponent"
+			plugin="technologies">
+			<model:onCreate
+				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
+				method="createTechOperCompTimeCalculations" />
+		</model:model-hook>
+		
 		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:validatesWith

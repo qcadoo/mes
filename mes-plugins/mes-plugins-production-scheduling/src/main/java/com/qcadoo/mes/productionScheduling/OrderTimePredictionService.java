@@ -57,7 +57,6 @@ import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -101,19 +100,31 @@ public class OrderTimePredictionService {
         if (order == null) {
             return;
         }
-        DataDefinition dataDefinition = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
-        List<Entity> operations = dataDefinition.find().add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order))
-                .list().getEntities();
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (technology == null) {
+            return;
+        }
+
+        DataDefinition dataDefinitionTOC = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+
+        List<Entity> operations = dataDefinitionTOC.find()
+                .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGY, technology)).list().getEntities();
 
         Date orderStartDate = (Date) order.getField(START_DATE);
         for (Entity operation : operations) {
-            Integer offset = (Integer) operation.getField("operationOffSet");
-            Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
+            Entity techOperCompTimeCalculations = operation.getBelongsToField("techOperCompTimeCalculations");
 
-            operation.setField(EFFECTIVE_DATE_FROM, null);
-            operation.setField(EFFECTIVE_DATE_TO, null);
+            if (techOperCompTimeCalculations == null) {
+                continue;
+            }
+            Integer offset = (Integer) techOperCompTimeCalculations.getField("operationOffSet");
+            Integer duration = (Integer) techOperCompTimeCalculations.getField("effectiveOperationRealizationTime");
+
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_FROM, null);
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_TO, null);
 
             if (offset == null || duration == null) {
                 continue;
@@ -129,12 +140,9 @@ public class OrderTimePredictionService {
             if (dateTo == null) {
                 continue;
             }
-            operation.setField(EFFECTIVE_DATE_FROM, dateFrom);
-            operation.setField(EFFECTIVE_DATE_TO, dateTo);
-        }
-        // TODO ALBR
-        for (Entity operation : operations) {
-            dataDefinition.save(operation);
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_FROM, dateFrom);
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_TO, dateTo);
+            techOperCompTimeCalculations.getDataDefinition().save(techOperCompTimeCalculations);
         }
     }
 
@@ -174,13 +182,9 @@ public class OrderTimePredictionService {
         Boolean includeAdditionalTime = "1".equals(viewDefinitionState.getComponentByReference("includeAdditionalTime")
                 .getFieldValue());
 
-        // TODO LUPO fix problem with operationRuns
-        final Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
+        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
-        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRunsFromProductionQuantities);
-
-        Map<Entity, BigDecimal> operationRuns = productQuantitiesService
-                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
+        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
 
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz,
                 includeAdditionalTime, productionLine, true);
@@ -231,7 +235,8 @@ public class OrderTimePredictionService {
     public Date getDateFromOrdersFromOperation(final List<Entity> operations) {
         Date beforeOperation = null;
         for (Entity operation : operations) {
-            Date operationDateFrom = operation.getDateField(TechnologyOperCompTNFOFields.EFFECTIVE_DATE_FROM);
+            Date operationDateFrom = operation.getBelongsToField("techOperCompTimeCalculations")
+                    .getDateField("effectiveDateFrom");
             if (operationDateFrom != null) {
                 if (beforeOperation == null) {
                     beforeOperation = operationDateFrom;
@@ -247,7 +252,7 @@ public class OrderTimePredictionService {
     public Date getDateToOrdersFromOperation(final List<Entity> operations) {
         Date laterOperation = null;
         for (Entity operation : operations) {
-            Date operationDateTo = operation.getDateField(TechnologyOperCompTNFOFields.EFFECTIVE_DATE_TO);
+            Date operationDateTo = operation.getBelongsToField("techOperCompTimeCalculations").getDateField("effectiveDateTo");
             if (operationDateTo != null) {
                 if (laterOperation == null) {
                     laterOperation = operationDateTo;
@@ -344,13 +349,9 @@ public class OrderTimePredictionService {
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
 
-        // TODO LUPO fix problem with operationRuns
-        final Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
+        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
-        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRunsFromProductionQuantities);
-
-        Map<Entity, BigDecimal> operationRuns = productQuantitiesService
-                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
+        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
 
         boolean saved = true;
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForTechnology(technology, operationRuns,

@@ -23,13 +23,14 @@
  */
 package com.qcadoo.mes.costNormsForOperationInOrder.hooks;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -65,7 +66,7 @@ public class HourlyCostNormsInOrderDetailsHooks {
 
         }
         FieldComponent lastUpdate = (FieldComponent) view.getComponentByReference("lastUpdate");
-        String lastUpdateDate = DateFormat.getDateTimeInstance().format((Date) (updateDate));
+        String lastUpdateDate = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, view.getLocale()).format(updateDate);
         lastUpdate.setFieldValue(lastUpdateDate);
         lastUpdate.requestComponentUpdateState();
     }

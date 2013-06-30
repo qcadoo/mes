@@ -350,13 +350,10 @@ public class ProductionBalanceDetailsListeners {
         final Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
 
         // TODO LUPO fix problem with operationRuns
-        final Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
+        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
         productQuantitiesService.getNeededProductQuantities(Lists.newArrayList(order), MrpAlgorithm.ONLY_COMPONENTS,
-                operationRunsFromProductionQuantities);
-
-        final Map<Entity, BigDecimal> operationRuns = productQuantitiesService
-                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
+                operationRuns);
 
         final OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns,
                 includeTpz, includeAdditionalTime, productionLine, false);
