@@ -92,7 +92,10 @@
 					expression="#product['unit']" />
 
 				<option type="order" column="productType" direction="desc" />
-
+				
+				<option type="searchable" value="productNumber,productName,usedQuantity,producedQuantity,productUnit" />
+				<option type="orderable" value="productNumber,productName,usedQuantity,producedQuantity,productUnit" />
+				
 				<option type="correspondingView"
 					value="basicProductionCounting/basicProductionCountingDetails" />
 				<option type="correspondingComponent" value="form" />

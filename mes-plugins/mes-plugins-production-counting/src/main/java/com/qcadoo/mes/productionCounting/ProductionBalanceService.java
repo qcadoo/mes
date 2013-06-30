@@ -32,29 +32,30 @@ import com.qcadoo.view.api.ViewDefinitionState;
 public interface ProductionBalanceService {
 
     /**
-     * Groups production records registered times
+     * Groups production trackings registered times
      * 
      * @param productionBalance
      *            production balance
-     * @param productionRecords
-     *            production records
+     * @param productionTrackings
+     *            production trackings
      * 
-     * @return grouped production records registered times
+     * @return grouped production trackings registered times
      */
-    Map<Long, Entity> groupProductionRecordsRegisteredTimes(final Entity productionBalance, final List<Entity> productionRecords);
+    Map<Long, Entity> groupProductionTrackingsRegisteredTimes(final Entity productionBalance,
+            final List<Entity> productionTrackings);
 
     /**
-     * Fills production records with planned times
+     * Fills production trackings with planned times
      * 
      * @param productionBalance
      *            production balance
-     * @param productionRecords
-     *            production records
+     * @param productionTrackings
+     *            production trackings
      * 
-     * @return production records with planned times
+     * @return production trackings with planned times
      */
-    Map<Long, Map<String, Integer>> fillProductionRecordsWithPlannedTimes(final Entity productionBalance,
-            final List<Entity> productionRecords);
+    Map<Long, Map<String, Integer>> fillProductionTrackingsWithPlannedTimes(final Entity productionBalance,
+            final List<Entity> productionTrackings);
 
     /**
      * Disables checkboxes

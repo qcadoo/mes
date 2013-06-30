@@ -38,11 +38,11 @@ import com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingFields;
-import com.qcadoo.mes.productionCounting.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingReportFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
-import com.qcadoo.mes.productionCounting.print.utils.EntityProductionRecordComparator;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordStateStringValues;
+import com.qcadoo.mes.productionCounting.print.utils.EntityProductionTrackingComparator;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -70,22 +70,22 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
     private static final String L_USED_QUANTITY_UNIT = "usedQuantityUNIT";
 
-    private static final String L_PRODUCTION_RECORDS = "productionRecords";
+    private static final String L_PRODUCTION_TRACKINGS = "productionTrackings";
 
-    private static final List<String> L_RECORD_OPERATION_PRODUCT_FIELD_NAMES = Lists.newArrayList(L_NUMBER, L_NAME,
+    private static final List<String> L_TRACKING_OPERATION_PRODUCT_FIELD_NAMES = Lists.newArrayList(L_NUMBER, L_NAME,
             L_PLANNED_QUANTITY_UNIT, L_USED_QUANTITY_UNIT);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public Entity getProductionCounting(final Long productionCountingId) {
-        return getProductionCountingDD().get(productionCountingId);
+    public Entity getProductionTrackingReport(final Long productionTrackingReportId) {
+        return getProductionTrackingReportDD().get(productionTrackingReportId);
     }
 
     @Override
-    public Entity getProductionRecord(final Long productionRecordId) {
-        return getProductionRecordDD().get(productionRecordId);
+    public Entity getProductionTracking(final Long productionTrackingId) {
+        return getProductionTrackingDD().get(productionTrackingId);
     }
 
     @Override
@@ -94,25 +94,25 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
-    public Entity getRecordOperationProductInComponent(final Long recordOperationProductInComponentId) {
-        return getRecordOperationProductInComponentDD().get(recordOperationProductInComponentId);
+    public Entity getTrackingOperationProductInComponent(final Long trackingOperationProductInComponentId) {
+        return getTrackingOperationProductInComponentDD().get(trackingOperationProductInComponentId);
     }
 
     @Override
-    public Entity getRecordOperationProductOutComponent(final Long recordOperationProductOutComponentId) {
-        return getRecordOperationProductOutComponentDD().get(recordOperationProductOutComponentId);
+    public Entity getTrackingOperationProductOutComponent(final Long trackingOperationProductOutComponentId) {
+        return getTrackingOperationProductOutComponentDD().get(trackingOperationProductOutComponentId);
     }
 
     @Override
-    public DataDefinition getProductionCountingDD() {
+    public DataDefinition getProductionTrackingReportDD() {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_COUNTING);
+                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING_REPORT);
     }
 
     @Override
-    public DataDefinition getProductionRecordDD() {
+    public DataDefinition getProductionTrackingDD() {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_RECORD);
+                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING);
     }
 
     @Override
@@ -122,22 +122,22 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
-    public DataDefinition getRecordOperationProductInComponentDD() {
+    public DataDefinition getTrackingOperationProductInComponentDD() {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
+                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT);
     }
 
     @Override
-    public DataDefinition getRecordOperationProductOutComponentDD() {
+    public DataDefinition getTrackingOperationProductOutComponentDD() {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
+                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT);
     }
 
     @Override
-    public List<Entity> getProductionRecordsForOrder(final Entity order) {
-        return getProductionRecordDD().find()
-                .add(SearchRestrictions.eq(ProductionRecordFields.STATE, ProductionRecordStateStringValues.ACCEPTED))
-                .add(SearchRestrictions.belongsTo(ProductionRecordFields.ORDER, order)).list().getEntities();
+    public List<Entity> getProductionTrackingsForOrder(final Entity order) {
+        return getProductionTrackingDD().find()
+                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order)).list().getEntities();
     }
 
     @Override
@@ -171,38 +171,39 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
-    public boolean validateOrder(final DataDefinition productionCountingOrBalanceDD, final Entity productionCountingOrBalance) {
-        Entity order = productionCountingOrBalance.getBelongsToField(L_ORDER);
+    public boolean validateOrder(final DataDefinition productionTrackingReportOrBalanceDD,
+            final Entity productionTrackingReportOrBalance) {
+        Entity order = productionTrackingReportOrBalance.getBelongsToField(L_ORDER);
 
         if ((order == null) || isTypeOfProductionRecordingBasic(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
-            productionCountingOrBalance.addError(productionCountingOrBalanceDD.getField(L_ORDER),
+            productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
 
             return false;
         }
 
-        String calculateOperationCostMode = productionCountingOrBalance
+        String calculateOperationCostMode = productionTrackingReportOrBalance
                 .getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
 
         if (!order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)
                 && isCalculateOperationCostModeHourly(calculateOperationCostMode)) {
-            productionCountingOrBalance.addError(productionCountingOrBalanceDD.getField(L_ORDER),
+            productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRegisterProductionTime");
 
             return false;
         } else if (!order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)
                 && isCalculateOperationCostModePiecework(calculateOperationCostMode)) {
-            productionCountingOrBalance.addError(productionCountingOrBalanceDD.getField(L_ORDER),
+            productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRegisterPiecework");
 
             return false;
         }
 
-        List<Entity> productionRecordList = getProductionRecordsForOrder(order);
+        List<Entity> productionTrackings = getProductionTrackingsForOrder(order);
 
-        if (productionRecordList.isEmpty()) {
-            productionCountingOrBalance.addError(productionCountingOrBalanceDD.getField(L_ORDER),
-                    "productionCounting.productionBalance.report.error.orderWithoutProductionRecords");
+        if (productionTrackings.isEmpty()) {
+            productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
+                    "productionCounting.productionBalance.report.error.orderWithoutProductionTrackings");
 
             return false;
         }
@@ -275,22 +276,22 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
-    public void fillFieldsFromProduct(final ViewDefinitionState view, final DataDefinition recordOperationProductComponentDD) {
-        FormComponent recordOperationProductComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
+    public void fillFieldsFromProduct(final ViewDefinitionState view, final DataDefinition trackingOperationProductComponentDD) {
+        FormComponent trackingOperationProductComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        Long recordOperationProductComponentId = recordOperationProductComponentForm.getEntityId();
+        Long trackingOperationProductComponentId = trackingOperationProductComponentForm.getEntityId();
 
-        if (recordOperationProductComponentId == null) {
+        if (trackingOperationProductComponentId == null) {
             return;
         }
 
-        Entity recordOperationProductComponent = recordOperationProductComponentDD.get(recordOperationProductComponentId);
+        Entity trackingOperationProductComponent = trackingOperationProductComponentDD.get(trackingOperationProductComponentId);
 
-        if (recordOperationProductComponent == null) {
+        if (trackingOperationProductComponent == null) {
             return;
         }
 
-        Entity product = recordOperationProductComponent.getBelongsToField(L_PRODUCT);
+        Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
 
         if (product == null) {
             return;
@@ -302,15 +303,15 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
         view.getComponentByReference(L_USED_QUANTITY_UNIT).setFieldValue(product.getStringField(ProductFields.UNIT));
         view.getComponentByReference(L_PLANNED_QUANTITY_UNIT).setFieldValue(product.getStringField(ProductFields.UNIT));
 
-        for (String fieldComponentNames : L_RECORD_OPERATION_PRODUCT_FIELD_NAMES) {
+        for (String fieldComponentNames : L_TRACKING_OPERATION_PRODUCT_FIELD_NAMES) {
             ((FieldComponent) view.getComponentByReference(fieldComponentNames)).requestComponentUpdateState();
         }
     }
 
     @Override
     public void fillProductField(final ViewDefinitionState view) {
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionCountingFields.ORDER);
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionCountingFields.PRODUCT);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingReportFields.ORDER);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingReportFields.PRODUCT);
 
         Entity order = orderLookup.getEntity();
 
@@ -332,7 +333,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     private void setProductFieldValue(final ViewDefinitionState view, final Entity order) {
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionCountingFields.PRODUCT);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingReportFields.PRODUCT);
 
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
@@ -343,14 +344,14 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
-    public void fillProductionRecordsGrid(final ViewDefinitionState view) {
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionCountingFields.ORDER);
-        GridComponent productionRecordsGrid = (GridComponent) view.getComponentByReference(L_PRODUCTION_RECORDS);
+    public void fillProductionTrackingsGrid(final ViewDefinitionState view) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingReportFields.ORDER);
+        GridComponent productionTrackingsGrid = (GridComponent) view.getComponentByReference(L_PRODUCTION_TRACKINGS);
 
         Entity order = orderLookup.getEntity();
 
         if (order == null) {
-            productionRecordsGrid.setVisible(false);
+            productionTrackingsGrid.setVisible(false);
 
             return;
         }
@@ -358,24 +359,24 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
         if (checkIfTypeOfProductionRecordingIsEmptyOrBasic(typeOfProductionRecording)) {
-            productionRecordsGrid.setVisible(false);
+            productionTrackingsGrid.setVisible(false);
 
             return;
         }
 
-        productionRecordsGrid.setVisible(true);
+        productionTrackingsGrid.setVisible(true);
 
-        setProductionRecordsGridContent(view, order);
+        setProductionTrackingsGridContent(view, order);
     }
 
-    private void setProductionRecordsGridContent(final ViewDefinitionState view, final Entity order) {
-        GridComponent productionRecordsGrid = (GridComponent) view.getComponentByReference(L_PRODUCTION_RECORDS);
+    private void setProductionTrackingsGridContent(final ViewDefinitionState view, final Entity order) {
+        GridComponent productionTrackingsGrid = (GridComponent) view.getComponentByReference(L_PRODUCTION_TRACKINGS);
 
-        List<Entity> productionRecords = getProductionRecordsForOrder(order);
+        List<Entity> productionTrackings = getProductionTrackingsForOrder(order);
 
-        Collections.sort(productionRecords, new EntityProductionRecordComparator());
+        Collections.sort(productionTrackings, new EntityProductionTrackingComparator());
 
-        productionRecordsGrid.setEntities(productionRecords);
+        productionTrackingsGrid.setEntities(productionTrackings);
     }
 
 }

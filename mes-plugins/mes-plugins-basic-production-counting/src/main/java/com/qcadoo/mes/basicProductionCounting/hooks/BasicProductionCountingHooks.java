@@ -43,10 +43,6 @@ public class BasicProductionCountingHooks {
     @Autowired
     private NumberService numberService;
 
-    public boolean validatesWith(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
-        return checkValueOfQuantity(basicProductionCountingDD, basicProductionCounting);
-    }
-
     public void onView(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
         fillPlannedQuantity(basicProductionCountingDD, basicProductionCounting);
     }
@@ -76,31 +72,6 @@ public class BasicProductionCountingHooks {
         }
 
         return plannedQuantity;
-    }
-
-    public boolean checkValueOfQuantity(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
-        BigDecimal usedQuantity = basicProductionCounting.getDecimalField(BasicProductionCountingFields.USED_QUANTITY);
-        BigDecimal producedQuantity = basicProductionCounting.getDecimalField(BasicProductionCountingFields.PRODUCED_QUANTITY);
-
-        if ((usedQuantity == null) && (producedQuantity == null)) {
-            return true;
-        }
-
-        if ((usedQuantity != null) && (usedQuantity.compareTo(BigDecimal.ZERO) == -1)) {
-            basicProductionCounting.addError(basicProductionCountingDD.getField(BasicProductionCountingFields.USED_QUANTITY),
-                    "basic.production.counting.value.lower.zero");
-        }
-
-        if ((producedQuantity != null) && (producedQuantity.compareTo(BigDecimal.ZERO) == -1)) {
-            basicProductionCounting.addError(basicProductionCountingDD.getField(BasicProductionCountingFields.PRODUCED_QUANTITY),
-                    "basic.production.counting.value.lower.zero");
-        }
-
-        if (!basicProductionCounting.getGlobalErrors().isEmpty() || !basicProductionCounting.getErrors().isEmpty()) {
-            return false;
-        }
-
-        return true;
     }
 
 }

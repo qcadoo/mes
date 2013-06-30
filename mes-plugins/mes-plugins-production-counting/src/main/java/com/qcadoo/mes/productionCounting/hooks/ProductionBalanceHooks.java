@@ -39,22 +39,22 @@ public class ProductionBalanceHooks {
     private ProductionCountingService productionCountingService;
 
     public void onSave(final DataDefinition productionBalanceDD, final Entity productionBalance) {
-        updateRecordsNumber(productionBalanceDD, productionBalance);
+        updateTrackingsNumber(productionBalanceDD, productionBalance);
     }
 
     public void onCopy(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         clearGeneratedOnCopy(productionBalanceDD, productionBalance);
     }
 
-    private void updateRecordsNumber(final DataDefinition productionBalanceDD, final Entity productionBalance) {
+    private void updateTrackingsNumber(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
         if ((order != null)
                 && !productionCountingService.isTypeOfProductionRecordingBasic(order
                         .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
-            int recordsNumber = productionCountingService.getProductionRecordsForOrder(order).size();
+            int trackingsNumber = productionCountingService.getProductionTrackingsForOrder(order).size();
 
-            productionBalance.setField(ProductionBalanceFields.RECORDS_NUMBER, recordsNumber);
+            productionBalance.setField(ProductionBalanceFields.TRACKINGS_NUMBER, trackingsNumber);
         }
     }
 

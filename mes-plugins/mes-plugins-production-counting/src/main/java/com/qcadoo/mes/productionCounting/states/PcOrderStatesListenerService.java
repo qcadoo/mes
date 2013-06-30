@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.Entity;
@@ -56,29 +56,36 @@ public class PcOrderStatesListenerService {
 
     private void checkFinalProductionCountingForOrderCumulated(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
-        final SearchResult productionRecordingsResult = productionCountingService.getProductionRecordDD().find()
-                .add(SearchRestrictions.belongsTo(ProductionRecordFields.ORDER, order))
-                .add(SearchRestrictions.eq(ProductionRecordFields.LAST_RECORD, true)).list();
+        final SearchResult result = productionCountingService.getProductionTrackingDD().find()
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, true)).list();
 
-        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && productionRecordingsResult.getTotalNumberOfEntities() == 0) {
+        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && result.getTotalNumberOfEntities() == 0) {
             stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
         }
     }
 
     private void checkFinalProductionCountingForOrderForEach(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
-        final List<Entity> operations = order.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
-        int numberOfRecord = 0;
-        for (Entity operation : operations) {
-            final SearchResult productionRecordingsResult = productionCountingService.getProductionRecordDD().find()
-                    .add(SearchRestrictions.belongsTo(ProductionRecordFields.ORDER, order))
-                    .add(SearchRestrictions.belongsTo(ProductionRecordFields.TECHNOLOGY_OPERATION_COMPONENT, operation))
-                    .add(SearchRestrictions.eq(ProductionRecordFields.LAST_RECORD, true)).list();
-            if (productionRecordingsResult.getTotalNumberOfEntities() > 0) {
-                numberOfRecord++;
+        // TODO lupo fix - order -> technology - tree
+        final List<Entity> technologyInstanceOperationComponents = order
+                .getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+
+        int trackingsNumber = 0;
+        for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponents) {
+            final SearchResult result = productionCountingService
+                    .getProductionTrackingDD()
+                    .find()
+                    .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                    .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
+                            technologyInstanceOperationComponent))
+                    .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, true)).list();
+            if (result.getTotalNumberOfEntities() > 0) {
+                trackingsNumber++;
             }
         }
-        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && operations.size() != numberOfRecord) {
+        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE)
+                && technologyInstanceOperationComponents.size() != trackingsNumber) {
             stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
         }
     }

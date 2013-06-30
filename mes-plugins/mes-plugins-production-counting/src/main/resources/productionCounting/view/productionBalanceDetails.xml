@@ -142,7 +142,7 @@
 
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
-								method="fillProductAndRecordsNumber" />
+								method="fillProductAndTrackingsNumber" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
 								method="setDefaultNameUsingOrder" />
@@ -171,8 +171,8 @@
 							reference="description" />
 					</layoutElement>
 					<layoutElement column="2" row="2">
-						<component type="input" name="recordsNumber" field="recordsNumber"
-							reference="recordsNumber" defaultEnabled="false">
+						<component type="input" name="trackingsNumber" field="trackingsNumber"
+							reference="trackingsNumber" defaultEnabled="false">
 							<option type="alignment" value="right" />
 							<option type="textRepresentationOnDisabled" value="true" />
 						</component>

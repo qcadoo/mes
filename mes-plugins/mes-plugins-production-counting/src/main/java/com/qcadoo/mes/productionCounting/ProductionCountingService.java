@@ -32,22 +32,22 @@ import com.qcadoo.view.api.ViewDefinitionState;
 public interface ProductionCountingService {
 
     /**
-     * Gets production counting
+     * Gets production tracking report
      * 
-     * @param productionCountingId
+     * @param productionTrackingReportId
      * 
-     * @return production counting
+     * @return production tracking report
      */
-    Entity getProductionCounting(final Long productionCountingId);
+    Entity getProductionTrackingReport(final Long productionTrackingReportId);
 
     /**
-     * Gets production record
+     * Gets production tracking
      * 
-     * @param productionRecordId
+     * @param productionTrackingId
      * 
-     * @return production record
+     * @return production tracking
      */
-    Entity getProductionRecord(final Long productionCountingId);
+    Entity getProductionTracking(final Long productionTrackingId);
 
     /**
      * Gets production balance
@@ -59,36 +59,36 @@ public interface ProductionCountingService {
     Entity getProductionBalance(final Long productionBalanceId);
 
     /**
-     * Gets record operation product in component
+     * Gets tracking operation product in component
      * 
-     * @param recordOperationProductInComponentId
+     * @param trackingOperationProductInComponentId
      * 
-     * @return record operation product in component
+     * @return tracking operation product in component
      */
-    Entity getRecordOperationProductInComponent(final Long recordOperationProductInComponentId);
+    Entity getTrackingOperationProductInComponent(final Long trackingOperationProductInComponentId);
 
     /**
-     * Gets record operation product out component
+     * Gets tracking operation product out component
      * 
-     * @param recordOperationProductOutComponentId
+     * @param trackingOperationProductOutComponentId
      * 
-     * @return record operation product out component
+     * @return tracking operation product out component
      */
-    Entity getRecordOperationProductOutComponent(final Long recordOperationProductOutComponentId);
+    Entity getTrackingOperationProductOutComponent(final Long trackingOperationProductOutComponentId);
 
     /**
-     * Gets production counting data definition
+     * Gets production tracking report data definition
      * 
-     * @return production counting data definition
+     * @return production tracking report data definition
      */
-    DataDefinition getProductionCountingDD();
+    DataDefinition getProductionTrackingReportDD();
 
     /**
-     * Gets production record data definition
+     * Gets production tracking data definition
      * 
-     * @return production record data definition
+     * @return production tracking data definition
      */
-    DataDefinition getProductionRecordDD();
+    DataDefinition getProductionTrackingDD();
 
     /**
      * Gets production balance data definition
@@ -98,27 +98,27 @@ public interface ProductionCountingService {
     DataDefinition getProductionBalanceDD();
 
     /**
-     * Gets record operation product in component data definition
+     * Gets tracking operation product in component data definition
      * 
-     * @return record operation product in component data definition
+     * @return tracking operation product in component data definition
      */
-    DataDefinition getRecordOperationProductInComponentDD();
+    DataDefinition getTrackingOperationProductInComponentDD();
 
     /**
-     * Gets record operation product out component data definition
+     * Gets tracking operation product out component data definition
      * 
-     * @return record operation product out component data definition
+     * @return tracking operation product out component data definition
      */
-    DataDefinition getRecordOperationProductOutComponentDD();
+    DataDefinition getTrackingOperationProductOutComponentDD();
 
     /**
-     * Gets production records for order
+     * Gets production trackings for order
      * 
      * @param order
      *            order
-     * @return production records
+     * @return production trackings
      */
-    List<Entity> getProductionRecordsForOrder(final Entity order);
+    List<Entity> getProductionTrackingsForOrder(final Entity order);
 
     /**
      * Is type of production recording basic
@@ -183,14 +183,14 @@ public interface ProductionCountingService {
     /**
      * Validates order
      * 
-     * @param productionCountingOrBalanceDD
-     *            production counting or production balance data definition
-     * @param productionCountingOrBalance
-     *            production counting or production balance
+     * @param productionTrackingReportOrBalanceDD
+     *            production tracking report or production balance data definition
+     * @param productionTrackingReportOrBalance
+     *            production tracking report or production balance
      * 
      * @return boolean
      */
-    boolean validateOrder(final DataDefinition productionCountingOrBalanceDD, final Entity productionCountingOrBalance);
+    boolean validateOrder(final DataDefinition productionTrackingReportOrBalanceDD, final Entity productionTrackingReportOrBalance);
 
     /**
      * Sets components state
@@ -235,10 +235,10 @@ public interface ProductionCountingService {
      * 
      * @param view
      *            view
-     * @param recordOperationProductComponentDD
-     *            record operation product component data definition
+     * @param trackingOperationProductComponentDD
+     *            tracking operation product component data definition
      */
-    void fillFieldsFromProduct(final ViewDefinitionState view, final DataDefinition recordOperationProductComponentDD);
+    void fillFieldsFromProduct(final ViewDefinitionState view, final DataDefinition trackingOperationProductComponentDD);
 
     /**
      * Fills product field
@@ -249,11 +249,11 @@ public interface ProductionCountingService {
     void fillProductField(final ViewDefinitionState view);
 
     /**
-     * Fills production records grid
+     * Fills production trackings grid
      * 
      * @param view
      *            view
      */
-    void fillProductionRecordsGrid(final ViewDefinitionState view);
+    void fillProductionTrackingsGrid(final ViewDefinitionState view);
 
 }

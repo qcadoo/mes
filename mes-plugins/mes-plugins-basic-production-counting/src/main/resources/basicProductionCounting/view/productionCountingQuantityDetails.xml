@@ -88,6 +88,7 @@
 						<layoutElement column="4" row="1">
 							<component type="input" name="plannedQuantityUnit"
 								reference="plannedQuantityUnit" defaultEnabled="false" hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
 					</component>
@@ -121,6 +122,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityDetailsHooks"
 			method="fillUnitFields" />
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityDetailsHooks"
+			method="setOperationFieldRequiredDependsOfOrder" />
 	</hooks>
 
 </view>

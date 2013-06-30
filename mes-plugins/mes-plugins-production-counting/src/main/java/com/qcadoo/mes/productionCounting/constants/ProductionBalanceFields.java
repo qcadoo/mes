@@ -41,7 +41,7 @@ public final class ProductionBalanceFields {
 
     public static final String WORKER = "worker";
 
-    public static final String RECORDS_NUMBER = "recordsNumber";
+    public static final String TRACKINGS_NUMBER = "trackingsNumber";
 
     public static final String DESCRIPTION = "description";
 

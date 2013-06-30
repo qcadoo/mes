@@ -45,6 +45,12 @@ public class ProductionCountingQuantityDetailsHooks {
 
     private static final String L_FORM = "form";
 
+    private static final String L_FOR_EACH = "03forEach";
+
+    private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUnit";
+
+    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
@@ -141,9 +147,47 @@ public class ProductionCountingQuantityDetailsHooks {
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
-        List<String> referenceNames = Lists.newArrayList("plannedQuantityUnit");
+        List<String> referenceNames = Lists.newArrayList(L_PLANNED_QUANTITY_UNIT);
 
         basicProductionCountingService.fillUnitFields(view, ProductionCountingQuantityFields.PRODUCT, referenceNames);
+    }
+
+    public void setOperationFieldRequiredDependsOfOrder(final ViewDefinitionState view) {
+        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        Entity productionCountingQuantity = productionCountingQuantityForm.getEntity();
+
+        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+        Entity basicProductionCounting = productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING);
+
+        if (order != null) {
+            String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
+
+            if (L_FOR_EACH.equals(typeOfProductionRecording)) {
+                technologyOperationComponentLookup.setRequired(true);
+
+                return;
+            }
+        }
+
+        if (basicProductionCounting != null) {
+            Entity basicProductionCountingOrder = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
+
+            if (basicProductionCountingOrder != null) {
+                String typeOfProductionRecording = basicProductionCountingOrder.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
+
+                if (L_FOR_EACH.equals(typeOfProductionRecording)) {
+                    technologyOperationComponentLookup.setRequired(true);
+
+                    return;
+                }
+            }
+        }
+
+        technologyOperationComponentLookup.setRequired(false);
     }
 
 }

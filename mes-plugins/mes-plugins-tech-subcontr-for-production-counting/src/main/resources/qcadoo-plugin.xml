@@ -24,10 +24,11 @@
     ***************************************************************************
 
 -->
-<plugin plugin="techSubcontrForProductionCounting" group="tracking" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+<plugin plugin="techSubcontrForProductionCounting" group="tracking"
+	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
@@ -65,27 +66,27 @@
 		<localization:translation path="locales" />
 
 		<model:model-field plugin="productionCounting"
-			model="productionRecord">
+			model="productionTracking">
 			<model:belongsTo name="subcontractor" plugin="basic"
 				model="company" />
 		</model:model-field>
 
-		<view:view-tab resource="view/tabExtensions/productionRecordDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/productionTrackingDetails.xml" />
 
 		<view:view-grid-column plugin="productionCounting"
-			view="productionRecordsList" component="grid">
+			view="productionTrackingsList" component="grid">
 			<view:column name="subcontractor" fields="subcontractor"
 				expression="#subcontractor['name']" orderable="true" searchable="true"
 				width="200" />
 		</view:view-grid-column>
 
-		<view:view-hook view="productionRecordDetails" type="beforeRender"
+		<view:view-hook view="productionTrackingDetails" type="beforeRender"
 			plugin="productionCounting"
-			class="com.qcadoo.mes.techSubcontrForProductionCounting.hooks.ProductionRecordDetailsHooksTSFPC"
+			class="com.qcadoo.mes.techSubcontrForProductionCounting.hooks.ProductionTrackingDetailsHooksTSFPC"
 			method="disabledSubcontractorFieldForState" />
 
 	</modules>
-	
+
 	<features>
 		<end-user />
 		<internal-integration />

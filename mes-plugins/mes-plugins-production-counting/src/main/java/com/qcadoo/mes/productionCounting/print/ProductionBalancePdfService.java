@@ -172,8 +172,8 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 locale), order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.NAME), null,
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
         addTableCellAsTable(leftPanel,
-                translationService.translate("productionCounting.productionBalance.report.panel.numberOfRecords", locale),
-                productionBalance.getIntegerField(ProductionBalanceFields.RECORDS_NUMBER).toString(), null,
+                translationService.translate("productionCounting.productionBalance.report.panel.trackingsNumber", locale),
+                productionBalance.getIntegerField(ProductionBalanceFields.TRACKINGS_NUMBER).toString(), null,
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 translationService.translate("productionCounting.productionBalance.description.label", locale) + ":",

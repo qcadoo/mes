@@ -71,6 +71,13 @@ ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN updatedate time
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN createuser character varying(255);
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN updateuser character varying(255);
 
+
+-- Table: productioncounting_productionbalance
+-- changed: 26.06.2013
+
+ALTER TABLE productioncounting_productionbalance RENAME COLUMN recordsnumber TO trackingsnumber;
+
+
 -- end
 
 
@@ -103,6 +110,28 @@ CREATE TABLE productionlines_techopercompworkstation
   CONSTRAINT productionlines_techopercompworkstation_pkey PRIMARY KEY (id)
 );
 
+
+-- Table: productioncounting_productionrecord
+-- changed: 26.06.2013
+
+ALTER TABLE productioncounting_productionrecord RENAME TO productioncounting_productiontracking;
+ALTER TABLE productioncounting_productionrecordstatechange RENAME COLUMN lastrecord TO lasttracking;
+
+ALTER TABLE productioncounting_productiontracking ADD COLUMN technologyoperationcomponent_id bigint;
+
+ALTER TABLE productioncounting_productiontracking
+  ADD CONSTRAINT productiontracking_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE;
+      
+-- end
+
+
+-- Table: productioncounting_productionrecordstatechange
+-- changed: 26.06.2013
+
+ALTER TABLE productioncounting_productionrecordstatechange RENAME TO productioncounting_productiontrackingstatechange;
+ALTER TABLE productioncounting_productionrecordstatechange RENAME COLUMN productionrecord_id TO productiontracking_id;
+
 -- end
 
 
@@ -117,6 +146,11 @@ CREATE TABLE operationaltasksfororders_techopercompoperationaltasks
   CONSTRAINT techopercompoperationaltasks_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
       REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE
 );
+
+-- Table: productioncounting_productioncounting
+-- changed: 26.06.2013
+
+ALTER TABLE productioncounting_productioncounting RENAME TO productioncounting_productiontrackingreport;
 
 -- end
 
@@ -138,3 +172,22 @@ ALTER TABLE technologies_technologyoperationcomponent
       REFERENCES productionlines_techopercompworkstation (id) DEFERRABLE;
 
 -- end
+
+      
+-- Table: productioncounting_recordoperationproductincomponent
+-- changed: 26.06.2013
+
+ALTER TABLE productioncounting_recordoperationproductincomponent RENAME TO productioncounting_trackingoperationproductincomponent;
+ALTER TABLE productioncounting_recordoperationproductincomponent RENAME COLUMN productionrecord_id TO productiontracking_id;
+
+-- end
+
+
+-- Table: productioncounting_recordoperationproductoutcomponent
+-- changed: 26.06.2013
+
+ALTER TABLE productioncounting_recordoperationproductoutcomponent RENAME TO productioncounting_trackingoperationproductoutcomponent;
+ALTER TABLE productioncounting_recordoperationproductoutcomponent RENAME COLUMN productionrecord_id TO productiontracking_id;
+
+-- end
+

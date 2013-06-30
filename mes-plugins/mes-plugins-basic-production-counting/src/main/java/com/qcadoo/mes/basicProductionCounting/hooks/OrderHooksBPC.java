@@ -42,7 +42,11 @@ public class OrderHooksBPC {
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
-    public void updateProductionCountingQuantitiesAndOperationRuns(final DataDefinition orderDD, final Entity order) {
+    public void onSave(final DataDefinition orderDD, final Entity order) {
+        updateProductionCountingQuantitiesAndOperationRuns(orderDD, order);
+    }
+
+    private void updateProductionCountingQuantitiesAndOperationRuns(final DataDefinition orderDD, final Entity order) {
         BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
         String state = order.getStringField(OrderFields.STATE);
@@ -86,8 +90,8 @@ public class OrderHooksBPC {
         List<Entity> productionCountingQuantities = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES);
         List<Entity> productionCountingOperationRuns = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS);
 
-        return (((productionCountingQuantities == null) || (productionCountingQuantities.isEmpty())) && ((productionCountingOperationRuns == null) || (productionCountingOperationRuns
-                .isEmpty())));
+        return (((productionCountingQuantities == null) || productionCountingQuantities.isEmpty()) && ((productionCountingOperationRuns == null) || productionCountingOperationRuns
+                .isEmpty()));
     }
 
 }
