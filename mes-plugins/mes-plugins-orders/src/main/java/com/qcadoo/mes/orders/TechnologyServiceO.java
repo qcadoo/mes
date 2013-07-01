@@ -82,7 +82,7 @@ public class TechnologyServiceO {
                             TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
                     newCopyOfTechnology = newCopyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
                     order.setField(OrderFields.TECHNOLOGY, newCopyOfTechnology);
-                    // setQuantityOfWorkstationTypes(order, technology);
+                    setQuantityOfWorkstationTypes(order, technology);
 
                 } else if (technologyWasChanged(order)) {
                     Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
@@ -103,7 +103,7 @@ public class TechnologyServiceO {
                             TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
                     newCopyOfTechnology = newCopyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
                     order.setField(OrderFields.TECHNOLOGY, newCopyOfTechnology);
-                    // setQuantityOfWorkstationTypes(order, technology);
+                    setQuantityOfWorkstationTypes(order, technology);
 
                 }
 
@@ -120,7 +120,7 @@ public class TechnologyServiceO {
                     // EntityTree technologyOperationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
                     // technologyOperationComponents.getRoot();
                     order.setField(OrderFields.TECHNOLOGY, technology);
-                    // setQuantityOfWorkstationTypes(order, technology);
+                    setQuantityOfWorkstationTypes(order, technology);
 
                 }
             }
@@ -135,10 +135,13 @@ public class TechnologyServiceO {
                     order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
                     Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
                     technology.setField("technologyPrototype", null);
-                    if (isTypeOrderChnagedToOwn(order)) {
-                        technology
-                                .setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue());
-                    }
+
+                    technology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue());
+                    technology.setField(
+                            TechnologyFields.NAME,
+                            makeTechnologyName(technology.getStringField(TechnologyFields.NUMBER),
+                                    order.getBelongsToField(OrderFields.PRODUCT)));
+
                     technology.getDataDefinition().save(technology);
                 }
 
@@ -161,7 +164,7 @@ public class TechnologyServiceO {
                     if (prototypeTechnology != null) {
                         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
                     }
-                    // setQuantityOfWorkstationTypes(order, technology);
+                    setQuantityOfWorkstationTypes(order, technology);
 
                 } else if (getExistingOrder(order).getBelongsToField(OrderFields.TECHNOLOGY) == null) {
                     Entity technology = technologyDD.create();
@@ -181,7 +184,7 @@ public class TechnologyServiceO {
                     if (prototypeTechnology != null) {
                         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
                     }
-                    // setQuantityOfWorkstationTypes(order, technology);
+                    setQuantityOfWorkstationTypes(order, technology);
 
                 }
             }
@@ -191,34 +194,34 @@ public class TechnologyServiceO {
     }
 
     public void setQuantityOfWorkstationTypes(Entity order, final Entity technology) {
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+        Entity technologyDB = technologyDD.get(technology.getId());
+        if (technologyDB == null) {
+            return;
+        }
+        EntityTree techOperComponentTree = technologyDB.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         DataDefinition quantityOfWorkstationTypesDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 "techOperCompWorkstation");
-        Entity technologyOperation = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        technologyOperation.getId();
-        EntityTree technologyOperationComponents = order.getBelongsToField(OrderFields.TECHNOLOGY).getTreeField(
-                TechnologyFields.OPERATION_COMPONENTS);
-        if (technologyOperationComponents == null) {
+
+        // EntityTree technologyOperationComponents = EntityTreeUtilsService.getDetachedEntityTree(en);
+        if (techOperComponentTree == null) {
             return;
         }
 
-        EntityTreeNode operationComponentRoot = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
-        Entity techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
-        techOperCompWorkstation.setField("quantityOfWorkstationTypes", productionLinesService.getWorkstationTypesCount(
-                operationComponentRoot, order.getBelongsToField("productionLine")));
-        quantityOfWorkstationTypesDD.save(techOperCompWorkstation);
-        operationComponentRoot.getDataDefinition().save(operationComponentRoot);
+        EntityTreeNode operationComponentRoot = techOperComponentTree.getRoot();
 
-        // Entity techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
-        // for (Entity child : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
-        // techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
-        // techOperCompWorkstation.setField("quantityOfWorkstationTypes",
-        // productionLinesService.getWorkstationTypesCount(child, order.getBelongsToField("productionLine")));
-        // techOperCompWorkstation = quantityOfWorkstationTypesDD.save(techOperCompWorkstation);
-        // child.setField("techOperCompWorkstation", techOperCompWorkstation);
-        //
-        // child = child.getDataDefinition().save(child);
-        //
-        // }
+        Entity techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
+        for (Entity child : technologyDB.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
+            techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
+            techOperCompWorkstation.setField("quantityOfWorkstationTypes",
+                    productionLinesService.getWorkstationTypesCount(child, order.getBelongsToField("productionLine")));
+            techOperCompWorkstation = quantityOfWorkstationTypesDD.save(techOperCompWorkstation);
+            child.setField("techOperCompWorkstation", techOperCompWorkstation);
+
+            child = child.getDataDefinition().save(child);
+
+        }
 
     }
 
