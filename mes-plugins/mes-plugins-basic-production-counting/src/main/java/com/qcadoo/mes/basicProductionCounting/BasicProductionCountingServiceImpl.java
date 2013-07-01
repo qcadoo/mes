@@ -56,6 +56,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.RowStyle;
 
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
@@ -363,6 +364,26 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
+    }
+
+    @Override
+    public Set<String> fillRowStylesDependsOfTypeOfMaterial(final Entity productionCountingQuantity) {
+        final Set<String> rowStyles = Sets.newHashSet();
+
+        final String typeOfMaterial = productionCountingQuantity
+                .getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+
+        if (ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial)) {
+            rowStyles.add("lightGreyBg");
+        } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)) {
+            rowStyles.add("greyBg");
+        } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)) {
+            rowStyles.add("darkGreyBg");
+        } else {
+            rowStyles.add(RowStyle.RED_BACKGROUND);
+        }
+
+        return rowStyles;
     }
 
 }

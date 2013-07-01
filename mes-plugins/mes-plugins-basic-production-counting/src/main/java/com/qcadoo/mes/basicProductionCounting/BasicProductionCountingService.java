@@ -25,6 +25,7 @@ package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -162,5 +163,15 @@ public interface BasicProductionCountingService {
      *            reference names to unit fields
      */
     void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames);
+
+    /**
+     * Fills row styles depends of type of material
+     * 
+     * @param productionCountingQuantity
+     *            production counting quantity
+     * 
+     * @return row styles
+     */
+    Set<String> fillRowStylesDependsOfTypeOfMaterial(final Entity productionCountingQuantity);
 
 }

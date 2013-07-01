@@ -39,8 +39,8 @@
 		<component type="form" name="order" reference="order" />
 		<component type="form" name="basicProductionCounting"
 			reference="form">
-			<component type="grid" name="productionCountingQuantities" reference="grid"
-				source="#{order}.productionCountingQuantities">
+			<component type="grid" name="productionCountingQuantities"
+				reference="grid" source="#{order}.productionCountingQuantities">
 				<option type="column" name="productNumber" fields="product"
 					expression="#product['number']" link="true" />
 				<option type="column" name="productName" fields="product"
@@ -62,10 +62,12 @@
 					expression="#product['unit']" />
 
 				<option type="order" column="productType" direction="desc" />
-				
-				<option type="searchable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit" />
-				<option type="orderable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit" />
-				
+
+				<option type="searchable"
+					value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit" />
+				<option type="orderable"
+					value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit" />
+
 				<option type="correspondingView"
 					value="basicProductionCounting/productionCountingQuantityDetails" />
 				<option type="correspondingComponent" value="form" />
@@ -76,6 +78,10 @@
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 				<option type="fixedHeight" value="true" />
+
+				<rowStyleResolver
+					class="com.qcadoo.mes.basicProductionCounting.rowStyleResolvers.DetailedProductionCountingListCriteriaModifiers"
+					method="fillRowStylesDependsOfTypeOfMaterial" />
 			</component>
 		</component>
 
