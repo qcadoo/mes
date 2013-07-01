@@ -355,6 +355,7 @@
 						<contextPath>/</contextPath>
 						<baseResource implementation="org.mortbay.resource.ResourceCollection">
 							<resourcesAsCSV>
+								${basedir}/../mes-plugins/mes-plugins-basic-production-counting/src/main/resources;
 								${basedir}/src/main/webapp;
 								${basedir}/../../qcadoo/qcadoo-view/src/main/resources;
 								${basedir}/../../qcadoo/qcadoo-report/src/main/resources;
