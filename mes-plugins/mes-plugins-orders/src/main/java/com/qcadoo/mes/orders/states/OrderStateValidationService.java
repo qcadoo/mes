@@ -27,6 +27,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,8 +37,14 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.StateChangeSamplesClient;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
@@ -51,6 +58,9 @@ public class OrderStateValidationService {
 
     @Autowired
     private StateChangeSamplesClient stateChangeSamplesClient;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     private static final String ENTITY_IS_NULL = "entity is null";
 
@@ -97,6 +107,18 @@ public class OrderStateValidationService {
         copyOfTechnologyValidationService.checkIfTechnologyHasAtLeastOneComponent(stateChangeContext, technology);
         copyOfTechnologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext, technology);
         copyOfTechnologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext, technology);
+
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+
+        Entity technologyDB = technologyDD.get(technology.getId());
+        if (technologyDB.getStringField(TechnologyFields.STATE).equals(TechnologyState.DRAFT.getStringValue())) {
+            final StateChangeStatus status = stateChangeContext.getStatus();
+
+            if (IN_PROGRESS.equals(status)) {
+                technologyDB = stateChangeSamplesClient.changeState(technologyDB, "02accepted");
+            }
+        }
 
     }
 

@@ -138,7 +138,9 @@
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="input" name="typeOfTechnology"
-							reference="typeOfTechnology" defaultEnabled="false" />
+							reference="typeOfTechnology" defaultEnabled="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
 						<component type="lookup" name="technologyPrototype" reference="technologyPrototype"

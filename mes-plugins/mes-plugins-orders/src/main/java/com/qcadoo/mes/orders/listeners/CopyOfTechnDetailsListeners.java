@@ -87,6 +87,7 @@ public class CopyOfTechnDetailsListeners {
             order.setField(OrderFields.TECHNOLOGY, newCopyOfTechnology);
 
             order.getDataDefinition().save(order);
+            technologyServiceO.setQuantityOfWorkstationTypes(order, newCopyOfTechnology);
             componentState.setFieldValue(newCopyOfTechnology.getId());
             final FormComponent form = (FormComponent) componentState;
             form.setEntity(newCopyOfTechnology);
@@ -118,7 +119,7 @@ public class CopyOfTechnDetailsListeners {
             newCopyOfTechnology = newCopyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
             order.setField(OrderFields.TECHNOLOGY, newCopyOfTechnology);
             order.getDataDefinition().save(order);
-            // technologyServiceO.setQuantityOfWorkstationTypes(order, newCopyOfTechnology);
+            technologyServiceO.setQuantityOfWorkstationTypes(order, newCopyOfTechnology);
             componentState.setFieldValue(newCopyOfTechnology.getId());
             final FormComponent form = (FormComponent) componentState;
             form.setEntity(newCopyOfTechnology);
@@ -140,6 +141,7 @@ public class CopyOfTechnDetailsListeners {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
                     .add(SearchRestrictions.belongsTo(OrderFields.TECHNOLOGY, technology)).uniqueResult();
             Entity patternTechnology = patternTechnologyLookup.getEntity();
+            Entity newCopyOfTechnology = technologyDD.create();
 
             if (patternTechnology != null
                     && !patternTechnology.getId().equals(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).getId())) {
@@ -147,7 +149,6 @@ public class CopyOfTechnDetailsListeners {
 
                 order.getDataDefinition().save(order);
                 technologyDD.delete(technology.getId());
-                Entity newCopyOfTechnology = technologyDD.create();
                 newCopyOfTechnology = technologyDD.copy(patternTechnology.getId()).get(0);
 
                 newCopyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
@@ -164,6 +165,12 @@ public class CopyOfTechnDetailsListeners {
                 componentState.setFieldValue(newCopyOfTechnology.getId());
                 final FormComponent form = (FormComponent) componentState;
                 form.setEntity(newCopyOfTechnology);
+            }
+
+            if (newCopyOfTechnology.getId() == null) {
+                technologyServiceO.setQuantityOfWorkstationTypes(order, technology);
+            } else {
+                technologyServiceO.setQuantityOfWorkstationTypes(order, newCopyOfTechnology);
             }
         }
     }

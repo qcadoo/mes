@@ -215,7 +215,8 @@ public class OrderDetailsListeners {
             boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(
                     orderType.getFieldValue());
             if (selectForPatternTechnology) {
-                orderForm.addMessage("order.orderType.changeOrderType", MessageType.INFO);
+                orderForm.addMessage("order.orderType.changeOrderType", MessageType.INFO, false);
+
             }
         }
     }
