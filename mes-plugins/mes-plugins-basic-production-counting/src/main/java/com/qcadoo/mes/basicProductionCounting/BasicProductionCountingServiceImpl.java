@@ -373,13 +373,13 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 .getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
         if (ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial)) {
-            rowStyles.add("componentsStyle");
+            rowStyles.add("greenBg");
         } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)) {
-            rowStyles.add("intermediateStyle");
+            rowStyles.add("blueBg");
         } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)) {
-            rowStyles.add("finalProductStyle");
+            rowStyles.add("yellowBg");
         } else {
-            rowStyles.add("wasteStyle");
+            rowStyles.add("brownBg");
         }
 
         return rowStyles;
