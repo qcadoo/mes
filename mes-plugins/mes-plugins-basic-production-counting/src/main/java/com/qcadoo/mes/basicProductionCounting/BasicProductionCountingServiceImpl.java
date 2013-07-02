@@ -56,6 +56,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.RowStyle;
 
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
@@ -373,13 +374,13 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 .getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
         if (ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial)) {
-            rowStyles.add("greenBg");
+            rowStyles.add(RowStyle.GREEN_BACKGROUND);
         } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)) {
-            rowStyles.add("blueBg");
+            rowStyles.add(RowStyle.BLUE_BACKGROUND);
         } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)) {
-            rowStyles.add("yellowBg");
+            rowStyles.add(RowStyle.YELLOW_BACKGROUND);
         } else {
-            rowStyles.add("brownBg");
+            rowStyles.add(RowStyle.BROWN_BACKGROUND);
         }
 
         return rowStyles;

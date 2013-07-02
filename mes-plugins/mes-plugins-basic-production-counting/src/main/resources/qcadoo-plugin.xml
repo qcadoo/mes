@@ -145,9 +145,6 @@
 		<view:view resource="view/detailedProductionCountingList.xml" />
 		<view:view resource="view/productionCountingQuantityAdvancedDetails.xml" />
 		<view:view resource="view/productionCountingQuantityDetails.xml" />
-
-		<view:resource uri="public/**/*" />
-
 	</modules>
 
 	<features>
