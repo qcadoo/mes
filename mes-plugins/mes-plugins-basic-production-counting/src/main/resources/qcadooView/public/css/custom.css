@@ -21,54 +21,71 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-
-.gridContainer .lightGreyBg {
-	background: #CCCCCC;
+/*components */
+.gridContainer .componentsStyle {
+	background: #ADEBAD;
 	border-color: #E3B1AF;
 }
 
-.gridContainer .ui-state-highlight.lightGreyBg {
-	background: #CCCCCC !important;
+.gridContainer .ui-state-highlight.componentsStyle {
+	background: #FDEDA2 !important;
 	border-color: #D19592 !important;
 }
-.gridContainer .ui-state-hover.lightGreyBg {
-	background: #CCCCCC;
+.gridContainer .ui-state-hover.componentsStyle {
+	background: #dcdcdc;
 	border-color: #D19592;
 }
-.gridContainer .ui-state-highlight.ui-state-hover.lightGreyBg {
-	background: #CCCCCC !important;
+.gridContainer .ui-state-highlight.ui-state-hover.componentsStyle {
+	background: #F8C426 !important;
 }
-
-.gridContainer .greyBg {
-	background: #808080;
+/*intermediate */
+.gridContainer .intermediateStyle {
+	background: #A3E0FF;
 	border-color: #E3B1AF;
 }
 
-.gridContainer .ui-state-highlight.greyBg {
-	background: #808080 !important;
+.gridContainer .ui-state-highlight.intermediateStyle {
+	background: #FDEDA2 !important;
 	border-color: #D19592 !important;
 }
-.gridContainer .ui-state-hover.greyBg {
-	background: #808080;
+.gridContainer .ui-state-hover.intermediateStyle {
+	background: #dcdcdc;
 	border-color: #D19592;
 }
-.gridContainer .ui-state-highlight.ui-state-hover.greyBg {
-	background: #D9A3A0 !important;
+.gridContainer .ui-state-highlight.ui-state-hover.intermediateStyle {
+	background: #F8C426 !important;
 }
-
-.gridContainer .darkGreyBg {
-	background: #888888;
+/*FINAL */
+.gridContainer .finalProductStyle {
+	background: #FFFFA3;
 	border-color: #E3B1AF;
 }
 
-.gridContainer .ui-state-highlight.darkGreyBg {
-	background: #888888 !important;
+.gridContainer .ui-state-highlight.finalProductStyle {
+	background: #FDEDA2 !important;
 	border-color: #D19592 !important;
 }
-.gridContainer .ui-state-hover.darkGreyBg {
-	background: #888888;
+.gridContainer .ui-state-hover.finalProductStyle {
+	background: #dcdcdc;
 	border-color: #D19592;
 }
-.gridContainer .ui-state-highlight.ui-state-hover.darkGreyBg {
-	background: #888888 !important;
+.gridContainer .ui-state-highlight.ui-state-hover.finalProductStyle {
+	background: #F8C426 !important;
+}
+/*WASTE */
+.gridContainer .wasteStyle {
+	background: #CAB197;
+	border-color: #D19592;
+}
+
+.gridContainer .ui-state-highlight.wasteStyle {
+	background: #FDEDA2 !important;
+	border-color: #D19592 !important;
+}
+.gridContainer .ui-state-hover.wasteStyle {
+	background: #dcdcdc;
+	border-color: #D19592;
+}
+.gridContainer .ui-state-highlight.ui-state-hover.wasteStyle {
+	background: #F8C426 !important;
 }
