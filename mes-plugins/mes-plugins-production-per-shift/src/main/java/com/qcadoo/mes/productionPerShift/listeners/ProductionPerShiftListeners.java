@@ -32,7 +32,6 @@ import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.C
 import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.HAS_CORRECTIONS;
 import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.PROGRESS_FOR_DAYS;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -237,15 +236,14 @@ public class ProductionPerShiftListeners {
                     .toString();
             List<Entity> progressForDays = getProgressForDayFromTIOC(tioc,
                     plannedProgressType.equals(PlannedProgressType.PLANNED.getStringValue()));
-            List<Entity> copiedProgressForDays = new ArrayList<Entity>();
+            deleteCorrectedProgressForDays(view, tioc);
             for (Entity progressForDay : progressForDays) {
                 Entity copyProgressForDay = progressForDayDD.copy(progressForDay.getId()).get(0);
+                copyProgressForDay = progressForDayDD.get(copyProgressForDay.getId());
                 copyProgressForDay.setField(CORRECTED, true);
-                copiedProgressForDays.add(copyProgressForDay);
+                progressForDayDD.save(copyProgressForDay);
             }
             tioc.setField(HAS_CORRECTIONS, true);
-            deleteProgressForDays(view, tioc);
-            tioc.setField(PROGRESS_FOR_DAYS, addCorrectedToPlannedProgressForDay(tioc, copiedProgressForDays));
             tioc.getDataDefinition().save(tioc);
         }
         detailsHooks.fillProgressForDays(view);
@@ -256,12 +254,12 @@ public class ProductionPerShiftListeners {
         if (tioc == null) {
             return;
         } else {
-            deleteProgressForDays(view, tioc);
+            deleteCorrectedProgressForDays(view, tioc);
         }
         detailsHooks.fillProgressForDays(view);
     }
 
-    private void deleteProgressForDays(final ViewDefinitionState view, final Entity tioc) {
+    private void deleteCorrectedProgressForDays(final ViewDefinitionState view, final Entity tioc) {
         String plannedProgressType = ((FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE)).getFieldValue()
                 .toString();
         List<Entity> progressForDays = getProgressForDayFromTIOC(tioc,
