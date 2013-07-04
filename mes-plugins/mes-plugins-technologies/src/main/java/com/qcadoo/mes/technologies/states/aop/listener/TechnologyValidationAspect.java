@@ -65,7 +65,8 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
     public void preValidationOnAcceptingOrChecking(final StateChangeContext stateChangeContext, final int phase) {
         technologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext);
         Entity technology = stateChangeContext.getOwner();
-        technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology);
+        technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology,
+                true);
         technologyValidationService.checkIfTechnologyHasAtLeastOneComponent(stateChangeContext);
         // TODO DEV_TEAM when we fixed problem with referenced technology
         // technologyValidationService.checkIfAllReferenceTechnologiesAreAceepted(stateChangeContext);
