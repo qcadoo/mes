@@ -191,3 +191,58 @@ ALTER TABLE productioncounting_recordoperationproductoutcomponent RENAME COLUMN 
 
 -- end
 
+
+-- Table: productioncounting_operationtimecomponent
+-- changed: 02.07.2013
+
+ALTER TABLE productioncounting_operationtimecomponent ADD COLUMN technologyoperationcomponent_id bigint;
+
+ALTER TABLE productioncounting_operationtimecomponent
+  ADD CONSTRAINT operationtimecomponent_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE;
+      
+-- end
+
+
+-- Table: productioncounting_operationpieceworkcomponent
+-- changed: 02.07.2013
+
+ALTER TABLE productioncounting_operationpieceworkcomponent ADD COLUMN technologyoperationcomponent_id bigint;
+
+ALTER TABLE productioncounting_operationpieceworkcomponent
+  ADD CONSTRAINT operationpieceworkcomponent_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE;
+      
+-- end
+
+
+-- Table: productioncountingwithcosts_operationcostcomponent
+-- changed: 02.07.2013
+
+ALTER TABLE productioncountingwithcosts_operationcostcomponent ADD COLUMN technologyoperationcomponent_id bigint;
+
+ALTER TABLE productioncountingwithcosts_operationcostcomponent
+  ADD CONSTRAINT operationcostcomponent_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE;
+      
+-- end
+
+
+-- Table: productioncountingwithcosts_operationpieceworkcostcomponent
+-- changed: 02.07.2013
+
+ALTER TABLE productioncountingwithcosts_operationpieceworkcostcomponent ADD COLUMN technologyoperationcomponent_id bigint;
+
+ALTER TABLE productioncountingwithcosts_operationpieceworkcostcomponent
+  ADD CONSTRAINT operationpieceworkcostcomponent_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE;
+      
+-- end
+
+
+-- Table: productioncountingwithcosts_technologyinstoperproductincomp
+-- changed: 02.07.2013
+
+ALTER TABLE productioncountingwithcosts_technologyinstoperproductincomp RENAME TO productioncountingwithcosts_technologyoperationproductincomp;
+
+-- end
