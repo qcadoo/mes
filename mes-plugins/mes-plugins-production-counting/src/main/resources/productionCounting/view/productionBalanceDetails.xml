@@ -334,14 +334,14 @@
 			<component type="grid" name="operationsTime" reference="operationsTimeGrid"
 				source="#{form}.operationTimeComponents">
 				<option type="column" name="operationLevel"
-					fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('nodeNumber')" />
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')" />
 				<option type="column" name="operationNumber"
-					fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('number')" />
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')" />
 				<option type="column" name="operationName"
-					fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('name')" />
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')" />
 				<option type="column" name="plannedMachineTime" fields="plannedMachineTime"
 					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#plannedMachineTime)" />
 				<option type="column" name="machineTime" fields="machineTime"
@@ -361,14 +361,14 @@
 			<component type="grid" name="operationsPiecework"
 				reference="operationsPieceworkGrid" source="#{form}.operationPieceworkComponents">
 				<option type="column" name="operationLevel"
-					fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('nodeNumber')" />
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')" />
 				<option type="column" name="operationNumber"
-					fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('number')" />
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')" />
 				<option type="column" name="operationName"
-					fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('name')" />
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')" />
 				<option type="column" name="plannedCycles" fields="plannedCycles"
 					expression="#plannedCycles" />
 				<option type="column" name="cycles" fields="cycles" />

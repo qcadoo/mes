@@ -23,19 +23,12 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.constants;
 
-public final class TechnologyInstOperProductInCompFields {
+public final class CalculationOperationComponentFieldsPCWC {
 
-    private TechnologyInstOperProductInCompFields() {
+    private CalculationOperationComponentFieldsPCWC() {
 
     }
 
     public static final String PRODUCTION_BALANCE = "productionBalance";
 
-    public static final String PRODUCT = "product";
-
-    public static final String PLANNED_COST = "plannedCost";
-
-    public static final String REGISTERED_COST = "registeredCost";
-
-    public static final String BALANCE = "balance";
 }

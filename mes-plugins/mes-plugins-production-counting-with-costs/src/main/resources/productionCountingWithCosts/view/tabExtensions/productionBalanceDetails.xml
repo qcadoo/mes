@@ -216,8 +216,8 @@
 				</component>
 			</layoutElement>
 		</component>
-		<component type="grid" name="technologyInstOperProductInComps" source="#{form}.technologyInstOperProductInComps"
-			 reference="technologyInstOperProductInGrid">
+		<component type="grid" name="technologyOperationProductInComponents" source="#{form}.technologyOperationProductInComponents"
+			 reference="technologyOperationProductInComponentsGrid">
 			<option type="column" name="productNumber" fields="product"
 				expression="#product['number']" />
 			<option type="column" name="productName" fields="product"
@@ -351,12 +351,12 @@
 		</component>
 		<component type="grid" name="operationsCost" source="#{form}.operationCostComponents"
 			reference="operationsCostGrid">
-			<option type="column" name="operationLevel" fields="technologyInstanceOperationComponent"
-				expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('nodeNumber')" />
-			<option type="column" name="operationNumber" fields="technologyInstanceOperationComponent"
-				expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('number')" />	
-			<option type="column" name="operationName" fields="technologyInstanceOperationComponent"
-				expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('name')" />
+			<option type="column" name="operationLevel" fields="technologyOperationComponent"
+				expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')" />
+			<option type="column" name="operationNumber" fields="technologyOperationComponent"
+				expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')" />	
+			<option type="column" name="operationName" fields="technologyOperationComponent"
+				expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')" />
 			<option type="column" name="plannedMachineCosts" fields="plannedMachineCosts"
 				expression="#plannedMachineCosts" />
 			<option type="column" name="machineCosts" fields="machineCosts" />
@@ -429,12 +429,12 @@
 		</component>
 		<component type="grid" name="operationsPieceworkCost" source="#{form}.operationPieceworkCostComponents"
 			reference="operationsPieceworkCostGrid">
-			<option type="column" name="operationLevel" fields="technologyInstanceOperationComponent"
-				expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('nodeNumber')" />
-			<option type="column" name="operationNumber" fields="technologyInstanceOperationComponent"
-				expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('number')" />	
-			<option type="column" name="operationName" fields="technologyInstanceOperationComponent"
-				expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('name')" />
+			<option type="column" name="operationLevel" fields="technologyOperationComponent"
+				expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')" />
+			<option type="column" name="operationNumber" fields="technologyOperationComponent"
+				expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')" />	
+			<option type="column" name="operationName" fields="technologyOperationComponent"
+				expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')" />
 			<option type="column" name="plannedCyclesCosts" fields="plannedCyclesCosts"
 				expression="#plannedCyclesCosts" />
 			<option type="column" name="cyclesCosts" fields="cyclesCosts" />

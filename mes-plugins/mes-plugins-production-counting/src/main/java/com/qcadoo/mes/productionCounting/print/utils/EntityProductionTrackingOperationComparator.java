@@ -30,7 +30,7 @@ import com.qcadoo.model.api.Entity;
 
 public class EntityProductionTrackingOperationComparator implements Comparator<Entity>, Serializable {
 
-    private static final String L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
+    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     private static final String L_NODE_NUMBER = "nodeNumber";
 
@@ -38,8 +38,8 @@ public class EntityProductionTrackingOperationComparator implements Comparator<E
 
     @Override
     public final int compare(final Entity o1, final Entity o2) {
-        return o1.getBelongsToField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).getStringField(L_NODE_NUMBER)
-                .compareTo(o2.getBelongsToField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).getStringField(L_NODE_NUMBER));
+        return o1.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getStringField(L_NODE_NUMBER)
+                .compareTo(o2.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getStringField(L_NODE_NUMBER));
     }
 
 }

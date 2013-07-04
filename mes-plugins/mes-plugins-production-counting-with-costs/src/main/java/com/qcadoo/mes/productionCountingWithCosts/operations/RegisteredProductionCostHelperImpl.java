@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
-import com.qcadoo.mes.productionCountingWithCosts.util.DecimalUtils;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -47,8 +46,8 @@ public final class RegisteredProductionCostHelperImpl implements RegisteredProdu
         final BigDecimal productionCostMargin = BigDecimalUtils.convertNullToZero(productionBalance
                 .getDecimalField(ProductionBalanceFieldsPCWC.PRODUCTION_COST_MARGIN));
         final BigDecimal registeredProductionCost = getRegisteredProductionCost(productionBalance);
-        final BigDecimal productionCostMarginFactor = DecimalUtils
-                .toPercent(productionCostMargin, numberService.getMathContext());
+        final BigDecimal productionCostMarginFactor = BigDecimalUtils.toPercent(productionCostMargin,
+                numberService.getMathContext());
         final BigDecimal registeredProductionMarginValue = registeredProductionCost.multiply(productionCostMarginFactor,
                 numberService.getMathContext());
 
@@ -76,8 +75,8 @@ public final class RegisteredProductionCostHelperImpl implements RegisteredProdu
     private BigDecimal getRegisteredHourlyCosts(final Entity productionBalance) {
         final BigDecimal registeredMachineCosts = productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.MACHINE_COSTS);
         final BigDecimal registeredLaborCosts = productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.LABOR_COSTS);
-        return BigDecimalUtils.convertNullToZero(registeredMachineCosts).add(DecimalUtils.nullToZero(registeredLaborCosts),
-                numberService.getMathContext());
+        return BigDecimalUtils.convertNullToZero(registeredMachineCosts).add(
+                BigDecimalUtils.convertNullToZero(registeredLaborCosts), numberService.getMathContext());
     }
 
 }

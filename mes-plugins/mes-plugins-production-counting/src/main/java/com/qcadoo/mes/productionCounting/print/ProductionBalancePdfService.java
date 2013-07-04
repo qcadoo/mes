@@ -51,7 +51,7 @@ import com.qcadoo.mes.productionCounting.constants.OperationTimeComponentFields;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
@@ -296,7 +296,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             document.add(new Paragraph(translationService.translate("productionCounting.productionBalance.report.paragraph",
                     locale), FontUtils.getDejavuBold11Dark()));
 
-            // TODO mici, same thing again.
             inputProductsList = Lists.newLinkedList(inputProductsList);
 
             PdfPTable inputProductsTable = pdfHelper.createTableWithHeader(6, inputProductsTableHeader, false);
@@ -359,7 +358,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             document.add(new Paragraph(translationService.translate("productionCounting.productionBalance.report.paragraph2",
                     locale), FontUtils.getDejavuBold11Dark()));
 
-            // TODO mici, same thing again.
             outputProductsList = Lists.newLinkedList(outputProductsList);
 
             PdfPTable outputProductsTable = pdfHelper.createTableWithHeader(6, outputProductsTableHeader, false);
@@ -424,11 +422,11 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         if (!operationTimeComponents.isEmpty()) {
             for (Entity operationTimeComponent : operationTimeComponents) {
                 machineTimeTable.addCell(new Phrase(operationTimeComponent.getBelongsToField(
-                        OperationTimeComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).getStringField(
-                        TechnologyInstanceOperCompFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
+                        OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
+                        TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
                 machineTimeTable.addCell(new Phrase(operationTimeComponent
-                        .getBelongsToField(OperationTimeComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
-                        .getBelongsToField(TechnologyInstanceOperCompFields.OPERATION).getStringField(OperationFields.NUMBER),
+                        .getBelongsToField(OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT)
+                        .getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER),
                         FontUtils.getDejavuRegular9Dark()));
                 machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(operationTimeComponent
                         .getIntegerField(OperationTimeComponentFields.PLANNED_MACHINE_TIME)), FontUtils.getDejavuRegular9Dark()));
@@ -479,11 +477,11 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         if (!operationTimeComponents.isEmpty()) {
             for (Entity operationTimeComponent : operationTimeComponents) {
                 laborTimeTable.addCell(new Phrase(operationTimeComponent.getBelongsToField(
-                        OperationTimeComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).getStringField(
-                        TechnologyInstanceOperCompFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
+                        OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
+                        TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
                 laborTimeTable.addCell(new Phrase(operationTimeComponent
-                        .getBelongsToField(OperationTimeComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
-                        .getBelongsToField(TechnologyInstanceOperCompFields.OPERATION).getStringField(OperationFields.NUMBER),
+                        .getBelongsToField(OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT)
+                        .getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER),
                         FontUtils.getDejavuRegular9Dark()));
                 laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(operationTimeComponent
                         .getIntegerField(OperationTimeComponentFields.PLANNED_LABOR_TIME)), FontUtils.getDejavuRegular9Dark()));
@@ -534,11 +532,11 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         if (!operationPieceworkComponents.isEmpty()) {
             for (Entity operationPieceworkComponent : operationPieceworkComponents) {
                 pieceworkTable.addCell(new Phrase(operationPieceworkComponent.getBelongsToField(
-                        OperationTimeComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).getStringField(
-                        TechnologyInstanceOperCompFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
+                        OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
+                        TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
                 pieceworkTable.addCell(new Phrase(operationPieceworkComponent
-                        .getBelongsToField(OperationTimeComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
-                        .getBelongsToField(TechnologyInstanceOperCompFields.OPERATION).getStringField(OperationFields.NUMBER),
+                        .getBelongsToField(OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT)
+                        .getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER),
                         FontUtils.getDejavuRegular9Dark()));
                 pieceworkTable.addCell(new Phrase(numberService.format(operationPieceworkComponent
                         .getField(OperationPieceworkComponentFields.PLANNED_CYCLES)), FontUtils.getDejavuRegular9Dark()));
@@ -549,7 +547,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             }
         }
 
-        // TODO lupo fix
+        // TODO lupo fix problem with no such fields in production balance
         pieceworkTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
                 locale), FontUtils.getDejavuRegular9Dark()));
         pieceworkTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));

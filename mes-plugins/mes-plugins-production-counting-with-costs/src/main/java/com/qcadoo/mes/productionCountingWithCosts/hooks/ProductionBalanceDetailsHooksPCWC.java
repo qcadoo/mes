@@ -23,27 +23,6 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.hooks;
 
-import static com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode.COST_FOR_ORDER;
-import static com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT;
-import static com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode.HOURLY;
-import static com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode.PIECEWORK;
-import static com.qcadoo.mes.productionCounting.constants.OrderFieldsPC.REGISTER_PIECEWORK;
-import static com.qcadoo.mes.productionCounting.constants.OrderFieldsPC.REGISTER_PRODUCTION_TIME;
-import static com.qcadoo.mes.productionCounting.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
-import static com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields.GENERATED;
-import static com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields.ORDER;
-import static com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording.CUMULATED;
-import static com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording.FOR_EACH;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.ADDITIONAL_OVERHEAD;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.MATERIAL_COST_MARGIN;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.PRINT_COST_NORMS_OF_MATERIALS;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.PRODUCTION_COST_MARGIN;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -54,10 +33,15 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
+import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -75,7 +59,7 @@ public class ProductionBalanceDetailsHooksPCWC {
 
     private static final String L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT = "componentsCostSummaryBorderLayout";
 
-    private static final String L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_GRID = "technologyInstOperProductInGrid";
+    private static final String L_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS_GRID = "technologyOperationProductInComponentsGrid";
 
     private static final String L_WORK_COSTS_GRID_LAYOUT = "workCostsGridLayout";
 
@@ -91,15 +75,17 @@ public class ProductionBalanceDetailsHooksPCWC {
 
     private static final String L_OPERATIONS_PIECEWORK_COST_GRID = "operationsPieceworkCostGrid";
 
-    private static final List<String> L_COST_FIELDS = Arrays.asList(PRINT_COST_NORMS_OF_MATERIALS, SOURCE_OF_MATERIAL_COSTS,
-            CALCULATE_MATERIAL_COSTS_MODE, AVERAGE_MACHINE_HOURLY_COST, AVERAGE_LABOR_HOURLY_COST, PRODUCTION_COST_MARGIN,
-            MATERIAL_COST_MARGIN, ADDITIONAL_OVERHEAD);
+    private static final List<String> L_COST_FIELDS = Arrays.asList(ProductionBalanceFieldsPCWC.PRINT_COST_NORMS_OF_MATERIALS,
+            ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS, ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE,
+            ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST, ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST,
+            ProductionBalanceFieldsPCWC.PRODUCTION_COST_MARGIN, ProductionBalanceFieldsPCWC.MATERIAL_COST_MARGIN,
+            ProductionBalanceFieldsPCWC.ADDITIONAL_OVERHEAD);
 
-    private static final List<String> L_COST_GRIDS = Arrays.asList(L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_GRID,
+    private static final List<String> L_COST_GRIDS = Arrays.asList(L_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS_GRID,
             L_OPERATIONS_COST_GRID);
 
     private static final List<String> L_COST_GRIDS_AND_LAYOUTS = Arrays.asList(L_MATERIAL_COSTS_GRID_LAYOUT,
-            L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT, L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_GRID, L_WORK_COSTS_GRID_LAYOUT,
+            L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT, L_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS_GRID, L_WORK_COSTS_GRID_LAYOUT,
             L_MACHINE_COSTS_BORDER_LAYOUT, L_LABOR_COSTS_BORDER_LAYOUT, L_OPERATIONS_COST_GRID, L_PIECEWORK_COSTS_GRID_LAYOUT,
             L_PIECEWORK_COSTS_BORDER_LAYOUT, L_OPERATIONS_PIECEWORK_COST_GRID);
 
@@ -118,7 +104,8 @@ public class ProductionBalanceDetailsHooksPCWC {
     public void changeFieldsAndGridsVisibility(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
 
-        FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
+        FieldComponent generated = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ProductionBalanceFields.GENERATED);
 
         if ((form == null) || (form.getEntityId() == null) || (generated == null) || "0".equals(generated.getFieldValue())) {
             productionCountingService.setComponentsVisibility(viewDefinitionState, L_COST_GRIDS_AND_LAYOUTS, false, false);
@@ -126,10 +113,11 @@ public class ProductionBalanceDetailsHooksPCWC {
             return;
         }
 
-        FieldComponent calculateOperationCostMode = (FieldComponent) viewDefinitionState
-                .getComponentByReference(CALCULATE_OPERATION_COST_MODE);
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ProductionBalanceFields.ORDER);
+        FieldComponent calculateOperationCostModeField = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
 
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ORDER);
+        String calculateOperationCostMode = (String) calculateOperationCostModeField.getFieldValue();
 
         Long orderId = (Long) orderLookup.getFieldValue();
 
@@ -141,21 +129,23 @@ public class ProductionBalanceDetailsHooksPCWC {
 
         Entity order = orderService.getOrder(orderId);
 
-        if ("1".equals(generated.getFieldValue()) && (calculateOperationCostMode != null) && (order != null)) {
+        if ("1".equals(generated.getFieldValue()) && (calculateOperationCostModeField != null) && (order != null)) {
             viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(true);
 
             viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(true);
-            viewDefinitionState.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_GRID).setVisible(true);
+            viewDefinitionState.getComponentByReference(L_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS_GRID).setVisible(true);
 
-            if (HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                    && order.getBooleanField(REGISTER_PRODUCTION_TIME)) {
+            if (productionCountingService.isCalculateOperationCostModeHourly(calculateOperationCostMode)
+                    && order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
                 viewDefinitionState.getComponentByReference(L_WORK_COSTS_GRID_LAYOUT).setVisible(true);
 
-                if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
+                if (productionCountingService.isTypeOfProductionRecordingForEach(order
+                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(true);
-                } else if (CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
+                } else if (productionCountingService.isTypeOfProductionRecordingCumulated(order
+                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(false);
@@ -165,8 +155,8 @@ public class ProductionBalanceDetailsHooksPCWC {
 
                 viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_BORDER_LAYOUT).setVisible(false);
                 viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_COST_GRID).setVisible(false);
-            } else if (PIECEWORK.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                    && order.getBooleanField(REGISTER_PIECEWORK)) {
+            } else if (productionCountingService.isCalculateOperationCostModePiecework(calculateOperationCostMode)
+                    && order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)) {
                 viewDefinitionState.getComponentByReference(L_WORK_COSTS_GRID_LAYOUT).setVisible(false);
 
                 viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(false);
@@ -189,10 +179,11 @@ public class ProductionBalanceDetailsHooksPCWC {
     public void changeAssumptionsVisibility(final ViewDefinitionState viewDefinitionState) {
         ComponentState assumptionsBorderLayout = viewDefinitionState.getComponentByReference(L_ASSUMPTIONS_BORDER_LAYOUT);
 
-        FieldComponent calculateOperationCostMode = (FieldComponent) viewDefinitionState
-                .getComponentByReference(CALCULATE_OPERATION_COST_MODE);
-
         FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ProductionBalanceFields.ORDER);
+        FieldComponent calculateOperationCostModeField = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
+
+        String calculateOperationCostMode = (String) calculateOperationCostModeField.getFieldValue();
 
         Long orderId = (Long) orderLookup.getFieldValue();
 
@@ -204,8 +195,10 @@ public class ProductionBalanceDetailsHooksPCWC {
 
         Entity order = orderService.getOrder(orderId);
 
-        if ((order != null) && HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                && CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
+        if ((order != null)
+                && productionCountingService.isCalculateOperationCostModeHourly(calculateOperationCostMode)
+                && productionCountingService.isTypeOfProductionRecordingCumulated(order
+                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             assumptionsBorderLayout.setVisible(true);
         } else {
             assumptionsBorderLayout.setVisible(false);
@@ -244,7 +237,7 @@ public class ProductionBalanceDetailsHooksPCWC {
         Set<String> unitFieldNames = Sets.newHashSet("registeredTotalTechnicalProductionCostPerUnitUnit",
                 "totalTechnicalProductionCostPerUnitUnit", "balanceTechnicalProductionCostPerUnitUnit", "totalCostPerUnitUnit");
 
-        Long productId = (Long) viewDefinitionState.getComponentByReference("product").getFieldValue();
+        Long productId = (Long) viewDefinitionState.getComponentByReference(ProductionBalanceFields.PRODUCT).getFieldValue();
 
         if (productId == null) {
             return;
@@ -252,7 +245,7 @@ public class ProductionBalanceDetailsHooksPCWC {
 
         Entity product = getProductFromDB(productId);
 
-        String unit = product.getStringField("unit");
+        String unit = product.getStringField(ProductFields.UNIT);
 
         for (String unitFieldName : unitFieldNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(unitFieldName);
@@ -263,7 +256,8 @@ public class ProductionBalanceDetailsHooksPCWC {
     }
 
     public void disableFieldsAndGridsWhenGenerated(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
+        FieldComponent generated = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ProductionBalanceFields.GENERATED);
 
         if ((generated != null) && (generated.getFieldValue() != null) && "1".equals(generated.getFieldValue())) {
             productionCountingService.setComponentsState(viewDefinitionState, L_COST_FIELDS, false, true);
@@ -277,12 +271,13 @@ public class ProductionBalanceDetailsHooksPCWC {
     public void checkIfOptionsAreAvailable(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         FieldComponent sourceOfMaterialCosts = (FieldComponent) viewDefinitionState
-                .getComponentByReference(SOURCE_OF_MATERIAL_COSTS);
+                .getComponentByReference(ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS);
         FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
-                .getComponentByReference(CALCULATE_MATERIAL_COSTS_MODE);
+                .getComponentByReference(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE);
 
-        if (CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(sourceOfMaterialCosts.getFieldValue())
-                && COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue())) {
+        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
+                sourceOfMaterialCosts.getFieldValue())
+                && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue())) {
             sourceOfMaterialCosts.addMessage("productionCountingWithCosts.messages.optionUnavailable", MessageType.FAILURE);
         }
     }

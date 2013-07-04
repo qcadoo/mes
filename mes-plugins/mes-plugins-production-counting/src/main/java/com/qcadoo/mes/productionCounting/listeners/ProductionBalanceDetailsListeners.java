@@ -64,8 +64,6 @@ import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.print.ProductionBalancePdfService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -247,7 +245,7 @@ public class ProductionBalanceDetailsListeners {
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
         Map<Long, Entity> balanceOperationProductComponents = Maps.newHashMap();
-        Set<Long> addedTechnologyInstanceOperationComponents = Sets.newHashSet();
+        Set<Long> addedTechnologyOperationComponents = Sets.newHashSet();
 
         boolean shouldAddPlannedQuantity = true;
 
@@ -255,13 +253,11 @@ public class ProductionBalanceDetailsListeners {
             List<Entity> trackingOperationProductComponents = productionTracking
                     .getHasManyField(trackingOperationProductComponentsModel);
 
-            Entity technologyInstanceOperationComponent = productionTracking
+            Entity technologyOperationComponent = productionTracking
                     .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
             if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
-                Long technologyInstanceOperationComponentId = technologyInstanceOperationComponent.getId();
-
-                if (addedTechnologyInstanceOperationComponents.contains(technologyInstanceOperationComponentId)) {
+                if (addedTechnologyOperationComponents.contains(technologyOperationComponent.getId())) {
                     shouldAddPlannedQuantity = false;
                 } else {
                     shouldAddPlannedQuantity = true;
@@ -289,7 +285,7 @@ public class ProductionBalanceDetailsListeners {
             if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
                 shouldAddPlannedQuantity = false;
             } else {
-                addedTechnologyInstanceOperationComponents.add(technologyInstanceOperationComponent.getId());
+                addedTechnologyOperationComponents.add(technologyOperationComponent.getId());
             }
         }
 
@@ -300,15 +296,15 @@ public class ProductionBalanceDetailsListeners {
     private void addBalanceOperationComponent(final Map<Long, Entity> balanceOperationProductComponents,
             final String balanceOperationProductComponentModel, final Entity trackingOperationProductComponent,
             final Long productId) {
-        Entity balanceOperationProductComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                balanceOperationProductComponentModel).create();
-
         BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(trackingOperationProductComponent
                 .getDecimalField(L_PLANNED_QUANTITY));
         BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(trackingOperationProductComponent
                 .getDecimalField(L_USED_QUANTITY));
 
         BigDecimal balance = usedQuantity.subtract(plannedQuantity, numberService.getMathContext());
+
+        Entity balanceOperationProductComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                balanceOperationProductComponentModel).create();
 
         balanceOperationProductComponent.setField(L_PRODUCT, trackingOperationProductComponent.getField(L_PRODUCT));
 
@@ -405,38 +401,45 @@ public class ProductionBalanceDetailsListeners {
 
         if (!productionTrackingsWithPlannedTimes.isEmpty()) {
             for (Entry<Long, Entity> productionTrackingWithRegisteredTimes : productionTrackingsWithRegisteredTimes.entrySet()) {
-                Long technologyInstanceOperationComponentId = productionTrackingWithRegisteredTimes.getKey();
                 Entity productionTracking = productionTrackingWithRegisteredTimes.getValue();
 
-                Entity operationTimeComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        ProductionCountingConstants.MODEL_OPERATION_TIME_COMPONENT).create();
+                Entity technologyOperationComponent = productionTracking
+                        .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-                Integer plannedMachineTime = productionTrackingsWithPlannedTimes.get(technologyInstanceOperationComponentId).get(
-                        L_PLANNED_MACHINE_TIME);
-                Integer machineTime = productionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
+                if (technologyOperationComponent != null) {
+                    Long technologyOperationComponentId = technologyOperationComponent.getId();
 
-                Integer machineTimeBalance = machineTime - plannedMachineTime;
+                    if (productionTrackingsWithPlannedTimes.containsKey(technologyOperationComponentId)) {
+                        Integer plannedMachineTime = productionTrackingsWithPlannedTimes.get(technologyOperationComponentId).get(
+                                L_PLANNED_MACHINE_TIME);
+                        Integer machineTime = productionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
 
-                Integer plannedLaborTime = productionTrackingsWithPlannedTimes.get(technologyInstanceOperationComponentId).get(
-                        L_PLANNED_LABOR_TIME);
-                Integer laborTime = productionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);
+                        Integer machineTimeBalance = machineTime - plannedMachineTime;
 
-                Integer laborTimeBalance = laborTime - plannedLaborTime;
+                        Integer plannedLaborTime = productionTrackingsWithPlannedTimes.get(technologyOperationComponentId).get(
+                                L_PLANNED_LABOR_TIME);
+                        Integer laborTime = productionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);
 
-                operationTimeComponent.setField(OperationPieceworkComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
-                        productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT));
+                        Integer laborTimeBalance = laborTime - plannedLaborTime;
 
-                operationTimeComponent.setField(OperationTimeComponentFields.PLANNED_MACHINE_TIME, plannedMachineTime);
-                operationTimeComponent.setField(OperationTimeComponentFields.MACHINE_TIME, machineTime);
-                operationTimeComponent.setField(OperationTimeComponentFields.MACHINE_TIME_BALANCE, machineTimeBalance);
+                        Entity operationTimeComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                ProductionCountingConstants.MODEL_OPERATION_TIME_COMPONENT).create();
 
-                operationTimeComponent.setField(OperationTimeComponentFields.PLANNED_LABOR_TIME, plannedLaborTime);
-                operationTimeComponent.setField(OperationTimeComponentFields.LABOR_TIME, laborTime);
-                operationTimeComponent.setField(OperationTimeComponentFields.LABOR_TIME_BALANCE, laborTimeBalance);
+                        operationTimeComponent.setField(OperationPieceworkComponentFields.TECHNOLOGY_OPERATION_COMPONENT,
+                                technologyOperationComponent);
 
-                operationTimeComponents.add(operationTimeComponent);
+                        operationTimeComponent.setField(OperationTimeComponentFields.PLANNED_MACHINE_TIME, plannedMachineTime);
+                        operationTimeComponent.setField(OperationTimeComponentFields.MACHINE_TIME, machineTime);
+                        operationTimeComponent.setField(OperationTimeComponentFields.MACHINE_TIME_BALANCE, machineTimeBalance);
+
+                        operationTimeComponent.setField(OperationTimeComponentFields.PLANNED_LABOR_TIME, plannedLaborTime);
+                        operationTimeComponent.setField(OperationTimeComponentFields.LABOR_TIME, laborTime);
+                        operationTimeComponent.setField(OperationTimeComponentFields.LABOR_TIME_BALANCE, laborTimeBalance);
+
+                        operationTimeComponents.add(operationTimeComponent);
+                    }
+                }
             }
-
         }
 
         productionBalance.setField(ProductionBalanceFields.OPERATION_TIME_COMPONENTS, operationTimeComponents);
@@ -459,33 +462,26 @@ public class ProductionBalanceDetailsListeners {
             for (Entry<Long, Entity> productionTrackingWithRegisteredTimes : productionTrackingsWithRegisteredTimes.entrySet()) {
                 Entity productionTracking = productionTrackingWithRegisteredTimes.getValue();
 
-                // TODO lupo fix
-                Entity technologyOperationComponent2 = productionTracking
+                Entity technologyOperationComponent = productionTracking
                         .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-                if (technologyOperationComponent2 != null) {
-                    Entity operationPieceworkComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                            ProductionCountingConstants.MODEL_OPERATION_PIECEWORK_COMPONENT).create();
+                if (technologyOperationComponent != null) {
+                    Long technologyOperationComponentId = technologyOperationComponent.getId();
 
-                    operationPieceworkComponent.setField(
-                            OperationPieceworkComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
-                            technologyOperationComponent2);
-
-                    Entity technologyInstanceOperationComponent = technologyOperationComponent2;
-
-                    Entity proxyTechnologyOperationComponent = technologyInstanceOperationComponent
-                            .getBelongsToField(TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT);
-                    Long technologyOperationComponentId = proxyTechnologyOperationComponent.getId();
-
-                    Entity technologyOperationComponent = getTechnologyOperationComponentFromDB(technologyOperationComponentId);
-
-                    if ((technologyOperationComponent != null) && operationRuns.containsKey(technologyOperationComponent.getId())) {
-                        BigDecimal plannedCycles = operationRuns.get(technologyOperationComponent.getId());
+                    if (operationRuns.containsKey(technologyOperationComponentId)) {
+                        BigDecimal plannedCycles = operationRuns.get(technologyOperationComponentId);
 
                         BigDecimal cycles = productionTracking
                                 .getDecimalField(ProductionTrackingFields.EXECUTED_OPERATION_CYCLES);
 
                         BigDecimal cyclesBalance = cycles.subtract(plannedCycles, numberService.getMathContext());
+
+                        Entity operationPieceworkComponent = dataDefinitionService.get(
+                                ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                ProductionCountingConstants.MODEL_OPERATION_PIECEWORK_COMPONENT).create();
+
+                        operationPieceworkComponent.setField(OperationPieceworkComponentFields.TECHNOLOGY_OPERATION_COMPONENT,
+                                technologyOperationComponent);
 
                         operationPieceworkComponent.setField(OperationPieceworkComponentFields.PLANNED_CYCLES,
                                 numberService.setScale(plannedCycles));
@@ -501,11 +497,6 @@ public class ProductionBalanceDetailsListeners {
         }
 
         productionBalance.setField(ProductionBalanceFields.OPERATION_PIECEWORK_COMPONENTS, operationPieceworkComponents);
-    }
-
-    private Entity getTechnologyOperationComponentFromDB(final Long technologyOperationComponentId) {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperationComponentId);
     }
 
     private void checkOrderDoneQuantity(final ComponentState componentState, final Entity productionBalance) {

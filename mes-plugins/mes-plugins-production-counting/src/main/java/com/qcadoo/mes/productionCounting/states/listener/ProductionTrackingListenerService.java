@@ -32,11 +32,10 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
@@ -46,7 +45,6 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutCo
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -59,9 +57,6 @@ public final class ProductionTrackingListenerService {
     private static final String L_PRODUCT = "product";
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
     private NumberService numberService;
 
     @Autowired
@@ -69,6 +64,9 @@ public final class ProductionTrackingListenerService {
 
     @Autowired
     private ProductionCountingService productionCountingService;
+
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
 
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity productionTracking = stateChangeContext.getOwner();
@@ -111,10 +109,12 @@ public final class ProductionTrackingListenerService {
         }
 
         Boolean autoCloseOrder = order.getBooleanField(OrderFieldsPC.AUTO_CLOSE_ORDER);
+
         if (autoCloseOrder && productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
             order.setField(OrderFields.STATE, OrderStateStringValues.COMPLETED);
-            Entity orderFromDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(
-                    order);
+
+            Entity orderFromDB = order.getDataDefinition().save(order);
+
             if (OrderStateStringValues.COMPLETED.equals(orderFromDB.getStringField(OrderFields.STATE))) {
                 stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
             } else {
@@ -146,9 +146,7 @@ public final class ProductionTrackingListenerService {
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
         product = product.getDataDefinition().get(product.getId());
 
-        final List<Entity> basicProductionCountings = dataDefinitionService
-                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
+        final List<Entity> basicProductionCountings = basicProductionCountingService.getBasicProductionCountingDD().find()
                 .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.ORDER, order))
                 .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.PRODUCT, product)).list().getEntities();
 
@@ -162,10 +160,70 @@ public final class ProductionTrackingListenerService {
             producedQuantity = producedQuantity.add(qty, numberService.getMathContext());
         }
 
-        order.setField("doneQuantity", producedQuantity);
+        order.setField(OrderFields.DONE_QUANTITY, producedQuantity);
 
         order.getDataDefinition().save(order);
+    }
 
+    private void updateBasicProductionCounting(final Entity productionTracking, final Operation operation) {
+        final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+
+        final List<Entity> basicProductionCountings = order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS);
+
+        final List<Entity> trackingOperationProductInComponents = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+        final List<Entity> trackingOperationProductOutComponents = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+
+        for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
+            Entity basicProductionCounting;
+
+            try {
+                basicProductionCounting = getBasicProductionCounting(trackingOperationProductInComponent,
+                        basicProductionCountings);
+            } catch (IllegalStateException e) {
+                continue;
+            }
+
+            final BigDecimal usedQuantity = basicProductionCounting.getDecimalField(BasicProductionCountingFields.USED_QUANTITY);
+            final BigDecimal productQuantity = trackingOperationProductInComponent
+                    .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+            final BigDecimal result = operation.perform(usedQuantity, productQuantity);
+
+            basicProductionCounting.setField(BasicProductionCountingFields.USED_QUANTITY, result);
+            basicProductionCounting = basicProductionCounting.getDataDefinition().save(basicProductionCounting);
+        }
+
+        for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
+            Entity productionCounting;
+
+            try {
+                productionCounting = getBasicProductionCounting(trackingOperationProductOutComponent, basicProductionCountings);
+            } catch (IllegalStateException e) {
+                continue;
+            }
+
+            final BigDecimal usedQuantity = productionCounting.getDecimalField(BasicProductionCountingFields.PRODUCED_QUANTITY);
+            final BigDecimal productQuantity = trackingOperationProductOutComponent
+                    .getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
+            final BigDecimal result = operation.perform(usedQuantity, productQuantity);
+
+            productionCounting.setField(BasicProductionCountingFields.PRODUCED_QUANTITY, result);
+            productionCounting = productionCounting.getDataDefinition().save(productionCounting);
+        }
+    }
+
+    private Entity getBasicProductionCounting(final Entity trackingOperationProductComponent,
+            final List<Entity> basicProductionCountings) {
+        Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
+
+        for (Entity basicProductionCounting : basicProductionCountings) {
+            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId().equals(product.getId())) {
+                return basicProductionCounting;
+            }
+        }
+
+        throw new IllegalStateException("No basic production counting found for product");
     }
 
     private interface Operation {
@@ -215,66 +273,6 @@ public final class ProductionTrackingListenerService {
             return value.subtract(sub, numberService.getMathContext());
         }
 
-    }
-
-    private void updateBasicProductionCounting(final Entity productionTracking, final Operation operation) {
-        final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-
-        final List<Entity> basicProductionCountings = order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS);
-
-        final List<Entity> trackingOperationProductInComponents = productionTracking
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-        final List<Entity> trackingOperationProductOutComponents = productionTracking
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-
-        for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
-            Entity basicProductionCounting;
-
-            try {
-                basicProductionCounting = getBasicProductionCounting(trackingOperationProductInComponent, basicProductionCountings);
-            } catch (IllegalStateException e) {
-                continue;
-            }
-
-            final BigDecimal usedQuantity = basicProductionCounting.getDecimalField(BasicProductionCountingFields.USED_QUANTITY);
-            final BigDecimal productQuantity = trackingOperationProductInComponent
-                    .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
-            final BigDecimal result = operation.perform(usedQuantity, productQuantity);
-
-            basicProductionCounting.setField(BasicProductionCountingFields.USED_QUANTITY, result);
-            basicProductionCounting = basicProductionCounting.getDataDefinition().save(basicProductionCounting);
-        }
-
-        for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-            Entity productionCounting;
-
-            try {
-                productionCounting = getBasicProductionCounting(trackingOperationProductOutComponent, basicProductionCountings);
-            } catch (IllegalStateException e) {
-                continue;
-            }
-
-            final BigDecimal usedQuantity = productionCounting.getDecimalField(BasicProductionCountingFields.PRODUCED_QUANTITY);
-            final BigDecimal productQuantity = trackingOperationProductOutComponent
-                    .getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
-            final BigDecimal result = operation.perform(usedQuantity, productQuantity);
-
-            productionCounting.setField(BasicProductionCountingFields.PRODUCED_QUANTITY, result);
-            productionCounting = productionCounting.getDataDefinition().save(productionCounting);
-        }
-    }
-
-    private Entity getBasicProductionCounting(final Entity trackingOperationProductComponent,
-            final List<Entity> basicProductionCountings) {
-        Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
-
-        for (Entity basicProductionCounting : basicProductionCountings) {
-            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId().equals(product.getId())) {
-                return basicProductionCounting;
-            }
-        }
-
-        throw new IllegalStateException("No basic production counting found for product");
     }
 
 }

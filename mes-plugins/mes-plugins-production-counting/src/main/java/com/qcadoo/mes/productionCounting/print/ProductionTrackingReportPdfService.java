@@ -56,7 +56,7 @@ import com.qcadoo.mes.productionCounting.print.utils.EntityProductionTrackingCom
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeFields;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
@@ -247,10 +247,10 @@ public class ProductionTrackingReportPdfService extends PdfDocumentService {
                     translationService.translate("productionCounting.productionTrackingReport.report.panel.operationAndLevel",
                             locale),
                     productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
-                            TechnologyInstanceOperCompFields.NODE_NUMBER)
+                            TechnologyOperationComponentFields.NODE_NUMBER)
                             + " "
                             + productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT)
-                                    .getBelongsToField(TechnologyInstanceOperCompFields.OPERATION)
+                                    .getBelongsToField(TechnologyOperationComponentFields.OPERATION)
                                     .getStringField(OperationFields.NAME), null, FontUtils.getDejavuBold9Dark(),
                     FontUtils.getDejavuBold9Dark(), null);
             addTableCellAsTable(

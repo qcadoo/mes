@@ -54,6 +54,7 @@ public class ProductionTrackingStateChangeAspect extends AbstractStateChangeAspe
 
     @Override
     protected void changeStatePhase(final StateChangeContext stateChangeContext, final int phase) {
+
     }
 
 }

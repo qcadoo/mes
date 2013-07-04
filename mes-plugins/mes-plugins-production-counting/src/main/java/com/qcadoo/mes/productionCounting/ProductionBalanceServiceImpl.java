@@ -39,6 +39,7 @@ import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -77,18 +78,18 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
             for (Entity productionTracking : productionTrackings) {
-                Entity technologyInstanceOperationComponent = productionTracking
+                Entity technologyOperationComponent = productionTracking
                         .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
                 if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
-                    Long technologyInstanceOperationComponentId = technologyInstanceOperationComponent.getId();
+                    Long technologyOperationComponentId = technologyOperationComponent.getId();
 
-                    if (groupedProductionTrackings.containsKey(technologyInstanceOperationComponentId)) {
+                    if (groupedProductionTrackings.containsKey(technologyOperationComponentId)) {
                         updateProductionTrackingRegisteredTimes(groupedProductionTrackings, productionTracking,
-                                technologyInstanceOperationComponentId);
+                                technologyOperationComponentId);
                     } else {
                         addProductionTrackingRegisteredTimes(groupedProductionTrackings, productionTracking,
-                                technologyInstanceOperationComponentId);
+                                technologyOperationComponentId);
                     }
                 } else if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
                     if (groupedProductionTrackings.isEmpty()) {
@@ -104,7 +105,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     }
 
     private void addProductionTrackingRegisteredTimes(final Map<Long, Entity> groupedProductionTracking,
-            final Entity productionTracking, final Long technologyInstanceOperationComponentId) {
+            final Entity productionTracking, final Long technologyOperationComponentId) {
         Integer machineTime = IntegerUtils.convertNullToZero(productionTracking
                 .getIntegerField(ProductionTrackingFields.MACHINE_TIME));
         Integer laborTime = IntegerUtils.convertNullToZero(productionTracking
@@ -117,12 +118,12 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         productionTracking.setField(ProductionTrackingFields.EXECUTED_OPERATION_CYCLES,
                 numberService.setScale(executedOperationCycles));
 
-        groupedProductionTracking.put(technologyInstanceOperationComponentId, productionTracking);
+        groupedProductionTracking.put(technologyOperationComponentId, productionTracking);
     }
 
     private void updateProductionTrackingRegisteredTimes(final Map<Long, Entity> groupedProductionTrackings,
-            final Entity productionTracking, final Long technologyInstanceOperationComponentId) {
-        Entity addedProductionTracking = groupedProductionTrackings.get(technologyInstanceOperationComponentId);
+            final Entity productionTracking, final Long technologyOperationComponentId) {
+        Entity addedProductionTracking = groupedProductionTrackings.get(technologyOperationComponentId);
 
         Integer machineTime = addedProductionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
         Integer laborTime = addedProductionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);
@@ -139,7 +140,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         addedProductionTracking.setField(ProductionTrackingFields.EXECUTED_OPERATION_CYCLES,
                 numberService.setScale(executedOperationCycles));
 
-        groupedProductionTrackings.put(technologyInstanceOperationComponentId, addedProductionTracking);
+        groupedProductionTrackings.put(technologyOperationComponentId, addedProductionTracking);
     }
 
     @Override
@@ -156,15 +157,15 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                 Map<String, Integer> plannedTimes = countPlannedTimes(productionBalance, productionTracking);
 
                 if (!plannedTimes.isEmpty()) {
-                    Entity technologyInstanceOperationComponent = productionTracking
+                    Entity technologyOperationComponent = productionTracking
                             .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
                     if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
-                        Long technologyInstanceOperationComponentId = technologyInstanceOperationComponent.getId();
+                        Long technologyOperationComponentId = technologyOperationComponent.getId();
 
-                        if (!productionTrackingsWithPlannedTimes.containsKey(technologyInstanceOperationComponentId)) {
+                        if (!productionTrackingsWithPlannedTimes.containsKey(technologyOperationComponentId)) {
                             addProductionTrackingWithPlannedTimes(productionTrackingsWithPlannedTimes, plannedTimes,
-                                    technologyInstanceOperationComponentId);
+                                    technologyOperationComponentId);
                         }
                     } else if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)
                             && productionTrackingsWithPlannedTimes.isEmpty()) {
@@ -178,8 +179,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     }
 
     private void addProductionTrackingWithPlannedTimes(final Map<Long, Map<String, Integer>> productionTrackingsWithPlannedTimes,
-            final Map<String, Integer> plannedTimes, final Long technologyInstanceOperationComponentId) {
-        productionTrackingsWithPlannedTimes.put(technologyInstanceOperationComponentId, plannedTimes);
+            final Map<String, Integer> plannedTimes, final Long technologyOperationComponentId) {
+        productionTrackingsWithPlannedTimes.put(technologyOperationComponentId, plannedTimes);
     }
 
     private Map<String, Integer> countPlannedTimes(final Entity productionBalance, final Entity productionTracking) {
@@ -204,7 +205,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             final Map<Entity, BigDecimal> operationRuns = productQuantitiesService
                     .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
 
-            Map<Entity, OperationWorkTime> operationLaborAndMachineWorkTime = operationWorkTimeService
+            Map<Entity, OperationWorkTime> operationsWorkTime = operationWorkTimeService
                     .estimateOperationsWorkTimeForOrder(order, operationRuns,
                             productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_TPZ),
                             productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME),
@@ -213,14 +214,14 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
             if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
-                countTimeOperation(plannedTimes, operationLaborAndMachineWorkTime.get(productionTracking
+                countTimeOperation(plannedTimes, operationsWorkTime.get(productionTracking
                         .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT)));
             } else if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
-                EntityTree technologyInstanceOperationComponents = order
-                        .getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+                Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+                EntityTree technologyOperationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
-                for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponents) {
-                    countTimeOperation(plannedTimes, operationLaborAndMachineWorkTime.get(technologyInstanceOperationComponent));
+                for (Entity technologyOperationComponent : technologyOperationComponents) {
+                    countTimeOperation(plannedTimes, operationsWorkTime.get(technologyOperationComponent));
                 }
             }
         }
@@ -228,11 +229,11 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         return plannedTimes;
     }
 
-    private void countTimeOperation(final Map<String, Integer> plannedTimes, final OperationWorkTime durationOfOperation) {
+    private void countTimeOperation(final Map<String, Integer> plannedTimes, final OperationWorkTime operationWorkTime) {
         Integer plannedMachineTime = IntegerUtils.convertNullToZero(plannedTimes.get(L_PLANNED_MACHINE_TIME))
-                + IntegerUtils.convertNullToZero(durationOfOperation.getMachineWorkTime());
+                + IntegerUtils.convertNullToZero(operationWorkTime.getMachineWorkTime());
         Integer plannedLaborTime = IntegerUtils.convertNullToZero(plannedTimes.get(L_PLANNED_LABOR_TIME))
-                + IntegerUtils.convertNullToZero(durationOfOperation.getLaborWorkTime());
+                + IntegerUtils.convertNullToZero(operationWorkTime.getLaborWorkTime());
 
         plannedTimes.put(L_PLANNED_MACHINE_TIME, plannedMachineTime);
         plannedTimes.put(L_PLANNED_LABOR_TIME, plannedLaborTime);

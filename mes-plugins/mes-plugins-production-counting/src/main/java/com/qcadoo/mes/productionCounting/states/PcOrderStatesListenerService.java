@@ -34,6 +34,7 @@ import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
@@ -67,25 +68,23 @@ public class PcOrderStatesListenerService {
 
     private void checkFinalProductionCountingForOrderForEach(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
-        // TODO lupo fix - order -> technology - tree
-        final List<Entity> technologyInstanceOperationComponents = order
-                .getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+        final Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        final List<Entity> technologyOperationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         int trackingsNumber = 0;
-        for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponents) {
+        for (Entity technologyOperationComponent : technologyOperationComponents) {
             final SearchResult result = productionCountingService
                     .getProductionTrackingDD()
                     .find()
                     .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
                     .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
-                            technologyInstanceOperationComponent))
+                            technologyOperationComponent))
                     .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, true)).list();
             if (result.getTotalNumberOfEntities() > 0) {
                 trackingsNumber++;
             }
         }
-        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE)
-                && technologyInstanceOperationComponents.size() != trackingsNumber) {
+        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && technologyOperationComponents.size() != trackingsNumber) {
             stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
         }
     }

@@ -21,27 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCountingWithCosts.util;
+package com.qcadoo.mes.productionCountingWithCosts.constants;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
+public final class TechnologyOperationProductInCompFields {
 
-public final class DecimalUtils {
+    private TechnologyOperationProductInCompFields() {
 
-    private static BigDecimal oneHundred = BigDecimal.valueOf(100L);
-
-    private DecimalUtils() {
     }
 
-    public static BigDecimal nullToZero(final BigDecimal decimalValue) {
-        if (decimalValue == null) {
-            return BigDecimal.ZERO;
-        } else {
-            return decimalValue;
-        }
-    }
+    public static final String PRODUCTION_BALANCE = "productionBalance";
 
-    public static BigDecimal toPercent(final BigDecimal decimalValue, final MathContext mathCntext) {
-        return nullToZero(decimalValue).divide(oneHundred, mathCntext);
-    }
+    public static final String PRODUCT = "product";
+
+    public static final String PLANNED_COST = "plannedCost";
+
+    public static final String REGISTERED_COST = "registeredCost";
+
+    public static final String BALANCE = "balance";
+
 }

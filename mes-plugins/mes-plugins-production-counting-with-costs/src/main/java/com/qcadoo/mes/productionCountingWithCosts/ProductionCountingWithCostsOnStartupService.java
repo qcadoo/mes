@@ -36,21 +36,21 @@ public class ProductionCountingWithCostsOnStartupService extends Module {
     private ProductionCountingGenerateProductionBalance productionCountingGenerateProductionBalance;
 
     @Autowired
-    private GenerateProductionBalanceWithCosts generateProductionBalance;
+    private GenerateProductionBalanceWithCosts generateProductionBalanceWithCosts;
 
     @Override
     public void enable() {
-        productionCountingGenerateProductionBalance.addObserver(generateProductionBalance);
+        productionCountingGenerateProductionBalance.addObserver(generateProductionBalanceWithCosts);
     }
 
     @Override
     public void enableOnStartup() {
-        productionCountingGenerateProductionBalance.addObserver(generateProductionBalance);
+        productionCountingGenerateProductionBalance.addObserver(generateProductionBalanceWithCosts);
     }
 
     @Override
     public void disable() {
-        productionCountingGenerateProductionBalance.deleteObserver(generateProductionBalance);
+        productionCountingGenerateProductionBalance.deleteObserver(generateProductionBalanceWithCosts);
     }
 
 }

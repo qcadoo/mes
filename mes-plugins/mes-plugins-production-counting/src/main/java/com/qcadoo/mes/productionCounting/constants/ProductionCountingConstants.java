@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.constants;
 public final class ProductionCountingConstants {
 
     private ProductionCountingConstants() {
+
     }
 
     public static final String PLUGIN_IDENTIFIER = "productionCounting";
