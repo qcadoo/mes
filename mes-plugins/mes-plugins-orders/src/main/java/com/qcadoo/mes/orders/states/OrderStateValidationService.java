@@ -103,7 +103,8 @@ public class OrderStateValidationService {
         }
 
         copyOfTechnologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext, technology);
-        technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology);
+        technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology,
+                false);
         copyOfTechnologyValidationService.checkIfTechnologyHasAtLeastOneComponent(stateChangeContext, technology);
         copyOfTechnologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext, technology);
         copyOfTechnologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext, technology);
@@ -112,7 +113,8 @@ public class OrderStateValidationService {
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
         Entity technologyDB = technologyDD.get(technology.getId());
-        if (technologyDB.getStringField(TechnologyFields.STATE).equals(TechnologyState.DRAFT.getStringValue())) {
+        if (technologyDB.getStringField(TechnologyFields.STATE).equals(TechnologyState.DRAFT.getStringValue())
+                || technologyDB.getStringField(TechnologyFields.STATE).equals(TechnologyState.CHECKED.getStringValue())) {
             final StateChangeStatus status = stateChangeContext.getStatus();
 
             if (IN_PROGRESS.equals(status)) {

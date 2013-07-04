@@ -22,6 +22,7 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -95,6 +96,25 @@ public class OrderValidatorsMO {
         return isValid;
     }
 
+    public boolean checkIfwithPatternTechnology(final DataDefinition orderDD, final Entity order) {
+        Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
+
+        boolean isValid = true;
+
+        if (masterOrder == null) {
+            return isValid;
+        }
+
+        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
+
+        if (!OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+            isValid = false;
+            order.addError(orderDD.getField(OrderFields.ORDER_TYPE), "masterOrders.order.masterOrder.wrongOrderType");
+        }
+
+        return isValid;
+    }
+
     public boolean checkProductAndTechnology(final DataDefinition orderDD, final Entity order) {
         Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
 
@@ -110,6 +130,10 @@ public class OrderValidatorsMO {
             return isValid;
         }
 
+        if (!checkIfwithPatternTechnology(orderDD, order)) {
+            return false;
+        }
+
         if (masterOrderType.equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             if (!checkIfBelongToFieldIsTheSame(order, masterOrder, PRODUCT)) {
                 isValid = false;
@@ -117,7 +141,7 @@ public class OrderValidatorsMO {
                 order.addError(orderDD.getField(PRODUCT), L_MASTER_ORDERS_ORDER_MASTER_ORDER + PRODUCT + ""
                         + ".fieldIsNotTheSame", createInfoAboutEntity(product, PRODUCT));
             }
-            if (!checkIfBelongToFieldIsTheSame(order, masterOrder, TECHNOLOGY)) {
+            if (!checkIfTechnologyFieldIsTheSame(order, masterOrder)) {
                 isValid = false;
                 Entity technology = masterOrder.getBelongsToField(TECHNOLOGY);
                 order.addError(orderDD.getField(TECHNOLOGY), L_MASTER_ORDERS_ORDER_MASTER_ORDER + TECHNOLOGY + ""
@@ -182,6 +206,21 @@ public class OrderValidatorsMO {
     private boolean checkIfBelongToFieldIsTheSame(final Entity order, final Entity masterOrder, final String reference) {
         Entity fieldFromMaster = masterOrder.getBelongsToField(reference);
         Entity fieldFromOrder = order.getBelongsToField(reference);
+
+        if ((fieldFromMaster == null && fieldFromOrder == null) || (fieldFromMaster == null && fieldFromOrder != null)) {
+            return true;
+        }
+
+        if (fieldFromMaster != null && fieldFromOrder != null && fieldFromOrder.getId().equals(fieldFromMaster.getId())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean checkIfTechnologyFieldIsTheSame(final Entity order, final Entity masterOrder) {
+        Entity fieldFromMaster = masterOrder.getBelongsToField(OrderFields.TECHNOLOGY);
+        Entity fieldFromOrder = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
         if ((fieldFromMaster == null && fieldFromOrder == null) || (fieldFromMaster == null && fieldFromOrder != null)) {
             return true;

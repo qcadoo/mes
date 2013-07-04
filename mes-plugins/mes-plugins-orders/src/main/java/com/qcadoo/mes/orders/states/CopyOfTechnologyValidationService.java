@@ -74,7 +74,7 @@ public class CopyOfTechnologyValidationService {
         for (Map.Entry<String, Set<String>> parentChildNodeNum : parentChildNodeNums.entrySet()) {
             for (String childNodeNum : parentChildNodeNum.getValue()) {
                 stateContext.addMessage("technologies.technology.validate.global.info.consumingManyProductsFromOneSubOperations",
-                        StateMessageType.INFO, parentChildNodeNum.getKey(), childNodeNum);
+                        StateMessageType.INFO, false, parentChildNodeNum.getKey(), childNodeNum);
             }
         }
     }
@@ -91,7 +91,7 @@ public class CopyOfTechnologyValidationService {
                 return true;
             }
         }
-        stateContext.addValidationError("technologies.technology.validate.global.error.noFinalProductInTechnologyTree");
+        stateContext.addValidationError("technologies.technology.validate.global.error.noFinalProductInTechnologyTree", false);
         return false;
     }
 
@@ -105,7 +105,7 @@ public class CopyOfTechnologyValidationService {
                 }
             }
         }
-        stateContext.addValidationError("technologies.technology.validate.global.error.emptyTechnologyTree");
+        stateContext.addValidationError("technologies.technology.validate.global.error.emptyTechnologyTree", false);
         return false;
     }
 
