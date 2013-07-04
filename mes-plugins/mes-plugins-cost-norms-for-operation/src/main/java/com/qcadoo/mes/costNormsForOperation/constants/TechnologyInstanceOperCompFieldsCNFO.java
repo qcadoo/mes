@@ -36,4 +36,5 @@ public final class TechnologyInstanceOperCompFieldsCNFO {
     public static final String MACHINE_HOURLY_COST = "machineHourlyCost";
 
     public static final String NUMBER_OF_OPERATIONS = "numberOfOperations";
+
 }
