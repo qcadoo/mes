@@ -102,4 +102,11 @@ public class MessageServiceImpl implements MessageService {
         }
         stateChangeContext.save();
     }
+
+    @Override
+    public void addValidationError(final StateChangeContext stateChangeContext, final String correspondField,
+            final String translationKey, final boolean autoClose, final String... translationArgs) {
+        addMessage(stateChangeContext, VALIDATION_ERROR, autoClose, correspondField, translationKey, translationArgs);
+
+    }
 }
