@@ -47,4 +47,6 @@ public final class TechnologyFields {
 
     public static final String TECHNOLOGY_GROUP = "technologyGroup";
 
+    public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
+
 }

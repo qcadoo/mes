@@ -43,17 +43,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.view.api.ComponentState;
@@ -104,6 +107,11 @@ public class TechnologyService {
     private static final String L_OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
 
     private static final String L_OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
+
+    private static final String IS_SYNCHRONIZED_QUERY = String.format(
+            "SELECT t.id as id, t.%s as %s from #%s_%s t where t.id = :technologyId", TechnologyFields.EXTERNAL_SYNCHRONIZED,
+            TechnologyFields.EXTERNAL_SYNCHRONIZED, TechnologiesConstants.PLUGIN_IDENTIFIER,
+            TechnologiesConstants.MODEL_TECHNOLOGY);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -447,6 +455,25 @@ public class TechnologyService {
      */
     public BigDecimal getProductCountForOperationComponent(final Entity operationComponent) {
         return getMainOutputProductComponent(operationComponent).getDecimalField(L_QUANTITY);
+    }
+
+    /**
+     * Check if technology with given id is external synchronized.
+     * 
+     * @param technologyId
+     *            identifier of the queried technology
+     * @return true if technology is external synchronized
+     */
+    public boolean isExternalSynchronized(final Long technologyId) {
+        SearchQueryBuilder sqb = getTechnologyDataDefinition().find(IS_SYNCHRONIZED_QUERY);
+        sqb.setLong("technologyId", technologyId).setMaxResults(1);
+        Entity projection = sqb.uniqueResult();
+        Preconditions.checkNotNull(projection, String.format("Technology with id = '%s' does not exists.", technologyId));
+        return projection.getBooleanField(TechnologyFields.EXTERNAL_SYNCHRONIZED);
+    }
+
+    private DataDefinition getTechnologyDataDefinition() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
     }
 
 }
