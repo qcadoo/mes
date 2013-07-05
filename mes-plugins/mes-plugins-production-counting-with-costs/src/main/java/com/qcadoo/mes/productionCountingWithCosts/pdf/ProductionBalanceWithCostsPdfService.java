@@ -192,7 +192,6 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
     private void addMaterialCost(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
-
         List<String> materialCostTableHeader = Lists.newArrayList();
 
         materialCostTableHeader

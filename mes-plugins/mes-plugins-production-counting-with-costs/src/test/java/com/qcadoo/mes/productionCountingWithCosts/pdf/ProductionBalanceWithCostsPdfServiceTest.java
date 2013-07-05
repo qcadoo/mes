@@ -24,18 +24,24 @@
 package com.qcadoo.mes.productionCountingWithCosts.pdf;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
@@ -52,8 +58,6 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
-// TODO lupo fix problem with test
-@Ignore
 public class ProductionBalanceWithCostsPdfServiceTest {
 
     private ProductionBalanceWithCostsPdfService productionBalanceWithCostsPdfService;
@@ -88,7 +92,23 @@ public class ProductionBalanceWithCostsPdfServiceTest {
     private PdfPTable twoColumnTable, singleColumnTable, threeColumnTable;
 
     @Mock
-    private EntityList technologyOperationProductInComponents, operationComponents;
+    private EntityList technologyOperationProductInComponents, operationCostComponents, operationPieceworkComponents;
+
+    private static EntityList mockEntityList(final List<Entity> entities) {
+        final EntityList entitiesList = mock(EntityList.class);
+
+        given(entitiesList.iterator()).willAnswer(new Answer<Iterator<Entity>>() {
+
+            @Override
+            public Iterator<Entity> answer(final InvocationOnMock invocation) throws Throwable {
+                return ImmutableList.copyOf(entities).iterator();
+            }
+        });
+
+        given(entitiesList.isEmpty()).willReturn(entities.isEmpty());
+
+        return entitiesList;
+    }
 
     @Before
     public void init() {
@@ -111,23 +131,33 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         given(pdfHelper.createPanelTable(1)).willReturn(singleColumnTable);
         given(pdfHelper.createPanelTable(3)).willReturn(threeColumnTable);
 
+        List<Entity> empty = Lists.newArrayList();
+
+        technologyOperationProductInComponents = mockEntityList(empty);
+        operationCostComponents = mockEntityList(empty);
+        operationPieceworkComponents = mockEntityList(empty);
+
         given(productionBalance.getHasManyField(ProductionBalanceFieldsPCWC.TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS))
                 .willReturn(technologyOperationProductInComponents);
 
         given(productionBalance.getHasManyField(ProductionBalanceFieldsPCWC.OPERATION_COST_COMPONENTS)).willReturn(
-                operationComponents);
+                operationCostComponents);
         given(productionBalance.getHasManyField(ProductionBalanceFieldsPCWC.OPERATION_PIECEWORK_COST_COMPONENTS)).willReturn(
-                operationComponents);
+                operationPieceworkComponents);
     }
 
     @Test
     public void shouldAddTimeBalanceAndProductionCostsIfTypeCumulatedAndHourly() throws Exception {
         // given
-        given(productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
-                CalculateOperationCostMode.HOURLY.getStringValue());
+        String typeOfProductionRecording = TypeOfProductionRecording.CUMULATED.getStringValue();
+        String calculateOperationCostMode = CalculateOperationCostMode.HOURLY.getStringValue();
 
-        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.CUMULATED.getStringValue());
+        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(typeOfProductionRecording);
+        given(productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
+                calculateOperationCostMode);
+
+        given(productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)).willReturn(true);
+        given(productionCountingService.isCalculateOperationCostModeHourly(calculateOperationCostMode)).willReturn(true);
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, productionBalance, locale);
@@ -140,11 +170,15 @@ public class ProductionBalanceWithCostsPdfServiceTest {
     @Test
     public void shouldNotAddTimeBalanceAndProductionCostsIfTypeIsNotHourly() throws Exception {
         // given
-        given(productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
-                CalculateOperationCostMode.PIECEWORK.getStringValue());
+        String typeOfProductionRecording = TypeOfProductionRecording.CUMULATED.getStringValue();
+        String calculateOperationCostMode = CalculateOperationCostMode.PIECEWORK.getStringValue();
 
-        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.CUMULATED.getStringValue());
+        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(typeOfProductionRecording);
+        given(productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
+                calculateOperationCostMode);
+
+        given(productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)).willReturn(true);
+        given(productionCountingService.isCalculateOperationCostModePiecework(calculateOperationCostMode)).willReturn(true);
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, productionBalance, locale);
@@ -157,11 +191,15 @@ public class ProductionBalanceWithCostsPdfServiceTest {
     @Test
     public void shouldNotAddTimeBalanceAndProductionCostsIfTypeIsNotCumulated() throws Exception {
         // given
-        given(productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
-                CalculateOperationCostMode.HOURLY.getStringValue());
+        String typeOfProductionRecording = TypeOfProductionRecording.FOR_EACH.getStringValue();
+        String calculateOperationCostMode = CalculateOperationCostMode.HOURLY.getStringValue();
 
-        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.FOR_EACH.getStringValue());
+        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(typeOfProductionRecording);
+        given(productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
+                calculateOperationCostMode);
+
+        given(productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)).willReturn(true);
+        given(productionCountingService.isCalculateOperationCostModeHourly(calculateOperationCostMode)).willReturn(true);
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, productionBalance, locale);
@@ -174,11 +212,15 @@ public class ProductionBalanceWithCostsPdfServiceTest {
     @Test
     public void shouldAddMachineTimeBalanceAndLaborTimeBalanceIfTypeIsHourlyAndForEach() throws Exception {
         // given
-        given(productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
-                CalculateOperationCostMode.HOURLY.getStringValue());
+        String typeOfProductionRecording = TypeOfProductionRecording.FOR_EACH.getStringValue();
+        String calculateOperationCostMode = CalculateOperationCostMode.HOURLY.getStringValue();
 
-        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.FOR_EACH.getStringValue());
+        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(typeOfProductionRecording);
+        given(productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
+                calculateOperationCostMode);
+
+        given(productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)).willReturn(true);
+        given(productionCountingService.isCalculateOperationCostModeHourly(calculateOperationCostMode)).willReturn(true);
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, productionBalance, locale);
@@ -191,11 +233,15 @@ public class ProductionBalanceWithCostsPdfServiceTest {
     @Test
     public void shouldCallProductAndOperationNormsPrintingMethodNoMatterWhatIncludingrHourlyAndForEachType() throws Exception {
         // given
-        given(productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
-                CalculateOperationCostMode.HOURLY.getStringValue());
+        String typeOfProductionRecording = TypeOfProductionRecording.FOR_EACH.getStringValue();
+        String calculateOperationCostMode = CalculateOperationCostMode.HOURLY.getStringValue();
 
-        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.FOR_EACH.getStringValue());
+        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(typeOfProductionRecording);
+        given(productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
+                calculateOperationCostMode);
+
+        given(productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)).willReturn(true);
+        given(productionCountingService.isCalculateOperationCostModeHourly(calculateOperationCostMode)).willReturn(true);
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, productionBalance, locale);

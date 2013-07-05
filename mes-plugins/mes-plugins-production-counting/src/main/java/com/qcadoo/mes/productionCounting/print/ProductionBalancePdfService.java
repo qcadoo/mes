@@ -275,7 +275,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
     public void addInputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
-
         List<String> inputProductsTableHeader = Lists.newArrayList();
 
         inputProductsTableHeader.add(translationService.translate(
