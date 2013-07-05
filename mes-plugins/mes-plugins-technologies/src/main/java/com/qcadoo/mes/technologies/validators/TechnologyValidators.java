@@ -26,20 +26,28 @@ package com.qcadoo.mes.technologies.validators;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
+import java.util.List;
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
 public class TechnologyValidators {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private TranslationService translationService;
 
     public boolean validate(final DataDefinition dataDefinition, final Entity technology) {
         boolean isValid = true;
@@ -57,19 +65,41 @@ public class TechnologyValidators {
         if (techFromDB == null) {
             return true;
         }
-        StringBuilder builder = new StringBuilder();
+        String message = "";
         boolean isValid = true;
         for (Entity operationComponent : techFromDB.getTreeField("operationComponents")) {
             if (!operationComponent.getDataDefinition().callValidators(operationComponent)) {
                 isValid = false;
-                builder.append(operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
-                builder.append(", ");
+                message = createMessageForValidationErrors(message, operationComponent);
             }
         }
         if (!isValid) {
-            technology.addGlobalError("technologies.technology.validate.error.OperationTreeNotValid", builder.toString());
+            technology.addGlobalError("technologies.technology.validate.error.OperationTreeNotValid", message);
         }
         return isValid;
+    }
+
+    private String createMessageForValidationErrors(final String message, final Entity entity) {
+        List<ErrorMessage> errors = Lists.newArrayList();
+        if (!entity.getErrors().isEmpty()) {
+            errors.addAll(entity.getErrors().values());
+        }
+        if (!entity.getGlobalErrors().isEmpty()) {
+            errors.addAll(entity.getGlobalErrors());
+        }
+
+        StringBuilder errorMessages = new StringBuilder();
+        errorMessages.append(message).append("\n");
+        for (ErrorMessage error : errors) {
+
+            if (!error.getMessage().equals("qcadooView.validate.global.error.custom")) {
+                String translatedErrorMessage = translationService.translate(error.getMessage(), Locale.getDefault(),
+                        error.getVars());
+                errorMessages.append("- ").append(translatedErrorMessage);
+                errorMessages.append(",\n ");
+            }
+        }
+        return errorMessages.toString();
     }
 
     public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity technology) {
