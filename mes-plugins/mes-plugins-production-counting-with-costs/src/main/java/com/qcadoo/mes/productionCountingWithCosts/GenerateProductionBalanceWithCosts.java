@@ -458,8 +458,8 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                     BigDecimal machineHourlyCost = BigDecimalUtils.convertNullToZero(calculationOperationComponent
                             .getDecimalField(CalculationOperationComponentFields.MACHINE_HOURLY_COST));
 
-                    Integer plannedMachineTime = productionTrackingsWithPlannedTimes.get(technologyOperationComponentId)
-                            .get(L_PLANNED_MACHINE_TIME);
+                    Integer plannedMachineTime = productionTrackingsWithPlannedTimes.get(technologyOperationComponentId).get(
+                            L_PLANNED_MACHINE_TIME);
                     BigDecimal plannedMachineTimeHours = BigDecimal.valueOf(plannedMachineTime).divide(milisecondsInHour,
                             numberService.getMathContext());
 
@@ -477,8 +477,8 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                     BigDecimal laborHourlyCost = BigDecimalUtils.convertNullToZero(calculationOperationComponent
                             .getDecimalField(CalculationOperationComponentFields.LABOR_HOURLY_COST));
 
-                    Integer plannedLaborTime = productionTrackingsWithPlannedTimes.get(technologyOperationComponentId)
-                            .get(L_PLANNED_LABOR_TIME);
+                    Integer plannedLaborTime = productionTrackingsWithPlannedTimes.get(technologyOperationComponentId).get(
+                            L_PLANNED_LABOR_TIME);
                     BigDecimal plannedLaborTimeHours = BigDecimal.valueOf(plannedLaborTime).divide(milisecondsInHour,
                             numberService.getMathContext());
 
@@ -553,7 +553,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
             }
         }
 
-        // TODO lupo totalPieceworkCosts?
         final BigDecimal plannedCyclesCosts = BigDecimalUtils.convertNullToZero(productionBalance
                 .getDecimalField(CostCalculationFields.TOTAL_PIECEWORK_COSTS));
         final BigDecimal cyclesCostsBalance = cyclesCosts.subtract(plannedCyclesCosts, numberService.getMathContext());

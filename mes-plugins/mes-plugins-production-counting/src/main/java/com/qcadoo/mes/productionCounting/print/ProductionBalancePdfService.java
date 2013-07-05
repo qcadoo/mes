@@ -529,8 +529,18 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         List<Entity> operationPieceworkComponents = productionBalance
                 .getHasManyField(ProductionBalanceFields.OPERATION_PIECEWORK_COMPONENTS);
 
+        BigDecimal totalPlannedCycles = BigDecimal.ZERO;
+        BigDecimal totalCycles = BigDecimal.ZERO;
+        BigDecimal totalCyclesBalance = BigDecimal.ZERO;
+
         if (!operationPieceworkComponents.isEmpty()) {
             for (Entity operationPieceworkComponent : operationPieceworkComponents) {
+                BigDecimal plannedCycles = operationPieceworkComponent
+                        .getDecimalField(OperationPieceworkComponentFields.PLANNED_CYCLES);
+                BigDecimal cycles = operationPieceworkComponent.getDecimalField(OperationPieceworkComponentFields.CYCLES);
+                BigDecimal cyclesBalance = operationPieceworkComponent
+                        .getDecimalField(OperationPieceworkComponentFields.CYCLES_BALANCE);
+
                 pieceworkTable.addCell(new Phrase(operationPieceworkComponent.getBelongsToField(
                         OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
                         TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
@@ -538,25 +548,22 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                         .getBelongsToField(OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT)
                         .getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER),
                         FontUtils.getDejavuRegular9Dark()));
-                pieceworkTable.addCell(new Phrase(numberService.format(operationPieceworkComponent
-                        .getField(OperationPieceworkComponentFields.PLANNED_CYCLES)), FontUtils.getDejavuRegular9Dark()));
-                pieceworkTable.addCell(new Phrase(numberService.format(operationPieceworkComponent
-                        .getField(OperationPieceworkComponentFields.CYCLES)), FontUtils.getDejavuRegular9Dark()));
-                pieceworkTable.addCell(new Phrase(numberService.format(operationPieceworkComponent
-                        .getField(OperationPieceworkComponentFields.CYCLES_BALANCE)), FontUtils.getDejavuRegular9Dark()));
+                pieceworkTable.addCell(new Phrase(numberService.format(plannedCycles), FontUtils.getDejavuRegular9Dark()));
+                pieceworkTable.addCell(new Phrase(numberService.format(cycles), FontUtils.getDejavuRegular9Dark()));
+                pieceworkTable.addCell(new Phrase(numberService.format(cyclesBalance), FontUtils.getDejavuRegular9Dark()));
+
+                totalPlannedCycles = totalPlannedCycles.add(plannedCycles, numberService.getMathContext());
+                totalCycles = totalPlannedCycles.add(cycles, numberService.getMathContext());
+                totalCyclesBalance = totalPlannedCycles.add(cyclesBalance, numberService.getMathContext());
             }
         }
 
-        // TODO lupo fix problem with no such fields in production balance
         pieceworkTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
                 locale), FontUtils.getDejavuRegular9Dark()));
         pieceworkTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
-        pieceworkTable.addCell(new Phrase(numberService.format(productionBalance.getField(L_PLANNED_CYCLES)), FontUtils
-                .getDejavuRegular9Dark()));
-        pieceworkTable.addCell(new Phrase(numberService.format(productionBalance.getField(L_CYCLES)), FontUtils
-                .getDejavuRegular9Dark()));
-        pieceworkTable.addCell(new Phrase(numberService.format(productionBalance.getField(L_CYCLES_BALANCE)), FontUtils
-                .getDejavuRegular9Dark()));
+        pieceworkTable.addCell(new Phrase(numberService.format(totalPlannedCycles), FontUtils.getDejavuRegular9Dark()));
+        pieceworkTable.addCell(new Phrase(numberService.format(totalCycles), FontUtils.getDejavuRegular9Dark()));
+        pieceworkTable.addCell(new Phrase(numberService.format(totalCyclesBalance), FontUtils.getDejavuRegular9Dark()));
 
         document.add(pieceworkTable);
     }
