@@ -140,6 +140,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documentTitle = translationService.translate("costCalculation.costCalculationDetails.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
+
         pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date());
 
         DataDefinition dataDefCostCalculation = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
@@ -194,7 +195,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     locale), FontUtils.getDejavuBold11Dark()));
             PdfPTable optionTable = addOptionTablePrintCostNormsOfMaterials(entity, locale);
             document.add(optionTable);
-
         }
 
         if (entity.getBooleanField("printOperationNorms")) {
@@ -368,12 +368,13 @@ public class CostCalculationPdfService extends PdfDocumentService {
                         + ":",
                 (reportData == null ? "" : numberService.format(reportData)) + " " + currencyService.getCurrencyAlphabeticCode(),
                 FontUtils.getDejavuBold10Dark(), FontUtils.getDejavuRegular10Dark(), 2);
+
         return rightPanelColumn;
     }
 
     public PdfPTable addMaterialsTable(final Entity costCalculation, final Locale locale) {
-
         List<String> materialsTableHeader = new ArrayList<String>();
+
         for (String translate : Arrays.asList(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
                 "costCalculation.costCalculationDetails.report.columnHeader.quantity",
                 "costCalculation.costCalculationDetails.report.columnHeader.unit",
@@ -381,8 +382,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.margin",
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
             materialsTableHeader.add(translationService.translate(translate, locale));
-
         }
+
         PdfPTable materialsTable = pdfHelper.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false);
 
         try {
@@ -394,6 +395,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         Entity technology;
         Entity order = costCalculation.getBelongsToField(ORDER);
+
         if (order == null) {
             technology = costCalculation.getBelongsToField(TECHNOLOGY);
         } else {
@@ -436,8 +438,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 materialsTable.addCell(new Phrase(numberService.format(totalCosts), FontUtils.getDejavuRegular9Dark()));
             }
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-
         }
+
         String totalMaterialCosts = numberService.format(costCalculation.getField(L_TOTAL_MATERIAL_COSTS));
         String materialCostMarginValue = numberService.format(costCalculation.getField(L_MATERIAL_COST_MARGIN_VALUE));
         BigDecimal totalCostOfMaterialValue = costCalculation.getDecimalField(L_TOTAL_MATERIAL_COSTS).add(
@@ -455,6 +457,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         materialsTable.addCell(new Phrase(totalCostOfMaterial, FontUtils.getDejavuRegular9Dark()));
 
         materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+
         return materialsTable;
     }
 
@@ -464,14 +467,13 @@ public class CostCalculationPdfService extends PdfDocumentService {
         Map<String, String> costModeName = getCostMode(costCalculation);
 
         for (String translate : Arrays.asList(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
-                L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME, costModeName.get("localeType")
-
-        )) {
+                L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME, costModeName.get("localeType"))) {
             optionTableHeader.add(translationService.translate(translate, locale));
         }
 
         Entity technology;
         Entity order = costCalculation.getBelongsToField(ORDER);
+
         if (costCalculation.getBelongsToField(ORDER) == null) {
             technology = costCalculation.getBelongsToField(TECHNOLOGY);
         } else {
@@ -501,7 +503,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
             printCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " " + " / " + quantity + " " + unit, FontUtils
                     .getDejavuRegular9Dark()));
-
         }
 
         return printCostNormsOfMaterialTable;
@@ -509,9 +510,11 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     private Map<String, String> getCostMode(final Entity costCalculation) {
         Map<String, String> costModeName = new HashMap<String, String>();
+
         String localeType = "";
         String costMode = "";
         String costCalculationMode = costCalculation.getStringField(CALCULATE_MATERIAL_COSTS_MODE);
+
         if ("01nominal".equals(costCalculationMode)) {
             localeType = "costCalculation.costCalculationDetails.report.columnHeader.nominalCost";
             costMode = L_NOMINAL_COST;
@@ -525,8 +528,10 @@ public class CostCalculationPdfService extends PdfDocumentService {
             localeType = "costCalculation.costCalculationDetails.report.columnHeader.costForOrder";
             costMode = "costForOrder";
         }
+
         costModeName.put("localeType", localeType);
         costModeName.put("costMode", costMode);
+
         return costModeName;
     }
 
@@ -623,9 +628,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         for (String translate : Arrays.asList(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
                 L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME,
                 "costCalculation.costCalculationDetails.report.columnHeader.pieceworkCost",
-                "costCalculation.costCalculationDetails.report.columnHeader.forNumberOfOperations"
-
-        )) {
+                "costCalculation.costCalculationDetails.report.columnHeader.forNumberOfOperations")) {
             optionTableHeader.add(translationService.translate(translate, locale));
         }
 
@@ -669,7 +672,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.margin",
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
             operationsTableHeader.add(translationService.translate(translate, locale));
-
         }
 
         List<Entity> calculationOperationComponents = costCalculation.getHasManyField(CALCULATION_OPERATION_COMPONENTS);
@@ -687,7 +689,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
         if (calculationOperationComponents != null && !calculationOperationComponents.isEmpty()) {
             Integer totalMachineWorkTimeSummary = Integer.valueOf(0);
             Integer totalLaborWorkTimeSummary = Integer.valueOf(0);
-            BigDecimal totalOperationWithMarginCostSummary = null;
+
+            BigDecimal totalOperationWithMarginCostSummary = BigDecimal.ZERO;
 
             for (Entity calculationOperationComponent : calculationOperationComponents) {
 
@@ -726,13 +729,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 BigDecimal totalOperationCostWithMargin = totalMachineOperationCostWithMargin.add(
                         totalLaborOperationCostWithMargin, mc);
 
-                if (totalOperationWithMarginCostSummary == null) {
-                    totalOperationWithMarginCostSummary = totalOperationCostWithMargin;
-                } else {
-                    totalOperationWithMarginCostSummary = totalOperationWithMarginCostSummary.add(totalOperationCostWithMargin,
-                            mc);
-                }
+                totalOperationWithMarginCostSummary = totalOperationWithMarginCostSummary.add(totalOperationCostWithMargin, mc);
             }
+
             String totalMachineWorkTimeToString = timeConverterService.convertTimeToString(totalMachineWorkTimeSummary);
             String totalMachineHourlyCosts = numberService.format(costCalculation.getDecimalField("totalMachineHourlyCosts"));
             String totalLaborWorkTimeToString = timeConverterService.convertTimeToString(totalLaborWorkTimeSummary);
@@ -756,6 +755,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             operationsTable.addCell(new Phrase(totalOperationWithMarginCostSummaryToString, FontUtils.getDejavuRegular9Dark()));
             operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
+
         return operationsTable;
     }
 
@@ -770,6 +770,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
             operationsTableHeader.add(translationService.translate(translate, locale));
         }
+
         List<Entity> calculationOperationComponents = costCalculation.getTreeField(CALCULATION_OPERATION_COMPONENTS);
 
         PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false);
@@ -782,8 +783,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
         }
 
         if (!calculationOperationComponents.isEmpty()) {
-            BigDecimal totalOperationCostSummary = null;
-            BigDecimal totalPieces = null;
+            BigDecimal totalOperationCostSummary = BigDecimal.ZERO;
+            BigDecimal totalPieces = BigDecimal.ZERO;
+
             for (Entity calculationOperationComponent : calculationOperationComponents) {
                 BigDecimal pieces = calculationOperationComponent.getDecimalField(L_PIECES);
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getField(L_NODE_NUMBER).toString(), FontUtils
@@ -803,18 +805,11 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 
                 BigDecimal operationCost = calculationOperationComponent.getDecimalField(L_OPERATION_COST);
-                if (totalOperationCostSummary == null) {
-                    totalOperationCostSummary = operationCost;
-                } else {
-                    totalOperationCostSummary = totalOperationCostSummary.add(operationCost);
-                }
-                if (totalPieces == null) {
-                    totalPieces = pieces;
-                } else {
-                    totalPieces = totalPieces.add(pieces);
-                }
 
+                totalOperationCostSummary = totalOperationCostSummary.add(operationCost);
+                totalPieces = totalPieces.add(pieces);
             }
+
             String totalOperationCostSummaryToString = numberService.format(totalOperationCostSummary);
             String totaProductionCostMarginValue = numberService.format(costCalculation.getField(L_PRODUCTION_COST_MARGIN_VALUE));
             String totalPiecesToString = numberService.format(totalPieces);
@@ -834,6 +829,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             operationsTable.addCell(new Phrase(totalOperationCostToString, FontUtils.getDejavuRegular9Dark()));
             operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
+
         return operationsTable;
     }
 
