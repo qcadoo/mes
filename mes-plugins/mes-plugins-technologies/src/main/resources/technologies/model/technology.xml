@@ -40,7 +40,9 @@
 		
 		<belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
 			lazy="false" />
-				
+
+		<boolean name="externalSynchronized" default="true" copyable="false" />
+
 		<boolean name="master" default="false" />
 		<string name="description">
 			<validatesLength max="2048" />
