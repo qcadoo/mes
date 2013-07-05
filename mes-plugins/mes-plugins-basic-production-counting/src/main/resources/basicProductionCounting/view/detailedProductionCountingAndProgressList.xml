@@ -65,8 +65,8 @@
 
 				<option type="order" column="productType" direction="desc" />
 
-				<option type="searchable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
-				<option type="orderable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
+				<option type="searchable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit" />
+				<option type="orderable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit" />
 				
 				<option type="correspondingView"
 					value="basicProductionCounting/productionCountingQuantityAdvancedDetails" />
