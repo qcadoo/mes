@@ -32,7 +32,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,17 +144,19 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             Entity productionLine = entity.getBelongsToField(L_PRODUCTION_LINE);
             Boolean includeTPZ = entity.getBooleanField("includeTPZ");
             Boolean includeAdditionalTime = entity.getBooleanField("includeAdditionalTime");
-            Map<Entity, Integer> workstations = getWorkstationsMapsForOperationsComponent(costCalculation, productionLine);
+            Map<Long, Integer> workstations = getWorkstationsMapsForOperationsComponent(costCalculation, productionLine);
 
-            Map<Entity, OperationWorkTime> realizationTimes = operationWorkTimeService.estimateOperationsWorkTime(
-                    calculationOperationComponents, productQuantitiesService
-                            .convertOperationsRunsFromProductQuantities(productQuantitiesAndOperationRuns.getOperationRuns()),
-                    includeTPZ, includeAdditionalTime, workstations, true);
+            // Map<Entity, OperationWorkTime> realizationTimes = operationWorkTimeService.estimateOperationsWorkTime(
+            // calculationOperationComponents, productQuantitiesService
+            // .convertOperationsRunsFromProductQuantities(productQuantitiesAndOperationRuns.getOperationRuns()),
+            // includeTPZ, includeAdditionalTime, workstations, true);
             OperationTimesContainer operationTimes = new OperationTimesContainer();
+            operationTimes = operationWorkTimeService.estimateOperationsWorkTimes(calculationOperationComponents,
+                    productQuantitiesAndOperationRuns.getOperationRuns(), includeTPZ, includeAdditionalTime, workstations, true);
             // FIXME MAKU
-            for (Entry<Entity, OperationWorkTime> operationAndTimeEntry : realizationTimes.entrySet()) {
-                operationTimes.add(operationAndTimeEntry.getKey(), operationAndTimeEntry.getValue());
-            }
+            // for (Entry<Entity, OperationWorkTime> operationAndTimeEntry : realizationTimes.entrySet()) {
+            // operationTimes.add(operationAndTimeEntry.getKey(), operationAndTimeEntry.getValue());
+            // }
 
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
                     margin, quantity, operationTimes);
@@ -304,8 +305,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         return results;
     }
 
-    private Map<Entity, Integer> getWorkstationsMapsForOperationsComponent(final Entity costCalculation,
-            final Entity productionLine) {
+    private Map<Long, Integer> getWorkstationsMapsForOperationsComponent(final Entity costCalculation, final Entity productionLine) {
         Entity order = costCalculation.getBelongsToField(L_ORDER);
         if (order == null) {
             return getWorkstationsFromTechnology(costCalculation.getBelongsToField("technology"), productionLine);
@@ -314,21 +314,26 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
     }
 
-    private Map<Entity, Integer> getWorkstationsFromTechnology(final Entity technology, final Entity productionLine) {
-        Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
+    private Map<Long, Integer> getWorkstationsFromTechnology(final Entity technology, final Entity productionLine) {
+        Map<Long, Integer> workstations = new HashMap<Long, Integer>();
         for (Entity operComp : technology.getHasManyField(OPERATION_COMPONENTS)) {
-            workstations.put(operComp, productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+            workstations.put(operComp.getId(), productionLinesService.getWorkstationTypesCount(operComp, productionLine));
         }
         return workstations;
     }
 
-    private Map<Entity, Integer> getWorkstationsFromOrder(final Entity order) {
-        Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
-        for (Entity operComp : order.getHasManyField("technologyInstanceOperationComponents")) {
-            workstations.put(operComp.getBelongsToField("technologyOperationComponent"),
-                    (Integer) operComp.getField("quantityOfWorkstationTypes"));
+    private Map<Long, Integer> getWorkstationsFromOrder(final Entity order) {
+        Map<Long, Integer> workstations = new HashMap<Long, Integer>();
+        for (Entity operComp : order.getBelongsToField("technology").getHasManyField("operationComponents")) {
+            workstations
+                    .put(operComp.getId(),
+                            getIntegerValue(operComp.getBelongsToField("techOperCompWorkstation").getField(
+                                    "quantityOfWorkstationTypes")));
         }
         return workstations;
     }
 
+    private Integer getIntegerValue(final Object value) {
+        return value == null ? Integer.valueOf(0) : (Integer) value;
+    }
 }

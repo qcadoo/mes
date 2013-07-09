@@ -558,6 +558,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
             panelTableContent.getDefaultCell().setBackgroundColor(null);
             panelTableContent.setTableEvent(null);
 
+            Entity operationComponent = calculationOperationComponent.getBelongsToField("technologyOperationComponent");
+
             panelTableHeader.addCell(new Phrase(translationService.translate(
                     L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER, locale)
                     + ": "
@@ -574,40 +576,39 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.productionSetUpTime.label", locale) + ":",
-                    timeConverterService.convertTimeToString((Integer) calculationOperationComponent.getField("tpz"))
-                            + " (g:m:s)");
+                    timeConverterService.convertTimeToString((Integer) operationComponent.getField("tpz")) + " (g:m:s)");
 
             addTableCellAsTwoColumnsTable(
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.machineUtilization.label", locale) + ":",
-                    calculationOperationComponent.getField("machineUtilization"));
+                    operationComponent.getField("machineUtilization"));
 
             addTableCellAsTwoColumnsTable(
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.productionTimeForOneCycle.label", locale)
-                            + ":",
-                    timeConverterService.convertTimeToString((Integer) calculationOperationComponent.getField("tj")) + " (g:m:s)");
+                            + ":", timeConverterService.convertTimeToString((Integer) operationComponent.getField("tj"))
+                            + " (g:m:s)");
 
             addTableCellAsTwoColumnsTable(
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.laborUtilization.label", locale) + ":",
-                    calculationOperationComponent.getField("laborUtilization"));
+                    operationComponent.getField("laborUtilization"));
 
             addTableCellAsTwoColumnsTable(
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.additionalTime.label", locale) + ":",
-                    timeConverterService.convertTimeToString((Integer) calculationOperationComponent
-                            .getField("timeNextOperation")) + " (g:m:s)");
+                    timeConverterService.convertTimeToString((Integer) operationComponent.getField("timeNextOperation"))
+                            + " (g:m:s)");
 
             addTableCellAsTwoColumnsTable(
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.machineHourlyCost.label", locale) + ":",
-                    calculationOperationComponent.getField("machineHourlyCost"));
+                    operationComponent.getField("machineHourlyCost"));
 
             addTableCellAsTwoColumnsTable(panelTableContent, null, null);
 
@@ -615,7 +616,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.laborHourlyCost.label", locale) + ":",
-                    calculationOperationComponent.getField("laborHourlyCost"));
+                    operationComponent.getField("laborHourlyCost"));
 
             document.add(panelTableHeader);
             document.add(panelTableContent);

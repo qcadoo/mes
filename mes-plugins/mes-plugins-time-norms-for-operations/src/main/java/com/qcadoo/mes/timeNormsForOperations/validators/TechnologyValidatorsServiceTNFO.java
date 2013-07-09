@@ -44,8 +44,6 @@ public class TechnologyValidatorsServiceTNFO {
     @Autowired
     private ProductQuantitiesService productQuantitiyService;
 
-   
-
     public boolean checkIfUnitMatch(final DataDefinition dataDefinition, final Entity technologyOperationComponent) {
         String productionInOneCycleUnit = technologyOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
         String nextOperationAfterProducedQuantityUnit = technologyOperationComponent

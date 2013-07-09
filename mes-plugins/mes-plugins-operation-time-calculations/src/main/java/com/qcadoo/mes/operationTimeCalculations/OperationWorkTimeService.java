@@ -42,7 +42,7 @@ public interface OperationWorkTimeService {
             Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Map<Entity, Integer> workstations, final boolean saved);
 
-    OperationTimesContainer estimateOperationsWorkTime(final List<Entity> operationComponents,
+    OperationTimesContainer estimateOperationsWorkTimes(final List<Entity> operationComponents,
             Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Map<Long, Integer> workstations, final boolean saved);
 

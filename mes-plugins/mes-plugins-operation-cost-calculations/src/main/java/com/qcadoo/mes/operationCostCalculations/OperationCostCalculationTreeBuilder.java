@@ -100,11 +100,9 @@ public class OperationCostCalculationTreeBuilder {
             final Entity calculationOperationComponent, final Entity costCalculation) {
         DataDefinition sourceDD = operationComponent.getDataDefinition();
 
-        // TODO MAKU remove unnecessary fields, such as tpz/tj and others.
-        for (String fieldName : Arrays.asList("priority", "nodeNumber", "tpz", "tj", L_PRODUCTION_IN_ONE_CYCLE,
-                "nextOperationAfterProducedQuantity", "timeNextOperation", "operationOffSet",
-                "effectiveOperationRealizationTime", "effectiveDateFrom", "effectiveDateTo", "pieceworkCost", "laborHourlyCost",
-                "machineHourlyCost", "numberOfOperations", "laborUtilization", "machineUtilization")) {
+        for (String fieldName : Arrays.asList("priority", "nodeNumber", L_PRODUCTION_IN_ONE_CYCLE,
+                "nextOperationAfterProducedQuantity", "operationOffSet", "effectiveOperationRealizationTime",
+                "effectiveDateFrom", "effectiveDateTo", "pieceworkCost", "numberOfOperations")) {
             calculationOperationComponent.setField(fieldName, operationComponent.getField(fieldName));
         }
 
