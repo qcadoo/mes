@@ -64,7 +64,7 @@
 								for (var elementKey in itemNames) {
 									var ribbonItem = #{window}.getRibbonItem(itemNames[elementKey]);
 									if (isSaved) {
-										ribbonItem.enable();
+										//ribbonItem.enable();
 									} else {
 										ribbonItem.disable();
 									}
@@ -112,6 +112,8 @@
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 						</component>
+						<component type="hidden" name="externalSynchronized"
+							field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
 				</component>
 				
@@ -123,8 +125,8 @@
 									if (!newValue || !newValue.content) {
 										return;
 									}
-									updateRibbon(newValue.content.value);
 									toggleEditable(newValue.content.value);
+									updateRibbon(newValue.content.value);
 								}
 							});
 							
@@ -172,9 +174,28 @@
 							}
 							
 							function updateRibbon(state) {
+								var save = #{window}.getRibbonItem("actions.save");
+								var saveBack = #{window}.getRibbonItem("actions.saveBack");
+								var saveNew = #{window}.getRibbonItem("actions.saveNew");
+								var cancel = #{window}.getRibbonItem("actions.cancel");
+								var del = #{window}.getRibbonItem("actions.delete");
 								var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
 								var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 								var checkState = #{window}.getRibbonItem("status.checkTechnology");
+								
+								console.log(#{externalSynchronized}.getValue().content.value);
+								
+								if (#{externalSynchronized}.getValue().content && #{externalSynchronized}.getValue().content.value === "1") {
+									save.enable();
+							 		saveBack.enable();
+							 		saveNew.enable();
+							 		cancel.enable();
+							 		del.enable();
+							 		acceptState.enable();
+									cancelState.enable();
+									checkState.enable();
+									#{window}.setPermanentlyDisabled(false, true);
+								}
 									
 								acceptState.disable();
 								acceptState.forState="02accepted";
@@ -210,9 +231,22 @@
 									checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
 									checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
 									acceptState.enable();
-								}else{
+								} else {
 									cancelState.enable();
 								}
+								
+								if (!#{externalSynchronized}.getValue().content || #{externalSynchronized}.getValue().content.value !== "1") {
+									save.disable();
+							 		saveBack.disable();
+							 		saveNew.disable();
+							 		cancel.disable();
+							 		del.disable();
+							 		acceptState.disable();
+									cancelState.disable();
+									checkState.disable();
+									#{window}.setPermanentlyDisabled(true, true);
+								}
+								
 							}
 							this.updateRibbon = updateRibbon;
 						]]>
