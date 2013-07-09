@@ -246,3 +246,14 @@ ALTER TABLE productioncountingwithcosts_operationpieceworkcostcomponent
 ALTER TABLE productioncountingwithcosts_technologyinstoperproductincomp RENAME TO productioncountingwithcosts_technologyoperationproductincomp;
 
 -- end
+
+
+-- Table: costnormsforoperation_calculationoperationcomponent
+-- changed: 02.07.2013
+
+ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN tj;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN tpz;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN machineutilization;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN laborutilization;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN timenextoperation;
+--end
