@@ -47,11 +47,11 @@
 
 		<boolean name="lastRecord" />
 
-		<integer name="machineTime" />
+		<integer name="machineTime" copyable="false"/>
 		
-		<integer name="laborTime" />
+		<integer name="laborTime" copyable="false"/>
 		
-		<decimal name="executedOperationCycles">
+		<decimal name="executedOperationCycles" copyable="false">
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
 		</decimal>
@@ -71,9 +71,6 @@
 		<onCopy 
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordModelHooks" 
 			method="setInitialState" />
-		<onCopy 
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordModelHooks" 
-			method="clearLaborAndMachineTime" />
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="generateData" />

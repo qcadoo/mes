@@ -380,7 +380,9 @@
 					<option type="label" value="piecework" />
 					<component type="gridLayout" name="pieceworkGridLayout" columns="1" rows="1">
 						<layoutElement column="1" row="1">
-							<component type="input" name="executedOperationCycles" reference="executedOperationCycles" field="#{form}.executedOperationCycles" />
+							<component type="input" name="executedOperationCycles" reference="executedOperationCycles" field="#{form}.executedOperationCycles" >
+								<option type="alignment" value="right" />
+							</component>
 						</layoutElement>
 					</component>
 				</component>
