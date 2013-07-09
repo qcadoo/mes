@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.tree.ProductNumberingService;
@@ -46,6 +47,9 @@ public class ProductHooks {
 
     @Autowired
     private ProductNumberingService productNumberingService;
+
+    @Autowired
+    private ProductService productService;
 
     public void generateNodeNumber(final DataDefinition productDD, final Entity product) {
         productNumberingService.generateNodeNumber(product);
@@ -127,6 +131,16 @@ public class ProductHooks {
             return;
         }
         entity.setField("externalNumber", null);
+    }
+
+    public void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
+        if (productService.hasUnitChangedOnUpdate(product)) {
+            productService.conversionForProductUnit(product);
+        }
+    }
+
+    public void calculateConversionOnCreate(final DataDefinition productDD, final Entity product) {
+        productService.conversionForProductUnit(product);
     }
 
 }

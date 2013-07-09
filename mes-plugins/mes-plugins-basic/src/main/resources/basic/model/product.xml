@@ -74,7 +74,7 @@
 		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
 			method="generateNodeNumber" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
-		<onCreate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionOnCreate" />
+		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks" method="calculateConversionOnCreate" />
 
 		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="updateNodeNumber" />
 		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged" />
@@ -83,7 +83,7 @@
 		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearExternalIdOnCopy" />
 		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearEanOnCopy" />
 
-		<onUpdate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />
+		<onUpdate class="com.qcadoo.mes.basic.hooks.ProductHooks" method="calculateConversionIfUnitChanged" />
 	</hooks>
 
 	<identifier expression="#number + ' - ' + #name" />

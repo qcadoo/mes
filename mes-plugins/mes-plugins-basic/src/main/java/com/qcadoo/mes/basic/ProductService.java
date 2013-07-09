@@ -71,17 +71,7 @@ public class ProductService {
         return entityType.getStringValue().equals(product.getStringField(ENTITY_TYPE));
     }
 
-    public void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
-        if (hasUnitChangedOnUpdate(product)) {
-            conversionForProductUnit(product);
-        }
-    }
-
-    public void calculateConversionOnCreate(final DataDefinition productDD, final Entity product) {
-        conversionForProductUnit(product);
-    }
-
-    private void conversionForProductUnit(final Entity product) {
+    public void conversionForProductUnit(final Entity product) {
         final String productUnit = product.getStringField(ProductFields.UNIT);
         if (StringUtils.isNotEmpty(productUnit)) {
             final PossibleUnitConversions conversions = unitConversionService.getPossibleConversions(productUnit);
@@ -89,7 +79,7 @@ public class ProductService {
         }
     }
 
-    private boolean hasUnitChangedOnUpdate(final Entity product) {
+    public boolean hasUnitChangedOnUpdate(final Entity product) {
         final Entity existingProduct = product.getDataDefinition().get(product.getId());
         final String existingProductUnit = existingProduct.getStringField(ProductFields.UNIT);
         final String currentUnit = product.getStringField(ProductFields.UNIT);
