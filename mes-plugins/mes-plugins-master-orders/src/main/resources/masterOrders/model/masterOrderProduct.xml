@@ -10,7 +10,7 @@
 		<belongsTo name="masterOrder" model="masterOrder" />
 
 		<decimal name="masterOrderQuantity">
-			<validatesRange from="0"  />
+			<validatesRange from="0" />
 		</decimal>
 		<decimal name="cumulatedOrderQuantity">
 			<validatesRange from="0" />
@@ -30,5 +30,7 @@
 			method="checkIfCanChangedTechnology" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
 			method="countCumulatedOrderQuantity" />
+		<onDelete class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
+			method="checkAssignedOrder" />
 	</hooks>
 </model>
