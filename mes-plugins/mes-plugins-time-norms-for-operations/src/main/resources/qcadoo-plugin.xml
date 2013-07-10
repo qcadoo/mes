@@ -399,6 +399,11 @@
 			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks"
 			method="checkOperationOutputQuantities" />
 
+		<view:view-listener plugin="basic" view="productDetails"
+			component="form" event="save"
+			class="com.qcadoo.mes.timeNormsForOperations.validators.ProductValidatorsTNFO"
+			method="checkIfProductUnitChange" />
+			
 	</modules>
 	
 	<features>
