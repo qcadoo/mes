@@ -61,7 +61,7 @@
 				<option type="column" name="productUnit" fields="product"
 					expression="#product['unit']" />
 
-				<option type="order" column="productNumber" direction="desc" />
+				<option type="order" column="productNumber" direction="asc" />
 
 				<option type="searchable"
 					value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit" />
