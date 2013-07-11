@@ -69,7 +69,7 @@
 						<option type="expression" value="#number + ' - ' + #name" />
 						<option type="fieldCode" value="number" />
 
-						<listener
+						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.basicProductionCounting.listeners.ProductionCountingQuantityAdvancedDetailsListeners"
 							method="fillUnitFields" />
 					</component>
@@ -134,7 +134,12 @@
 				</layoutElement>
 				<layoutElement column="1" row="5">
 					<component type="select" name="typeOfMaterial" field="typeOfMaterial"
-						reference="typeOfMaterial" />
+						reference="typeOfMaterial">
+						
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.basicProductionCounting.listeners.ProductionCountingQuantityAdvancedDetailsListeners"
+							method="setTechnologyOperationComponentFieldRequired" />
+					</component>
 				</layoutElement>
 			</component>
 
@@ -157,6 +162,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
 			method="fillUnitFields" />
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
+			method="setTechnologyOperationComponentFieldRequired" />
 	</hooks>
 
 </view>

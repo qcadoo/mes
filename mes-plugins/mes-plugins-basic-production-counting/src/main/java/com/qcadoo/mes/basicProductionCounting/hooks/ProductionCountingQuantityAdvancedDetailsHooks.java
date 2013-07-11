@@ -139,4 +139,8 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
         basicProductionCountingService.fillUnitFields(view, ProductionCountingQuantityFields.PRODUCT, referenceNames);
     }
 
+    public void setTechnologyOperationComponentFieldRequired(final ViewDefinitionState view) {
+        basicProductionCountingService.setTechnologyOperationComponentFieldRequired(view);
+    }
+
 }

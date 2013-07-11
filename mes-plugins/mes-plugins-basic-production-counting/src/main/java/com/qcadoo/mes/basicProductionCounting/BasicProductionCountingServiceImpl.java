@@ -372,6 +372,20 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     @Override
+    public void setTechnologyOperationComponentFieldRequired(final ViewDefinitionState view) {
+        FieldComponent typeOfMaterialField = (FieldComponent) view
+                .getComponentByReference(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        String typeOfMaterial = (String) typeOfMaterialField.getFieldValue();
+
+        boolean isRequired = ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial);
+
+        technologyOperationComponentLookup.setRequired(isRequired);
+    }
+
+    @Override
     public Set<String> fillRowStylesDependsOfTypeOfMaterial(final Entity productionCountingQuantity) {
         final Set<String> rowStyles = Sets.newHashSet();
 

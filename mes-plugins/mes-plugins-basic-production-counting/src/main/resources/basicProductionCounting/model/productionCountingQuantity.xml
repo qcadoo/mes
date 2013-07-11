@@ -52,6 +52,9 @@
 
 	<hooks>
 		<onCreate
+			class="com.qcadoo.mes.basicProductionCounting.validators.ProductionCountingQuantityValidators"
+			method="validatesWith" />
+		<onCreate
 			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityHooks"
 			method="onCreate" />
 		<onDelete

@@ -165,6 +165,14 @@ public interface BasicProductionCountingService {
     void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames);
 
     /**
+     * Sets technology operation component field required
+     * 
+     * @param view
+     *            view
+     */
+    void setTechnologyOperationComponentFieldRequired(final ViewDefinitionState view);
+
+    /**
      * Fills row styles depends of type of material
      * 
      * @param productionCountingQuantity
