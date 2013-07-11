@@ -264,7 +264,9 @@
 					rows="6">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
-							reference="number" />
+							reference="number" >
+							<option type="alignment" value="right" />
+						</component>
 						<component type="hidden" name="externalSynchronized"
 							field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
