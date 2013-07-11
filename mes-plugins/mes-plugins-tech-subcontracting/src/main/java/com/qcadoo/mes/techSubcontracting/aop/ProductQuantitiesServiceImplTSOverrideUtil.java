@@ -28,16 +28,15 @@ import static com.qcadoo.mes.technologies.constants.OperationProductOutComponent
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.CHILDREN;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginStateResolver;
@@ -48,17 +47,15 @@ public class ProductQuantitiesServiceImplTSOverrideUtil {
     @Autowired
     private PluginStateResolver pluginStateResolver;
 
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
-
     public boolean shouldOverride() {
         return pluginStateResolver.isEnabled(TechSubcontractingConstants.PLUGIN_IDENTIFIER);
     }
 
-    public Map<Long, BigDecimal> getProductComponentWithQuantitiesWithoutNonComponents(
-            final Map<Long, BigDecimal> productComponentWithQuantities, final Set<Long> nonComponents) {
-        for (Long nonComponent : nonComponents) {
-            Entity operationProductComponent = productQuantitiesService.getOperationProductComponent(nonComponent);
+    public OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesWithoutNonComponents(
+            final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            final Set<OperationProductComponentHolder> nonComponents) {
+        for (OperationProductComponentHolder nonComponent : nonComponents) {
+            Entity operationProductComponent = nonComponent.getEntity();
 
             Entity product = operationProductComponent.getBelongsToField(PRODUCT);
             Entity technologyOperationComponent = operationProductComponent.getBelongsToField(OPERATION_COMPONENT);

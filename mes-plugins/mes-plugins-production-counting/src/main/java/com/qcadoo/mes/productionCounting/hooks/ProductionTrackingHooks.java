@@ -27,7 +27,6 @@ import static java.util.Arrays.asList;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -43,6 +42,8 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeDescriber;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -141,13 +142,14 @@ public class ProductionTrackingHooks {
             trackingOperationProductsFieldName = ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS;
         }
 
-        Map<Long, BigDecimal> productComponentQuantities = productQuantitiesService.getProductComponentQuantities(asList(order));
+        OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
+                .getProductComponentQuantities(asList(order));
 
         Set<Long> alreadyAddedProducts = Sets.newHashSet();
 
-        for (Entry<Long, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
-            Entity operationProductComponent = productQuantitiesService.getOperationProductComponent(productComponentQuantity
-                    .getKey());
+        for (Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity : productComponentQuantities.asMap()
+                .entrySet()) {
+            Entity operationProductComponent = productComponentQuantity.getKey().getEntity();
 
             if (technologyOperationComponent != null) {
                 Entity operationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);

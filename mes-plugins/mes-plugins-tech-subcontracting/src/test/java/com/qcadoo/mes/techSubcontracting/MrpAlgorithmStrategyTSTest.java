@@ -40,10 +40,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -60,9 +61,9 @@ public class MrpAlgorithmStrategyTSTest {
     @Mock
     private Entity operComp1, operComp2;
 
-    private Map<Long, BigDecimal> productComponentQuantities;
+    private OperationProductComponentWithQuantityContainer productComponentQuantities;
 
-    private Set<Long> nonComponents;
+    private Set<OperationProductComponentHolder> nonComponents;
 
     @Mock
     private DataDefinition ddIn, ddOut;
@@ -102,17 +103,17 @@ public class MrpAlgorithmStrategyTSTest {
         when(productInComponent2.getField("quantity")).thenReturn(new BigDecimal(2));
         when(productOutComponent4.getField("quantity")).thenReturn(BigDecimal.ONE);
 
-        productComponentQuantities = Maps.newHashMap();
+        productComponentQuantities = new OperationProductComponentWithQuantityContainer();
         nonComponents = Sets.newHashSet();
 
-        productComponentQuantities.put(productInComponent1.getId(), new BigDecimal(5));
-        productComponentQuantities.put(productInComponent3.getId(), BigDecimal.ONE);
-        productComponentQuantities.put(productOutComponent2.getId(), BigDecimal.ONE);
+        productComponentQuantities.put(productInComponent1, new BigDecimal(5));
+        productComponentQuantities.put(productInComponent3, BigDecimal.ONE);
+        productComponentQuantities.put(productOutComponent2, BigDecimal.ONE);
 
-        productComponentQuantities.put(productOutComponent4.getId(), BigDecimal.ONE);
-        productComponentQuantities.put(productInComponent2.getId(), new BigDecimal(2));
+        productComponentQuantities.put(productOutComponent4, BigDecimal.ONE);
+        productComponentQuantities.put(productInComponent2, new BigDecimal(2));
 
-        nonComponents.add(productInComponent2.getId());
+        nonComponents.add(new OperationProductComponentHolder(productInComponent2));
 
         when(product1.getId()).thenReturn(1L);
         when(product2.getId()).thenReturn(2L);
@@ -142,6 +143,8 @@ public class MrpAlgorithmStrategyTSTest {
         when(productOutComponent2.getDataDefinition()).thenReturn(ddOut);
         when(productOutComponent4.getDataDefinition()).thenReturn(ddOut);
 
+        when(ddIn.getName()).thenReturn("operationProductInComponent");
+        when(ddOut.getName()).thenReturn("operationProductOutComponent");
     }
 
     private static EntityList mockEntityListIterator(List<Entity> list) {

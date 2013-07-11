@@ -36,6 +36,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 
 public class ProductQuantitiesServiceImplBPCOverrideAspectTest {
 
@@ -47,7 +48,7 @@ public class ProductQuantitiesServiceImplBPCOverrideAspectTest {
                 Set.class, boolean.class);
         assertNotNull(method);
         assertTrue(Modifier.isPrivate(method.getModifiers()));
-        assertEquals(Map.class, method.getReturnType());
+        assertEquals(OperationProductComponentWithQuantityContainer.class, method.getReturnType());
     }
 
 }

@@ -21,30 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.technologies.dto;
 
-public enum TechnologyType {
+public enum OperationProductComponentEntityType {
 
-    WITH_PATTERN_TECHNOLOGY("01patternTechnology"), WITH_OWN_TECHNOLOGY("02ownTechnology");
+    OPERATION_PRODUCT_IN_COMPONENT("operationProductInComponent"), OPERATION_PRODUCT_OUT_COMPONENT("operationProductOutComponent");
 
-    private final String technologyType;
+    private final String productQuantitiesEntityType;
 
-    private TechnologyType(final String technologyType) {
-        this.technologyType = technologyType;
+    private OperationProductComponentEntityType(final String productQuantitiesEntityType) {
+        this.productQuantitiesEntityType = productQuantitiesEntityType;
     }
 
     public String getStringValue() {
-        return technologyType;
+        return productQuantitiesEntityType;
     }
 
-    public static TechnologyType parseString(final String string) {
-        if ("01patternTechnology".equals(string)) {
-            return WITH_PATTERN_TECHNOLOGY;
-        } else if ("02ownTechnology".equals(string)) {
-            return WITH_OWN_TECHNOLOGY;
+    public static OperationProductComponentEntityType parseString(final String string) {
+        if ("operationProductInComponent".equals(string)) {
+            return OPERATION_PRODUCT_IN_COMPONENT;
+        } else if ("operationProductOutComponent".equals(string)) {
+            return OPERATION_PRODUCT_OUT_COMPONENT;
         }
 
-        throw new IllegalStateException("Unsupported TechnologyType: " + string);
+        throw new IllegalStateException("Unsupported ProductQuantitiesEntityType: " + string);
     }
 
 }

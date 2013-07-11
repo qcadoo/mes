@@ -47,7 +47,7 @@ import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.dto.ProductQuantitiesAndOperationRuns;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -128,8 +128,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyFromOrder.getId());
         }
 
-        ProductQuantitiesAndOperationRuns productQuantitiesAndOperationRuns = productQuantitiesService
-                .getProductComponentQuantities(technology, quantity);
+        ProductQuantitiesHolder productQuantitiesAndOperationRuns = productQuantitiesService.getProductComponentQuantities(
+                technology, quantity);
 
         if (CalculateOperationCostMode.PIECEWORK.equals(mode)) {
             if (calculationOperationComponents.isEmpty()) {

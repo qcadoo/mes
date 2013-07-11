@@ -28,12 +28,15 @@ import java.util.Map;
 import java.util.Set;
 
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 
 public interface MrpAlgorithmStrategy {
 
     boolean isApplicableFor(final MrpAlgorithm mrpAlgorithm);
 
-    Map<Long, BigDecimal> perform(final Map<Long, BigDecimal> productComponentWithQuantities, final Set<Long> nonComponents,
-            MrpAlgorithm mrAlgorithm, final String operationProductComponentModelName);
+    Map<Long, BigDecimal> perform(final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            final Set<OperationProductComponentHolder> nonComponents, MrpAlgorithm mrAlgorithm,
+            final String operationProductComponentModelName);
 
 }

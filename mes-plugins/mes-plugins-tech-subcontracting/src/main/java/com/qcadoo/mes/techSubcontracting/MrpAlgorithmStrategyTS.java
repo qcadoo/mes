@@ -41,6 +41,8 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.MrpAlgorithmStrategy;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
@@ -54,40 +56,39 @@ public class MrpAlgorithmStrategyTS implements MrpAlgorithmStrategy {
         return MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS.equals(mrpAlgorithm);
     }
 
-    public Map<Long, BigDecimal> perform(final Map<Long, BigDecimal> productComponentWithQuantities,
-            final Set<Long> nonComponents, final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) {
+    public Map<Long, BigDecimal> perform(final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            final Set<OperationProductComponentHolder> nonComponents, final MrpAlgorithm mrpAlgorithm,
+            final String operationProductComponentModelName) {
         Map<Long, BigDecimal> productWithQuantities = Maps.newHashMap();
 
-        for (Entry<Long, BigDecimal> productComponentWithQuantity : productComponentWithQuantities.entrySet()) {
-            Entity operationProductComponent = productQuantitiesService.getOperationProductComponent(productComponentWithQuantity
-                    .getKey());
+        for (Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity : productComponentWithQuantities
+                .asMap().entrySet()) {
+            OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
+            Entity operationProductComponent = operationProductComponentHolder.getEntity();
 
-            if (operationProductComponentModelName.equals(operationProductComponent.getDataDefinition().getName())) {
-                if (nonComponents.contains(operationProductComponent)) {
+            if (nonComponents.contains(operationProductComponentHolder)) {
+                Entity product = operationProductComponent.getBelongsToField(PRODUCT);
+                Entity technologyOperationComponent = operationProductComponent.getBelongsToField(OPERATION_COMPONENT);
 
-                    Entity product = operationProductComponent.getBelongsToField(PRODUCT);
-                    Entity technologyOperationComponent = operationProductComponent.getBelongsToField(OPERATION_COMPONENT);
+                List<Entity> children = technologyOperationComponent.getHasManyField(CHILDREN).find()
+                        .add(SearchRestrictions.eq("isSubcontracting", true)).list().getEntities();
 
-                    List<Entity> children = technologyOperationComponent.getHasManyField(CHILDREN).find()
-                            .add(SearchRestrictions.eq("isSubcontracting", true)).list().getEntities();
+                boolean isSubcontracting = false;
+                for (Entity child : children) {
+                    Entity operationProductOutComponent = child.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                            .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
 
-                    boolean isSubcontracting = false;
-                    for (Entity child : children) {
-                        Entity operationProductOutComponent = child.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS).find()
-                                .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
-
-                        if (operationProductOutComponent != null) {
-                            isSubcontracting = true;
-                        }
-                    }
-
-                    if (!isSubcontracting) {
-                        continue;
+                    if (operationProductOutComponent != null) {
+                        isSubcontracting = true;
                     }
                 }
 
-                productQuantitiesService.addProductQuantitiesToList(productComponentWithQuantity, productWithQuantities);
+                if (!isSubcontracting) {
+                    continue;
+                }
             }
+
+            productQuantitiesService.addProductQuantitiesToList(productComponentWithQuantity, productWithQuantities);
         }
 
         return productWithQuantities;

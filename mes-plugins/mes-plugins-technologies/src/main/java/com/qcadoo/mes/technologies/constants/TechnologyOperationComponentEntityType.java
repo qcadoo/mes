@@ -23,28 +23,27 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public enum TechnologyType {
+public enum TechnologyOperationComponentEntityType {
+    OPERATION("operation"), REFERENCE_TECHNOLOGY("referenceTechnology");
 
-    WITH_PATTERN_TECHNOLOGY("01patternTechnology"), WITH_OWN_TECHNOLOGY("02ownTechnology");
+    private final String technologyOperationComponentEntityType;
 
-    private final String technologyType;
-
-    private TechnologyType(final String technologyType) {
-        this.technologyType = technologyType;
+    private TechnologyOperationComponentEntityType(final String technologyOperationComponentEntityType) {
+        this.technologyOperationComponentEntityType = technologyOperationComponentEntityType;
     }
 
     public String getStringValue() {
-        return technologyType;
+        return technologyOperationComponentEntityType;
     }
 
-    public static TechnologyType parseString(final String string) {
-        if ("01patternTechnology".equals(string)) {
-            return WITH_PATTERN_TECHNOLOGY;
-        } else if ("02ownTechnology".equals(string)) {
-            return WITH_OWN_TECHNOLOGY;
+    public static TechnologyOperationComponentEntityType parseString(final String string) {
+        if ("operation".equals(string)) {
+            return OPERATION;
+        } else if ("referenceTechnology".equals(string)) {
+            return REFERENCE_TECHNOLOGY;
         }
 
-        throw new IllegalStateException("Unsupported TechnologyType: " + string);
+        throw new IllegalStateException("Unsupported TechnologyOperationComponentEntityType: " + string);
     }
 
 }

@@ -45,8 +45,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -61,6 +62,9 @@ public class WorkPlansColumnFillerTest {
 
     @Mock
     private Entity order, order2, product, productComponent, technology, operComp;
+
+    @Mock
+    private DataDefinition productComponentDD;
 
     @Mock
     private NumberService numberService;
@@ -144,8 +148,10 @@ public class WorkPlansColumnFillerTest {
         EntityList prodOutComps = mockEntityList(new ArrayList<Entity>());
         given(operComp.getHasManyField("operationProductOutComponents")).willReturn(prodOutComps);
 
-        Map<Long, BigDecimal> quantities = Maps.newHashMap();
-        quantities.put(productComponent.getId(), new BigDecimal(11));
+        given(productComponent.getDataDefinition()).willReturn(productComponentDD);
+        given(productComponentDD.getName()).willReturn("operationProductInComponent");
+        OperationProductComponentWithQuantityContainer quantities = new OperationProductComponentWithQuantityContainer();
+        quantities.put(productComponent, new BigDecimal(11));
         given(productQuantitiesService.getProductComponentQuantities(orders)).willReturn(quantities);
 
         // when
@@ -156,4 +162,5 @@ public class WorkPlansColumnFillerTest {
         assertEquals("product (123)", columnValues.get(productComponent).get("productName"));
         assertEquals("11.00000 abc", columnValues.get(productComponent).get("plannedQuantity"));
     }
+
 }

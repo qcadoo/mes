@@ -64,6 +64,7 @@ import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.print.ProductionBalancePdfService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -455,10 +456,11 @@ public class ProductionBalanceDetailsListeners {
 
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
-        Map<Long, BigDecimal> productComponents = productQuantitiesService.getProductComponentQuantities(
-                asList(productionBalance.getBelongsToField(ProductionBalanceFields.ORDER)), operationRuns);
+        OperationProductComponentWithQuantityContainer productComponents = productQuantitiesService
+                .getProductComponentQuantities(asList(productionBalance.getBelongsToField(ProductionBalanceFields.ORDER)),
+                        operationRuns);
 
-        if (!productComponents.isEmpty()) {
+        if (!productComponents.asMap().isEmpty()) {
             for (Entry<Long, Entity> productionTrackingWithRegisteredTimes : productionTrackingsWithRegisteredTimes.entrySet()) {
                 Entity productionTracking = productionTrackingWithRegisteredTimes.getValue();
 

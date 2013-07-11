@@ -48,6 +48,8 @@ import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -72,10 +74,10 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     public void createProductionCountingQuantitiesAndOperationRuns(final Entity order) {
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
-        final Set<Long> nonComponents = Sets.newHashSet();
+        final Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 
-        final Map<Long, BigDecimal> productComponentQuantities = productQuantitiesService.getProductComponentWithQuantities(
-                Arrays.asList(order), operationRuns, nonComponents);
+        final OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
+                .getProductComponentWithQuantities(Arrays.asList(order), operationRuns, nonComponents);
 
         for (Entry<Long, BigDecimal> operationRun : operationRuns.entrySet()) {
             Entity technologyOperationComponent = productQuantitiesService.getTechnologyOperationComponent(operationRun.getKey());
@@ -84,16 +86,17 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             createProductionCountingOperationRun(order, technologyOperationComponent, runs);
         }
 
-        for (Entry<Long, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
-            Entity operationProductComponent = productQuantitiesService.getOperationProductComponent(productComponentQuantity
-                    .getKey());
+        for (Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity : productComponentQuantities.asMap()
+                .entrySet()) {
+            OperationProductComponentHolder operationProductComponentHolder = productComponentQuantity.getKey();
+            Entity operationProductComponent = operationProductComponentHolder.getEntity();
 
             BigDecimal plannedQuantity = productComponentQuantity.getValue();
             Entity technologyOperationComponent = operationProductComponent
                     .getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
             Entity product = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 
-            boolean isNonComponent = nonComponents.contains(operationProductComponent.getId());
+            boolean isNonComponent = nonComponents.contains(operationProductComponentHolder);
 
             if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(operationProductComponent.getDataDefinition()
                     .getName())) {
@@ -184,10 +187,10 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     public void updateProductionCountingQuantitiesAndOperationRuns(final Entity order) {
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
-        final Set<Long> nonComponents = Sets.newHashSet();
+        final Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 
-        final Map<Long, BigDecimal> productComponentQuantities = productQuantitiesService.getProductComponentWithQuantities(
-                Arrays.asList(order), operationRuns, nonComponents);
+        final OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
+                .getProductComponentWithQuantities(Arrays.asList(order), operationRuns, nonComponents);
 
         for (Entry<Long, BigDecimal> operationRun : operationRuns.entrySet()) {
             Entity technologyOperationComponent = productQuantitiesService.getTechnologyOperationComponent(operationRun.getKey());
@@ -196,13 +199,15 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             updateProductionCountingOperationRun(order, technologyOperationComponent, runs);
         }
 
-        for (Entry<Long, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
-            Entity operationProductComponent = productQuantitiesService.getOperationProductComponent(productComponentQuantity
-                    .getKey());
+        for (Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity : productComponentQuantities.asMap()
+                .entrySet()) {
+            OperationProductComponentHolder operationProductComponentHolder = productComponentQuantity.getKey();
+            Entity operationProductComponent = operationProductComponentHolder.getEntity();
+
             BigDecimal plannedQuantity = productComponentQuantity.getValue();
             Entity product = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 
-            boolean isNonComponent = nonComponents.contains(operationProductComponent);
+            boolean isNonComponent = nonComponents.contains(operationProductComponentHolder);
 
             if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(operationProductComponent.getDataDefinition()
                     .getName())) {

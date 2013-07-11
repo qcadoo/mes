@@ -38,6 +38,8 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -51,9 +53,10 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public Map<Long, BigDecimal> getProductComponentWithQuantitiesForOrders(final List<Entity> orders,
-            final Map<Long, BigDecimal> operationRuns, final Set<Long> nonComponents, final boolean onTheFly) {
-        Map<Long, Map<Long, BigDecimal>> productComponentWithQuantitiesForOrders = Maps.newHashMap();
+    public OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesForOrders(final List<Entity> orders,
+            final Map<Long, BigDecimal> operationRuns, final Set<OperationProductComponentHolder> nonComponents,
+            final boolean onTheFly) {
+        Map<Long, OperationProductComponentWithQuantityContainer> productComponentWithQuantitiesForOrders = Maps.newHashMap();
 
         for (Entity order : orders) {
             BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
@@ -80,11 +83,11 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
             }
         }
 
-        return productQuantitiesServiceImpl.groupProductComponentWithQuantities(productComponentWithQuantitiesForOrders);
+        return productQuantitiesServiceImpl.groupOperationProductComponentWithQuantities(productComponentWithQuantitiesForOrders);
     }
 
-    private Map<Long, BigDecimal> getProductComponentWithQuantities(final Entity order) {
-        Map<Long, BigDecimal> productComponentWithQuantities = Maps.newHashMap();
+    private OperationProductComponentWithQuantityContainer getProductComponentWithQuantities(final Entity order) {
+        OperationProductComponentWithQuantityContainer productComponentWithQuantities = new OperationProductComponentWithQuantityContainer();
 
         List<Entity> productionCountingQuantities = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
@@ -101,9 +104,9 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
 
             if ((operationProductInComponent != null) || (operationProductOutComponent != null)) {
                 if (operationProductInComponent != null) {
-                    productComponentWithQuantities.put(operationProductInComponent.getId(), plannedQuantity);
+                    productComponentWithQuantities.put(operationProductInComponent, plannedQuantity);
                 } else if (operationProductOutComponent != null) {
-                    productComponentWithQuantities.put(operationProductOutComponent.getId(), plannedQuantity);
+                    productComponentWithQuantities.put(operationProductOutComponent, plannedQuantity);
                 }
             }
         }
@@ -126,7 +129,7 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
         }
     }
 
-    private void fillNonComponents(final Set<Long> nonComponents, final Entity order) {
+    private void fillNonComponents(final Set<OperationProductComponentHolder> nonComponents, final Entity order) {
         List<Entity> productionCountingQuantities = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY).find()
@@ -141,9 +144,9 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
 
             if ((operationProductInComponent != null) || (operationProductOutComponent != null)) {
                 if (operationProductInComponent != null) {
-                    nonComponents.add(operationProductInComponent.getId());
+                    nonComponents.add(new OperationProductComponentHolder(operationProductInComponent));
                 } else if (operationProductOutComponent != null) {
-                    nonComponents.add(operationProductOutComponent.getId());
+                    nonComponents.add(new OperationProductComponentHolder(operationProductOutComponent));
                 }
             }
         }

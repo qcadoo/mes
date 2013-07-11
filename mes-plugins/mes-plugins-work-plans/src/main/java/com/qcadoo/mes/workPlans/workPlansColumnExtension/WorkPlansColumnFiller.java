@@ -32,7 +32,6 @@ import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,6 +44,7 @@ import org.springframework.stereotype.Component;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.print.ColumnFiller;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -155,7 +155,8 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     public Map<Entity, Map<String, String>> getValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
-        Map<Long, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
+        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
+                .getProductComponentQuantities(orders);
 
         for (Entity order : orders) {
             Entity technology = order.getBelongsToField(TECHNOLOGY);
@@ -194,7 +195,8 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         }
     }
 
-    private void fillPlannedQuantities(final Entity technology, final Map<Long, BigDecimal> productQuantities,
+    private void fillPlannedQuantities(final Entity technology,
+            final OperationProductComponentWithQuantityContainer productQuantities,
             final Map<Entity, Map<String, String>> valuesMap) {
         // TODO mici, change those to technologyInstanceOperationComponents?
         EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS);
@@ -213,7 +215,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
                 initMap(valuesMap, productComponent);
 
                 String unit = productComponent.getBelongsToField(MODEL_PRODUCT).getStringField(UNIT);
-                String quantityString = numberService.format(productQuantities.get(productComponent.getId())) + " " + unit;
+                String quantityString = numberService.format(productQuantities.get(productComponent)) + " " + unit;
                 valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
             }
 
@@ -221,7 +223,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
                 initMap(valuesMap, productComponent);
 
                 String unit = productComponent.getBelongsToField(MODEL_PRODUCT).getStringField(UNIT);
-                String quantityString = numberService.format(productQuantities.get(productComponent.getId())) + " " + unit;
+                String quantityString = numberService.format(productQuantities.get(productComponent)) + " " + unit;
                 valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
             }
         }
