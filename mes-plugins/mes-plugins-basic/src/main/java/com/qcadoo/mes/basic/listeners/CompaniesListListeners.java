@@ -51,6 +51,10 @@ public class CompaniesListListeners {
     public void checkIfIsOwner(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity parameter = parameterService.getParameter();
         Entity owner = parameter.getBelongsToField(ParameterFields.COMPANY);
+        if (owner == null) {
+            disabledButton(view, true);
+            return;
+        }
         boolean enabled = true;
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
         List<Entity> companies = grid.getSelectedEntities();
