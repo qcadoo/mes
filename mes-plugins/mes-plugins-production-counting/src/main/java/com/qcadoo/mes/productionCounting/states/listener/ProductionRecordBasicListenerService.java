@@ -43,9 +43,11 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -72,6 +74,12 @@ public final class ProductionRecordBasicListenerService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private OrderStateChangeAspect orderStateChangeAspect;
+
+    @Autowired
+    private StateChangeContextBuilder stateChangeContextBuilder;
 
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity productionRecord = stateChangeContext.getOwner();
@@ -115,19 +123,24 @@ public final class ProductionRecordBasicListenerService {
 
         Boolean autoCloseOrder = order.getBooleanField(AUTO_CLOSE_ORDER);
         if (autoCloseOrder && productionRecord.getBooleanField(LAST_RECORD)) {
-            order.setField(STATE, COMPLETED.getStringValue());
-            Entity orderFromDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(
-                    order);
+            if (order.getStringField(STATE).equals(COMPLETED.getStringValue())) {
+                stateChangeContext.addMessage("productionCounting.order.orderIsAlreadyClosed", StateMessageType.INFO, false);
+                return;
+            }
+            final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
+                    orderStateChangeAspect.getChangeEntityDescriber(), order, OrderState.COMPLETED.getStringValue());
+            orderStateChangeAspect.changeState(orderStateChangeContext);
+            Entity orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
             if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
                 stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
             } else {
                 stateChangeContext.addMessage("productionCounting.order.orderCannotBeClosed", StateMessageType.FAILURE, false);
 
                 List<ErrorMessage> errors = Lists.newArrayList();
-                if (!order.getErrors().isEmpty()) {
+                if (!orderFromDB.getErrors().isEmpty()) {
                     errors.addAll(order.getErrors().values());
                 }
-                if (!order.getGlobalErrors().isEmpty()) {
+                if (!orderFromDB.getGlobalErrors().isEmpty()) {
                     errors.addAll(order.getGlobalErrors());
                 }
 
