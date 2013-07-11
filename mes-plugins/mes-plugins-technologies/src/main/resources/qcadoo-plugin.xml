@@ -152,11 +152,6 @@
 			type="beforeRender" 
 			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooksT"
 			method="updateRibbonState" />
-		
-		<view:view-listener plugin="basic" view="productDetails"
-				component="form" event="save"
-				class="com.qcadoo.mes.technologies.validators.ProductValidatorsT"
-				method="checkIfProductUnitChange" />
 				
 		<custom:custom class="com.qcadoo.mes.technologies.states.module.TechnologyStateServiceRegisterModule" />
 	</modules>
