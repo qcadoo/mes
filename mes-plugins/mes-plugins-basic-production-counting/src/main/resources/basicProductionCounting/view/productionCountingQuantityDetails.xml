@@ -50,7 +50,7 @@
 						<option type="searchable" value="nodeNumber,operationNumber,operationName" />
 						<option type="orderable" value="nodeNumber,operationNumber,operationName" />
 
-						<option type="expression" value="#operation.get('name')" />
+						<option type="expression" value="#nodeNumber + ' ' + #operation.get('name')" />
 						<option type="fieldCode" value="nodeNumber" />
 
 						<criteriaModifier
