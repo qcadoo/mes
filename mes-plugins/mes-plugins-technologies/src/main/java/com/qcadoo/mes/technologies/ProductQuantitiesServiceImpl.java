@@ -76,9 +76,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         OperationProductComponentWithQuantityContainer productQuantities = getProductComponentQuantities(technology,
                 givenQuantity, operationRuns);
-        // return new ProductQuantitiesContainer(operationRuns, productQuantities);
 
-        return null;
+        return new ProductQuantitiesHolder(productQuantities, operationRuns);
     }
 
     @Override

@@ -12,24 +12,30 @@ import com.google.common.collect.Sets;
 
 public class ProductQuantitiesHolder {
 
+    private final Map<OperationProductComponentHolder, BigDecimal> productQuantities;
+
     private final Map<Long, BigDecimal> operationRuns;
 
     private final Set<OperationProductComponentHolder> nonComponents;
 
-    private final Map<OperationProductComponentHolder, BigDecimal> productQuantities;
-
     public ProductQuantitiesHolder() {
+        this.productQuantities = Maps.newHashMap();
         this.operationRuns = Maps.newHashMap();
         this.nonComponents = Sets.newHashSet();
-        this.productQuantities = Maps.newHashMap();
     }
 
-    @Deprecated
-    public ProductQuantitiesHolder(final Map<Long, BigDecimal> operationRuns, final Set<OperationProductComponentHolder> nonComponents,
-            final Map<OperationProductComponentHolder, BigDecimal> productQuantities) {
+    public ProductQuantitiesHolder(final OperationProductComponentWithQuantityContainer productQuantities,
+            final Map<Long, BigDecimal> operationRuns, final Set<OperationProductComponentHolder> nonComponents) {
+        this.productQuantities = Maps.newHashMap(productQuantities.asMap());
         this.operationRuns = Maps.newHashMap(operationRuns);
         this.nonComponents = Sets.newHashSet(nonComponents);
-        this.productQuantities = Maps.newHashMap(productQuantities);
+    }
+
+    public ProductQuantitiesHolder(final OperationProductComponentWithQuantityContainer productQuantities,
+            final Map<Long, BigDecimal> operationRuns) {
+        this.productQuantities = Maps.newHashMap(productQuantities.asMap());
+        this.operationRuns = Maps.newHashMap(operationRuns);
+        this.nonComponents = Sets.newHashSet();
     }
 
     public Map<Long, BigDecimal> getOperationRuns() {
@@ -42,7 +48,7 @@ public class ProductQuantitiesHolder {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(operationRuns).append(productQuantities).toHashCode();
+        return new HashCodeBuilder().append(operationRuns).append(nonComponents).append(productQuantities).toHashCode();
     }
 
     @Override
@@ -57,8 +63,8 @@ public class ProductQuantitiesHolder {
 
         ProductQuantitiesHolder other = (ProductQuantitiesHolder) obj;
 
-        return new EqualsBuilder().append(operationRuns, other.operationRuns).append(productQuantities, other.productQuantities)
-                .isEquals();
+        return new EqualsBuilder().append(operationRuns, other.operationRuns).append(nonComponents, other.nonComponents)
+                .append(productQuantities, other.productQuantities).isEquals();
     }
 
 }
