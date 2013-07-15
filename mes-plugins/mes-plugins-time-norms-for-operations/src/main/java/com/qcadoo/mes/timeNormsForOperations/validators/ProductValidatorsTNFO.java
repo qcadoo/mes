@@ -113,8 +113,9 @@ public class ProductValidatorsTNFO {
                 .getOutputProductsFromOperationComponent(technologyOperationComponent);
         if (outputProduct != null) {
             final String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
-            final String unitFromProduct = product.getStringField(ProductFields.UNIT);
-            if (!unitFromProduct.equals(outputProductionUnit)) {
+            String componentProductNumber = outputProduct.getBelongsToField(PRODUCT).getStringField(ProductFields.NUMBER);
+            final String productNumber = product.getStringField(ProductFields.NUMBER);
+            if (!componentProductNumber.equals(productNumber)) {
                 return true;
             }
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
