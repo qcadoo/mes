@@ -42,6 +42,10 @@ public class OperationProductComponentHolder {
         return getEntityDD().get(getEntityId());
     }
 
+    public boolean isEntityTypeSame(final String operationProductComponentModelName) {
+        return isEntityTypeSame(OperationProductComponentEntityType.parseString(operationProductComponentModelName));
+    }
+
     public boolean isEntityTypeSame(final OperationProductComponentEntityType operationProductComponentEntityType) {
         return operationProductComponentEntityType.equals(getEntityType());
     }
