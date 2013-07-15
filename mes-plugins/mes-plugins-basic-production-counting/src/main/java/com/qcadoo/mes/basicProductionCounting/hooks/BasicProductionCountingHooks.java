@@ -32,6 +32,8 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -58,20 +60,38 @@ public class BasicProductionCountingHooks {
         Entity order = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
         Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
 
-        List<Entity> productionCountingQuantities = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).find()
-                .add(SearchRestrictions.isNull(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT))
-                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product)).list().getEntities();
+        if (checkIfProductIsOrderFinalProduct(order, product)) {
+            plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+        } else {
+            List<Entity> productionCountingQuantities = order
+                    .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+                    .find()
+                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                            ProductionCountingQuantityRole.USED.getStringValue()))
+                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product)).list().getEntities();
 
-        for (Entity productionCountingQuantity : productionCountingQuantities) {
-            BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity
-                    .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
+            for (Entity productionCountingQuantity : productionCountingQuantities) {
+                BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity
+                        .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
 
-            if (productionCountingQuantityPlannedQuantity != null) {
-                plannedQuantity = plannedQuantity.add(productionCountingQuantityPlannedQuantity, numberService.getMathContext());
+                if (productionCountingQuantityPlannedQuantity != null) {
+                    plannedQuantity = plannedQuantity.add(productionCountingQuantityPlannedQuantity,
+                            numberService.getMathContext());
+                }
             }
         }
 
         return plannedQuantity;
+    }
+
+    private boolean checkIfProductIsOrderFinalProduct(final Entity order, final Entity product) {
+        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
+
+        if (orderProduct == null) {
+            return false;
+        } else {
+            return product.getId().equals(orderProduct.getId());
+        }
     }
 
 }

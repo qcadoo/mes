@@ -357,9 +357,13 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
         if (basicProductionCountings == null || basicProductionCountings.isEmpty()) {
             final List<Entity> productionCountingQuantities = order
-                    .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).find()
-                    .add(SearchRestrictions.isNull(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT)).list()
-                    .getEntities();
+                    .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+                    .find()
+                    .add(SearchRestrictions.or(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                            ProductionCountingQuantityRole.USED.getStringValue()), SearchRestrictions.and(SearchRestrictions.eq(
+                            ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue()),
+                            SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                                    ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue())))).list().getEntities();
 
             Set<Long> alreadyAddedProducts = Sets.newHashSet();
 
@@ -372,6 +376,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                     alreadyAddedProducts.add(product.getId());
                 }
             }
+
+            createBasicProductionCounting(order, order.getBelongsToField(OrderFields.PRODUCT));
         }
     }
 
