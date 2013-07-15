@@ -49,6 +49,7 @@ import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.DataDefinition;
@@ -167,10 +168,10 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private String getRole(final Entity operationProductInComponent, final Entity operationProductOutComponent) {
-        if (operationProductInComponent != null) {
-            return ProductionCountingQuantityRole.USED.getStringValue();
-        } else {
+        if (operationProductInComponent == null) {
             return ProductionCountingQuantityRole.PRODUCED.getStringValue();
+        } else {
+            return ProductionCountingQuantityRole.USED.getStringValue();
         }
     }
 
@@ -179,19 +180,24 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         if (isNonComponent) {
             return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
         } else {
-            if (checkIfIsFinalProduct(order, operationProductOutComponent, product)) {
+            if (checkIfProductIsFinalProduct(order, operationProductOutComponent, product)) {
                 return ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue();
             } else {
-                if (operationProductInComponent != null) {
-                    return ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue();
+                if (operationProductInComponent == null) {
+                    if (checkIfProductAlreadyExists(operationProductOutComponent, product)) {
+                        return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
+                    } else {
+                        return ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue();
+                    }
                 } else {
-                    return ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue();
+                    return ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue();
                 }
             }
         }
     }
 
-    private boolean checkIfIsFinalProduct(final Entity order, final Entity operationProductOutComponent, final Entity product) {
+    private boolean checkIfProductIsFinalProduct(final Entity order, final Entity operationProductOutComponent,
+            final Entity product) {
         return (checkIfProductsAreSame(order, product) && (operationProductOutComponent != null) && checkIfTechnologyOperationComponentsAreSame(
                 order, operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT)));
     }
@@ -199,20 +205,58 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     private boolean checkIfProductsAreSame(final Entity order, final Entity product) {
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
-        return product.getId().equals(orderProduct.getId());
+        if (orderProduct == null) {
+            return false;
+        } else {
+            return product.getId().equals(orderProduct.getId());
+        }
     }
 
     private boolean checkIfTechnologyOperationComponentsAreSame(final Entity order, final Entity technologyOperationComponent) {
         Entity orderTechnologyOperationComponent = getOrderTechnologyOperationComponent(order);
 
-        return technologyOperationComponent.getId().equals(orderTechnologyOperationComponent.getId());
+        if (orderTechnologyOperationComponent == null) {
+            return false;
+        } else {
+            return technologyOperationComponent.getId().equals(orderTechnologyOperationComponent.getId());
+        }
     }
 
     private Entity getOrderTechnologyOperationComponent(final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        Entity technologyOperationComponent = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
 
-        return technologyOperationComponent;
+        if (technology == null) {
+            return null;
+        } else {
+            Entity technologyOperationComponent = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+
+            return technologyOperationComponent;
+        }
+    }
+
+    private boolean checkIfProductAlreadyExists(final Entity operationProductOutComponent, final Entity product) {
+        Entity technologyOperationComponent = operationProductOutComponent
+                .getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT);
+
+        if (technologyOperationComponent == null) {
+            return false;
+        } else {
+            Entity previousTechnologyOperationComponent = technologyOperationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.PARENT);
+
+            if (previousTechnologyOperationComponent == null) {
+                return false;
+            } else {
+                return checkIfProductExists(previousTechnologyOperationComponent, product);
+            }
+        }
+    }
+
+    private boolean checkIfProductExists(final Entity previousTechnologyOperationComponent, final Entity product) {
+        return (previousTechnologyOperationComponent
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS).find()
+                .add(SearchRestrictions.belongsTo(OperationProductInComponentFields.PRODUCT, product)).list()
+                .getTotalNumberOfEntities() == 1);
     }
 
     public void updateProductionCountingQuantitiesAndOperationRuns(final Entity order) {
