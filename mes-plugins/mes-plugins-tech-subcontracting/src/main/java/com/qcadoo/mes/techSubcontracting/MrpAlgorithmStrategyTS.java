@@ -59,10 +59,13 @@ public class MrpAlgorithmStrategyTS implements MrpAlgorithmStrategy {
     public Map<Long, BigDecimal> perform(final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
             final Set<OperationProductComponentHolder> nonComponents, final MrpAlgorithm mrpAlgorithm,
             final String operationProductComponentModelName) {
+        OperationProductComponentWithQuantityContainer allWithSameEntityType = productComponentWithQuantities
+                .getAllWithSameEntityType(operationProductComponentModelName);
+
         Map<Long, BigDecimal> productWithQuantities = Maps.newHashMap();
 
-        for (Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity : productComponentWithQuantities
-                .asMap().entrySet()) {
+        for (Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity : allWithSameEntityType.asMap()
+                .entrySet()) {
             OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
             Entity operationProductComponent = operationProductComponentHolder.getEntity();
 
