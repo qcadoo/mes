@@ -32,7 +32,7 @@
 		<belongsTo name="product" model="product" plugin="basic" />
 		<decimal name="plannedQuantity" persistent="false" />
 		<decimal name="usedQuantity">
-			<validatesRange from="0" exclusively="true" />
+			<validatesRange from="0" exclusively="false" />
 		</decimal>
 		<decimal name="balance" />
 	</fields>
