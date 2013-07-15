@@ -157,8 +157,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
             document.newPage();
 
             document.add(new Paragraph(entry.getKey().getString(), FontUtils.getDejavuBold11Dark()));
-
+            int count = 0;
             for (Entity operationComponent : entry.getValue()) {
+                count++;
                 PdfPTable operationTable = pdfHelper.createPanelTable(3);
                 addOperationInfoToTheOperationHeader(operationTable, operationComponent, locale);
                 if (haveManyOrders && isOrderInfoEnabled(operationComponent)) {
@@ -186,6 +187,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 }
 
                 addAdditionalFields(document, operationComponent, locale);
+                if (count != entry.getValue().size()) {
+                    document.add(Chunk.NEXTPAGE);
+                }
             }
         }
     }
@@ -439,7 +443,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         pdfHelper.addImage(document, imagePath);
 
-        document.add(Chunk.NEXTPAGE);
+        document.add(Chunk.NEWLINE);
     }
 
     void addMainHeader(final Document document, final Entity entity, final Locale locale) throws DocumentException {
