@@ -256,4 +256,18 @@ ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN tpz;
 ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN machineutilization;
 ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN laborutilization;
 ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN timenextoperation;
+
 --end
+
+
+-- Table: productionpershift_progressforday
+-- changed: 15.07.2013
+
+ALTER TABLE productionpershift_progressforday ADD COLUMN technologyoperationcomponent_id bigint;
+
+ALTER TABLE productionpershift_progressforday
+  ADD CONSTRAINT progressforday_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE;
+      
+-- end
+      

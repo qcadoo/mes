@@ -67,6 +67,20 @@
 						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 					<option type="fieldCode" value="number" />
 				</component>
+				<component type="lookup" name="technology" field="technology"
+					reference="technology" hasLabel="false" defaultVisible="false">
+					<option type="column" name="name" fields="name" link="true" />
+					
+					<option type="searchable" value="name,number" />
+					<option type="orderable" value="name,number" />
+
+					<option type="order" column="number" direction="desc" />
+
+					<option type="expression"
+						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+					<option type="fieldCode" value="number" />
+				</component>
+				
 				<component type="checkbox" name="setRoot" reference="setRoot"
 					hasLabel="false" defaultVisible="false" />
 				<component type="gridLayout" name="mainGridLayout"
@@ -172,9 +186,9 @@
 							<component type="gridLayout" name="plannedProgressGridLayout"
 								columns="2" rows="2">
 								<layoutElement column="1" row="1">
-									<component type="lookup" name="productionPerShiftOperation"
-										field="#{form}.technologyInstanceOperationComponent" source="#{order}.technologyInstanceOperationComponents"
-										reference="productionPerShiftOperation">
+									<component type="lookup" name="productionPerShiftOperation" reference="productionPerShiftOperation"
+										source="#{technology}.operationComponents" field="#{form}.technologyOperationComponent"
+										>
 										<option type="column" name="name" fields="operation"
 											expression="#operation['name']" link="true" />
 										<option type="column" name="hasCorrections" fields="hasCorrections" />
@@ -286,37 +300,40 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="fillSetRoot" />
+			method="setTechnologyField" />
+		<beforeRender
+            class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+            method="fillSetRoot" />
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="addRootForOperation" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="disablePlannedProgressTypeForPendingOrder" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="fillProducedField" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="refreshProgressForDaysADL" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="setOrderStartDate" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="disableReasonOfCorrection" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="changeButtonState" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="checkIfWasItCorrected" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="checkShiftsIfWorks" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="updateProgressForDaysDates" />
+<beforeRender
+class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+method="disablePlannedProgressTypeForPendingOrder" />
+<beforeRender
+class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+method="fillProducedField" />
+<beforeRender
+class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+                       method="refreshProgressForDaysADL" />
+               <beforeRender
+                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+                       method="setOrderStartDate" />
+               <beforeRender
+                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"                       
+                       method="disableReasonOfCorrection" />
+               <beforeRender
+                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+                       method="changeButtonState" />
+               <beforeRender
+                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+                       method="checkIfWasItCorrected" />
+               <beforeRender
+                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+                       method="checkShiftsIfWorks" />
+               <beforeRender
+                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+                       method="updateProgressForDaysDates" />
 	</hooks>
 	
 </view>

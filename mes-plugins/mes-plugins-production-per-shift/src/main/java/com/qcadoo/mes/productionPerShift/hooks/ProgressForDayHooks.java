@@ -26,18 +26,29 @@ package com.qcadoo.mes.productionPerShift.hooks;
 import java.util.Date;
 
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProgressForDayHooks {
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void saveDateOfDay(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField(ProgressForDayFields.TECH_INST_OPER_COMP).getBelongsToField("order");
+        Entity technology = entity.getBelongsToField(ProgressForDayFields.TECH_OPER_COMP).getBelongsToField(
+                TechnologyOperationComponentFields.TECHNOLOGY);
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
+                .add(SearchRestrictions.belongsTo(OrderFields.TECHNOLOGY, technology)).uniqueResult();
         Integer day = (Integer) entity.getField(ProgressForDayFields.DAY);
         DateTime orderStartDate;
         if (entity.getBooleanField(ProgressForDayFields.CORRECTED)) {
