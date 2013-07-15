@@ -76,15 +76,15 @@ public class PPSHelper {
                 ProductionPerShiftConstants.MODEL_DAILY_PROGRESS);
     }
 
-    public Entity getTiocFromOperationLookup(final ViewDefinitionState viewState) {
+    public Entity getTocFromOperationLookup(final ViewDefinitionState viewState) {
         ComponentState operationLookup = viewState.getComponentByReference("productionPerShiftOperation");
         Long id = (Long) operationLookup.getFieldValue();
-        Entity tioc = null;
+        Entity toc = null;
         if (id != null) {
-            tioc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).get(id);
+            toc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(id);
         }
-        return tioc;
+        return toc;
     }
 
     public boolean shouldHasCorrections(final ViewDefinitionState viewState) {

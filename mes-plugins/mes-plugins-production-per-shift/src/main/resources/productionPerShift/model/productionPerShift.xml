@@ -34,8 +34,10 @@
 		<text name="plannedProgressCorrectionComment" />
 		<!-- Not persistent fields below -->
 
-		<belongsTo persistent="false" name="technologyInstanceOperationComponent"
-			model="technologyInstanceOperationComponent" plugin="technologies" />
+		<belongsTo persistent="false" name="technologyOperationComponent"
+			model="technologyOperationComponent" plugin="technologies" />
+		<belongsTo persistent="false" name="technology"
+			model="technology" plugin="technologies" />
 		<enum persistent="false" name="plannedProgressType" values="01planned,02corrected"
 			default="01planned" />
 	</fields>

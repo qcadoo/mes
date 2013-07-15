@@ -38,16 +38,16 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class TechInstOperCompHooksPPS {
 
-    public boolean checkGrowingNumberOfDays(final DataDefinition technologyInstanceOperationComponentDD,
-            final Entity technologyInstanceOperationComponent) {
-        List<Entity> progressForDays = technologyInstanceOperationComponent.getHasManyField(PROGRESS_FOR_DAYS);
+    public boolean checkGrowingNumberOfDays(final DataDefinition technologyOperationComponentDD,
+            final Entity technologyOperationComponent) {
+        List<Entity> progressForDays = technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS);
         if (progressForDays.isEmpty()) {
             return true;
         }
         Integer dayNumber = Integer.valueOf(0);
         for (Entity progressForDay : progressForDays) {
-            if (progressForDay.getBooleanField(CORRECTED) != technologyInstanceOperationComponent
-                    .getBooleanField(HAS_CORRECTIONS) || progressForDay.getField(DAY) == null) {
+            if (progressForDay.getBooleanField(CORRECTED) != technologyOperationComponent.getBooleanField(HAS_CORRECTIONS)
+                    || progressForDay.getField(DAY) == null) {
                 continue;
             }
             if (!(progressForDay.getField(DAY) instanceof Long)) {
@@ -59,20 +59,20 @@ public class TechInstOperCompHooksPPS {
             if (day != null && dayNumber.compareTo(day) == -1) {
                 dayNumber = day;
             } else {
-                technologyInstanceOperationComponent.addGlobalError(
-                        "productionPerShift.progressForDay.daysAreNotInAscendingOrder", progressForDay.getField(DAY).toString());
+                technologyOperationComponent.addGlobalError("productionPerShift.progressForDay.daysAreNotInAscendingOrder",
+                        progressForDay.getField(DAY).toString());
                 return false;
             }
         }
         return true;
     }
 
-    public boolean checkShiftsIfWorks(final DataDefinition technologyInstanceOperationComponentDD,
-            final Entity technologyInstanceOperationComponent) {
-        List<Entity> progressForDays = technologyInstanceOperationComponent.getHasManyField(PROGRESS_FOR_DAYS);
+    public boolean checkShiftsIfWorks(final DataDefinition technologyOperationComponentDD,
+            final Entity technologyOperationComponent) {
+        List<Entity> progressForDays = technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS);
         for (Entity progressForDay : progressForDays) {
             if (progressForDay.getField(DAY) == null) {
-                technologyInstanceOperationComponent.addGlobalError("productionPerShift.progressForDay.dayIsNull");
+                technologyOperationComponent.addGlobalError("productionPerShift.progressForDay.dayIsNull");
                 return false;
             }
         }
