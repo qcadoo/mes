@@ -28,8 +28,12 @@ import static com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMateria
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class TechnologyInstOperProductInCompDetailsHooks {
@@ -40,7 +44,15 @@ public class TechnologyInstOperProductInCompDetailsHooks {
     private static final String L_COST_FOR_NUMBER_UNIT = "costForNumberUnit";
 
     public void fillUnitField(final ViewDefinitionState viewDefinitionState) {
-        costNormsForProductService.fillUnitField(viewDefinitionState, L_COST_FOR_NUMBER_UNIT, true);
+        FieldComponent costForNumberUnit = (FieldComponent) viewDefinitionState.getComponentByReference(L_COST_FOR_NUMBER_UNIT);
+        LookupComponent productLookup = (LookupComponent) viewDefinitionState.getComponentByReference("product");
+        Entity product = productLookup.getEntity();
+        if (product == null) {
+            return;
+        }
+        String unit = product.getStringField(ProductFields.UNIT);
+        costForNumberUnit.setFieldValue(unit);
+        costForNumberUnit.requestComponentUpdateState();
     }
 
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
