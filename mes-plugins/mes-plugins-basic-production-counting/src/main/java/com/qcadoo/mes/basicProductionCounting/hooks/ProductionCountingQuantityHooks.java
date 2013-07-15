@@ -131,16 +131,19 @@ public class ProductionCountingQuantityHooks {
         if (productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING) == null) {
             Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+            String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+            String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
 
-            if (checkIfShouldFillBasicProductionCounting(order, product)) {
+            if (checkIfShouldFillBasicProductionCounting(order, product, typeOfMaterial, role)) {
                 productionCountingQuantity.setField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING,
                         fillBasicProductionCounting(order, product));
             }
         }
     }
 
-    private boolean checkIfShouldFillBasicProductionCounting(final Entity order, final Entity product) {
-        return ((order != null) && (product != null) && !checkIfBasicProductionCountingIsEmpty(order));
+    private boolean checkIfShouldFillBasicProductionCounting(final Entity order, final Entity product,
+            final String typeOfMaterial, final String role) {
+        return ((order != null) && (product != null) && !checkIfBasicProductionCountingIsEmpty(order) && (checkIfIsUsed(role) || (checkIfIsProduced(role) && checkIfIsWaste(typeOfMaterial))));
     }
 
     private boolean checkIfBasicProductionCountingIsEmpty(final Entity order) {
@@ -185,6 +188,10 @@ public class ProductionCountingQuantityHooks {
 
     private boolean checkIfIsComponent(final String typeOfMaterial) {
         return (ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial));
+    }
+
+    private boolean checkIfIsWaste(final String typeOfMaterial) {
+        return (ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(typeOfMaterial));
     }
 
     private boolean checkIfIsUsed(final String role) {
