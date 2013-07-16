@@ -66,6 +66,7 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
@@ -202,21 +203,25 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     private Map<String, Object> createThirdColumn(final Entity delivery, final Locale locale) {
         Map<String, Object> column = new LinkedHashMap<String, Object>();
-        if (delivery.getStringField(STATE) != null) {
+        if (StringUtils.isNotEmpty(delivery.getStringField(STATE))) {
             column.put("deliveries.delivery.report.columnHeader.state",
                     translationService.translate("deliveries.delivery.state.value." + delivery.getStringField(STATE), locale));
         }
         if (delivery.getField("createDate") != null) {
             column.put("deliveries.delivery.report.columnHeader.createDate",
-                    getStringFromDate((Date) delivery.getField("createDate")));
+                    getStringFromDate(delivery.getDateField("createDate")));
         }
         if (getPrepareOrderDate(delivery) != null) {
-            column.put("deliveries.delivery.report.columnHeader.createOrderDate",
-                    getStringFromDate((Date) getPrepareOrderDate(delivery).getField("dateAndTime")));
+            column.put("deliveries.delivery.report.columnHeader.createOrderDate", getStringFromDate(getPrepareOrderDate(delivery)
+                    .getDateField("dateAndTime")));
         }
         if (getReceivedOrderDate(delivery) != null) {
             column.put("deliveries.delivery.report.columnHeader.receivedOrderDate",
-                    getStringFromDate((Date) getReceivedOrderDate(delivery).getField("dateAndTime")));
+                    getStringFromDate(getReceivedOrderDate(delivery).getDateField("dateAndTime")));
+        }
+        if (StringUtils.isNotEmpty(delivery.getStringField(DeliveryFields.PAYMENT_FORM))) {
+            column.put("deliveries.delivery.report.columnHeader.paymentForm",
+                    delivery.getStringField(DeliveryFields.PAYMENT_FORM));
         }
         return column;
     }

@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -66,6 +67,7 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
@@ -213,6 +215,10 @@ public class OrderReportPdf extends ReportPdfView {
         if (getPrepareOrderDate(delivery) != null) {
             column.put("deliveries.delivery.report.columnHeader.createOrderDate",
                     getStringFromDate((Date) getPrepareOrderDate(delivery).getField("dateAndTime")));
+        }
+        if (StringUtils.isNotEmpty(delivery.getStringField(DeliveryFields.PAYMENT_FORM))) {
+            column.put("deliveries.delivery.report.columnHeader.paymentForm",
+                    delivery.getStringField(DeliveryFields.PAYMENT_FORM));
         }
         return column;
     }

@@ -64,4 +64,6 @@ public final class DeliveryFields {
     public static final String DELIVERED_PRODUCTS_CUMULATED_QUANTITY = "deliveredProductsCumulatedQuantity";
 
     public static final String DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE = "deliveredProductsCumulatedTotalPrice";
+
+    public static final String PAYMENT_FORM = "paymentForm";
 }

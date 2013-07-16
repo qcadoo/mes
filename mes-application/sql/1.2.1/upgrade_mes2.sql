@@ -59,3 +59,8 @@ CREATE TABLE deliveries_parameterdeliveryordercolumn
 
 -- end
 
+-- Table: deliveries_delivery
+-- changed: 16.07.2013
+ALTER TABLE deliveries_delivery ADD COLUMN paymentform character varying(1024);
+
+--end
