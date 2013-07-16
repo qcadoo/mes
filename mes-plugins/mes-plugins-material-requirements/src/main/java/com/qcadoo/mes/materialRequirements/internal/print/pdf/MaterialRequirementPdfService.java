@@ -101,16 +101,17 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         orderHeader.add(translationService.translate("orders.order.number.label", locale));
         orderHeader.add(translationService.translate("orders.order.name.label", locale));
         orderHeader.add(translationService.translate("orders.order.product.label", locale));
-        orderHeader.add(translationService.translate("basic.product.unit.label", locale));
-        orderHeader.add(translationService.translate("orders.order.plannedQuantity.label", locale));
+        orderHeader.add(translationService.translate("materialRequirements.materialRequirement.report.order.plannedQuantity",
+                locale));
+        orderHeader.add(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale));
         addOrderSeries(document, entity, orderHeader);
         document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah2",
                 locale), FontUtils.getDejavuBold11Dark()));
         List<String> productHeader = new ArrayList<String>();
         productHeader.add(translationService.translate("basic.product.number.label", locale));
         productHeader.add(translationService.translate("basic.product.name.label", locale));
-        productHeader.add(translationService.translate("basic.product.unit.label", locale));
         productHeader.add(translationService.translate("technologies.technologyOperationComponent.quantity.label", locale));
+        productHeader.add(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale));
         addTechnologySeries(document, entity, productHeader);
     }
 
@@ -148,15 +149,16 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
             table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuBold9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             Object unit = entry.getKey().getField(UNIT_FIELD);
             if (unit == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
             } else {
                 table.addCell(new Phrase(unit.toString(), FontUtils.getDejavuRegular9Dark()));
             }
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuBold9Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+
         }
         document.add(table);
     }
@@ -176,6 +178,11 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             } else {
                 table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
             }
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_FIELD);
+            plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
+            table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             if (product == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
             } else {
@@ -186,11 +193,6 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                     table.addCell(new Phrase(unit.toString(), FontUtils.getDejavuRegular9Dark()));
                 }
             }
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_FIELD);
-            plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
-            table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular9Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
     }
