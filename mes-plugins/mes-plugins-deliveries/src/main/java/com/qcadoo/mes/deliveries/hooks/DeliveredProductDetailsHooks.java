@@ -104,7 +104,7 @@ public class DeliveredProductDetailsHooks {
         Entity deliveredProduct = form.getEntity();
         Entity delivery = deliveredProduct.getBelongsToField(OrderedProductFields.DELIVERY);
 
-        deliveriesService.fillCurrencyFields(view, referenceNames, delivery);
+        deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
     }
 
     public void setDeliveredQuantityFieldRequired(final ViewDefinitionState view) {

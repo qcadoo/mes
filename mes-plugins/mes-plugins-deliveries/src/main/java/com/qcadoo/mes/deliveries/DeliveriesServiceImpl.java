@@ -267,7 +267,23 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames, final Entity delivery) {
+    public void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames) {
+        String currency = currencyService.getCurrencyAlphabeticCode();
+
+        if (currency == null || currency == "") {
+            return;
+        }
+
+        for (String reference : referenceNames) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+            field.setFieldValue(currency);
+            field.requestComponentUpdateState();
+        }
+    }
+
+    @Override
+    public void fillCurrencyFieldsForDelivery(final ViewDefinitionState view, final List<String> referenceNames,
+            final Entity delivery) {
         String currency = getCurrency(delivery);
 
         if (currency == null) {

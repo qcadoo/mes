@@ -57,7 +57,7 @@ public class OrderedProductDetailsHooks {
         Entity orderedProduct = form.getEntity();
         Entity delivery = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY);
 
-        deliveriesService.fillCurrencyFields(view, referenceNames, delivery);
+        deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
     }
 
 }

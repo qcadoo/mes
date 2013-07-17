@@ -194,7 +194,19 @@ public interface DeliveriesService {
      * @param delivery
      *            entity need to get currency
      */
-    void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames, final Entity delivery);
+    void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames);
+
+    /**
+     * Fills currency fields
+     * 
+     * @param view
+     *            view
+     * 
+     * @param referenceNames
+     *            reference names to unit fields
+     * 
+     */
+    void fillCurrencyFieldsForDelivery(final ViewDefinitionState view, final List<String> referenceNames, final Entity delivery);
 
     /**
      * Filters currency column

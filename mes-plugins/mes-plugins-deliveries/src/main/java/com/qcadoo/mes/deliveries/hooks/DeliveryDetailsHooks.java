@@ -208,6 +208,6 @@ public class DeliveryDetailsHooks {
                 "orderedProductsCumulatedTotalPriceCurrency");
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity delivery = form.getEntity();
-        deliveriesService.fillCurrencyFields(view, referenceNames, delivery);
+        deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
     }
 }
