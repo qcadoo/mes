@@ -967,6 +967,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             technology.setField("otherFeatureRequired", false);
             technology.setField("shiftFeatureRequired", false);
             technology.setField("technologyBatchRequired", false);
+            technology.setField("externalSynchronized", true);
 
             if (isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION)
                     && L_QUALITY_CONTROLS_FOR_OPERATION.equals(values.get(L_QUALITYCONTROLTYPE_3))) {
