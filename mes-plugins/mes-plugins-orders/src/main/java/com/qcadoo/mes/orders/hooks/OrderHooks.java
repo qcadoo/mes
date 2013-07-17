@@ -55,20 +55,17 @@ import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -126,48 +123,7 @@ public class OrderHooks {
         return orderService.checkOrderDates(orderDD, order) && orderService.checkOrderPlannedQuantity(orderDD, order)
                 && productService.checkIfProductIsNotRemoved(orderDD, order)
                 && checkReasonOfStartDateCorrection(parameter, order) && checkReasonOfEndDateCorrection(parameter, order)
-                && checkEffectiveDeviation(parameter, order) && validateTechnology(orderDD, order);
-    }
-
-    private boolean validateTechnology(final DataDefinition orderDD, final Entity order) {
-        if (order == null) {
-            return true;
-        }
-        if (!order.getStringField(OrderFields.ORDER_TYPE).equals(OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue())) {
-            return true;
-        }
-        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
-        if (order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE) == null) {
-            return true;
-        }
-        Entity technology = technologyDD.get(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).getId());
-        if (technology == null) {
-            return true;
-        }
-        boolean isValid = true;
-        Map<Long, String> wrongTechnlgies = Maps.newHashMap();
-
-        for (Entity operationComponent : technology.getTreeField("operationComponents")) {
-            if (!operationComponent.getDataDefinition().callValidators(operationComponent)) {
-                isValid = false;
-                wrongTechnlgies.put(technology.getId(), technology.getStringField(TechnologyFields.NUMBER));
-            }
-        }
-        if (!isValid) {
-            order.addGlobalError("orders.validate.global.error.technologyHasError");
-            return false;
-        }
-        return true;
-    }
-
-    private String buildArgs(final Map<Long, String> wrongTechnlgies) {
-        StringBuilder builder = new StringBuilder();
-        for (String technologyNumber : wrongTechnlgies.values()) {
-            builder.append(technologyNumber);
-            builder.append(", ");
-        }
-        return builder.toString();
+                && checkEffectiveDeviation(parameter, order);
     }
 
     public void setInitialState(final DataDefinition dataDefinition, final Entity order) {

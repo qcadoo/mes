@@ -46,6 +46,7 @@ import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.PluginUtils;
 
 @Service
 public class OrderStateValidationService {
@@ -108,7 +109,9 @@ public class OrderStateValidationService {
         copyOfTechnologyValidationService.checkIfTechnologyHasAtLeastOneComponent(stateChangeContext, technology);
         copyOfTechnologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext, technology);
         copyOfTechnologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext, technology);
-
+        if (PluginUtils.isEnabled("timeNormsForOperations")) {
+            copyOfTechnologyValidationService.checkIfTreeOperationIsValid(stateChangeContext, technology);
+        }
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 

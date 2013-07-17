@@ -96,7 +96,13 @@ public class ProductValidatorsTNFO {
             builder.append(technologyNumber);
             builder.append(", ");
         }
-        return builder.toString();
+        String msg = builder.toString();
+        int length = msg.length();
+        String lastSigns = msg.substring(length - 2);
+        if (", ".equals(lastSigns)) {
+            msg = msg.substring(0, length - 2);
+        }
+        return msg;
     }
 
     private boolean checkIfUnitsInTechnologyMatch(final Entity technologyOperationComponent, final Entity product) {

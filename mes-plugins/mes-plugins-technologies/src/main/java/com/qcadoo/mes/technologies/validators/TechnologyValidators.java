@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -45,30 +44,6 @@ public class TechnologyValidators {
         boolean isValid = true;
         isValid = isValid && checkTechnologyDefault(dataDefinition, technology);
         isValid = isValid && productService.checkIfProductIsNotRemoved(dataDefinition, technology);
-        isValid = isValid && checkIfTreeOperationIsValid(dataDefinition, technology);
-        return isValid;
-    }
-
-    public boolean checkIfTreeOperationIsValid(final DataDefinition dataDefinition, final Entity technology) {
-        if (technology == null || technology.getId() == null) {
-            return true;
-        }
-        Entity techFromDB = technology.getDataDefinition().get(technology.getId());
-        if (techFromDB == null) {
-            return true;
-        }
-        StringBuilder builder = new StringBuilder();
-        boolean isValid = true;
-        for (Entity operationComponent : techFromDB.getTreeField("operationComponents")) {
-            if (!operationComponent.getDataDefinition().callValidators(operationComponent)) {
-                isValid = false;
-                builder.append(operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
-                builder.append(", ");
-            }
-        }
-        if (!isValid) {
-            technology.addGlobalError("technologies.technology.validate.error.OperationTreeNotValid", builder.toString());
-        }
         return isValid;
     }
 

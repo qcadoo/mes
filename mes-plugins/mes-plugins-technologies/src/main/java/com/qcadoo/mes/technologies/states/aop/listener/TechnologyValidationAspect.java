@@ -41,6 +41,7 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.mes.technologies.states.listener.TechnologyValidationService;
 import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
@@ -72,6 +73,9 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         // technologyValidationService.checkIfAllReferenceTechnologiesAreAceepted(stateChangeContext);
         technologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext);
         technologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext);
+        if (PluginUtils.isEnabled("timeNormsForOperations")) {
+            technologyValidationService.checkIfTreeOperationIsValid(stateChangeContext);
+        }
     }
 
     @RunInPhase(TechnologyStateChangePhase.PRE_VALIDATION)
