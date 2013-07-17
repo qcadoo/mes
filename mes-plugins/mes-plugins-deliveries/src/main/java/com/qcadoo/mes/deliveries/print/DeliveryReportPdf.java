@@ -62,7 +62,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
@@ -99,9 +98,6 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     @Autowired
     private ParameterService parameterService;
-
-    @Autowired
-    private CurrencyService currencyService;
 
     @Autowired
     private NumberService numberService;
@@ -312,7 +308,7 @@ public class DeliveryReportPdf extends ReportPdfView {
                         .getDejavuRegular9Dark()));
             } else if (columnsName.contains(L_CURRENCY) && columnsName.indexOf(L_CURRENCY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                productsTable.addCell(new Phrase(currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular9Dark()));
+                productsTable.addCell(new Phrase(deliveriesService.getCurrency(delivery), FontUtils.getDejavuRegular9Dark()));
             } else {
                 productsTable.addCell("");
             }

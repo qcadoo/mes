@@ -50,6 +50,7 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
@@ -266,8 +267,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames) {
-        String currency = currencyService.getCurrencyAlphabeticCode();
+    public void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames, final Entity delivery) {
+        String currency = getCurrency(delivery);
 
         if (currency == null) {
             return;
@@ -313,4 +314,16 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return contains;
     }
 
+    @Override
+    public String getCurrency(final Entity delivery) {
+        if (delivery == null) {
+            return "";
+        }
+        Entity currency = delivery.getBelongsToField(DeliveryFields.CURRENCY);
+        if (currency == null) {
+            return currencyService.getCurrencyAlphabeticCode();
+        } else {
+            return currency.getDataDefinition().get(currency.getId()).getStringField("alphabeticCode");
+        }
+    }
 }

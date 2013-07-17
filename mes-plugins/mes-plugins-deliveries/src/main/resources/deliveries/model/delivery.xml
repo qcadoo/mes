@@ -48,6 +48,7 @@
 		</string>
 		
 		<belongsTo name="relatedDelivery" model="delivery" />
+		<belongsTo name="currency" model="currency" plugin="basic"/>
 		<hasMany name="relatedDeliveries" joinField="relatedDelivery" model="delivery"
 			cascade="nullify" />
 		

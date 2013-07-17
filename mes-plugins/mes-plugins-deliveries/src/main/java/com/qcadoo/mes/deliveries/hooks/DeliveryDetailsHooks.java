@@ -206,7 +206,8 @@ public class DeliveryDetailsHooks {
     public void fillCurrencyFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("deliveredProductsCumulatedTotalPriceCurrency",
                 "orderedProductsCumulatedTotalPriceCurrency");
-
-        deliveriesService.fillCurrencyFields(view, referenceNames);
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity delivery = form.getEntity();
+        deliveriesService.fillCurrencyFields(view, referenceNames, delivery);
     }
 }

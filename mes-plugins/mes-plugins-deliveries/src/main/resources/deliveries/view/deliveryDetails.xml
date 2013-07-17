@@ -342,6 +342,20 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
+					<layoutElement column="3" row="5">
+						<component type="lookup" name="currency" reference="currency"
+							field="currency">
+							<option type="column" name="currency" fields="currency"
+								link="true" />
+							
+							<option type="searchable" value="currency,alphabeticCode" />
+							<option type="orderable" value="currency,alphabeticCode" />
+
+							<option type="expression" value="#alphabeticCode + ' - ' + #currency" />
+							<option type="fieldCode" value="alphabeticCode" />
+						</component>
+					</layoutElement>
+					
 				</component>
 				
 				<option type="header" value="true" />

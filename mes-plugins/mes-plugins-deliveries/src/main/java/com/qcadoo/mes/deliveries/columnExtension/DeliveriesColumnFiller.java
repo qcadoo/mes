@@ -42,13 +42,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.print.DeliveryColumnFiller;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.mes.deliveries.print.OrderColumnFiller;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
@@ -62,7 +63,7 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     private NumberService numberService;
 
     @Autowired
-    private CurrencyService currencyService;
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(final List<DeliveryProduct> deliveryProducts) {
@@ -343,31 +344,23 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     }
 
     private void fillCurrency(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
-        String currency = null;
-
-        Entity currentCurrency = currencyService.getCurrentCurrency();
-
-        if (currentCurrency == null) {
-            currency = "";
-        } else {
-            currency = currencyService.getCurrencyAlphabeticCode();
-        }
-
+        Entity delivery = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY);
+        String currency = deliveriesService.getCurrency(delivery);
         values.get(orderedProduct).put("currency", currency);
     }
 
     private void fillCurrency(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
-        String currency = null;
-
-        Entity currentCurrency = currencyService.getCurrentCurrency();
-
-        if (currentCurrency == null) {
-            currency = "";
-        } else {
-            currency = currencyService.getCurrencyAlphabeticCode();
+        Entity entity = null;
+        if (deliveryProduct.getDeliveredProductId() != null) {
+            entity = dataDefinitionService
+                    .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT).get(
+                            deliveryProduct.getDeliveredProductId());
         }
+        entity = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT).get(
+                deliveryProduct.getOrderedProductId());
+        Entity delivery = entity.getBelongsToField(DeliveredProductFields.DELIVERY);
+        String currency = deliveriesService.getCurrency(delivery);
 
         values.get(deliveryProduct).put("currency", currency);
     }
-
 }

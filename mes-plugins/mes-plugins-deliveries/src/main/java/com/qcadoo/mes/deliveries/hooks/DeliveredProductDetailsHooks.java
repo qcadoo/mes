@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -99,7 +100,11 @@ public class DeliveredProductDetailsHooks {
     public void fillCurrencyFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
 
-        deliveriesService.fillCurrencyFields(view, referenceNames);
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity deliveredProduct = form.getEntity();
+        Entity delivery = deliveredProduct.getBelongsToField(OrderedProductFields.DELIVERY);
+
+        deliveriesService.fillCurrencyFields(view, referenceNames, delivery);
     }
 
     public void setDeliveredQuantityFieldRequired(final ViewDefinitionState view) {
