@@ -813,12 +813,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity technology = order.getBelongsToField(TECHNOLOGY_MODEL_TECHNOLOGY);
         Entity operationProdInComp = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent")
                 .find().add(SearchRestrictions.belongsTo(L_PRODUCT, product)).setMaxResults(1).uniqueResult();
-        Entity technologyInstanceOperationComponent = dataDefinitionService
+        Entity technologyOperationComponent = dataDefinitionService
                 .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
-                        SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
+                        SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_OPERATION_COMPONENT)
                 .find()
-                .add(SearchRestrictions.and(SearchRestrictions.belongsTo(ORDERS_MODEL_ORDER, order),
-                        SearchRestrictions.belongsTo(TECHNOLOGY_MODEL_TECHNOLOGY, technology),
+                .add(SearchRestrictions.and(SearchRestrictions.belongsTo(TECHNOLOGY_MODEL_TECHNOLOGY, technology),
                         SearchRestrictions.belongsTo(L_OPERATION, getOperationByNumber(operationNumber)))).setMaxResults(1)
                 .uniqueResult();
 
@@ -827,8 +826,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .find()
                 .add(SearchRestrictions.and(SearchRestrictions.belongsTo("trackingRecord", trackingRecord), SearchRestrictions
                         .belongsTo("productInComponent", operationProdInComp), SearchRestrictions.belongsTo(
-                        SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
-                        technologyInstanceOperationComponent))).setMaxResults(1).uniqueResult();
+                        SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent)))
+                .setMaxResults(1).uniqueResult();
         return genealogyProductInComponent;
     }
 
