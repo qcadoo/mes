@@ -65,7 +65,7 @@
 
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
 
-		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:hasMany name="qualityControls" joinField="operation" model="qualityControl" plugin="qualityControls" cascade="delete"/>
 		</model:model-field>
 		

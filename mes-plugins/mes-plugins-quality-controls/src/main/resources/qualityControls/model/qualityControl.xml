@@ -30,8 +30,12 @@
 	<fields>
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
-		<belongsTo name="operation" model="technologyInstanceOperationComponent"
+		<belongsTo name="operation" model="technologyOperationComponent"
 			plugin="technologies" />
+			
+		<belongsTo persistent="false" name="technology"
+			model="technology" plugin="technologies" />
+			
 		<string name="number" required="true">
 			<validatesLength max="255" />
 		</string>

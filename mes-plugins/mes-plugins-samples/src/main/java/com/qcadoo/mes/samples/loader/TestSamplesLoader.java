@@ -118,7 +118,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         if (isEnabledOrEnabling(L_QUALITY_CONTROLS)) {
-            // readDataFromXML(dataset, L_QUALITY_CONTROLS, locale);
+            readDataFromXML(dataset, L_QUALITY_CONTROLS, locale);
         }
 
         if (isEnabledOrEnabling(L_MATERIAL_REQUIREMENTS)) {
@@ -1278,7 +1278,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             qualitycontrol.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
             qualitycontrol.setField(
                     L_OPERATION,
-                    getTechnologyInstanceOperationComponentByNumber(getOrderByNumber(values.get(L_ORDER)),
+                    getTechnologyOperationComponentByNumber(getOrderByNumber(values.get(L_ORDER)),
                             getOperationByNumber(values.get(L_OPERATION))));
             qualitycontrol.setField("ControlResult", values.get("controlresult"));
             qualitycontrol.setField(L_COMMENT, values.get(L_COMMENT));
@@ -1289,7 +1289,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         }
 
-        qualitycontrol.getDataDefinition().save(qualitycontrol);
+        qualitycontrol = qualitycontrol.getDataDefinition().save(qualitycontrol);
     }
 
     private void addWageGroups(final Map<String, String> values) {

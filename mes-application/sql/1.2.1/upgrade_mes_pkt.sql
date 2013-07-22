@@ -270,4 +270,15 @@ ALTER TABLE productionpershift_progressforday
       REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE;
       
 -- end
+
+-- Table: qualitycontrols_qualitycontrol
+-- changed: 19.07.2013
+
+ALTER TABLE qualitycontrols_qualitycontrol ADD COLUMN technologyoperationcomponent_id bigint;
+
+ALTER TABLE qualitycontrols_qualitycontrol
+  ADD CONSTRAINT qualitycontrol_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE;
+      
+-- end
       
