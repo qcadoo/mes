@@ -55,26 +55,93 @@
 								#{form}.fireEvent(eventPerformer, 'changeState', [newState]);
 							}
 						}
-					
-						#{form}.addOnChangeListener({
-							onSetValue: function() {
-								var itemNames = ["reports.pdf", "reports.xls", "status.acceptTechnology", "status.cancelTechnology", "status.checkTechnology"]; 
-								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
+
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								var state = #{state}.getValue().content.value;
+								if (!state) {
+									return;
+								}
+								if (! value || ! value.content) {
+									return;
+								}
+								updateRibbon(state);
+							}
+						});
+						
+						function toggleEditable(enabled, message) {
+							var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel", "actions.delete"]; 
+							for (var elementKey in toggleRibbonItems) {
+								var ribbonItemName = toggleRibbonItems[elementKey];
+								var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
 								
-								for (var elementKey in itemNames) {
-									var ribbonItem = #{window}.getRibbonItem(itemNames[elementKey]);
-									if (isSaved) {
-										//ribbonItem.enable();
-									} else {
+								if (!ribbonItem) {
+									continue;
+								}
+								
+								if (enabled) {
+									ribbonItem.enable();
+								} else {
+									if(message){
+										ribbonItem.disable(message);
+									}else{
 										ribbonItem.disable();
 									}
 								}
-								
-								if (isSaved && #{state}.getValue().content && #{state}.getValue().content.value) {
-									#{state}.updateRibbon(#{state}.getValue().content.value);
-								}
 							}
-						});
+						}
+						
+						function updateRibbon(state) {
+							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
+							var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
+							var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
+							var checkState = #{window}.getRibbonItem("status.checkTechnology");
+							
+							if (state == "01draft") {
+								acceptState.enable();
+								acceptState.forState="02accepted";
+								acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
+								cancelState.enable();
+								cancelState.forState="03declined";
+								cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
+								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
+								checkState.enable();
+								checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.checked)}";
+								checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
+								checkState.forState="05checked";
+								toggleEditable(true, "");
+							} else if (state == "02accepted") {
+								acceptState.disable();
+								checkState.disable();
+								cancelState.enable();
+								cancelState.forState="04outdated";
+								cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
+								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
+								toggleEditable(false,"#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
+							} else if (state == "03declined" || state == "04outdated") {
+								acceptState.disable();
+								checkState.disable();
+								cancelState.disable();
+								toggleEditable(false);
+							} else if( state == "05checked"){
+								cancelState.enable();
+								checkState.enable();
+								checkState.forState="01draft"
+								checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
+								checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
+								acceptState.enable();
+								toggleEditable(false,"#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
+							}
+							if(externalSynchronized == '0') {
+								toggleEditable(false, "#{translate(technologies.technology.ribbon.message.technologyIsExternal)}");
+								acceptState.disable();
+								cancelState.disable();
+								checkState.disable();
+							}					
+						}
 					]]>
 				</script>
 				<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
@@ -117,142 +184,7 @@
 					</layoutElement>
 				</component>
 				
-				<component type="select" name="state" field="state" reference="state" hasLabel="false" defaultVisible="false">
-					<script>
-						<![CDATA[
-							this.addOnChangeListener({
-								onSetValue: function(newValue) {
-									if (!newValue || !newValue.content) {
-										return;
-									}
-									toggleEditable(newValue.content.value);
-									updateRibbon(newValue.content.value);
-								}
-							});
-							
-							var onSetValueListener = {
-								onSetValue: function(value) {
-									if (#{form}.getValue().content && #{form}.getValue().content.entityId) {
-										toggleEditable(#{state}.getValue().content.value); 
-									} else {
-										this.setEnabled(false, true);
-									}
-								}
-							};
-							
-							function toggleEditable(state) {
-								var isDraft = state == "01draft";
-								var isAccepted = state == "02accepted";
-								var isDeclined = state == "03declined";
-								var isOutdated = state == "04outdated";
-								var isChecked = state == "05checked";
-								
-								#{window}.setEnabled(isDraft, true);
-								#{master}.setEnabled(isDraft, false);
-								#{master}.setEnabled(isAccepted, true);
-								
-								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel"]; 
-								for (var elementKey in toggleRibbonItems) {
-									var ribbonItemName = toggleRibbonItems[elementKey];
-									var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
-									
-									if (!ribbonItem) {
-										continue;
-									}
-									
-									if (isDraft || isAccepted) {
-										ribbonItem.enable();
-									} else {
-										ribbonItem.disable("#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
-									}
-								}
-								if (!isAccepted) {
-									#{window}.getRibbonItem("actions.delete").enable();
-								} else {
-									#{window}.getRibbonItem("actions.delete").disable();
-								}
-							}
-							
-							function updateRibbon(state) {
-								var save = #{window}.getRibbonItem("actions.save");
-								var saveBack = #{window}.getRibbonItem("actions.saveBack");
-								var saveNew = #{window}.getRibbonItem("actions.saveNew");
-								var cancel = #{window}.getRibbonItem("actions.cancel");
-								var del = #{window}.getRibbonItem("actions.delete");
-								var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
-								var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
-								var checkState = #{window}.getRibbonItem("status.checkTechnology");
-								
-								console.log(#{externalSynchronized}.getValue().content.value);
-								
-								if (#{externalSynchronized}.getValue().content && #{externalSynchronized}.getValue().content.value === "1") {
-									save.enable();
-							 		saveBack.enable();
-							 		saveNew.enable();
-							 		cancel.enable();
-							 		del.enable();
-							 		acceptState.enable();
-									cancelState.enable();
-									checkState.enable();
-									#{window}.setPermanentlyDisabled(false, true);
-								}
-									
-								acceptState.disable();
-								acceptState.forState="02accepted";
-								acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
-								
-								checkState.disable();
-								checkState.forState="05checked";
-								checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.checked)}";
-								checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
-
-								cancelState.disable();
-								cancelState.forState="03declined";
-								cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
-								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
-								
-								if (state == "01draft") {
-									acceptState.enable();
-									cancelState.enable();
-									checkState.enable();
-								} else if (state == "02accepted") {
-									checkState.disable();
-									cancelState.enable();
-									cancelState.forState="04outdated";
-									cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
-									cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-								} else if (state == "03declined") {
-								} else if (state == "04outdated") {
-									cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-								} else if( state == "05checked"){
-									cancelState.enable();
-									checkState.enable();
-									checkState.forState="01draft"
-									checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
-									checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
-									acceptState.enable();
-								} else {
-									cancelState.enable();
-								}
-								
-								if (!#{externalSynchronized}.getValue().content || #{externalSynchronized}.getValue().content.value !== "1") {
-									save.disable();
-							 		saveBack.disable();
-							 		saveNew.disable();
-							 		cancel.disable();
-							 		del.disable();
-							 		acceptState.disable();
-									cancelState.disable();
-									checkState.disable();
-									#{window}.setPermanentlyDisabled(true, true);
-								}
-								
-							}
-							this.updateRibbon = updateRibbon;
-						]]>
-					</script>
-				</component>
-
+				<component type="select" name="state" field="state" reference="state" hasLabel="false" defaultVisible="false" />
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 				
@@ -359,6 +291,8 @@
 	<hooks>
 <!-- 		<beforeRender class="com.qcadoo.mes.technologies.TechnologyTreeNumberingHooks" -->
 <!-- 			method="rebuildTreeNumbering" /> -->
+		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+			method="disableFieldTechnologyForm" />
 		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
 			method="filterStateChangeHistory" />
 		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"

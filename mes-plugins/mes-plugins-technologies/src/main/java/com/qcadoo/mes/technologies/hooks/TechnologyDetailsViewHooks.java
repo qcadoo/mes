@@ -32,8 +32,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -43,11 +45,16 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class TechnologyDetailsViewHooks {
 
+    private static final String L_FORM = "form";
+
     private static final String OUT_PRODUCTS_REFERENCE = "outProducts";
 
     private static final String IN_PRODUCTS_REFERENCE = "inProducts";
 
     private static final String TECHNOLOGY_TREE_REFERENCE = "technologyTree";
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private StateChangeHistoryService stateChangeHistoryService;
@@ -69,18 +76,39 @@ public class TechnologyDetailsViewHooks {
     }
 
     private boolean technologyIsAlreadySaved(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         return form.getEntityId() != null;
     }
 
     private TechnologyState getTechnologyState(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         final Entity technology = form.getEntity();
         TechnologyState state = TechnologyState.DRAFT;
         if (technology != null) {
             state = TechnologyState.parseString(technology.getStringField(TechnologyFields.STATE));
         }
         return state;
+    }
+
+    public void disableFieldTechnologyForm(final ViewDefinitionState view) {
+        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+
+        boolean disabled = false;
+
+        if (technology.getEntityId() != null) {
+            Entity entity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY).get(technology.getEntityId());
+            if (entity == null) {
+                return;
+            }
+            String state = entity.getStringField(TechnologyFields.STATE);
+            if (!TechnologyState.DRAFT.getStringValue().equals(state)) {
+                disabled = true;
+            }
+        }
+
+        technology.setFormEnabled(!disabled);
+
     }
 
 }
