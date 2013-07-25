@@ -22,7 +22,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class MasterOrderValidators {
 
-    public boolean checkIfCanChangedCompany(final DataDefinition masterOrderDD, final Entity masterOrder) {
+    public boolean checkIfCanChangeCompany(final DataDefinition masterOrderDD, final Entity masterOrder) {
         if (masterOrder.getId() == null) {
             return true;
         }
@@ -45,7 +45,7 @@ public class MasterOrderValidators {
         return true;
     }
 
-    public boolean checkIfCanChangedDeadline(final DataDefinition masterOrderDD, final Entity masterOrder) {
+    public boolean checkIfCanChangeDeadline(final DataDefinition masterOrderDD, final Entity masterOrder) {
         if (masterOrder.getId() == null) {
             return true;
         }
@@ -109,7 +109,7 @@ public class MasterOrderValidators {
                 .isEmpty();
     }
 
-    public boolean checkIfCanChangedTechnology(final DataDefinition masterOrderDD, final Entity masterOrder) {
+    public boolean checkIfCanChangeTechnology(final DataDefinition masterOrderDD, final Entity masterOrder) {
         if (masterOrder.getId() == null) {
             return true;
         }
@@ -144,7 +144,7 @@ public class MasterOrderValidators {
         return isValid;
     }
 
-    public boolean checkIfCanChangedProduct(final DataDefinition masterOrderDD, final Entity masterOrder) {
+    public boolean checkIfCanChangeProduct(final DataDefinition masterOrderDD, final Entity masterOrder) {
         if (masterOrder.getId() == null) {
             return true;
         }
@@ -188,7 +188,7 @@ public class MasterOrderValidators {
         return true;
     }
 
-    public boolean checkIfCanChangedType(final DataDefinition dataDefinition, final Entity masterOrder) {
+    public boolean checkIfCanChangeType(final DataDefinition dataDefinition, final Entity masterOrder) {
         Long masterOrderId = masterOrder.getId();
         if (masterOrderId == null) {
             return true;
@@ -207,4 +207,5 @@ public class MasterOrderValidators {
     private boolean checkIfMasterOrderHaveOrders(final Entity masterOrder) {
         return !masterOrder.getHasManyField(MasterOrderFields.ORDERS).find().list().getEntities().isEmpty();
     }
+
 }
