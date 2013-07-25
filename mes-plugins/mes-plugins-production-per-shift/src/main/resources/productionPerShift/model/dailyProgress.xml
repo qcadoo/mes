@@ -32,4 +32,7 @@
 		<belongsTo name="shift" model="shift" plugin="basic" required="true" />
 		<decimal name="quantity" required="true" />
 	</fields>
+	<hooks>
+		<onSave class="com.qcadoo.mes.productionPerShift.validators.DailyProgressValidators" method="checkUniqueShift"/>
+	</hooks>
 </model>
