@@ -10,7 +10,8 @@
 	GNU Affero General Public License for more details. You should have received 
 	a copy of the GNU Affero General Public License along with this program; 
 	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
-	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+	Floor, Boston, MA 02110-1301 USA 
+*************************************************************************** -->
 <plugin plugin="operationalTasksForOrders" group="planning"
 	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
@@ -65,6 +66,10 @@
 			<model:belongsTo name="order" model="order" plugin="orders" />
 		</model:model-field>
 		<model:model-field model="operationalTask" plugin="operationalTasks">
+			<model:belongsTo name="technology" model="technology" 
+								plugin="technologies" persistent="false"/>
+		</model:model-field>
+		<model:model-field model="operationalTask" plugin="operationalTasks">
 			<model:belongsTo name="technologyInstanceOperationComponent"
 				model="technologyInstanceOperationComponent" plugin="technologies" />
 		</model:model-field>
@@ -97,15 +102,16 @@
 				class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskHooksOTFO"
 				method="checkIfOrderHasTechnology" />
 		</model:model-hook>
+
 		<model:model-hook model="operation" plugin="technologies">
 			<model:onSave
 				class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationHooksOTFO"
 				method="changedNameOperationTasksWhenEntityNameChanged" />
 		</model:model-hook>
-		<model:model-hook model="technologyInstanceOperationComponent"
+		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:onSave
-				class="com.qcadoo.mes.operationalTasksForOrders.hooks.TechInstOperCompHooksOTFO"
+				class="com.qcadoo.mes.operationalTasksForOrders.hooks.TechOperCompHooksOTFO"
 				method="changedDescriptionOperationTasksWhenCommentEntityChanged" />
 		</model:model-hook>
 		<model:model-hook model="order" plugin="orders">
@@ -127,12 +133,12 @@
 				searchable="true" expression="#order['number']" />
 			<view:column name="technology" fields="order" orderable="true"
 				expression="#order['technology'].get('number')" />
-			<view:column name="techInstOperCompNodeNumber" fields="technologyInstanceOperationComponent"
+			<view:column name="techOperCompNodeNumber" fields="techOperCompOperationalTasks"
 				orderable="true" searchable="true"
-				expression="#technologyInstanceOperationComponent['nodeNumber']" />
-			<view:column name="techInstOperCompNumber" fields="technologyInstanceOperationComponent"
+				expression="#techOperCompOperationalTasks['technologyOperationComponent'].get('nodeNumber')"/>
+			<view:column name="techOperCompNumber" fields="techOperCompOperationalTasks"
 				orderable="true"
-				expression="#technologyInstanceOperationComponent['operation'].get('number')" />
+				expression="#techOperCompOperationalTasks.get('technologyOperationComponent').get('operation').get('number')"/>
 		</view:view-grid-column>
 
 		<view:view-hook view="operationalTasksList" type="beforeRender"
@@ -149,11 +155,27 @@
 			plugin="operationalTasks"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
 			method="disabledButtons" />
+			
+		<view:view-hook view="operationalTaskDetails" type="beforeRender"
+			plugin="operationalTasks"
+			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
+			method="setTechnology" />
 
+		<view:view-hook view="operationalTaskDetails" type="beforeRender"
+			plugin="operationalTasks"
+			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
+			method="setTechnologyOperationComponent" />
+			
 		<view:view-hook view="operationDurationDetailsInOrder"
 			type="beforeRender" plugin="productionScheduling"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationDurationDetailsInOrderDetailsHooksOTFO"
 			method="disabledCreateButton" />
+
+		<view:view-listener view="operationalTaskDetails"
+			component="form" plugin="operationalTasks" event="save"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
+			method="setTOCOperationalTasks" />
+
 
 		<view:view-listener view="operationalTaskDetails"
 			component="typeTask" plugin="operationalTasks" event="onSelectedEntityChange"

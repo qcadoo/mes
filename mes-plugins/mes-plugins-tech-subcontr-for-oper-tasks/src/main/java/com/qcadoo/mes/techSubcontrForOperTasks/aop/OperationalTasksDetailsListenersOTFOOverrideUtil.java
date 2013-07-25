@@ -27,7 +27,6 @@ import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.D
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.NAME;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
@@ -44,7 +43,7 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtil {
 
     public void checkIfOperationIsSubcontracted(final ViewDefinitionState viewDefinitionState) {
         LookupComponent technologyLookup = (LookupComponent) viewDefinitionState
-                .getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+                .getComponentByReference("technologyOperationComponent");
         technologyLookup.setFieldValue(null);
         technologyLookup.requestComponentUpdateState();
 
@@ -52,8 +51,8 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtil {
     }
 
     public void setOperationalNameAndDescriptionForSubcontractedOperation(final ViewDefinitionState viewDefinitionState) {
-        Entity techInstOperComp = ((LookupComponent) viewDefinitionState
-                .getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
+        Entity techInstOperComp = ((LookupComponent) viewDefinitionState.getComponentByReference("technologyOperationComponent"))
+                .getEntity();
         FieldComponent description = (FieldComponent) viewDefinitionState.getComponentByReference(DESCRIPTION);
         FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference(NAME);
         if (techInstOperComp == null) {
@@ -82,8 +81,8 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtil {
     }
 
     private boolean isSubcontracting(final ViewDefinitionState viewDefinitionState) {
-        Entity techInstOperComp = ((LookupComponent) viewDefinitionState
-                .getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
+        Entity techInstOperComp = ((LookupComponent) viewDefinitionState.getComponentByReference("technologyOperationComponent"))
+                .getEntity();
         return techInstOperComp != null && techInstOperComp.getBooleanField(IS_SUBCONTRACTING);
     }
 

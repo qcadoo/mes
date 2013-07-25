@@ -27,7 +27,6 @@ import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.D
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.NAME;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
@@ -52,13 +51,13 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
     private ViewDefinitionState viewDefinitionState;
 
     @Mock
-    private LookupComponent orderLookup, techInstOperCompLookup;
+    private LookupComponent orderLookup, techOperCompLookup;
 
     @Mock
     private FieldComponent productionLineLookup, nameField, descriptionField;
 
     @Mock
-    private Entity order, techInstOperComp, productionLine, operation;
+    private Entity order, techOperComp, productionLine, operation;
 
     @Before
     public void init() {
@@ -67,8 +66,7 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
         MockitoAnnotations.initMocks(this);
 
         when(viewDefinitionState.getComponentByReference(ORDER)).thenReturn(orderLookup);
-        when(viewDefinitionState.getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).thenReturn(
-                techInstOperCompLookup);
+        when(viewDefinitionState.getComponentByReference("technologyOperationComponent")).thenReturn(techOperCompLookup);
         when(viewDefinitionState.getComponentByReference(PRODUCTION_LINE)).thenReturn(productionLineLookup);
         when(viewDefinitionState.getComponentByReference(NAME)).thenReturn(nameField);
         when(viewDefinitionState.getComponentByReference(DESCRIPTION)).thenReturn(descriptionField);
@@ -81,7 +79,7 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
         // when
         util.checkIfOperationIsSubcontracted(viewDefinitionState);
         // then
-        Mockito.verify(techInstOperCompLookup).setFieldValue(null);
+        Mockito.verify(techOperCompLookup).setFieldValue(null);
     }
 
     @Test
@@ -90,7 +88,7 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
 
         util.checkIfOperationIsSubcontracted(viewDefinitionState);
         // then
-        Mockito.verify(techInstOperCompLookup).setFieldValue(null);
+        Mockito.verify(techOperCompLookup).setFieldValue(null);
     }
 
     @Test
@@ -98,12 +96,12 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
         // given
         Long productionLineId = 1L;
         when(orderLookup.getEntity()).thenReturn(order);
-        when(techInstOperCompLookup.getEntity()).thenReturn(null);
+        when(techOperCompLookup.getEntity()).thenReturn(null);
         when(order.getBelongsToField(PRODUCTION_LINE)).thenReturn(productionLine);
         when(productionLine.getId()).thenReturn(productionLineId);
         util.checkIfOperationIsSubcontracted(viewDefinitionState);
         // then
-        Mockito.verify(techInstOperCompLookup).setFieldValue(null);
+        Mockito.verify(techOperCompLookup).setFieldValue(null);
     }
 
     @Test
@@ -112,14 +110,14 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
         String name = "name";
         when(orderLookup.getEntity()).thenReturn(order);
         when(order.getBelongsToField(PRODUCTION_LINE)).thenReturn(null);
-        when(techInstOperCompLookup.getEntity()).thenReturn(techInstOperComp);
-        when(techInstOperComp.getBooleanField(IS_SUBCONTRACTING)).thenReturn(true);
-        when(techInstOperComp.getBelongsToField(OPERATION)).thenReturn(operation);
+        when(techOperCompLookup.getEntity()).thenReturn(techOperComp);
+        when(techOperComp.getBooleanField(IS_SUBCONTRACTING)).thenReturn(true);
+        when(techOperComp.getBelongsToField(OPERATION)).thenReturn(operation);
         when(operation.getStringField(NAME)).thenReturn(name);
 
         util.checkIfOperationIsSubcontracted(viewDefinitionState);
         // then
-        Mockito.verify(techInstOperCompLookup).setFieldValue(null);
+        Mockito.verify(techOperCompLookup).setFieldValue(null);
         Mockito.verify(productionLineLookup).setFieldValue(null);
     }
 
@@ -130,12 +128,12 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
 
         when(orderLookup.getEntity()).thenReturn(order);
         when(order.getBelongsToField(PRODUCTION_LINE)).thenReturn(productionLine);
-        when(techInstOperCompLookup.getEntity()).thenReturn(techInstOperComp);
-        when(techInstOperComp.getBooleanField(IS_SUBCONTRACTING)).thenReturn(false);
+        when(techOperCompLookup.getEntity()).thenReturn(techOperComp);
+        when(techOperComp.getBooleanField(IS_SUBCONTRACTING)).thenReturn(false);
         when(productionLine.getId()).thenReturn(productionLineId);
         util.checkIfOperationIsSubcontracted(viewDefinitionState);
         // then
-        Mockito.verify(techInstOperCompLookup).setFieldValue(null);
+        Mockito.verify(techOperCompLookup).setFieldValue(null);
         Mockito.verify(productionLineLookup).setFieldValue(productionLineId);
     }
 
@@ -144,12 +142,12 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
         // given
         String comment = "Comment";
         String name = "name";
-        when(techInstOperCompLookup.getEntity()).thenReturn(techInstOperComp);
-        when(techInstOperComp.getBooleanField(IS_SUBCONTRACTING)).thenReturn(true);
+        when(techOperCompLookup.getEntity()).thenReturn(techOperComp);
+        when(techOperComp.getBooleanField(IS_SUBCONTRACTING)).thenReturn(true);
         when(orderLookup.getEntity()).thenReturn(order);
         when(order.getBelongsToField(PRODUCTION_LINE)).thenReturn(null);
-        when(techInstOperComp.getStringField(COMMENT)).thenReturn(comment);
-        when(techInstOperComp.getBelongsToField(OPERATION)).thenReturn(operation);
+        when(techOperComp.getStringField(COMMENT)).thenReturn(comment);
+        when(techOperComp.getBelongsToField(OPERATION)).thenReturn(operation);
         when(operation.getStringField(NAME)).thenReturn(name);
         // when
         util.setOperationalNameAndDescriptionForSubcontractedOperation(viewDefinitionState);
@@ -161,7 +159,7 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
     @Test
     public void shouldSetNullToFieldWhenTechInstOpCompIsNull() throws Exception {
         // given
-        when(techInstOperCompLookup.getEntity()).thenReturn(null);
+        when(techOperCompLookup.getEntity()).thenReturn(null);
         // when
         util.setOperationalNameAndDescriptionForSubcontractedOperation(viewDefinitionState);
         // then

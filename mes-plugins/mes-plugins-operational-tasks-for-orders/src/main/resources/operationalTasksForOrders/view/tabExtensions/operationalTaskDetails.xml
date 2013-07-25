@@ -30,6 +30,16 @@
 	plugin="operationalTasks" view="operationalTaskDetails">
 
 	<windowTab name="orderTab" reference="orderTab">
+		<component type="lookup" name="technology" field="technology"
+					reference="technology" hasLabel="false" defaultVisible="false">
+			<option type="column" name="name" fields="name" link="true" />
+			<option type="searchable" value="name,number" />
+			<option type="orderable" value="name,number" />
+			<option type="order" column="number" direction="desc" />
+			<option type="expression"
+					value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+			<option type="fieldCode" value="number" />
+		</component>
 		<component type="gridLayout" name="gridLayout" reference="gridLayout"
 			columns="3" rows="5">
 			<layoutElement column="1" row="1">
@@ -48,9 +58,9 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">
-				<component type="lookup" name="technologyInstanceOperationComponent"
-					reference="technologyInstanceOperationComponent" field="#{form}.technologyInstanceOperationComponent"
-					source="#{order}.technologyInstanceOperationComponents">
+				<component type="lookup" name="technologyOperationComponent"
+					reference="technologyOperationComponent"
+					source="#{technology}.operationComponents">
 					<option type="column" name="name" fields="operation"
 						expression="#operation['name']" link="true" />
 					<option type="searchable" value="name,nodeNumber" />

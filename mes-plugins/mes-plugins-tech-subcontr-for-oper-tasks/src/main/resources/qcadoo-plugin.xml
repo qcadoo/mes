@@ -57,9 +57,9 @@
 
 		<view:view-grid-column plugin="operationalTasks"
 			view="operationalTasksList" component="grid">
-			<view:column name="techInstOperCompIsSubcontracting"
-				fields="technologyInstanceOperationComponent"
-				expression="#technologyInstanceOperationComponent['isSubcontracting'] == '0' ? '@qcadooView.false' : '@qcadooView.true'"
+			<view:column name="techOperCompIsSubcontracting"
+				fields="techOperCompOperationalTasks"
+				expression="#techOperCompOperationalTasks['technologyOperationComponent'].get('isSubcontracting') == false ? '@qcadooView.false' : '@qcadooView.true'"
 				orderable="true" />
 		</view:view-grid-column>
 	</modules>

@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -162,6 +163,7 @@ public class OperationalTasksListOTFOHooksTest {
         // then
     }
 
+    @Ignore
     @Test
     public void shouldReturnTasksForProductInWhenProdOutIsNull() throws Exception {
         // given
@@ -184,6 +186,7 @@ public class OperationalTasksListOTFOHooksTest {
 
     }
 
+    @Ignore
     @Test
     public void shouldReturnTasksForProductOutWhenProdInIsNull() throws Exception {
         // given

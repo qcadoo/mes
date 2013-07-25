@@ -24,7 +24,6 @@
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.DESCRIPTION;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
 
 import java.util.List;
@@ -33,13 +32,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksForOrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
-public class TechInstOperCompHooksOTFO {
+public class TechOperCompHooksOTFO {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -48,26 +48,38 @@ public class TechInstOperCompHooksOTFO {
         if (entity.getId() == null) {
             return;
         }
-        Entity techInstOperComp = dataDefinition.get(entity.getId());
+        Entity techOperComp = dataDefinition.get(entity.getId());
         String entityComment = entity.getStringField(COMMENT) == null ? "" : entity.getStringField(COMMENT);
-        String techInstOperCompComment = techInstOperComp.getStringField(COMMENT) == null ? "" : techInstOperComp
-                .getStringField(COMMENT);
+        String techOperCompComment = techOperComp.getStringField(COMMENT) == null ? "" : techOperComp.getStringField(COMMENT);
 
-        if (!entityComment.equals(techInstOperCompComment)) {
+        if (!entityComment.equals(techOperCompComment)) {
             changedDescriptionOperationTasks(entity);
         }
     }
 
-    private void changedDescriptionOperationTasks(final Entity techInstOperComp) {
+    private void changedDescriptionOperationTasks(final Entity techOperComp) {
+
+        DataDefinition techOperCompOperationalTaskDD = dataDefinitionService.get(
+                OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
+                OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASKS);
+
         DataDefinition operationalTasksDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
-        List<Entity> operationalTasksList = operationalTasksDD.find()
-                .add(SearchRestrictions.belongsTo(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, techInstOperComp)).list()
-                .getEntities();
-        for (Entity operationalTask : operationalTasksList) {
-            String comment = techInstOperComp.getStringField(COMMENT) == null ? "" : techInstOperComp.getStringField(COMMENT);
-            operationalTask.setField(DESCRIPTION, comment);
-            operationalTasksDD.save(operationalTask);
+
+        List<Entity> techOperCompOperationalTasks = techOperCompOperationalTaskDD.find()
+                .add(SearchRestrictions.belongsTo("technologyOperationComponent", techOperComp)).list().getEntities();
+
+        for (Entity techOperCompOperationalTask : techOperCompOperationalTasks) {
+
+            List<Entity> operationalTasksList = operationalTasksDD.find()
+                    .add(SearchRestrictions.belongsTo("techOperCompOperationalTasks", techOperCompOperationalTask)).list()
+                    .getEntities();
+
+            for (Entity operationalTask : operationalTasksList) {
+                String comment = techOperComp.getStringField(COMMENT) == null ? "" : techOperComp.getStringField(COMMENT);
+                operationalTask.setField(DESCRIPTION, comment);
+                operationalTasksDD.save(operationalTask);
+            }
         }
     }
 }

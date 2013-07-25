@@ -28,28 +28,41 @@ import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.N
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.TYPE_TASK;
 import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksForOrdersConstants;
+import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class OperationalTasksDetailsHooksOTFO {
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void disabledFieldWhenOrderTypeIsSelected(final ViewDefinitionState view) {
 
         FieldComponent type = (FieldComponent) view.getComponentByReference(TYPE_TASK);
 
         List<String> referenceBasicFields = Lists.newArrayList(NAME, PRODUCTION_LINE, DESCRIPTION);
-        List<String> extendFields = Lists.newArrayList(ORDER, TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+        List<String> extendFields = Lists.newArrayList(ORDER, "technologyOperationComponent");
         if (type.getFieldValue().equals("01otherCase")) {
             changedStateField(view, referenceBasicFields, true);
             changedStateField(view, extendFields, false);
@@ -94,5 +107,46 @@ public class OperationalTasksDetailsHooksOTFO {
                 .getItemByName("showOperationalTasksWithOrder");
         showOperationalTasksWithOrder.setEnabled(isSelectedExecutionOperationInOrder);
         showOperationalTasksWithOrder.requestUpdate(true);
+    }
+
+    public void setTechnology(final ViewDefinitionState view) {
+        Entity order = ((LookupComponent) view.getComponentByReference("order")).getEntity();
+        if (order == null) {
+            return;
+        }
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+        FieldComponent technologyField = (FieldComponent) view.getComponentByReference("technology");
+        technologyField.setFieldValue(technologyDD.get(order.getBelongsToField(OrderFields.TECHNOLOGY).getId()).getId());
+        technologyField.requestComponentUpdateState();
+    }
+
+    public void setTechnologyOperationComponent(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
+        FieldComponent type = (FieldComponent) view.getComponentByReference(TYPE_TASK);
+        LookupComponent tocLookup = (LookupComponent) view.getComponentByReference("technologyOperationComponent");
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference("order");
+        if (type.getFieldValue().equals("02executionOperationInOrder")) {
+            Entity operationalTask = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
+                    OperationalTasksConstants.MODEL_OPERATIONAL_TASK).get(form.getEntityId());
+            Entity techOperCompOperationalTasks = dataDefinitionService.get(OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
+                    OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASKS).get(
+                    operationalTask.getBelongsToField("techOperCompOperationalTasks").getId());
+            Entity toc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
+                    techOperCompOperationalTasks.getBelongsToField(
+                            TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT).getId());
+
+            if (tocLookup.getEntity() == null && orderLookup.getEntity() != null) {
+                tocLookup.setFieldValue(toc.getId());
+                tocLookup.requestComponentUpdateState();
+            }
+        } else {
+            tocLookup.setFieldValue(null);
+            tocLookup.requestComponentUpdateState();
+        }
     }
 }
