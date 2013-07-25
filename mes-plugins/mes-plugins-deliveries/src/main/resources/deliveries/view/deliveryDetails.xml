@@ -301,11 +301,11 @@
 							<option type="withTimePicker" value="true" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="3" height="2">
+					<layoutElement column="2" row="3" height="3">
 						<component type="textarea" name="deliveryAddress" field="deliveryAddress"
 							reference="deliveryAddress" />
 					</layoutElement>
-					<layoutElement column="2" row="5" height="2">
+					<layoutElement column="2" row="6" >
 						<component type="textarea" name="paymentForm" field="paymentForm"
 							reference="paymentForm" />
 					</layoutElement>
