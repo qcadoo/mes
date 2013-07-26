@@ -120,7 +120,7 @@
 								cancelState.forState="04outdated";
 								cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
 								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-								toggleEditable(false,"#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
+								toggleEditable(true, "");
 							} else if (state == "03declined" || state == "04outdated") {
 								acceptState.disable();
 								checkState.disable();

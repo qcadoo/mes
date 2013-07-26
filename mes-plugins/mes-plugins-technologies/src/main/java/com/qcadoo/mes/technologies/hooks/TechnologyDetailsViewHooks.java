@@ -95,7 +95,7 @@ public class TechnologyDetailsViewHooks {
         FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent master = (FieldComponent) view.getComponentByReference(TechnologyFields.MASTER);
         boolean disabled = false;
-        boolean masterDisabled = true;
+        boolean masterDisabled = false;
         if (technology.getEntityId() != null) {
             Entity entity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technology.getEntityId());
@@ -105,8 +105,11 @@ public class TechnologyDetailsViewHooks {
             String state = entity.getStringField(TechnologyFields.STATE);
             if (!TechnologyState.DRAFT.getStringValue().equals(state)) {
                 disabled = true;
-                masterDisabled = false;
             }
+            if (TechnologyState.ACCEPTED.getStringValue().equals(state)) {
+                masterDisabled = true;
+            }
+
         }
 
         technology.setFormEnabled(!disabled);
