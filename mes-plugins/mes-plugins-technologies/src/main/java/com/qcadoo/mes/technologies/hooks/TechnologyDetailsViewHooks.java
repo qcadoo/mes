@@ -39,6 +39,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 
@@ -90,11 +91,11 @@ public class TechnologyDetailsViewHooks {
         return state;
     }
 
-    public void disableFieldTechnologyForm(final ViewDefinitionState view) {
+    public void disableFieldTechnologyFormAndEnabledMaster(final ViewDefinitionState view) {
         FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
-
+        FieldComponent master = (FieldComponent) view.getComponentByReference(TechnologyFields.MASTER);
         boolean disabled = false;
-
+        boolean masterDisabled = true;
         if (technology.getEntityId() != null) {
             Entity entity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technology.getEntityId());
@@ -104,11 +105,13 @@ public class TechnologyDetailsViewHooks {
             String state = entity.getStringField(TechnologyFields.STATE);
             if (!TechnologyState.DRAFT.getStringValue().equals(state)) {
                 disabled = true;
+                masterDisabled = false;
             }
         }
 
         technology.setFormEnabled(!disabled);
-
+        master.setEnabled(masterDisabled);
+        master.requestComponentUpdateState();
     }
 
 }
