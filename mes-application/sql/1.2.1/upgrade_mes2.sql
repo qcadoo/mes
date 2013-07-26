@@ -125,3 +125,12 @@ ALTER TABLE  productionpershift_productionpershift DROP COLUMN technologyinstanc
 ALTER TABLE technologies_operation DROP COLUMN machine_id;
 
 -- end
+
+
+-- Table: masterorders_masterorder
+-- changed: 26.07.2013
+
+ALTER TABLE masterorders_masterorder ADD COLUMN active boolean;
+ALTER TABLE masterorders_masterorder ALTER COLUMN active SET DEFAULT true;
+
+-- end
