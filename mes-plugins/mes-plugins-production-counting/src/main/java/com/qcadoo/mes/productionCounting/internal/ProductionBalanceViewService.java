@@ -308,13 +308,6 @@ public class ProductionBalanceViewService {
         }
     }
 
-    private Entity getExistingProductionBalance(final Entity productionBalance) {
-        if (productionBalance.getId() == null) {
-            return null;
-        }
-        return productionBalance.getDataDefinition().get(productionBalance.getId());
-    }
-
     public String makeDefaultName(final Entity orderEntity, final Locale locale) {
 
         String orderNumber = L_EMPTY_NUMBER;
