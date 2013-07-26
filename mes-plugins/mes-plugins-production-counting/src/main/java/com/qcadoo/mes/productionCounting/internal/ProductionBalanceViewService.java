@@ -53,12 +53,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -67,6 +66,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ProductionBalanceViewService {
@@ -290,21 +290,29 @@ public class ProductionBalanceViewService {
             return;
         }
 
-        FieldComponent orderField = (FieldComponent) view.getComponentByReference(ORDER);
-        FieldComponent name = (FieldComponent) view.getComponentByReference(NAME);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ORDER);
+        FieldComponent nameField = (FieldComponent) view.getComponentByReference(NAME);
 
-        if (orderField.getFieldValue() == null || StringUtils.hasText((String) name.getFieldValue())) {
+        Entity order = orderLookup.getEntity();
+
+        if (order == null) {
             return;
         }
 
-        Entity orderEntity = getOrderById((Long) orderField.getFieldValue());
-
-        if (orderEntity == null) {
-            return;
-        }
-
+        String name = (String) nameField.getFieldValue();
         Locale locale = component.getLocale();
-        name.setFieldValue(makeDefaultName(orderEntity, locale));
+        String defaultName = makeDefaultName(order, locale);
+
+        if (StringUtils.isEmpty(name) || !defaultName.equals(name)) {
+            nameField.setFieldValue(defaultName);
+        }
+    }
+
+    private Entity getExistingProductionBalance(final Entity productionBalance) {
+        if (productionBalance.getId() == null) {
+            return null;
+        }
+        return productionBalance.getDataDefinition().get(productionBalance.getId());
     }
 
     public String makeDefaultName(final Entity orderEntity, final Locale locale) {
@@ -321,7 +329,4 @@ public class ProductionBalanceViewService {
                 cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
     }
 
-    private Entity getOrderById(final Long id) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-    }
 }
