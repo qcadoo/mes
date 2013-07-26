@@ -29,23 +29,32 @@
 	name="technologyDetails" modelName="technology">
 
 	<component type="window" name="window" reference="window">
-		
+
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="status">
-				<smallButton name="acceptTechnology" icon="startIcon16.png" state="disabled" action="#{form}.changeState(acceptTechnology);" />
-				<smallButton name="cancelTechnology" icon="deleteIcon16.png" state="disabled" action="#{form}.changeState(cancelTechnology);" />
-				<smallButton name="checkTechnology" icon="startIcon16.png" state="disabled" action="#{form}.changeState(checkTechnology);" />
+				<smallButton name="acceptTechnology" icon="startIcon16.png"
+					state="disabled" action="#{form}.changeState(acceptTechnology);" />
+				<smallButton name="cancelTechnology" icon="deleteIcon16.png"
+					state="disabled" action="#{form}.changeState(cancelTechnology);" />
+				<smallButton name="checkTechnology" icon="startIcon16.png"
+					state="disabled" action="#{form}.changeState(checkTechnology);" />
 			</group>
 			<group name="reports">
-				<smallButton name="pdf" icon="pdfIcon16.png" action="#{form}.fireEvent(printTechnologyDetailsReport,pdf);" state="enabled" />
-				<smallButton name="xls" icon="xlsIcon16.png" action="#{form}.fireEvent(printTechnologyDetailsReport,xls);" state="enabled" />
+				<smallButton name="pdf" icon="pdfIcon16.png"
+					action="#{form}.fireEvent(printTechnologyDetailsReport,pdf);"
+					state="enabled" />
+				<smallButton name="xls" icon="xlsIcon16.png"
+					action="#{form}.fireEvent(printTechnologyDetailsReport,xls);"
+					state="enabled" />
 			</group>
 		</ribbon>
-		
+
 		<windowTab name="mainTab">
 			<component type="form" name="technology" reference="form">
-				<listener event="changeState" class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient" method="changeState" />
+				<listener event="changeState"
+					class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient"
+					method="changeState" />
 				<script>
 					<![CDATA[
 						this.changeState = function(eventPerformer, ribbonItemName) {
@@ -147,53 +156,70 @@
 						}
 					]]>
 				</script>
-				<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
+				<component type="gridLayout" name="gridsLayout" columns="3"
+					rows="5" hasBorders="false">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="master" field="master" reference="master" hasDescription="true"/>
+						<component type="checkbox" name="master" field="master"
+							reference="master" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="input" name="number" field="number" reference="number" hasDescription="true">
+						<component type="input" name="number" field="number"
+							reference="number" hasDescription="true">
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3" height="2">
-						<component type="textarea" name="name" field="name" reference="name" hasDescription="true" />
+						<component type="textarea" name="name" field="name"
+							reference="name" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
-						<component type="lookup" name="product" field="product" reference="product">
-							<option type="column" name="name" fields="name" link="true" width="200" />
+						<component type="lookup" name="product" field="product"
+							reference="product">
+							<option type="column" name="name" fields="name" link="true"
+								width="200" />
 							<option type="column" name="ean" fields="ean" />
 							<option type="searchable" value="name,ean" />
 							<option type="orderable" value="name,ean" />
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyNumber" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyName" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyNumber" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyName" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2" height="2">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
 					<layoutElement column="2" row="4">
-						<component type="lookup" name="technologyGroup" field="technologyGroup" reference="technologyGroup">
-							<option type="column" name="name" fields="name" link="true" width="200" />
+						<component type="lookup" name="technologyGroup" field="technologyGroup"
+							reference="technologyGroup">
+							<option type="column" name="name" fields="name" link="true"
+								width="200" />
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 						</component>
 						<component type="hidden" name="externalSynchronized"
 							field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
 				</component>
-				
-				<component type="select" name="state" field="state" reference="state" hasLabel="false" defaultVisible="false" />
+
+				<component type="select" name="state" field="state"
+					reference="state" hasLabel="false" defaultVisible="false" />
 				<option type="header" value="true" />
-				<option type="expression" value="#name" />
-				
-				<listener event="printTechnologyDetailsReport" class="com.qcadoo.mes.technologies.print.TechnologiesReportService" method="printTechnologyDetailsReport" />
+				<option type="expression"
+					value="#name + ' - ' + #number + ' - ' + '@technologies.technology.state.value.' + #state" />
+
+				<listener event="printTechnologyDetailsReport"
+					class="com.qcadoo.mes.technologies.print.TechnologiesReportService"
+					method="printTechnologyDetailsReport" />
 			</component>
 		</windowTab>
+		
 		<windowTab name="treeTab">
 			<component type="gridLayout" name="gridsLayout" columns="2"
 				rows="8" hasBorders="false">
@@ -206,39 +232,54 @@
 					<component type="tree" name="technologyTree" reference="technologyTree"
 						field="#{form}.operationComponents">
 						<dataType name="operation">
-							<option type="nodeLabelExpression" value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
-							<option type="correspondingView" value="technologies/technologyOperationComponentDetails" />
+							<option type="nodeLabelExpression"
+								value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
+							<option type="correspondingView"
+								value="technologies/technologyOperationComponentDetails" />
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="false" />
-							<option type="nodeIcon" value="/technologies/public/css/icons/operationIcon16.png" />
-							<option type="newIcon" value="/technologies/public/css/icons/newOperationIcon16.png" />
+							<option type="nodeIcon"
+								value="/technologies/public/css/icons/operationIcon16.png" />
+							<option type="newIcon"
+								value="/technologies/public/css/icons/newOperationIcon16.png" />
 						</dataType>
 						<dataType name="referenceTechnology">
-							<option type="nodeLabelExpression" value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + '&lt;/span&gt; ' + #referenceTechnology['name']" />
-							<option type="correspondingView" value="technologies/technologyReferenceTechnologyComponentDetails" />
+							<option type="nodeLabelExpression"
+								value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + '&lt;/span&gt; ' + #referenceTechnology['name']" />
+							<option type="correspondingView"
+								value="technologies/technologyReferenceTechnologyComponentDetails" />
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="true" />
-							<option type="nodeIcon" value="/technologies/public/css/icons/technologyIcon16.png" />
-							<option type="newIcon" value="/technologies/public/css/icons/newTechnologyIcon16.png" />
+							<option type="nodeIcon"
+								value="/technologies/public/css/icons/technologyIcon16.png" />
+							<option type="newIcon"
+								value="/technologies/public/css/icons/newTechnologyIcon16.png" />
 							<option type="canHaveChildren" value="false" />
 						</dataType>
 						<option type="selectableWhenDisabled" value="true" />
-						
-						<listener event="select" class="com.qcadoo.mes.technologies.TechnologyService" method="loadProductsForReferencedTechnology" />
-						<listener event="select" class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners" method="setGridEditable" />
+
+						<listener event="select"
+							class="com.qcadoo.mes.technologies.TechnologyService" method="loadProductsForReferencedTechnology" />
+						<listener event="select"
+							class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+							method="setGridEditable" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1" height="4">
 					<component type="grid" name="outProducts" reference="outProducts"
-						source="#{technologyTree}.operationProductOutComponents" defaultEnabled="false">
+						source="#{technologyTree}.operationProductOutComponents"
+						defaultEnabled="false">
 						<option type="column" name="number" fields="product"
 							expression="#product['number']" link="true" width="100" />
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" width="200" />
-						<option type="column" name="quantity" fields="quantity" width="100" />
-						<option type="column" name="unit" fields="product" expression="#product['unit']" link="false" width="70" />
+						<option type="column" name="quantity" fields="quantity"
+							width="100" />
+						<option type="column" name="unit" fields="product"
+							expression="#product['unit']" link="false" width="70" />
 						<option type="order" column="number" direction="desc" />
-						<option type="correspondingView" value="technologies/operationProductOutComponentDetails" />
+						<option type="correspondingView"
+							value="technologies/operationProductOutComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="searchable" value="number,name,quantity,unit" />
@@ -253,7 +294,8 @@
 				</layoutElement>
 				<layoutElement column="2" row="5" height="4">
 					<component type="grid" name="inProducts" reference="inProducts"
-						source="#{technologyTree}.operationProductInComponents" defaultEnabled="false" >
+						source="#{technologyTree}.operationProductInComponents"
+						defaultEnabled="false">
 						<option type="column" name="number" fields="product"
 							expression="#product['number']" link="true" width="100" />
 						<option type="column" name="name" fields="product"
@@ -263,7 +305,8 @@
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" link="false" width="70" />
 						<option type="order" column="number" direction="desc" />
-						<option type="correspondingView" value="technologies/operationProductInComponentDetails" />
+						<option type="correspondingView"
+							value="technologies/operationProductInComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="searchable" value="number,name,quantity,unit" />
@@ -278,29 +321,39 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 		<windowTab name="history">
-			<component type="grid" name="loggings" reference="grid" source="#{form}.stateChanges">
+			<component type="grid" name="loggings" reference="grid"
+				source="#{form}.stateChanges">
 				<option type="column" name="dateAndTime" fields="dateAndTime" />
 				<option type="column" name="previousState" fields="sourceState" />
 				<option type="column" name="currentState" fields="targetState" />
-				<option type="column" name="shift" fields="shift" expression="#shift != null ? #shift['name'] : ''" />
+				<option type="column" name="shift" fields="shift"
+					expression="#shift != null ? #shift['name'] : ''" />
 				<option type="column" name="worker" fields="worker" />
 				<option type="order" column="dateAndTime" direction="asc" />
 				<option type="searchable" value="dateAndTime,sourceState,targetState" />
 				<option type="orderable" value="dateAndTime,sourceState,targetState" />
 			</component>
 		</windowTab>
+		
 	</component>
+	
 	<hooks>
-<!-- 		<beforeRender class="com.qcadoo.mes.technologies.TechnologyTreeNumberingHooks" -->
-<!-- 			method="rebuildTreeNumbering" /> -->
-		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+		<!-- <beforeRender class="com.qcadoo.mes.technologies.TechnologyTreeNumberingHooks" -->
+		<!-- method="rebuildTreeNumbering" /> -->
+		<beforeRender
+			class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
 			method="disableFieldTechnologyFormAndEnabledMaster" />
-		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+		<beforeRender
+			class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
 			method="filterStateChangeHistory" />
-		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
-			method="setTreeTabEditable" />	
-		<beforeRender class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners" 
+		<beforeRender
+			class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+			method="setTreeTabEditable" />
+		<beforeRender
+			class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
 			method="setGridEditable" />
 	</hooks>
+	
 </view>
