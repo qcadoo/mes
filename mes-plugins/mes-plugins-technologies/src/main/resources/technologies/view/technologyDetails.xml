@@ -100,18 +100,21 @@
 							var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 							var checkState = #{window}.getRibbonItem("status.checkTechnology");
 							
+							acceptState.forState="02accepted";
+							acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
+
+							cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
+							cancelState.forState="03declined";
+							cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
+
+							checkState.forState="05checked";
+							checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.checked)}";
+							checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
+							
 							if (state == "01draft") {
 								acceptState.enable();
-								acceptState.forState="02accepted";
-								acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 								cancelState.enable();
-								cancelState.forState="03declined";
-								cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
-								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
 								checkState.enable();
-								checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.checked)}";
-								checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
-								checkState.forState="05checked";
 								toggleEditable(true, "");
 							} else if (state == "02accepted") {
 								acceptState.disable();
