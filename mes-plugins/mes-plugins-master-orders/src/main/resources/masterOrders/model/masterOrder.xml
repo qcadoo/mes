@@ -46,7 +46,7 @@
 	<hooks>
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedCompany" />
+			method="checkIfCanChangeCompany" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
 			method="checkIfCanChangeMasterOrderPreffixField" />
@@ -55,16 +55,16 @@
 			method="checkIsProductSelected" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedProduct" />
+			method="checkIfCanChangeProduct" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedTechnology" />
+			method="checkIfCanChangeTechnology" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedDeadline" />
+			method="checkIfCanChangeDeadline" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedType" />
+			method="checkIfCanChangeType" />
 		<onCreate class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
 			method="setExternalSynchronizedField" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"

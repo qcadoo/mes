@@ -213,7 +213,7 @@
 														</layoutElement>
 														<layoutElement column="1" row="2">
 															<component type="calendar" name="date" reference="date" 
-																hasLabel="false" defaultEnabled="false" />
+																hasLabel="false" defaultEnabled="false" field="dateOfDay"/>
 														</layoutElement>
 													</component>
 												</layoutElement>
@@ -255,6 +255,9 @@
 										<listener event="onAddRow"
 											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 											method="updateProgressForDays" />
+										<listener event="onDeleteRow"
+											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+											method="saveProgressForDays" />
 										<listener event="saveProgressForDays"
 											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 											method="saveProgressForDays" />
