@@ -136,7 +136,7 @@
 								toggleEditable(false,"#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
 							}
 							if(externalSynchronized == '0') {
-								toggleEditable(false, "#{translate(technologies.technology.ribbon.message.technologyIsExternal)}");
+								toggleEditable(false, "#{translate(technologies.technology.ribbon.message.technologyIsSynchronized)}");
 								acceptState.disable();
 								cancelState.disable();
 								checkState.disable();
@@ -292,7 +292,7 @@
 <!-- 		<beforeRender class="com.qcadoo.mes.technologies.TechnologyTreeNumberingHooks" -->
 <!-- 			method="rebuildTreeNumbering" /> -->
 		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
-			method="disableFieldTechnologyForm" />
+			method="disableFieldTechnologyFormAndEnabledMaster" />
 		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
 			method="filterStateChangeHistory" />
 		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
