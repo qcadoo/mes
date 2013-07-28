@@ -31,10 +31,13 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -46,10 +49,6 @@ public class BasicProductionCountingDetailsHooks {
 
     private static final String L_BASIC = "01basic";
 
-    private static final String L_COMPONENT = "01component";
-
-    private static final String L_FINAL_PRODUCT = "03finalProduct";
-
     private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUnit";
@@ -60,9 +59,6 @@ public class BasicProductionCountingDetailsHooks {
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
-
-    @Autowired
-    private TechnologyService technologyService;
 
     public void disableUsedAndProducedFieldsDependsOfProductType(final ViewDefinitionState view) {
         FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -76,30 +72,41 @@ public class BasicProductionCountingDetailsHooks {
         if (basicProductionCountingId != null) {
             Entity basicProductionCounting = basicProductionCountingService.getBasicProductionCounting(basicProductionCountingId);
 
+            Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
             Entity order = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
             String state = order.getStringField(OrderFields.STATE);
             String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
 
             if (L_BASIC.equals(typeOfProductionRecording)
                     && (OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED.equals(state))) {
-                if (L_FINAL_PRODUCT.equals(technologyService.getProductType(product, technology))) {
-                    usedQuantityField.setEnabled(false);
-                } else {
-                    usedQuantityField.setEnabled(true);
-                }
+                boolean isUsed = checkIfProductIsUsed(order, product);
+                boolean isProduced = checkIfProductIsProduced(order, product);
 
-                if (L_COMPONENT.equals(technologyService.getProductType(product, technology))) {
-                    producedQuantityField.setEnabled(false);
-                } else {
-                    producedQuantityField.setEnabled(true);
-                }
+                usedQuantityField.setEnabled(isUsed);
+                producedQuantityField.setEnabled(isProduced);
             } else {
                 usedQuantityField.setEnabled(false);
                 producedQuantityField.setEnabled(false);
             }
         }
+    }
+
+    private boolean checkIfProductIsUsed(final Entity order, final Entity product) {
+        return (order
+                .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.USED.getStringValue())).list().getTotalNumberOfEntities() > 0);
+    }
+
+    private boolean checkIfProductIsProduced(final Entity order, final Entity product) {
+        return (order
+                .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue())).list().getTotalNumberOfEntities() > 0);
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
