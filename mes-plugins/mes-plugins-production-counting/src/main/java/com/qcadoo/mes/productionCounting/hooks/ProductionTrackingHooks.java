@@ -130,24 +130,27 @@ public class ProductionTrackingHooks {
             final Entity technologyOperationComponent, final String trackingOperationProductModelName) {
         List<Entity> trackingOperationProductComponents = Lists.newArrayList();
 
-        String operationProductModel = null;
+        String operationProductComponentModel = null;
         String trackingOperationProductsFieldName = null;
 
         if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT.equals(trackingOperationProductModelName)) {
-            operationProductModel = "operationProductInComponent";
+            operationProductComponentModel = "operationProductInComponent";
             trackingOperationProductsFieldName = ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS;
         } else if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT
                 .equals(trackingOperationProductModelName)) {
-            operationProductModel = "operationProductOutComponent";
+            operationProductComponentModel = "operationProductOutComponent";
             trackingOperationProductsFieldName = ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS;
         }
 
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(asList(order));
 
+        OperationProductComponentWithQuantityContainer allWithSameEntityType = productComponentQuantities
+                .getAllWithSameEntityType(operationProductComponentModel);
+
         Set<Long> alreadyAddedProducts = Sets.newHashSet();
 
-        for (Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity : productComponentQuantities.asMap()
+        for (Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity : allWithSameEntityType.asMap()
                 .entrySet()) {
             Entity operationProductComponent = productComponentQuantity.getKey().getEntity();
 
@@ -159,14 +162,12 @@ public class ProductionTrackingHooks {
                 }
             }
 
-            if (operationProductModel.equals(operationProductComponent.getDataDefinition().getName())) {
-                Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
+            Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
 
-                if (!alreadyAddedProducts.contains(product.getId())) {
-                    createTrackingOperationProduct(trackingOperationProductComponents, trackingOperationProductModelName, product);
+            if (!alreadyAddedProducts.contains(product.getId())) {
+                createTrackingOperationProduct(trackingOperationProductComponents, trackingOperationProductModelName, product);
 
-                    alreadyAddedProducts.add(product.getId());
-                }
+                alreadyAddedProducts.add(product.getId());
             }
         }
 
