@@ -75,11 +75,7 @@ public class BasicProductionCountingListHooks {
         Entity order = orderService.getOrder(orderId);
 
         boolean isSaved = (order != null);
-        boolean isForEach = false;
-
-        if ("03forEach".equals(order.getStringField("typeOfProductionRecording"))) {
-            isForEach = true;
-        }
+        boolean isForEach = ("03forEach".equals(order.getStringField("typeOfProductionRecording")));
 
         updateButtonState(showDetailedProductionCountingAndProgress, isSaved && isForEach);
         updateButtonState(showDetailedProductionCounting, isSaved && !isForEach);

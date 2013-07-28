@@ -32,6 +32,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -63,7 +64,7 @@ public class BasicProductionCountingDetailsHooks {
     @Autowired
     private TechnologyService technologyService;
 
-    public void disableUsedProducedFieldDependsOfProductType(final ViewDefinitionState view) {
+    public void disableUsedAndProducedFieldsDependsOfProductType(final ViewDefinitionState view) {
         FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent producedQuantityField = (FieldComponent) view
                 .getComponentByReference(BasicProductionCountingFields.PRODUCED_QUANTITY);
@@ -76,11 +77,13 @@ public class BasicProductionCountingDetailsHooks {
             Entity basicProductionCounting = basicProductionCountingService.getBasicProductionCounting(basicProductionCountingId);
 
             Entity order = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
+            String state = order.getStringField(OrderFields.STATE);
             String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
             Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
 
-            if (L_BASIC.equals(typeOfProductionRecording)) {
+            if (L_BASIC.equals(typeOfProductionRecording)
+                    && (OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED.equals(state))) {
                 if (L_FINAL_PRODUCT.equals(technologyService.getProductType(product, technology))) {
                     usedQuantityField.setEnabled(false);
                 } else {
