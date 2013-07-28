@@ -31,13 +31,20 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 
 @Service
 public class ProductionCountingQuantityValidators {
 
     public boolean validatesWith(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-        return checkRoleAndTypeOfMaterial(productionCountingQuantityDD, productionCountingQuantity);
+        boolean isValid = true;
+
+        isValid = isValid && checkRoleAndTypeOfMaterial(productionCountingQuantityDD, productionCountingQuantity);
+        isValid = isValid && checkIfIsUnique(productionCountingQuantityDD, productionCountingQuantity);
+
+        return isValid;
     }
 
     private boolean checkRoleAndTypeOfMaterial(final DataDefinition productionCountingQuantityDD,
@@ -84,6 +91,41 @@ public class ProductionCountingQuantityValidators {
         }
 
         return true;
+    }
+
+    private boolean checkIfIsUnique(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+        if (!checkIfProductionCountingQuantityIsUnique(productionCountingQuantityDD, productionCountingQuantity)) {
+            productionCountingQuantity.addGlobalError("basicProductionCounting.productionCountingQuantity.error.isNotUnique");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean checkIfProductionCountingQuantityIsUnique(final DataDefinition productionCountingQuantityDD,
+            final Entity productionCountingQuantity) {
+        Entity technologyOperationComponent = productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+        String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
+        String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+
+        SearchCriteriaBuilder searchCriteriaBuilder = productionCountingQuantityDD
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
+                        technologyOperationComponent))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, role))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL, typeOfMaterial));
+
+        if (productionCountingQuantity.getId() != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne("id", productionCountingQuantity.getId()));
+        }
+
+        SearchResult searchResult = searchCriteriaBuilder.list();
+
+        return searchResult.getEntities().isEmpty();
     }
 
     private boolean isRoleUsed(final String role) {

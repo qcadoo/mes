@@ -51,7 +51,7 @@
 	</fields>
 
 	<hooks>
-		<onCreate
+		<validatesWith
 			class="com.qcadoo.mes.basicProductionCounting.validators.ProductionCountingQuantityValidators"
 			method="validatesWith" />
 		<onCreate
