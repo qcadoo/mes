@@ -31,7 +31,7 @@
 	<component type="window" name="window">
 	
 		<ribbon>
-			<template name="standardGridTemplate" />
+			<template name="standardGridTemplate" excludeItems="actions.copy" />
 		</ribbon>
 		
 		<component type="grid" name="countries" reference="grid">

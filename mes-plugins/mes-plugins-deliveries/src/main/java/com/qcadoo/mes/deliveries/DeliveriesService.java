@@ -225,5 +225,6 @@ public interface DeliveriesService {
      *            delivery entity
      * @return selected or default currency
      */
-    public String getCurrency(final Entity delivery);
+    String getCurrency(final Entity delivery);
+
 }
