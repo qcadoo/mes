@@ -125,3 +125,11 @@ ALTER TABLE  productionpershift_productionpershift DROP COLUMN technologyinstanc
 ALTER TABLE technologies_operation DROP COLUMN machine_id;
 
 -- end
+
+
+-- Table: deliveries_delivery
+-- changed: 29.07.2013
+
+ALTER TABLE deliveries_delivery ADD COLUMN currency_id bigint;
+
+-- end
