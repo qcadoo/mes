@@ -80,12 +80,13 @@ public class ProductionCountingQuantityValidators {
             } else if (isTypeOfMaterialFinalProduct(typeOfMaterial)) {
                 Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
 
+                // TODO lupo fix problem with final product
                 if (checkIfAnotherFinalProductExists(order)) {
-                    productionCountingQuantity.addError(
-                            productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL),
-                            "basicProductionCounting.productionCountingQuantity.typeOfMaterial.error.anotherFinalProductExists");
+                    // productionCountingQuantity.addError(
+                    // productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL),
+                    // "basicProductionCounting.productionCountingQuantity.typeOfMaterial.error.anotherFinalProductExists");
 
-                    return false;
+                    return true;
                 }
             }
         }
@@ -105,6 +106,7 @@ public class ProductionCountingQuantityValidators {
 
     private boolean checkIfProductionCountingQuantityIsUnique(final DataDefinition productionCountingQuantityDD,
             final Entity productionCountingQuantity) {
+        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
         Entity technologyOperationComponent = productionCountingQuantity
                 .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
         Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
@@ -113,6 +115,7 @@ public class ProductionCountingQuantityValidators {
 
         SearchCriteriaBuilder searchCriteriaBuilder = productionCountingQuantityDD
                 .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
                         technologyOperationComponent))
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
