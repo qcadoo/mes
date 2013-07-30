@@ -162,7 +162,7 @@
 										hasBorders="false" columns="4" rows="1">
 										<layoutElement column="1" row="1" width="3">
 											<component type="input" name="pricePerUnit" field="#{form}.pricePerUnit"
-												reference="pricePerUnit" defaultEnabled="never">
+												reference="pricePerUnit" >
 												<option type="alignment" value="right" />
 												<option type="labelWidth" value="40" />
 											</component>
