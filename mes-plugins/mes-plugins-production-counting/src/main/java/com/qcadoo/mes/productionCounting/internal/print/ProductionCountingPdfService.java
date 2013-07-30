@@ -100,6 +100,9 @@ public class ProductionCountingPdfService extends PdfDocumentService {
     @Autowired
     private PdfHelper pdfHelper;
 
+    @Autowired
+    private ProductionBalancePdfService balancePdfService;
+
     @Override
     protected void buildPdfContent(final Document document, final Entity productionCounting, final Locale locale)
             throws DocumentException {
@@ -112,6 +115,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         final PdfPTable rightPanel = createRightPanel(productionCounting, locale);
 
         final PdfPTable panelTable = pdfHelper.createPanelTable(2);
+
         panelTable.addCell(leftPanel);
         panelTable.addCell(rightPanel);
         panelTable.setSpacingAfter(20);
@@ -148,7 +152,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
     }
 
     private PdfPTable createLeftPanel(final Entity productionCounting, final Locale locale) {
-        final PdfPTable leftPanel = pdfHelper.createPanelTable(1);
+        final PdfPTable leftPanel = pdfHelper.createPanelTableWithSimpleFormat(1);
 
         addTableCellAsTable(leftPanel, translationService.translate("productionCounting.productionCounting.report.title", locale)
                 + ":", productionCounting.getId().toString(), null, FontUtils.getDejavuBold9Dark(),
@@ -176,7 +180,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
     }
 
     private PdfPTable createRightPanel(final Entity productionCounting, final Locale locale) {
-        final PdfPTable rightPanel = pdfHelper.createPanelTable(1);
+        final PdfPTable rightPanel = pdfHelper.createPanelTableWithSimpleFormat(1);
 
         rightPanel.addCell(new Phrase(translationService.translate(
                 "costCalculation.costCalculationDetails.window.mainTab.form.parameters", locale) + ":", FontUtils
