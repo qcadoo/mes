@@ -100,10 +100,14 @@ public class DeliveryHooks {
     private void fillOrderedAndDeliveredCumulatedQuantityAndCumulatedTotalPrice(final Entity delivery) {
         DeliveryPricesAndQuantities pricesAndQntts = new DeliveryPricesAndQuantities(delivery, numberService);
 
-        delivery.setField(DeliveryFields.ORDERED_PRODUCTS_CUMULATED_QUANTITY, pricesAndQntts.getOrderedCumulatedQuantity());
-        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_QUANTITY, pricesAndQntts.getDeliveredCumulatedQuantity());
-        delivery.setField(DeliveryFields.ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE, pricesAndQntts.getOrderedTotalPrice());
-        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE, pricesAndQntts.getDeliveredTotalPrice());
+        delivery.setField(DeliveryFields.ORDERED_PRODUCTS_CUMULATED_QUANTITY,
+                numberService.format(pricesAndQntts.getOrderedCumulatedQuantity()));
+        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_QUANTITY,
+                numberService.format(pricesAndQntts.getDeliveredCumulatedQuantity()));
+        delivery.setField(DeliveryFields.ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE,
+                numberService.format(pricesAndQntts.getOrderedTotalPrice()));
+        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE,
+                numberService.format(pricesAndQntts.getDeliveredTotalPrice()));
     }
 
 }
