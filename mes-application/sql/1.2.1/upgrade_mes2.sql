@@ -135,6 +135,7 @@ ALTER TABLE masterorders_masterorder ALTER COLUMN active SET DEFAULT true;
 
 -- end
 
+
 -- Table: deliveries_delivery
 -- changed: 29.07.2013
 
