@@ -248,22 +248,54 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     @Override
     public void calculatePricePerUnit(final Entity entity, final String quantityFieldName) {
         BigDecimal totalPrice = entity.getDecimalField(OrderedProductFields.TOTAL_PRICE);
+        BigDecimal pricePerUnit = entity.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
         BigDecimal quantity = entity.getDecimalField(quantityFieldName);
 
-        if (totalPrice == null) {
-            entity.setField("pricePerUnit", null);
-            entity.setField("totalPrice", null);
+        if ((pricePerUnit != null && changedFieldValue(entity, pricePerUnit, OrderedProductFields.PRICE_PER_UNIT))
+                || (pricePerUnit != null && totalPrice == null)) {
+            totalPrice = numberService.setScale(calculateTotalPrice(quantity, pricePerUnit));
+        } else if ((totalPrice != null && changedFieldValue(entity, totalPrice, OrderedProductFields.TOTAL_PRICE))
+                || (totalPrice != null && pricePerUnit == null)) {
+            pricePerUnit = numberService.setScale(calculatePricePefUnit(quantity, totalPrice));
         } else {
-            if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
-                entity.setField("pricePerUnit", null);
-                entity.setField("totalPrice", numberService.setScale(totalPrice));
-            } else {
-                BigDecimal pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
-
-                entity.setField("pricePerUnit", numberService.setScale(pricePerUnit));
-                entity.setField("totalPrice", numberService.setScale(totalPrice));
-            }
+            totalPrice = null;
+            pricePerUnit = null;
         }
+
+        entity.setField("pricePerUnit", pricePerUnit);
+        entity.setField("totalPrice", totalPrice);
+    }
+
+    private boolean changedFieldValue(final Entity entity, final BigDecimal fieldValue, final String reference) {
+        if (entity.getId() == null) {
+            return true;
+        }
+        Entity entityFromDB = entity.getDataDefinition().get(entity.getId());
+        if (entityFromDB.getDecimalField(reference) == null
+                || !(fieldValue.compareTo(entityFromDB.getDecimalField(reference)) == 0)) {
+            return true;
+        }
+        return false;
+    }
+
+    private BigDecimal calculatePricePefUnit(final BigDecimal quantity, final BigDecimal totalPrice) {
+        BigDecimal pricePerUnit = BigDecimal.ZERO;
+        if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
+            pricePerUnit = null;
+        } else {
+            pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
+        }
+        return pricePerUnit;
+    }
+
+    private BigDecimal calculateTotalPrice(final BigDecimal quantity, final BigDecimal pricePerUnit) {
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
+            totalPrice = BigDecimal.ZERO;
+        } else {
+            totalPrice = pricePerUnit.multiply(quantity, numberService.getMathContext());
+        }
+        return totalPrice;
     }
 
     @Override
