@@ -198,5 +198,8 @@
 		<beforeRender
 			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
 			method="setDeliveredQuantityFieldRequired" />
+		<beforeRender
+			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
+			method="fillLastPurchasePrice" />
 	</hooks>
 </view>

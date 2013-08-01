@@ -148,6 +148,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks"
 			method="fillCurrencyFields" />
+		<beforeRender
+			class="com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks"
+			method="fillLastPurchasePrice" />
 	</hooks>
 
 </view>

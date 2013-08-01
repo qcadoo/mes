@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
@@ -227,4 +228,14 @@ public interface DeliveriesService {
      */
     String getCurrency(final Entity delivery);
 
+    /**
+     * get last purchase price
+     * 
+     * @param product
+     * @param dataDefinition
+     * @return lastPurchase price if entity exist or null
+     */
+    BigDecimal findLastPurchasePrice(final Entity product, final String dataDefinition);
+
+    void fillLastPurchasePrice(final ViewDefinitionState view, final String dataDefinition);
 }
