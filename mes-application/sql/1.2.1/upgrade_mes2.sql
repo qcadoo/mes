@@ -142,3 +142,14 @@ ALTER TABLE masterorders_masterorder ALTER COLUMN active SET DEFAULT true;
 ALTER TABLE deliveries_delivery ADD COLUMN currency_id bigint;
 
 -- end
+
+
+-- Table: technologies_technology
+-- changed: 30.07.2013
+
+ALTER TABLE technologies_technology ADD COLUMN externalsynchronized boolean;
+ALTER TABLE technologies_technology ALTER COLUMN externalsynchronized SET DEFAULT true;
+
+UPDATE technologies_technology SET externalsynchronized = true;
+
+-- end
