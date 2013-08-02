@@ -27,13 +27,13 @@
 <view name="supplyItems" modelName="orderedProduct" menuAccessible="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
-	
+
 	<component type="window" name="window" reference="window">
-	
+
 		<ribbon>
 			<template name="standardGridTemplate" excludeItems="actions.copy,actions.delete,actions.new" />
 		</ribbon>
-		
+
 		<component type="grid" name="supplyItems" reference="grid">
 			<option type="column" name="deliveryDate" fields="delivery"
 				expression="#delivery['deliveryDate']" />
@@ -52,23 +52,28 @@
 				expression="#product['unit']" />
 			<option type="column" name="supplier" fields="delivery"
 				expression="#delivery.get('supplier')?.get('name')" />
-				
+
 			<option type="order" column="deliveryDate" direction="asc" />
-			
+
 			<option type="searchable"
 				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,productUnit,supplier" />
 			<option type="orderable"
 				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,productUnit,supplier" />
-				
+
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
-			<criteriaModifier class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveryCriteriaModifiers" method="showActiveSupplyItems" />
+			
+			<criteriaModifier
+				class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveryCriteriaModifiers"
+				method="showActiveSupplyItems" />
+				
 			<listener event="select"
 				class="com.qcadoo.mes.deliveries.listeners.SupplyItemsListeners"
 				method="redirectToDeliveryDetails" />
 		</component>
-		
+
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
+	
 </view>
