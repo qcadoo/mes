@@ -35,8 +35,11 @@ import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCR
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -394,6 +397,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         pricePerUnit.requestComponentUpdateState();
     }
 
+    @Override
     public BigDecimal findLastPurchasePrice(final Entity product, final String modelName) {
         String QUERY = String.format("select entity from #deliveries_%s as entity "
                 + "INNER JOIN entity.delivery as delivery WHERE delivery.%s= :deliveryState"
@@ -408,5 +412,19 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             return entity.getDecimalField(PRICE_PER_UNIT);
         }
         return null;
+    }
+
+    @Override
+    public BigDecimal getBigDecimalFromField(final FieldComponent fieldComponent, final Locale locale) {
+        Object value = fieldComponent.getFieldValue();
+
+        try {
+            DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
+            format.setParseBigDecimal(true);
+
+            return new BigDecimal(format.parse(value.toString()).doubleValue());
+        } catch (ParseException e) {
+            return null;
+        }
     }
 }

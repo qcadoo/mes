@@ -26,6 +26,7 @@ package com.qcadoo.mes.deliveries.listeners;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -35,6 +36,9 @@ public class DeliveredProductDetailsListeners {
 
     @Autowired
     private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
+
+    @Autowired
+    private OrderedProductDetailsListeners orderedProductDetailsListeners;
 
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveredProductDetailsHooks.fillUnitFields(view);
@@ -48,4 +52,15 @@ public class DeliveredProductDetailsListeners {
         deliveredProductDetailsHooks.fillOrderedQuantities(view);
     }
 
+    public void calculatePriceFromTotalPrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        orderedProductDetailsListeners.recalculatePriceFromTotalPrice(view, DeliveredProductFields.DELIVERED_QUANTITY);
+    }
+
+    public void calculatePriceFromPricePerUnit(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        orderedProductDetailsListeners.recalculatePriceFromPricePerUnit(view, DeliveredProductFields.DELIVERED_QUANTITY);
+    }
+
+    public void calculatePrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        orderedProductDetailsListeners.recalculatePrice(view, DeliveredProductFields.DELIVERED_QUANTITY);
+    }
 }

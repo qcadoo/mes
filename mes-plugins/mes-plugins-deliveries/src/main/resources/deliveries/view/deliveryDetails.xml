@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
 	<component type="window" name="window" reference="window">
-	
+
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="generate">
@@ -104,6 +104,10 @@
 					state="disabled" action="#{form}.fireEvent(createRelatedDelivery);" />
 				<bigButton name="showRelatedDeliveries" icon="genealogyIcon24.png"
 					state="disabled" action="#{form}.fireEvent(showRelatedDeliveries);" />
+			</group>
+			<group name="product">
+				<bigButton name="showProduct" icon="genealogyIcon24.png"
+					state="disabled" action="#{form}.fireEvent(showProduct);" />
 			</group>
 		</ribbon>
 
@@ -264,7 +268,7 @@
 					rows="6">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
-							reference="number" >
+							reference="number">
 							<option type="alignment" value="right" />
 						</component>
 						<component type="hidden" name="externalSynchronized"
@@ -282,14 +286,14 @@
 						<component type="lookup" name="supplier" reference="supplier"
 							field="supplier">
 							<option type="column" name="name" fields="name" link="true" />
-							
+
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
-							
+
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							
+
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 								method="fillBufferForSupplier" />
@@ -305,7 +309,7 @@
 						<component type="textarea" name="deliveryAddress" field="deliveryAddress"
 							reference="deliveryAddress" />
 					</layoutElement>
-					<layoutElement column="2" row="6" >
+					<layoutElement column="2" row="6">
 						<component type="textarea" name="paymentForm" field="paymentForm"
 							reference="paymentForm" />
 					</layoutElement>
@@ -318,7 +322,7 @@
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="deliveryDateBuffer"
-									reference="deliveryDateBuffer" defaultEnabled="never" >
+									reference="deliveryDateBuffer" defaultEnabled="never">
 									<option type="labelWidth" value="40" />
 								</component>
 							</layoutElement>
@@ -331,13 +335,13 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="3" row="4">
-						<component type="lookup" name="relatedDelivery" reference="relatedDelivery"
-							field="relatedDelivery">
+						<component type="lookup" name="relatedDelivery"
+							reference="relatedDelivery" field="relatedDelivery">
 							<option type="column" name="name" fields="name" link="true" />
-							
+
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
-							
+
 							<option type="expression" value="#number" />
 							<option type="fieldCode" value="number" />
 						</component>
@@ -347,7 +351,7 @@
 							field="currency">
 							<option type="column" name="currency" fields="currency"
 								link="true" />
-							
+
 							<option type="searchable" value="currency,alphabeticCode" />
 							<option type="orderable" value="currency,alphabeticCode" />
 
@@ -355,12 +359,12 @@
 							<option type="fieldCode" value="alphabeticCode" />
 						</component>
 					</layoutElement>
-					
+
 				</component>
-				
+
 				<option type="header" value="true" />
 				<option type="expression" value="#number" />
-				
+
 				<listener event="changeState"
 					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
 					method="changeState" />
@@ -379,18 +383,22 @@
 				<listener event="showRelatedDeliveries"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 					method="showRelatedDeliveries" />
+				<listener event="showProduct"
+					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+					method="showProduct" />
 			</component>
 		</windowTab>
-		
+
 		<windowTab name="orderedProductTab">
 			<component type="gridLayout" name="orderedProductsGridLayout"
 				columns="4" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="input" name="orderedProductsCumulatedQuantity" field="#{form}.orderedProductsCumulatedQuantity"
-						reference="orderedProductsCumulatedQuantity" defaultEnabled="never" >
+					<component type="input" name="orderedProductsCumulatedQuantity"
+						field="#{form}.orderedProductsCumulatedQuantity" reference="orderedProductsCumulatedQuantity"
+						defaultEnabled="never">
 						<option type="alignment" value="right" />
 						<option type="boldTextRepresentationOnDisabled" value="true" />
-					</component>										
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="4">
 					<component type="grid" name="orderedProducts" reference="orderedProducts"
@@ -401,13 +409,16 @@
 							expression="#product['number']" link="true" width="80" />
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
-						<option type="column" name="orderedQuantity" fields="orderedQuantity"  width="80"/>
+						<option type="column" name="orderedQuantity" fields="orderedQuantity"
+							width="80" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="30" />
-						<option type="column" name="pricePerUnit" fields="pricePerUnit" width="80" />
-						<option type="column" name="totalPrice" fields="totalPrice" width="80" />
+						<option type="column" name="pricePerUnit" fields="pricePerUnit"
+							width="80" />
+						<option type="column" name="totalPrice" fields="totalPrice"
+							width="80" />
 						<option type="column" name="description" fields="description"
-							 width="140" />
+							width="140" />
 						<option type="order" column="succession" direction="asc" />
 
 						<option type="searchable" value="number,name,orderedQuantity,unit" />
@@ -422,22 +433,26 @@
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="fixedHeight" value="true" />
+						<listener event="select" method="disabledButtonShowProduct"
+							class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
-					<component type="gridLayout" name="orderedProductsCumulatedTotalPriceGridLayout"
-						hasBorders="false" columns="4" rows="1">
+					<component type="gridLayout"
+						name="orderedProductsCumulatedTotalPriceGridLayout" hasBorders="false"
+						columns="4" rows="1">
 						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="orderedProductsCumulatedTotalPrice" field="#{form}.orderedProductsCumulatedTotalPrice"
-								reference="orderedProductsCumulatedTotalPrice" defaultEnabled="never" >
+							<component type="input" name="orderedProductsCumulatedTotalPrice"
+								field="#{form}.orderedProductsCumulatedTotalPrice" reference="orderedProductsCumulatedTotalPrice"
+								defaultEnabled="never">
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>										
+							</component>
 						</layoutElement>
 						<layoutElement column="4" row="1">
-							<component type="input" name="orderedProductsCumulatedTotalPriceCurrency"
-								reference="orderedProductsCumulatedTotalPriceCurrency" defaultEnabled="never"
-								hasLabel="false">
+							<component type="input"
+								name="orderedProductsCumulatedTotalPriceCurrency" reference="orderedProductsCumulatedTotalPriceCurrency"
+								defaultEnabled="never" hasLabel="false">
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
@@ -445,16 +460,17 @@
 				</layoutElement>
 			</component>
 		</windowTab>
-		
+
 		<windowTab name="deliveredProductTab">
 			<component type="gridLayout" name="deliveredProductsGridLayout"
 				columns="4" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="input" name="deliveredProductsCumulatedQuantity" field="#{form}.deliveredProductsCumulatedQuantity"
-						reference="deliveredProductsCumulatedQuantity" defaultEnabled="never" >
+					<component type="input" name="deliveredProductsCumulatedQuantity"
+						field="#{form}.deliveredProductsCumulatedQuantity" reference="deliveredProductsCumulatedQuantity"
+						defaultEnabled="never">
 						<option type="alignment" value="right" />
 						<option type="boldTextRepresentationOnDisabled" value="true" />
-					</component>										
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="4">
 					<component type="grid" name="deliveredProducts"
@@ -470,38 +486,46 @@
 						<option type="column" name="damagedQuantity" fields="damagedQuantity" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="60" />
-						<option type="column" name="pricePerUnit" fields="pricePerUnit" width="80" />
-						<option type="column" name="totalPrice" fields="totalPrice" width="80" />	
+						<option type="column" name="pricePerUnit" fields="pricePerUnit"
+							width="80" />
+						<option type="column" name="totalPrice" fields="totalPrice"
+							width="80" />
 						<option type="order" column="succession" direction="asc" />
-						
-						<option type="searchable" value="number,name,unit,deliveredQuantity,damagedQuantity" />
-						<option type="orderable" value="succession,number,name,unit,deliveredQuantity,damagedQuantity" />
-						
+
+						<option type="searchable"
+							value="number,name,unit,deliveredQuantity,damagedQuantity" />
+						<option type="orderable"
+							value="succession,number,name,unit,deliveredQuantity,damagedQuantity" />
+
 						<option type="correspondingView" value="deliveries/deliveredProductDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
-						
+
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="fixedHeight" value="true" />
+						<listener event="select" method="disabledButtonShowProduct"
+							class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
-					<component type="gridLayout" name="orderedProductsCumulatedTotalPriceGridLayout"
-						hasBorders="false" columns="4" rows="1">
+					<component type="gridLayout"
+						name="orderedProductsCumulatedTotalPriceGridLayout" hasBorders="false"
+						columns="4" rows="1">
 						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="deliveredProductsCumulatedTotalPrice" field="#{form}.deliveredProductsCumulatedTotalPrice"
-							reference="deliveredProductsCumulatedTotalPrice" defaultEnabled="never" >
+							<component type="input" name="deliveredProductsCumulatedTotalPrice"
+								field="#{form}.deliveredProductsCumulatedTotalPrice" reference="deliveredProductsCumulatedTotalPrice"
+								defaultEnabled="never">
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>										
+							</component>
 						</layoutElement>
 						<layoutElement column="4" row="1">
-							<component type="input" name="deliveredProductsCumulatedTotalPriceCurrency"
-								reference="deliveredProductsCumulatedTotalPriceCurrency" defaultEnabled="never"
-								hasLabel="false">
+							<component type="input"
+								name="deliveredProductsCumulatedTotalPriceCurrency" reference="deliveredProductsCumulatedTotalPriceCurrency"
+								defaultEnabled="never" hasLabel="false">
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
@@ -509,9 +533,9 @@
 				</layoutElement>
 			</component>
 		</windowTab>
-		
+
 		<windowTab name="historyTab">
-			<component type="gridLayout" name="loggingsGridLayout" 
+			<component type="gridLayout" name="loggingsGridLayout"
 				columns="2" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="grid" name="loggingsGrid" reference="loggingsGrid"
@@ -519,21 +543,21 @@
 						<option type="column" name="dateAndTime" fields="dateAndTime" />
 						<option type="column" name="currentState" fields="targetState" />
 						<option type="column" name="worker" fields="worker" />
-						
+
 						<option type="order" column="dateAndTime" direction="asc" />
-						
+
 						<option type="searchable" value="dateAndTime,targetState,worker" />
 						<option type="orderable" value="dateAndTime,targetState,worker" />
-						
+
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
-		
+
 	</component>
-	
+
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="generateDeliveryNumber" />
@@ -551,6 +575,8 @@
 			method="filterStateChangeHistory" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="fillCurrencyFields" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="disabledButtonShowProduct" />
 	</hooks>
-	
+
 </view>

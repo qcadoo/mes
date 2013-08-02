@@ -23,15 +23,34 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import java.math.BigDecimal;
+import java.util.Locale;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class OrderedProductDetailsListeners {
+
+    private static final String PRICE_PER_UNIT = "pricePerUnit";
+
+    private static final String ORDERED_QUANTITY = "orderedQuantity";
+
+    private static final String TOTAL_PRICE = "totalPrice";
+
+    @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private DeliveriesService deliveriesService;
 
     @Autowired
     private OrderedProductDetailsHooks orderedProductDetailsHooks;
@@ -44,4 +63,72 @@ public class OrderedProductDetailsListeners {
         orderedProductDetailsHooks.fillCurrencyFields(view);
     }
 
+    public void calculatePriceFromTotalPrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        recalculatePriceFromTotalPrice(view, ORDERED_QUANTITY);
+    }
+
+    public void recalculatePriceFromTotalPrice(final ViewDefinitionState view, final String quantityFieldReference) {
+        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
+        FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(TOTAL_PRICE);
+        if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
+                && StringUtils.isNotEmpty((String) totalPriceField.getFieldValue())) {
+            calculatePriceUsingTotalCost(view, quantityField, totalPriceField);
+        }
+    }
+
+    private void calculatePriceUsingTotalCost(final ViewDefinitionState view, FieldComponent quantityField,
+            FieldComponent totalPriceField) {
+        Locale locale = view.getLocale();
+        BigDecimal quantity = deliveriesService.getBigDecimalFromField(quantityField, locale);
+        BigDecimal totalPrice = deliveriesService.getBigDecimalFromField(totalPriceField, locale);
+        FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(PRICE_PER_UNIT);
+
+        BigDecimal pricePerUnit = numberService.setScale(totalPrice.divide(quantity, numberService.getMathContext()));
+        pricePerUnitField.setFieldValue(numberService.format(pricePerUnit));
+        pricePerUnitField.requestComponentUpdateState();
+    }
+
+    public void calculatePriceFromPricePerUnit(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        recalculatePriceFromPricePerUnit(view, ORDERED_QUANTITY);
+    }
+
+    public void recalculatePriceFromPricePerUnit(final ViewDefinitionState view, final String quantityFieldReference) {
+        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
+        FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(PRICE_PER_UNIT);
+        if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
+                && StringUtils.isNotEmpty((String) pricePerUnitField.getFieldValue())) {
+            calculatePriceUsingPricePerUnit(view, quantityField, pricePerUnitField);
+        }
+    }
+
+    private void calculatePriceUsingPricePerUnit(final ViewDefinitionState view, FieldComponent quantityField,
+            FieldComponent pricePerUnitField) {
+        Locale locale = view.getLocale();
+        BigDecimal pricePerUnit = deliveriesService.getBigDecimalFromField(pricePerUnitField, locale);
+        BigDecimal quantity = deliveriesService.getBigDecimalFromField(quantityField, locale);
+        FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(TOTAL_PRICE);
+        BigDecimal totalPrice = numberService.setScale(pricePerUnit.multiply(quantity, numberService.getMathContext()));
+
+        totalPriceField.setFieldValue(numberService.format(totalPrice));
+        totalPriceField.requestComponentUpdateState();
+    }
+
+    public void calculatePrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        recalculatePrice(view, ORDERED_QUANTITY);
+    }
+
+    public void recalculatePrice(final ViewDefinitionState view, final String quantityFieldReference) {
+        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
+        FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(PRICE_PER_UNIT);
+        FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(TOTAL_PRICE);
+
+        if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
+                && StringUtils.isNotEmpty((String) pricePerUnitField.getFieldValue())) {
+            calculatePriceUsingPricePerUnit(view, quantityField, pricePerUnitField);
+        } else if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
+                && StringUtils.isNotEmpty((String) totalPriceField.getFieldValue())) {
+            calculatePriceUsingTotalCost(view, quantityField, totalPriceField);
+        }
+
+    }
 }

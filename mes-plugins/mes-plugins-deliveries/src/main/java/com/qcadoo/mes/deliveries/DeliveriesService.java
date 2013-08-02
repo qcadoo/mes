@@ -25,11 +25,13 @@ package com.qcadoo.mes.deliveries;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 public interface DeliveriesService {
 
@@ -238,4 +240,7 @@ public interface DeliveriesService {
     BigDecimal findLastPurchasePrice(final Entity product, final String dataDefinition);
 
     void fillLastPurchasePrice(final ViewDefinitionState view, final String dataDefinition);
+
+    BigDecimal getBigDecimalFromField(final FieldComponent fieldComponent, final Locale locale);
+
 }

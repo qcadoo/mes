@@ -25,11 +25,8 @@ package com.qcadoo.mes.deliveries.listeners;
 
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.RELATED_DELIVERY;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
@@ -57,10 +54,17 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Component
 public class DeliveryDetailsListeners {
+
+    private static final String L_DELIVERED_PRODUCTS = "deliveredProducts";
+
+    private static final String L_ORDERED_PRODUCTS = "orderedProducts";
+
+    private static final String L_PRODUCT = "product";
 
     private static final String L_FORM = "form";
 
@@ -117,7 +121,7 @@ public class DeliveryDetailsListeners {
 
         Entity delivery = deliveriesService.getDelivery(deliveryId);
 
-        List<Entity> orderedProducts = delivery.getHasManyField(ORDERED_PRODUCTS);
+        List<Entity> orderedProducts = delivery.getHasManyField(L_ORDERED_PRODUCTS);
 
         copyOrderedProductToDelivered(delivery, orderedProducts);
     }
@@ -125,9 +129,9 @@ public class DeliveryDetailsListeners {
     private void copyOrderedProductToDelivered(final Entity delivery, final List<Entity> orderedProducts) {
         // ALBR deliveredProduct has a validation so we have to delete all
         // entities before save HM field in delivery
-        delivery.setField(DELIVERED_PRODUCTS, Lists.newArrayList());
+        delivery.setField(L_DELIVERED_PRODUCTS, Lists.newArrayList());
         delivery.getDataDefinition().save(delivery);
-        delivery.setField(DELIVERED_PRODUCTS, Lists.newArrayList(createDeliveredProducts(orderedProducts)));
+        delivery.setField(L_DELIVERED_PRODUCTS, Lists.newArrayList(createDeliveredProducts(orderedProducts)));
 
         delivery.getDataDefinition().save(delivery);
     }
@@ -145,7 +149,7 @@ public class DeliveryDetailsListeners {
     private Entity createDeliveredProduct(final Entity orderedProduct) {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
 
-        deliveredProduct.setField(PRODUCT, orderedProduct.getBelongsToField(PRODUCT));
+        deliveredProduct.setField(L_PRODUCT, orderedProduct.getBelongsToField(L_PRODUCT));
 
         return deliveredProduct;
     }
@@ -194,7 +198,7 @@ public class DeliveryDetailsListeners {
             relatedDelivery.setField(SUPPLIER, delivery.getBelongsToField(SUPPLIER));
             relatedDelivery.setField(DELIVERY_DATE, new Date());
             relatedDelivery.setField(RELATED_DELIVERY, delivery);
-            relatedDelivery.setField(ORDERED_PRODUCTS, orderedProducts);
+            relatedDelivery.setField(L_ORDERED_PRODUCTS, orderedProducts);
             relatedDelivery.setField(EXTERNAL_SYNCHRONIZED, true);
 
             relatedDelivery = relatedDelivery.getDataDefinition().save(relatedDelivery);
@@ -206,8 +210,8 @@ public class DeliveryDetailsListeners {
     private List<Entity> createOrderedProducts(final Entity delivery) {
         List<Entity> newOrderedProducts = Lists.newArrayList();
 
-        List<Entity> orderedProducts = delivery.getHasManyField(ORDERED_PRODUCTS);
-        List<Entity> deliveredProducts = delivery.getHasManyField(DELIVERED_PRODUCTS);
+        List<Entity> orderedProducts = delivery.getHasManyField(L_ORDERED_PRODUCTS);
+        List<Entity> deliveredProducts = delivery.getHasManyField(L_DELIVERED_PRODUCTS);
 
         for (Entity orderedProduct : orderedProducts) {
             Entity deliveredProduct = getDeliveredProduct(deliveredProducts, orderedProduct);
@@ -239,13 +243,13 @@ public class DeliveryDetailsListeners {
     }
 
     private boolean checkIfProductsAreSame(final Entity orderedProduct, final Entity deliveredProduct) {
-        return (orderedProduct.getBelongsToField(PRODUCT).getId().equals(deliveredProduct.getBelongsToField(PRODUCT).getId()));
+        return (orderedProduct.getBelongsToField(L_PRODUCT).getId().equals(deliveredProduct.getBelongsToField(L_PRODUCT).getId()));
     }
 
     private Entity createOrderedProduct(final Entity orderedProduct, final BigDecimal orderedQuantity) {
         Entity newOrderedProduct = deliveriesService.getOrderedProductDD().create();
 
-        newOrderedProduct.setField(PRODUCT, orderedProduct.getBelongsToField(PRODUCT));
+        newOrderedProduct.setField(L_PRODUCT, orderedProduct.getBelongsToField(L_PRODUCT));
         newOrderedProduct.setField(ORDERED_QUANTITY, numberService.setScale(orderedQuantity));
         newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
                 orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));
@@ -282,6 +286,27 @@ public class DeliveryDetailsListeners {
 
         String url = "../page/deliveries/deliveriesList.html";
         view.redirectTo(url, false, true, parameters);
+    }
+
+    public final void showProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent orderedProductGrid = (GridComponent) view.getComponentByReference(L_ORDERED_PRODUCTS);
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(L_DELIVERED_PRODUCTS);
+        List<Entity> selectedEntities = orderedProductGrid.getSelectedEntities();
+        if (selectedEntities.isEmpty()) {
+            selectedEntities = deliveredProductsGrid.getSelectedEntities();
+        }
+        Entity selectedEntity = selectedEntities.iterator().next();
+        Entity product = selectedEntity.getBelongsToField(L_PRODUCT);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("product.id", product.getId());
+
+        String url = "../page/basic/productDetails.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
+    public void disabledButtonShowProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveryDetailsHooks.disabledButtonShowProduct(view);
     }
 
 }

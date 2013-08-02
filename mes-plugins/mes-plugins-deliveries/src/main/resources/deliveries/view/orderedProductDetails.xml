@@ -72,6 +72,8 @@
 									reference="orderedQuantity" field="orderedQuantity">
 									<option type="alignment" value="right" />
 									<option type="labelWidth" value="40" />
+									<listener event="onInputChange" method="calculatePrice"
+										class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners" />
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
@@ -95,6 +97,8 @@
 												field="#{form}.totalPrice" reference="totalPrice">
 												<option type="alignment" value="right" />
 												<option type="labelWidth" value="40" />
+												<listener event="onInputChange" method="calculatePriceFromTotalPrice"
+													class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners" />
 											</component>
 										</layoutElement>
 										<layoutElement column="4" row="1">
@@ -114,6 +118,8 @@
 												field="#{form}.pricePerUnit" reference="pricePerUnit" >
 												<option type="alignment" value="right" />
 												<option type="labelWidth" value="40" />
+												<listener event="onInputChange" method="calculatePriceFromPricePerUnit"
+													class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners" />
 											</component>
 										</layoutElement>
 										<layoutElement column="4" row="1">
