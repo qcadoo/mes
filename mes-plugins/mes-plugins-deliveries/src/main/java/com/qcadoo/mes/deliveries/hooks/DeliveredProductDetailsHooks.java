@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -111,6 +112,10 @@ public class DeliveredProductDetailsHooks {
         FieldComponent delivedQuantity = (FieldComponent) view.getComponentByReference(DELIVERED_QUANTITY);
         delivedQuantity.setRequired(true);
         delivedQuantity.requestComponentUpdateState();
+    }
+
+    public void fillLastPurchasePrice(final ViewDefinitionState view) {
+        deliveriesService.fillLastPurchasePrice(view, DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
     }
 
 }
