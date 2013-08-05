@@ -48,7 +48,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
@@ -84,9 +83,7 @@ public class TechOperCompHooksOTFOTest {
                 dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                         OperationalTasksConstants.MODEL_OPERATIONAL_TASK)).thenReturn(operationalTasksDD);
         when(operationalTasksDD.find()).thenReturn(builder);
-        SearchCriterion criterion = SearchRestrictions.belongsTo("technologyInstanceOperationComponent", tioc);
-        when(builder.add(criterion)).thenReturn(builder);
-        when(builder.list()).thenReturn(result);
+
     }
 
     private EntityList mockEntityList(List<Entity> list) {

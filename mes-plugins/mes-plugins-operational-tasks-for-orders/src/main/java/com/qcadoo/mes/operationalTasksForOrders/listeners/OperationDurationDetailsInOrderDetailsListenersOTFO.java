@@ -29,7 +29,6 @@ import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.N
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.TYPE_TASK;
 import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
 
@@ -70,7 +69,6 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         List<Entity> techOperComps = order.getBelongsToField(OrderFields.TECHNOLOGY).getHasManyField(
                 TechnologyFields.OPERATION_COMPONENTS);
         for (Entity techOperComp : techOperComps) {
-            // deleteOperationalTasks(techOperComp);
             deleteTOCOperationalTasks(techOperComp);
             createOperationalTasks(order, techOperComp, techOperComp.getBooleanField("isSubcontracting"));
         }
@@ -90,17 +88,6 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         }
     }
 
-    private void deleteOperationalTasks(final Entity techInstOperComp) {
-        DataDefinition operationTaskDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
-                OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
-        List<Entity> operationTasks = operationTaskDD.find()
-                .add(SearchRestrictions.belongsTo(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, techInstOperComp)).list()
-                .getEntities();
-        for (Entity operationTask : operationTasks) {
-            operationTaskDD.delete(operationTask.getId());
-        }
-    }
-
     private void createOperationalTasks(final Entity order, final Entity techOperComp, final boolean isSubcontracting) {
         DataDefinition operationTaskDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
@@ -110,7 +97,6 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         Entity techOperCompTimeCalculations = techOperComp.getBelongsToField("techOperCompTimeCalculations");
         Entity techOperCompOperationalTasks = techOperCompOperationalTasksDD.create();
         techOperCompOperationalTasks.setField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT, techOperComp);
-        // techOperCompOperationalTasks.getDataDefinition().save(techOperCompOperationalTasks);
         Entity operationalTask = operationTaskDD.create();
         operationalTask.setField(NUMBER, numberGeneratorService.generateNumber(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK));
@@ -119,8 +105,7 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         operationalTask.setField(OperationalTasksFields.FINISH_DATE, techOperCompTimeCalculations.getField("effectiveDateTo"));
         operationalTask.setField(TYPE_TASK, "02executionOperationInOrder");
         operationalTask.setField(ORDER, order);
-        // operationalTask.setField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, techOperComp);
-        // operationalTask.setField("techOperCompOperationalTasks", techOperCompOperationalTasks);
+        ;
         if (!isSubcontracting) {
             operationalTask.setField(PRODUCTION_LINE, order.getBelongsToField(PRODUCTION_LINE));
         }

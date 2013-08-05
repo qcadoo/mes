@@ -31,5 +31,4 @@ public final class OperationalTasksOTFOFields {
 
     public static final String ORDER = "order";
 
-    public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 }

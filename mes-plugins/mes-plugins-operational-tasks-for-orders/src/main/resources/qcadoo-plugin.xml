@@ -69,10 +69,7 @@
 			<model:belongsTo name="technology" model="technology" 
 								plugin="technologies" persistent="false"/>
 		</model:model-field>
-		<model:model-field model="operationalTask" plugin="operationalTasks">
-			<model:belongsTo name="technologyInstanceOperationComponent"
-				model="technologyInstanceOperationComponent" plugin="technologies" />
-		</model:model-field>
+		
 		<model:model-field model="operationalTask" plugin="operationalTasks">
 			<model:belongsTo name="techOperCompOperationalTasks"
 				model="techOperCompOperationalTasks" plugin="operationalTasksForOrders" />
@@ -82,13 +79,6 @@
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="operationalTasks" joinField="order"
 				model="operationalTask" cascade="delete" plugin="operationalTasks" />
-		</model:model-field>
-
-		<model:model-field model="technologyInstanceOperationComponent"
-			plugin="technologies">
-			<model:hasMany name="operationalTasks"
-				joinField="technologyInstanceOperationComponent" model="operationalTask"
-				cascade="delete" plugin="operationalTasks" />
 		</model:model-field>
 
 		<model:model-enum-value plugin="basic" model="parameter"

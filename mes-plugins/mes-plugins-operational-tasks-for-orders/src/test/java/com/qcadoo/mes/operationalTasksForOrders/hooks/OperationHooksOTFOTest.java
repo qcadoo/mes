@@ -93,9 +93,6 @@ public class OperationHooksOTFOTest {
                 dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                         OperationalTasksConstants.MODEL_OPERATIONAL_TASK)).thenReturn(operationalTasksDD);
         when(operationalTasksDD.find()).thenReturn(builder2);
-        SearchCriterion criterion2 = SearchRestrictions.belongsTo("technologyInstanceOperationComponent", tioc1);
-        when(builder2.add(criterion2)).thenReturn(builder2);
-        when(builder2.list()).thenReturn(result2);
 
     }
 
