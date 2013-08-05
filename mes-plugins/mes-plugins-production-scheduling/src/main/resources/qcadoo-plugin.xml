@@ -103,15 +103,7 @@
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
 			category="calculations" />
 
-		<view:view
-			resource="view/technologyInstanceOperationProductInComponentDetails.xml" />
-		<view:view resource="view/timeTechnologyInOrderDetails.xml" />
 		<view:view resource="view/operationDurationDetailsInOrder.xml" />
-
-		<view:view-listener plugin="productionScheduling"
-			view="timeTechnologyInOrderDetails" component="form" event="changeRealizationTime"
-			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
-			method="changeRealizationTime" />
 
 		<view:view-listener plugin="productionScheduling"
 			view="orderTimePrediction" component="window" event="changeRealizationTime"
