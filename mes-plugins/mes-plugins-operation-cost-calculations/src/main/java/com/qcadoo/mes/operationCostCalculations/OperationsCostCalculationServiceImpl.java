@@ -146,17 +146,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             Boolean includeAdditionalTime = entity.getBooleanField("includeAdditionalTime");
             Map<Long, Integer> workstations = getWorkstationsMapsForOperationsComponent(costCalculation, productionLine);
 
-            // Map<Entity, OperationWorkTime> realizationTimes = operationWorkTimeService.estimateOperationsWorkTime(
-            // calculationOperationComponents, productQuantitiesService
-            // .convertOperationsRunsFromProductQuantities(productQuantitiesAndOperationRuns.getOperationRuns()),
-            // includeTPZ, includeAdditionalTime, workstations, true);
             OperationTimesContainer operationTimes = new OperationTimesContainer();
             operationTimes = operationWorkTimeService.estimateOperationsWorkTimes(calculationOperationComponents,
                     productQuantitiesAndOperationRuns.getOperationRuns(), includeTPZ, includeAdditionalTime, workstations, true);
-            // FIXME MAKU
-            // for (Entry<Entity, OperationWorkTime> operationAndTimeEntry : realizationTimes.entrySet()) {
-            // operationTimes.add(operationAndTimeEntry.getKey(), operationAndTimeEntry.getValue());
-            // }
 
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
                     margin, quantity, operationTimes);
@@ -204,11 +196,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         MathContext mc = numberService.getMathContext();
 
         Entity calcOperComp = operationTimes.getOperation();
+        Entity operationComponent = calcOperComp.getBelongsToField("technologyOperationComponent");
         OperationWorkTime times = operationTimes.getTimes();
 
         Map<String, BigDecimal> results = new HashMap<String, BigDecimal>();
-        BigDecimal hourlyMachineCost = BigDecimalUtils.convertNullToZero(calcOperComp.getField(MACHINE_HOURLY_COST));
-        BigDecimal hourlyLaborCost = BigDecimalUtils.convertNullToZero(calcOperComp.getField(LABOR_HOURLY_COST));
+        BigDecimal hourlyMachineCost = BigDecimalUtils.convertNullToZero(operationComponent.getField(MACHINE_HOURLY_COST));
+        BigDecimal hourlyLaborCost = BigDecimalUtils.convertNullToZero(operationComponent.getField(LABOR_HOURLY_COST));
 
         BigDecimal durationMachine = BigDecimal.valueOf(times.getMachineWorkTime());
         BigDecimal durationLabor = BigDecimal.valueOf(times.getLaborWorkTime());
