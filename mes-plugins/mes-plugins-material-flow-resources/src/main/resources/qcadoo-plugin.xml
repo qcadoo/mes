@@ -76,7 +76,7 @@
 		
 		<model:model-field plugin="materialFlow" model="location">
 			<model:hasMany name="resources" model="resource"
-			plugin="materialFlowResources" joinField="location" />
+			plugin="materialFlowResources" joinField="location" cascade="delete"/>
 		</model:model-field>
 
 		<model:model-enum-value plugin="materialFlow"
