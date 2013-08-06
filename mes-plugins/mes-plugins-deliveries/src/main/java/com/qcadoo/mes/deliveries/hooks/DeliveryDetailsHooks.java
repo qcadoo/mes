@@ -64,8 +64,6 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class DeliveryDetailsHooks {
 
-    private static final String PRODUCT = "product";
-
     private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
 
     private static final String L_FORM = "form";
@@ -213,21 +211,4 @@ public class DeliveryDetailsHooks {
         deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
     }
 
-    public void disabledButtonShowProduct(final ViewDefinitionState view) {
-        GridComponent orderedProductGrid = (GridComponent) view.getComponentByReference("orderedProducts");
-        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference("deliveredProducts");
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup actions = (RibbonGroup) window.getRibbon().getGroupByName(PRODUCT);
-
-        RibbonActionItem showProduct = (RibbonActionItem) actions.getItemByName("showProduct");
-        int sizeOfSelectedEntitiesOrderedGrid = orderedProductGrid.getSelectedEntities().size();
-        int sizeOfSelectedEntitiesDelivereGrid = deliveredProductsGrid.getSelectedEntities().size();
-        if ((sizeOfSelectedEntitiesOrderedGrid == 1 && sizeOfSelectedEntitiesDelivereGrid == 0)
-                || (sizeOfSelectedEntitiesOrderedGrid == 0 && sizeOfSelectedEntitiesDelivereGrid == 1)) {
-            showProduct.setEnabled(true);
-        } else {
-            showProduct.setEnabled(false);
-        }
-        window.requestRibbonRender();
-    }
 }
