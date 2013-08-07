@@ -105,7 +105,6 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         operationalTask.setField(OperationalTasksFields.FINISH_DATE, techOperCompTimeCalculations.getField("effectiveDateTo"));
         operationalTask.setField(TYPE_TASK, "02executionOperationInOrder");
         operationalTask.setField(ORDER, order);
-        ;
         if (!isSubcontracting) {
             operationalTask.setField(PRODUCTION_LINE, order.getBelongsToField(PRODUCTION_LINE));
         }
