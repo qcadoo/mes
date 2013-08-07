@@ -98,8 +98,6 @@ public final class SamplesConstants {
 
     public static final String ORDERS_MODEL_ORDER = "order";
 
-    public static final String TECHNOLOGY_MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
-
     public static final String TECHNOLOGIES_PLUGIN_IDENTIFIER = "technologies";
 
     public static final String TECHNOLOGY_MODEL_TECHNOLOGY = "technology";
@@ -397,8 +395,6 @@ public final class SamplesConstants {
     public static final String L_1600 = "1600";
 
     public static final String L_2400 = "2400";
-
-    public static final String L_TECHNOLOGY_ISTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
     public static final String L_SUPPLY_NEGOTIATIONS = "supplyNegotiations";
 

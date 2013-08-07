@@ -1068,7 +1068,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             component.setField("numberOfOperations", operation.getField("numberOfOperations"));
         }
         if (isEnabledOrEnabling(L_TECH_SUBCONTRACTING) && !values.get("issubcontracting").isEmpty()) {
-            component.setField("isSubcontracting", true);
+            // component.setField("isSubcontracting", true);
         }
 
         component = techOperCompDD.save(component);
@@ -1350,14 +1350,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                         SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
                 .add(SearchRestrictions.belongsTo(L_TECHNOLOGY, technology))
                 .add(SearchRestrictions.belongsTo(L_OPERATION, operation)).setMaxResults(1).uniqueResult();
-    }
-
-    private Entity getTechnologyInstanceOperationComponentByNumber(final Entity order, final Entity operation) {
-        return dataDefinitionService
-                .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
-                        SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).find()
-                .add(SearchRestrictions.belongsTo(L_ORDER, order)).add(SearchRestrictions.belongsTo(L_OPERATION, operation))
-                .setMaxResults(1).uniqueResult();
     }
 
     private Entity getShiftByName(final String name) {
