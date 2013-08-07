@@ -81,6 +81,9 @@ public class TechnologyOperationComponentHooksPL {
         toc.getDataDefinition();
         Integer quantityOfWorkstationTypes = toc.getIntegerField("quantityOfWorkstationTypes");
 
+        if (quantityOfWorkstationTypes == null) {
+            return;
+        }
         Entity techOperCompWorkstation = toc.getBelongsToField("techOperCompWorkstation");
         DataDefinition techOperCompWorkstationDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 "techOperCompWorkstation");

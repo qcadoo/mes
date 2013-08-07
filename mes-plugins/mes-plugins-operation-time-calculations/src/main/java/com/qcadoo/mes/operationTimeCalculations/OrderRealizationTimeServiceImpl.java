@@ -45,7 +45,6 @@ import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -55,8 +54,6 @@ import com.qcadoo.model.api.NumberService;
 
 @Service
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
-
-    private static final String L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
     private static final String L_ORDER = "order";
 
@@ -161,7 +158,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         } else if (L_ORDER.equals(entityType)) {
             technology = entity.getBelongsToField(TECHNOLOGY);
 
-            operationComponents = entity.getTreeField("technologyInstanceOperationComponents");
+            operationComponents = technology.getTreeField("operationComponents");
         } else {
             throw new IllegalStateException("Entity has to be either order or technology");
         }
@@ -195,11 +192,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         } else {
             int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField,
                     productionLine, maxForWorkstation);
-            if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
-                operationDurations.put(operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT), duration);
-            } else {
-                operationDurations.put(operationComponent, duration);
-            }
+
+            operationDurations.put(operationComponent, duration);
+
         }
     }
 
@@ -253,16 +248,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private Integer retrieveWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
-        String modelName = operationComponent.getDataDefinition().getName();
-
-        if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(modelName)) {
-            return getIntegerValue(operationComponent.getField("quantityOfWorkstationTypes"));
-        } else if (L_TECHNOLOGY_OPERATION_COMPONENT.equals(modelName)) {
-            return productionLinesService.getWorkstationTypesCount(operationComponent, productionLine);
-        }
-
-        throw new IllegalStateException(
-                "operationComponent is neither technologyInstanceOperationComponent nor technologyOperationComponent");
+        return getIntegerValue(operationComponent.getBelongsToField("techOperCompWorkstation").getIntegerField(
+                "quantityOfWorkstationTypes"));
     }
 
     private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
@@ -271,12 +258,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
 
         Entity technologyOperationComponent = operationComponent;
-
-        if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
-            technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
-                    operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
-        }
 
         BigDecimal cycles = operationRuns.get(technologyOperationComponent);
         return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
@@ -305,22 +286,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private Entity getTechnologyOperationComponent(final Entity operationComponent) {
-        if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
-            return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
-                    operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
-        } else {
-            return operationComponent;
-        }
+        return operationComponent;
     }
 
     private Entity getOutputProduct(final Entity operationComponent) {
-        if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
-            Entity technologyOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
-            return productQuantitiesService.getOutputProductsFromOperationComponent(technologyOperComp);
-        } else {
-            return productQuantitiesService.getOutputProductsFromOperationComponent(operationComponent);
-        }
+        return productQuantitiesService.getOutputProductsFromOperationComponent(operationComponent);
     }
 
     private BigDecimal getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(final Entity operationComponent,
