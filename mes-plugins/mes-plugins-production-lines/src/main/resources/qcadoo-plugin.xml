@@ -84,8 +84,8 @@
 		</model:model-field>
 
 		<model:model-field plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:integer name="quantityOfWorkstationTypes" default="1">
+			model="technologyOperationComponent">
+			<model:integer name="quantityOfWorkstationTypes" default="1" persistent="false">
 				<validatesRange from="0" exclusively="true" />
 			</model:integer>
 		</model:model-field>
@@ -100,6 +100,11 @@
 		    <model:onCreate class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter"/>
 		</model:model-hook>
 		
+		<model:model-hook  plugin="technologies"
+			model="technologyOperationComponent">
+		    <model:onSave class="com.qcadoo.mes.productionLines.hooks.TechnologyOperationComponentHooksPL" method="save"/>
+		</model:model-hook>
+		
 		<menu:menu-item name="productionLines" category="technology"
 			view="productionLinesList" />
 
@@ -108,7 +113,12 @@
 
 		<view:view resource="view/workstationTypeComponentDetails.xml" />
 		
-		<view:view-tab resource="view/tabExtensions/technologyInstanceOperationComponentDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
+		
+		<view:view-hook plugin="technologies" view="technologyOperationComponentDetails"
+			type="beforeRender" class="com.qcadoo.mes.productionLines.hooks.TechnologyOperationComponentHooksPL"
+			method="setQuantityOfWorkstationTypes" />	
+			
 	</modules>
 	
 	<features>
