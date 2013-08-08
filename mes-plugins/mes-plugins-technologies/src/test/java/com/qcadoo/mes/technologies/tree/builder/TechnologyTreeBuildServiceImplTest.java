@@ -39,6 +39,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.NumberService;
 
 public class TechnologyTreeBuildServiceImplTest {
 
@@ -53,6 +54,9 @@ public class TechnologyTreeBuildServiceImplTest {
     @Mock
     private Entity toc1op, toc1opic1prod, toc1opoc1prod;
 
+    @Mock
+    private NumberService numberService;
+
     @Captor
     private ArgumentCaptor<Collection<Entity>> toc1opicCaptor, toc1opocCaptor, toc2opicCaptor, toc2opocCaptor,
             toc1childrenCaptor, toc2childrenCaptor;
@@ -60,7 +64,6 @@ public class TechnologyTreeBuildServiceImplTest {
     @Before
     public final void init() {
         MockitoAnnotations.initMocks(this);
-
         treeBuildService = new TechnologyTreeBuildServiceImpl();
         given(componentsFactory.buildToc()).willAnswer(new Answer<InternalTechnologyOperationComponent>() {
 
@@ -79,6 +82,7 @@ public class TechnologyTreeBuildServiceImplTest {
                 });
 
         ReflectionTestUtils.setField(treeBuildService, "componentsFactory", componentsFactory);
+        ReflectionTestUtils.setField(treeBuildService, "numberService", numberService);
     }
 
     private InternalOperationProductComponent buildOpc(final OperationCompType type) {
@@ -185,6 +189,7 @@ public class TechnologyTreeBuildServiceImplTest {
     private ItemWithQuantity<ProductHolder> mockProduct(final Entity productEntity, final BigDecimal quantity) {
         ProductHolder product = mock(ProductHolder.class);
         given(product.getProduct()).willReturn(productEntity);
+        given(numberService.setScale(quantity)).willReturn(quantity);
         DataDefinition dataDef = mockProductDataDef();
         given(productEntity.getDataDefinition()).willReturn(dataDef);
         return new ItemWithQuantity<ProductHolder>(product, quantity);
