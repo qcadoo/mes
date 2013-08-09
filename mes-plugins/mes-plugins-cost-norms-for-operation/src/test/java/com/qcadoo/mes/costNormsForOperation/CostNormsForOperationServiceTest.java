@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.costNormsForOperation;
 
-import static java.util.Arrays.asList;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -120,30 +118,6 @@ public class CostNormsForOperationServiceTest {
     }
 
     @Test
-    public void shouldCopyCostValuesFromTechnology() throws Exception {
-        // given
-        Long techInsOperCompId = 1L;
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntity()).thenReturn(technologyInstanceOperCompEntity);
-        when(technologyInstanceOperCompEntity.getId()).thenReturn(techInsOperCompId);
-        when(technologyInstanceOperCompEntity.getDataDefinition()).thenReturn(techInsOperCompDD);
-        when(techInsOperCompDD.get(techInsOperCompId)).thenReturn(technologyInstanceOperCompEntity);
-        when(technologyInstanceOperCompEntity.getBelongsToField("technologyOperationComponent")).thenReturn(techOperCompEntity);
-
-        when(techOperCompEntity.getField("pieceworkCost")).thenReturn(obj1);
-        when(techOperCompEntity.getField("numberOfOperations")).thenReturn(obj2);
-        when(techOperCompEntity.getField("laborHourlyCost")).thenReturn(obj3);
-        when(techOperCompEntity.getField("machineHourlyCost")).thenReturn(obj4);
-        // when
-        costNormsForOperationService.copyCostValuesFromTechnology(view, state, null);
-
-        Mockito.verify(field1).setFieldValue(obj1);
-        Mockito.verify(field2).setFieldValue(obj2);
-        Mockito.verify(field3).setFieldValue(obj3);
-        Mockito.verify(field4).setFieldValue(obj4);
-    }
-
-    @Test
     public void shouldFillCurrencyFields() throws Exception {
         // given
         String currency = "PLN";
@@ -161,22 +135,4 @@ public class CostNormsForOperationServiceTest {
         Mockito.verify(field3).setFieldValue(currency);
     }
 
-    @Test
-    public void shouldCopyCostNormsToTechnologyInstanceOperationComponent() throws Exception {
-        // given
-        when(technologyInstanceOperCompEntity.getBelongsToField("technologyOperationComponent")).thenReturn(techOperCompEntity);
-
-        for (String field : asList("pieceworkCost", "numberOfOperations", "laborHourlyCost", "machineHourlyCost")) {
-            when(techOperCompEntity.getField(field)).thenReturn(field);
-        }
-
-        // when
-        costNormsForOperationService.copyCostNormsToTechnologyInstanceOperationComponent(techInsOperCompDD,
-                technologyInstanceOperCompEntity);
-
-        // then
-        for (String field : asList("pieceworkCost", "numberOfOperations", "laborHourlyCost", "machineHourlyCost")) {
-            verify(technologyInstanceOperCompEntity).setField(field, field);
-        }
-    }
 }

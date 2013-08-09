@@ -89,10 +89,7 @@
 			<model:hasMany name="orders" plugin="orders" model="order"
 				joinField="technology" cascade="nullify" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
-		    <model:belongsTo name="order" plugin="orders" model="order" required="true"/>
-		</model:model-field>
-		
+
 		<model:model-field plugin="basic" model="parameter">
 		    <model:boolean name="reasonNeededWhenCorrectingDateFrom" default="false" />
 		</model:model-field>
@@ -165,8 +162,6 @@
 		<view:view resource="view/orderStateChangeDetails.xml" />
 		
 		<view:view resource="view/orderStateChangeReasonDialog.xml" />
-
-		<view:view resource="view/technologyInstanceOperationComponentList.xml" />
 		
 		<view:view resource="view/copyOfTechnologyDetails.xml" />
 		
@@ -177,9 +172,6 @@
 			component="form" event="redirectToOrdersParameters"
 			class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
 			method="redirectToOrdersParameters" />
-		
-		<view:view-hook view="technologyInstanceOperationComponentDetails" type="beforeRender" plugin="technologies" 
-		    	class="com.qcadoo.mes.orders.hooks.TechnologyInstOperCompDetailsHooks" method="disabledFormWhenOrderStateIsAccepted"/>
 		
 		<view:view-listener plugin="basic" view="productDetails"
 			component="form" event="showOrdersWithProductMain"
