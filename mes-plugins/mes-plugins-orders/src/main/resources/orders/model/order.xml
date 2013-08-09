@@ -90,10 +90,6 @@
 		<hasMany name="stateChanges" joinField="order" model="orderStateChange"
 			cascade="delete" />
 
-		<tree name="technologyInstanceOperationComponents" copyable="true"
-			joinField="order" model="technologyInstanceOperationComponent"
-			plugin="technologies" cascade="delete" />
-
 		<decimal name="commissionedPlannedQuantity">
 			<validatesRange from="0" exclusively="false" />
 			<validatesUnscaledValue max="5" />

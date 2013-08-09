@@ -147,6 +147,15 @@ CREATE TABLE operationaltasksfororders_techopercompoperationaltasks
       REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE
 );
 
+ALTER TABLE operationaltasks_operationaltask ADD COLUMN techopercompoperationaltasks_id bigint;      
+
+ALTER TABLE operationaltasks_operationaltask
+  ADD CONSTRAINT operationaltask_techopercompoperationaltasks_fkey FOREIGN KEY (techopercompoperationaltasks_id)
+      REFERENCES operationaltasksfororders_techopercompoperationaltasks (id) DEFERRABLE;
+
+-- end
+
+      
 -- Table: productioncounting_productioncounting
 -- changed: 26.06.2013
 

@@ -85,8 +85,6 @@ public final class OrderFields {
 
     public static final String STATE_CHANGES = "stateChanges";
 
-    public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS = "technologyInstanceOperationComponents";
-
     public static final String COMMISSIONED_PLANNED_QUANTITY = "commissionedPlannedQuantity";
 
     public static final String COMMISSIONED_CORRECTED_QUANTITY = "commissionedCorrectedQuantity";
