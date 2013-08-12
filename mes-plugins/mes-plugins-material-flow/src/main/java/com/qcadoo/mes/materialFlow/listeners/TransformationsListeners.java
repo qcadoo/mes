@@ -191,7 +191,7 @@ public class TransformationsListeners {
         String number = "";
 
         if ((product != null) && (transfers != null)) {
-            String generatedNumber = numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
+            String generatedNumber = materialFlowService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
 
             String prefix = product.getStringField(NUMBER);
 
@@ -214,7 +214,7 @@ public class TransformationsListeners {
         String number = "";
 
         if ((product != null) && (consumptionComponents != null) && (productionComponents != null)) {
-            String generatedNumber = numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
+            String generatedNumber = materialFlowService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
 
             String prefix = product.getStringField(NUMBER);
 
