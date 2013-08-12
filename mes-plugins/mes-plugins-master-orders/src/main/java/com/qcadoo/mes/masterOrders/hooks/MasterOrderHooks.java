@@ -70,18 +70,24 @@ public class MasterOrderHooks {
         }
         List<Entity> actualOrders = Lists.newArrayList();
         List<Entity> allOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
+        boolean hasChange = false;
         for (Entity order : allOrders) {
             if (!order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
                 actualOrders.add(order);
                 continue;
             }
-            if (deadline != null) {
+            if (deadline != null && !order.getDateField(OrderFields.DEADLINE).equals(deadline)) {
                 order.setField(OrderFields.DEADLINE, deadline);
+                hasChange = true;
             }
-            if (customer != null) {
+            if (customer != null && !order.getBelongsToField(OrderFields.COMPANY).equals(customer)) {
                 order.setField(OrderFields.COMPANY, customer);
+                hasChange = true;
             }
             actualOrders.add(order);
+        }
+        if (!hasChange) {
+            return;
         }
         masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);
     }

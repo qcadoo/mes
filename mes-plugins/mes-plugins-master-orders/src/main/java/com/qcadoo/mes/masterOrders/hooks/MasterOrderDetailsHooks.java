@@ -5,10 +5,8 @@ import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEFAULT_TECHNOLOGY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants.PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
 
 import java.math.BigDecimal;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
@@ -50,11 +47,6 @@ public class MasterOrderDetailsHooks {
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
-
-    public void generateMasterOrderNumer(final ViewDefinitionState view) {
-        numberGeneratorService.generateAndInsertNumber(view, PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER, L_FORM,
-                NUMBER);
-    }
 
     public void hideFieldDependOnMasterOrderType(final ViewDefinitionState view) {
         FieldComponent masterOrderType = (FieldComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_TYPE);
