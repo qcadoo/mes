@@ -38,7 +38,7 @@
 			<component type="gridLayout" name="grid" reference="grid" hasBorders="false"
 				columns="15" rows="7">
 				<layoutElement column="1" row="1" width="5">
-					<component type="input" name="number" field="number" reference="number">
+					<component type="input" name="number" field="number" reference="number" hasDescription="true">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
