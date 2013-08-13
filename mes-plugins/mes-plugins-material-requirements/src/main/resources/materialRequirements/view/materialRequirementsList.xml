@@ -60,8 +60,8 @@
 								xlsRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");
 								pdfRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");	
 							} else if (selectedEntitiesArray[0].fields.generated == '0') {
-								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");								
+								xlsRibbonItem.disable("#{translate(materialRequirements.materialRequirementsList.ribbon.message.recordNotGenerated)}");
+								pdfRibbonItem.disable("#{translate(materialRequirements.materialRequirementsList.ribbon.message.recordNotGenerated)}");								
 							} else {
 								xlsRibbonItem.enable();
 								pdfRibbonItem.enable();

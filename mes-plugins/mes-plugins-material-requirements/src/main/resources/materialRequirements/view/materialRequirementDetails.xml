@@ -48,14 +48,14 @@
 
 			<script>
 				<![CDATA[
-					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
-					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
-					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
-					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
-					var saveBack = #{window}.getRibbonItem("actions.saveBack");
-					var saveNew = #{window}.getRibbonItem("actions.saveNew");
-					var generateRibbonItem = #{window}.getRibbonItem("generate.generate");
-					var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
+					var saveButton = #{window}.getRibbonItem("actions.save");
+					var saveBackButton = #{window}.getRibbonItem("actions.saveBack");
+					var saveNewButton = #{window}.getRibbonItem("actions.saveNew");
+					var copyButton = #{window}.getRibbonItem("actions.copy");
+					var cancelButton = #{window}.getRibbonItem("actions.cancel");
+					var generateButton = #{window}.getRibbonItem("generate.generate");
+					var pdfButton = #{window}.getRibbonItem("export.pdf");
+					var xlsButton = #{window}.getRibbonItem("export.xls");
 					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
@@ -87,47 +87,51 @@
 					
 					function updateRibbon() {
 						if (entityExists) {
+							copyButton.enable();
+							
 							var isGeneratedCheckboxValue = #{generated}.getValue();
 							var generated = false;
-							copyRibbonItem.enable();
 							
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 								var generated = true;
-								xlsRibbonItem.enable();
-								pdfRibbonItem.enable();
-								generateRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
-								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
-								saveBack.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
-								saveNew.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
-								cancelRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
-							} else {
-								if (containsAtLeastOneOrder && !generated) {
-									xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-									generateRibbonItem.enable();
-									saveRibbonItem.enable();
-									saveBack.enable();
-									saveNew.enable();
-									cancelRibbonItem.enable(); 
+							}
+							
+							if (containsAtLeastOneOrder) {
+								if (generated) {
+									saveButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordAlreadyGenerated)}");
+									saveBackButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordAlreadyGenerated)}");
+									saveNewButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordAlreadyGenerated)}");
+									cancelButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordAlreadyGenerated)}");
+									generateButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordAlreadyGenerated)}");
+									pdfButton.enable();
+									xlsButton.enable();
 								} else {
-									xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-									generateRibbonItem.disable();
-									saveRibbonItem.enable();
-									saveBack.enable();
-									saveNew.enable();
-									cancelRibbonItem.enable();
+									saveButton.enable();
+									saveBackButton.enable();
+									saveNewButton.enable();
+									cancelButton.enable();
+									generateButton.enable();
+									pdfButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordNotGenerated)}");
+									xlsButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordNotGenerated)}");
 								}
+							} else {
+								saveButton.enable();
+								saveBackButton.enable();
+								saveNewButton.enable();
+								cancelButton.enable();
+								generateButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.noOrders)}");
+								pdfButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordNotGenerated)}");
+								xlsButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordNotGenerated)}");
 							}
 						} else {
-							copyRibbonItem.disable("#{translate(recordNotCreated)}");
-							xlsRibbonItem.disable("#{translate(recordNotCreated)}");
-							pdfRibbonItem.disable("#{translate(recordNotCreated)}");
-							generateRibbonItem.disable();
-							saveRibbonItem.enable();
-							saveBack.enable();
-							saveNew.enable();
-							cancelRibbonItem.enable();
+							saveButton.enable();
+							saveBackButton.enable();
+							saveNewButton.enable();
+							cancelButton.enable();
+							copyButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordNotGenerated)}");
+							generateButton.disable();
+							pdfButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordNotGenerated)}");
+							xlsButton.disable("#{translate(materialRequirements.materialRequirementDetails.ribbon.message.recordNotGenerated)}");
 						}
 					}
 				]]>
