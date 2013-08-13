@@ -258,7 +258,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         BigDecimal totalPrice = entity.getDecimalField(OrderedProductFields.TOTAL_PRICE);
         BigDecimal pricePerUnit = entity.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
         BigDecimal quantity = entity.getDecimalField(quantityFieldName);
-
+        boolean save = true;
         if ((pricePerUnit != null && changedFieldValue(entity, pricePerUnit, OrderedProductFields.PRICE_PER_UNIT))
                 || (pricePerUnit != null && totalPrice == null)) {
             totalPrice = numberService.setScale(calculateTotalPrice(quantity, pricePerUnit));
@@ -266,12 +266,12 @@ public class DeliveriesServiceImpl implements DeliveriesService {
                 || (totalPrice != null && pricePerUnit == null)) {
             pricePerUnit = numberService.setScale(calculatePricePefUnit(quantity, totalPrice));
         } else {
-            totalPrice = null;
-            pricePerUnit = null;
+            save = false;
         }
-
-        entity.setField(PRICE_PER_UNIT, pricePerUnit);
-        entity.setField("totalPrice", totalPrice);
+        if (save) {
+            entity.setField(PRICE_PER_UNIT, pricePerUnit);
+            entity.setField("totalPrice", totalPrice);
+        }
     }
 
     private boolean changedFieldValue(final Entity entity, final BigDecimal fieldValue, final String reference) {
