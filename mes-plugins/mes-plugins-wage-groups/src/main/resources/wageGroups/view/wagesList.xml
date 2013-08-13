@@ -29,7 +29,7 @@
 
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardGridTemplate" excludeGroups="actions,statuses"/>
+			<template name="standardGridTemplate" excludeGroups="actions,states"/>
 		</ribbon>
 		<component type="grid" name="grid" reference="grid">
 			<option type="column" name="number" fields="number" link="true"
