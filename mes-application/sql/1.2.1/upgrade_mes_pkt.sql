@@ -280,6 +280,7 @@ ALTER TABLE productionpershift_progressforday
       
 -- end
 
+
 -- Table: qualitycontrols_qualitycontrol
 -- changed: 19.07.2013
 
@@ -290,4 +291,20 @@ ALTER TABLE qualitycontrols_qualitycontrol
       REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE;
       
 -- end
-      
+
+
+-- Table: workplans_orderoperationinputcolumn
+-- changed: 14.08.2013
+
+DROP TABLE workplans_orderoperationinputcolumn;
+
+-- end
+
+
+-- Table: workplans_orderoperationoutputcolumn
+-- changed: 14.08.2013
+
+DROP TABLE workplans_orderoperationoutputcolumn
+
+-- end
+  
