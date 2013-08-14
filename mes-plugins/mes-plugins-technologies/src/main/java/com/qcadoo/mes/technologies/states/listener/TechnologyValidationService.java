@@ -139,7 +139,7 @@ public class TechnologyValidationService {
                 continue;
             }
             final Entity referenceTechnology = operation
-                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY);
+                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
             if (referenceTechnology != null
                     && !TechnologyState.ACCEPTED.getStringValue().equals(referenceTechnology.getStringField(STATE))) {
                 stateContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
@@ -195,7 +195,7 @@ public class TechnologyValidationService {
         for (Entity technologyOperation : technologyOperations) {
             final Entity parent = technologyOperation.getBelongsToField(TechnologyOperationComponentFields.PARENT);
             if (parent == null
-                    || TechnologyOperationComponentFields.REFERENCETECHNOLOGY.equals(parent
+                    || TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY.equals(parent
                             .getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
                 continue;
             }
@@ -230,7 +230,7 @@ public class TechnologyValidationService {
                 }
             } else {
                 final Entity prodOut = technologyOperation
-                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY);
+                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
 
                 if (prodOut == null) {
                     operations.add(parent);

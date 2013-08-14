@@ -164,7 +164,7 @@ public class CopyOfTechnologyValidationService {
         for (Entity technologyOperation : technologyOperations) {
             final Entity parent = technologyOperation.getBelongsToField(TechnologyOperationComponentFields.PARENT);
             if (parent == null
-                    || TechnologyOperationComponentFields.REFERENCETECHNOLOGY.equals(parent
+                    || TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY.equals(parent
                             .getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
                 continue;
             }
@@ -199,7 +199,7 @@ public class CopyOfTechnologyValidationService {
                 }
             } else {
                 final Entity prodOut = technologyOperation
-                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY);
+                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
 
                 if (prodOut == null) {
                     operations.add(parent);

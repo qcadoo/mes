@@ -274,7 +274,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         for (Entity operationComponent : operationComponents) {
             if (isTechnologyOperationComponentEntityTypeReferenceTechnology(operationComponent)) {
                 Entity referenceTechnology = operationComponent
-                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY);
+                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
                 EntityTree referenceOperationComponents = referenceTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
                 preloadProductQuantitiesAndOperationRuns(referenceOperationComponents,
@@ -309,7 +309,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             final Set<OperationProductComponentHolder> nonComponents, final Map<Long, BigDecimal> operationRuns) {
         if (isTechnologyOperationComponentEntityTypeReferenceTechnology(operationComponent)) {
             Entity referenceTechnology = operationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY);
+                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
             EntityTree referenceOperationComponent = referenceTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
             traverseProductQuantitiesAndOperationRuns(referenceTechnology, givenQuantity, referenceOperationComponent.getRoot(),
