@@ -23,18 +23,24 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 public class ParameterHooksWP {
 
-    public void addFieldsForParameter(final DataDefinition dataDefinition, final Entity parameter) {
-        parameter.setField("dontPrintOrdersInWorkPlans", false);
-        parameter.setField("hideDescriptionInWorkPlans", false);
-        parameter.setField("hideDetailsInWorkPlans", false);
-        parameter.setField("hideTechnologyAndOrderInWorkPlans", false);
-        parameter.setField("imageUrlInWorkPlan", false);
-        parameter.setField("dontPrintInputProductsInWorkPlans", false);
-        parameter.setField("dontPrintOutputProductsInWorkPlans", false);
+    public void onCreate(final DataDefinition parameterDD, final Entity parameter) {
+        addFieldsForParameter(parameterDD, parameter);
     }
+
+    private void addFieldsForParameter(final DataDefinition parameterDD, final Entity parameter) {
+        parameter.setField(ParameterFieldsWP.DONT_PRINT_ORDERS_IN_WORK_PLANS, false);
+        parameter.setField(ParameterFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS, false);
+        parameter.setField(ParameterFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, false);
+        parameter.setField(ParameterFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS, false);
+        parameter.setField(ParameterFieldsWP.IMAGE_URL_IN_WORK_PLAN, false);
+        parameter.setField(ParameterFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS, false);
+        parameter.setField(ParameterFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS, false);
+    }
+
 }

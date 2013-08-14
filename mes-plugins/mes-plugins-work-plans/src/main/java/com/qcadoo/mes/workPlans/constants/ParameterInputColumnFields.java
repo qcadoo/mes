@@ -21,24 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.hooks;
+package com.qcadoo.mes.workPlans.constants;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+public final class ParameterInputColumnFields {
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+    private ParameterInputColumnFields() {
 
-@Service
-public class WorkPlanColumnModelValidators {
-
-    @Autowired
-    private ValidatorService validatorService;
-
-    public final boolean checkIfColumnForOrdersIsNotAlreadyUsed(final DataDefinition orderColumnDD, final Entity orderColumn) {
-
-        return validatorService.checkIfColumnIsNotUsed(orderColumnDD, orderColumn, "workPlan", "columnForOrders",
-                "workPlanOrderColumns");
     }
+
+    public static final String PARAMETER = "parameter";
+
+    public static final String COLUMN_FOR_INPUT_PRODUCTS = "columnForInputProducts";
+
+    public static final String SUCCESSION = "succession";
 
 }

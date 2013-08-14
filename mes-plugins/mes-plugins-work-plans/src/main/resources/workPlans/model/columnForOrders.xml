@@ -24,9 +24,10 @@
     ***************************************************************************
 
 -->
-<model name="columnForOrders" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+<model name="columnForOrders" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<string name="identifier" required="true">
 			<validatesLength max="255" />
@@ -41,16 +42,16 @@
 			<validatesLength max="255" />
 		</string>
 
-		<enum name="alignment" values="01left,02right"
-			default="01left" required="true" />
+		<enum name="alignment" values="01left,02right" default="01left"
+			required="true" />
 
 		<hasMany name="parameterOrderColumns" plugin="workPlans"
-			model="parameterOrderColumn" joinField="columnForOrders"
-			cascade="delete" />
+			model="parameterOrderColumn" joinField="columnForOrders" cascade="delete" />
 		<hasMany name="workPlanOrderColumns" plugin="workPlans"
-			model="workPlanOrderColumn" joinField="columnForOrders"
-			cascade="delete" />
+			model="workPlanOrderColumn" joinField="columnForOrders" cascade="delete" />
 	</fields>
+
 	<hooks />
+
 	<identifier expression="#identifier" />
 </model>

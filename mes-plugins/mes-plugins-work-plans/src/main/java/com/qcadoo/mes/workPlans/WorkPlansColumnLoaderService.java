@@ -25,24 +25,65 @@ package com.qcadoo.mes.workPlans;
 
 public interface WorkPlansColumnLoaderService {
 
+    /**
+     * Sets parameter default values
+     */
     void setParameterDefaultValues();
 
+    /**
+     * Sets operation default values
+     */
     void setOperationDefaultValues();
 
+    /**
+     * Sets technology operation component default values
+     */
     void setTechnologyOperationComponentDefaultValues();
 
-    void setTechnologyInstanceOperationComponentDefaultValues();
-
+    /**
+     * Fills columns for orders
+     * 
+     * @param plugin
+     *            plugin
+     */
     void fillColumnsForOrders(final String plugin);
 
+    /**
+     * Clears columns for orders
+     * 
+     * @param plugin
+     *            plugin
+     */
     void clearColumnsForOrders(final String plugin);
 
+    /**
+     * Fills columns for products
+     * 
+     * @param plugin
+     *            plugin
+     */
     void fillColumnsForProducts(final String plugin);
 
+    /**
+     * Clears columns for products
+     * 
+     * @param plugin
+     *            plugin
+     */
     void clearColumnsForProducts(final String plugin);
 
+    /**
+     * Is columns for orders empty
+     * 
+     * @return boolean
+     */
     boolean isColumnsForOrdersEmpty();
 
+    /**
+     * Is columns for products empty
+     * 
+     * @return
+     */
     boolean isColumnsForProductsEmpty();
 
 }

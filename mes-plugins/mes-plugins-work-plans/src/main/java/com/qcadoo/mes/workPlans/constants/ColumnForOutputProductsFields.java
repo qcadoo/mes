@@ -21,18 +21,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.hooks;
+package com.qcadoo.mes.workPlans.constants;
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
+public final class ColumnForOutputProductsFields {
 
-public interface ValidatorService {
+    private ColumnForOutputProductsFields() {
 
-    boolean checkAttachmentExtension(final DataDefinition dataDefinition, final FieldDefinition attachmentFieldDef,
-            final Entity entity, final Object oldValue, final Object newValue);
+    }
 
-    boolean checkIfColumnIsNotUsed(final DataDefinition componentDD, final Entity component, final String modelName,
-            final String columnName, final String componentName);
+    public static final String IDENTIFIER = "identifier";
+
+    public static final String NAME = "name";
+
+    public static final String DESCRIPTION = "description";
+
+    public static final String COLUMN_FILLER = "columnFiller";
+
+    public static final String ALIGNMENT = "alignment";
+
+    public static final String PARAMETER_OUTPUT_COLUMNS = "parameterOutputColumns";
+
+    public static final String OPERATION_OUTPUT_COLUMNS = "operationOutputColumns";
+
+    public static final String TECHNOLOGY_OPERATION_OUTPUT_COLUMNS = "technologyOperationOutputColumns";
 
 }

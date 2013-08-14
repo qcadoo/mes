@@ -21,38 +21,33 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.hooks;
+package com.qcadoo.mes.workPlans.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.workPlans.WorkPlansService;
+import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
+import com.qcadoo.mes.workPlans.constants.WorkPlanOrderColumnFields;
+import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class ParameterColumnModelValidators {
+public class WorkPlanOrderColumnValidators {
 
     @Autowired
-    private ValidatorService validatorService;
+    private WorkPlansService workPlansService;
 
-    public final boolean checkIfColumnForOrdersIsNotAlreadyUsed(final DataDefinition orderColumnDD, final Entity orderColumn) {
-
-        return validatorService.checkIfColumnIsNotUsed(orderColumnDD, orderColumn, "parameter", "columnForOrders",
-                "parameterOrderColumns");
+    public boolean validatesWith(final DataDefinition workPlanOrderColumnDD, final Entity workPlanOrderColumn) {
+        return checkIfColumnForOrdersIsNotAlreadyUsed(workPlanOrderColumnDD, workPlanOrderColumn);
     }
 
-    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputColumnDD,
-            final Entity inputColumn) {
-
-        return validatorService.checkIfColumnIsNotUsed(inputColumnDD, inputColumn, "parameter", "columnForInputProducts",
-                "parameterInputColumns");
-    }
-
-    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputColumnDD,
-            final Entity outputColumn) {
-
-        return validatorService.checkIfColumnIsNotUsed(outputColumnDD, outputColumn, "parameter", "columnForOutputProducts",
-                "parameterOutputColumns");
+    private boolean checkIfColumnForOrdersIsNotAlreadyUsed(final DataDefinition workPlanOrderColumnDD,
+            final Entity workPlanOrderColumn) {
+        return workPlansService.checkIfColumnIsNotUsed(workPlanOrderColumnDD, workPlanOrderColumn,
+                WorkPlansConstants.MODEL_WORK_PLAN, WorkPlanOrderColumnFields.COLUMN_FOR_ORDERS,
+                WorkPlanFields.WORK_PLAN_ORDER_COLUMNS);
     }
 
 }

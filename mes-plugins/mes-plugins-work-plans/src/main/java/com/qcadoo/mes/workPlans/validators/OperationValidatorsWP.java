@@ -21,43 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans;
+package com.qcadoo.mes.workPlans.validators;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import com.qcadoo.mes.workPlans.hooks.WorkPlanModelHooks;
+import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
-public class WorkPlanModelHooksTest {
+@Service
+public class OperationValidatorsWP {
 
-    private WorkPlanModelHooks workPlanModelHooks;
+    @Autowired
+    private WorkPlansService workPlansService;
 
-    @Before
-    public final void init() {
-        workPlanModelHooks = new WorkPlanModelHooks();
+    public boolean validatesWith(final DataDefinition operationDD, final FieldDefinition attachmentFieldDef,
+            final Entity operation, final Object oldValue, final Object newValue) {
+        return checkAttachmentExtension(operationDD, attachmentFieldDef, operation, oldValue, newValue);
     }
 
-    @Test
-    public void shouldClearGeneratedOnCopy() {
-        // given
-        Entity workPlan = mock(Entity.class);
-        DataDefinition workPlanDD = mock(DataDefinition.class);
-
-        // when
-        boolean result = workPlanModelHooks.clearGeneratedOnCopy(workPlanDD, workPlan);
-
-        // then
-        assertTrue(result);
-
-        verify(workPlan).setField("fileName", null);
-        verify(workPlan).setField("generated", false);
-        verify(workPlan).setField("date", null);
-        verify(workPlan).setField("worker", null);
+    private boolean checkAttachmentExtension(final DataDefinition operationDD, final FieldDefinition attachmentFieldDef,
+            final Entity operation, final Object oldValue, final Object newValue) {
+        return workPlansService.checkAttachmentExtension(operationDD, attachmentFieldDef, operation, oldValue, newValue);
     }
+
 }

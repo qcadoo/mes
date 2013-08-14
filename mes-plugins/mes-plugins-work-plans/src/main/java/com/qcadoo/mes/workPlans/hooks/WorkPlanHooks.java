@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,59 +30,70 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
+import com.qcadoo.mes.workPlans.WorkPlansService;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
+import com.qcadoo.mes.workPlans.constants.ParameterOrderColumnFields;
+import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
+import com.qcadoo.mes.workPlans.constants.WorkPlanOrderColumnFields;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class WorkPlanModelHooks {
+public class WorkPlanHooks {
+
+    @Autowired
+    private WorkPlansService workPlansService;
 
     @Autowired
     private ParameterService parameterService;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    public final boolean clearGeneratedOnCopy(final DataDefinition workPlanDD, final Entity workPlan) {
-        workPlan.setField("fileName", null);
-        workPlan.setField("generated", false);
-        workPlan.setField("date", null);
-        workPlan.setField("worker", null);
-
-        return true;
+    public void onCreate(final DataDefinition workPlanDD, final Entity workPlan) {
+        copyColumnForOrders(workPlanDD, workPlan);
     }
 
-    public void copyColumnForOrders(final DataDefinition workPlanDD, final Entity workPlan) {
+    public void onCopy(final DataDefinition workPlanDD, final Entity workPlan) {
+        clearGeneratedOnCopy(workPlanDD, workPlan);
+    }
+
+    private void copyColumnForOrders(final DataDefinition workPlanDD, final Entity workPlan) {
         if (!shouldPropagateValuesFromLowerInstance(workPlan)) {
             return;
         }
 
-        ArrayList<Entity> workPlanOrderColumns = Lists.newArrayList();
-        for (Entity parameterOrderColumn : getParameterHasManyField("parameterOrderColumns")) {
-            Entity columnForOrders = parameterOrderColumn.getBelongsToField("columnForOrders");
+        List<Entity> workPlanOrderColumns = Lists.newArrayList();
 
-            Entity workPlanOrderColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                    WorkPlansConstants.MODEL_WORK_PLAN_ORDER_COLUMN).create();
+        for (Entity parameterOrderColumn : getParameterHasManyField(ParameterFieldsWP.PARAMETER_ORDER_COLUMNS)) {
+            Entity columnForOrders = parameterOrderColumn.getBelongsToField(ParameterOrderColumnFields.COLUMN_FOR_ORDERS);
 
-            workPlanOrderColumn.setField("columnForOrders", columnForOrders);
+            Entity workPlanOrderColumn = workPlansService.getWorkPlanOrderColumnDD().create();
+
+            workPlanOrderColumn.setField(WorkPlanOrderColumnFields.COLUMN_FOR_ORDERS, columnForOrders);
 
             workPlanOrderColumns.add(workPlanOrderColumn);
         }
 
-        workPlan.setField("workPlanOrderColumns", workPlanOrderColumns);
+        workPlan.setField(WorkPlanFields.WORK_PLAN_ORDER_COLUMNS, workPlanOrderColumns);
     }
 
-    private boolean shouldPropagateValuesFromLowerInstance(final Entity operation) {
-        return operation.getField("workPlanOrderColumns") == null;
+    private boolean shouldPropagateValuesFromLowerInstance(final Entity workPlan) {
+        return (workPlan.getField(WorkPlanFields.WORK_PLAN_ORDER_COLUMNS) == null);
     }
 
     private List<Entity> getParameterHasManyField(final String fieldName) {
         List<Entity> hasManyFieldValue = parameterService.getParameter().getHasManyField(fieldName);
+
         if (hasManyFieldValue == null) {
             hasManyFieldValue = Lists.newArrayList();
         }
+
         return hasManyFieldValue;
+    }
+
+    private void clearGeneratedOnCopy(final DataDefinition workPlanDD, final Entity workPlan) {
+        workPlan.setField(WorkPlanFields.FILE_NAME, null);
+        workPlan.setField(WorkPlanFields.GENERATED, false);
+        workPlan.setField(WorkPlanFields.DATE, null);
+        workPlan.setField(WorkPlanFields.WORKER, null);
     }
 
 }

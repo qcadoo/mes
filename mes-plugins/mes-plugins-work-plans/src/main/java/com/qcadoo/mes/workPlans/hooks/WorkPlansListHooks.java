@@ -26,27 +26,19 @@ package com.qcadoo.mes.workPlans.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.mes.orders.util.RibbonReportService;
+import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class OperationColumnModelValidators {
+public class WorkPlansListHooks {
 
     @Autowired
-    private ValidatorService validatorService;
+    private RibbonReportService ribbonReportService;
 
-    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputColumnDD,
-            final Entity inputColumn) {
-
-        return validatorService.checkIfColumnIsNotUsed(inputColumnDD, inputColumn, "operation",
-                "columnForInputProducts", "operationInputColumns");
-    }
-
-    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputColumnDD,
-            final Entity outputColumn) {
-
-        return validatorService.checkIfColumnIsNotUsed(outputColumnDD, outputColumn, "operation",
-                "columnForOutputProducts", "operationOutputColumns");
+    public void setGridGenerateButtonState(final ViewDefinitionState view) {
+        ribbonReportService.setGridGenerateButtonState(view, view.getLocale(), WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN);
     }
 
 }

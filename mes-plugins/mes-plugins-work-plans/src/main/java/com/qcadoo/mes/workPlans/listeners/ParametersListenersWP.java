@@ -31,13 +31,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 @Service
 public class ParametersListenersWP {
 
-    public void redirectToWorkPlanParameters(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        Long parameterId = (Long) componentState.getFieldValue();
+    public void redirectToWorkPlanParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long parameterId = (Long) state.getFieldValue();
 
         if (parameterId != null) {
             String url = "../page/workPlans/workPlanParameters.html?context={\"form.id\":\"" + parameterId + "\"}";
             view.redirectTo(url, false, true);
         }
     }
+
 }

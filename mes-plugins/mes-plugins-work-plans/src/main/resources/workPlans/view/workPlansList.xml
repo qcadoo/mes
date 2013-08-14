@@ -31,22 +31,45 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
-			<group name="exportWorkPlan">
+			<group name="export">
 				<bigButton name="printWorkPlan" icon="pdfIcon24.png"
 					action="#{grid}.fireEvent(printWorkPlan,pdf);" state="disabled" />
 			</group>
 		</ribbon>
+		
 		<component type="grid" name="workPlans" reference="grid">
+			<script>
+				<![CDATA[
+					var printWorkPlan = #{window}.getRibbonItem("export.printWorkPlan");
+					
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								printWorkPlan.disable();
+							} else if (selectedEntitiesArray.length > 1) {
+								printWorkPlan.disable("#{translate(moreThanOneRecordSelected)}");
+							} else if (selectedEntitiesArray[0].fields.generated == '0') {
+								printWorkPlan.disable("#{translate(workPlans.workPlansList.ribbon.message.recordNotGenerated)}");
+							} else {
+								printWorkPlan.enable();
+							}
+						}
+					}
+					
+					this.addOnChangeListener(listener);
+				]]>
+			</script>
+			
 			<option type="column" name="name" fields="name" link="true"
 				width="300" />
 			<option type="column" name="generated" fields="generated"
 				link="false" width="100" />
 			<option type="column" name="worker" fields="worker" width="200" />
 
+			<option type="order" column="name" direction="asc" />
+			
 			<option type="searchable" value="name,generated,worker" />
 			<option type="orderable" value="name,generated,worker" />
-
-			<option type="order" column="name" direction="asc" />
 
 			<option type="correspondingView" value="workPlans/workPlanDetails" />
 			<option type="correspondingComponent" value="form" />
@@ -55,32 +78,17 @@
 			<option type="multiselect" value="true" />
 
 			<listener event="printWorkPlan"
-				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" method="printWorkPlan" />
-			<script>
-				<![CDATA[
-					var printWorkPlan = #{window}.getRibbonItem("exportWorkPlan.printWorkPlan");
-					var listener = {
-						onChange: function(selectedEntitiesArray) {
-							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								printWorkPlan.disable();
-							} else if (selectedEntitiesArray.length > 1) {
-								printWorkPlan.disable("#{translate(moreThanOneRecordSelected)}");
-							} else if (selectedEntitiesArray[0].fields.generated == '0') {
-								printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-							} else {
-								printWorkPlan.enable();
-							}
-						}
-					}
-					this.addOnChangeListener(listener);
-				]]>
-			</script>
+				class="com.qcadoo.mes.workPlans.listeners.WorkPlansListListeners" 
+				method="printWorkPlan" />
 		</component>
+		
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
+	
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
+		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlansListHooks"
 			method="setGridGenerateButtonState" />
 	</hooks>
+	
 </view>

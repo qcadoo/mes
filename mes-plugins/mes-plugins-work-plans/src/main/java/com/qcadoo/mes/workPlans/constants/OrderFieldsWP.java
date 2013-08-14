@@ -21,11 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.hooks;
+package com.qcadoo.mes.workPlans.constants;
 
-import org.springframework.stereotype.Service;
+public final class OrderFieldsWP {
 
-@Service
-public class TechnologyInstanceOperationComponentViewHooks {
+    private OrderFieldsWP() {
+
+    }
+
+    public static final String WORK_PLANS = "workPlans";
 
 }

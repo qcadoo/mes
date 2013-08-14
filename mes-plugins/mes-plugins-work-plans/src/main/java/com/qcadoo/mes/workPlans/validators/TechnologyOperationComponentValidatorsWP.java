@@ -21,32 +21,33 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.hooks;
+package com.qcadoo.mes.workPlans.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 @Service
-public class TechnologyOperationColumnModelValidators {
+public class TechnologyOperationComponentValidatorsWP {
 
     @Autowired
-    private ValidatorService validatorService;
+    private WorkPlansService workPlansService;
 
-    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputColumnDD,
-            final Entity inputColumn) {
-
-        return validatorService.checkIfColumnIsNotUsed(inputColumnDD, inputColumn, "technologyOperationColumn",
-                "columnForInputProducts", "technologyOperationInputColumns");
+    public boolean validatesWith(final DataDefinition technologyOperationComponentDD, final FieldDefinition attachmentFieldDef,
+            final Entity technologyOperationComponent, final Object oldValue, final Object newValue) {
+        return checkAttachmentExtension(technologyOperationComponentDD, attachmentFieldDef, technologyOperationComponent,
+                oldValue, newValue);
     }
 
-    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputColumnDD,
-            final Entity outputColumn) {
-
-        return validatorService.checkIfColumnIsNotUsed(outputColumnDD, outputColumn, "technologyOperationColumn",
-                "columnForOutputProducts", "technologyOperationOutputColumns");
+    private boolean checkAttachmentExtension(final DataDefinition technologyOperationComponentDD,
+            final FieldDefinition attachmentFieldDef, final Entity technologyOperationComponent, final Object oldValue,
+            final Object newValue) {
+        return workPlansService.checkAttachmentExtension(technologyOperationComponentDD, attachmentFieldDef,
+                technologyOperationComponent, oldValue, newValue);
     }
 
 }

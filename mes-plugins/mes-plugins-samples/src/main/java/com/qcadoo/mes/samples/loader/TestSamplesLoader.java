@@ -126,7 +126,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         if (isEnabledOrEnabling(L_WORK_PLANS)) {
-            // readDataFromXML(dataset, L_WORK_PLANS, locale);
+            readDataFromXML(dataset, L_WORK_PLANS, locale);
         }
 
         if (isEnabledOrEnabling(L_PRODUCTION_COUNTING)) {

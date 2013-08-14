@@ -83,28 +83,10 @@
 			resource="model/technologyOperationInputColumn.xml" />
 		<model:model model="technologyOperationOutputColumn"
 			resource="model/technologyOperationOutputColumn.xml" />
-		<model:model model="orderOperationInputColumn" resource="model/orderOperationInputColumn.xml" />
-		<model:model model="orderOperationOutputColumn" resource="model/orderOperationOutputColumn.xml" />
-		
-		<model:model-field plugin="workPlans" model="workPlan">
-			<model:boolean name="dontPrintOrdersInWorkPlans" />
-		</model:model-field>
-		
-		<model:model-field plugin="workPlans" model="workPlan">
-			<model:hasMany name="workPlanOrderColumns" plugin="workPlans"
-				model="workPlanOrderColumn" joinField="workPlan" cascade="delete"
-				copyable="true" />
-		</model:model-field>
-		
-		<model:model-field plugin="orders" model="order">
-			<model:manyToMany name="workPlans" joinField="orders"
-				model="workPlan" plugin="workPlans" />
-		</model:model-field>
-		
+
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="dontPrintOrdersInWorkPlans" />
 		</model:model-field>
-		
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="hideDescriptionInWorkPlans" />
 		</model:model-field>
@@ -117,8 +99,8 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:file name="imageUrlInWorkPlan">
 				<model:validatesWith
-					class="com.qcadoo.mes.workPlans.hooks.ValidatorService"
-					method="checkAttachmentExtension" />
+					class="com.qcadoo.mes.workPlans.validators.ParameterValidatorsWP" 
+					method="validatesWith" />
 			</model:file>
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
@@ -127,7 +109,7 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="basic" model="parameter">
 			<model:hasMany name="parameterOrderColumns" plugin="workPlans"
 				model="parameterOrderColumn" joinField="parameter" cascade="delete"
@@ -156,8 +138,8 @@
 		<model:model-field plugin="technologies" model="operation">
 			<model:file name="imageUrlInWorkPlan">
 				<model:validatesWith
-					class="com.qcadoo.mes.workPlans.hooks.ValidatorService"
-					method="checkAttachmentExtension" />
+					class="com.qcadoo.mes.workPlans.validators.OperationValidatorsWP" 
+					method="validatesWith" />
 			</model:file>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
@@ -194,8 +176,8 @@
 			model="technologyOperationComponent">
 			<model:file name="imageUrlInWorkPlan">
 				<model:validatesWith
-					class="com.qcadoo.mes.workPlans.hooks.ValidatorService"
-					method="checkAttachmentExtension" />
+					class="com.qcadoo.mes.workPlans.validators.TechnologyOperationComponentValidatorsWP" 
+					method="validatesWith" />
 			</model:file>
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -220,63 +202,21 @@
 				joinField="technologyOperationComponent" cascade="delete" copyable="true" />
 		</model:model-field>
 
-		<model:model-field plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:boolean name="hideDescriptionInWorkPlans" />
-		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:boolean name="hideDetailsInWorkPlans" />
-		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
-		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:file name="imageUrlInWorkPlan">
-				<model:validatesWith
-					class="com.qcadoo.mes.workPlans.hooks.ValidatorService"
-					method="checkAttachmentExtension" />
-			</model:file>
-		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:boolean name="dontPrintInputProductsInWorkPlans" />
-		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
+		<model:model-field plugin="orders" model="order">
+			<model:manyToMany name="workPlans" joinField="orders"
+				model="workPlan" plugin="workPlans" />
 		</model:model-field>
 
-		<model:model-field plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:hasMany name="orderOperationInputColumns"
-				plugin="workPlans" model="orderOperationInputColumn" joinField="technologyInstanceOperationComponent"
-				cascade="delete" copyable="true" />
-		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:hasMany name="orderOperationOutputColumns"
-				plugin="workPlans" model="orderOperationOutputColumn" joinField="technologyInstanceOperationComponent"
-				cascade="delete" copyable="true" />
-		</model:model-field>
-
-		<model:model-hook plugin="workPlans" model="workPlan">
-			<model:onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanModelHooks"
-				method="copyColumnForOrders" />
-		</model:model-hook>
-		
 		<model:model-hook plugin="technologies" model="operation">
-			<model:onCreate class="com.qcadoo.mes.workPlans.hooks.OperationModelHooks"
-				method="copyColumnForProducts" />
+			<model:onCreate class="com.qcadoo.mes.workPlans.hooks.OperationHooksWP"
+				method="onCreate" />
 		</model:model-hook>
 
 		<model:model-hook plugin="technologies"
 			model="technologyOperationComponent">
 			<model:onCreate
-				class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelHooks"
-				method="copyColumnForProducts" />
+				class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentHooksWP"
+				method="onCreate" />
 		</model:model-hook>
 
 		<menu:menu-item name="workPlans" category="orders"
@@ -287,52 +227,48 @@
 
 		<view:view resource="view/workPlansList.xml" />
 		<view:view resource="view/workPlanDetails.xml" />
-		
+
 		<view:view resource="view/parameterOrderColumnDetails.xml" />
 		<view:view resource="view/workPlanOrderColumnDetails.xml" />
-		
+
 		<view:view resource="view/parameterInputColumnDetails.xml" />
 		<view:view resource="view/parameterOutputColumnDetails.xml" />
 		<view:view resource="view/operationInputColumnDetails.xml" />
 		<view:view resource="view/operationOutputColumnDetails.xml" />
 		<view:view resource="view/technologyOperationInputColumnDetails.xml" />
 		<view:view resource="view/technologyOperationOutputColumnDetails.xml" />
-		<view:view resource="view/orderOperationInputColumnDetails.xml" />
-		<view:view resource="view/orderOperationOutputColumnDetails.xml" />
 		<view:view resource="view/workPlanParameters.xml" />
-		
+
 		<view:view-tab resource="view/tabExtensions/operationDetailsBasicTab.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetailsProductsTab.xml" />
-		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetailsBasicTab.xml" />
-		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetailsProductsTab.xml" />
+		<view:view-tab
+			resource="view/tabExtensions/technologyOperationComponentDetailsBasicTab.xml" />
+		<view:view-tab
+			resource="view/tabExtensions/technologyOperationComponentDetailsProductsTab.xml" />
 
-		<view:view-hook plugin="workPlans" view="workPlanDetails"
-			type="beforeRender" class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
-			method="setWorkPlanDefaultValues" />
-			
-		<view:view-listener plugin="orders" view="ordersPlanningList"
-			component="grid" event="addSelectedOrdersToWorkPlan" 
-			class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
-			method="addSelectedOrdersToWorkPlan" />
-
-		<view:view-hook plugin="technologies" view="operationDetails"
-			type="beforeRender" class="com.qcadoo.mes.workPlans.hooks.OperationViewHooks"
-			method="setOperationDefaultValues" />
-
-		<view:view-listener plugin="technologies"
-			view="technologyOperationComponentDetails" component="operation"
-			event="onSelectedEntityChange"
-			class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentViewHooks"
-			method="setTechnologyOperationComponentDefaultValues" />
-			
 		<view:view-listener plugin="basic" view="parameters"
 			component="form" event="redirectToWorkPlanParameters"
 			class="com.qcadoo.mes.workPlans.listeners.ParametersListenersWP"
 			method="redirectToWorkPlanParameters" />
 
+		<view:view-hook plugin="technologies" view="operationDetails"
+			type="beforeRender" class="com.qcadoo.mes.workPlans.hooks.OperationDetailsHooksWP"
+			method="setOperationDefaultValues" />
+
+		<view:view-listener plugin="technologies"
+			view="technologyOperationComponentDetails" component="operation"
+			event="onSelectedEntityChange"
+			class="com.qcadoo.mes.workPlans.listeners.TechnologyOperationComponentDetailsListeners"
+			method="setTechnologyOperationComponentDefaultValues" />
+
+		<view:view-listener plugin="orders" view="ordersPlanningList"
+			component="grid" event="addSelectedOrdersToWorkPlan"
+			class="com.qcadoo.mes.workPlans.listeners.OrdersPlanningListListenersWP" 
+			method="addSelectedOrdersToWorkPlan" />
+
 		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlansOnStartupService" />
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>

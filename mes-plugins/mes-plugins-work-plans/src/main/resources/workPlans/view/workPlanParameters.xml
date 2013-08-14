@@ -35,6 +35,7 @@
 				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
 			</group>
 		</ribbon>
+		
 		<windowTab name="workPlansOrdersTab" reference="workPlansOrdersTab">
 			<component type="form" name="workPlanParameters" reference="form">
 				<component type="gridLayout" name="workPlansOrdersGridLayout"
@@ -51,12 +52,16 @@
 							source="#{form}.parameterOrderColumns" reference="columnsForOrders">
 							<option type="column" name="name" fields="columnForOrders"
 								expression="'@' + #columnForOrders.get('name')" link="true" />
+								
+							<option type="order" column="succession" direction="desc" />
+							
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
-							<option type="order" column="succession" direction="desc" />
+							
 							<option type="correspondingView" value="workPlans/parameterOrderColumnDetails" />
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="true" />
+							
 							<option type="creatable" value="true" />
 							<option type="deletable" value="true" />
 							<option type="fullscreen" value="true" />
@@ -64,10 +69,12 @@
 						</component>
 					</layoutElement>
 				</component>
+				
 				<option type="header" value="true" />
 				<option type="expression" value="' '" />
 			</component>
 		</windowTab>
+		
 		<windowTab name="workPlansBasicTab" reference="workPlansBasicTab">
 			<component type="gridLayout" name="workPlansBasicGridLayout"
 				columns="3" rows="1">
@@ -101,11 +108,13 @@
 								</component>
 							</layoutElement>
 						</component>
+						
 						<option type="label" value="workPlansBasicTabWelcome" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 		<windowTab name="workPlansProductsTab" reference="workPlansProductsTab">
 			<component type="gridLayout" name="workPlansProductsGridLayout"
 				columns="2" rows="3">
@@ -126,12 +135,16 @@
 						source="#{form}.parameterInputColumns" reference="columnsForInputProducts">
 						<option type="column" name="name" fields="columnForInputProducts"
 							expression="'@' + #columnForInputProducts.get('name')" link="true" />
+							
+						<option type="order" column="succession" direction="desc" />
+						
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
-						<option type="order" column="succession" direction="desc" />
+						
 						<option type="correspondingView" value="workPlans/parameterInputColumnDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
+						
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
@@ -150,12 +163,16 @@
 						source="#{form}.parameterOutputColumns" reference="columnsForOutputProducts">
 						<option type="column" name="name" fields="columnForOutputProducts"
 							expression="'@' + #columnForOutputProducts.get('name')" link="true" />
+							
+						<option type="order" column="succession" direction="desc" />
+						
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
-						<option type="order" column="succession" direction="desc" />
+						
 						<option type="correspondingView" value="workPlans/parameterOutputColumnDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
+						
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
@@ -164,5 +181,7 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 	</component>
+	
 </view>

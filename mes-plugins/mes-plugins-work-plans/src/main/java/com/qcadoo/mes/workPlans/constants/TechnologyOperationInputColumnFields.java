@@ -23,24 +23,16 @@
  */
 package com.qcadoo.mes.workPlans.constants;
 
-public final class ColumnForProductsFields {
+public final class TechnologyOperationInputColumnFields {
 
-    private ColumnForProductsFields() {
+    private TechnologyOperationInputColumnFields() {
 
     }
 
-    public static final String IDENTIFIER = "identifier";
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    public static final String NAME = "name";
+    public static final String COLUMN_FOR_INPUT_PRODUCTS = "columnForInputProducts";
 
-    public static final String DESCRIPTION = "description";
-
-    public static final String COLUMN_FILLER = "columnFiller";
-
-    public static final String ALIGNMENT = "alignment";
-
-    public static final String TYPE = "type";
-
-    public static final String ACTIVE = "active";
+    public static final String SUCCESSION = "succession";
 
 }

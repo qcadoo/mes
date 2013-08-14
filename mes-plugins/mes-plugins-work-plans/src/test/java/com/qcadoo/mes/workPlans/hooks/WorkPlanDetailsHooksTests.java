@@ -21,66 +21,75 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans;
+package com.qcadoo.mes.workPlans.hooks;
 
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks;
+import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
-public class WorkPlanViewHooksTests {
+public class WorkPlanDetailsHooksTests {
 
-    private WorkPlanViewHooks workPlanViewHooks;
+    private static final String L_FORM = "form";
 
-    @Mock
-    private FieldComponent generated;
+    private WorkPlanDetailsHooks workPlanDetailsHooks;
 
     @Mock
     private ViewDefinitionState view;
 
     @Mock
-    private FormComponent form;
+    private FormComponent workPlanForm;
+
+    @Mock
+    private FieldComponent generatedField;
+
+    @Mock
+    private ComponentState componentState;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        workPlanViewHooks = new WorkPlanViewHooks();
+        workPlanDetailsHooks = new WorkPlanDetailsHooks();
 
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(view.getComponentByReference("generated")).thenReturn(generated);
+        when(view.getComponentByReference(Mockito.anyString())).thenReturn(componentState);
+        when(view.getComponentByReference(L_FORM)).thenReturn(workPlanForm);
+        when(view.getComponentByReference(WorkPlanFields.GENERATED)).thenReturn(generatedField);
+        when(workPlanForm.getEntityId()).thenReturn(1L);
     }
 
     @Test
     public void shouldDisableFormIfDocumentIsGenerated() {
         // given
-        when(generated.getFieldValue()).thenReturn("1");
+        when(generatedField.getFieldValue()).thenReturn("1");
 
         // when
-        workPlanViewHooks.disableFormForGeneratedWorkPlan(view);
+        workPlanDetailsHooks.disableFormForGeneratedWorkPlan(view);
 
         // then
-        verify(form).setFormEnabled(false);
+        verify(componentState, Mockito.never()).setEnabled(true);
     }
 
     @Test
     public void shoulntDisableFormIfDocumentIsntGenerated() {
         // given
-        when(generated.getFieldValue()).thenReturn("0");
+        when(generatedField.getFieldValue()).thenReturn("0");
 
         // when
-        workPlanViewHooks.disableFormForGeneratedWorkPlan(view);
+        workPlanDetailsHooks.disableFormForGeneratedWorkPlan(view);
 
         // then
-        verify(form, never()).setFormEnabled(false);
+        verify(componentState, Mockito.times(5)).setEnabled(true);
     }
+
 }

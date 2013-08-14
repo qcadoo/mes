@@ -53,6 +53,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -63,6 +64,19 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.DivisionFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.workPlans.constants.ColumnForInputProductsFields;
+import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
+import com.qcadoo.mes.workPlans.constants.TechnologyOperationInputColumnFields;
+import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.print.WorkPlanPdfService.ProductDirection;
 import com.qcadoo.model.api.Entity;
@@ -78,24 +92,23 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 
 public class WorkPlanPdfServiceTest {
 
-    private static final String NO_WORKSTATION_TYPE = "No workstation type";
+    private static final String L_NAME = "name";
 
-    private static final String NO_DIVISION = "No division";
+    private static final String L_NO_WORKSTATION_TYPE = "No workstation type";
 
-    private static final String BY_DIVISION = "By division";
+    private static final String L_NO_DIVISION = "No division";
 
-    private static final String BY_WORKSTATION_TYPE = "By workstation type";
+    private static final String L_GET_ORDER_ID_WITH_TITLE_AND_OPERATION_COMPONENTS_MAP = "getOrderIdWithTitleAndOperationComponentsMap";
 
-    private static final String BY_END_PRODUCT = "By end product";
+    private static final int L_NUM_OF_UNIQUE_OPERATIONS = 5;
 
-    private static final String NO_DISTINCTION = "No distinction";
-
-    private static final String GET_ORDER_OP_COMS_MAP_METHOD_NAME = "getOrderIdToOperationComponentsMap";
-
-    private static final int NUM_OF_UNIQUE_OPERATIONS = 5;
+    private WorkPlanPdfService workPlanPdfService;
 
     @Mock
     private TranslationService translationService;
+
+    @Mock
+    private EntityTreeUtilsService entityTreeUtilsService;
 
     @Mock
     private PdfHelper pdfHelper;
@@ -104,22 +117,14 @@ public class WorkPlanPdfServiceTest {
     private Document document;
 
     @Mock
-    private Entity op1Comp, op2Comp, op3Comp, op4Comp, op5Comp, op6Comp;
+    private Entity workPlan, order1, order2, technology1, technology2, operationComponent1, operationComponent2,
+            operationComponent3, operationComponent4, operationComponent5, operation1, operation2, operation3, operation4,
+            operation5, workstation1, workstation2, division1, division2, product1, product2;
 
     @Mock
-    private EntityTreeUtilsService entityTreeUtilsService;
-
-    @Mock
-    private Entity workstation1, workstation2;
-
-    @Mock
-    private Entity workPlan;
-
-    private WorkPlanPdfService workPlanPdfService;
+    private EntityTree operationComponents1, operationComponents2;
 
     private Locale locale;
-
-    private final Map<Entity, Entity> operationComponent2order = new HashMap<Entity, Entity>();
 
     private static EntityList mockEntityListIterator(final List<Entity> list) {
         EntityList entityList = mock(EntityList.class);
@@ -144,70 +149,49 @@ public class WorkPlanPdfServiceTest {
 
         locale = Locale.getDefault();
 
-        Entity division1 = mock(Entity.class);
-        Entity division2 = mock(Entity.class);
+        when(division1.getStringField(DivisionFields.NAME)).thenReturn("division1");
+        when(division2.getStringField(DivisionFields.NAME)).thenReturn("division2");
 
-        when(division1.getStringField("name")).thenReturn("division1");
-        when(division2.getStringField("name")).thenReturn("division2");
+        when(workstation1.getBelongsToField(WorkstationTypeFields.DIVISION)).thenReturn(division1);
+        when(workstation2.getBelongsToField(WorkstationTypeFields.DIVISION)).thenReturn(division2);
 
-        when(workstation1.getBelongsToField("division")).thenReturn(division1);
-        when(workstation2.getBelongsToField("division")).thenReturn(division2);
+        when(workstation1.getStringField(WorkstationTypeFields.NAME)).thenReturn("workstation1");
+        when(workstation2.getStringField(WorkstationTypeFields.NAME)).thenReturn("workstation2");
 
-        when(workstation1.getStringField("name")).thenReturn("workstation1");
-        when(workstation2.getStringField("name")).thenReturn("workstation2");
+        when(operationComponent1.getBelongsToField(TechnologyOperationComponentFields.OPERATION)).thenReturn(operation1);
+        when(operationComponent2.getBelongsToField(TechnologyOperationComponentFields.OPERATION)).thenReturn(operation2);
+        when(operationComponent3.getBelongsToField(TechnologyOperationComponentFields.OPERATION)).thenReturn(operation3);
+        when(operationComponent4.getBelongsToField(TechnologyOperationComponentFields.OPERATION)).thenReturn(operation4);
+        when(operationComponent5.getBelongsToField(TechnologyOperationComponentFields.OPERATION)).thenReturn(operation5);
 
-        Entity op1 = mock(Entity.class);
-        Entity op2 = mock(Entity.class);
-        Entity op3 = mock(Entity.class);
-        Entity op4 = mock(Entity.class);
-        Entity op5 = mock(Entity.class);
-
-        when(op1Comp.getBelongsToField("operation")).thenReturn(op1);
-        when(op2Comp.getBelongsToField("operation")).thenReturn(op2);
-        when(op3Comp.getBelongsToField("operation")).thenReturn(op3);
-        when(op4Comp.getBelongsToField("operation")).thenReturn(op4);
-        when(op5Comp.getBelongsToField("operation")).thenReturn(op5);
-
-        when(op1.getBelongsToField("workstationType")).thenReturn(workstation1);
-        when(op2.getBelongsToField("workstationType")).thenReturn(workstation1);
-        when(op3.getBelongsToField("workstationType")).thenReturn(workstation2);
-        when(op4.getBelongsToField("workstationType")).thenReturn(workstation2);
-        when(op5.getBelongsToField("workstationType")).thenReturn(null);
-
-        Entity order1 = mock(Entity.class);
-        Entity order2 = mock(Entity.class);
+        when(operation1.getBelongsToField(OperationFields.WORKSTATION_TYPE)).thenReturn(workstation1);
+        when(operation2.getBelongsToField(OperationFields.WORKSTATION_TYPE)).thenReturn(workstation1);
+        when(operation3.getBelongsToField(OperationFields.WORKSTATION_TYPE)).thenReturn(workstation2);
+        when(operation4.getBelongsToField(OperationFields.WORKSTATION_TYPE)).thenReturn(workstation2);
+        when(operation5.getBelongsToField(OperationFields.WORKSTATION_TYPE)).thenReturn(null);
 
         when(order1.getId()).thenReturn(1L);
         when(order2.getId()).thenReturn(2L);
 
-        when(order1.getStringField("number")).thenReturn("1");
-        when(order2.getStringField("number")).thenReturn("2");
+        when(order1.getStringField(OrderFields.NUMBER)).thenReturn("1");
+        when(order2.getStringField(OrderFields.NUMBER)).thenReturn("2");
 
         EntityList orders = mockEntityListIterator(Arrays.asList(order1, order2));
 
-        Entity tech1 = mock(Entity.class);
-        Entity tech2 = mock(Entity.class);
+        when(order1.getBelongsToField(OrderFields.TECHNOLOGY)).thenReturn(technology1);
+        when(order2.getBelongsToField(OrderFields.TECHNOLOGY)).thenReturn(technology2);
 
-        when(order1.getBelongsToField("technology")).thenReturn(tech1);
-        when(order2.getBelongsToField("technology")).thenReturn(tech2);
+        when(technology1.getBelongsToField(TechnologyFields.PRODUCT)).thenReturn(product1);
+        when(technology2.getBelongsToField(TechnologyFields.PRODUCT)).thenReturn(product2);
 
-        Entity prod1 = mock(Entity.class);
-        Entity prod2 = mock(Entity.class);
+        when(product1.getStringField(ProductFields.NAME)).thenReturn("product1");
+        when(product2.getStringField(ProductFields.NAME)).thenReturn("product2");
 
-        when(tech1.getBelongsToField("product")).thenReturn(prod1);
-        when(tech2.getBelongsToField("product")).thenReturn(prod2);
+        operationComponents1 = mockEntityTreeIterator(asList(operationComponent1, operationComponent2, operationComponent3));
+        operationComponents2 = mockEntityTreeIterator(asList(operationComponent4, operationComponent5));
 
-        when(prod1.getStringField("name")).thenReturn("product1");
-        when(prod2.getStringField("name")).thenReturn("product2");
-
-        EntityTree operComp1 = mock(EntityTree.class);
-        EntityTree operComp2 = mock(EntityTree.class);
-
-        operComp1 = mockEntityTreeIterator(asList(op1Comp, op2Comp, op3Comp));
-        operComp2 = mockEntityTreeIterator(asList(op4Comp, op5Comp));
-
-        when(tech1.getTreeField("operationComponents")).thenReturn(operComp1);
-        when(tech2.getTreeField("operationComponents")).thenReturn(operComp2);
+        when(technology1.getTreeField(TechnologyFields.OPERATION_COMPONENTS)).thenReturn(operationComponents1);
+        when(technology2.getTreeField(TechnologyFields.OPERATION_COMPONENTS)).thenReturn(operationComponents2);
 
         when(entityTreeUtilsService.getSortedEntities(Mockito.any(EntityTree.class))).thenAnswer(new Answer<List<Entity>>() {
 
@@ -220,28 +204,36 @@ public class WorkPlanPdfServiceTest {
 
         ReflectionTestUtils.setField(workPlanPdfService, "entityTreeUtilsService", entityTreeUtilsService);
 
-        when(op1Comp.getStringField("nodeNumber")).thenReturn("2.A.1");
-        when(op2Comp.getStringField("nodeNumber")).thenReturn("1.");
-        when(op3Comp.getStringField("nodeNumber")).thenReturn("2.");
-        when(op4Comp.getStringField("nodeNumber")).thenReturn("1.");
-        when(op5Comp.getStringField("nodeNumber")).thenReturn("2.");
+        when(operationComponent1.getStringField(TechnologyOperationComponentFields.NODE_NUMBER)).thenReturn("2.A.1");
+        when(operationComponent2.getStringField(TechnologyOperationComponentFields.NODE_NUMBER)).thenReturn("1.");
+        when(operationComponent3.getStringField(TechnologyOperationComponentFields.NODE_NUMBER)).thenReturn("2.");
+        when(operationComponent4.getStringField(TechnologyOperationComponentFields.NODE_NUMBER)).thenReturn("1.");
+        when(operationComponent5.getStringField(TechnologyOperationComponentFields.NODE_NUMBER)).thenReturn("2.");
 
-        when(op1Comp.getStringField("entityType")).thenReturn("operation");
-        when(op2Comp.getStringField("entityType")).thenReturn("operation");
-        when(op3Comp.getStringField("entityType")).thenReturn("operation");
-        when(op4Comp.getStringField("entityType")).thenReturn("operation");
-        when(op5Comp.getStringField("entityType")).thenReturn("operation");
+        when(operationComponent1.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE)).thenReturn(
+                TechnologyOperationComponentEntityType.OPERATION.getStringValue());
+        when(operationComponent2.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE)).thenReturn(
+                TechnologyOperationComponentEntityType.OPERATION.getStringValue());
+        when(operationComponent3.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE)).thenReturn(
+                TechnologyOperationComponentEntityType.OPERATION.getStringValue());
+        when(operationComponent4.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE)).thenReturn(
+                TechnologyOperationComponentEntityType.OPERATION.getStringValue());
+        when(operationComponent5.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE)).thenReturn(
+                TechnologyOperationComponentEntityType.OPERATION.getStringValue());
 
-        when(workPlan.getManyToManyField("orders")).thenReturn(orders);
+        when(workPlan.getManyToManyField(WorkPlanFields.ORDERS)).thenReturn(orders);
 
-        when(translationService.translate("workPlans.workPlan.report.title.noDistinction", locale)).thenReturn(NO_DISTINCTION);
+        when(translationService.translate("workPlans.workPlan.report.title.noDistinction", locale)).thenReturn(
+                WorkPlanType.NO_DISTINCTION.getStringValue());
         when(translationService.translate("workPlans.workPlan.report.title.byWorkstationType", locale)).thenReturn(
-                BY_WORKSTATION_TYPE);
+                WorkPlanType.BY_WORKSTATION_TYPE.getStringValue());
+        when(translationService.translate("workPlans.workPlan.report.title.byEndProduct", locale)).thenReturn(
+                WorkPlanType.BY_END_PRODUCT.getStringValue());
+        when(translationService.translate("workPlans.workPlan.report.title.byDivision", locale)).thenReturn(
+                WorkPlanType.BY_DIVISION.getStringValue());
+        when(translationService.translate("workPlans.workPlan.report.title.noDivision", locale)).thenReturn(L_NO_DIVISION);
         when(translationService.translate("workPlans.workPlan.report.title.noWorkstationType", locale)).thenReturn(
-                NO_WORKSTATION_TYPE);
-        when(translationService.translate("workPlans.workPlan.report.title.byEndProduct", locale)).thenReturn(BY_END_PRODUCT);
-        when(translationService.translate("workPlans.workPlan.report.title.byDivision", locale)).thenReturn(BY_DIVISION);
-        when(translationService.translate("workPlans.workPlan.report.title.noDivision", locale)).thenReturn(NO_DIVISION);
+                L_NO_WORKSTATION_TYPE);
     }
 
     @Test
@@ -262,9 +254,9 @@ public class WorkPlanPdfServiceTest {
         // given
         Date date = mock(Date.class);
         Object name = mock(Object.class);
-        when(name.toString()).thenReturn("name");
-        when(workPlan.getField("date")).thenReturn(date);
-        when(workPlan.getField("name")).thenReturn(name);
+        when(name.toString()).thenReturn(L_NAME);
+        when(workPlan.getField(WorkPlanFields.DATE)).thenReturn(date);
+        when(workPlan.getField(WorkPlanFields.NAME)).thenReturn(name);
 
         // when
         workPlanPdfService.addMainHeader(document, workPlan, locale);
@@ -277,11 +269,11 @@ public class WorkPlanPdfServiceTest {
     @Test
     public void shouldGetOperationComponentsForNoDistinction() {
         // given
-        when(workPlan.getStringField("type")).thenReturn(WorkPlanType.NO_DISTINCTION.getStringValue());
+        when(workPlan.getStringField(WorkPlanFields.TYPE)).thenReturn(WorkPlanType.NO_DISTINCTION.getStringValue());
 
         // when
         Map<Long, Map<PrioritizedString, List<Entity>>> operationComponents = ReflectionTestUtils.invokeMethod(
-                workPlanPdfService, GET_ORDER_OP_COMS_MAP_METHOD_NAME, workPlan, locale);
+                workPlanPdfService, L_GET_ORDER_ID_WITH_TITLE_AND_OPERATION_COMPONENTS_MAP, workPlan, locale);
 
         // then
         isDistinct(operationComponents);
@@ -290,11 +282,11 @@ public class WorkPlanPdfServiceTest {
     @Test
     public void shouldGetOperationComponentsForDistinctionByWorkstationType() {
         // given
-        when(workPlan.getStringField("type")).thenReturn(WorkPlanType.BY_WORKSTATION_TYPE.getStringValue());
+        when(workPlan.getStringField(WorkPlanFields.TYPE)).thenReturn(WorkPlanType.BY_WORKSTATION_TYPE.getStringValue());
 
         // when
         Map<Long, Map<PrioritizedString, List<Entity>>> operationComponents = ReflectionTestUtils.invokeMethod(
-                workPlanPdfService, GET_ORDER_OP_COMS_MAP_METHOD_NAME, workPlan, locale);
+                workPlanPdfService, L_GET_ORDER_ID_WITH_TITLE_AND_OPERATION_COMPONENTS_MAP, workPlan, locale);
 
         // then
         isDistinct(operationComponents);
@@ -303,11 +295,11 @@ public class WorkPlanPdfServiceTest {
     @Test
     public void shouldGetOperationComponentsForDistinctionByDivision() {
         // given
-        when(workPlan.getStringField("type")).thenReturn(WorkPlanType.BY_DIVISION.getStringValue());
+        when(workPlan.getStringField(WorkPlanFields.TYPE)).thenReturn(WorkPlanType.BY_DIVISION.getStringValue());
 
         // when
         Map<Long, Map<PrioritizedString, List<Entity>>> operationComponents = ReflectionTestUtils.invokeMethod(
-                workPlanPdfService, GET_ORDER_OP_COMS_MAP_METHOD_NAME, workPlan, locale);
+                workPlanPdfService, L_GET_ORDER_ID_WITH_TITLE_AND_OPERATION_COMPONENTS_MAP, workPlan, locale);
 
         // then
         isDistinct(operationComponents);
@@ -316,11 +308,11 @@ public class WorkPlanPdfServiceTest {
     @Test
     public void shouldGetOperationComponentsForDistinctionByEndProduct() {
         // given
-        when(workPlan.getStringField("type")).thenReturn(WorkPlanType.BY_END_PRODUCT.getStringValue());
+        when(workPlan.getStringField(WorkPlanFields.TYPE)).thenReturn(WorkPlanType.BY_END_PRODUCT.getStringValue());
 
         // when
         Map<Long, Map<PrioritizedString, List<Entity>>> operationComponents = ReflectionTestUtils.invokeMethod(
-                workPlanPdfService, GET_ORDER_OP_COMS_MAP_METHOD_NAME, workPlan, locale);
+                workPlanPdfService, L_GET_ORDER_ID_WITH_TITLE_AND_OPERATION_COMPONENTS_MAP, workPlan, locale);
 
         // then
         isDistinct(operationComponents);
@@ -330,7 +322,8 @@ public class WorkPlanPdfServiceTest {
     public void shouldAddAdditionalFieldsCorrectly() throws DocumentException {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(operationComponent.getStringField("imageUrlInWorkPlan")).thenReturn("actualPath");
+        when(operationComponent.getStringField(TechnologyOperationComponentFieldsWP.IMAGE_URL_IN_WORK_PLAN)).thenReturn(
+                "actualPath");
 
         // when
         workPlanPdfService.addAdditionalFields(document, operationComponent, locale);
@@ -347,8 +340,8 @@ public class WorkPlanPdfServiceTest {
         PdfPTable table = mock(PdfPTable.class);
         PdfPCell cell = mock(PdfPCell.class);
 
-        when(operationComponent.getStringField("comment")).thenReturn("comment");
-        when(operationComponent.getField("hideDescriptionInWorkPlans")).thenReturn(false);
+        when(operationComponent.getStringField(TechnologyOperationComponentFields.COMMENT)).thenReturn("comment");
+        when(operationComponent.getField(TechnologyOperationComponentFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS)).thenReturn(false);
         when(pdfHelper.createPanelTable(1)).thenReturn(table);
         when(table.getDefaultCell()).thenReturn(cell);
 
@@ -369,8 +362,8 @@ public class WorkPlanPdfServiceTest {
         Entity column2 = mock(Entity.class);
         columns.add(column1);
         columns.add(column2);
-        when(column1.getStringField("name")).thenReturn("workPlans.workPlan.report.colums.product");
-        when(column2.getStringField("name")).thenReturn("orders.order.plannedQuantity.label");
+        when(column1.getStringField(L_NAME)).thenReturn("workPlans.workPlan.report.colums.product");
+        when(column2.getStringField(L_NAME)).thenReturn("orders.order.plannedQuantity.label");
         ProductDirection direction = ProductDirection.IN;
 
         // when
@@ -386,10 +379,11 @@ public class WorkPlanPdfServiceTest {
     public void shouldGetCorrectImagePathFromDataDefinition() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(operationComponent.getStringField("imageUrlInWorkPlan")).thenReturn("actualPath");
+        when(operationComponent.getStringField(TechnologyOperationComponentFieldsWP.IMAGE_URL_IN_WORK_PLAN)).thenReturn(
+                "actualPath");
 
         // when
-        String imagePath = workPlanPdfService.getImagePathFromDD(operationComponent);
+        String imagePath = workPlanPdfService.getImageUrlInWorkPlan(operationComponent);
 
         // then
         assertEquals("actualPath", imagePath);
@@ -401,14 +395,15 @@ public class WorkPlanPdfServiceTest {
         Entity operationComponent = mock(Entity.class);
 
         // when
-        String imagePath = workPlanPdfService.getImagePathFromDD(operationComponent);
+        String imagePath = workPlanPdfService.getImageUrlInWorkPlan(operationComponent);
     }
 
     @Test
     public void shouldHideOperationCommentIfTold() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(operationComponent.getBooleanField("hideDescriptionInWorkPlans")).thenReturn(true);
+        when(operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS)).thenReturn(
+                true);
 
         // when
         boolean isCommentEnabled = workPlanPdfService.isCommentEnabled(operationComponent);
@@ -421,7 +416,8 @@ public class WorkPlanPdfServiceTest {
     public void shouldHideOrderInfoIfTold() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(operationComponent.getBooleanField("hideTechnologyAndOrderInWorkPlans")).thenReturn(true);
+        when(operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS))
+                .thenReturn(true);
 
         // when
         boolean isOrderInfoEnabled = workPlanPdfService.isOrderInfoEnabled(operationComponent);
@@ -434,7 +430,8 @@ public class WorkPlanPdfServiceTest {
     public void shouldHideWorkstationInfoIfTold() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(operationComponent.getBooleanField("hideDetailsInWorkPlans")).thenReturn(true);
+        when(operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.HIDE_DETAILS_IN_WORK_PLANS))
+                .thenReturn(true);
 
         // when
         boolean isWorkstationInfoEnabled = workPlanPdfService.isWorkstationInfoEnabled(operationComponent);
@@ -447,7 +444,8 @@ public class WorkPlanPdfServiceTest {
     public void shouldHideInputProductsInfoIfTold() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(operationComponent.getBooleanField("dontPrintInputProductsInWorkPlans")).thenReturn(true);
+        when(operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS))
+                .thenReturn(true);
 
         // when
         boolean isInputProductTableEnabled = workPlanPdfService.isInputProductTableEnabled(operationComponent);
@@ -460,7 +458,8 @@ public class WorkPlanPdfServiceTest {
     public void shouldHideOutputProductsInfoIfTold() {
         // given
         Entity operationComponent = mock(Entity.class);
-        when(operationComponent.getBooleanField("dontPrintOutputProductsInWorkPlans")).thenReturn(true);
+        when(operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS))
+                .thenReturn(true);
 
         // when
         boolean isOutputProductTableEnabled = workPlanPdfService.isOutputProductTableEnabled(operationComponent);
@@ -474,20 +473,20 @@ public class WorkPlanPdfServiceTest {
         // given
         Locale locale = Locale.getDefault();
         Document document = mock(Document.class);
-        Entity column = mock(Entity.class);
+        Entity column1 = mock(Entity.class);
         Entity column2 = mock(Entity.class);
-        given(column.getStringField("name")).willReturn("column");
-        given(column2.getStringField("name")).willReturn("column2");
-        given(translationService.translate("column", locale)).willReturn("column");
+        given(column1.getStringField(L_NAME)).willReturn("column1");
+        given(column2.getStringField(L_NAME)).willReturn("column2");
+        given(translationService.translate("column1", locale)).willReturn("column1");
         given(translationService.translate("column2", locale)).willReturn("column2");
-        List<Entity> columns = asList(column, column2);
+        List<Entity> columns = asList(column1, column2);
 
         // when
         List<String> ordersHeader = workPlanPdfService.prepareOrdersTableHeader(document, columns, locale);
 
         // then
         verify(document).add(Mockito.any(Paragraph.class));
-        assertEquals("column", ordersHeader.get(0));
+        assertEquals("column1", ordersHeader.get(0));
         assertEquals("column2", ordersHeader.get(1));
     }
 
@@ -500,33 +499,33 @@ public class WorkPlanPdfServiceTest {
         Entity prod2 = mock(Entity.class);
         SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
         SearchResult searchResult = mock(SearchResult.class);
-        when(prod1.getStringField("number")).thenReturn("1");
-        when(prod2.getStringField("number")).thenReturn("2");
-        when(prodComp1.getBelongsToField("product")).thenReturn(prod1);
-        when(prodComp2.getBelongsToField("product")).thenReturn(prod2);
+        when(prod1.getStringField(ProductFields.NUMBER)).thenReturn("1");
+        when(prod2.getStringField(ProductFields.NUMBER)).thenReturn("2");
+        when(prodComp1.getBelongsToField(OperationProductInComponentFields.PRODUCT)).thenReturn(prod1);
+        when(prodComp2.getBelongsToField(OperationProductInComponentFields.PRODUCT)).thenReturn(prod2);
 
-        List<Entity> components = asList(prodComp1, prodComp2);
+        List<Entity> operationProductInputComponents = asList(prodComp1, prodComp2);
         Document document = mock(Document.class);
-        Map<Entity, Map<String, String>> columnValues = new HashMap<Entity, Map<String, String>>();
+        Map<Entity, Map<String, String>> columnValues = Maps.newHashMap();
         Entity operationComponent = mock(Entity.class);
         Entity column1 = mock(Entity.class);
         Entity column2 = mock(Entity.class);
         Entity column1Def = mock(Entity.class);
         Entity column2Def = mock(Entity.class);
-        when(column1.getBelongsToField("columnForInputProducts")).thenReturn(column1Def);
-        when(column2.getBelongsToField("columnForInputProducts")).thenReturn(column2Def);
+        when(column1.getBelongsToField(TechnologyOperationInputColumnFields.COLUMN_FOR_INPUT_PRODUCTS)).thenReturn(column1Def);
+        when(column2.getBelongsToField(TechnologyOperationInputColumnFields.COLUMN_FOR_INPUT_PRODUCTS)).thenReturn(column2Def);
 
-        when(column1Def.getStringField("identifier")).thenReturn("column1");
-        when(column2Def.getStringField("identifier")).thenReturn("column2");
+        when(column1Def.getStringField(ColumnForInputProductsFields.IDENTIFIER)).thenReturn("column1");
+        when(column2Def.getStringField(ColumnForInputProductsFields.IDENTIFIER)).thenReturn("column2");
 
-        when(column1Def.getStringField("name")).thenReturn("column1");
-        when(column2Def.getStringField("name")).thenReturn("column2");
+        when(column1Def.getStringField(ColumnForInputProductsFields.NAME)).thenReturn("column1");
+        when(column2Def.getStringField(ColumnForInputProductsFields.NAME)).thenReturn("column2");
 
-        when(column1.getField("succession")).thenReturn(Integer.valueOf(1));
-        when(column2.getField("succession")).thenReturn(Integer.valueOf(2));
+        when(column1.getField(TechnologyOperationInputColumnFields.SUCCESSION)).thenReturn(Integer.valueOf(1));
+        when(column2.getField(TechnologyOperationInputColumnFields.SUCCESSION)).thenReturn(Integer.valueOf(2));
 
-        when(column1Def.getStringField("alignment")).thenReturn("01left");
-        when(column2Def.getStringField("alignment")).thenReturn("02right");
+        when(column1Def.getStringField(ColumnForInputProductsFields.ALIGNMENT)).thenReturn("01left");
+        when(column2Def.getStringField(ColumnForInputProductsFields.ALIGNMENT)).thenReturn("02right");
 
         columnValues.put(prodComp1, new HashMap<String, String>());
         columnValues.put(prodComp2, new HashMap<String, String>());
@@ -538,7 +537,8 @@ public class WorkPlanPdfServiceTest {
         columnValues.get(prodComp2).put("column1", "value2");
 
         EntityList columns = mockEntityListIterator(asList(column1, column2));
-        when(operationComponent.getHasManyField("technologyOperationInputColumns")).thenReturn(columns);
+        when(operationComponent.getHasManyField(TechnologyOperationComponentFieldsWP.TECHNOLOGY_OPERATION_INPUT_COLUMNS))
+                .thenReturn(columns);
         when(columns.find()).thenReturn(searchCriteriaBuilder);
         when(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).thenReturn(searchCriteriaBuilder);
         when(searchCriteriaBuilder.list()).thenReturn(searchResult);
@@ -555,7 +555,8 @@ public class WorkPlanPdfServiceTest {
 
         // when
         try {
-            workPlanPdfService.addProductsSeries(components, document, columnValues, operationComponent, direction, locale);
+            workPlanPdfService.addProductsSeries(document, columnValues, operationComponent, operationProductInputComponents,
+                    direction, locale);
         } catch (DocumentException e) {
         }
 
@@ -576,7 +577,7 @@ public class WorkPlanPdfServiceTest {
                 opComponents.addAll(opComponent);
             }
         }
-        Assert.assertEquals(NUM_OF_UNIQUE_OPERATIONS, Sets.newHashSet(opComponents).size());
+        Assert.assertEquals(L_NUM_OF_UNIQUE_OPERATIONS, Sets.newHashSet(opComponents).size());
     }
 
 }

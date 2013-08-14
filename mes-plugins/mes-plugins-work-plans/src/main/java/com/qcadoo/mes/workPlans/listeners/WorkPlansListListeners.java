@@ -21,47 +21,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.hooks;
+package com.qcadoo.mes.workPlans.listeners;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
+import com.qcadoo.report.api.ReportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class OperationViewHooks {
+public class WorkPlansListListeners {
 
     @Autowired
-    private ParameterService parameterService;
+    private ReportService reportService;
 
-    public final void setOperationDefaultValues(final ViewDefinitionState view, final ComponentState component,
-            final String[] args) {
-        setOperationDefaultValues(view);
-    }
-
-    public final void setOperationDefaultValues(final ViewDefinitionState view) {
-        FormComponent form = getForm(view);
-
-        if (form.getEntityId() == null) {
-            for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
-                FieldComponent field = getFieldComponent(view, workPlanParameter);
-                Object parameterValue = parameterService.getParameter().getField(workPlanParameter);
-                field.setFieldValue(parameterValue);
-            }
-        }
-    }
-
-    private FormComponent getForm(final ViewDefinitionState view) {
-        return (FormComponent) view.getComponentByReference("form");
-    }
-
-    private FieldComponent getFieldComponent(final ViewDefinitionState view, final String name) {
-        return (FieldComponent) view.getComponentByReference(name);
+    public void printWorkPlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        reportService.printGeneratedReport(view, state, new String[] { args[0], WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN });
     }
 
 }

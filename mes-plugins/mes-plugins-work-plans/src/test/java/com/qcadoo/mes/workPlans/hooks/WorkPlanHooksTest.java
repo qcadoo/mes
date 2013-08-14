@@ -23,30 +23,46 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static org.mockito.Mockito.verify;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
-@Service
-public class TechnologyInstanceOperationColumnModelValidators {
+public class WorkPlanHooksTest {
 
-    @Autowired
-    private ValidatorService validatorService;
+    private WorkPlanHooks workPlanHooks;
 
-    public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputColumnDD,
-            final Entity inputColumn) {
+    @Mock
+    private Entity workPlan;
 
-        return validatorService.checkIfColumnIsNotUsed(inputColumnDD, inputColumn, "orderOperationColumn",
-                "columnForInputProducts", "orderOperatonInputColumns");
+    @Mock
+    private DataDefinition workPlanDD;
+
+    @Before
+    public final void init() {
+        MockitoAnnotations.initMocks(this);
+
+        workPlanHooks = new WorkPlanHooks();
     }
 
-    public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputColumnDD,
-            final Entity outputColumn) {
+    @Test
+    public void shouldClearGeneratedOnCopy() {
+        // given
 
-        return validatorService.checkIfColumnIsNotUsed(outputColumnDD, outputColumn, "orderOperationColumn",
-                "columnForOutputProducts", "orderOperationOutputColumns");
+        // when
+        workPlanHooks.onCopy(workPlanDD, workPlan);
+
+        // then
+        verify(workPlan).setField(WorkPlanFields.FILE_NAME, null);
+        verify(workPlan).setField(WorkPlanFields.GENERATED, false);
+        verify(workPlan).setField(WorkPlanFields.DATE, null);
+        verify(workPlan).setField(WorkPlanFields.WORKER, null);
     }
 
 }

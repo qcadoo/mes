@@ -73,7 +73,6 @@
 
 				<option type="header" value="true" />
 				<option type="expression" value="'@' + #columnForOrders[name]" />
-
 			</component>
 		</windowTab>
 

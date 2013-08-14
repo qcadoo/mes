@@ -38,7 +38,9 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
@@ -49,56 +51,60 @@ import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchResult;
 
 public class WorkPlanServiceTest {
 
+    private static final String L_TRANSLATED_STRING = "translated string";
+
     private WorkPlansService workPlanService;
 
+    @Mock
     private DataDefinitionService dataDefinitionService;
 
-    private Entity workPlan;
+    @Mock
+    private TranslationService translationService;
 
-    private DataDefinition workPlanDD;
+    @Mock
+    private Entity workPlan, entity;
 
-    private static final String TRANSLATED_STRING = "translated string";
+    @Mock
+    private DataDefinition workPlanDD, entityDD;
+
+    @Mock
+    private FieldDefinition attachmentFieldDef;
 
     @Before
     public final void init() {
+        MockitoAnnotations.initMocks(this);
+
         workPlanService = new WorkPlansServiceImpl();
 
-        dataDefinitionService = mock(DataDefinitionService.class);
-        TranslationService translationService = mock(TranslationService.class);
-        workPlan = mock(Entity.class);
-        workPlanDD = mock(DataDefinition.class);
+        ReflectionTestUtils.setField(workPlanService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(workPlanService, "translationService", translationService);
 
+        when(translationService.translate(Mockito.anyString(), Mockito.any(Locale.class), Mockito.anyString())).thenReturn(
+                L_TRANSLATED_STRING);
         when(dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN)).thenReturn(
                 workPlanDD);
 
-        when(translationService.translate(Mockito.anyString(), Mockito.any(Locale.class), Mockito.anyString())).thenReturn(
-                TRANSLATED_STRING);
-
-        when(workPlanDD.getName()).thenReturn(WorkPlansConstants.MODEL_WORK_PLAN);
-        when(workPlanDD.getPluginIdentifier()).thenReturn(WorkPlansConstants.PLUGIN_IDENTIFIER);
         when(workPlanDD.get(Mockito.anyLong())).thenReturn(workPlan);
 
         when(workPlan.getDataDefinition()).thenReturn(workPlanDD);
         when(workPlan.getId()).thenReturn(1L);
-
-        ReflectionTestUtils.setField(workPlanService, "dataDefinitionService", dataDefinitionService);
-        ReflectionTestUtils.setField(workPlanService, "translationService", translationService);
     }
 
     @Test
     public final void shouldReturnWorkPlan() throws Exception {
         // when
-        Entity resultEntity = workPlanService.getWorkPlan(1L);
+        Entity result = workPlanService.getWorkPlan(1L);
 
         // then
-        Assert.assertSame(workPlanDD, resultEntity.getDataDefinition());
-        Assert.assertEquals(workPlan.getId(), resultEntity.getId());
+        Assert.assertSame(workPlanDD, result.getDataDefinition());
+        Assert.assertEquals(workPlan.getId(), result.getId());
 
     }
 
@@ -140,7 +146,7 @@ public class WorkPlanServiceTest {
         Assert.assertSame(order, resultOrders.get(2));
 
         verify(emptyWorkPlan, times(1)).setField(Mockito.eq("name"), stringArgCaptor.capture());
-        Assert.assertEquals(TRANSLATED_STRING, stringArgCaptor.getValue());
+        Assert.assertEquals(L_TRANSLATED_STRING, stringArgCaptor.getValue());
 
         verify(emptyWorkPlan, times(1)).setField(Mockito.eq("type"), stringArgCaptor.capture());
         Assert.assertEquals(WorkPlanType.NO_DISTINCTION.getStringValue(), stringArgCaptor.getValue());
@@ -259,6 +265,133 @@ public class WorkPlanServiceTest {
 
         // then
         Assert.assertEquals(0, resultList.size());
+    }
+
+    @Test
+    public final void shouldMarkExtensionAsValidForNullAttachmentPathValue() {
+        // given
+        final String oldValue = "valid.png";
+        final String newValue = null;
+
+        // when
+        final boolean isValid = workPlanService
+                .checkAttachmentExtension(entityDD, attachmentFieldDef, entity, oldValue, newValue);
+
+        // then
+        Assert.assertTrue(isValid);
+    }
+
+    @Test
+    public final void shouldMarkExtensionAsValidForEmptyAttachmentPathValue() {
+        // given
+        final String oldValue = "valid.png";
+        final String newValue = "";
+
+        // when
+        final boolean isValid = workPlanService
+                .checkAttachmentExtension(entityDD, attachmentFieldDef, entity, oldValue, newValue);
+
+        // then
+        Assert.assertTrue(isValid);
+    }
+
+    @Test
+    public final void shouldMarkExtensionAsValidForBlankAttachmentPathValue() {
+        // given
+        final String oldValue = "valid.png";
+        final String newValue = "   ";
+
+        // when
+        final boolean isValid = workPlanService
+                .checkAttachmentExtension(entityDD, attachmentFieldDef, entity, oldValue, newValue);
+
+        // then
+        Assert.assertTrue(isValid);
+    }
+
+    @Test
+    public final void shouldMarkExtensionAsValidIfNewValueIsEqualToOldOne() {
+        // given
+        final String oldValue = "valid.png";
+        final String newValue = oldValue;
+
+        // when
+        final boolean isValid = workPlanService
+                .checkAttachmentExtension(entityDD, attachmentFieldDef, entity, oldValue, newValue);
+
+        // then
+        Assert.assertTrue(isValid);
+    }
+
+    @Test
+    public final void shouldMarkExtensionAsValidIfNewValueIsEqualToOldOneEvenIfBothValuesAreInvalid() {
+        // given
+        final String oldValue = "invalid.mp3";
+        final String newValue = oldValue;
+
+        // when
+        final boolean isValid = workPlanService
+                .checkAttachmentExtension(entityDD, attachmentFieldDef, entity, oldValue, newValue);
+
+        // then
+        Assert.assertTrue(isValid);
+    }
+
+    @Test
+    public final void shouldMarkExtensionAsValidIfNewValueIsValidAndOldValueIsInvalid() {
+        // given
+        final String oldValue = "invalid.mp3";
+        final String newValue = "valid.png";
+
+        // when
+        final boolean isValid = workPlanService
+                .checkAttachmentExtension(entityDD, attachmentFieldDef, entity, oldValue, newValue);
+
+        // then
+        Assert.assertTrue(isValid);
+    }
+
+    @Test
+    public final void shouldMarkExtensionAsValidEvenIfNewValueHasManyDots() {
+        // given
+        final String oldValue = null;
+        final String newValue = "valid.wav.mp3.rmvb.pdf.sh.png";
+
+        // when
+        final boolean isValid = workPlanService
+                .checkAttachmentExtension(entityDD, attachmentFieldDef, entity, oldValue, newValue);
+
+        // then
+        Assert.assertTrue(isValid);
+    }
+
+    @Test
+    public final void shouldMarkAllowedExtensionAsValid() {
+        // given
+        final String oldValue = null;
+        final String newValuePrefix = "someFile.";
+
+        // when
+        for (String allowedFileExtension : WorkPlansConstants.FILE_EXTENSIONS) {
+            boolean isValid = workPlanService.checkAttachmentExtension(entityDD, attachmentFieldDef, entity, oldValue,
+                    newValuePrefix + allowedFileExtension);
+            Assert.assertTrue(isValid);
+        }
+    }
+
+    @Test
+    public final void shouldMarkDisallowedExtensionAsInvalid() {
+        // given
+        final String oldValue = null;
+        final String newValuePrefix = "someFile.";
+        final String disallowedExtension = ".mp3";
+
+        // when
+        for (String allowedFileExtension : WorkPlansConstants.FILE_EXTENSIONS) {
+            boolean isValid = workPlanService.checkAttachmentExtension(entityDD, attachmentFieldDef, entity, oldValue,
+                    newValuePrefix + allowedFileExtension + disallowedExtension);
+            Assert.assertFalse(isValid);
+        }
     }
 
 }

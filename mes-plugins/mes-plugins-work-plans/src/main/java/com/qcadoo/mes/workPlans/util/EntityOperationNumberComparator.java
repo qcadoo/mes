@@ -32,10 +32,14 @@ public class EntityOperationNumberComparator implements Comparator<Entity>, Seri
 
     private static final long serialVersionUID = -3569221006218524772L;
 
+    private static final String L_OPERATION = "operation";
+
+    private static final String L_NUMBER = "number";
+
     @Override
     public int compare(final Entity o1, final Entity o2) {
-        return ((Entity) o1.getField("operation")).getField("number").toString()
-                .compareTo(((Entity) o2.getField("operation")).getField("number").toString());
+        return ((Entity) o1.getField(L_OPERATION)).getField(L_NUMBER).toString()
+                .compareTo(((Entity) o2.getField(L_OPERATION)).getField(L_NUMBER).toString());
     }
 
 }
