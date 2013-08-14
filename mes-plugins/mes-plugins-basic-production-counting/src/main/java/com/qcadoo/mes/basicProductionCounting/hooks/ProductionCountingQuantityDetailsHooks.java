@@ -45,11 +45,7 @@ public class ProductionCountingQuantityDetailsHooks {
 
     private static final String L_FORM = "form";
 
-    private static final String L_FOR_EACH = "03forEach";
-
     private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUnit";
-
-    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;

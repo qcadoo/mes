@@ -27,7 +27,7 @@ import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.D
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.NAME;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.TYPE_TASK;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksFieldsOTFOF.ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.NUMBER;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
@@ -54,19 +54,21 @@ import com.qcadoo.view.api.components.LookupComponent;
 @Service
 public class OperationalTasksDetailsListenersOTFO {
 
-    @Autowired
-    private OperationalTasksDetailsHooksOTFO detailsHooks;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private static final String L_FORM = "form";
 
     private static final String L_GRID_OPTIONS = "grid.options";
 
     private static final String L_FILTERS = "filters";
 
-    private static final String L_FORM = "form";
-
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
+    @Autowired
+    private OperationalTasksDetailsHooksOTFO detailsHooks;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void disabledFieldWhenOrderTypeIsSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -76,7 +78,8 @@ public class OperationalTasksDetailsListenersOTFO {
     public void setProductionLineFromOrderAndClearOperation(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
         Entity order = ((LookupComponent) viewDefinitionState.getComponentByReference(ORDER)).getEntity();
-        LookupComponent tocLookup = (LookupComponent) viewDefinitionState.getComponentByReference("technologyOperationComponent");
+        LookupComponent tocLookup = (LookupComponent) viewDefinitionState
+                .getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
         tocLookup.setFieldValue(null);
         tocLookup.requestComponentUpdateState();
         FieldComponent productionLine = (FieldComponent) viewDefinitionState.getComponentByReference(PRODUCTION_LINE);
@@ -90,7 +93,7 @@ public class OperationalTasksDetailsListenersOTFO {
 
     public void setOperationalNameAndDescription(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        Entity techOperComp = ((LookupComponent) viewDefinitionState.getComponentByReference("technologyOperationComponent"))
+        Entity techOperComp = ((LookupComponent) viewDefinitionState.getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT))
                 .getEntity();
         FieldComponent description = (FieldComponent) viewDefinitionState.getComponentByReference(DESCRIPTION);
         FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference(NAME);
@@ -152,7 +155,7 @@ public class OperationalTasksDetailsListenersOTFO {
 
     public final void showOperationParameter(final ViewDefinitionState viewState, final ComponentState componentState,
             final String[] args) {
-        Entity techOperComp = ((LookupComponent) viewState.getComponentByReference("technologyOperationComponent")).getEntity();
+        Entity techOperComp = ((LookupComponent) viewState.getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT)).getEntity();
         if (techOperComp == null) {
             return;
         }
@@ -172,7 +175,7 @@ public class OperationalTasksDetailsListenersOTFO {
         if (operationalTaskId != null) {
             FieldComponent type = (FieldComponent) view.getComponentByReference(TYPE_TASK);
             if (type.getFieldValue().equals("02executionOperationInOrder")) {
-                LookupComponent tocLookup = (LookupComponent) view.getComponentByReference("technologyOperationComponent");
+                LookupComponent tocLookup = (LookupComponent) view.getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
                 Entity toc = tocLookup.getEntity();
                 Entity operationalTask = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                         OperationalTasksConstants.MODEL_OPERATIONAL_TASK).get(operationalTaskId);

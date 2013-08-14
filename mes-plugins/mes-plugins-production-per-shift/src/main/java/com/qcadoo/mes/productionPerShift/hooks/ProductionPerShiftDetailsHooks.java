@@ -404,7 +404,7 @@ public class ProductionPerShiftDetailsHooks {
                     continue;
                 }
                 boolean isFirstDailyProgress = dailyProgressList.get(0).equals(dailyProgress);
-                if (!checkIfShiftWorks(progressForDays, progressForDay, toc, shift, order, isFirstDailyProgress)) {
+                if (!checkIfShiftWorks(progressForDays, progressForDay, shift, order, isFirstDailyProgress)) {
                     final String shiftName = shift.getStringField(ShiftFields.NAME);
                     final String workDate = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
                             .format(ppsHelper.getDateAfterStartOrderForProgress(order, progressForDay));
@@ -415,8 +415,8 @@ public class ProductionPerShiftDetailsHooks {
         }
     }
 
-    private boolean checkIfShiftWorks(final List<Entity> progressForDays, final Entity progressForDay, final Entity toc,
-            final Entity shift, final Entity order, final boolean isFirstDailyProgress) {
+    private boolean checkIfShiftWorks(final List<Entity> progressForDays, final Entity progressForDay, final Entity shift,
+            final Entity order, final boolean isFirstDailyProgress) {
         boolean works = false;
         if (progressForDay.equals(progressForDays.get(0)) && isFirstDailyProgress) {
             Entity shiftFromDay = shiftsService.getShiftFromDateWithTime(ppsHelper.getDateAfterStartOrderForProgress(order,

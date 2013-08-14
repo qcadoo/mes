@@ -27,13 +27,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -41,9 +39,6 @@ import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class HourlyCostNormsInOrderDetailsHooks {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setLastUpdateDateTioc(view);

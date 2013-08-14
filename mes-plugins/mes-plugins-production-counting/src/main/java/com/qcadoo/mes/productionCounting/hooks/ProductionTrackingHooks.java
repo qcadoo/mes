@@ -72,31 +72,31 @@ public class ProductionTrackingHooks {
     private ProductQuantitiesService productQuantitiesService;
 
     public void onCreate(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        setInitialState(productionTrackingDD, productionTracking);
+        setInitialState(productionTracking);
     }
 
     public void onSave(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        generateData(productionTrackingDD, productionTracking);
-        copyProductsFromOrderOperation(productionTrackingDD, productionTracking);
+        generateData(productionTracking);
+        copyProductsFromOrderOperation(productionTracking);
     }
 
     public void onCopy(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        setInitialState(productionTrackingDD, productionTracking);
-        clearLaborAndMachineTime(productionTrackingDD, productionTracking);
+        setInitialState(productionTracking);
+        clearLaborAndMachineTime(productionTracking);
     }
 
-    private void setInitialState(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+    private void setInitialState(final Entity productionTracking) {
         stateChangeEntityBuilder.buildInitial(describer, productionTracking, ProductionTrackingState.DRAFT);
     }
 
-    private void generateData(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+    private void generateData(final Entity productionTracking) {
         if (productionTracking.getField(ProductionTrackingFields.NUMBER) == null) {
             productionTracking.setField(ProductionTrackingFields.NUMBER, numberGeneratorService.generateNumber(
                     ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING));
         }
     }
 
-    private void copyProductsFromOrderOperation(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+    private void copyProductsFromOrderOperation(final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         Entity technologyOperationComponent = productionTracking
                 .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
@@ -214,7 +214,7 @@ public class ProductionTrackingHooks {
         return productionTracking.getDataDefinition().get(productionTracking.getId());
     }
 
-    private void clearLaborAndMachineTime(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+    private void clearLaborAndMachineTime(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.LABOR_TIME, 0);
         productionTracking.setField(ProductionTrackingFields.MACHINE_TIME, 0);
     }

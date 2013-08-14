@@ -26,7 +26,7 @@ package com.qcadoo.mes.techSubcontrForOperTasks.aop;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.DESCRIPTION;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.NAME;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksFieldsOTFOF.ORDER;
 import static com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;

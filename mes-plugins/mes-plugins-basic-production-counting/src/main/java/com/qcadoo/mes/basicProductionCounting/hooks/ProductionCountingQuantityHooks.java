@@ -48,18 +48,18 @@ public class ProductionCountingQuantityHooks {
     private BasicProductionCountingService basicProductionCountingService;
 
     public void onCreate(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-        fillOrder(productionCountingQuantityDD, productionCountingQuantity);
-        fillOperationProductInComponent(productionCountingQuantityDD, productionCountingQuantity);
-        fillOperationProductOutComponent(productionCountingQuantityDD, productionCountingQuantity);
-        fillBasicProductionCounting(productionCountingQuantityDD, productionCountingQuantity);
-        fillIsNonComponent(productionCountingQuantityDD, productionCountingQuantity);
+        fillOrder(productionCountingQuantity);
+        fillOperationProductInComponent(productionCountingQuantity);
+        fillOperationProductOutComponent(productionCountingQuantity);
+        fillBasicProductionCounting(productionCountingQuantity);
+        fillIsNonComponent(productionCountingQuantity);
     }
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         return deleteBasicProductionCounting(productionCountingQuantity);
     }
 
-    private void fillOrder(final DataDefinition producionCountingQuantityDD, final Entity productionCountingQuantity) {
+    private void fillOrder(final Entity productionCountingQuantity) {
         if (productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER) == null) {
             Entity basicProductionCounting = productionCountingQuantity
                     .getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING);
@@ -72,8 +72,7 @@ public class ProductionCountingQuantityHooks {
         }
     }
 
-    private void fillOperationProductInComponent(final DataDefinition producionCountingQuantityDD,
-            final Entity productionCountingQuantity) {
+    private void fillOperationProductInComponent(final Entity productionCountingQuantity) {
         if (productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT) == null) {
             Entity technologyOperationComponent = productionCountingQuantity
                     .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
@@ -99,8 +98,7 @@ public class ProductionCountingQuantityHooks {
                 .uniqueResult();
     }
 
-    private void fillOperationProductOutComponent(final DataDefinition productionCountingQuantityDD,
-            final Entity productionCountingQuantity) {
+    private void fillOperationProductOutComponent(final Entity productionCountingQuantity) {
         if (productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT) == null) {
             Entity technologyOperationComponent = productionCountingQuantity
                     .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
@@ -126,8 +124,7 @@ public class ProductionCountingQuantityHooks {
                 .uniqueResult();
     }
 
-    private void fillBasicProductionCounting(final DataDefinition productionCountingQuantityDD,
-            final Entity productionCountingQuantity) {
+    private void fillBasicProductionCounting(final Entity productionCountingQuantity) {
         if (productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING) == null) {
             Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
@@ -168,7 +165,7 @@ public class ProductionCountingQuantityHooks {
                 .uniqueResult();
     }
 
-    private void fillIsNonComponent(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+    private void fillIsNonComponent(final Entity productionCountingQuantity) {
         if (productionCountingQuantity.getField(ProductionCountingQuantityFields.IS_NON_COMPONENT) == null) {
             String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 

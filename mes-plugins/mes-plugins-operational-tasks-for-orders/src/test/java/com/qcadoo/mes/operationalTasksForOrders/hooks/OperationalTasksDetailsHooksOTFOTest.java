@@ -32,7 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksFieldsOTFOF;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -55,7 +55,7 @@ public class OperationalTasksDetailsHooksOTFOTest {
         Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFields.NAME)).thenReturn(nameField);
         Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFields.DESCRIPTION))
                 .thenReturn(descriptionField);
-        Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksOTFOFields.ORDER)).thenReturn(orderField);
+        Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFieldsOTFOF.ORDER)).thenReturn(orderField);
         Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFields.PRODUCTION_LINE)).thenReturn(
                 productionLineField);
         Mockito.when(viewDefinitionState.getComponentByReference("technologyOperationComponent")).thenReturn(tocField);

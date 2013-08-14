@@ -46,10 +46,10 @@ public class BasicProductionCountingHooks {
     private NumberService numberService;
 
     public void onView(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
-        fillPlannedQuantity(basicProductionCountingDD, basicProductionCounting);
+        fillPlannedQuantity(basicProductionCounting);
     }
 
-    private void fillPlannedQuantity(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
+    private void fillPlannedQuantity(final Entity basicProductionCounting) {
         basicProductionCounting.setField(BasicProductionCountingFields.PLANNED_QUANTITY,
                 numberService.setScale(getPlannedQuantity(basicProductionCounting)));
     }

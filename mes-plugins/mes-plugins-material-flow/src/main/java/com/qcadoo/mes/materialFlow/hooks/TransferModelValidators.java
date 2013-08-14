@@ -41,6 +41,14 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class TransferModelValidators {
 
+    private static final String L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_TYPE = "materialFlow.validate.global.error.fillType";
+
+    private static final String L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_DATE = "materialFlow.validate.global.error.fillDate";
+
+    private static final String L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_REQUIRED = "materialFlow.validate.global.error.fillRequired";
+
+    private static final String L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_LOCATION_HAS_EXTERNAL_NUMBER = "materialFlow.validate.global.error.locationHasExternalNumber";
+
     @Autowired
     private MaterialFlowService materialFlowService;
 
@@ -51,7 +59,7 @@ public class TransferModelValidators {
         Date time = (Date) transfer.getField(TIME);
 
         if (type == null) {
-            transfer.addError(transferDD.getField(TYPE), "materialFlow.validate.global.error.fillType");
+            transfer.addError(transferDD.getField(TYPE), L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_TYPE);
 
             isValid = false;
         } else {
@@ -59,7 +67,7 @@ public class TransferModelValidators {
         }
 
         if (time == null) {
-            transfer.addError(transferDD.getField(TIME), "materialFlow.validate.global.error.fillDate");
+            transfer.addError(transferDD.getField(TIME), L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_DATE);
 
             isValid = false;
         }
@@ -74,16 +82,16 @@ public class TransferModelValidators {
         Entity locationTo = transfer.getBelongsToField(LOCATION_TO);
         boolean isValid = true;
         if (type.equals(TransferType.PRODUCTION.getStringValue()) && locationTo == null) {
-            transfer.addError(transferDD.getField(LOCATION_TO), "materialFlow.validate.global.error.fillRequired");
+            transfer.addError(transferDD.getField(LOCATION_TO), L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_REQUIRED);
             isValid = false;
         }
         if (type.equals(TransferType.CONSUMPTION.getStringValue()) && locationFrom == null) {
-            transfer.addError(transferDD.getField(LOCATION_FROM), "materialFlow.validate.global.error.fillRequired");
+            transfer.addError(transferDD.getField(LOCATION_FROM), L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_REQUIRED);
             isValid = false;
         }
         if (locationFrom == null && locationTo == null && (type.equals(TransferType.TRANSPORT.getStringValue()))) {
-            transfer.addError(transferDD.getField(LOCATION_FROM), "materialFlow.validate.global.error.fillRequired");
-            transfer.addError(transferDD.getField(LOCATION_TO), "materialFlow.validate.global.error.fillRequired");
+            transfer.addError(transferDD.getField(LOCATION_FROM), L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_REQUIRED);
+            transfer.addError(transferDD.getField(LOCATION_TO), L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_REQUIRED);
             isValid = false;
         }
         return isValid;
@@ -93,13 +101,15 @@ public class TransferModelValidators {
         boolean isValid = true;
 
         if (materialFlowService.checkIfLocationHasExternalNumber(transfer.getBelongsToField(LOCATION_FROM))) {
-            transfer.addError(transferDD.getField(LOCATION_FROM), "materialFlow.validate.global.error.locationHasExternalNumber");
+            transfer.addError(transferDD.getField(LOCATION_FROM),
+                    L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_LOCATION_HAS_EXTERNAL_NUMBER);
 
             isValid = false;
         }
 
         if (materialFlowService.checkIfLocationHasExternalNumber(transfer.getBelongsToField(LOCATION_TO))) {
-            transfer.addError(transferDD.getField(LOCATION_TO), "materialFlow.validate.global.error.locationHasExternalNumber");
+            transfer.addError(transferDD.getField(LOCATION_TO),
+                    L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_LOCATION_HAS_EXTERNAL_NUMBER);
 
             isValid = false;
         }

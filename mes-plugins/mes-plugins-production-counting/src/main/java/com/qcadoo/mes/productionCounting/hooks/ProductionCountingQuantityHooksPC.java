@@ -48,16 +48,16 @@ public class ProductionCountingQuantityHooksPC {
     private NumberService numberService;
 
     public void onView(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-        fillUsedQuantity(productionCountingQuantityDD, productionCountingQuantity);
-        fillProducedQuantity(productionCountingQuantityDD, productionCountingQuantity);
+        fillUsedQuantity(productionCountingQuantity);
+        fillProducedQuantity(productionCountingQuantity);
     }
 
-    private void fillUsedQuantity(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+    private void fillUsedQuantity(final Entity productionCountingQuantity) {
         productionCountingQuantity.setField(ProductionCountingQuantityFields.USED_QUANTITY,
                 numberService.setScale(getUsedQuantity(productionCountingQuantity)));
     }
 
-    private void fillProducedQuantity(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+    private void fillProducedQuantity(final Entity productionCountingQuantity) {
         productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCED_QUANTITY,
                 numberService.setScale(getProducedQuantity(productionCountingQuantity)));
     }

@@ -18,7 +18,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -76,8 +75,8 @@ public class TechnologyServiceO {
                             .get(0);
                     newCopyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
                             TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
-                    newCopyOfTechnology
-                            .setField("technologyPrototype", order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+                    newCopyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE,
+                            order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
                     newCopyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE,
                             TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
                     newCopyOfTechnology = newCopyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
@@ -97,8 +96,8 @@ public class TechnologyServiceO {
                             .get(0);
                     newCopyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
                             TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
-                    newCopyOfTechnology
-                            .setField("technologyPrototype", order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+                    newCopyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE,
+                            order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
                     newCopyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE,
                             TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
                     newCopyOfTechnology = newCopyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
@@ -113,7 +112,8 @@ public class TechnologyServiceO {
                     technology = technologyDD.copy(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).getId()).get(0);
                     technology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
                             TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
-                    technology.setField("technologyPrototype", order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+                    technology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE,
+                            order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
                     technology
                             .setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
                     technology = technology.getDataDefinition().save(technology);
@@ -134,7 +134,7 @@ public class TechnologyServiceO {
                 if (prototypeTechnology != null) {
                     order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
                     Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-                    technology.setField("technologyPrototype", null);
+                    technology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, null);
 
                     technology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue());
                     technology.setField(
@@ -155,7 +155,8 @@ public class TechnologyServiceO {
                             makeTechnologyName(technology.getStringField(TechnologyFields.NUMBER),
                                     order.getBelongsToField(OrderFields.PRODUCT)));
                     technology.setField(TechnologyFields.PRODUCT, order.getBelongsToField(OrderFields.PRODUCT));
-                    technology.setField("technologyPrototype", order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+                    technology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE,
+                            order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
                     technology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue());
                     technology = technology.getDataDefinition().save(technology);
 
@@ -175,7 +176,8 @@ public class TechnologyServiceO {
                             makeTechnologyName(technology.getStringField(TechnologyFields.NUMBER),
                                     order.getBelongsToField(OrderFields.PRODUCT)));
                     technology.setField(TechnologyFields.PRODUCT, order.getBelongsToField(OrderFields.PRODUCT));
-                    technology.setField("technologyPrototype", order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+                    technology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE,
+                            order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
                     technology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue());
                     technology = technology.getDataDefinition().save(technology);
 
@@ -204,12 +206,9 @@ public class TechnologyServiceO {
         DataDefinition quantityOfWorkstationTypesDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 "techOperCompWorkstation");
 
-        // EntityTree technologyOperationComponents = EntityTreeUtilsService.getDetachedEntityTree(en);
         if (techOperComponentTree == null) {
             return;
         }
-
-        EntityTreeNode operationComponentRoot = techOperComponentTree.getRoot();
 
         Entity techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
         for (Entity child : technologyDB.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
@@ -220,9 +219,7 @@ public class TechnologyServiceO {
             child.setField("techOperCompWorkstation", techOperCompWorkstation);
 
             child = child.getDataDefinition().save(child);
-
         }
-
     }
 
     public String makeTechnologyName(final String technologyNumber, final Entity product) {
@@ -237,15 +234,6 @@ public class TechnologyServiceO {
         Entity existingOrder = getExistingOrder(order);
         String orderTypeDB = existingOrder.getStringField(OrderFields.ORDER_TYPE);
         if (orderTypeDB.equals(OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue())) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isTypeOrderChnagedToOwn(final Entity order) {
-        Entity existingOrder = getExistingOrder(order);
-        String orderTypeDB = existingOrder.getStringField(OrderFields.ORDER_TYPE);
-        if (orderTypeDB.equals(OrderType.WITH_OWN_TECHNOLOGY.getStringValue())) {
             return false;
         }
         return true;

@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.constants;
 
-public class TechOperCompTimeCalculationsFields {
+public final class TechOperCompTimeCalculationsFields {
 
     private TechOperCompTimeCalculationsFields() {
 

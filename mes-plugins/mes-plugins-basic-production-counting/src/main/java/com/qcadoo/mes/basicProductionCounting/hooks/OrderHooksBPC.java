@@ -43,10 +43,10 @@ public class OrderHooksBPC {
     private BasicProductionCountingService basicProductionCountingService;
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
-        updateProductionCountingQuantitiesAndOperationRuns(orderDD, order);
+        updateProductionCountingQuantitiesAndOperationRuns(order);
     }
 
-    private void updateProductionCountingQuantitiesAndOperationRuns(final DataDefinition orderDD, final Entity order) {
+    private void updateProductionCountingQuantitiesAndOperationRuns(final Entity order) {
         BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
         String state = order.getStringField(OrderFields.STATE);

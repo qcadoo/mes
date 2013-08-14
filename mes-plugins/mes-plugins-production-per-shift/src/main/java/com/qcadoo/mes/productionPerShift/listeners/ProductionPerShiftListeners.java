@@ -78,8 +78,6 @@ public class ProductionPerShiftListeners {
 
     private static final String L_DAILY_PROGRESS = "dailyProgress";
 
-    private static final String L_ORDER = "order";
-
     private static final String L_DAY = "day";
 
     private static final String L_DATE = "date";

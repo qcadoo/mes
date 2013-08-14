@@ -43,11 +43,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.NumberService;
@@ -57,12 +59,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private static final String L_ORDER = "order";
 
-    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
-    private static final String L_OPERATION = "operation";
-
-    private static final String L_REFERENCE_TECHNOLOGY = "referenceTechnology";
-
     private Map<Entity, BigDecimal> operationRunsField = Maps.newHashMap();
 
     @Autowired
@@ -70,12 +66,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ProductionLinesService productionLinesService;
 
     @Override
     public Object setDateToField(final Date date) {
@@ -151,14 +141,14 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         Entity technology;
         List<Entity> operationComponents;
 
-        if (TECHNOLOGY.equals(entityType)) {
+        if (TechnologiesConstants.MODEL_TECHNOLOGY.equals(entityType)) {
             technology = entity;
 
-            operationComponents = technology.getTreeField("operationComponents");
+            operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         } else if (L_ORDER.equals(entityType)) {
             technology = entity.getBelongsToField(TECHNOLOGY);
 
-            operationComponents = technology.getTreeField("operationComponents");
+            operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         } else {
             throw new IllegalStateException("Entity has to be either order or technology");
         }
@@ -183,9 +173,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private void evaluateTimesConsideringOperationCanBeReferencedTechnology(final Map<Entity, Integer> operationDurations,
             final Entity operationComponent, final boolean includeTpz, final boolean includeAdditionalTime,
             final Map<Entity, BigDecimal> operationRuns, final Entity productionLine, final boolean maxForWorkstation) {
-        if (L_REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField("entityType"))) {
-            for (Entity operComp : operationComponent.getBelongsToField("referenceTechnology")
-                    .getTreeField("operationComponents")) {
+        String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
+
+        if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(entityType)) {
+            for (Entity operComp : operationComponent.getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
+                    .getTreeField(TechnologyFields.OPERATION_COMPONENTS)) {
                 evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operComp, includeTpz,
                         includeAdditionalTime, operationRuns, productionLine, maxForWorkstation);
             }
@@ -201,15 +193,16 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private int evaluateOperationTime(final Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns, final Entity productionLine,
             final boolean maxForWorkstation, final OperationProductComponentWithQuantityContainer productComponentQuantities) {
-        String entityType = operationComponent.getStringField("entityType");
+        String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
 
-        if (L_REFERENCE_TECHNOLOGY.equals(entityType)) {
-            EntityTreeNode actualOperationComponent = operationComponent.getBelongsToField("referenceTechnology")
-                    .getTreeField("operationComponents").getRoot();
+        if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(entityType)) {
+            EntityTreeNode actualOperationComponent = operationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
+                    .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
 
             return evaluateOperationTime(actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation, productComponentQuantities);
-        } else if (L_OPERATION.equals(entityType)) {
+        } else if (TechnologyOperationComponentEntityType.OPERATION.getStringValue().equals(entityType)) {
             int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation);
             int offset = 0;
@@ -234,7 +227,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 }
             }
 
-            if (L_TECHNOLOGY_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
+            if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition()
+                    .getName())) {
                 Entity techOperCompTimeCalculations = operationComponent.getBelongsToField("techOperCompTimeCalculations");
                 techOperCompTimeCalculations.setField("operationOffSet", offset);
                 techOperCompTimeCalculations.setField("effectiveOperationRealizationTime", operationTime);
@@ -247,7 +241,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         throw new IllegalStateException("entityType has to be either operation or referenceTechnology");
     }
 
-    private Integer retrieveWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
+    private Integer retrieveWorkstationTypesCount(final Entity operationComponent) {
         return getIntegerValue(operationComponent.getBelongsToField("techOperCompWorkstation").getIntegerField(
                 "quantityOfWorkstationTypes"));
     }
@@ -320,7 +314,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             final boolean includeAdditionalTime) {
         boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
 
-        Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
+        Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent);
         BigDecimal cyclesPerOperation = cycles;
 
         if (maxForWorkstation) {

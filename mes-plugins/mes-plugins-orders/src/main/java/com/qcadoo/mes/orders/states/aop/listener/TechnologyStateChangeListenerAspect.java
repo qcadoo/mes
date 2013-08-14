@@ -27,11 +27,9 @@ import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.states.TechnologyStateChangeListenerService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
@@ -48,9 +46,6 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 @Configurable
 @RunIfEnabled(OrdersConstants.PLUGIN_IDENTIFIER)
 public class TechnologyStateChangeListenerAspect extends AbstractStateListenerAspect {
-
-    @Autowired
-    private TechnologyStateChangeListenerService technologyStateChangeListener;
 
     @Pointcut(TechnologyStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {

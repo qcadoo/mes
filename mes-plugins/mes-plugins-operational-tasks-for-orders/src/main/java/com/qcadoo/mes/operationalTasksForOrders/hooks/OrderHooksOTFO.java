@@ -24,7 +24,7 @@
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksFieldsOTFOF.ORDER;
 
 import java.util.List;
 

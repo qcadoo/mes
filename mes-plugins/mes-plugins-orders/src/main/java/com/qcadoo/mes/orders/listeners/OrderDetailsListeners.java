@@ -53,13 +53,15 @@ import com.qcadoo.view.api.components.LookupComponent;
 @Service
 public class OrderDetailsListeners {
 
-    private static final String PLANNED_DATE_FROM = "plannedDateFrom";
+    private static final String L_FORM = "form";
 
-    private static final String PLANNED_DATE_TO = "plannedDateTo";
+    private static final String L_PLANNED_DATE_FROM = "plannedDateFrom";
 
-    private static final String EFFECTIVE_DATE_FROM = "effectiveDateFrom";
+    private static final String L_PLANNED_DATE_TO = "plannedDateTo";
 
-    private static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
+    private static final String L_EFFECTIVE_DATE_FROM = "effectiveDateFrom";
+
+    private static final String L_EFFECTIVE_DATE_TO = "effectiveDateTo";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -97,7 +99,7 @@ public class OrderDetailsListeners {
     }
 
     private void copyDate(final ViewDefinitionState viewDefinitionState, final String fromNameField, final String toNameField) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
         FieldComponent fromField = (FieldComponent) viewDefinitionState.getComponentByReference(fromNameField);
         FieldComponent toField = (FieldComponent) viewDefinitionState.getComponentByReference(toNameField);
         if (form.getEntityId() == null) {
@@ -113,9 +115,9 @@ public class OrderDetailsListeners {
     }
 
     public void copyStartDate(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        if (triggerState.getName().equals(PLANNED_DATE_FROM)) {
-            copyDate(view, PLANNED_DATE_FROM, DATE_FROM);
-        } else if (triggerState.getName().equals(EFFECTIVE_DATE_FROM)) {
+        if (triggerState.getName().equals(L_PLANNED_DATE_FROM)) {
+            copyDate(view, L_PLANNED_DATE_FROM, DATE_FROM);
+        } else if (triggerState.getName().equals(L_EFFECTIVE_DATE_FROM)) {
             copyDate(view, OrderFields.EFFECTIVE_DATE_FROM, DATE_FROM);
         } else {
             copyDate(view, CORRECTED_DATE_FROM, DATE_FROM);
@@ -123,9 +125,9 @@ public class OrderDetailsListeners {
     }
 
     public void copyEndDate(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        if (triggerState.getName().equals(PLANNED_DATE_TO)) {
-            copyDate(view, PLANNED_DATE_TO, DATE_TO);
-        } else if (triggerState.getName().equals(EFFECTIVE_DATE_TO)) {
+        if (triggerState.getName().equals(L_PLANNED_DATE_TO)) {
+            copyDate(view, L_PLANNED_DATE_TO, DATE_TO);
+        } else if (triggerState.getName().equals(L_EFFECTIVE_DATE_TO)) {
             copyDate(view, OrderFields.EFFECTIVE_DATE_TO, DATE_TO);
         } else {
             copyDate(view, CORRECTED_DATE_TO, DATE_TO);
@@ -134,10 +136,10 @@ public class OrderDetailsListeners {
     }
 
     public void copyStartDateToDetails(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
         if (form.getEntityId() == null) {
-            copyDate(view, DATE_FROM, PLANNED_DATE_FROM);
+            copyDate(view, DATE_FROM, L_PLANNED_DATE_FROM);
             return;
         }
 
@@ -145,11 +147,11 @@ public class OrderDetailsListeners {
 
         String state = order.getStringField(OrderFields.STATE);
         if (OrderState.PENDING.getStringValue().equals(state)) {
-            copyDate(view, DATE_FROM, PLANNED_DATE_FROM);
+            copyDate(view, DATE_FROM, L_PLANNED_DATE_FROM);
         }
         if (OrderState.IN_PROGRESS.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state)
                 || OrderState.COMPLETED.getStringValue().equals(state)) {
-            copyDate(view, DATE_FROM, EFFECTIVE_DATE_FROM);
+            copyDate(view, DATE_FROM, L_EFFECTIVE_DATE_FROM);
         }
         if ((OrderState.ACCEPTED.getStringValue().equals(state))) {
             copyDate(view, DATE_FROM, CORRECTED_DATE_FROM);
@@ -158,9 +160,9 @@ public class OrderDetailsListeners {
     }
 
     public void copyFinishDateToDetails(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
-            copyDate(view, DATE_TO, PLANNED_DATE_TO);
+            copyDate(view, DATE_TO, L_PLANNED_DATE_TO);
             return;
         }
 
@@ -169,10 +171,10 @@ public class OrderDetailsListeners {
         String state = order.getStringField(OrderFields.STATE);
 
         if (OrderState.PENDING.getStringValue().equals(state)) {
-            copyDate(view, DATE_TO, PLANNED_DATE_TO);
+            copyDate(view, DATE_TO, L_PLANNED_DATE_TO);
         }
         if (OrderState.COMPLETED.getStringValue().equals(state) || OrderState.ABANDONED.getStringValue().equals(state)) {
-            copyDate(view, DATE_TO, EFFECTIVE_DATE_TO);
+            copyDate(view, DATE_TO, L_EFFECTIVE_DATE_TO);
         }
         if (OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state)) {
             copyDate(view, DATE_TO, CORRECTED_DATE_TO);
@@ -207,7 +209,7 @@ public class OrderDetailsListeners {
 
         orderDetailsHooks.setFieldsVisibilityAndFill(view);
 
-        final FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
         Long orderId = orderForm.getEntityId();
         if (orderId != null) {
             FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);

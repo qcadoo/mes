@@ -49,11 +49,10 @@ public class TrackingOperationProductInComponentHooks {
 
     public void onView(final DataDefinition trackingOperationProductInComponentDD,
             final Entity trackingOperationProductInComponent) {
-        fillPlannedQuantity(trackingOperationProductInComponentDD, trackingOperationProductInComponent);
+        fillPlannedQuantity(trackingOperationProductInComponent);
     }
 
-    private void fillPlannedQuantity(final DataDefinition trackingOperationProductInComponentDD,
-            final Entity trackingOperationProductInComponent) {
+    private void fillPlannedQuantity(final Entity trackingOperationProductInComponent) {
         trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY,
                 numberService.setScale(getPlannedQuantity(trackingOperationProductInComponent)));
     }

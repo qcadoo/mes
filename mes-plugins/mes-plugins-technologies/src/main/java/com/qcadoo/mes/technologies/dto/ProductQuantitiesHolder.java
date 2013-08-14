@@ -57,7 +57,7 @@ public class ProductQuantitiesHolder {
             return true;
         }
 
-        if (obj == null || !(obj instanceof ProductQuantitiesHolder)) {
+        if (!(obj instanceof ProductQuantitiesHolder)) {
             return false;
         }
 

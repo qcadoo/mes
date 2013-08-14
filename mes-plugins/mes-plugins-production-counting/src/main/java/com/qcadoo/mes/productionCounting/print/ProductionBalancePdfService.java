@@ -62,12 +62,6 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public class ProductionBalancePdfService extends PdfDocumentService {
 
-    private static final String L_PLANNED_CYCLES = "plannedCycles";
-
-    private static final String L_CYCLES = "cycles";
-
-    private static final String L_CYCLES_BALANCE = "cyclesBalance";
-
     private static final String L_N_A = "";
 
     private static final String L_TABS = "\t \t \t";

@@ -11,6 +11,8 @@ import com.qcadoo.model.api.Entity;
 
 public class OperationProductComponentWithQuantityContainer {
 
+    private static final String L_MISSING_OPERATION_PRODUCT_COMPONENT_ENTITY = "Missing operationProductComponent entity!";
+
     private final Map<OperationProductComponentHolder, BigDecimal> operationProductComponentWithQuantities;
 
     public OperationProductComponentWithQuantityContainer() {
@@ -22,7 +24,7 @@ public class OperationProductComponentWithQuantityContainer {
     }
 
     public void put(final Entity operationProductComponent, final BigDecimal quantity) {
-        Preconditions.checkNotNull(operationProductComponent, "Missing operationProductComponent entity!");
+        Preconditions.checkNotNull(operationProductComponent, L_MISSING_OPERATION_PRODUCT_COMPONENT_ENTITY);
 
         OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
                 operationProductComponent);
@@ -35,7 +37,7 @@ public class OperationProductComponentWithQuantityContainer {
     }
 
     public BigDecimal get(final Entity operationProductComponent) {
-        Preconditions.checkNotNull(operationProductComponent, "Missing operationProductComponent entity!");
+        Preconditions.checkNotNull(operationProductComponent, L_MISSING_OPERATION_PRODUCT_COMPONENT_ENTITY);
 
         OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
                 operationProductComponent);
@@ -50,7 +52,7 @@ public class OperationProductComponentWithQuantityContainer {
     }
 
     public void remove(final Entity operationProductComponent) {
-        Preconditions.checkNotNull(operationProductComponent, "Missing operationProductComponent entity!");
+        Preconditions.checkNotNull(operationProductComponent, L_MISSING_OPERATION_PRODUCT_COMPONENT_ENTITY);
 
         OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
                 operationProductComponent);
@@ -63,7 +65,7 @@ public class OperationProductComponentWithQuantityContainer {
     }
 
     public boolean containsKey(final Entity operationProductComponent) {
-        Preconditions.checkNotNull(operationProductComponent, "Missing operationProductComponent entity!");
+        Preconditions.checkNotNull(operationProductComponent, L_MISSING_OPERATION_PRODUCT_COMPONENT_ENTITY);
 
         OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
                 operationProductComponent);
@@ -107,10 +109,13 @@ public class OperationProductComponentWithQuantityContainer {
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof OperationProductComponentWithQuantityContainer)) {
+
+        if (!(obj instanceof OperationProductComponentWithQuantityContainer)) {
             return false;
         }
+
         OperationProductComponentWithQuantityContainer other = (OperationProductComponentWithQuantityContainer) obj;
+
         return operationProductComponentWithQuantities.equals(other.operationProductComponentWithQuantities);
     }
 

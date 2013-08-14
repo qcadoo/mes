@@ -28,7 +28,7 @@ import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.N
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.NUMBER;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.TYPE_TASK;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksFieldsOTFOF.ORDER;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
 

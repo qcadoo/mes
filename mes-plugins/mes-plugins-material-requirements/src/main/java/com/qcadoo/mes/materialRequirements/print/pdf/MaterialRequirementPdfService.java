@@ -57,12 +57,6 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
 
-    private static final String PLANNED_QUANTITY_FIELD = "plannedQuantity";
-
-    private static final String PRODUCT_FIELD = "product";
-
-    private static final String ORDERS_FIELD = "orders";
-
     private final int[] defaultMatReqHeaderColumnWidth = new int[] { 25, 25, 24, 13, 13 };
 
     private final int[] defaultOrderHeaderColumnWidth = new int[] { 37, 37, 13, 13 };
@@ -194,7 +188,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 }
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            BigDecimal plannedQuantity = order.getDecimalField(PLANNED_QUANTITY_FIELD);
+            BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
             table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);

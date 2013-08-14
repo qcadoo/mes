@@ -46,6 +46,8 @@ import com.qcadoo.model.api.NumberService;
 @Service
 public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
+    private static final String L_TECHNOLOGY = "technology";
+
     private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     @Autowired
@@ -161,7 +163,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForOrder(final Entity order,
             final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine, final boolean saved) {
-        List<Entity> operationComponents = order.getBelongsToField("technology").getHasManyField(
+        List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY).getHasManyField(
                 TechnologyFields.OPERATION_COMPONENTS);
         Map<Entity, Integer> workstations = getWorkstationsFromOrder(order);
         return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
@@ -236,7 +238,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     @Override
     public OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine, final boolean saved) {
-        List<Entity> operationComponents = order.getBelongsToField("technology").getHasManyField(
+        List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY).getHasManyField(
                 TechnologyFields.OPERATION_COMPONENTS);
         Map<Long, Integer> workstations = getWorkstationsMapFromOrder(order);
 
@@ -338,7 +340,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     private Map<Long, Integer> getWorkstationsMapFromOrder(final Entity order) {
         Map<Long, Integer> workstations = new HashMap<Long, Integer>();
-        for (Entity operComp : order.getBelongsToField("technology").getHasManyField("operationComponents")) {
+        for (Entity operComp : order.getBelongsToField(L_TECHNOLOGY).getHasManyField("operationComponents")) {
             workstations
                     .put(operComp.getId(),
                             getIntegerValue(operComp.getBelongsToField("techOperCompWorkstation").getField(
@@ -349,7 +351,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     private Map<Entity, Integer> getWorkstationsFromOrder(final Entity order) {
         Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
-        for (Entity operComp : order.getBelongsToField("technology").getHasManyField("operationComponents")) {
+        for (Entity operComp : order.getBelongsToField(L_TECHNOLOGY).getHasManyField("operationComponents")) {
             workstations
                     .put(operComp,
                             getIntegerValue(operComp.getBelongsToField("techOperCompWorkstation").getField(

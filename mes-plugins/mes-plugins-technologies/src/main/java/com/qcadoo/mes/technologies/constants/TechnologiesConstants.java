@@ -26,6 +26,7 @@ package com.qcadoo.mes.technologies.constants;
 public final class TechnologiesConstants {
 
     private TechnologiesConstants() {
+
     }
 
     public static final String PLUGIN_IDENTIFIER = "technologies";

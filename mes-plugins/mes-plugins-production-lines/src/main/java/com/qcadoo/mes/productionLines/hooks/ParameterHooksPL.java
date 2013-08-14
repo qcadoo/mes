@@ -28,6 +28,7 @@ import static com.qcadoo.mes.productionLines.constants.ProductionLinesConstants.
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionLines.constants.ParameterFieldsPL;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -42,6 +43,8 @@ public class ParameterHooksPL {
     public void addFieldsForParameter(final DataDefinition dataDefinition, final Entity parameter) {
         Entity productionLine = dataDefinitionService.get(PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
                 .find().setMaxResults(1).uniqueResult();
-        parameter.setField("defaultProductionLine", productionLine);
+
+        parameter.setField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE, productionLine);
     }
+
 }

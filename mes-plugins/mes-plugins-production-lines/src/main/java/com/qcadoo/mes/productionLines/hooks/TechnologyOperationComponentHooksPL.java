@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
+import com.qcadoo.mes.productionLines.constants.TechOperCompWorkstationFields;
+import com.qcadoo.mes.productionLines.constants.TechnologyOperationComponentFieldsPL;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -43,11 +45,13 @@ public class TechnologyOperationComponentHooksPL {
 
     private static final String L_FORM = "form";
 
+    private static final String L_QUANTITY_OF_WORKSTATION_TYPES_TECH = "quantityOfWorkstationTypesTech";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public final void setQuantityOfWorkstationTypes(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Long id = form.getEntityId();
 
         DataDefinition tocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -55,10 +59,10 @@ public class TechnologyOperationComponentHooksPL {
         Entity toc = tocDD.get(id);
 
         FieldComponent quantityOfWorkstationTypesComponent = (FieldComponent) view
-                .getComponentByReference("quantityOfWorkstationTypes");
+                .getComponentByReference(TechnologyOperationComponentFieldsPL.QUANTITY_OF_WORKSTATION_TYPES);
 
         FieldComponent quantityOfWorkstationTypesTech = (FieldComponent) view
-                .getComponentByReference("quantityOfWorkstationTypesTech");
+                .getComponentByReference(L_QUANTITY_OF_WORKSTATION_TYPES_TECH);
 
         if (StringUtils.isEmpty(toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY).getStringField(
                 TechnologyFields.TECHNOLOGY_TYPE))) {
@@ -69,8 +73,8 @@ public class TechnologyOperationComponentHooksPL {
             quantityOfWorkstationTypesTech.requestComponentUpdateState();
             return;
         }
-        int quantityOfWorkstationTypesDB = toc.getBelongsToField("techOperCompWorkstation").getIntegerField(
-                "quantityOfWorkstationTypes");
+        int quantityOfWorkstationTypesDB = toc.getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION)
+                .getIntegerField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATIONTYPES);
         quantityOfWorkstationTypesComponent.setFieldValue(quantityOfWorkstationTypesDB);
         quantityOfWorkstationTypesComponent.requestComponentUpdateState();
         Object quantityOfWorkstationTypes = quantityOfWorkstationTypesComponent.getFieldValue();
@@ -79,24 +83,28 @@ public class TechnologyOperationComponentHooksPL {
 
     public void save(final DataDefinition dataDefinition, final Entity toc) {
         toc.getDataDefinition();
-        Integer quantityOfWorkstationTypes = toc.getIntegerField("quantityOfWorkstationTypes");
+        Integer quantityOfWorkstationTypes = toc
+                .getIntegerField(TechnologyOperationComponentFieldsPL.QUANTITY_OF_WORKSTATION_TYPES);
 
         if (quantityOfWorkstationTypes == null) {
             return;
         }
-        Entity techOperCompWorkstation = toc.getBelongsToField("techOperCompWorkstation");
+        Entity techOperCompWorkstation = toc.getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION);
         DataDefinition techOperCompWorkstationDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                "techOperCompWorkstation");
+                ProductionLinesConstants.MODEL_TECH_OPER_COMP_WORKSTATION);
 
         if (techOperCompWorkstation == null) {
             techOperCompWorkstation = techOperCompWorkstationDD.create();
-            techOperCompWorkstation.setField("quantityOfWorkstationTypes", quantityOfWorkstationTypes);
+            techOperCompWorkstation.setField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATIONTYPES,
+                    quantityOfWorkstationTypes);
             techOperCompWorkstation = techOperCompWorkstation.getDataDefinition().save(techOperCompWorkstation);
         } else {
-            techOperCompWorkstation.setField("quantityOfWorkstationTypes", quantityOfWorkstationTypes);
+            techOperCompWorkstation.setField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATIONTYPES,
+                    quantityOfWorkstationTypes);
             techOperCompWorkstation = techOperCompWorkstation.getDataDefinition().save(techOperCompWorkstation);
         }
 
-        toc.setField("techOperCompWorkstation", techOperCompWorkstation);
+        toc.setField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION, techOperCompWorkstation);
     }
+
 }

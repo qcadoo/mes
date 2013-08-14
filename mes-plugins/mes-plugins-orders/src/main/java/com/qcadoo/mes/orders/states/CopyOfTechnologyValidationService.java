@@ -58,6 +58,10 @@ import com.qcadoo.model.api.validators.ErrorMessage;
 @Service
 public class CopyOfTechnologyValidationService {
 
+    private static final String L_OPERATION = "operation";
+
+    private static final String L_PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
+
     @Autowired
     private TechnologyService technologyService;
 
@@ -69,8 +73,6 @@ public class CopyOfTechnologyValidationService {
 
     @Autowired
     private ProductQuantitiesService productQuantitiyService;
-
-    private static final String L_OPERATION = "operation";
 
     public void checkIfTechnologyIsNotUsedInActiveOrder(final StateChangeContext stateContext) {
         final Entity technology = stateContext.getOwner();
@@ -293,7 +295,7 @@ public class CopyOfTechnologyValidationService {
 
     public boolean checkIfUnitMatch(final Entity technologyOperationComponent) {
         DataDefinition dataDefinition = technologyOperationComponent.getDataDefinition();
-        String productionInOneCycleUnit = technologyOperationComponent.getStringField("productionInOneCycleUNIT");
+        String productionInOneCycleUnit = technologyOperationComponent.getStringField(L_PRODUCTION_IN_ONE_CYCLE_UNIT);
         String nextOperationAfterProducedQuantityUnit = technologyOperationComponent
                 .getStringField("nextOperationAfterProducedQuantityUNIT");
         String nextOperationAfterProducedType = (String) technologyOperationComponent.getField("nextOperationAfterProducedType");
@@ -313,10 +315,10 @@ public class CopyOfTechnologyValidationService {
     }
 
     public boolean checkIfUnitsInTechnologyMatch(final Entity technologyOperationComponent) {
-        final String productionInOneCycleUNIT = technologyOperationComponent.getStringField("productionInOneCycleUNIT");
+        final String productionInOneCycleUNIT = technologyOperationComponent.getStringField(L_PRODUCTION_IN_ONE_CYCLE_UNIT);
         DataDefinition dataDefinition = technologyOperationComponent.getDataDefinition();
         if (productionInOneCycleUNIT == null) {
-            technologyOperationComponent.addError(dataDefinition.getField("productionInOneCycleUNIT"),
+            technologyOperationComponent.addError(dataDefinition.getField(L_PRODUCTION_IN_ONE_CYCLE_UNIT),
                     "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
             return false;
         }
@@ -330,7 +332,7 @@ public class CopyOfTechnologyValidationService {
         if (outputProduct != null) {
             final String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
-                technologyOperationComponent.addError(dataDefinition.getField("productionInOneCycleUNIT"),
+                technologyOperationComponent.addError(dataDefinition.getField(L_PRODUCTION_IN_ONE_CYCLE_UNIT),
                         "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
                 return false;
             }

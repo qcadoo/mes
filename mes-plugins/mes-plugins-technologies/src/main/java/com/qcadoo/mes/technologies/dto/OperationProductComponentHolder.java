@@ -61,7 +61,7 @@ public class OperationProductComponentHolder {
             return true;
         }
 
-        if (obj == null || !(obj instanceof OperationProductComponentHolder)) {
+        if (!(obj instanceof OperationProductComponentHolder)) {
             return false;
         }
 

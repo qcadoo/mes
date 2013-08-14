@@ -63,6 +63,10 @@ import com.qcadoo.view.api.components.LookupComponent;
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
 
+    private static final String L_TOTAL_PRICE = "totalPrice";
+
+    private static final String L_PRICE_PER_UNIT = "pricePerUnit";
+
     @Autowired
     private ParameterService parameterService;
 
@@ -248,17 +252,17 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         BigDecimal quantity = entity.getDecimalField(quantityFieldName);
 
         if (totalPrice == null) {
-            entity.setField("pricePerUnit", null);
-            entity.setField("totalPrice", null);
+            entity.setField(L_PRICE_PER_UNIT, null);
+            entity.setField(L_TOTAL_PRICE, null);
         } else {
             if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
-                entity.setField("pricePerUnit", null);
-                entity.setField("totalPrice", numberService.setScale(totalPrice));
+                entity.setField(L_PRICE_PER_UNIT, null);
+                entity.setField(L_TOTAL_PRICE, numberService.setScale(totalPrice));
             } else {
                 BigDecimal pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
 
-                entity.setField("pricePerUnit", numberService.setScale(pricePerUnit));
-                entity.setField("totalPrice", numberService.setScale(totalPrice));
+                entity.setField(L_PRICE_PER_UNIT, numberService.setScale(pricePerUnit));
+                entity.setField(L_TOTAL_PRICE, numberService.setScale(totalPrice));
             }
         }
     }
@@ -303,7 +307,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         for (Entity column : columns) {
             String identifier = column.getStringField(ColumnForOrdersFields.IDENTIFIER);
 
-            if ("pricePerUnit".equals(identifier) || "totalPrice".equals(identifier)) {
+            if (L_PRICE_PER_UNIT.equals(identifier) || L_TOTAL_PRICE.equals(identifier)) {
                 contains = true;
             }
         }

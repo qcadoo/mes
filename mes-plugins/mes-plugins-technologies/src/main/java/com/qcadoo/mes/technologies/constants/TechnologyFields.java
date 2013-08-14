@@ -49,6 +49,6 @@ public final class TechnologyFields {
 
     public static final String TECHNOLOGY_TYPE = "technologyType";
 
-    public static final String PATTERN_TECHNOLOGY = "patternTechnology";
+    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
 
 }

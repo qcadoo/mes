@@ -24,16 +24,17 @@
 package com.qcadoo.mes.samples.loader;
 
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EMAIL;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES_DICTIONARY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES_MODEL_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_FROM;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_TO;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT_FROM;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT_TO;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_MODEL_PRODUCTION_LINE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_PLUGIN_IDENTIFIER;
 
 import java.util.Map;
 
@@ -78,7 +79,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         readDataFromXML(dataset, "shifts", locale);
         readDataFromXML(dataset, "conversionItem", locale);
 
-        if (isEnabledOrEnabling(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
+        if (isEnabledOrEnabling(L_PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
             readDataFromXML(dataset, L_DEFAULT_PRODUCTION_LINE, locale);
         }
@@ -124,7 +125,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         Entity user = dataDefinitionService.get("qcadooSecurity", "user").create();
 
         user.setField("userName", values.get("login"));
-        user.setField(EMAIL, values.get(EMAIL));
+        user.setField(L_EMAIL, values.get(SamplesConstants.L_EMAIL));
         user.setField("firstName", values.get("firstname"));
         user.setField("lastName", values.get("lastname"));
         user.setField("password", "123");
@@ -135,7 +136,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         user.setField("role", role.getName());
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test user {login=" + user.getField("userName") + ", email=" + user.getField(EMAIL) + ", firstName="
+            LOG.debug("Add test user {login=" + user.getField("userName") + ", email=" + user.getField(L_EMAIL) + ", firstName="
                     + user.getField("firstName") + ", lastName=" + user.getField("lastName") + ", role=" + user.getField("role")
                     + "}");
         }
@@ -144,10 +145,10 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     }
 
     protected void addShifts(final Map<String, String> values) {
-        Entity shift = dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_SHIFT)
-                .create();
+        Entity shift = dataDefinitionService
+                .get(SamplesConstants.L_BASIC_PLUGIN_IDENTIFIER, SamplesConstants.L_BASIC_MODEL_SHIFT).create();
 
-        shift.setField(NAME, values.get(NAME));
+        shift.setField(L_NAME, values.get(L_NAME));
         shift.setField("mondayWorking", values.get("mondayworking"));
         shift.setField("mondayHours", values.get("mondayhours"));
         shift.setField("tuesdayWorking", values.get("tuesdayworking"));
@@ -164,15 +165,15 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         shift.setField("sundayHours", values.get("sundayhours"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test shift item {shift=" + shift.getField(NAME) + "}");
+            LOG.debug("Add test shift item {shift=" + shift.getField(L_NAME) + "}");
         }
 
         shift.getDataDefinition().save(shift);
     }
 
     protected void addProductionLines(final Map<String, String> values) {
-        Entity productionLine = dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER,
-                PRODUCTION_LINES_MODEL_PRODUCTION_LINE).create();
+        Entity productionLine = dataDefinitionService.get(L_PRODUCTION_LINES_PLUGIN_IDENTIFIER,
+                L_PRODUCTION_LINES_MODEL_PRODUCTION_LINE).create();
 
         productionLine.setField(L_NAME, values.get(L_NAME));
         productionLine.setField(L_NUMBER, values.get(L_NUMBER));
@@ -192,7 +193,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     }
 
     protected Entity getProductionLineByNumber(final String number) {
-        return dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER, PRODUCTION_LINES_MODEL_PRODUCTION_LINE).find()
+        return dataDefinitionService.get(L_PRODUCTION_LINES_PLUGIN_IDENTIFIER, L_PRODUCTION_LINES_MODEL_PRODUCTION_LINE).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 

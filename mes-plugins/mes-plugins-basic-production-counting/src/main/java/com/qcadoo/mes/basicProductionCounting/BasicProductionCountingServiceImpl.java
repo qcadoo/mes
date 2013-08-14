@@ -154,8 +154,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         productionCountingQuantity.setField(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT,
                 operationProductOutComponent);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCT, product);
-        productionCountingQuantity.setField(ProductionCountingQuantityFields.ROLE,
-                getRole(operationProductInComponent, operationProductOutComponent));
+        productionCountingQuantity.setField(ProductionCountingQuantityFields.ROLE, getRole(operationProductInComponent));
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
                 getTypeOfMaterial(order, operationProductInComponent, operationProductOutComponent, product, isNonComponent));
         productionCountingQuantity.setField(ProductionCountingQuantityFields.IS_NON_COMPONENT, isNonComponent);
@@ -167,7 +166,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         return productionCountingQuantity;
     }
 
-    private String getRole(final Entity operationProductInComponent, final Entity operationProductOutComponent) {
+    private String getRole(final Entity operationProductInComponent) {
         if (operationProductInComponent == null) {
             return ProductionCountingQuantityRole.PRODUCED.getStringValue();
         } else {

@@ -78,6 +78,8 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
     private static final String L_PLANNED_LABOR_TIME = "plannedLaborTime";
 
+    private static final String L_PRODUCTION_LINE = "produtionLine";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -154,7 +156,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         productionBalance.setField(ProductionBalanceFieldsPCWC.QUANTITY, quantity);
         productionBalance.setField(ProductionBalanceFieldsPCWC.TECHNOLOGY, technology);
-        // productionBalance.setField("productionLine", productionLine);
+        productionBalance.setField(L_PRODUCTION_LINE, productionLine);
 
         // FIXME MAKU beware of side effects - order of below computations matter!
         costCalculationService.calculateOperationsAndProductsCosts(productionBalance);

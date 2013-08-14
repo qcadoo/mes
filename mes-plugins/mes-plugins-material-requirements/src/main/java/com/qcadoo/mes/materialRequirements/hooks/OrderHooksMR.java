@@ -43,14 +43,14 @@ public class OrderHooksMR {
     private ParameterService parameterService;
 
     public void onCreate(final DataDefinition orderDD, final Entity order) {
-        setInputProductsRequiredForTypeDefaultValue(orderDD, order);
+        setInputProductsRequiredForTypeDefaultValue(order);
     }
 
     public void onCopy(final DataDefinition orderDD, final Entity order) {
-        setInputProductsRequiredForTypeDefaultValue(orderDD, order);
+        setInputProductsRequiredForTypeDefaultValue(order);
     }
 
-    private void setInputProductsRequiredForTypeDefaultValue(final DataDefinition orderDD, final Entity order) {
+    private void setInputProductsRequiredForTypeDefaultValue(final Entity order) {
         materialRequirementService.setInputProductsRequiredForTypeDefaultValue(order,
                 OrderFieldsMR.INPUT_PRODUCTS_REQUIRED_FOR_TYPE, getInputProductsRequiredForType());
     }

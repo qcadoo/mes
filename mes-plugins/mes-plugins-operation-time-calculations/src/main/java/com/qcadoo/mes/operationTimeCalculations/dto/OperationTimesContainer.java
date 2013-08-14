@@ -43,10 +43,13 @@ public class OperationTimesContainer {
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof OperationTimesContainer)) {
+
+        if (!(obj instanceof OperationTimesContainer)) {
             return false;
         }
+
         OperationTimesContainer other = (OperationTimesContainer) obj;
+
         return timesByOperationId.equals(other.timesByOperationId);
     }
 

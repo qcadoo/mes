@@ -34,10 +34,10 @@ import com.qcadoo.model.api.Entity;
 public class ParameterHooksPC {
 
     public void onCreate(final DataDefinition parameterDD, final Entity parameter) {
-        setParameterWithDefaultProductionCountingValues(parameterDD, parameter);
+        setParameterWithDefaultProductionCountingValues(parameter);
     }
 
-    private void setParameterWithDefaultProductionCountingValues(final DataDefinition parameterDD, final Entity parameter) {
+    private void setParameterWithDefaultProductionCountingValues(final Entity parameter) {
         if (parameter.getStringField(ParameterFieldsPC.TYPE_OF_PRODUCTION_RECORDING) == null) {
             parameter.setField(ParameterFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
                     TypeOfProductionRecording.CUMULATED.getStringValue());

@@ -49,11 +49,10 @@ public class TrackingOperationProductOutComponentHooks {
 
     public void onView(final DataDefinition trackingOperationProductOutComponentDD,
             final Entity trackingOperationProductOutComponent) {
-        fillPlannedQuantity(trackingOperationProductOutComponentDD, trackingOperationProductOutComponent);
+        fillPlannedQuantity(trackingOperationProductOutComponent);
     }
 
-    private void fillPlannedQuantity(final DataDefinition trackingOperationProductOutComponentDD,
-            final Entity trackingOperationProductOutComponent) {
+    private void fillPlannedQuantity(final Entity trackingOperationProductOutComponent) {
         trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.PLANNED_QUANTITY,
                 numberService.setScale(getPlannedQuantity(trackingOperationProductOutComponent)));
     }
@@ -63,7 +62,8 @@ public class TrackingOperationProductOutComponentHooks {
 
         Entity productionTracking = trackingOperationProductOutComponent
                 .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-        Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+        Entity product = trackingOperationProductOutComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
 
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         Entity technologyOperationComponent = productionTracking
