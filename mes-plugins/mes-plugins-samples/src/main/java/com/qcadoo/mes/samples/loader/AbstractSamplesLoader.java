@@ -116,17 +116,19 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     protected void addDictionaryItems(final Map<String, String> values) {
         Entity dictionary = getDictionaryByName(values.get(NAME));
 
-        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
-        item.setField("dictionary", dictionary);
-        item.setField(NAME, values.get("item"));
-        item.setField("description", values.get("description"));
+        if (dictionary != null) {
+            Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
+            item.setField("dictionary", dictionary);
+            item.setField(NAME, values.get("item"));
+            item.setField("description", values.get("description"));
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(NAME) + ", item=" + item.getField(NAME)
-                    + ", description=" + item.getField("description") + "}");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(NAME) + ", item=" + item.getField(NAME)
+                        + ", description=" + item.getField("description") + "}");
+            }
+
+            item.getDataDefinition().save(item);
         }
-
-        item.getDataDefinition().save(item);
     }
 
     protected String getRandomDictionaryItem(final String dictionaryName) {
