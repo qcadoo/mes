@@ -46,6 +46,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingC
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -133,6 +134,9 @@ public final class ProductionRecordBasicListenerService {
             Entity orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
             if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
                 stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
+            } else if (StateChangeStatus.PAUSED.equals(orderStateChangeContext.getStatus())) {
+                stateChangeContext.addMessage("productionCounting.order.orderWillBeClosedAfterExtSync", StateMessageType.INFO,
+                        false);
             } else {
                 stateChangeContext.addMessage("productionCounting.order.orderCannotBeClosed", StateMessageType.FAILURE, false);
 
