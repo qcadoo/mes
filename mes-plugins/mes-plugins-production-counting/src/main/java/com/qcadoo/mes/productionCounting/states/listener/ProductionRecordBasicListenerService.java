@@ -141,6 +141,7 @@ public final class ProductionRecordBasicListenerService {
                 stateChangeContext.addMessage("productionCounting.order.orderCannotBeClosed", StateMessageType.FAILURE, false);
 
                 List<ErrorMessage> errors = Lists.newArrayList();
+
                 if (!orderFromDB.getErrors().isEmpty()) {
                     errors.addAll(order.getErrors().values());
                 }
@@ -148,14 +149,18 @@ public final class ProductionRecordBasicListenerService {
                     errors.addAll(order.getGlobalErrors());
                 }
 
-                StringBuilder errorMessages = new StringBuilder();
-                for (ErrorMessage message : errors) {
-                    String translatedErrorMessage = translationService.translate(message.getMessage(), Locale.getDefault(),
-                            message.getVars());
-                    errorMessages.append(translatedErrorMessage);
-                    errorMessages.append(", ");
+                if (!errors.isEmpty()) {
+                    StringBuilder errorMessages = new StringBuilder();
+
+                    for (ErrorMessage errorMessage : errors) {
+                        String translatedErrorMessage = translationService.translate(errorMessage.getMessage(),
+                                Locale.getDefault(), errorMessage.getVars());
+                        errorMessages.append(translatedErrorMessage);
+                        errorMessages.append(", ");
+                    }
+
+                    stateChangeContext.addValidationError("orders.order.orderStates.error", errorMessages.toString());
                 }
-                stateChangeContext.addValidationError("orders.order.orderStates.error", errorMessages.toString());
             }
         }
     }
