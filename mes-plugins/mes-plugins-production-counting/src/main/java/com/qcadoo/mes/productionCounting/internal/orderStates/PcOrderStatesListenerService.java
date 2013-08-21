@@ -64,7 +64,7 @@ public class PcOrderStatesListenerService {
                 .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("lastRecord", true)).list();
 
         if (order.getBooleanField("allowToClose") && productionRecordingsResult.getTotalNumberOfEntities() == 0) {
-            stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
+            stateChangeContext.addMessage("orders.order.state.allowToClose.failureCumulated", StateMessageType.FAILURE);
         }
     }
 
@@ -83,7 +83,7 @@ public class PcOrderStatesListenerService {
             }
         }
         if (order.getBooleanField("allowToClose") && operations.size() != numberOfRecord) {
-            stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
+            stateChangeContext.addMessage("orders.order.state.allowToClose.failureForEach", StateMessageType.FAILURE);
         }
     }
 
