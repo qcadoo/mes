@@ -48,13 +48,15 @@ public class TechnologiesWithUsingProductListHooks {
     }
 
     private List<Entity> getTechnologyWithProductInComponent(final Entity product) {
-        String QUERY = String.format(" select prodin from #technologies_operationProductInComponent as prodin "
-                + "where prodin.%s.id = :product", OperationProductInComponentFields.PRODUCT);
+        String query = String.format(
+                "SELECT operationProductInComponent FROM #technologies_operationProductInComponent AS operationProductInComponent "
+                        + "WHERE operationProductInComponent.%s.id = :product", OperationProductInComponentFields.PRODUCT);
 
-        SearchQueryBuilder sqb = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).find(QUERY);
-        sqb.setEntity(OperationProductInComponentFields.PRODUCT, product);
-        return sqb.list().getEntities();
+        SearchQueryBuilder searchQueryBuilder = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).find(query);
+        searchQueryBuilder.setEntity("product", product);
+
+        return searchQueryBuilder.list().getEntities();
     }
 
     public void fillProductName(final ViewDefinitionState viewDefinitionState) {

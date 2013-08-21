@@ -48,9 +48,11 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
@@ -69,9 +71,11 @@ import com.qcadoo.view.api.components.LookupComponent;
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
 
-    private static final String PRICE_PER_UNIT = "pricePerUnit";
+    private static final String L_PRODUCT = "product";
 
-    private static final String PRODUCT = "product";
+    private static final String L_PRICE_PER_UNIT = "pricePerUnit";
+
+    private static final String L_TOTAL_PRICE = "totalPrice";
 
     @Autowired
     private ParameterService parameterService;
@@ -247,9 +251,9 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     @Override
     public Entity getProduct(final DeliveryProduct deliveryProduct) {
         if (deliveryProduct.getOrderedProductId() == null) {
-            return getDeliveredProduct(deliveryProduct.getDeliveredProductId()).getBelongsToField(PRODUCT);
+            return getDeliveredProduct(deliveryProduct.getDeliveredProductId()).getBelongsToField(DeliveredProductFields.PRODUCT);
         } else {
-            return getOrderedProduct(deliveryProduct.getOrderedProductId()).getBelongsToField(PRODUCT);
+            return getOrderedProduct(deliveryProduct.getOrderedProductId()).getBelongsToField(OrderedProductFields.PRODUCT);
         }
     }
 
@@ -269,8 +273,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             save = false;
         }
         if (save) {
-            entity.setField(PRICE_PER_UNIT, pricePerUnit);
-            entity.setField("totalPrice", totalPrice);
+            entity.setField(L_PRICE_PER_UNIT, pricePerUnit);
+            entity.setField(L_TOTAL_PRICE, totalPrice);
         }
     }
 
@@ -359,7 +363,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         for (Entity column : columns) {
             String identifier = column.getStringField(ColumnForOrdersFields.IDENTIFIER);
 
-            if (PRICE_PER_UNIT.equals(identifier) || "totalPrice".equals(identifier)) {
+            if (L_PRICE_PER_UNIT.equals(identifier) || L_TOTAL_PRICE.equals(identifier)) {
                 contains = true;
             }
         }
@@ -376,14 +380,14 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         if (currency == null) {
             return currencyService.getCurrencyAlphabeticCode();
         } else {
-            return currency.getDataDefinition().get(currency.getId()).getStringField("alphabeticCode");
+            return currency.getDataDefinition().get(currency.getId()).getStringField(CurrencyFields.ALPHABETIC_CODE);
         }
     }
 
     @Override
     public void fillLastPurchasePrice(final ViewDefinitionState view, final String modelName) {
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(PRODUCT);
-        FieldComponent pricePerUnit = (FieldComponent) view.getComponentByReference(PRICE_PER_UNIT);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(L_PRODUCT);
+        FieldComponent pricePerUnit = (FieldComponent) view.getComponentByReference(L_PRICE_PER_UNIT);
         if (StringUtils.isNotEmpty((String) pricePerUnit.getFieldValue())) {
             return;
         }
@@ -399,18 +403,21 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public BigDecimal findLastPurchasePrice(final Entity product, final String modelName) {
-        String QUERY = String.format("select entity from #deliveries_%s as entity "
-                + "INNER JOIN entity.delivery as delivery WHERE delivery.%s= :deliveryState"
-                + " AND entity.%s = :product  ORDER BY delivery.updateDate DESC", modelName, DeliveryFields.STATE, PRODUCT);
+        String query = String.format("SELECT entity FROM #%s_%s AS entity "
+                + "INNER JOIN entity.delivery AS delivery WHERE delivery.%s= :deliveryState"
+                + " AND entity.%s = :product ORDER BY delivery.updateDate DESC", DeliveriesConstants.PLUGIN_IDENTIFIER,
+                modelName, DeliveryFields.STATE, DeliveredProductFields.PRODUCT);
 
-        SearchQueryBuilder sqb = getOrderedProductDD().find(QUERY);
-        sqb.setEntity(PRODUCT, product);
-        sqb.setString("deliveryState", DeliveryStateStringValues.RECEIVED);
-        Entity entity = sqb.setMaxResults(1).uniqueResult();
+        SearchQueryBuilder searcgQueryBuilder = getOrderedProductDD().find(query);
+        searcgQueryBuilder.setEntity("product", product);
+        searcgQueryBuilder.setString("deliveryState", DeliveryStateStringValues.RECEIVED);
+
+        Entity entity = searcgQueryBuilder.setMaxResults(1).uniqueResult();
 
         if (entity != null) {
-            return entity.getDecimalField(PRICE_PER_UNIT);
+            return entity.getDecimalField(L_PRICE_PER_UNIT);
         }
+
         return null;
     }
 
