@@ -20,7 +20,7 @@ public interface InternalTechnologyOperationComponent extends TechnologyOperatio
      * @throws IllegalArgumentException
      *             when given entity has data definition other than #technology_operation.
      */
-    void setOperation(final Entity operation) throws IllegalArgumentException;
+    void setOperation(final Entity operation);
 
     /**
      * Add sub-operation or in other words assign child to current tree node.

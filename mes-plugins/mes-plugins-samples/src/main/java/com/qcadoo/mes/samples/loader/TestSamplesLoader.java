@@ -269,12 +269,12 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         long date = System.currentTimeMillis();
         Entity requestForQuotationStateChange = dataDefinitionService
                 .get(L_SUPPLY_NEGOTIATIONS, "requestForQuotationStateChange").create();
-        requestForQuotationStateChange.setField("dateAndTime", new Date(date));
-        requestForQuotationStateChange.setField("sourceState", values.get("sourcestate"));
-        requestForQuotationStateChange.setField("targetState", values.get("targetstate"));
-        requestForQuotationStateChange.setField("status", values.get("status"));
-        requestForQuotationStateChange.setField("phase", values.get("phase"));
-        requestForQuotationStateChange.setField("worker", values.get("worker"));
+        requestForQuotationStateChange.setField(L_DATE_AND_TIME, new Date(date));
+        requestForQuotationStateChange.setField(L_SOURCE_STATE, values.get(L_SOURCESTATE));
+        requestForQuotationStateChange.setField(L_TARGET_STATE, values.get(L_TARGETSTATE));
+        requestForQuotationStateChange.setField(L_STATUS, values.get(L_STATUS));
+        requestForQuotationStateChange.setField(L_PHASE, values.get(L_PHASE));
+        requestForQuotationStateChange.setField(L_WORKER, values.get(L_WORKER));
         requestForQuotationStateChange.setField(REQUEST_FOR_QUOTION,
                 getRequestForQuotationByNumber(values.get("requestforquotation")));
         requestForQuotationStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
@@ -285,12 +285,12 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void addOfferStateChange(final Map<String, String> values) {
         long date = System.currentTimeMillis();
         Entity offerStateChange = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "offerStateChange").create();
-        offerStateChange.setField("dateAndTime", new Date(date));
-        offerStateChange.setField("sourceState", values.get("sourcestate"));
-        offerStateChange.setField("targetState", values.get("targetstate"));
-        offerStateChange.setField("status", values.get("status"));
-        offerStateChange.setField("phase", values.get("phase"));
-        offerStateChange.setField("worker", values.get("worker"));
+        offerStateChange.setField(L_DATE_AND_TIME, new Date(date));
+        offerStateChange.setField(L_SOURCE_STATE, values.get(L_SOURCESTATE));
+        offerStateChange.setField(L_TARGET_STATE, values.get(L_TARGETSTATE));
+        offerStateChange.setField(L_STATUS, values.get(L_STATUS));
+        offerStateChange.setField(L_PHASE, values.get(L_PHASE));
+        offerStateChange.setField(L_WORKER, values.get(L_WORKER));
         offerStateChange.setField(OFFER, getOfferByNumber(values.get(OFFER)));
         offerStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         offerStateChange.getDataDefinition().save(offerStateChange);
@@ -300,12 +300,12 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void addNegotiationStateChange(final Map<String, String> values) {
         long date = System.currentTimeMillis();
         Entity negotiationStateChange = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "negotiationStateChange").create();
-        negotiationStateChange.setField("dateAndTime", new Date(date));
-        negotiationStateChange.setField("sourceState", values.get("sourcestate"));
-        negotiationStateChange.setField("targetState", values.get("targetstate"));
-        negotiationStateChange.setField("status", values.get("status"));
-        negotiationStateChange.setField("phase", values.get("phase"));
-        negotiationStateChange.setField("worker", values.get("worker"));
+        negotiationStateChange.setField(L_DATE_AND_TIME, new Date(date));
+        negotiationStateChange.setField(L_SOURCE_STATE, values.get(L_SOURCESTATE));
+        negotiationStateChange.setField(L_TARGET_STATE, values.get(L_TARGETSTATE));
+        negotiationStateChange.setField(L_STATUS, values.get(L_STATUS));
+        negotiationStateChange.setField(L_PHASE, values.get(L_PHASE));
+        negotiationStateChange.setField(L_WORKER, values.get(L_WORKER));
         negotiationStateChange.setField(NEGOTIATION, getNegotationByNumber(values.get(NEGOTIATION)));
         negotiationStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         negotiationStateChange.getDataDefinition().save(negotiationStateChange);
@@ -315,12 +315,12 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void addDeliveryStateChange(final Map<String, String> values) {
         long date = System.currentTimeMillis();
         Entity deliveryStateChange = dataDefinitionService.get(L_DELIVERY, "deliveryStateChange").create();
-        deliveryStateChange.setField("dateAndTime", new Date(date));
-        deliveryStateChange.setField("sourceState", values.get("sourcestate"));
-        deliveryStateChange.setField("targetState", values.get("targetstate"));
-        deliveryStateChange.setField("status", values.get("status"));
-        deliveryStateChange.setField("phase", values.get("phase"));
-        deliveryStateChange.setField("worker", values.get("worker"));
+        deliveryStateChange.setField(L_DATE_AND_TIME, new Date(date));
+        deliveryStateChange.setField(L_SOURCE_STATE, values.get(L_SOURCESTATE));
+        deliveryStateChange.setField(L_TARGET_STATE, values.get(L_TARGETSTATE));
+        deliveryStateChange.setField(L_STATUS, values.get(L_STATUS));
+        deliveryStateChange.setField(L_PHASE, values.get(L_PHASE));
+        deliveryStateChange.setField(L_WORKER, values.get(L_WORKER));
         deliveryStateChange.setField(DELIVERY, getDeliveryByNumber(values.get(DELIVERY)));
         deliveryStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         deliveryStateChange.getDataDefinition().save(deliveryStateChange);

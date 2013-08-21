@@ -125,7 +125,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public List<Entity> getColumnsForOrders() {
-
         List<Entity> columns = new LinkedList<Entity>();
         List<Entity> columnComponents = getColumnForOrdersDD().find()
                 .addOrder(SearchOrders.asc(ColumnForOrdersFields.SUCCESSION)).list().getEntities();
@@ -311,7 +310,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     public void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames) {
         String currency = currencyService.getCurrencyAlphabeticCode();
 
-        if (currency == null || currency == "") {
+        if (StringUtils.isEmpty(currency)) {
             return;
         }
 

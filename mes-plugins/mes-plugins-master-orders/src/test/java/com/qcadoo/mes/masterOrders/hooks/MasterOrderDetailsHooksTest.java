@@ -27,7 +27,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 public class MasterOrderDetailsHooksTest {
 
@@ -50,9 +49,6 @@ public class MasterOrderDetailsHooksTest {
     private GridComponent masterOrderProducts;
 
     @Mock
-    private NumberGeneratorService numberGeneratorService;
-
-    @Mock
     private ExpressionService expressionService;
 
     @Mock
@@ -70,7 +66,6 @@ public class MasterOrderDetailsHooksTest {
 
         MockitoAnnotations.initMocks(this);
 
-        ReflectionTestUtils.setField(masterOrderDetailsHooks, "numberGeneratorService", numberGeneratorService);
         ReflectionTestUtils.setField(masterOrderDetailsHooks, "technologyServiceO", technologyServiceO);
         ReflectionTestUtils.setField(masterOrderDetailsHooks, "expressionService", expressionService);
         given(view.getComponentByReference("form")).willReturn(form);

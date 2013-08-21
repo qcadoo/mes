@@ -211,14 +211,6 @@ public class ProductionPerShiftListeners {
         return plannedPrograssForDay;
     }
 
-    private List<Entity> addCorrectedToPlannedProgressForDay(final Entity tioc, final List<Entity> progressForDays) {
-        Entity techInstOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).get(tioc.getId());
-        List<Entity> plannedPrograssForDay = techInstOperComp.getHasManyField(PROGRESS_FOR_DAYS).find().list().getEntities();
-        plannedPrograssForDay.addAll(progressForDays);
-        return plannedPrograssForDay;
-    }
-
     public void changeView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         detailsHooks.disablePlannedProgressTypeForPendingOrder(view);
         detailsHooks.disableReasonOfCorrection(view);

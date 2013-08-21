@@ -24,6 +24,7 @@
 package com.qcadoo.mes.samples.loader;
 
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EMAIL;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES;
@@ -124,7 +125,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         Entity user = dataDefinitionService.get("qcadooSecurity", "user").create();
 
         user.setField("userName", values.get("login"));
-        user.setField(EMAIL, values.get(EMAIL));
+        user.setField(L_EMAIL, values.get(L_EMAIL));
         user.setField("firstName", values.get("firstname"));
         user.setField("lastName", values.get("lastname"));
         user.setField("password", "123");
@@ -135,7 +136,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         user.setField("role", role.getName());
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test user {login=" + user.getField("userName") + ", email=" + user.getField(EMAIL) + ", firstName="
+            LOG.debug("Add test user {login=" + user.getField("userName") + ", email=" + user.getField(L_EMAIL) + ", firstName="
                     + user.getField("firstName") + ", lastName=" + user.getField("lastName") + ", role=" + user.getField("role")
                     + "}");
         }
@@ -147,7 +148,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         Entity shift = dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_SHIFT)
                 .create();
 
-        shift.setField(NAME, values.get(NAME));
+        shift.setField(L_NAME, values.get(L_NAME));
         shift.setField("mondayWorking", values.get("mondayworking"));
         shift.setField("mondayHours", values.get("mondayhours"));
         shift.setField("tuesdayWorking", values.get("tuesdayworking"));
@@ -164,7 +165,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         shift.setField("sundayHours", values.get("sundayhours"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test shift item {shift=" + shift.getField(NAME) + "}");
+            LOG.debug("Add test shift item {shift=" + shift.getField(L_NAME) + "}");
         }
 
         shift.getDataDefinition().save(shift);

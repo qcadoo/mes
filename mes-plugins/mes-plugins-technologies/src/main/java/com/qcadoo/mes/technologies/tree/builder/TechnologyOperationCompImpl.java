@@ -34,7 +34,7 @@ public class TechnologyOperationCompImpl implements InternalTechnologyOperationC
     }
 
     @Override
-    public void setOperation(final Entity operation) throws IllegalArgumentException {
+    public void setOperation(final Entity operation) {
         Preconditions.checkArgument(hasCorrectOperationDataDefinition(operation));
         setField(TechnologyOperationComponentFields.OPERATION, operation);
     }

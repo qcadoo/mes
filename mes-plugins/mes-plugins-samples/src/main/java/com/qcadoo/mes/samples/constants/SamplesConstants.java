@@ -438,4 +438,26 @@ public final class SamplesConstants {
 
     public static final String L_OFFER_STATE_CHANGES = "offerStateChanges";
 
+    public static final String L_TARGETSTATE = "targetstate";
+
+    public static final String L_SOURCESTATE = "sourcestate";
+
+    public static final String L_PHASE = "phase";
+
+    public static final String L_STATUS = "status";
+
+    public static final String L_TARGET_STATE = "targetState";
+
+    public static final String L_SOURCE_STATE = "sourceState";
+
+    public static final String L_DATE_AND_TIME = "dateAndTime";
+
+    public static final String L_ITEM = "item";
+
+    public static final String L_EMAIL = "email";
+
+    public static final String L_OWNER = "owner";
+
+    public static final String L_COUNTRY = "country";
+
 }

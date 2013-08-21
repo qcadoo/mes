@@ -30,7 +30,7 @@ public class OperationProductComponentImpl implements InternalOperationProductCo
     }
 
     @Override
-    public void setProduct(final Entity product) throws IllegalArgumentException {
+    public void setProduct(final Entity product) {
         Preconditions.checkArgument(hasCorrectProductDataDefinition(product));
         entity.setField(operationType.getProductFieldName(), product);
     }

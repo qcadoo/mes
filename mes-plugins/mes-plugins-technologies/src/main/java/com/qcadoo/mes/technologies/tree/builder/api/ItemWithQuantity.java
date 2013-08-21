@@ -51,7 +51,7 @@ public class ItemWithQuantity<T> {
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof ItemWithQuantity)) {
+        if (!(obj instanceof ItemWithQuantity)) {
             return false;
         }
         ItemWithQuantity<?> other = (ItemWithQuantity<?>) obj;

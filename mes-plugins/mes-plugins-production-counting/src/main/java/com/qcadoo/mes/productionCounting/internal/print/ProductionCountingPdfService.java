@@ -1,5 +1,6 @@
 /**
  * ***************************************************************************
+
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.2.0
@@ -99,9 +100,6 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
     @Autowired
     private PdfHelper pdfHelper;
-
-    @Autowired
-    private ProductionBalancePdfService balancePdfService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity productionCounting, final Locale locale)
