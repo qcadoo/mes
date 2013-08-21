@@ -26,7 +26,6 @@ package com.qcadoo.mes.productionCounting.states.listener;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.AUTO_CLOSE_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.ORDER;
@@ -45,7 +44,9 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -80,6 +81,9 @@ public final class ProductionRecordBasicListenerService {
 
     @Autowired
     private StateChangeContextBuilder stateChangeContextBuilder;
+
+    @Autowired
+    private OrderClosingHelper orderClosingHelper;
 
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity productionRecord = stateChangeContext.getOwner();
@@ -117,40 +121,43 @@ public final class ProductionRecordBasicListenerService {
         final Entity productionRecord = stateChangeContext.getOwner();
         final Entity order = productionRecord.getBelongsToField(ORDER);
 
-        if (order == null) {
+        if (!orderClosingHelper.orderShouldBeClosed(productionRecord)) {
             return;
         }
+        if (order.getStringField(STATE).equals(COMPLETED.getStringValue())) {
+            stateChangeContext.addMessage("productionCounting.order.orderIsAlreadyClosed", StateMessageType.INFO, false);
+            return;
+        }
+        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
+                orderStateChangeAspect.getChangeEntityDescriber(), order, OrderState.COMPLETED.getStringValue());
+        orderStateChangeAspect.changeState(orderStateChangeContext);
+        Entity orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
+        if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
+            stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
+        } else if (StateChangeStatus.PAUSED.equals(orderStateChangeContext.getStatus())) {
+            stateChangeContext.addMessage("productionCounting.order.orderWillBeClosedAfterExtSync", StateMessageType.INFO, false);
+        } else {
+            stateChangeContext.addMessage("productionCounting.order.orderCannotBeClosed", StateMessageType.FAILURE, false);
 
-        Boolean autoCloseOrder = order.getBooleanField(AUTO_CLOSE_ORDER);
-        if (autoCloseOrder && productionRecord.getBooleanField(LAST_RECORD)) {
-            if (order.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-                stateChangeContext.addMessage("productionCounting.order.orderIsAlreadyClosed", StateMessageType.INFO, false);
-                return;
+            List<ErrorMessage> errors = Lists.newArrayList();
+
+            if (!orderFromDB.getErrors().isEmpty()) {
+                errors.addAll(order.getErrors().values());
             }
-            final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
-                    orderStateChangeAspect.getChangeEntityDescriber(), order, OrderState.COMPLETED.getStringValue());
-            orderStateChangeAspect.changeState(orderStateChangeContext);
-            Entity orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
-            if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-                stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
-            } else {
-                stateChangeContext.addMessage("productionCounting.order.orderCannotBeClosed", StateMessageType.FAILURE, false);
+            if (!orderFromDB.getGlobalErrors().isEmpty()) {
+                errors.addAll(order.getGlobalErrors());
+            }
 
-                List<ErrorMessage> errors = Lists.newArrayList();
-                if (!orderFromDB.getErrors().isEmpty()) {
-                    errors.addAll(order.getErrors().values());
-                }
-                if (!orderFromDB.getGlobalErrors().isEmpty()) {
-                    errors.addAll(order.getGlobalErrors());
-                }
-
+            if (!errors.isEmpty()) {
                 StringBuilder errorMessages = new StringBuilder();
-                for (ErrorMessage message : errors) {
-                    String translatedErrorMessage = translationService.translate(message.getMessage(), Locale.getDefault(),
-                            message.getVars());
+
+                for (ErrorMessage errorMessage : errors) {
+                    String translatedErrorMessage = translationService.translate(errorMessage.getMessage(), Locale.getDefault(),
+                            errorMessage.getVars());
                     errorMessages.append(translatedErrorMessage);
                     errorMessages.append(", ");
                 }
+
                 stateChangeContext.addValidationError("orders.order.orderStates.error", errorMessages.toString());
             }
         }
