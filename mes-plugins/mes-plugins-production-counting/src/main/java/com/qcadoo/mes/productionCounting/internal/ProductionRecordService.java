@@ -114,7 +114,7 @@ public class ProductionRecordService {
         }
         if (BASIC.getStringValue().equals(typeOfProductionRecording)) {
             productionRecord.addError(productionRecordDD.getField(ORDER),
-                    "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting");
+                    "productionCounting.productionRecord.report.error.orderWithBasicProductionCounting");
             validTypeOfRecording = false;
         }
         return validTypeOfRecording;
@@ -136,10 +136,10 @@ public class ProductionRecordService {
         for (Entity counting : productionCountings) {
             if (counting.getBooleanField(LAST_RECORD)) {
                 if (productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) == null) {
-                    productionRecord.addError(dd.getField(ORDER), "productionCounting.record.messages.error.final");
+                    productionRecord.addError(dd.getField(ORDER), "productionCounting.productionRecord.messages.error.final");
                 } else {
                     productionRecord.addError(dd.getField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT),
-                            "productionCounting.record.messages.error.operationFinal");
+                            "productionCounting.productionRecord.messages.error.operationFinal");
                 }
 
                 return false;
@@ -153,7 +153,7 @@ public class ProductionRecordService {
         boolean isStarted = true;
         final String orderState = entity.getBelongsToField(ORDER).getStringField(OrderFields.STATE);
         if (!isOrderStarted(orderState)) {
-            entity.addError(dd.getField(ORDER), "productionCounting.record.messages.error.orderIsNotStarted");
+            entity.addError(dd.getField(ORDER), "productionCounting.productionRecord.messages.error.orderIsNotStarted");
             isStarted = false;
         }
         return isStarted;
@@ -254,7 +254,7 @@ public class ProductionRecordService {
 
         if (FOR_EACH.getStringValue().equals(recordingMode) && orderOperation == null) {
             productionRecord.addError(productionRecordDD.getField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT),
-                    "productionCounting.record.messages.error.operationIsNotSet");
+                    "productionCounting.productionRecord.messages.error.operationIsNotSet");
             return false;
         }
         return true;

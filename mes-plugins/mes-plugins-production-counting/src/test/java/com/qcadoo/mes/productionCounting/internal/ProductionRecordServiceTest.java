@@ -81,7 +81,7 @@ public class ProductionRecordServiceTest {
 
         // then
         assertFalse(canIAdd);
-        verify(productionRecord).addError(orderField, "productionCounting.record.messages.error.final");
+        verify(productionRecord).addError(orderField, "productionCounting.productionRecord.messages.error.final");
     }
 
     @Test
@@ -98,7 +98,7 @@ public class ProductionRecordServiceTest {
 
         // then
         assertFalse(canIAdd);
-        verify(productionRecord).addError(operationField, "productionCounting.record.messages.error.operationFinal");
+        verify(productionRecord).addError(operationField, "productionCounting.productionRecord.messages.error.operationFinal");
     }
 
     @Test

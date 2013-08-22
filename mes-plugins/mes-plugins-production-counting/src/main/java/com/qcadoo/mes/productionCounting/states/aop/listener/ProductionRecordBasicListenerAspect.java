@@ -56,7 +56,7 @@ public class ProductionRecordBasicListenerAspect extends AbstractStateListenerAs
     @RunForStateTransition(targetState = ProductionRecordStateStringValues.ACCEPTED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void validationOnAccept(final StateChangeContext stateChangeContext, final int phase) {
-        productionRecordBasicListenerService.checkIfExistsFinalRecord(stateChangeContext);
+        productionRecordBasicListenerService.validationOnAccept(stateChangeContext);
     }
 
     @RunInPhase(ProductionRecordStateChangePhase.DEFAULT)
