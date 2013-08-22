@@ -23,7 +23,7 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 public class DeliveryStateServiceMFAspect extends AbstractStateListenerAspect {
 
     @Autowired
-    DeliveryStateServiceMF deliveryStateServiceMF;
+    private DeliveryStateServiceMF deliveryStateServiceMF;
 
     @Pointcut(DeliveryStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
@@ -36,4 +36,5 @@ public class DeliveryStateServiceMFAspect extends AbstractStateListenerAspect {
     public void createTransfersForTheReceivedProducts(final StateChangeContext stateChangeContext, final int phase) {
         deliveryStateServiceMF.createTransfersForTheReceivedProducts(stateChangeContext);
     }
+
 }

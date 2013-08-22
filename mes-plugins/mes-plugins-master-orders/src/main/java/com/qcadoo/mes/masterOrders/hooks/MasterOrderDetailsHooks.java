@@ -28,7 +28,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class MasterOrderDetailsHooks {
@@ -38,9 +37,6 @@ public class MasterOrderDetailsHooks {
     private static final String L_ORDERS_GRID = "ordersGrid";
 
     private static final String L_PRODUCTS_GRID = "productsGrid";
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private ExpressionService expressionService;

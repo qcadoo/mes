@@ -53,7 +53,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Component
 public class TransformationsListeners {
@@ -65,9 +64,6 @@ public class TransformationsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
 
     public void fillTransferNumbersInTransfersConsumption(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {

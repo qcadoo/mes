@@ -27,6 +27,6 @@ public interface InternalOperationProductComponent extends OperationProductCompo
      * @throws IllegalArgumentException
      *             when given entity has type other than #basic_product.
      */
-    void setProduct(final Entity product) throws IllegalArgumentException;
+    void setProduct(final Entity product);
 
 }

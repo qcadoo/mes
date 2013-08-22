@@ -24,6 +24,11 @@
 package com.qcadoo.mes.samples.loader;
 
 import static com.qcadoo.mes.samples.constants.ParameterFieldsSamples.SAMPLES_WERE_LOADED;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COUNTRY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EMAIL;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_OWNER;
 
 import java.util.Map;
 import java.util.Random;
@@ -48,16 +53,6 @@ import com.qcadoo.tenant.api.DefaultLocaleResolver;
 public abstract class AbstractSamplesLoader implements SamplesLoader {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SamplesLoader.class);
-
-    private static final String NUMBER = "number";
-
-    protected static final String NAME = "name";
-
-    protected static final String ITEM = "item";
-
-    protected static final String EMAIL = "email";
-
-    private static final String OWNER = "owner";
 
     public static final Random RANDOM = new Random(System.currentTimeMillis());
 
@@ -114,17 +109,17 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     }
 
     protected void addDictionaryItems(final Map<String, String> values) {
-        Entity dictionary = getDictionaryByName(values.get(NAME));
+        Entity dictionary = getDictionaryByName(values.get(L_NAME));
 
         if (dictionary != null) {
             Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
             item.setField("dictionary", dictionary);
-            item.setField(NAME, values.get("item"));
+            item.setField(L_NAME, values.get("item"));
             item.setField("description", values.get("description"));
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(NAME) + ", item=" + item.getField(NAME)
-                        + ", description=" + item.getField("description") + "}");
+                LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(L_NAME) + ", item="
+                        + item.getField(L_NAME) + ", description=" + item.getField("description") + "}");
             }
 
             item.getDataDefinition().save(item);
@@ -136,11 +131,11 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         SearchCriteriaBuilder searchBuilder = dataDefinitionService.get("qcadooModel", "dictionaryItem").find()
                 .add(SearchRestrictions.belongsTo("dictionary", dictionary));
         int total = searchBuilder.list().getTotalNumberOfEntities();
-        return searchBuilder.setMaxResults(1).setFirstResult(RANDOM.nextInt(total)).uniqueResult().getField(NAME).toString();
+        return searchBuilder.setMaxResults(1).setFirstResult(RANDOM.nextInt(total)).uniqueResult().getField(L_NAME).toString();
     }
 
     protected Entity getDictionaryByName(final String name) {
-        return dataDefinitionService.get("qcadooModel", "dictionary").find().add(SearchRestrictions.eq(NAME, name))
+        return dataDefinitionService.get("qcadooModel", "dictionary").find().add(SearchRestrictions.eq(L_NAME, name))
                 .setMaxResults(1).uniqueResult();
     }
 
@@ -148,10 +143,10 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         LOG.info("Adding parameters");
         Entity parameter = parameterService.getParameter();
 
-        parameter.setField("country", getCountry(values.get("country")));
+        parameter.setField(L_COUNTRY, getCountry(values.get(L_COUNTRY)));
         parameter.setField("currency", getCurrency(values.get("code")));
         parameter.setField("unit", values.get("unit"));
-        parameter.setField("company", getCompany(values.get(OWNER)));
+        parameter.setField("company", getCompany(values.get(L_OWNER)));
 
         if (isEnabledOrEnabling("productionCounting")) {
             parameter.setField("typeOfProductionRecording", "02cumulated");
@@ -196,15 +191,15 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         Entity company = dataDefinitionService
                 .get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).create();
 
-        LOG.debug("id: " + values.get("id") + "number: " + values.get(NUMBER) + " companyFullName "
+        LOG.debug("id: " + values.get("id") + "number: " + values.get(L_NUMBER) + " companyFullName "
                 + values.get("companyfullname") + " tax " + values.get("tax") + " street " + values.get("street") + " house "
                 + values.get("house") + " flat " + values.get("flat") + " zipCode " + values.get("zipcode") + " city "
-                + values.get("city") + " state " + values.get("state") + " country " + values.get("country") + " email "
-                + values.get(EMAIL) + " website " + values.get("website") + " phone " + values.get("phone") + " owner "
-                + values.get(OWNER));
+                + values.get("city") + " state " + values.get("state") + " country " + values.get(L_COUNTRY) + " email "
+                + values.get(L_EMAIL) + " website " + values.get("website") + " phone " + values.get("phone") + " owner "
+                + values.get(L_OWNER));
 
-        company.setField(NUMBER, values.get(NUMBER));
-        company.setField(NAME, values.get(NAME));
+        company.setField(L_NUMBER, values.get(L_NUMBER));
+        company.setField(L_NAME, values.get(L_NAME));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));
         company.setField("house", values.get("house"));
@@ -212,14 +207,14 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         company.setField("zipCode", values.get("zipcode"));
         company.setField("city", values.get("city"));
         company.setField("state", values.get("state"));
-        company.setField("country", getCountry(values.get("country")));
-        company.setField(EMAIL, values.get(EMAIL));
+        company.setField(L_COUNTRY, getCountry(values.get(L_COUNTRY)));
+        company.setField(L_EMAIL, values.get(L_EMAIL));
         company.setField("website", values.get("website"));
         company.setField("phone", values.get("phone"));
-        company.setField(OWNER, values.get(OWNER));
+        company.setField(L_OWNER, values.get(L_OWNER));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test company item {company=" + company.getField(NAME) + "}");
+            LOG.debug("Add test company item {company=" + company.getField(L_NAME) + "}");
         }
 
         company.getDataDefinition().save(company);
@@ -227,7 +222,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
 
     private Entity getCompany(final String number) {
         return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq(NUMBER, number)).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getCurrency(final String code) {
