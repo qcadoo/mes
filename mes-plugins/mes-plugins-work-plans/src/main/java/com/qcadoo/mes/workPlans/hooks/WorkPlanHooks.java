@@ -48,14 +48,14 @@ public class WorkPlanHooks {
     private ParameterService parameterService;
 
     public void onCreate(final DataDefinition workPlanDD, final Entity workPlan) {
-        copyColumnForOrders(workPlanDD, workPlan);
+        copyColumnForOrders(workPlan);
     }
 
     public void onCopy(final DataDefinition workPlanDD, final Entity workPlan) {
-        clearGeneratedOnCopy(workPlanDD, workPlan);
+        clearGeneratedOnCopy(workPlan);
     }
 
-    private void copyColumnForOrders(final DataDefinition workPlanDD, final Entity workPlan) {
+    private void copyColumnForOrders(final Entity workPlan) {
         if (!shouldPropagateValuesFromLowerInstance(workPlan)) {
             return;
         }
@@ -89,7 +89,7 @@ public class WorkPlanHooks {
         return hasManyFieldValue;
     }
 
-    private void clearGeneratedOnCopy(final DataDefinition workPlanDD, final Entity workPlan) {
+    private void clearGeneratedOnCopy(final Entity workPlan) {
         workPlan.setField(WorkPlanFields.FILE_NAME, null);
         workPlan.setField(WorkPlanFields.GENERATED, false);
         workPlan.setField(WorkPlanFields.DATE, null);

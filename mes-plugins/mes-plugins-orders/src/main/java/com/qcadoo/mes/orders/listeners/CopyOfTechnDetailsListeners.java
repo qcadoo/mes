@@ -131,7 +131,7 @@ public class CopyOfTechnDetailsListeners {
         Long technologyId = (Long) componentState.getFieldValue();
 
         if (technologyId != null) {
-
+            DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
             DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY);
 
@@ -146,22 +146,21 @@ public class CopyOfTechnDetailsListeners {
             if (patternTechnology != null
                     && !patternTechnology.getId().equals(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).getId())) {
                 order.setField(OrderFields.TECHNOLOGY, null);
+                orderDD.save(order);
 
-                order.getDataDefinition().save(order);
                 technologyDD.delete(technology.getId());
-                newCopyOfTechnology = technologyDD.copy(patternTechnology.getId()).get(0);
 
+                newCopyOfTechnology = technologyDD.copy(patternTechnology.getId()).get(0);
                 newCopyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
                         TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
                 newCopyOfTechnology.setField("technologyPrototype", patternTechnology);
                 newCopyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, getTechnologyType(order));
                 newCopyOfTechnology = newCopyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
+
                 order.setField(OrderFields.TECHNOLOGY, newCopyOfTechnology);
                 order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, patternTechnology);
-                DataDefinition orderDD = dataDefinitionService
-                        .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
                 orderDD.save(order);
-                // order.getDataDefinition().save(order);
+
                 componentState.setFieldValue(newCopyOfTechnology.getId());
                 final FormComponent form = (FormComponent) componentState;
                 form.setEntity(newCopyOfTechnology);

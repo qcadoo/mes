@@ -52,11 +52,10 @@ public class TechnologyOperationComponentHooksWP {
     private WorkPlansService workPlansService;
 
     public void onCreate(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
-        copyColumnForProducts(technologyOperationComponentDD, technologyOperationComponent);
+        copyColumnForProducts(technologyOperationComponent);
     }
 
-    private void copyColumnForProducts(final DataDefinition technologyOperationComponentDD,
-            final Entity technologyOperationComponent) {
+    private void copyColumnForProducts(final Entity technologyOperationComponent) {
         if (!shouldPropagateValuesFromLowerInstance(technologyOperationComponent)) {
             return;
         }

@@ -254,7 +254,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         Entity technologyOperationComponent = operationComponent;
 
         BigDecimal cycles = operationRuns.get(technologyOperationComponent);
-        return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
+        return evaluateOperationDurationOutOfCycles(cycles, operationComponent, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
     }
 
@@ -275,7 +275,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         } else {
             cycles = operationRuns.get(technologyOperationComponent);
         }
-        return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
+        return evaluateOperationDurationOutOfCycles(cycles, operationComponent, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
     }
 
@@ -310,8 +310,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private int evaluateOperationDurationOutOfCycles(final BigDecimal cycles, final Entity operationComponent,
-            final Entity productionLine, final boolean maxForWorkstation, final boolean includeTpz,
-            final boolean includeAdditionalTime) {
+            final boolean maxForWorkstation, final boolean includeTpz, final boolean includeAdditionalTime) {
         boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
 
         Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent);

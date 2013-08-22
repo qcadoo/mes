@@ -1068,9 +1068,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             component.setField(L_LABOR_HOURLY_COST, operation.getField(L_LABOR_HOURLY_COST));
             component.setField("numberOfOperations", operation.getField("numberOfOperations"));
         }
-        if (isEnabledOrEnabling(L_TECH_SUBCONTRACTING) && !values.get("issubcontracting").isEmpty()) {
-            // component.setField("isSubcontracting", true);
-        }
+        // if (isEnabledOrEnabling(L_TECH_SUBCONTRACTING) && !values.get("issubcontracting").isEmpty()) {
+        // component.setField("isSubcontracting", true);
+        // }
 
         component = techOperCompDD.save(component);
         if (LOG.isDebugEnabled()) {

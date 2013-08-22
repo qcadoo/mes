@@ -50,10 +50,10 @@ public class OperationHooksWP {
     private WorkPlansService workPlansService;
 
     public void onCreate(final DataDefinition operationDD, final Entity operation) {
-        copyColumnForProducts(operationDD, operation);
+        copyColumnForProducts(operation);
     }
 
-    private void copyColumnForProducts(final DataDefinition operationDD, final Entity operation) {
+    private void copyColumnForProducts(final Entity operation) {
         if (!shouldPropagateValuesFromLowerInstance(operation)) {
             return;
         }

@@ -30,10 +30,10 @@ import com.qcadoo.model.api.Entity;
 public class ParameterHooksWP {
 
     public void onCreate(final DataDefinition parameterDD, final Entity parameter) {
-        addFieldsForParameter(parameterDD, parameter);
+        addFieldsForParameter(parameter);
     }
 
-    private void addFieldsForParameter(final DataDefinition parameterDD, final Entity parameter) {
+    private void addFieldsForParameter(final Entity parameter) {
         parameter.setField(ParameterFieldsWP.DONT_PRINT_ORDERS_IN_WORK_PLANS, false);
         parameter.setField(ParameterFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS, false);
         parameter.setField(ParameterFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, false);
