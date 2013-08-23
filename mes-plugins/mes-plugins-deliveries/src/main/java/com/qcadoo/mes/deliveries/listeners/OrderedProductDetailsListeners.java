@@ -24,6 +24,8 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,10 +34,13 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class OrderedProductDetailsListeners {
@@ -45,6 +50,8 @@ public class OrderedProductDetailsListeners {
     private static final String ORDERED_QUANTITY = "orderedQuantity";
 
     private static final String TOTAL_PRICE = "totalPrice";
+
+    private static final List<String> FIELDS = Arrays.asList(PRICE_PER_UNIT, ORDERED_QUANTITY, TOTAL_PRICE);
 
     @Autowired
     private NumberService numberService;
@@ -68,6 +75,9 @@ public class OrderedProductDetailsListeners {
     }
 
     public void recalculatePriceFromTotalPrice(final ViewDefinitionState view, final String quantityFieldReference) {
+        if (!isValidDecimalField(view, Arrays.asList(PRICE_PER_UNIT, quantityFieldReference, TOTAL_PRICE))) {
+            return;
+        }
         FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
         FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(TOTAL_PRICE);
         if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
@@ -78,6 +88,7 @@ public class OrderedProductDetailsListeners {
 
     private void calculatePriceUsingTotalCost(final ViewDefinitionState view, FieldComponent quantityField,
             FieldComponent totalPriceField) {
+
         Locale locale = view.getLocale();
         BigDecimal quantity = deliveriesService.getBigDecimalFromField(quantityField, locale);
         BigDecimal totalPrice = deliveriesService.getBigDecimalFromField(totalPriceField, locale);
@@ -93,6 +104,9 @@ public class OrderedProductDetailsListeners {
     }
 
     public void recalculatePriceFromPricePerUnit(final ViewDefinitionState view, final String quantityFieldReference) {
+        if (!isValidDecimalField(view, Arrays.asList(PRICE_PER_UNIT, quantityFieldReference, TOTAL_PRICE))) {
+            return;
+        }
         FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
         FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(PRICE_PER_UNIT);
         if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
@@ -103,6 +117,7 @@ public class OrderedProductDetailsListeners {
 
     private void calculatePriceUsingPricePerUnit(final ViewDefinitionState view, FieldComponent quantityField,
             FieldComponent pricePerUnitField) {
+
         Locale locale = view.getLocale();
         BigDecimal pricePerUnit = deliveriesService.getBigDecimalFromField(pricePerUnitField, locale);
         BigDecimal quantity = deliveriesService.getBigDecimalFromField(quantityField, locale);
@@ -118,6 +133,9 @@ public class OrderedProductDetailsListeners {
     }
 
     public void recalculatePrice(final ViewDefinitionState view, final String quantityFieldReference) {
+        if (!isValidDecimalField(view, Arrays.asList(PRICE_PER_UNIT, quantityFieldReference, TOTAL_PRICE))) {
+            return;
+        }
         FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
         FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(PRICE_PER_UNIT);
         FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(TOTAL_PRICE);
@@ -130,5 +148,22 @@ public class OrderedProductDetailsListeners {
             calculatePriceUsingTotalCost(view, quantityField, totalPriceField);
         }
 
+    }
+
+    private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
+        boolean isValid = true;
+        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        Entity entity = formComponent.getEntity();
+        for (String field : fileds) {
+            try {
+                BigDecimal decimalField = entity.getDecimalField(field);
+            } catch (IllegalArgumentException e) {
+                formComponent.findFieldComponentByName(field).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
+                        MessageType.FAILURE);
+                isValid = false;
+            }
+        }
+
+        return isValid;
     }
 }
