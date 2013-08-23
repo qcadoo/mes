@@ -60,7 +60,7 @@
 		<decimal name="deliveredProductsCumulatedTotalPrice" persistent="false"/>
 		
 		<enum name="state"
-			values="01draft,02prepared,03duringCorrection,04declined,05approved,06received"
+			values="01draft,02prepared,03duringCorrection,04declined,05approved,06received,07receiveConfirmWaiting"
 			default="01draft" required="true" />
 		<hasMany name="stateChanges" joinField="delivery" model="deliveryStateChange"
 			cascade="delete" />
