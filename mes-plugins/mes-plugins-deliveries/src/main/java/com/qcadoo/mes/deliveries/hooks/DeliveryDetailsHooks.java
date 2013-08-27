@@ -70,6 +70,10 @@ public class DeliveryDetailsHooks {
 
     private static final String L_WINDOW = "window";
 
+    private static final String L_PRODUCT = "product";
+
+    private static final String L_SHOW_PRODUCT = "showProduct";
+
     private static final String L_RELATED_DELIVERY = "relatedDelivery";
 
     private static final String L_CREATE_RELATED_DELIVERY = "createRelatedDelivery";
@@ -209,6 +213,10 @@ public class DeliveryDetailsHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity delivery = form.getEntity();
         deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
+    }
+
+    public void disableShowProductButton(final ViewDefinitionState view) {
+        deliveriesService.disableShowProductButton(view);
     }
 
 }

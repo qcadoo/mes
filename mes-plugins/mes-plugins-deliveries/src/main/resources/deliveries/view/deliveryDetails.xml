@@ -63,34 +63,34 @@
 									}
 								}
 							});
-							]]>
+						]]>
 					</script>
 				</smallButton>
 				<smallButton name="declineDelivery" icon="deleteIcon16.png"
 					state="disabled">
 					<script>
-					<![CDATA[
-						this.addOnChangeListener({
-							onClick: function() {
-								if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery.confirm)}")) {
-									#{form}.performEvent('changeState', ['04declined']);
-								};
-							}
-						});
-							]]>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery.confirm)}")) {
+										#{form}.performEvent('changeState', ['04declined']);
+									};
+								}
+							});
+						]]>
 					</script>
 				</smallButton>
 				<smallButton name="approveDelivery" icon="acceptIcon16.png"
 					state="disabled">
 					<script>
 						<![CDATA[
-						this.addOnChangeListener({
-							onClick: function() {
-								if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
-									#{form}.performEvent('changeState', ['05approved']);
-								};
-							}
-						});
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
+										#{form}.performEvent('changeState', ['05approved']);
+									};
+								}
+							});
 						]]>
 					</script>
 				</smallButton>
@@ -433,7 +433,8 @@
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="fixedHeight" value="true" />
-						<listener event="select" method="disabledButtonShowProduct"
+						
+						<listener event="select" method="disableShowProductButton"
 							class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners" />
 					</component>
 				</layoutElement>
@@ -506,7 +507,8 @@
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="fixedHeight" value="true" />
-						<listener event="select" method="disabledButtonShowProduct"
+						
+						<listener event="select" method="disableShowProductButton"
 							class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners" />
 					</component>
 				</layoutElement>
@@ -576,7 +578,7 @@
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="fillCurrencyFields" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="disabledButtonShowProduct" />
+			method="disableShowProductButton" />
 	</hooks>
 
 </view>

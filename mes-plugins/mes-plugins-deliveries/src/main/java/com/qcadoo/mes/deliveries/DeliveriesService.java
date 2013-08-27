@@ -222,7 +222,7 @@ public interface DeliveriesService {
     List<Entity> getColumnsWithFilteredCurrencies(final List<Entity> columns);
 
     /**
-     * get currency for delivery
+     * Gets currency for delivery
      * 
      * @param delivery
      *            delivery entity
@@ -231,16 +231,53 @@ public interface DeliveriesService {
     String getCurrency(final Entity delivery);
 
     /**
-     * get last purchase price
+     * Gets last purchase price
      * 
+     * @param pluginIdentifier
+     *            plugin identifier
+     * @param joinModelName
+     *            join model name
+     * @param joinModelStateName
+     *            join model state name
+     * @param joinModelState
+     *            join model state
+     * @param productModelName
+     *            product model name
+     * @param productModelProductName
+     *            product model product name
      * @param product
-     * @param dataDefinition
+     *            product
+     * 
      * @return lastPurchase price if entity exist or null
      */
-    BigDecimal findLastPurchasePrice(final Entity product, final String dataDefinition);
+    BigDecimal findLastPurchasePrice(final String pluginIdentifier, final String joinModelName, final String joinModelStateName,
+            final String joinModelState, final String productModelName, final String productModelProductName, final Entity product);
 
-    void fillLastPurchasePrice(final ViewDefinitionState view, final String dataDefinition);
+    /**
+     * Fills last purchase price
+     * 
+     * @param view
+     * @param lastPurchasePrice
+     *            last purchase price
+     */
+    void fillLastPurchasePrice(final ViewDefinitionState view, final BigDecimal lastPurchasePrice);
 
+    /**
+     * Gets big decimal from field
+     * 
+     * @param fieldComponent
+     *            field component
+     * @param locale
+     *            locale
+     * @return BigDecimal
+     */
     BigDecimal getBigDecimalFromField(final FieldComponent fieldComponent, final Locale locale);
+
+    /**
+     * Disables show product button
+     * 
+     * @param view
+     */
+    void disableShowProductButton(final ViewDefinitionState view);
 
 }

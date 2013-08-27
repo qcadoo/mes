@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -61,7 +60,4 @@ public class OrderedProductDetailsHooks {
         deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
     }
 
-    public void fillLastPurchasePrice(final ViewDefinitionState view) {
-        deliveriesService.fillLastPurchasePrice(view, DeliveriesConstants.MODEL_ORDERED_PRODUCT);
-    }
 }

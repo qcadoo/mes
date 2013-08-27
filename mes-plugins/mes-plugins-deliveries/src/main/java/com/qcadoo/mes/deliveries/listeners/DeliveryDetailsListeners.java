@@ -55,9 +55,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Component
@@ -67,13 +64,15 @@ public class DeliveryDetailsListeners {
 
     private static final String L_ORDERED_PRODUCTS = "orderedProducts";
 
-    private static final String L_PRODUCT = "product";
-
     private static final String L_FORM = "form";
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     private static final String L_WINDOW = "window";
+
+    private static final String L_PRODUCT = "product";
+
+    private static final String L_SHOW_PRODUCT = "showProduct";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -313,23 +312,8 @@ public class DeliveryDetailsListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
-    public void disabledButtonShowProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent orderedProductGrid = (GridComponent) view.getComponentByReference("orderedProducts");
-        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference("deliveredProducts");
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup product = (RibbonGroup) window.getRibbon().getGroupByName(L_PRODUCT);
-
-        RibbonActionItem showProduct = (RibbonActionItem) product.getItemByName("showProduct");
-        int sizeOfSelectedEntitiesOrderedGrid = orderedProductGrid.getSelectedEntities().size();
-        int sizeOfSelectedEntitiesDelivereGrid = deliveredProductsGrid.getSelectedEntities().size();
-        if ((sizeOfSelectedEntitiesOrderedGrid == 1 && sizeOfSelectedEntitiesDelivereGrid == 0)
-                || (sizeOfSelectedEntitiesOrderedGrid == 0 && sizeOfSelectedEntitiesDelivereGrid == 1)) {
-            showProduct.setEnabled(true);
-        } else {
-            showProduct.setEnabled(false);
-        }
-        showProduct.requestUpdate(true);
-        window.requestRibbonRender();
+    public void disableShowProductButton(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveriesService.disableShowProductButton(view);
     }
 
 }

@@ -30,6 +30,8 @@ import static com.qcadoo.mes.basic.constants.CompanyFields.STREET;
 import static com.qcadoo.mes.basic.constants.CompanyFields.ZIP_CODE;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.deliveries.constants.DefaultAddressType.OTHER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_ADDRESS;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
@@ -57,7 +59,6 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
-import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -66,12 +67,20 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
 
+    private static final String L_WINDOW = "window";
+
     private static final String L_PRODUCT = "product";
+
+    private static final String L_SHOW_PRODUCT = "showProduct";
 
     private static final String L_PRICE_PER_UNIT = "pricePerUnit";
 
@@ -384,40 +393,37 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public void fillLastPurchasePrice(final ViewDefinitionState view, final String modelName) {
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(L_PRODUCT);
-        FieldComponent pricePerUnit = (FieldComponent) view.getComponentByReference(L_PRICE_PER_UNIT);
-        if (StringUtils.isNotEmpty((String) pricePerUnit.getFieldValue())) {
-            return;
-        }
-        Entity product = productLookup.getEntity();
-        if (product == null) {
-            return;
-        }
-        BigDecimal lastPurchasePrice = findLastPurchasePrice(product, modelName);
-
-        pricePerUnit.setFieldValue(lastPurchasePrice);
-        pricePerUnit.requestComponentUpdateState();
-    }
-
-    @Override
-    public BigDecimal findLastPurchasePrice(final Entity product, final String modelName) {
+    public BigDecimal findLastPurchasePrice(final String pluginIdentifier, final String joinModelName,
+            final String joinModelStateName, final String joinModelState, final String productModelName,
+            final String productModelProductName, final Entity product) {
         String query = String.format("SELECT entity FROM #%s_%s AS entity "
-                + "INNER JOIN entity.delivery AS delivery WHERE delivery.%s= :deliveryState"
-                + " AND entity.%s = :product ORDER BY delivery.updateDate DESC", DeliveriesConstants.PLUGIN_IDENTIFIER,
-                modelName, DeliveryFields.STATE, DeliveredProductFields.PRODUCT);
+                + "INNER JOIN entity.%s AS joinModel WHERE joinModel.%s = :state"
+                + " AND entity.%s = :product ORDER BY joinModel.updateDate DESC", pluginIdentifier, productModelName,
+                joinModelName, joinModelStateName, productModelProductName);
 
-        SearchQueryBuilder searcgQueryBuilder = getOrderedProductDD().find(query);
-        searcgQueryBuilder.setEntity("product", product);
-        searcgQueryBuilder.setString("deliveryState", DeliveryStateStringValues.RECEIVED);
+        SearchQueryBuilder searchQueryBuilder = dataDefinitionService.get(pluginIdentifier, productModelName).find(query);
+        searchQueryBuilder.setEntity("product", product);
+        searchQueryBuilder.setString("state", joinModelState);
 
-        Entity entity = searcgQueryBuilder.setMaxResults(1).uniqueResult();
+        Entity entity = searchQueryBuilder.setMaxResults(1).uniqueResult();
 
         if (entity != null) {
             return entity.getDecimalField(L_PRICE_PER_UNIT);
         }
 
         return null;
+    }
+
+    @Override
+    public void fillLastPurchasePrice(final ViewDefinitionState view, final BigDecimal lastPurchasePrice) {
+        FieldComponent pricePerUnit = (FieldComponent) view.getComponentByReference(L_PRICE_PER_UNIT);
+
+        if (StringUtils.isNotEmpty((String) pricePerUnit.getFieldValue())) {
+            return;
+        }
+
+        pricePerUnit.setFieldValue(lastPurchasePrice);
+        pricePerUnit.requestComponentUpdateState();
     }
 
     @Override
@@ -433,4 +439,27 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             return null;
         }
     }
+
+    @Override
+    public void disableShowProductButton(final ViewDefinitionState view) {
+        GridComponent orderedProductGrid = (GridComponent) view.getComponentByReference(ORDERED_PRODUCTS);
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DELIVERED_PRODUCTS);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup product = (RibbonGroup) window.getRibbon().getGroupByName(L_PRODUCT);
+        RibbonActionItem showProduct = (RibbonActionItem) product.getItemByName(L_SHOW_PRODUCT);
+
+        int sizeOfSelectedEntitiesOrderedGrid = orderedProductGrid.getSelectedEntities().size();
+        int sizeOfSelectedEntitiesDelivereGrid = deliveredProductsGrid.getSelectedEntities().size();
+        if ((sizeOfSelectedEntitiesOrderedGrid == 1 && sizeOfSelectedEntitiesDelivereGrid == 0)
+                || (sizeOfSelectedEntitiesOrderedGrid == 0 && sizeOfSelectedEntitiesDelivereGrid == 1)) {
+            showProduct.setEnabled(true);
+        } else {
+            showProduct.setEnabled(false);
+        }
+
+        showProduct.requestUpdate(true);
+        window.requestRibbonRender();
+    }
+
 }
