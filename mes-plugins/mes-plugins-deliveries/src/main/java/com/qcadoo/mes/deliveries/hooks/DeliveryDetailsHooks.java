@@ -36,6 +36,7 @@ import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.APPROVED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.PREPARED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.RECEIVED;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.RECEIVE_CONFIRM_WAITING;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 import java.util.List;
@@ -118,7 +119,8 @@ public class DeliveryDetailsHooks {
         if (deliveryForm.getEntityId() == null) {
             changeFieldsEnabled(view, true, false, false);
         } else {
-            if (PREPARED.getStringValue().equals(state) || APPROVED.getStringValue().equals(state)) {
+            if (PREPARED.getStringValue().equals(state) || APPROVED.getStringValue().equals(state)
+                    || RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, true);
             } else if (DECLINED.getStringValue().equals(state) || RECEIVED.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, false);
