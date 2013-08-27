@@ -35,7 +35,9 @@
 			<validatesLength max="1024" />
 		</string>
 		<enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste" />
-		<string name="ean" unique="true" />
+		<string name="ean">
+			<validatesWith class="com.qcadoo.mes.basic.hooks.ProductValidators" method="checkEanUniqueness"/>
+		</string>
 		<dictionary name="category" dictionary="categories" />
 		<dictionary name="unit" dictionary="units" required="true" />
 		<hasMany name="substitutes" model="substitute" joinField="product"
