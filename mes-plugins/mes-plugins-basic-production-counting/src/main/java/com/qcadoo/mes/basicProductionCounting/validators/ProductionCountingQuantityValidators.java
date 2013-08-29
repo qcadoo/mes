@@ -25,7 +25,6 @@ package com.qcadoo.mes.basicProductionCounting.validators;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
@@ -78,15 +77,12 @@ public class ProductionCountingQuantityValidators {
                     return false;
                 }
             } else if (isTypeOfMaterialFinalProduct(typeOfMaterial)) {
-                Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+                if (!checkIfAnotherFinalProductExists(productionCountingQuantityDD, productionCountingQuantity)) {
+                    productionCountingQuantity.addError(
+                            productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL),
+                            "basicProductionCounting.productionCountingQuantity.typeOfMaterial.error.anotherFinalProductExists");
 
-                // TODO lupo fix problem with final product
-                if (checkIfAnotherFinalProductExists(order)) {
-                    // productionCountingQuantity.addError(
-                    // productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL),
-                    // "basicProductionCounting.productionCountingQuantity.typeOfMaterial.error.anotherFinalProductExists");
-
-                    return true;
+                    return false;
                 }
             }
         }
@@ -131,6 +127,25 @@ public class ProductionCountingQuantityValidators {
         return searchResult.getEntities().isEmpty();
     }
 
+    private boolean checkIfAnotherFinalProductExists(final DataDefinition productionCountingQuantityDD,
+            final Entity productionCountingQuantity) {
+        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+
+        SearchCriteriaBuilder searchCriteriaBuilder = productionCountingQuantityDD
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                        ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()));
+
+        if (productionCountingQuantity.getId() != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne("id", productionCountingQuantity.getId()));
+        }
+
+        SearchResult searchResult = searchCriteriaBuilder.list();
+
+        return searchResult.getEntities().isEmpty();
+    }
+
     private boolean isRoleUsed(final String role) {
         return ProductionCountingQuantityRole.USED.getStringValue().equals(role);
     }
@@ -153,15 +168,6 @@ public class ProductionCountingQuantityValidators {
 
     private boolean isTypeOfMaterialWaste(final String typeOfMaterial) {
         return ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(typeOfMaterial);
-    }
-
-    private boolean checkIfAnotherFinalProductExists(final Entity order) {
-        return (order
-                .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
-                .find()
-                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
-                        ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue())).list()
-                .getTotalNumberOfEntities() == 1);
     }
 
 }
