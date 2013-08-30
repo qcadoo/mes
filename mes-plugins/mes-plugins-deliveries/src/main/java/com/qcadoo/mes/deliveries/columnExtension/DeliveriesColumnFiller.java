@@ -351,15 +351,19 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
 
     private void fillCurrency(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
         Entity entity = null;
+        String currency = "";
         if (deliveryProduct.getDeliveredProductId() != null) {
             entity = dataDefinitionService
                     .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT).get(
                             deliveryProduct.getDeliveredProductId());
+        } else {
+
+            entity = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT)
+                    .get(deliveryProduct.getOrderedProductId());
+
         }
-        entity = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT).get(
-                deliveryProduct.getOrderedProductId());
         Entity delivery = entity.getBelongsToField(DeliveredProductFields.DELIVERY);
-        String currency = deliveriesService.getCurrency(delivery);
+        currency = deliveriesService.getCurrency(delivery);
 
         values.get(deliveryProduct).put("currency", currency);
     }
