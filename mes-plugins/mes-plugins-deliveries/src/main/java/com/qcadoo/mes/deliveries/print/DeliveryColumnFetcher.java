@@ -71,14 +71,54 @@ public class DeliveryColumnFetcher {
 
         for (Entity deliveredProduct : deliveredProducts) {
             DeliveryProduct deliveryProduct = checkIfSetContainsProduct(productWithDeliveryProducts, deliveredProduct);
+            if (deliveryProduct != null) {
+
+                productWithDeliveryProducts.remove(deliveryProduct);
+
+                deliveryProduct.setDeliveredProductId(deliveredProduct.getId());
+                productWithDeliveryProducts.add(deliveryProduct);
+            }
+        }
+
+        for (Entity deliveredProduct : deliveredProducts) {
+            DeliveryProduct deliveryProduct = checkIfSetContainsProduct(productWithDeliveryProducts, deliveredProduct);
             if (deliveryProduct == null) {
                 deliveryProduct = new DeliveryProduct();
+
+                productWithDeliveryProducts.remove(deliveryProduct);
+
+                deliveryProduct.setDeliveredProductId(deliveredProduct.getId());
+                productWithDeliveryProducts.add(deliveryProduct);
             }
-            productWithDeliveryProducts.remove(deliveryProduct);
-            deliveryProduct.setDeliveredProductId(deliveredProduct.getId());
-            productWithDeliveryProducts.add(deliveryProduct);
         }
-        return Lists.newArrayList(productWithDeliveryProducts);
+        return sortDeliveryProducts(productWithDeliveryProducts, orderedProducts, deliveredProducts);
+    }
+
+    private List<DeliveryProduct> sortDeliveryProducts(final Set<DeliveryProduct> productWithDeliveryProducts,
+            final List<Entity> orderedProducts, final List<Entity> deliveredProducts) {
+        List<DeliveryProduct> deliveryProducts = Lists.newArrayList();
+
+        for (Entity orderedProduct : orderedProducts) {
+            for (DeliveryProduct deliveryProduct : productWithDeliveryProducts) {
+                if (deliveryProduct.getOrderedProductId() != null
+                        && deliveryProduct.getOrderedProductId().equals(orderedProduct.getId())) {
+                    deliveryProducts.add(deliveryProduct);
+                    continue;
+                }
+            }
+        }
+
+        for (Entity deliveredProduct : deliveredProducts) {
+            for (DeliveryProduct deliveryProduct : productWithDeliveryProducts) {
+                if (deliveryProduct.getDeliveredProductId() != null && deliveryProduct.getOrderedProductId() == null
+                        && deliveryProduct.getDeliveredProductId().equals(deliveredProduct.getId())) {
+                    deliveryProducts.add(deliveryProduct);
+                    continue;
+                }
+            }
+        }
+
+        return deliveryProducts;
     }
 
     private DeliveryProduct checkIfSetContainsProduct(Set<DeliveryProduct> productWithDeliveryProducts, Entity deliveredProduct) {
@@ -102,8 +142,7 @@ public class DeliveryColumnFetcher {
         return product.getId().equals(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getId());
     }
 
-    public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(
-            final List<DeliveryProduct> deliveryProducts) {
+    public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(final List<DeliveryProduct> deliveryProducts) {
         Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues = new HashMap<DeliveryProduct, Map<String, String>>();
 
         fetchColumnValues(deliveryProductsColumnValues, "getDeliveryProductsColumnValues", deliveryProducts);

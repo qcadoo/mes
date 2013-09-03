@@ -69,8 +69,9 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(final List<DeliveryProduct> deliveryProducts) {
         Map<DeliveryProduct, Map<String, String>> values = new HashMap<DeliveryProduct, Map<String, String>>();
 
+        Integer succession = 0;
         for (DeliveryProduct deliveryProduct : deliveryProducts) {
-
+            succession++;
             if (!values.containsKey(deliveryProduct)) {
                 values.put(deliveryProduct, new HashMap<String, String>());
             }
@@ -78,6 +79,8 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
             fillProductNumber(values, deliveryProduct);
             fillProductName(values, deliveryProduct);
             fillProductUnit(values, deliveryProduct);
+
+            fillSuccession(values, deliveryProduct, succession);
 
             fillOrderedQuantity(values, deliveryProduct);
             fillDeliveredQuantity(values, deliveryProduct);
@@ -198,6 +201,12 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         }
 
         values.get(deliveryProduct).put("productUnit", productUnit);
+    }
+
+    private void fillSuccession(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct,
+            final Integer succession) {
+
+        values.get(deliveryProduct).put("succession", succession.toString());
     }
 
     private void fillOrderedQuantity(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {

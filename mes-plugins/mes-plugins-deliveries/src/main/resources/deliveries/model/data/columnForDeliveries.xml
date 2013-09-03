@@ -25,6 +25,7 @@
 
 -->
 <column>
+	<row IDENTIFIER="succession" NAME="deliveries.columnForDeliveries.name.value.succession" DESCRIPTION="deliveries.columnForDeliveries.description.value.succession" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
 	<row IDENTIFIER="productNumber" NAME="deliveries.columnForDeliveries.name.value.productNumber" DESCRIPTION="deliveries.columnForDeliveries.description.value.productNumber" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
 	<row IDENTIFIER="productName" NAME="deliveries.columnForDeliveries.name.value.productName" DESCRIPTION="deliveries.columnForDeliveries.description.value.productName" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
 	<row IDENTIFIER="orderedQuantity" NAME="deliveries.columnForDeliveries.name.value.orderedQuantity" DESCRIPTION="deliveries.columnForDeliveries.description.value.orderedQuantity" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="02right" />

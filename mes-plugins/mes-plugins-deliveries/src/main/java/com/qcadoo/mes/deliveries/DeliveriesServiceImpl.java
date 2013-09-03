@@ -39,6 +39,7 @@ import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -65,6 +66,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -128,8 +130,19 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public List<Entity> getColumnsForDeliveries() {
-        return getColumnForDeliveriesDD().find().addOrder(SearchOrders.asc(ColumnForDeliveriesFields.SUCCESSION)).list()
-                .getEntities();
+        List<Entity> columnsForDeliveries = getColumnForDeliveriesDD().find()
+                .addOrder(SearchOrders.asc(ColumnForDeliveriesFields.SUCCESSION)).list().getEntities();
+        List<Entity> deliveriesColumn = new ArrayList<Entity>();
+        Entity successionColumn = getColumnForDeliveriesDD().find()
+                .add(SearchRestrictions.eq(ColumnForDeliveriesFields.IDENTIFIER, "succession")).uniqueResult();
+        deliveriesColumn.add(successionColumn);
+        for (Entity entity : columnsForDeliveries) {
+            if (!entity.getStringField(ColumnForDeliveriesFields.IDENTIFIER).equals(
+                    successionColumn.getStringField(ColumnForDeliveriesFields.IDENTIFIER))) {
+                deliveriesColumn.add(entity);
+            }
+        }
+        return deliveriesColumn;
     }
 
     @Override
