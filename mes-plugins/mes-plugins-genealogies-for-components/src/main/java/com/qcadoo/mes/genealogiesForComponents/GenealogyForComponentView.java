@@ -121,15 +121,15 @@ public class GenealogyForComponentView extends ReportPdfView {
         Collections.sort(genealogies, new EntityOrderNumberComparator());
         for (Entity genealogy : genealogies) {
             Entity order = (Entity) genealogy.getField("order");
-            table.addCell(new Phrase(order.getField("number").toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(order.getField("name").toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(order.getField("number").toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(order.getField("name").toString(), FontUtils.getDejavuRegular7Dark()));
             Entity product = (Entity) order.getField("product");
             if (product == null) {
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
-                table.addCell(new Phrase(product.getField("name").toString(), FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase(product.getField("name").toString(), FontUtils.getDejavuRegular7Dark()));
             }
-            table.addCell(new Phrase(genealogy.getField(BATCH_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(genealogy.getField(BATCH_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
         }
         document.add(table);
     }

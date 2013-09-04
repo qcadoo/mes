@@ -160,9 +160,9 @@ public class GenealogyForProductView extends ReportPdfView {
             for (Pair<String, Entity> pair : batchList) {
                 String batch = pair.getKey();
                 Entity product = pair.getValue();
-                table.addCell(new Phrase(product.getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
-                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
-                table.addCell(new Phrase(batch, FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase(product.getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
+                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
+                table.addCell(new Phrase(batch, FontUtils.getDejavuRegular7Dark()));
             }
             document.add(table);
 
@@ -173,9 +173,9 @@ public class GenealogyForProductView extends ReportPdfView {
             throws DocumentException {
         PdfPTable table = pdfHelper.createTableWithHeader(3, orderHeader, false);
         for (Entity order : orders) {
-            table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(order.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(order.getField(DATE_FROM_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(order.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(order.getField(DATE_FROM_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
         }
         document.add(table);
     }

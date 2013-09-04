@@ -256,7 +256,7 @@ public class DeliveryReportPdf extends ReportPdfView {
 
                         prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
 
-                        productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                        productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
                     }
                 }
 
@@ -279,7 +279,7 @@ public class DeliveryReportPdf extends ReportPdfView {
         DeliveryPricesAndQuantities pricesAndQntts = new DeliveryPricesAndQuantities(delivery, numberService);
 
         PdfPCell total = new PdfPCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
-                FontUtils.getDejavuRegular9Dark()));
+                FontUtils.getDejavuRegular7Dark()));
 
         total.setColspan(2);
         total.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -295,20 +295,20 @@ public class DeliveryReportPdf extends ReportPdfView {
                     && columnsName.indexOf(OrderedProductFields.ORDERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getOrderedCumulatedQuantity()), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
             } else if (columnsName.contains(DeliveredProductFields.DELIVERED_QUANTITY)
                     && columnsName.indexOf(DeliveredProductFields.DELIVERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getDeliveredCumulatedQuantity()), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
             } else if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)
                     && columnsName.indexOf(DeliveredProductFields.TOTAL_PRICE) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getDeliveredTotalPrice()), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
             } else if (columnsName.contains(L_CURRENCY) && columnsName.indexOf(L_CURRENCY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                productsTable.addCell(new Phrase(deliveriesService.getCurrency(delivery), FontUtils.getDejavuRegular9Dark()));
+                productsTable.addCell(new Phrase(deliveriesService.getCurrency(delivery), FontUtils.getDejavuRegular7Dark()));
             } else {
                 productsTable.addCell("");
             }

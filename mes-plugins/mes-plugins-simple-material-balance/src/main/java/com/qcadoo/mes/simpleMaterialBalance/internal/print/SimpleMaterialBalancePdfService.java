@@ -158,17 +158,17 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
-            table.addCell(new Phrase(entry.getKey().getField(L_NUMBER).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(L_NAME).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(L_UNIT).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(entry.getKey().getField(L_NUMBER).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(entry.getKey().getField(L_NAME).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(entry.getKey().getField(L_UNIT).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuRegular7Dark()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity simpleMaterialBalanceLocationComponent : simpleMaterialBalanceLocationComponents) {
                 available = available.add(materialFlowService.calculateShouldBeInLocation(simpleMaterialBalanceLocationComponent
                         .getBelongsToField(L_LOCATION).getId(), entry.getKey().getId(), (Date) simpleMaterialBalance
                         .getField(L_DATE)));
             }
-            table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(numberService.format(available.subtract(entry.getValue(), numberService.getMathContext())),
                     FontUtils.getDejavuBold9Dark()));
         }
@@ -192,8 +192,8 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 simpleMaterialBalance.getHasManyField(L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS));
         Collections.sort(orders, new EntityOrderNumberComparator());
         for (Entity e : orders) {
-            table.addCell(new Phrase(e.getBelongsToField(L_ORDER).getStringField(L_NUMBER), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField(L_ORDER).getStringField(L_NAME), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(L_ORDER).getStringField(L_NUMBER), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(L_ORDER).getStringField(L_NAME), FontUtils.getDejavuRegular7Dark()));
         }
         document.add(table);
     }
@@ -216,9 +216,9 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         Collections.sort(simpleMaterialBalanceLocationComponents, new EntityLocationNumberComparator());
         for (Entity simpleMaterialBalanceLocationComponent : simpleMaterialBalanceLocationComponents) {
             table.addCell(new Phrase(simpleMaterialBalanceLocationComponent.getBelongsToField(L_LOCATION)
-                    .getStringField(L_NUMBER), FontUtils.getDejavuRegular9Dark()));
+                    .getStringField(L_NUMBER), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(simpleMaterialBalanceLocationComponent.getBelongsToField(L_LOCATION).getStringField(L_NAME),
-                    FontUtils.getDejavuRegular9Dark()));
+                    FontUtils.getDejavuRegular7Dark()));
         }
         document.add(table);
     }

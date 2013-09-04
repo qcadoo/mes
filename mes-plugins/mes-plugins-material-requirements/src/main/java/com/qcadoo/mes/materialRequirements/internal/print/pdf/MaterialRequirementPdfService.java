@@ -147,16 +147,16 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         PdfPTable table = pdfHelper.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
-            table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuBold9Dark()));
+            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuBold7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             Object unit = entry.getKey().getField(UNIT_FIELD);
             if (unit == null) {
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
-                table.addCell(new Phrase(unit.toString(), FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase(unit.toString(), FontUtils.getDejavuRegular7Dark()));
             }
 
         }
@@ -170,27 +170,27 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         PdfPTable table = pdfHelper.createTableWithHeader(5, orderHeader, true, defaultMatReqHeaderColumnWidth);
 
         for (Entity order : orders) {
-            table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(order.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(order.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
             Entity product = (Entity) order.getField(PRODUCT_FIELD);
             if (product == null) {
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
-                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_FIELD);
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
-            table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             if (product == null) {
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
                 Object unit = product.getField(UNIT_FIELD);
                 if (unit == null) {
-                    table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                    table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                 } else {
-                    table.addCell(new Phrase(unit.toString(), FontUtils.getDejavuRegular9Dark()));
+                    table.addCell(new Phrase(unit.toString(), FontUtils.getDejavuRegular7Dark()));
                 }
             }
         }

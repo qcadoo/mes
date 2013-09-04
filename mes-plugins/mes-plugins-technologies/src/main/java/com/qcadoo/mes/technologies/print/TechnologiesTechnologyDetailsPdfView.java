@@ -147,14 +147,14 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 if (product.getDataDefinition().getName().equals("operationProductInComponent")) {
                     productType = "technologies.technologiesTechnologyDetails.report.direction.in";
                 }
-                table.addCell(new Phrase(nodeNumber, FontUtils.getDejavuRegular9Dark()));
-                table.addCell(new Phrase(operationName, FontUtils.getDejavuRegular9Dark()));
-                table.addCell(new Phrase(translationService.translate(productType, locale), FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase(nodeNumber, FontUtils.getDejavuRegular7Dark()));
+                table.addCell(new Phrase(operationName, FontUtils.getDejavuRegular7Dark()));
+                table.addCell(new Phrase(translationService.translate(productType, locale), FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(FIELD_NAME), FontUtils
-                        .getDejavuRegular9Dark()));
-                table.addCell(new Phrase(numberService.format(product.getField("quantity")), FontUtils.getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
+                table.addCell(new Phrase(numberService.format(product.getField("quantity")), FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField("unit"), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
             }
         }
 
