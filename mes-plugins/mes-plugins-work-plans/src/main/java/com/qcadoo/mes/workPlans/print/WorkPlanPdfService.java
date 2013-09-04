@@ -394,7 +394,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 String value = columnValues.get(productComponent).get(columnIdentifier);
 
                 alignColumn(table.getDefaultCell(), ColumnAlignment.parseString(column.getStringField("alignment")));
-
+                table.addCell(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
             }
         }
 
