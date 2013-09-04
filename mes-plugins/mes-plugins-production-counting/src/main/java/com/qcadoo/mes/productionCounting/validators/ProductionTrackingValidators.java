@@ -24,11 +24,12 @@
 package com.qcadoo.mes.productionCounting.validators;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
@@ -42,25 +43,26 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class ProductionTrackingValidators {
 
-    private static final List<String> L_ORDER_STARTED_STATES = Lists.newArrayList(OrderStateStringValues.IN_PROGRESS,
+    private static final Set<String> ORDER_STARTED_STATES_SET = Sets.newHashSet(OrderStateStringValues.IN_PROGRESS,
             OrderStateStringValues.COMPLETED, OrderStateStringValues.INTERRUPTED);
 
     @Autowired
     private ProductionCountingService productionCountingService;
 
     public boolean validatesWith(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+
         boolean isValid = true;
 
-        isValid = isValid && checkTypeOfProductionRecording(productionTrackingDD, productionTracking);
-        isValid = isValid && willOrderAcceptOneMore(productionTrackingDD, productionTracking);
-        isValid = isValid && checkIfOrderIsStarted(productionTrackingDD, productionTracking);
-        isValid = isValid && checkIfOperationIsSet(productionTrackingDD, productionTracking);
+        isValid = isValid && checkTypeOfProductionRecording(productionTrackingDD, productionTracking, order);
+        isValid = isValid && willOrderAcceptOneMore(productionTrackingDD, productionTracking, order);
+        isValid = isValid && checkIfOrderIsStarted(productionTrackingDD, productionTracking, order);
 
         return isValid;
     }
 
-    private boolean checkTypeOfProductionRecording(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+    private boolean checkTypeOfProductionRecording(final DataDefinition productionTrackingDD, final Entity productionTracking,
+            final Entity order) {
         if (order == null) {
             return true;
         }
@@ -87,8 +89,9 @@ public class ProductionTrackingValidators {
         return isValid;
     }
 
-    private boolean willOrderAcceptOneMore(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+    private boolean willOrderAcceptOneMore(final DataDefinition productionTrackingDD, final Entity productionTracking,
+            final Entity order) {
+
         Entity technologyOperationComponent = productionTracking
                 .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -110,7 +113,8 @@ public class ProductionTrackingValidators {
                     productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.ORDER),
                             "productionCounting.record.messages.error.final");
                 } else {
-                    productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT),
+                    productionTracking.addError(
+                            productionTrackingDD.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT),
                             "productionCounting.record.messages.error.operationFinal");
                 }
 
@@ -121,10 +125,10 @@ public class ProductionTrackingValidators {
         return true;
     }
 
-    private boolean checkIfOrderIsStarted(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+    private boolean checkIfOrderIsStarted(final DataDefinition productionTrackingDD, final Entity productionTracking,
+            final Entity order) {
         boolean isStarted = true;
 
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         String state = order.getStringField(OrderFields.STATE);
 
         if (!isOrderStarted(state)) {
@@ -138,25 +142,7 @@ public class ProductionTrackingValidators {
     }
 
     private boolean isOrderStarted(final String state) {
-        return L_ORDER_STARTED_STATES.contains(state);
-    }
-
-    private boolean checkIfOperationIsSet(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        Entity technologyOperationComponent = productionTracking
-                .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
-
-        String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-
-        if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)
-                && (technologyOperationComponent == null)) {
-            productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT),
-                    "productionCounting.record.messages.error.operationIsNotSet");
-
-            return false;
-        }
-
-        return true;
+        return ORDER_STARTED_STATES_SET.contains(state);
     }
 
 }
