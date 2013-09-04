@@ -37,12 +37,11 @@ public enum ProductionCountingQuantityRole {
     }
 
     public static ProductionCountingQuantityRole parseString(final String string) {
-        if ("01used".equals(string)) {
-            return USED;
-        } else if ("02produced".equals(string)) {
-            return PRODUCED;
+        for (ProductionCountingQuantityRole role : values()) {
+            if (role.getStringValue().equals(string)) {
+                return role;
+            }
         }
-
         throw new IllegalStateException("Unsupported ProductionCountingQuantityRole: " + string);
     }
 
