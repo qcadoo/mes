@@ -5,15 +5,16 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -26,11 +27,8 @@ public abstract class AbstractPlannedQuantitiesCounter {
     @Autowired
     private NumberService numberService;
 
-    private final String opcProductFieldName;
-
-    private final String tocOperationProductComponentsFieldName;
-
-    private final String pcqOperationProductComponentFieldName;
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     private final String topcProductionTrackingFieldName;
 
@@ -41,15 +39,9 @@ public abstract class AbstractPlannedQuantitiesCounter {
     protected AbstractPlannedQuantitiesCounter(final ProductionCountingQuantityRole role) {
         this.role = role;
         if (role == ProductionCountingQuantityRole.USED) {
-            this.opcProductFieldName = OperationProductInComponentFields.PRODUCT;
-            this.tocOperationProductComponentsFieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
-            this.pcqOperationProductComponentFieldName = ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT;
             this.topcProductionTrackingFieldName = TrackingOperationProductInComponentFields.PRODUCTION_TRACKING;
             this.topcProductFieldName = TrackingOperationProductInComponentFields.PRODUCT;
         } else if (role == ProductionCountingQuantityRole.PRODUCED) {
-            this.opcProductFieldName = OperationProductOutComponentFields.PRODUCT;
-            this.tocOperationProductComponentsFieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
-            this.pcqOperationProductComponentFieldName = ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT;
             this.topcProductionTrackingFieldName = TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING;
             this.topcProductFieldName = TrackingOperationProductOutComponentFields.PRODUCT;
         } else {
@@ -76,16 +68,19 @@ public abstract class AbstractPlannedQuantitiesCounter {
 
     private SearchCriteriaBuilder prepareCriteria(final Entity product, final Entity order,
             final Entity technologyOperationComponent) {
-        SearchCriteriaBuilder scb = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).find();
+        SearchCriteriaBuilder scb = criteriaBuilderFor(order);
 
-        if (technologyOperationComponent == null) {
-            scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product)).list().getEntities();
-        } else {
-            Entity operationProductComponent = findOperationProductComponent(technologyOperationComponent, product);
-            scb.add(SearchRestrictions.belongsTo(pcqOperationProductComponentFieldName, operationProductComponent));
-            scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product));
+        TypeOfProductionRecording recordingType = TypeOfProductionRecording.parseString(order
+                .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
+
+        if (recordingType == TypeOfProductionRecording.FOR_EACH) {
+            // since belongsTo restriction produces .isNull(fieldName) for null entity argument we do not have to deal with any
+            // null checks
+            scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
+                    technologyOperationComponent));
         }
 
+        scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product));
         scb.add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, role.getStringValue()));
         scb.add(SearchRestrictions.isNotNull(ProductionCountingQuantityFields.PLANNED_QUANTITY));
 
@@ -106,9 +101,12 @@ public abstract class AbstractPlannedQuantitiesCounter {
         return numberService.setScale(plannedQuantity);
     }
 
-    private Entity findOperationProductComponent(final Entity technologyOperationComponent, final Entity product) {
-        return technologyOperationComponent.getHasManyField(tocOperationProductComponentsFieldName).find()
-                .add(SearchRestrictions.belongsTo(opcProductFieldName, product)).setMaxResults(1).uniqueResult();
+    private SearchCriteriaBuilder criteriaBuilderFor(final Entity order) {
+        DataDefinition dd = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY);
+        SearchCriteriaBuilder scb = dd.find();
+        scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order));
+        return scb;
     }
 
 }

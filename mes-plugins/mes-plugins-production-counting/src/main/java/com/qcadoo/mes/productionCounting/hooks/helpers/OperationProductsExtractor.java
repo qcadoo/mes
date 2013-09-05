@@ -91,10 +91,6 @@ public class OperationProductsExtractor {
     }
 
     private List<Entity> getProductsFromProductionCountingQuantities(final Entity productionTracking, final Entity order) {
-        if (hasValueChanged(productionTracking, order, ProductionTrackingFields.ORDER)) {
-            return Lists.newArrayList();
-        }
-
         Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
         List<Entity> quantities = productionCountingQuantityFetcher.getQuantities(order, toc);
         return trackingOperationComponentBuilder.build(quantities);
@@ -104,13 +100,10 @@ public class OperationProductsExtractor {
         Entity technologyOperationComponent = productionTracking
                 .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-        List<Entity> productComponents = Lists.newArrayList();
-        if (shouldCopy(productionTracking, order, technologyOperationComponent)) {
-            productComponents.addAll(getOperationProductComponents(order, technologyOperationComponent));
-        }
-        return productComponents;
+        return getOperationProductComponents(order, technologyOperationComponent);
     }
 
+    // TODO LUPO - Can not we just take productionCountingQuantities from the order?
     private List<Entity> getOperationProductComponents(final Entity order, final Entity technologyOperationComponent) {
         List<Entity> trackingOperationProductComponents = Lists.newArrayList();
 
@@ -128,6 +121,8 @@ public class OperationProductsExtractor {
                 if (!technologyOperationComponent.getId().equals(operationComponent.getId())) {
                     continue;
                 }
+            } else if (operationProductComponent.getField(L_OPERATION_COMPONENT) != null) {
+                continue;
             }
 
             Entity trackingOpComp = trackingOperationComponentBuilder.fromOperationProductComponent(operationProductComponent);
@@ -135,36 +130,6 @@ public class OperationProductsExtractor {
         }
 
         return trackingOperationProductComponents;
-    }
-
-    private boolean shouldCopy(final Entity productionTracking, final Entity order, final Entity technologyOperationComponent) {
-        return (hasValueChanged(productionTracking, order, ProductionTrackingFields.ORDER)
-                || (technologyOperationComponent != null && hasValueChanged(productionTracking, technologyOperationComponent,
-                        ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT)) || !hasTrackingOperationProductComponents(productionTracking));
-    }
-
-    private boolean hasTrackingOperationProductComponents(final Entity productionTracking) {
-        return ((productionTracking.getField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS) != null) && (productionTracking
-                .getField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS) != null));
-    }
-
-    private boolean hasValueChanged(final Entity productionTracking, final Entity value, final String field) {
-        Entity existingProductionTracking = getExistingProductionTracking(productionTracking);
-        if (existingProductionTracking == null) {
-            return false;
-        }
-        Entity existingProductionTrackingValue = existingProductionTracking.getBelongsToField(field);
-        if (existingProductionTrackingValue == null) {
-            return true;
-        }
-        return !existingProductionTrackingValue.equals(value);
-    }
-
-    private Entity getExistingProductionTracking(final Entity productionTracking) {
-        if (productionTracking.getId() == null) {
-            return null;
-        }
-        return productionTracking.getDataDefinition().get(productionTracking.getId());
     }
 
 }

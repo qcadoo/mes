@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,23 +78,42 @@ public class ProductionTrackingHooks {
         final boolean registerQuantityOutProduct = order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT);
 
         if (!(registerQuantityInProduct || registerQuantityOutProduct)
-                || StringUtils.isEmpty(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                || StringUtils.isEmpty(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))
+                || !shouldCopyProducts(productionTracking)) {
             return;
         }
 
         OperationProductsExtractor.TrackingOperationProducts operationProducts = operationProductsExtractor
                 .getProductsByModelName(productionTracking);
 
+        List<Entity> inputs = Collections.emptyList();
         if (registerQuantityInProduct) {
-            productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
-                    operationProducts.getInputComponents());
+            inputs = operationProducts.getInputComponents();
         }
+        productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS, inputs);
 
+        List<Entity> outputs = Collections.emptyList();
         if (registerQuantityOutProduct) {
-            productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS,
-                    operationProducts.getOutputComponents());
+            outputs = operationProducts.getOutputComponents();
+        }
+        productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, outputs);
+
+    }
+
+    private boolean shouldCopyProducts(final Entity productionTracking) {
+        if (productionTracking.getId() == null) {
+            return true;
         }
 
+        Entity existingProductionTracking = productionTracking.getDataDefinition().get(productionTracking.getId());
+
+        Object oldTocValue = existingProductionTracking.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Object newTocValue = productionTracking.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        Object oldOrderValue = existingProductionTracking.getField(ProductionTrackingFields.ORDER);
+        Object newOrderValue = productionTracking.getField(ProductionTrackingFields.ORDER);
+
+        return !ObjectUtils.equals(oldOrderValue, newOrderValue) || !ObjectUtils.equals(oldTocValue, newTocValue);
     }
 
     private void setInitialState(final Entity productionTracking) {
