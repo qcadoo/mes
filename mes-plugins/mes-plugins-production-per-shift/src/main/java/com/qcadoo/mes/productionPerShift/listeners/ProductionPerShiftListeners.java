@@ -228,6 +228,9 @@ public class ProductionPerShiftListeners {
                 BigDecimal planedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
                 BigDecimal difference = planedQuantity.subtract(productionQuantity, numberService.getMathContext());
                 ComponentState form = (ComponentState) view.getComponentByReference("form");
+                if (difference.compareTo(BigDecimal.ZERO) == 0) {
+                    return;
+                }
                 if (difference.compareTo(BigDecimal.ZERO) > 0) {
                     form.addMessage("productionPerShift.productionPerShiftDetails.sumPlanedQuantityPSSmaller", MessageType.INFO,
                             false,
