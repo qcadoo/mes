@@ -32,6 +32,7 @@ import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.C
 import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.HAS_CORRECTIONS;
 import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.PROGRESS_FOR_DAYS;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -45,14 +46,19 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
+import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
@@ -91,6 +97,9 @@ public class ProductionPerShiftListeners {
 
     @Autowired
     private ProductionPerShiftDetailsHooks detailsHooks;
+
+    @Autowired
+    private NumberService numberService;
 
     public void redirectToProductionPerShift(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Long orderId = (Long) state.getFieldValue();
@@ -197,6 +206,39 @@ public class ProductionPerShiftListeners {
                 plannedProgressCorrectionCommentField.requestComponentUpdateState();
                 progressForDaysADL.requestComponentUpdateState();
                 plannedProgressCorrectionTypesADL.requestComponentUpdateState();
+
+                Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
+                EntityTree techInstOperComps = order.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+                if (techInstOperComps.isEmpty()) {
+                    return;
+                }
+                Entity root = techInstOperComps.getRoot();
+                if (!root.getId().equals(tioc.getId())) {
+                    return;
+                }
+                BigDecimal productionQuantity = new BigDecimal(0);
+                List<Entity> plannedPrograssForDay = root.getHasManyField(PROGRESS_FOR_DAYS);
+                for (Entity progressForDay : plannedPrograssForDay) {
+                    List<Entity> dailyProgreses = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
+                    for (Entity dailyProgress : dailyProgreses) {
+                        productionQuantity = productionQuantity.add(dailyProgress.getDecimalField(DailyProgressFields.QUANTITY),
+                                numberService.getMathContext());
+                    }
+                }
+                BigDecimal planedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+                BigDecimal difference = planedQuantity.subtract(productionQuantity, numberService.getMathContext());
+                ComponentState form = (ComponentState) view.getComponentByReference("form");
+                if (difference.compareTo(BigDecimal.ZERO) > 0) {
+                    form.addMessage("productionPerShift.productionPerShiftDetails.sumPlanedQuantityPSSmaller", MessageType.INFO,
+                            false,
+                            numberService.formatWithMinimumFractionDigits(difference.abs(numberService.getMathContext()), 0));
+                } else {
+                    form.addMessage("productionPerShift.productionPerShiftDetails.sumPlanedQuantityPSGreater", MessageType.INFO,
+                            false,
+                            numberService.formatWithMinimumFractionDigits(difference.abs(numberService.getMathContext()), 0));
+
+                }
+
             }
         }
     }
