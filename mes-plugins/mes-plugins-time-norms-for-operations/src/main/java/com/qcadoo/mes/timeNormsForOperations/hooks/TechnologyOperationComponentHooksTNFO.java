@@ -27,13 +27,32 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.util.UnitService;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class TechnologyOperationComponentHooksTNFO {
+
+    @Autowired
+    private UnitService unitService;
+
+    public void onCreate(final DataDefinition dd, final Entity technologyOperationComponent) {
+        setDefaultUnitOnCreate(dd, technologyOperationComponent);
+    }
+
+    private void setDefaultUnitOnCreate(final DataDefinition dd, final Entity technologyOperationComponent) {
+        if (StringUtils.isEmpty(technologyOperationComponent
+                .getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT))) {
+            String defaultUnit = unitService.getDefaultUnitFromSystemParameters();
+            technologyOperationComponent.setField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT, defaultUnit);
+        }
+    }
 
     public void copyTimeNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {
         if ("referenceTechnology".equals(technologyOperationComponent.getField("entityType"))) {
