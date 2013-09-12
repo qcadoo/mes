@@ -178,7 +178,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 if (quantity.compareTo(resourceQuantity) >= 0) {
                     quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
 
-                    // TODO LUPO batch update problem?
                     resource.getDataDefinition().delete(resource.getId());
 
                     if (BigDecimal.ZERO.compareTo(quantity) == 0) {
