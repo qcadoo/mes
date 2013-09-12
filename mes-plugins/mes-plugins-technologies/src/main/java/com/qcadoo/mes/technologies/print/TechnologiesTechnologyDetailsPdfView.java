@@ -47,6 +47,7 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -123,12 +124,14 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         technologyDetailsTableHeader.add(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.direction", locale));
         technologyDetailsTableHeader.add(translationService.translate(
-                "technologies.technologiesTechnologyDetails.report.columnHeader.product", locale));
+                "technologies.technologiesTechnologyDetails.report.columnHeader.productNumber", locale));
+        technologyDetailsTableHeader.add(translationService.translate(
+                "technologies.technologiesTechnologyDetails.report.columnHeader.productName", locale));
         technologyDetailsTableHeader.add(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.quantity", locale));
         technologyDetailsTableHeader.add(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.unit", locale));
-        PdfPTable table = pdfHelper.createTableWithHeader(6, technologyDetailsTableHeader, false);
+        PdfPTable table = pdfHelper.createTableWithHeader(7, technologyDetailsTableHeader, false);
 
         EntityTree technologyTree = technology.getTreeField("operationComponents");
         treeNumberingService.generateTreeNumbers(technologyTree);
@@ -150,6 +153,8 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 table.addCell(new Phrase(nodeNumber, FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(operationName, FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(translationService.translate(productType, locale), FontUtils.getDejavuRegular7Dark()));
+                table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(ProductFields.NUMBER),
+                        FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(FIELD_NAME), FontUtils
                         .getDejavuRegular7Dark()));
                 table.addCell(new Phrase(numberService.format(product.getField("quantity")), FontUtils.getDejavuRegular7Dark()));
