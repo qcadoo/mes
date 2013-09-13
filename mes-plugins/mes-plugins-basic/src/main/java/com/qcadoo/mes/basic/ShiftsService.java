@@ -29,6 +29,7 @@ import java.util.List;
 import org.joda.time.LocalTime;
 
 import com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
+import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.model.api.Entity;
 
 public interface ShiftsService {
@@ -47,6 +48,10 @@ public interface ShiftsService {
 
     List<Entity> getShiftsWorkingAtDate(final Date date);
 
+    /**
+     * @deprecated use {@link Shift#worksAt(int)} instead.
+     */
+    @Deprecated
     boolean checkIfShiftWorkAtDate(final Date date, final Entity shift);
 
 }

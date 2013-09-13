@@ -56,7 +56,7 @@ public class TechInstOperCompHooksPPS {
                 return false;
             }
             Integer day = ((Long) progressForDay.getField(DAY)).intValue();
-            if (day != null && dayNumber.compareTo(day) == -1) {
+            if (day != null && dayNumber.compareTo(day) <= 0) {
                 dayNumber = day;
             } else {
                 technologyInstanceOperationComponent.addGlobalError(
