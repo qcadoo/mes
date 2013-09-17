@@ -308,3 +308,9 @@ DROP TABLE workplans_orderoperationoutputcolumn
 
 -- end
   
+-- SC#QCADOOMES-1599 -> PKT-6
+-- changed: 16.09.2013 by maku
+ALTER TABLE basic_parameter ADD COLUMN locktechnologytree boolean DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN lockProductionProgress boolean DEFAULT false;
+-- end
+

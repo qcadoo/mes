@@ -23,19 +23,26 @@
  */
 package com.qcadoo.mes.basicProductionCounting.validators;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
 @Service
 public class ProductionCountingQuantityValidators {
+
+    @Autowired
+    private ProductionProgressModifyLockHelper progressModifyLockHelper;
 
     public boolean validatesWith(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         boolean isValid = true;
@@ -44,6 +51,22 @@ public class ProductionCountingQuantityValidators {
         isValid = isValid && checkIfIsUnique(productionCountingQuantityDD, productionCountingQuantity);
 
         return isValid;
+    }
+
+    public boolean validatePlannedQuantity(final DataDefinition productionCountingQuantityDD,
+            final FieldDefinition plannedQuantityFieldDefinition, final Entity productionCountingQuantity, final Object oldValue,
+            final Object newValue) {
+        if (productionCountingQuantity.getId() != null && ObjectUtils.equals(oldValue, newValue)) {
+            return true;
+        }
+        if (progressModifyLockHelper.isLocked(productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFields.ORDER))) {
+            productionCountingQuantity
+                    .addError(plannedQuantityFieldDefinition,
+                            "basicProductionCounting.productionCountingQuantity.plannedQuantity.error.valueChangeIsNotAllowedForAcceptetOrder");
+            return false;
+        }
+        return true;
     }
 
     private boolean checkRoleAndTypeOfMaterial(final DataDefinition productionCountingQuantityDD,

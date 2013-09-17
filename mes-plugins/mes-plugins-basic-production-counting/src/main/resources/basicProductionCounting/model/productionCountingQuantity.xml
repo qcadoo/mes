@@ -45,7 +45,10 @@
 		<enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
 			default="01component" required="true" />
 		<boolean name="isNonComponent" default="false" required="true" />
-		<decimal name="plannedQuantity" required="true" />
+		<decimal name="plannedQuantity" required="true">
+			<validatesWith class="com.qcadoo.mes.basicProductionCounting.validators.ProductionCountingQuantityValidators" 
+				method="validatePlannedQuantity"/>
+		</decimal>
 		<decimal name="usedQuantity" persistent="false" />
 		<decimal name="producedQuantity" persistent="false" />
 	</fields>

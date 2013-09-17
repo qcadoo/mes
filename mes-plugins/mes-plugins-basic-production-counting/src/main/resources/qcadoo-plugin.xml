@@ -69,6 +69,10 @@
 		<model:model model="productionCountingOperationRun"
 			resource="model/productionCountingOperationRun.xml" />
 
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="lockProductionProgress" default="false" />
+		</model:model-field>
+
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="basicProductionCountings" model="basicProductionCounting"
 				plugin="basicProductionCounting" joinField="order" cascade="delete" />
@@ -128,6 +132,7 @@
 		</model:model-hook>
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/ordersParameters.xml" />
 
 		<view:view-hook view="orderDetails" type="beforeRender"
 			plugin="orders"

@@ -67,8 +67,19 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="checkbox" name="blockAbilityToChangeApprovalOrder"
-							field="#{form}.blockAbilityToChangeApprovalOrder" reference="blockAbilityToChangeApprovalOrder">
+						<component type="borderLayout" name="orderValuesLockBorderLayout">
+							<component type="gridLayout" name="orderValuesLockGridLayout" columns="1" rows="2">
+								<layoutElement column="1" row="1">
+									<component type="checkbox" name="blockAbilityToChangeApprovalOrder"
+										field="#{form}.blockAbilityToChangeApprovalOrder" reference="blockAbilityToChangeApprovalOrder">
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="checkbox" name="lockTechnologyTree" field="#{form}.lockTechnologyTree" reference="lockTechnologyTree">
+									</component>
+								</layoutElement>
+							</component>
+							<option type="label" value="orderValuesLockLabel" />
 						</component>
 					</layoutElement>
 				</component>

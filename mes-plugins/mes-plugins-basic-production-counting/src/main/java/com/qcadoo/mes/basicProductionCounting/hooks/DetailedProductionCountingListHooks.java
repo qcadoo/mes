@@ -26,10 +26,8 @@ package com.qcadoo.mes.basicProductionCounting.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
 import com.qcadoo.mes.orders.OrderService;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -44,6 +42,9 @@ public class DetailedProductionCountingListHooks {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private ProductionProgressModifyLockHelper progressModifyLockHelper;
+
     public void setGridEditableDependsOfOrderState(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_ORDER);
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
@@ -53,20 +54,8 @@ public class DetailedProductionCountingListHooks {
             return;
         }
 
-        Entity order = orderService.getOrder(orderId);
-
-        if (order == null) {
-            return;
-        }
-
-        String state = order.getStringField(OrderFields.STATE);
-
-        if (OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state)
-                || OrderStateStringValues.INTERRUPTED.equals(state)) {
-            grid.setEditable(true);
-        } else {
-            grid.setEditable(false);
-        }
+        boolean isLocked = progressModifyLockHelper.isLocked(orderService.getOrder(orderId));
+        grid.setEnabled(!isLocked);
     }
 
 }
