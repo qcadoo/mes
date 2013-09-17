@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.workPlans.constants.OperationFieldsWP;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -46,10 +46,10 @@ public class OperationDetailsHooksWP {
         FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         if (operationForm.getEntityId() == null) {
-            for (String fieldName : Lists.newArrayList(OperationFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS,
-                    OperationFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, OperationFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS,
-                    OperationFieldsWP.IMAGE_URL_IN_WORK_PLAN, OperationFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS,
-                    OperationFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS)) {
+            for (String fieldName : Lists.newArrayList(ParameterFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS,
+                    ParameterFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, ParameterFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS,
+                    ParameterFieldsWP.IMAGE_URL_IN_WORK_PLAN, ParameterFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS,
+                    ParameterFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS)) {
                 FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldName);
                 fieldComponent.setFieldValue(getParameterField(fieldName));
             }
