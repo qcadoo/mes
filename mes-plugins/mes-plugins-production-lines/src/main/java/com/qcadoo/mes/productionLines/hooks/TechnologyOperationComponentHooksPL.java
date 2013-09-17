@@ -61,16 +61,10 @@ public class TechnologyOperationComponentHooksPL {
         FieldComponent quantityOfWorkstationTypesComponent = (FieldComponent) view
                 .getComponentByReference(TechnologyOperationComponentFieldsPL.QUANTITY_OF_WORKSTATION_TYPES);
 
-        FieldComponent quantityOfWorkstationTypesTech = (FieldComponent) view
-                .getComponentByReference(L_QUANTITY_OF_WORKSTATION_TYPES_TECH);
-
         if (StringUtils.isEmpty(toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY).getStringField(
                 TechnologyFields.TECHNOLOGY_TYPE))) {
             quantityOfWorkstationTypesComponent.setVisible(false);
             quantityOfWorkstationTypesComponent.requestComponentUpdateState();
-            quantityOfWorkstationTypesTech.setVisible(true);
-            quantityOfWorkstationTypesTech.setEnabled(false);
-            quantityOfWorkstationTypesTech.requestComponentUpdateState();
             return;
         }
         int quantityOfWorkstationTypesDB = toc.getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION)
@@ -83,6 +77,11 @@ public class TechnologyOperationComponentHooksPL {
 
     public void save(final DataDefinition dataDefinition, final Entity toc) {
         toc.getDataDefinition();
+
+        if (StringUtils.isEmpty(toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY).getStringField(
+                TechnologyFields.TECHNOLOGY_TYPE))) {
+            return;
+        }
         Integer quantityOfWorkstationTypes = toc
                 .getIntegerField(TechnologyOperationComponentFieldsPL.QUANTITY_OF_WORKSTATION_TYPES);
 
