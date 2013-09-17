@@ -37,12 +37,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -66,6 +68,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private ProductionLinesService productionLinesService;
 
     @Override
     public Object setDateToField(final Date date) {
@@ -241,9 +246,15 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         throw new IllegalStateException("entityType has to be either operation or referenceTechnology");
     }
 
-    private Integer retrieveWorkstationTypesCount(final Entity operationComponent) {
-        return getIntegerValue(operationComponent.getBelongsToField("techOperCompWorkstation").getIntegerField(
-                "quantityOfWorkstationTypes"));
+    private Integer retrieveWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
+        if (StringUtils.isEmpty(operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY)
+                .getStringField(TechnologyFields.TECHNOLOGY_TYPE))) {
+            return productionLinesService.getWorkstationTypesCount(operationComponent, productionLine);
+        } else {
+            return getIntegerValue(operationComponent.getBelongsToField("techOperCompWorkstation").getIntegerField(
+                    "quantityOfWorkstationTypes"));
+        }
+
     }
 
     private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
@@ -254,7 +265,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         Entity technologyOperationComponent = operationComponent;
 
         BigDecimal cycles = operationRuns.get(technologyOperationComponent);
-        return evaluateOperationDurationOutOfCycles(cycles, operationComponent, maxForWorkstation, includeTpz,
+        return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
     }
 
@@ -275,7 +286,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         } else {
             cycles = operationRuns.get(technologyOperationComponent);
         }
-        return evaluateOperationDurationOutOfCycles(cycles, operationComponent, maxForWorkstation, includeTpz,
+        return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
     }
 
@@ -310,10 +321,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private int evaluateOperationDurationOutOfCycles(final BigDecimal cycles, final Entity operationComponent,
-            final boolean maxForWorkstation, final boolean includeTpz, final boolean includeAdditionalTime) {
+            final Entity productionLine, final boolean maxForWorkstation, final boolean includeTpz,
+            final boolean includeAdditionalTime) {
         boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
 
-        Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent);
+        Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
         BigDecimal cyclesPerOperation = cycles;
 
         if (maxForWorkstation) {
