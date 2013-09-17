@@ -23,12 +23,19 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.AMOUNT_OF_PRODUCT_PRODUCED;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +48,10 @@ import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.hooks.OrderDetailsHooks;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -63,6 +72,8 @@ public class OrderDetailsListeners {
 
     private static final String L_EFFECTIVE_DATE_TO = "effectiveDateTo";
 
+    public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -71,6 +82,9 @@ public class OrderDetailsListeners {
 
     @Autowired
     private OrderDetailsHooks orderDetailsHooks;
+
+    @Autowired
+    private NumberService numberService;
 
     public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Long orderId = (Long) componentState.getFieldValue();
@@ -223,4 +237,81 @@ public class OrderDetailsListeners {
         }
     }
 
+    public void setProductQuantities(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
+        if (!isValidDecimalField(view, Arrays.asList(DONE_QUANTITY))) {
+            return;
+        }
+        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
+
+        Entity order = form.getEntity();
+
+        FieldComponent amountOfPPComponent = (FieldComponent) view.getComponentByReference(AMOUNT_OF_PRODUCT_PRODUCED);
+        FieldComponent remainingAmountOfPTPComponent = (FieldComponent) view
+                .getComponentByReference(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
+
+        amountOfPPComponent.setFieldValue(numberService.format(order.getField(DONE_QUANTITY)));
+        amountOfPPComponent.requestComponentUpdateState();
+
+        BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(DONE_QUANTITY)), numberService.getMathContext());
+        if (remainingAmountOfPTP.compareTo(BigDecimal.ZERO) == -1) {
+            remainingAmountOfPTPComponent.setFieldValue(numberService.format(BigDecimal.ZERO));
+
+        } else {
+            remainingAmountOfPTPComponent.setFieldValue(numberService.format(remainingAmountOfPTP));
+
+        }
+        remainingAmountOfPTPComponent.requestComponentUpdateState();
+    }
+
+    public void setDoneQuantity(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
+        if (!isValidDecimalField(view, Arrays.asList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED))) {
+            return;
+        }
+        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
+
+        Entity order = form.getEntity();
+
+        FieldComponent doneQuantityComponent = (FieldComponent) view.getComponentByReference(DONE_QUANTITY);
+        FieldComponent remainingAmountOfPTPComponent = (FieldComponent) view
+                .getComponentByReference(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
+
+        doneQuantityComponent.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
+        doneQuantityComponent.requestComponentUpdateState();
+
+        BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                numberService.getMathContext());
+        if (remainingAmountOfPTP.compareTo(BigDecimal.ZERO) == -1) {
+            remainingAmountOfPTPComponent.setFieldValue(numberService.format(BigDecimal.ZERO));
+
+        } else {
+            remainingAmountOfPTPComponent.setFieldValue(numberService.format(remainingAmountOfPTP));
+
+        }
+        remainingAmountOfPTPComponent.requestComponentUpdateState();
+    }
+
+    private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
+        boolean isValid = true;
+        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        Entity entity = formComponent.getEntity();
+        for (String field : fileds) {
+            try {
+                BigDecimal decimalField = entity.getDecimalField(field);
+            } catch (IllegalArgumentException e) {
+                FieldComponent component = (FieldComponent) view.getComponentByReference(field);
+                component.addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
 }
