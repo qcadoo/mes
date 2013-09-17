@@ -28,7 +28,7 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<hasMany name="operationalTask"
+		<hasMany name="operationalTasks"
 				joinField="techOperCompOperationalTasks" model="operationalTask"
 				cascade="delete" plugin="operationalTasks" />
 		<belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent" />

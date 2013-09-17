@@ -35,9 +35,11 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentEntityType;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -95,20 +97,20 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order)).list().getEntities();
 
         for (Entity productionCountingQuantity : productionCountingQuantities) {
-            Entity operationProductInComponent = productionCountingQuantity
-                    .getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT);
-            Entity operationProductOutComponent = productionCountingQuantity
-                    .getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT);
+            Entity technologyOperationComponent = productionCountingQuantity
+                    .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+            Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+            String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
             BigDecimal plannedQuantity = productionCountingQuantity
                     .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
 
-            if ((operationProductInComponent != null) || (operationProductOutComponent != null)) {
-                if (operationProductInComponent != null) {
-                    productComponentWithQuantities.put(operationProductInComponent, plannedQuantity);
-                } else if (operationProductOutComponent != null) {
-                    productComponentWithQuantities.put(operationProductOutComponent, plannedQuantity);
-                }
-            }
+            OperationProductComponentEntityType entityType = getEntityType(role);
+
+            OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
+                    product.getId(), technologyOperationComponent.getId(), product.getDataDefinition(),
+                    technologyOperationComponent.getDataDefinition(), entityType);
+
+            productComponentWithQuantities.put(operationProductComponentHolder, plannedQuantity);
         }
 
         return productComponentWithQuantities;
@@ -137,18 +139,28 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.IS_NON_COMPONENT, true)).list().getEntities();
 
         for (Entity productionCountingQuantity : productionCountingQuantities) {
-            Entity operationProductInComponent = productionCountingQuantity
-                    .getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT);
-            Entity operationProductOutComponent = productionCountingQuantity
-                    .getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT);
+            Entity technologyOperationComponent = productionCountingQuantity
+                    .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+            Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+            String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
 
-            if ((operationProductInComponent != null) || (operationProductOutComponent != null)) {
-                if (operationProductInComponent != null) {
-                    nonComponents.add(new OperationProductComponentHolder(operationProductInComponent));
-                } else if (operationProductOutComponent != null) {
-                    nonComponents.add(new OperationProductComponentHolder(operationProductOutComponent));
-                }
-            }
+            OperationProductComponentEntityType entityType = getEntityType(role);
+
+            OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
+                    product.getId(), technologyOperationComponent.getId(), product.getDataDefinition(),
+                    technologyOperationComponent.getDataDefinition(), entityType);
+
+            nonComponents.add(operationProductComponentHolder);
+        }
+    }
+
+    private OperationProductComponentEntityType getEntityType(final String role) {
+        if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)) {
+            return OperationProductComponentEntityType.OPERATION_PRODUCT_OUT_COMPONENT;
+        } else if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {
+            return OperationProductComponentEntityType.OPERATION_PRODUCT_IN_COMPONENT;
+        } else {
+            return OperationProductComponentEntityType.OPERATION_PRODUCT_IN_COMPONENT;
         }
     }
 

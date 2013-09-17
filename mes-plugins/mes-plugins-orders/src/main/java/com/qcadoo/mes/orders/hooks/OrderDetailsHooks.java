@@ -136,7 +136,6 @@ public class OrderDetailsHooks {
         compareDeadlineAndStartDate(view);
         orderProductQuantityHooks.changedEnabledFieldForSpecificOrderState(view);
         orderProductQuantityHooks.fillProductUnit(view);
-        orderProductQuantityHooks.setProductQuantity(view);
         orderHooks.changedEnabledDescriptionFieldForSpecificOrderState(view);
         setFieldsVisibility(view);
     }

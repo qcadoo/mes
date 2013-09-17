@@ -31,4 +31,8 @@ public final class OperationalTasksFieldsOTFOF {
 
     public static final String ORDER = "order";
 
+    public static final String TECHNOLOGY = "technology";
+
+    public static final String TECH_OPER_COMP_OPERATIONAL_TASKS = "techOperCompOperationalTasks";
+
 }

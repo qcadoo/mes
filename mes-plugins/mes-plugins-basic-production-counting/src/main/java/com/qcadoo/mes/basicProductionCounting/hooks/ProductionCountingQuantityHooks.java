@@ -34,9 +34,6 @@ import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -49,8 +46,6 @@ public class ProductionCountingQuantityHooks {
 
     public void onCreate(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         fillOrder(productionCountingQuantity);
-        fillOperationProductInComponent(productionCountingQuantity);
-        fillOperationProductOutComponent(productionCountingQuantity);
         fillBasicProductionCounting(productionCountingQuantity);
         fillIsNonComponent(productionCountingQuantity);
     }
@@ -70,58 +65,6 @@ public class ProductionCountingQuantityHooks {
                 productionCountingQuantity.setField(ProductionCountingQuantityFields.ORDER, order);
             }
         }
-    }
-
-    private void fillOperationProductInComponent(final Entity productionCountingQuantity) {
-        if (productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT) == null) {
-            Entity technologyOperationComponent = productionCountingQuantity
-                    .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-            Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
-            String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
-
-            if (checkIfShouldFillOperationProductInComponent(technologyOperationComponent, product, typeOfMaterial, role)) {
-                productionCountingQuantity.setField(ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT,
-                        getOperationProductInComponent(technologyOperationComponent, product));
-            }
-        }
-    }
-
-    private boolean checkIfShouldFillOperationProductInComponent(final Entity technologyOperationComponent, final Entity product,
-            final String typeOfMaterial, final String role) {
-        return ((technologyOperationComponent != null) && (product != null) && !checkIfIsFinalProduct(typeOfMaterial) && checkIfIsUsed(role));
-    }
-
-    private Entity getOperationProductInComponent(final Entity technologyOperationComponent, final Entity product) {
-        return technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)
-                .find().add(SearchRestrictions.belongsTo(OperationProductInComponentFields.PRODUCT, product)).setMaxResults(1)
-                .uniqueResult();
-    }
-
-    private void fillOperationProductOutComponent(final Entity productionCountingQuantity) {
-        if (productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT) == null) {
-            Entity technologyOperationComponent = productionCountingQuantity
-                    .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-            Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
-            String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
-
-            if (checkIfShouldFillOperationProductOutComponent(technologyOperationComponent, product, typeOfMaterial, role)) {
-                productionCountingQuantity.setField(ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT,
-                        getOperationProductOutComponent(technologyOperationComponent, product));
-            }
-        }
-    }
-
-    private boolean checkIfShouldFillOperationProductOutComponent(final Entity technologyOperationComponent,
-            final Entity product, final String typeOfMaterial, final String role) {
-        return ((technologyOperationComponent != null) && (product != null) && !checkIfIsFinalProduct(typeOfMaterial) && checkIfIsProduced(role));
-    }
-
-    private Entity getOperationProductOutComponent(final Entity technologyOperationComponent, final Entity product) {
-        return technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)
-                .find().add(SearchRestrictions.belongsTo(OperationProductOutComponentFields.PRODUCT, product)).setMaxResults(1)
-                .uniqueResult();
     }
 
     private void fillBasicProductionCounting(final Entity productionCountingQuantity) {

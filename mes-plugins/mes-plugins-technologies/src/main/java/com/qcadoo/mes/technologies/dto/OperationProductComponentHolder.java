@@ -8,38 +8,66 @@ import com.qcadoo.model.api.Entity;
 
 public class OperationProductComponentHolder {
 
-    private final Long entityId;
+    private final Long productId;
 
-    private final DataDefinition entityDD;
+    private final Long technologyOperationComponentId;
+
+    private final DataDefinition productDD;
+
+    private final DataDefinition technologyOperationComponentDD;
 
     private final OperationProductComponentEntityType entityType;
 
     public OperationProductComponentHolder(final Entity operationProductComponent) {
-        this(operationProductComponent.getId(), operationProductComponent.getDataDefinition(),
-                OperationProductComponentEntityType.parseString(operationProductComponent.getDataDefinition().getName()));
-    }
+        Entity product = operationProductComponent.getBelongsToField("product");
+        Entity technologyOperationComponent = operationProductComponent.getBelongsToField("operationComponent");
 
-    public OperationProductComponentHolder(final Long entityId, final DataDefinition entityDD,
-            final OperationProductComponentEntityType entityType) {
-        this.entityId = entityId;
-        this.entityDD = entityDD;
+        OperationProductComponentEntityType entityType = OperationProductComponentEntityType
+                .parseString(operationProductComponent.getDataDefinition().getName());
+
+        this.productId = product.getId();
+        this.technologyOperationComponentId = technologyOperationComponent.getId();
+        this.productDD = product.getDataDefinition();
+        this.technologyOperationComponentDD = technologyOperationComponent.getDataDefinition();
         this.entityType = entityType;
     }
 
-    public Long getEntityId() {
-        return entityId;
+    public OperationProductComponentHolder(final Long productId, final Long technologyOperationComponentId,
+            final DataDefinition productDD, final DataDefinition technologyOperationComponentDD,
+            final OperationProductComponentEntityType entityType) {
+        this.productId = productId;
+        this.technologyOperationComponentId = technologyOperationComponentId;
+        this.productDD = productDD;
+        this.technologyOperationComponentDD = technologyOperationComponentDD;
+        this.entityType = entityType;
     }
 
-    public DataDefinition getEntityDD() {
-        return entityDD;
+    public Long getProductId() {
+        return productId;
+    }
+
+    public Long getTechnologyOperationComponentId() {
+        return technologyOperationComponentId;
+    }
+
+    public DataDefinition getProductDD() {
+        return productDD;
+    }
+
+    public DataDefinition getTechnologyOperationComponentDD() {
+        return technologyOperationComponentDD;
     }
 
     public OperationProductComponentEntityType getEntityType() {
         return entityType;
     }
 
-    public Entity getEntity() {
-        return getEntityDD().get(getEntityId());
+    public Entity getProduct() {
+        return getProductDD().get(getProductId());
+    }
+
+    public Entity getTechnologyOperationComponent() {
+        return getTechnologyOperationComponentDD().get(getTechnologyOperationComponentId());
     }
 
     public boolean isEntityTypeSame(final String operationProductComponentModelName) {
@@ -52,7 +80,7 @@ public class OperationProductComponentHolder {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(entityId).append(entityType).toHashCode();
+        return new HashCodeBuilder().append(productId).append(technologyOperationComponentId).append(entityType).toHashCode();
     }
 
     @Override
@@ -67,7 +95,9 @@ public class OperationProductComponentHolder {
 
         OperationProductComponentHolder other = (OperationProductComponentHolder) obj;
 
-        return new EqualsBuilder().append(entityId, other.entityId).append(entityType, other.entityType).isEquals();
+        return new EqualsBuilder().append(productId, other.productId)
+                .append(technologyOperationComponentId, other.technologyOperationComponentId)
+                .append(entityType, other.entityType).isEquals();
     }
 
 }

@@ -90,14 +90,14 @@ public class ProductionTrackingHooks {
         if (registerQuantityInProduct) {
             inputs = operationProducts.getInputComponents();
         }
-        productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS, inputs);
 
         List<Entity> outputs = Collections.emptyList();
         if (registerQuantityOutProduct) {
             outputs = operationProducts.getOutputComponents();
         }
-        productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, outputs);
 
+        productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS, inputs);
+        productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, outputs);
     }
 
     private boolean shouldCopyProducts(final Entity productionTracking) {

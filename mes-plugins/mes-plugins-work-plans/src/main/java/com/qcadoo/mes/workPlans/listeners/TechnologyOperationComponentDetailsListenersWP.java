@@ -35,10 +35,10 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
-public class TechnologyOperationComponentDetailsListeners {
+public class TechnologyOperationComponentDetailsListenersWP {
 
-    public final void setOperationDefaultValues(final ViewDefinitionState view, final ComponentState component,
-            final String[] args) {
+    public final void setTechnologyOperationComponentDefaultValues(final ViewDefinitionState view,
+            final ComponentState component, final String[] args) {
         LookupComponent operationLookup = (LookupComponent) view
                 .getComponentByReference(TechnologyOperationComponentFields.OPERATION);
 

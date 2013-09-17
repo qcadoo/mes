@@ -23,9 +23,14 @@
  */
 package com.qcadoo.mes.operationalTasks.constants;
 
-public interface OperationalTasksConstants {
+public final class OperationalTasksConstants {
 
-    String PLUGIN_IDENTIFIER = "operationalTasks";
+    private OperationalTasksConstants() {
 
-    String MODEL_OPERATIONAL_TASK = "operationalTask";
+    }
+
+    public static final String PLUGIN_IDENTIFIER = "operationalTasks";
+
+    public static final String MODEL_OPERATIONAL_TASK = "operationalTask";
+
 }
