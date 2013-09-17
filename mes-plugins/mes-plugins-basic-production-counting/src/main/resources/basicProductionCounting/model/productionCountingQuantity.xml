@@ -32,10 +32,6 @@
 			required="true" />
 		<belongsTo name="technologyOperationComponent" model="technologyOperationComponent"
 			plugin="technologies" />
-		<belongsTo name="operationProductInComponent" model="operationProductInComponent"
-			plugin="technologies" />
-		<belongsTo name="operationProductOutComponent" model="operationProductOutComponent"
-			plugin="technologies" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<belongsTo name="basicProductionCounting" model="basicProductionCounting"

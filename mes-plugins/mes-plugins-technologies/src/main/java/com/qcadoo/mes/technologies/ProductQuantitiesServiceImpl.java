@@ -415,7 +415,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     @Override
     public OperationProductComponentWithQuantityContainer getProductComponentWithQuantities(final List<Entity> orders,
             final Map<Long, BigDecimal> operationRuns, final Set<OperationProductComponentHolder> nonComponents) {
-        return getProductComponentWithQuantitiesForOrders(orders, operationRuns, nonComponents, false);
+        return getProductComponentWithQuantitiesForOrders(orders, operationRuns, nonComponents, true);
     }
 
     private List<Entity> getOrdersFromComponents(final List<Entity> components) {
@@ -471,19 +471,17 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     @Override
     public void addProductQuantitiesToList(final Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity,
             final Map<Long, BigDecimal> productWithQuantities) {
-        Entity operationProductComponent = productComponentWithQuantity.getKey().getEntity();
+        OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
 
-        if (operationProductComponent != null) {
-            Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
-            BigDecimal newQuantity = productComponentWithQuantity.getValue();
+        Entity product = operationProductComponentHolder.getProduct();
+        BigDecimal newQuantity = productComponentWithQuantity.getValue();
 
-            BigDecimal oldQuantity = productWithQuantities.get(product.getId());
-            if (oldQuantity != null) {
-                newQuantity = newQuantity.add(oldQuantity);
-            }
-
-            productWithQuantities.put(product.getId(), newQuantity);
+        BigDecimal oldQuantity = productWithQuantities.get(product.getId());
+        if (oldQuantity != null) {
+            newQuantity = newQuantity.add(oldQuantity);
         }
+
+        productWithQuantities.put(product.getId(), newQuantity);
     }
 
     @Override

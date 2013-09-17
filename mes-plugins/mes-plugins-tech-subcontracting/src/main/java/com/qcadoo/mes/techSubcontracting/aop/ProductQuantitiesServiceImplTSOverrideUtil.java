@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.techSubcontracting.aop;
 
-import static com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields.OPERATION_COMPONENT;
-import static com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields.PRODUCT;
-import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.CHILDREN;
-import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
-
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
+import com.qcadoo.mes.techSubcontracting.constants.TechnologyOperationComponentFieldsTS;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.Entity;
@@ -55,18 +53,19 @@ public class ProductQuantitiesServiceImplTSOverrideUtil {
             final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
             final Set<OperationProductComponentHolder> nonComponents) {
         for (OperationProductComponentHolder nonComponent : nonComponents) {
-            Entity operationProductComponent = nonComponent.getEntity();
+            Entity product = nonComponent.getProduct();
+            Entity technologyOperationComponent = nonComponent.getTechnologyOperationComponent();
 
-            Entity product = operationProductComponent.getBelongsToField(PRODUCT);
-            Entity technologyOperationComponent = operationProductComponent.getBelongsToField(OPERATION_COMPONENT);
-
-            List<Entity> children = technologyOperationComponent.getHasManyField(CHILDREN).find()
-                    .add(SearchRestrictions.eq("isSubcontracting", true)).list().getEntities();
+            List<Entity> children = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.CHILDREN)
+                    .find().add(SearchRestrictions.eq(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING, true)).list()
+                    .getEntities();
 
             boolean isSubcontracting = false;
             for (Entity child : children) {
-                Entity operationProductOutComponent = child.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS).find()
-                        .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
+                Entity operationProductOutComponent = child
+                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                        .add(SearchRestrictions.belongsTo(OperationProductOutComponentFields.PRODUCT, product)).setMaxResults(1)
+                        .uniqueResult();
 
                 if (operationProductOutComponent != null) {
                     isSubcontracting = true;

@@ -61,10 +61,10 @@ import com.qcadoo.model.api.NumberService;
 
 public class WorkPlansColumnFillerTest {
 
-
     private static final String L_PLANNED_QUANTITY = "plannedQuantity";
 
     private static final String L_PRODUCT_NAME = "productName";
+
     private static final String L_PRODUCT = "product";
 
     private WorkPlansColumnFiller workPlansColumnFiller;
@@ -121,6 +121,7 @@ public class WorkPlansColumnFillerTest {
         given(order2.getStringField(OrderFields.NAME)).willReturn("order2");
         given(order2.getBelongsToField(OrderFields.PRODUCT)).willReturn(product);
 
+        given(product.getId()).willReturn(1L);
         given(product.getStringField(ProductFields.NAME)).willReturn("product");
         given(product.getStringField(ProductFields.NUMBER)).willReturn("123");
         given(product.getStringField(ProductFields.UNIT)).willReturn("abc");
@@ -155,8 +156,10 @@ public class WorkPlansColumnFillerTest {
 
         given(operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE)).willReturn(
                 TechnologyOperationComponentEntityType.OPERATION.getStringValue());
+        given(operationComponent.getId()).willReturn(1L);
         EntityList prodInComps = mockEntityList(asList(operationProductComponent));
         EntityList prodInComps2 = mockEntityList(asList(operationProductComponent));
+        given(operationProductComponent.getBelongsToField("operationComponent")).willReturn(operationComponent);
         given(operationProductComponent.getBelongsToField(L_PRODUCT)).willReturn(product);
         given(operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)).willReturn(
                 prodInComps, prodInComps2);
@@ -178,5 +181,4 @@ public class WorkPlansColumnFillerTest {
         assertEquals("product (123)", columnValues.get(operationProductComponent).get(L_PRODUCT_NAME));
         assertEquals("11.00000 abc", columnValues.get(operationProductComponent).get(L_PLANNED_QUANTITY));
     }
-
 }

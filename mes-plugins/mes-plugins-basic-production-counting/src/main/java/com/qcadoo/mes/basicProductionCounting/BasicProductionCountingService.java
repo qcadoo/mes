@@ -63,22 +63,19 @@ public interface BasicProductionCountingService {
      *            order
      * @param technologyOperationComponent
      *            technology operation component
-     * @param operationProductInComponent
-     *            operation product in component
-     * @param operationProductOutComponent
-     *            operation product out component
      * @param product
      *            product
-     * @param plannedQuantity
-     *            planned quantity
+     * @param role
+     *            role
      * @param isNonComponent
      *            is non component
+     * @param plannedQuantity
+     *            planned quantity
      * 
      * @return production counting quantity entity
      */
-    Entity createProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent,
-            final Entity operationProductInComponent, final Entity operationProductOutComponent, final Entity product,
-            final BigDecimal plannedQuantity, final boolean isNonComponent);
+    Entity createProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent, final Entity product,
+            final String role, final boolean isNonComponent, final BigDecimal plannedQuantity);
 
     /**
      * Updates production counting quantities

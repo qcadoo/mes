@@ -46,4 +46,5 @@ public final class OperationalTasksFields {
     public static final String PRODUCT_IN = "productIn";
 
     public static final String PRODUCT_OUT = "productOut";
+
 }

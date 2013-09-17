@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.techSubcontracting;
 
-import static com.qcadoo.mes.technologies.constants.OperationProductInComponentFields.OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.OperationProductInComponentFields.PRODUCT;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.CHILDREN;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
@@ -67,11 +66,10 @@ public class MrpAlgorithmStrategyTS implements MrpAlgorithmStrategy {
         for (Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity : allWithSameEntityType.asMap()
                 .entrySet()) {
             OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
-            Entity operationProductComponent = operationProductComponentHolder.getEntity();
 
             if (nonComponents.contains(operationProductComponentHolder)) {
-                Entity product = operationProductComponent.getBelongsToField(PRODUCT);
-                Entity technologyOperationComponent = operationProductComponent.getBelongsToField(OPERATION_COMPONENT);
+                Entity product = operationProductComponentHolder.getProduct();
+                Entity technologyOperationComponent = operationProductComponentHolder.getTechnologyOperationComponent();
 
                 List<Entity> children = technologyOperationComponent.getHasManyField(CHILDREN).find()
                         .add(SearchRestrictions.eq("isSubcontracting", true)).list().getEntities();

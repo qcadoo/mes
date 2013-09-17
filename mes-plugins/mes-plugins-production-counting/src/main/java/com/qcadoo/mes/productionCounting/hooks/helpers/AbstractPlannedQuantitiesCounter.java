@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
@@ -13,8 +13,6 @@ import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -28,11 +26,11 @@ public abstract class AbstractPlannedQuantitiesCounter {
     private NumberService numberService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    private final String topcProductionTrackingFieldName;
+    private BasicProductionCountingService basicProductionCountingService;
 
     private final ProductionCountingQuantityRole role;
+
+    private final String topcProductionTrackingFieldName;
 
     private final String topcProductFieldName;
 
@@ -52,6 +50,7 @@ public abstract class AbstractPlannedQuantitiesCounter {
     protected BigDecimal getPlannedQuantity(final Entity trackingOperationProductInComponent) {
         Entity productionTracking = trackingOperationProductInComponent.getBelongsToField(topcProductionTrackingFieldName);
         Entity product = trackingOperationProductInComponent.getBelongsToField(topcProductFieldName);
+
         return getPlannedQuantity(productionTracking, product);
     }
 
@@ -60,15 +59,15 @@ public abstract class AbstractPlannedQuantitiesCounter {
         Entity technologyOperationComponent = productionTracking
                 .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-        SearchCriteriaBuilder scb = prepareCriteria(product, order, technologyOperationComponent);
-        List<Entity> partialResults = scb.list().getEntities();
+        SearchCriteriaBuilder searchCriteriaBuilder = prepareCriteria(product, order, technologyOperationComponent);
+        List<Entity> partialResults = searchCriteriaBuilder.list().getEntities();
 
         return sumOfPlannedQuantities(partialResults);
     }
 
     private SearchCriteriaBuilder prepareCriteria(final Entity product, final Entity order,
             final Entity technologyOperationComponent) {
-        SearchCriteriaBuilder scb = criteriaBuilderFor(order);
+        SearchCriteriaBuilder searchCriteriaBuilder = criteriaBuilderFor(order);
 
         TypeOfProductionRecording recordingType = TypeOfProductionRecording.parseString(order
                 .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
@@ -76,37 +75,40 @@ public abstract class AbstractPlannedQuantitiesCounter {
         if (recordingType == TypeOfProductionRecording.FOR_EACH) {
             // since belongsTo restriction produces .isNull(fieldName) for null entity argument we do not have to deal with any
             // null checks
-            scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
-                    technologyOperationComponent));
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                    ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent));
         }
 
-        scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product));
-        scb.add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, role.getStringValue()));
-        scb.add(SearchRestrictions.isNotNull(ProductionCountingQuantityFields.PLANNED_QUANTITY));
+        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product));
+        searchCriteriaBuilder.add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, role.getStringValue()));
+        searchCriteriaBuilder.add(SearchRestrictions.isNotNull(ProductionCountingQuantityFields.PLANNED_QUANTITY));
 
         SearchProjection sumOfPlannedQntty = SearchProjections.alias(
                 SearchProjections.field(ProductionCountingQuantityFields.PLANNED_QUANTITY),
                 ProductionCountingQuantityFields.PLANNED_QUANTITY);
-        scb.setProjection(sumOfPlannedQntty);
-        return scb;
-    }
+        searchCriteriaBuilder.setProjection(sumOfPlannedQntty);
 
-    private BigDecimal sumOfPlannedQuantities(final List<Entity> partialResults) {
-        BigDecimal plannedQuantity = BigDecimal.ZERO;
-        for (Entity productionCountingQuantity : partialResults) {
-            BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity
-                    .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
-            plannedQuantity = plannedQuantity.add(productionCountingQuantityPlannedQuantity, numberService.getMathContext());
-        }
-        return numberService.setScale(plannedQuantity);
+        return searchCriteriaBuilder;
     }
 
     private SearchCriteriaBuilder criteriaBuilderFor(final Entity order) {
-        DataDefinition dd = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY);
-        SearchCriteriaBuilder scb = dd.find();
-        scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order));
-        return scb;
+        SearchCriteriaBuilder searchCriteriaBuilder = basicProductionCountingService.getProductionCountingQuantityDD().find();
+        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order));
+
+        return searchCriteriaBuilder;
+    }
+
+    private BigDecimal sumOfPlannedQuantities(final List<Entity> productionCountingQuantities) {
+        BigDecimal plannedQuantity = BigDecimal.ZERO;
+
+        for (Entity productionCountingQuantity : productionCountingQuantities) {
+            BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity
+                    .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
+
+            plannedQuantity = plannedQuantity.add(productionCountingQuantityPlannedQuantity, numberService.getMathContext());
+        }
+
+        return numberService.setScale(plannedQuantity);
     }
 
 }
