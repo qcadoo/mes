@@ -59,6 +59,7 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -93,6 +94,8 @@ public class OrderDetailsHooks {
 
     private static final String L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END = "commentReasonTypeDeviationsOfEffectiveEnd";
 
+    public static final String LOCK_TECHNOLOGY_TREE = "lockTechnologyTree";
+
     private static final List<String> PREDEFINED_TECHNOLOGY_FIELDS = Arrays.asList("defaultTechnology", "technologyPrototype",
             "predefinedTechnology");
 
@@ -120,6 +123,9 @@ public class OrderDetailsHooks {
     @Autowired
     private TechnologyServiceO technologyServiceO;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public final void onBeforeRender(final ViewDefinitionState view) {
         orderService.fillProductionLine(view);
         orderService.generateOrderNumber(view);
@@ -138,6 +144,17 @@ public class OrderDetailsHooks {
         orderProductQuantityHooks.fillProductUnit(view);
         orderHooks.changedEnabledDescriptionFieldForSpecificOrderState(view);
         setFieldsVisibility(view);
+        checkILlockTechnologyTree(view);
+    }
+
+    private void checkILlockTechnologyTree(final ViewDefinitionState view) {
+
+        if (parameterService.getParameter().getBooleanField(LOCK_TECHNOLOGY_TREE)) {
+            FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
+            orderType.setEnabled(false);
+            orderType.requestComponentUpdateState();
+        }
+
     }
 
     public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {

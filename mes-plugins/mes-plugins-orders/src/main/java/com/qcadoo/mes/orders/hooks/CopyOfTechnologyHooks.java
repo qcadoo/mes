@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -56,6 +57,8 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class CopyOfTechnologyHooks {
 
+    public static final String LOCK_TECHNOLOGY_TREE = "lockTechnologyTree";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -67,6 +70,9 @@ public class CopyOfTechnologyHooks {
 
     @Autowired
     private TechnologyDetailsListeners technologyDetailsListeners;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
@@ -89,7 +95,6 @@ public class CopyOfTechnologyHooks {
         technologyDetailsViewHooks.setTreeTabEditable(view);
         technologyDetailsListeners.setGridEditable(view);
         disableForm(view, order, technology);
-
     }
 
     private void disableForm(final ViewDefinitionState view, final Entity order, final Entity technologyEntity) {
@@ -112,8 +117,11 @@ public class CopyOfTechnologyHooks {
         }
 
         technology.setFormEnabled(!disabled);
-        technologyDetailsViewHooks.setTreeTabEditable(view, !disabled);
-
+        if (lockTechnologyTree()) {
+            technologyDetailsViewHooks.setTreeTabEditable(view, false);
+        } else {
+            technologyDetailsViewHooks.setTreeTabEditable(view, !disabled);
+        }
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view, final Entity order) {
@@ -182,5 +190,9 @@ public class CopyOfTechnologyHooks {
         }
 
         field.requestComponentUpdateState();
+    }
+
+    public boolean lockTechnologyTree() {
+        return parameterService.getParameter().getBooleanField(LOCK_TECHNOLOGY_TREE);
     }
 }
