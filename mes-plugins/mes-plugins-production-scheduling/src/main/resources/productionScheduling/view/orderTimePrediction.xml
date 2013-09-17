@@ -37,7 +37,7 @@
 			</group>
 		</ribbon>
 		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="gridsLayout" columns="2"
+			<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="8">
 				<layoutElement column="1" row="1">
 					<component type="lookup" field="technology" name="technology"
@@ -137,6 +137,37 @@
 								</component>
 							</layoutElement>
 						</component>
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1" height="6" width="2">
+					<component type="gridLayout" name="technologyGridLayout"
+						columns="1" rows="1">
+						<layoutElement column="1" row="1">
+							<component type="grid" name="technologyOperationComponents"
+                                    source="#{technology}.operationComponents">
+								<option type="column" name="nodeNumber" fields="nodeNumber" 
+								     />
+								<option type="column" name="number" fields="operation"
+									expression="#operation['number']"  />
+								<option type="column" name="name" fields="operation"
+									expression="#operation['name']"  />
+							
+								<option type="column" name="dateFrom" fields="operation" 
+									expression="#techOperCompTimeCalculations['effectiveDateFrom']" />     
+                                <option type="column" name="dateTo" fields="operation" 
+									expression="#techOperCompTimeCalculations['effectiveDateTo']" /> 
+
+ 								<option type="column" name="laborWorkTime"
+									fields="laborWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculations['laborWorkTime'])"/>
+ 								<option type="column" name="machineWorkTime"
+									fields="machineWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculations['machineWorkTime'])"/>
+								<option type="order" column="number" direction="asc" />
+								<option type="searchable" value="number, name" />
+								<option type="orderable" value="number, name,dateFrom,dateTo" />
+								<option type="fullscreen" value="true" />
+								<option type="multiselect" value="true" />
+							</component>
+						</layoutElement>
 					</component>
 				</layoutElement>
 			</component>
