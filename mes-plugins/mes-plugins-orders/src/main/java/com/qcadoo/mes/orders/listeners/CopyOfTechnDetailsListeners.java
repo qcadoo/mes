@@ -94,6 +94,7 @@ public class CopyOfTechnDetailsListeners {
         }
     }
 
+    @Transactional
     public void clearAndLoadPatternTechnology(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         Long technologyId = (Long) componentState.getFieldValue();
@@ -127,6 +128,7 @@ public class CopyOfTechnDetailsListeners {
         }
     }
 
+    @Transactional
     public void changePatternTechnology(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Long technologyId = (Long) componentState.getFieldValue();
 
