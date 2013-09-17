@@ -4,6 +4,7 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUC
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -49,6 +50,7 @@ public class TechnologyServiceO {
         }
     }
 
+    @Transactional
     public void createOrUpdateTechnology(final DataDefinition dataDefinition, final Entity order) {
         if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))) {
 
@@ -117,8 +119,6 @@ public class TechnologyServiceO {
                     technology
                             .setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
                     technology = technology.getDataDefinition().save(technology);
-                    // EntityTree technologyOperationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-                    // technologyOperationComponents.getRoot();
                     order.setField(OrderFields.TECHNOLOGY, technology);
                     setQuantityOfWorkstationTypes(order, technology);
 
