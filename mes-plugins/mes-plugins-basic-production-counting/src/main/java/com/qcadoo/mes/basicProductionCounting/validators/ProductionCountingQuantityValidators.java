@@ -56,7 +56,9 @@ public class ProductionCountingQuantityValidators {
     public boolean validatePlannedQuantity(final DataDefinition productionCountingQuantityDD,
             final FieldDefinition plannedQuantityFieldDefinition, final Entity productionCountingQuantity, final Object oldValue,
             final Object newValue) {
-        if (productionCountingQuantity.getId() != null && ObjectUtils.equals(oldValue, newValue)) {
+        // I don't check if entity is updated or created (check null on id) because we should disallow also creating
+        // of new ones if editing production progresses for accepted orders is locked.
+        if (ObjectUtils.equals(oldValue, newValue)) {
             return true;
         }
         if (progressModifyLockHelper.isLocked(productionCountingQuantity

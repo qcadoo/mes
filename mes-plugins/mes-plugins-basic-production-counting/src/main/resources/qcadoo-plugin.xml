@@ -143,6 +143,11 @@
 			component="form" event="showProductionCounting"
 			class="com.qcadoo.mes.basicProductionCounting.listeners.OrderDetailsListenersBPC"
 			method="showProductionCounting" />
+			
+		<view:view-listener plugin="orders" view="ordersParameters" 
+			component="blockAbilityToChangeApprovalOrder" event="onChange" 
+			class="com.qcadoo.mes.basicProductionCounting.listeners.OrderParametersListenersBPC" 
+			method="onChangeLockOrderPlannedQuantity"/>
 
 		<view:view resource="view/basicProductionCountingList.xml" />
 		<view:view resource="view/basicProductionCountingDetails.xml" />
