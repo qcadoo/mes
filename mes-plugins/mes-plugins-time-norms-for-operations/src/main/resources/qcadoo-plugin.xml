@@ -194,7 +194,7 @@
 		</model:model-field>
 		
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:belongsTo name="techOperCompTimeCalculations" plugin="timeNormsForOperations" model="techOperCompTimeCalculations" />
+			<model:belongsTo name="techOperCompTimeCalculations" plugin="timeNormsForOperations" model="techOperCompTimeCalculations" copyable="false" />
 		</model:model-field>
 		
 		<model:model-hook model="technology" plugin="technologies">
@@ -212,11 +212,16 @@
 		
 		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
+			<model:onCopy
+				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
+				method="createTechOperCompTimeCalculations" />
+		</model:model-hook>
+		<model:model-hook model="technologyOperationComponent"
+			plugin="technologies">
 			<model:onCreate
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 				method="createTechOperCompTimeCalculations" />
 		</model:model-hook>
-
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		
 		<view:view-tab

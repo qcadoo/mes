@@ -258,7 +258,7 @@
 		<view:view-listener plugin="technologies"
 			view="technologyOperationComponentDetails" component="operation"
 			event="onSelectedEntityChange"
-			class="com.qcadoo.mes.workPlans.listeners.TechnologyOperationComponentDetailsListeners"
+			class="com.qcadoo.mes.workPlans.listeners.TechnologyOperationComponentDetailsListenersWP"
 			method="setTechnologyOperationComponentDefaultValues" />
 
 		<view:view-listener plugin="orders" view="ordersPlanningList"

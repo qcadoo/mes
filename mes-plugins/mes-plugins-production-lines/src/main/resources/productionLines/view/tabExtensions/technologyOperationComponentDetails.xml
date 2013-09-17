@@ -39,12 +39,6 @@
 					<option type="labelWidth" value="60" />
 					<option type="alignment" value="right" />
 				</component>
-				<component type="input" name="quantityOfWorkstationTypesTech"
-					reference="quantityOfWorkstationTypesTech"
-					hasDescription="true" defaultVisible="false">
-					<option type="labelWidth" value="60" />
-					<option type="alignment" value="right" />
-				</component>
 			</layoutElement>
 		</component>
 	</windowTab>

@@ -146,6 +146,52 @@ public class OrderTimePredictionService {
         }
     }
 
+    private void scheduleOperationComponents(final Long technologyId, final Date startDate) {
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
+
+        if (technology == null) {
+            return;
+        }
+
+        DataDefinition dataDefinitionTOC = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+
+        List<Entity> operations = dataDefinitionTOC.find()
+                .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGY, technology)).list().getEntities();
+
+        for (Entity operation : operations) {
+            Entity techOperCompTimeCalculations = operation.getBelongsToField("techOperCompTimeCalculations");
+
+            if (techOperCompTimeCalculations == null) {
+                continue;
+            }
+            Integer offset = (Integer) techOperCompTimeCalculations.getField("operationOffSet");
+            Integer duration = (Integer) techOperCompTimeCalculations.getField("effectiveOperationRealizationTime");
+
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_FROM, null);
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_TO, null);
+
+            if (offset == null || duration == null) {
+                continue;
+            }
+            if (duration.equals(0)) {
+                duration = duration + 1;
+            }
+            Date dateFrom = shiftsService.findDateToForOrder(startDate, offset);
+            if (dateFrom == null) {
+                continue;
+            }
+            Date dateTo = shiftsService.findDateToForOrder(startDate, offset + duration);
+            if (dateTo == null) {
+                continue;
+            }
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_FROM, dateFrom);
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_TO, dateTo);
+            techOperCompTimeCalculations.getDataDefinition().save(techOperCompTimeCalculations);
+        }
+    }
+
     public void copyRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         FieldComponent generatedEndDate = (FieldComponent) viewDefinitionState.getComponentByReference("generatedEndDate");
         FieldComponent endDate = (FieldComponent) viewDefinitionState.getComponentByReference("stopTime");
@@ -383,6 +429,9 @@ public class OrderTimePredictionService {
             } else {
                 dateTo.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
             }
+
+            scheduleOperationComponents(technology.getId(), startTime);
+
         }
         laborWorkTime.requestComponentUpdateState();
         machineWorkTime.requestComponentUpdateState();
