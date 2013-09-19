@@ -110,6 +110,8 @@ CREATE TABLE productionlines_techopercompworkstation
   CONSTRAINT productionlines_techopercompworkstation_pkey PRIMARY KEY (id)
 );
 
+-- end
+
 
 -- Table: productioncounting_productionrecord
 -- changed: 26.06.2013
@@ -172,7 +174,6 @@ ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN techopercomptim
 ALTER TABLE technologies_technologyoperationcomponent
   ADD CONSTRAINT technologyoperationcomponent_techopercomptimecalculations_fkey FOREIGN KEY (techopercomptimecalculations_id)
       REFERENCES timenormsforoperations_techopercomptimecalculations (id) DEFERRABLE;
-
 
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN techopercompworkstation_id bigint;      
 
@@ -266,7 +267,7 @@ ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN mach
 ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN laborutilization;
 ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN timenextoperation;
 
---end
+-- end
 
 
 -- Table: productionpershift_progressforday
@@ -325,4 +326,3 @@ ALTER TABLE basicproductioncounting_productioncountingquantity DROP COLUMN opera
 ALTER TABLE basicproductioncounting_productioncountingquantity DROP COLUMN operationproductoutcomponent_id;
 
 -- end
-
