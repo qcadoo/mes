@@ -155,6 +155,7 @@ public class Shift {
                 return timeRange;
             }
         }
+        // TODO MAKU maybe it should returns empty TimeRange instead of null?
         return null;
     }
 

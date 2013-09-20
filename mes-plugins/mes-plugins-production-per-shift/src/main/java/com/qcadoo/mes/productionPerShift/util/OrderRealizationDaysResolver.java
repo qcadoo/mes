@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -35,7 +36,11 @@ public class OrderRealizationDaysResolver {
 
     private boolean startingShiftIsWorkingFromPreviousDay(final Shift shift, final DateTime orderStartDate) {
         LocalTime time = orderStartDate.toLocalTime();
-        return shift != null && shift.findWorkTimeAt(orderStartDate.getDayOfWeek(), time).startsDayBefore();
+        if (shift == null) {
+            return false;
+        }
+        TimeRange foundTimeRange = shift.findWorkTimeAt(orderStartDate.getDayOfWeek(), time);
+        return foundTimeRange != null && foundTimeRange.startsDayBefore();
     }
 
     private static final int DAYS_IN_YEAR = 365;
