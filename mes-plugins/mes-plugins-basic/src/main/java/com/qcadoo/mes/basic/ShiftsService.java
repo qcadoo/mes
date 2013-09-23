@@ -26,6 +26,7 @@ package com.qcadoo.mes.basic;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
 import com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
@@ -53,5 +54,7 @@ public interface ShiftsService {
      */
     @Deprecated
     boolean checkIfShiftWorkAtDate(final Date date, final Entity shift);
+
+    String getWeekDayName(DateTime dateTime);
 
 }

@@ -106,6 +106,13 @@ public class ShiftsServiceImpl implements ShiftsService {
         return Collections.unmodifiableMap(dayNumsToDayName);
     }
 
+    @Override
+    public String getWeekDayName(final DateTime dateTime) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(dateTime.toDate());
+        return DAY_OF_WEEK.get(c.get(Calendar.DAY_OF_WEEK));
+    }
+
     public boolean validateShiftTimetableException(final DataDefinition dataDefinition, final Entity entity) {
         Date dateFrom = (Date) entity.getField(FROM_DATE_FIELD);
         Date dateTo = (Date) entity.getField(TO_DATE_FIELD);
