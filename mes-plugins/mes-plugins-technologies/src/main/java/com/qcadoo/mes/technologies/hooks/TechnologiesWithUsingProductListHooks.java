@@ -14,6 +14,7 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -46,6 +47,10 @@ public class TechnologiesWithUsingProductListHooks {
         List<Entity> inputProducts = getTechnologyWithProductInComponent(product.getEntity());
 
         grid.setEntities(inputProducts);
+
+        if (inputProducts.isEmpty()) {
+            product.addMessage("technologies.product.info.notUsed", MessageType.INFO, true);
+        }
     }
 
     private List<Entity> getTechnologyWithProductInComponent(final Entity product) {
