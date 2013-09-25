@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -60,17 +61,18 @@ public class TechnologiesWithUsingProductListHooks {
     }
 
     public void fillProductName(final ViewDefinitionState viewDefinitionState) {
-        FormComponent productInComponent = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
         FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference(L_PRODUCT);
-        Long productInComponentId = productInComponent.getEntityId();
-        if (productInComponentId == null) {
-            productField.setFieldValue(null);
-        } else {
-            Entity productEntity = productInComponent.getEntity().getDataDefinition().get(productInComponentId)
-                    .getBelongsToField(OperationProductInComponentFields.PRODUCT);
-            productField.setFieldValue(String.format("%s - %s", productEntity.getStringField(ProductFields.NUMBER),
-                    productEntity.getStringField(ProductFields.NAME)));
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        if (form.getEntityId() == null) {
+            return;
         }
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                form.getEntityId());
+        if (product == null) {
+            return;
+        }
+        productField.setFieldValue(String.format("%s - %s", product.getStringField(ProductFields.NUMBER),
+                product.getStringField(ProductFields.NAME)));
         productField.requestComponentUpdateState();
     }
 }
