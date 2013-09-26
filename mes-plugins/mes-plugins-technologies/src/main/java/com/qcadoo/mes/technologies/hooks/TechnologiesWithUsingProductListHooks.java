@@ -38,18 +38,20 @@ public class TechnologiesWithUsingProductListHooks {
         checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(L_GRID);
-        FormComponent product = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
 
-        if (product.getEntityId() == null) {
+        if (form.getEntityId() == null) {
             return;
         }
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                form.getEntityId());
 
-        List<Entity> inputProducts = getTechnologyWithProductInComponent(product.getEntity());
+        List<Entity> inputProducts = getTechnologyWithProductInComponent(product);
 
         grid.setEntities(inputProducts);
 
         if (inputProducts.isEmpty()) {
-            product.addMessage("technologies.product.info.notUsed", MessageType.INFO, true);
+            form.addMessage("technologies.product.info.notUsed", MessageType.INFO, true);
         }
     }
 
