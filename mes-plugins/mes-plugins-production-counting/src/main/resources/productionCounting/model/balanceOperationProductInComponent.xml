@@ -39,10 +39,7 @@
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="balance">
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
+		<decimal name="balance" />
 	</fields>
 	<hooks />
 </model>

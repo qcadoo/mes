@@ -34,10 +34,7 @@
 		<belongsTo name="operationProductOutComponent"
 			model="operationProductOutComponent" plugin="technologies" />
 		<belongsTo name="product" model="product" plugin="basic" required="true" />
-		<decimal name="plannedQuantity" required="true">
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
+		<decimal name="plannedQuantity" required="true" />
 		<boolean name="isNonComponent" default="false" required="true" />
 	</fields>
 	
