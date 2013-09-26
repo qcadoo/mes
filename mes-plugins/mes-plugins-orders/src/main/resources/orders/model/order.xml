@@ -67,9 +67,13 @@
 
 		<decimal name="plannedQuantity" required="true">
 			<validatesRange from="0" exclusively="true" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
 		</decimal>
 		<decimal name="doneQuantity">
 			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
 		</decimal>
 
 		<boolean name="externalSynchronized" default="true" />
@@ -83,18 +87,26 @@
 			
 		<decimal name="commissionedPlannedQuantity">
 			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
 		</decimal>
 		
 		<decimal name="commissionedCorrectedQuantity">
 			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
 		</decimal>
 		
 		<decimal name="amountOfProductProduced">
 			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
 		</decimal>
 		
 		<decimal name="remainingAmountOfProductToProduce">
 			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
 		</decimal>
 
 		<hasMany name="typeOfCorrectionCauses" joinField="order" model="typeOfCorrectionCauses"
