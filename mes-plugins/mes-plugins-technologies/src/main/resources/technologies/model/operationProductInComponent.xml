@@ -34,8 +34,6 @@
 			required="true" />
 		<decimal name="quantity" required="true">
 			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="5" />
-			<validatesScale max="5" />
 		</decimal>
 	</fields>
 	<hooks>
