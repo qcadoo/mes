@@ -21,9 +21,13 @@
 
 		<decimal name="masterOrderQuantity">
 			<validatesRange from="0" />
+	      	<validatesUnscaledValue max="9" />
+       		<validatesScale max="5" /> 
 		</decimal>
 		<decimal name="cumulatedOrderQuantity" persistent="false">
 			<validatesRange from="0" />
+	      	<validatesUnscaledValue max="9" />
+       		<validatesScale max="5" /> 
 		</decimal>
 
 		<enum name="masterOrderType" values="01undefined,02oneProduct,03manyProducts"
