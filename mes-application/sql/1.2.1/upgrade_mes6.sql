@@ -20,11 +20,14 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN totalmachinehourlycosts
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN totalpieceworkcosts TYPE numeric(19, 5);
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN totallaborhourlycosts TYPE numeric(19, 5);
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN totaltechnicalproductioncosts TYPE numeric(19, 5);
-ALTER TABLE costcalculation_costcalculation ALTER COLUMN totaloverhead TYPE numeric(18, 5);
+ALTER TABLE costcalculation_costcalculation ALTER COLUMN totaloverhead TYPE numeric(19, 5);
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN totalcosts TYPE numeric(19, 5);
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN totalcostperunit TYPE numeric(19, 5);
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN additionaloverhead TYPE numeric(19, 5);
-
+ALTER TABLE costcalculation_costcalculation ALTER COLUMN productioncostmargin TYPE numeric(19, 5);
+ALTER TABLE costcalculation_costcalculation ALTER COLUMN productioncostmarginvalue TYPE numeric(19, 5);
+ALTER TABLE costcalculation_costcalculation ALTER COLUMN materialcostmargin TYPE numeric(19, 5);
+ALTER TABLE costcalculation_costcalculation ALTER COLUMN materialcostmarginvalue TYPE numeric(19, 5);
 -- end
 
 -- Plugin: technologies
