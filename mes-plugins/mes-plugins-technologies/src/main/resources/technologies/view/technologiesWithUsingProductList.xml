@@ -13,7 +13,7 @@
 	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="technologiesWithUsingProductList" modelName="operationProductInComponent"
+	name="technologiesWithUsingProductList" modelName="product" modelPlugin="basic"
 	menuAccessible="true">
 
 	<component type="window" name="window">
@@ -24,12 +24,12 @@
 			<component type="gridLayout" name="costNormsForProductsGridLayout"
 				hasBorders="false" columns="3" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="input" name="product" reference="product" defaultEnabled="never">
+					<component type="input" name="product" reference="product" field="name" defaultEnabled="never">
 						<option type="textRepresentationOnDisabled" value="true" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="3">
-					<component type="grid" name="operations" reference="grid">
+					<component type="grid" name="operations" reference="grid" source="operationProductInComponents">
 						<option type="column" name="techNumber" fields="operationComponent"
 							expression="#operationComponent.get('technology').get('number')" />
 						<option type="column" name="techName" fields="operationComponent"
@@ -39,8 +39,11 @@
 						<option type="column" name="operationName" fields="operationComponent"
 							expression="#operationComponent.get('technology').get('name')" />
 						<option type="column" name="quantity" fields="quantity" />
+						
 						<option type="order" column="techNumber" direction="asc" />
 						<option type="fullscreen" value="true" />
+						<option type="orderable" value="techNumber, techName, operationName" />
+						<option type="searchable" value="techNumber, techName, operationName" />
 					</component>
 				</layoutElement>
 			</component>
@@ -51,9 +54,6 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.technologies.hooks.TechnologiesWithUsingProductListHooks"
-			method="fillTechnologiesWithUsingProduct" />
-		<beforeRender
-			class="com.qcadoo.mes.technologies.hooks.TechnologiesWithUsingProductListHooks"
-			method="fillProductName" />
+			method="beforeRender" />
 	</hooks>
 </view>
