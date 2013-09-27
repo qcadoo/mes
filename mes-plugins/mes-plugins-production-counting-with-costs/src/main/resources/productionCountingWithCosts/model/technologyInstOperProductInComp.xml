@@ -32,15 +32,15 @@
 		<belongsTo name="product" model="product" plugin="basic" />
 		
 		<decimal name="plannedCost">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="registeredCost">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="balance">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 	</fields>

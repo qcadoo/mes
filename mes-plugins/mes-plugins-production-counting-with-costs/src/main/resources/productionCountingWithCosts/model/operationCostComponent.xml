@@ -33,28 +33,28 @@
 			plugin="technologies" />
 
 		<decimal name="plannedMachineCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="machineCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="machineCostsBalance">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		
 		<decimal name="plannedLaborCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="laborCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="laborCostsBalance">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 	</fields>
