@@ -33,11 +33,11 @@
 		<decimal name="plannedQuantity" persistent="false" />
 		<decimal name="usedQuantity">
 			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="balance">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
 	</fields>
