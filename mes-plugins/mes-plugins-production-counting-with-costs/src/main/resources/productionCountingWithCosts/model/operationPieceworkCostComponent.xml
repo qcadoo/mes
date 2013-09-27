@@ -33,15 +33,15 @@
 			plugin="technologies" />
 
 		<decimal name="plannedCyclesCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="cyclesCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="cyclesCostsBalance">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 	</fields>

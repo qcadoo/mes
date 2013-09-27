@@ -35,9 +35,9 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN materialcostmarginvalue
 -- changed: 26.09.2013
 -- author: lupo
 
-ALTER TABLE technologies_operationproductincomponent ALTER COLUMN quantity TYPE numeric(12, 5);
+ALTER TABLE technologies_operationproductincomponent ALTER COLUMN quantity TYPE numeric(14, 5);
 
-ALTER TABLE technologies_operationproductoutcomponent ALTER COLUMN quantity TYPE numeric(12, 5);
+ALTER TABLE technologies_operationproductoutcomponent ALTER COLUMN quantity TYPE numeric(14, 5);
 
 -- end
 
@@ -72,19 +72,19 @@ ALTER TABLE basicproductioncounting_productioncountingquantity ALTER COLUMN plan
 -- changed: 26.09.2013
 -- author: lupo
 
-ALTER TABLE productioncounting_balanceoperationproductincomponent ALTER COLUMN plannedquantity TYPE numeric(12, 5);
-ALTER TABLE productioncounting_balanceoperationproductincomponent ALTER COLUMN usedquantity TYPE numeric(12, 5);
-ALTER TABLE productioncounting_balanceoperationproductincomponent ALTER COLUMN balance TYPE numeric(12, 5);
+ALTER TABLE productioncounting_balanceoperationproductincomponent ALTER COLUMN plannedquantity TYPE numeric(14, 5);
+ALTER TABLE productioncounting_balanceoperationproductincomponent ALTER COLUMN usedquantity TYPE numeric(14, 5);
+ALTER TABLE productioncounting_balanceoperationproductincomponent ALTER COLUMN balance TYPE numeric(14, 5);
 
-ALTER TABLE productioncounting_balanceoperationproductoutcomponent ALTER COLUMN plannedquantity TYPE numeric(12, 5);
-ALTER TABLE productioncounting_balanceoperationproductoutcomponent ALTER COLUMN usedquantity TYPE numeric(12, 5);
-ALTER TABLE productioncounting_balanceoperationproductoutcomponent ALTER COLUMN balance TYPE numeric(12, 5);
+ALTER TABLE productioncounting_balanceoperationproductoutcomponent ALTER COLUMN plannedquantity TYPE numeric(14, 5);
+ALTER TABLE productioncounting_balanceoperationproductoutcomponent ALTER COLUMN usedquantity TYPE numeric(14, 5);
+ALTER TABLE productioncounting_balanceoperationproductoutcomponent ALTER COLUMN balance TYPE numeric(14, 5);
 
-ALTER TABLE productioncounting_recordoperationproductincomponent ALTER COLUMN usedquantity TYPE numeric(12, 5);
-ALTER TABLE productioncounting_recordoperationproductincomponent ALTER COLUMN balance TYPE numeric(12, 5);
+ALTER TABLE productioncounting_recordoperationproductincomponent ALTER COLUMN usedquantity TYPE numeric(14, 5);
+ALTER TABLE productioncounting_recordoperationproductincomponent ALTER COLUMN balance TYPE numeric(14, 5);
 
-ALTER TABLE productioncounting_recordoperationproductoutcomponent ALTER COLUMN usedquantity TYPE numeric(12, 5);
-ALTER TABLE productioncounting_recordoperationproductoutcomponent ALTER COLUMN balance TYPE numeric(12, 5);
+ALTER TABLE productioncounting_recordoperationproductoutcomponent ALTER COLUMN usedquantity TYPE numeric(14, 5);
+ALTER TABLE productioncounting_recordoperationproductoutcomponent ALTER COLUMN balance TYPE numeric(14, 5);
 
 -- end
 
