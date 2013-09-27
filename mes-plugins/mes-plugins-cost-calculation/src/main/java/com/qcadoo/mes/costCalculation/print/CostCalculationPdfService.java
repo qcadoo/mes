@@ -65,9 +65,11 @@ import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
@@ -684,7 +686,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         if (calculationOperationComponents != null && !calculationOperationComponents.isEmpty()) {
             Integer totalMachineWorkTimeSummary = Integer.valueOf(0);
             Integer totalLaborWorkTimeSummary = Integer.valueOf(0);
-            BigDecimal totalOperationWithMarginCostSummary = null;
+            BigDecimal totalOperationWithMarginCostSummary = BigDecimal.ZERO;
 
             for (Entity calculationOperationComponent : calculationOperationComponents) {
 
@@ -712,23 +714,17 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
                 operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 
-                totalMachineWorkTimeSummary += machineWorkTime;
-                totalLaborWorkTimeSummary += laborWorkTime;
+                totalMachineWorkTimeSummary += IntegerUtils.convertNullToZero(machineWorkTime);
+                totalLaborWorkTimeSummary += IntegerUtils.convertNullToZero(laborWorkTime);
                 MathContext mc = numberService.getMathContext();
 
-                BigDecimal totalMachineOperationCostWithMargin = calculationOperationComponent
-                        .getDecimalField("totalMachineOperationCostWithMargin");
-                BigDecimal totalLaborOperationCostWithMargin = calculationOperationComponent
-                        .getDecimalField("totalLaborOperationCostWithMargin");
+                BigDecimal totalMachineOperationCostWithMargin = BigDecimalUtils.convertNullToZero(calculationOperationComponent
+                        .getDecimalField("totalMachineOperationCostWithMargin"));
+                BigDecimal totalLaborOperationCostWithMargin = BigDecimalUtils.convertNullToZero(calculationOperationComponent
+                        .getDecimalField("totalLaborOperationCostWithMargin"));
                 BigDecimal totalOperationCostWithMargin = totalMachineOperationCostWithMargin.add(
                         totalLaborOperationCostWithMargin, mc);
-
-                if (totalOperationWithMarginCostSummary == null) {
-                    totalOperationWithMarginCostSummary = totalOperationCostWithMargin;
-                } else {
-                    totalOperationWithMarginCostSummary = totalOperationWithMarginCostSummary.add(totalOperationCostWithMargin,
-                            mc);
-                }
+                totalOperationWithMarginCostSummary = totalOperationWithMarginCostSummary.add(totalOperationCostWithMargin, mc);
             }
             String totalMachineWorkTimeToString = timeConverterService.convertTimeToString(totalMachineWorkTimeSummary);
             String totalMachineHourlyCosts = numberService.format(costCalculation.getDecimalField("totalMachineHourlyCosts"));
