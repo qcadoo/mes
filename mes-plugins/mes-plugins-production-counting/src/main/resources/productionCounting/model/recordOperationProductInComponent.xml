@@ -30,7 +30,10 @@
 	<fields>
 		<belongsTo name="productionRecord" model="productionRecord" />
 		<belongsTo name="product" model="product" plugin="basic" />
-		<decimal name="plannedQuantity" persistent="false" />
+		<decimal name="plannedQuantity" persistent="false">
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
+		</decimal>
 		<decimal name="usedQuantity">
 			<validatesRange from="0" exclusively="false" />
 			<validatesUnscaledValue max="9" />
