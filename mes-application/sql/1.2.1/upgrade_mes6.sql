@@ -59,18 +59,61 @@ ALTER TABLE orders_order ALTER COLUMN remainingamountofproducttoproduce TYPE num
 
 -- Plugin: basicproductioncounting
 -- Table: basicproductioncounting_productioncountingquantity
--- changed: 26.09.2013
+-- changed: 30.09.2013
 -- author: lupo
 
 ALTER TABLE basicproductioncounting_productioncountingquantity ALTER COLUMN plannedquantity TYPE numeric(14, 5);
+
+ALTER TABLE basicproductioncounting_basicproductioncounting ALTER COLUMN usedquantity TYPE numeric(14, 5);
+ALTER TABLE basicproductioncounting_basicproductioncounting ALTER COLUMN producedquantity TYPE numeric(14, 5);
 
 -- end
 
 
 -- Plugin: productioncounting
 -- Table: productioncounting_balanceoperationproductincomponent, productioncounting_balanceoperationproductoutcomponent, productioncounting_recordoperationproductincomponent, productioncounting_recordoperationproductoutcomponent
--- changed: 26.09.2013
+-- changed: 30.09.2013
 -- author: lupo
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN averagemachinehourlycost TYPE numeric(12, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN averagelaborhourlycost TYPE numeric(12, 5);
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN productioncostmargin TYPE numeric(12, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN materialcostmargin TYPE numeric(12, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN additionaloverhead TYPE numeric(12, 5);
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN plannedComponentscosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN componentscosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN componentscostsbalance TYPE numeric(19, 5);
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN plannedmachinecosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN machinecosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN machinecostsbalance TYPE numeric(19, 5);
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN plannedlaborcosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN laborcosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN laborcostsbalance TYPE numeric(19, 5);
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN plannedcyclescosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN cyclescosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN cyclescostsbalance TYPE numeric(19, 5);
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN registeredtotaltechnicalproductioncosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN registeredtotaltechnicalproductioncostperunit TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN totaltechnicalproductioncosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN totaltechnicalproductioncostperunit TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN balancetechnicalproductioncosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN balancetechnicalproductioncostperunit TYPE numeric(19, 5);
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN productioncostmarginvalue TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN materialcostmarginvalue TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN additionaloverheadvalue TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN totaloverhead TYPE numeric(19, 5);
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcosts TYPE numeric(19, 5);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostperunit TYPE numeric(19, 5);
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN quantity TYPE numeric(12, 5);
 
 ALTER TABLE productioncounting_balanceoperationproductincomponent ALTER COLUMN plannedquantity TYPE numeric(14, 5);
 ALTER TABLE productioncounting_balanceoperationproductincomponent ALTER COLUMN usedquantity TYPE numeric(14, 5);
@@ -90,49 +133,9 @@ ALTER TABLE productioncounting_recordoperationproductoutcomponent ALTER COLUMN b
 
 
 -- Plugin: productioncountingwithcosts
--- Table: productioncountingwithcosts_productionbalance, productioncountingwithcosts_operationcostcomponent, productioncountingwithcosts_operationpieceworkcostcomponent, productioncountingwithcosts_technologyinstoperproductincomp
+-- Table: productioncountingwithcosts_operationcostcomponent, productioncountingwithcosts_operationpieceworkcostcomponent, productioncountingwithcosts_technologyinstoperproductincomp
 -- changed: 27.09.2013
 -- author: lupo
-
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN averageMachineHourlyCost TYPE numeric(12, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN averageLaborHourlyCost TYPE numeric(12, 5);
-
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN productionCostMargin TYPE numeric(12, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN materialCostMargin TYPE numeric(12, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN additionalOverhead TYPE numeric(12, 5);
-
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN plannedComponentsCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN componentsCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN componentsCostsBalance TYPE numeric(19, 5);
-
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN plannedMachineCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN machineCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN machineCostsBalance TYPE numeric(19, 5);
-
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN plannedLaborCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN laborCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN laborCostsBalance TYPE numeric(19, 5);
-
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN plannedCyclesCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN cyclesCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN cyclesCostsBalance TYPE numeric(19, 5);
-
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN registeredTotalTechnicalProductionCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN registeredTotalTechnicalProductionCostPerUnit TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN totalTechnicalProductionCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN totalTechnicalProductionCostPerUnit TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN balanceTechnicalProductionCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN balanceTechnicalProductionCostPerUnit TYPE numeric(19, 5);
-
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN productionCostMarginValue TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN materialCostMarginValue TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN additionalOverheadValue TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN totalOverhead TYPE numeric(19, 5);
-
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN totalCosts TYPE numeric(19, 5);
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN totalCostPerUnit TYPE numeric(19, 5);
-
-ALTER TABLE productioncountingwithcosts_productionbalance ALTER COLUMN quantity TYPE numeric(12, 5);
 
 ALTER TABLE productioncountingwithcosts_operationcostcomponent ALTER COLUMN plannedmachinecosts TYPE numeric(19, 5);
 ALTER TABLE productioncountingwithcosts_operationcostcomponent ALTER COLUMN machinecosts TYPE numeric(19, 5);
