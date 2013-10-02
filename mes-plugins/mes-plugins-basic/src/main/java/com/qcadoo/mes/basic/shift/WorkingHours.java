@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalTime;
-import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 import com.google.common.collect.Sets;
 import com.qcadoo.commons.dateTime.TimeRange;
@@ -18,6 +18,9 @@ public class WorkingHours implements Comparable<WorkingHours> {
 
     private static final Pattern WORKING_HOURS_PATTERN = Pattern
             .compile("\\d{1,2}:\\d{2}-\\d{1,2}:\\d{2}(,\\d{1,2}:\\d{2}-\\d{1,2}:\\d{2})*");
+
+    private static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder().appendHourOfDay(1).appendLiteral(':')
+            .appendMinuteOfHour(2).toFormatter();
 
     private final SortedSet<TimeRange> hours;
 
@@ -45,9 +48,8 @@ public class WorkingHours implements Comparable<WorkingHours> {
 
     private TimeRange stringToInterval(final String hoursRange) {
         String[] lowerUpperBound = StringUtils.split(hoursRange, '-');
-        DateTimeFormatter formatter = DateTimeFormat.shortTime();
-        LocalTime lower = LocalTime.parse(lowerUpperBound[0], formatter);
-        LocalTime upper = LocalTime.parse(lowerUpperBound[1], formatter);
+        LocalTime lower = LocalTime.parse(lowerUpperBound[0], TIME_FORMATTER);
+        LocalTime upper = LocalTime.parse(lowerUpperBound[1], TIME_FORMATTER);
         return new TimeRange(lower, upper);
     }
 
