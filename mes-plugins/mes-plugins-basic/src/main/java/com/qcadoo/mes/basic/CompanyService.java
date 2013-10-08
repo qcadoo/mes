@@ -56,12 +56,15 @@ public class CompanyService {
      * 
      */
     public Long getCompanyId() {
-        return getCompany().getId();
+        if (getCompany() == null) {
+            return null;
+        } else {
+            return getCompany().getId();
+        }
     }
 
     /**
-     * Returns basic comapny entity for current user. If company does not exist the new company entity will be created, saved and
-     * returned.
+     * Returns basic company entity for current user.
      * 
      * @return company entity
      * 
@@ -69,8 +72,8 @@ public class CompanyService {
     @Transactional
     public Entity getCompany() {
         Entity parameter = parameterService.getParameter();
-        return parameter.getBelongsToField(ParameterFields.COMPANY);
 
+        return parameter.getBelongsToField(ParameterFields.COMPANY);
     }
 
     public final Boolean isCompanyOwner(final Entity company) {
