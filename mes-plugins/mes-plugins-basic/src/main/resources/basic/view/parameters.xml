@@ -135,6 +135,8 @@
 	</component>
 
 	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.hooks.ParametersHooks"
+			method="onBeforeRender" />
 		<beforeRender class="com.qcadoo.mes.basic.CurrencyViewService"
 			method="applyCurrentCurrency" />
 	</hooks>
