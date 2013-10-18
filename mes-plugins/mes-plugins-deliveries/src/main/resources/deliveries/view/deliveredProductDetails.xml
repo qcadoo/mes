@@ -26,7 +26,8 @@
 -->
 <view name="deliveredProductDetails" modelName="deliveredProduct"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	windowWidth="640" windowHeight="430">
 
 	<component type="window" name="window">
 
