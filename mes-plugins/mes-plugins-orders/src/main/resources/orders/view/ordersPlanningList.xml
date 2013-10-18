@@ -212,6 +212,7 @@
 				]]>
 			</script>
 			<option type="column" name="number" fields="number" link="true" width="30" />
+			<option type="column" name="description" fields="description" link="true" width="60" />
 			<option type="column" name="state" fields="state" width="35" />
 			<option type="column" name="productNumber" fields="product" expression="#product['number']" width="30" />
 			<option type="column" name="technologyNumber" fields="technology" expression="#technology['number']" width="30" />
@@ -230,8 +231,8 @@
 			
 			<option type="order" column="dateFrom" direction="asc" />
 			
-			<option type="searchable" value="number,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
-			<option type="orderable" value="number,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
+			<option type="searchable" value="number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
+			<option type="orderable" value="number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
 			
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
