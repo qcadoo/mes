@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
@@ -31,7 +30,6 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.RELATED_DELIVERIES;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.APPROVED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.PREPARED;
@@ -47,7 +45,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeFields;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.Entity;
@@ -65,15 +65,9 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class DeliveryDetailsHooks {
 
-    private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
-
     private static final String L_FORM = "form";
 
     private static final String L_WINDOW = "window";
-
-    private static final String L_PRODUCT = "product";
-
-    private static final String L_SHOW_PRODUCT = "showProduct";
 
     private static final String L_RELATED_DELIVERY = "relatedDelivery";
 
@@ -95,19 +89,24 @@ public class DeliveryDetailsHooks {
                 DeliveriesConstants.MODEL_DELIVERY, L_FORM, NUMBER);
     }
 
-    public void fillBufferForSupplier(final ViewDefinitionState view) {
-        LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(SUPPLIER);
-        FieldComponent deliveryDateBufferField = (FieldComponent) view.getComponentByReference(L_DELIVERY_DATE_BUFFER);
+    public void fillCompanyFieldsForSupplier(final ViewDefinitionState view) {
+        LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.SUPPLIER);
+        FieldComponent deliveryDateBufferField = (FieldComponent) view
+                .getComponentByReference(DeliveryFields.DELIVERY_DATE_BUFFER);
+        FieldComponent paymentFormField = (FieldComponent) view.getComponentByReference(DeliveryFields.PAYMENT_FORM);
 
         Entity supplier = supplierLookup.getEntity();
 
         if (supplier == null) {
             deliveryDateBufferField.setFieldValue(null);
+            paymentFormField.setFieldValue(null);
         } else {
-            deliveryDateBufferField.setFieldValue(supplier.getField(BUFFER));
+            deliveryDateBufferField.setFieldValue(supplier.getIntegerField(CompanyFieldsD.BUFFER));
+            paymentFormField.setFieldValue(supplier.getStringField(CompanyFieldsD.PAYMENT_FORM));
         }
 
         deliveryDateBufferField.requestComponentUpdateState();
+        paymentFormField.requestComponentUpdateState();
     }
 
     public void changeFieldsEnabledDependOnState(final ViewDefinitionState view) {

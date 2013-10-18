@@ -66,7 +66,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
@@ -212,9 +212,9 @@ public class OrderReportPdf extends ReportPdfView {
             column.put("deliveries.delivery.report.columnHeader.createOrderDate",
                     getStringFromDate((Date) getPrepareOrderDate(delivery).getField("dateAndTime")));
         }
-        if (StringUtils.isNotEmpty(delivery.getStringField(DeliveryFields.PAYMENT_FORM))) {
-            column.put("deliveries.delivery.report.columnHeader.paymentForm",
-                    delivery.getStringField(DeliveryFields.PAYMENT_FORM));
+        if (StringUtils.isNotEmpty(delivery.getBelongsToField(SUPPLIER).getStringField(CompanyFieldsD.PAYMENT_FORM))) {
+            column.put("deliveries.delivery.report.columnHeader.paymentForm", delivery.getBelongsToField(SUPPLIER)
+                    .getStringField(CompanyFieldsD.PAYMENT_FORM));
         }
         return column;
     }

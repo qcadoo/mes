@@ -296,7 +296,7 @@
 
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
-								method="fillBufferForSupplier" />
+								method="fillCompanyFieldsForSupplier" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -310,8 +310,8 @@
 							reference="deliveryAddress" />
 					</layoutElement>
 					<layoutElement column="2" row="6">
-						<component type="textarea" name="paymentForm" field="paymentForm"
-							reference="paymentForm" />
+						<component type="select" name="paymentForm" field="paymentForm"
+							reference="paymentForm" defaultEnabled="never" />
 					</layoutElement>
 					<layoutElement column="3" row="1">
 						<component type="select" name="state" field="state"
@@ -321,7 +321,7 @@
 						<component type="gridLayout" name="gridLayoutDeliveryDateBuffer"
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="deliveryDateBuffer"
+								<component type="input" name="deliveryDateBuffer" field="deliveryDateBuffer"
 									reference="deliveryDateBuffer" defaultEnabled="never">
 									<option type="labelWidth" value="40" />
 								</component>
@@ -564,7 +564,7 @@
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="generateDeliveryNumber" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="fillBufferForSupplier" />
+			method="fillCompanyFieldsForSupplier" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="fillDeliveryAddressDefaultValue" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"

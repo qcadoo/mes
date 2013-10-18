@@ -35,4 +35,6 @@ public final class CompanyFieldsD {
 
     public static final String BUFFER = "buffer";
 
+    public static final String PAYMENT_FORM = "paymentForm";
+
 }

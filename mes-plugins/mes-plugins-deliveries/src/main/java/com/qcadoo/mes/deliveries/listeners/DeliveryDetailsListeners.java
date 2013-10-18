@@ -44,6 +44,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
@@ -60,19 +61,15 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Component
 public class DeliveryDetailsListeners {
 
-    private static final String L_DELIVERED_PRODUCTS = "deliveredProducts";
-
-    private static final String L_ORDERED_PRODUCTS = "orderedProducts";
-
     private static final String L_FORM = "form";
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
-    private static final String L_WINDOW = "window";
+    private static final String L_ORDERED_PRODUCTS = "orderedProducts";
+
+    private static final String L_DELIVERED_PRODUCTS = "deliveredProducts";
 
     private static final String L_PRODUCT = "product";
-
-    private static final String L_SHOW_PRODUCT = "showProduct";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -86,8 +83,8 @@ public class DeliveryDetailsListeners {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public void fillBufferForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveryDetailsHooks.fillBufferForSupplier(view);
+    public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
     }
 
     public final void printDeliveryReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -153,7 +150,7 @@ public class DeliveryDetailsListeners {
     private Entity createDeliveredProduct(final Entity orderedProduct) {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
 
-        deliveredProduct.setField(L_PRODUCT, orderedProduct.getBelongsToField(L_PRODUCT));
+        deliveredProduct.setField(DeliveredProductFields.PRODUCT, orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
 
         return deliveredProduct;
     }
@@ -247,13 +244,14 @@ public class DeliveryDetailsListeners {
     }
 
     private boolean checkIfProductsAreSame(final Entity orderedProduct, final Entity deliveredProduct) {
-        return (orderedProduct.getBelongsToField(L_PRODUCT).getId().equals(deliveredProduct.getBelongsToField(L_PRODUCT).getId()));
+        return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId().equals(deliveredProduct.getBelongsToField(
+                DeliveredProductFields.PRODUCT).getId()));
     }
 
     private Entity createOrderedProduct(final Entity orderedProduct, final BigDecimal orderedQuantity) {
         Entity newOrderedProduct = deliveriesService.getOrderedProductDD().create();
 
-        newOrderedProduct.setField(L_PRODUCT, orderedProduct.getBelongsToField(L_PRODUCT));
+        newOrderedProduct.setField(OrderedProductFields.PRODUCT, orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
         newOrderedProduct.setField(ORDERED_QUANTITY, numberService.setScale(orderedQuantity));
         newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
                 orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));

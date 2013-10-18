@@ -43,9 +43,9 @@
 		<string name="deliveryAddress">
 			<validatesLength max="2048" />
 		</string>
-		<string name="paymentForm">
-			<validatesLength max="1024" />
-		</string>
+		
+		<integer name="deliveryDateBuffer" persistent="false" />
+		<dictionary name="paymentForm" dictionary="paymentForm" persistent="false" />
 		
 		<belongsTo name="relatedDelivery" model="delivery" />
 		<belongsTo name="currency" model="currency" plugin="basic"/>

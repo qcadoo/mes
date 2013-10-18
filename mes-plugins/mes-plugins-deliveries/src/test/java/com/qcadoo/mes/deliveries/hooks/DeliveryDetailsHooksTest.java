@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
@@ -41,6 +40,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -53,6 +53,8 @@ public class DeliveryDetailsHooksTest {
     private static final String L_FORM = "form";
 
     private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
+
+    private static final String L_PAYMENT_FORM = "paymentForm";
 
     private DeliveryDetailsHooks deliveryDetailsHooks;
 
@@ -75,7 +77,10 @@ public class DeliveryDetailsHooksTest {
     private LookupComponent supplierLookup;
 
     @Mock
-    private FieldComponent deliveryDateBuffer;
+    private FieldComponent deliveryDateBufferField;
+
+    @Mock
+    private FieldComponent paymentFormField;
 
     @Mock
     private Entity supplier;
@@ -94,33 +99,42 @@ public class DeliveryDetailsHooksTest {
     }
 
     @Test
-    public void shouldSetBufferFromCompany() throws Exception {
+    public void shouldFillCompanyFields() throws Exception {
         // given
         Integer buffer = Integer.valueOf(10);
+        String paymentForm = "cash";
+
         when(view.getComponentByReference(SUPPLIER)).thenReturn(supplierLookup);
-        when(view.getComponentByReference(L_DELIVERY_DATE_BUFFER)).thenReturn(deliveryDateBuffer);
+        when(view.getComponentByReference(L_DELIVERY_DATE_BUFFER)).thenReturn(deliveryDateBufferField);
+        when(view.getComponentByReference(L_PAYMENT_FORM)).thenReturn(paymentFormField);
+
         when(supplierLookup.getEntity()).thenReturn(supplier);
-        when(supplier.getField(BUFFER)).thenReturn(buffer);
+        when(supplier.getIntegerField(CompanyFieldsD.BUFFER)).thenReturn(buffer);
+        when(supplier.getStringField(CompanyFieldsD.PAYMENT_FORM)).thenReturn(paymentForm);
 
         // when
-        deliveryDetailsHooks.fillBufferForSupplier(view);
+        deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
 
         // then
-        verify(deliveryDateBuffer).setFieldValue(buffer);
+        verify(deliveryDateBufferField).setFieldValue(buffer);
+        verify(paymentFormField).setFieldValue(paymentForm);
     }
 
     @Test
-    public void shouldSetNullForDeliveryBufferFieldWhenSUpplierIsNotSelected() throws Exception {
+    public void shouldntFillCompanyFieldsWhenSupplierIsNotSelected() throws Exception {
         // given
         when(view.getComponentByReference(SUPPLIER)).thenReturn(supplierLookup);
-        when(view.getComponentByReference(L_DELIVERY_DATE_BUFFER)).thenReturn(deliveryDateBuffer);
+        when(view.getComponentByReference(L_DELIVERY_DATE_BUFFER)).thenReturn(deliveryDateBufferField);
+        when(view.getComponentByReference(L_PAYMENT_FORM)).thenReturn(paymentFormField);
+
         when(supplierLookup.getEntity()).thenReturn(null);
 
         // when
-        deliveryDetailsHooks.fillBufferForSupplier(view);
+        deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
 
         // then
-        verify(deliveryDateBuffer).setFieldValue(null);
+        verify(deliveryDateBufferField).setFieldValue(null);
+        verify(paymentFormField).setFieldValue(null);
     }
 
     @Test

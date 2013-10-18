@@ -71,6 +71,8 @@
 	<modules>
 		<localization:translation path="locales" />
 	
+		<model:dictionary name="paymentForm" />
+			
 		<model:model model="companyProduct" resource="model/companyProduct.xml" />
 		<model:model model="companyProductsFamily" resource="model/companyProductsFamily.xml" />
 		<model:model model="columnForDeliveries" resource="model/columnForDeliveries.xml" />
@@ -81,34 +83,11 @@
 		<model:model model="deliveryStateChange" resource="model/deliveryStateChange.xml" />
 		<model:model model="parameterDeliveryOrderColumn" resource="model/parameterDeliveryOrderColumn.xml" />
 		
-
 		<model:model-field plugin="states" model="message">
 			<model:belongsTo name="deliveryStateChange" plugin="deliveries"
 				model="deliveryStateChange" />
 		</model:model-field>
 	
-		<model:model-field plugin="basic" model="company">
-			<model:hasMany name="products" joinField="company"
-				plugin="deliveries" model="companyProduct" cascade="delete" copyable="true" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="company">
-			<model:hasMany name="productsFamilies" joinField="company"
-				plugin="deliveries" model="companyProductsFamily" cascade="delete"
-				copyable="true" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="company">
-			<model:integer name="buffer" />
-		</model:model-field>
-	
-		<model:model-field plugin="basic" model="product">
-			<model:hasMany name="productCompanies" joinField="product"
-				plugin="deliveries" model="companyProduct" cascade="delete" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="product">
-			<model:hasMany name="productsFamilyCompanies" joinField="product"
-				plugin="deliveries" model="companyProductsFamily" cascade="delete" />
-		</model:model-field>
-		
 		<model:model-field plugin="basic" model="parameter">
 			<model:string name="defaultDescription">
 				<model:validatesLength max="2048" />
@@ -135,6 +114,31 @@
 			<model:hasMany name="parameterDeliveryOrderColumns" plugin="deliveries"
 				model="parameterDeliveryOrderColumn" joinField="parameter" cascade="delete"
 				copyable="true" />
+		</model:model-field>
+		
+		<model:model-field plugin="basic" model="company">
+			<model:hasMany name="products" joinField="company"
+				plugin="deliveries" model="companyProduct" cascade="delete" copyable="true" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="company">
+			<model:hasMany name="productsFamilies" joinField="company"
+				plugin="deliveries" model="companyProductsFamily" cascade="delete"
+				copyable="true" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="company">
+			<model:integer name="buffer" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="company">
+			<model:dictionary name="paymentForm" dictionary="paymentForm" />
+		</model:model-field>
+	
+		<model:model-field plugin="basic" model="product">
+			<model:hasMany name="productCompanies" joinField="product"
+				plugin="deliveries" model="companyProduct" cascade="delete" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="product">
+			<model:hasMany name="productsFamilyCompanies" joinField="product"
+				plugin="deliveries" model="companyProductsFamily" cascade="delete" />
 		</model:model-field>
 		
 		<menu:menu-category name="requirements" />

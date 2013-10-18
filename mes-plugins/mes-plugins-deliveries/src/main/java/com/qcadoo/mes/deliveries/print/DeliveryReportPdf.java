@@ -64,8 +64,8 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
@@ -215,9 +215,9 @@ public class DeliveryReportPdf extends ReportPdfView {
             column.put("deliveries.delivery.report.columnHeader.receivedOrderDate",
                     getStringFromDate(getReceivedOrderDate(delivery).getDateField("dateAndTime")));
         }
-        if (StringUtils.isNotEmpty(delivery.getStringField(DeliveryFields.PAYMENT_FORM))) {
-            column.put("deliveries.delivery.report.columnHeader.paymentForm",
-                    delivery.getStringField(DeliveryFields.PAYMENT_FORM));
+        if (StringUtils.isNotEmpty(delivery.getBelongsToField(SUPPLIER).getStringField(CompanyFieldsD.PAYMENT_FORM))) {
+            column.put("deliveries.delivery.report.columnHeader.paymentForm", delivery.getBelongsToField(SUPPLIER)
+                    .getStringField(CompanyFieldsD.PAYMENT_FORM));
         }
         return column;
     }

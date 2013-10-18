@@ -32,10 +32,16 @@
 	<windowTab name="deliveriesTab" reference="deliveriesTab">
 		<component type="form" name="company">
 			<component type="gridLayout" name="deliveriesTabGridLayout"
-				reference="deliveriesTabGridLayout" columns="3" rows="1">
+				reference="deliveriesTabGridLayout" columns="3" rows="2">
 				<layoutElement column="1" row="1">
 					<component type="input" name="buffer" field="#{form}.buffer"
 						reference="buffer" hasDescription="true" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="select" name="paymentForm"
+						field="#{form}.paymentForm" reference="paymentForm">
+						<option type="labelWidth" value="60" />
+					</component>
 				</layoutElement>
 			</component>
 		</component>
