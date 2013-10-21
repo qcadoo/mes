@@ -111,8 +111,17 @@ public class DeliveryDetailsListeners {
         }
     }
 
-    public final void copyOrderedProductToDelivered(final ViewDefinitionState view, final ComponentState state,
+    public final void copyProductsWithoutQuantityAndPrice(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
+        copyOrderedProductToDelivered(view, false);
+    }
+
+    public final void copyProductsWithQuantityAndPrice(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        copyOrderedProductToDelivered(view, true);
+    }
+
+    private void copyOrderedProductToDelivered(final ViewDefinitionState view, boolean copyQuantityAndPrice) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
         Long deliveryId = deliveryForm.getEntityId();
 
@@ -122,35 +131,43 @@ public class DeliveryDetailsListeners {
 
         Entity delivery = deliveriesService.getDelivery(deliveryId);
 
-        List<Entity> orderedProducts = delivery.getHasManyField(L_ORDERED_PRODUCTS);
-
-        copyOrderedProductToDelivered(delivery, orderedProducts);
+        copyOrderedProductToDelivered(delivery, copyQuantityAndPrice);
     }
 
-    private void copyOrderedProductToDelivered(final Entity delivery, final List<Entity> orderedProducts) {
+    private void copyOrderedProductToDelivered(final Entity delivery, final boolean copyQuantityAndPrice) {
         // ALBR deliveredProduct has a validation so we have to delete all
         // entities before save HM field in delivery
-        delivery.setField(L_DELIVERED_PRODUCTS, Lists.newArrayList());
+        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, Lists.newArrayList());
         delivery.getDataDefinition().save(delivery);
-        delivery.setField(L_DELIVERED_PRODUCTS, Lists.newArrayList(createDeliveredProducts(orderedProducts)));
+        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS,
+                createDeliveredProducts(delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS), copyQuantityAndPrice));
 
         delivery.getDataDefinition().save(delivery);
     }
 
-    private List<Entity> createDeliveredProducts(final List<Entity> orderedProducts) {
+    private List<Entity> createDeliveredProducts(final List<Entity> orderedProducts, final boolean copyQuantityAndPrice) {
         List<Entity> deliveredProducts = Lists.newArrayList();
 
         for (Entity orderedProduct : orderedProducts) {
-            deliveredProducts.add(createDeliveredProduct(orderedProduct));
+            deliveredProducts.add(createDeliveredProduct(orderedProduct, copyQuantityAndPrice));
         }
 
         return deliveredProducts;
     }
 
-    private Entity createDeliveredProduct(final Entity orderedProduct) {
+    private Entity createDeliveredProduct(final Entity orderedProduct, final boolean copyQuantityAndPrice) {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
 
         deliveredProduct.setField(DeliveredProductFields.PRODUCT, orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
+
+        if (copyQuantityAndPrice) {
+            deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY,
+                    orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY));
+            deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT,
+                    orderedProduct.getBelongsToField(OrderedProductFields.PRICE_PER_UNIT));
+            deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE,
+                    orderedProduct.getBelongsToField(OrderedProductFields.TOTAL_PRICE));
+        }
 
         return deliveredProduct;
     }

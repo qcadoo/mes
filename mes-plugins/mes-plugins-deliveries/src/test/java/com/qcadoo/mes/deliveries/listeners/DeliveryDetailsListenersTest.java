@@ -23,13 +23,9 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +33,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -63,12 +55,6 @@ public class DeliveryDetailsListenersTest {
     @Mock
     private FormComponent formComponent;
 
-    @Mock
-    private DataDefinition dataDefinition, deliveredProductDD;
-
-    @Mock
-    private Entity entity, ordered1, ordered2, deliveredProduct;
-
     private String[] args = { "pdf" };
 
     @Before
@@ -76,12 +62,6 @@ public class DeliveryDetailsListenersTest {
         deliveryDetailsListeners = new DeliveryDetailsListeners();
         MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(deliveryDetailsListeners, "deliveriesService", deliveriesService);
-    }
-
-    private EntityList mockEntityList(List<Entity> list) {
-        EntityList entityList = mock(EntityList.class);
-        when(entityList.iterator()).thenReturn(list.iterator());
-        return entityList;
     }
 
     @Test
@@ -137,37 +117,6 @@ public class DeliveryDetailsListenersTest {
         // then
         verify(grid).addMessage("deliveries.order.report.componentFormError", MessageType.FAILURE);
         verify(view, never()).redirectTo("/deliveries/orderReport." + args[0] + "?id=" + stateValue, true, false);
-    }
-
-    @Test
-    public void shouldReturnWhenEntityIdIsNull() throws Exception {
-        // given
-        when(view.getComponentByReference("form")).thenReturn(formComponent);
-        when(formComponent.getEntityId()).thenReturn(null);
-
-        // when
-        deliveryDetailsListeners.copyOrderedProductToDelivered(view, formComponent, args);
-    }
-
-    @Test
-    public void shouldCopyOrderedProdsToDeliveredProds() throws Exception {
-        // given
-        Long entityId = 1L;
-        when(view.getComponentByReference("form")).thenReturn(formComponent);
-        when(formComponent.getEntityId()).thenReturn(entityId);
-        when(deliveriesService.getDelivery(entityId)).thenReturn(entity);
-        when(entity.getDataDefinition()).thenReturn(dataDefinition);
-
-        when(deliveriesService.getDeliveredProductDD()).thenReturn(deliveredProductDD);
-        when(deliveredProductDD.create()).thenReturn(deliveredProduct);
-
-        EntityList orderedProducts = mockEntityList(Lists.newArrayList(ordered1, ordered2));
-        when(entity.getHasManyField(ORDERED_PRODUCTS)).thenReturn(orderedProducts);
-
-        // when
-        deliveryDetailsListeners.copyOrderedProductToDelivered(view, formComponent, args);
-
-        // then
     }
 
 }

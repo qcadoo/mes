@@ -95,9 +95,11 @@
 					</script>
 				</smallButton>
 			</group>
-			<group name="copy">
-				<bigButton name="copyOrderedProductToDelivered" icon="copyIcon24.png"
-					state="disabled" action="#{form}.fireEvent(copyOrderedProductToDelivered);" />
+			<group name="copyOrderedProductsToDelivered">
+				<bigButton name="copyWithoutQuantityAndPrice" icon="copyIcon24.png"
+					state="disabled" action="#{form}.fireEvent(copyWithoutQuantityAndPrice);" />
+				<bigButton name="copyWithQuantityAndPrice" icon="copyIcon24.png"
+					state="disabled" action="#{form}.fireEvent(copyWithQuantityAndPrice);" />
 			</group>
 			<group name="relatedDelivery">
 				<bigButton name="createRelatedDelivery" icon="genealogyIcon24.png"
@@ -115,153 +117,156 @@
 			<component type="form" name="deliveriesDetails" reference="form">
 				<script>
 					<![CDATA[
-					var saveBtn = #{window}.getRibbonItem("actions.save");
-					var saveBackBtn = #{window}.getRibbonItem("actions.saveBack");
-					var saveNewBtn = #{window}.getRibbonItem("actions.saveNew");
-					var cancelBtn = #{window}.getRibbonItem("actions.cancel");
-					var deleteBtn = #{window}.getRibbonItem("actions.delete");
-					
-					var generateOrderBtn =  #{window}.getRibbonItem("generate.generateOrder");
-					var generateDeliveryBtn =  #{window}.getRibbonItem("generate.generateDelivery");
-					
-					var acceptBtn = #{window}.getRibbonItem("status.accept");
-					var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
-					var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
-					var copyOrderedProductToDeliveredBtn = #{window}.getRibbonItem("copy.copyOrderedProductToDelivered");
-					
-					var generateOrderBtn = #{window}.getRibbonItem("generate.generateOrder");
-					var generateDeliveryBtn = #{window}.getRibbonItem("generate.generateDelivery");
-					
-					var createRelatedDeliveryBtn = #{window}.getRibbonItem("relatedDelivery.createRelatedDelivery");
-					var showRelatedDeliveriesBtn = #{window}.getRibbonItem("relatedDelivery.showRelatedDeliveries");
-					
-					this.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
+						var saveBtn = #{window}.getRibbonItem("actions.save");
+						var saveBackBtn = #{window}.getRibbonItem("actions.saveBack");
+						var saveNewBtn = #{window}.getRibbonItem("actions.saveNew");
+						var cancelBtn = #{window}.getRibbonItem("actions.cancel");
+						var deleteBtn = #{window}.getRibbonItem("actions.delete");
+						
+						var generateOrderBtn =  #{window}.getRibbonItem("generate.generateOrder");
+						var generateDeliveryBtn =  #{window}.getRibbonItem("generate.generateDelivery");
+						
+						var acceptBtn = #{window}.getRibbonItem("status.accept");
+						var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
+						var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
+						var copyOrderedProductToDeliveredBtn = #{window}.getRibbonItem("copy.copyOrderedProductToDelivered");
+						
+						var generateOrderBtn = #{window}.getRibbonItem("generate.generateOrder");
+						var generateDeliveryBtn = #{window}.getRibbonItem("generate.generateDelivery");
+						
+						var createRelatedDeliveryBtn = #{window}.getRibbonItem("relatedDelivery.createRelatedDelivery");
+						var showRelatedDeliveriesBtn = #{window}.getRibbonItem("relatedDelivery.showRelatedDeliveries");
+						
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								
+								saveBtn.enable();
+								saveBackBtn.enable();
+								saveNewBtn.enable();
+								
+								if (! value.content.entityId) {
+									cancelBtn.disable();
+									deleteBtn.disable();
+									acceptBtn.disable();
+									declineDeliveryBtn.disable();
+									approveDeliveryBtn.disable();
+									generateOrderBtn.disable();
+									generateDeliveryBtn.disable();
+									return;
+								}
+								
+								cancelBtn.enable();
+								generateOrderBtn.enable();
+								generateDeliveryBtn.enable();
+								
+								var state = #{state}.getValue().content.value;
+								var externalSynchronized = #{externalSynchronized}.getValue().content.value;
+								
+								if (!state) {
+									return;
+								}
+								
+								if (state == "01draft") {
+									deleteBtn.enable();
+									acceptBtn.enable();
+									acceptBtn.state = "draft";
+									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
+									acceptBtn.setIcon('startIcon16.png');
+									declineDeliveryBtn.enable();
+									declineDeliveryBtn.state = "decline";
+									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+									declineDeliveryBtn.setIcon('deleteIcon16.png');
+									approveDeliveryBtn.enable();
+									copyOrderedProductToDeliveredBtn.enable();
+									createRelatedDeliveryBtn.disable();
+									showRelatedDeliveriesBtn.disable();
+								} else if (state == "02prepared") {
+									deleteBtn.disable();
+									acceptBtn.enable();
+									acceptBtn.state = "prepare";
+									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
+									acceptBtn.setIcon('startIcon16.png');
+									declineDeliveryBtn.enable();
+									declineDeliveryBtn.state = "decline";
+									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+									declineDeliveryBtn.setIcon('deleteIcon16.png');
+									approveDeliveryBtn.enable();
+									copyOrderedProductToDeliveredBtn.enable();
+									createRelatedDeliveryBtn.disable();
+									showRelatedDeliveriesBtn.disable();
+								} else if (state == "03duringCorrection") {
+									deleteBtn.disable();
+									acceptBtn.disable();
+									acceptBtn.state = "correct";
+									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+									acceptBtn.setIcon('acceptIcon16.png');
+									declineDeliveryBtn.enable();
+									declineDeliveryBtn.state = "decline";
+									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+									declineDeliveryBtn.setIcon('deleteIcon16.png');
+									approveDeliveryBtn.enable();
+									copyOrderedProductToDeliveredBtn.enable();
+									createRelatedDeliveryBtn.disable();
+									showRelatedDeliveriesBtn.disable();
+								} else if (state == "05approved") {
+									deleteBtn.disable();
+									acceptBtn.enable();
+									acceptBtn.state = "receive";
+									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+									acceptBtn.setIcon('acceptIcon16.png');
+									declineDeliveryBtn.enable();
+									declineDeliveryBtn.state = "decline";
+									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+									declineDeliveryBtn.setIcon('deleteIcon16.png');
+									approveDeliveryBtn.disable();
+									copyOrderedProductToDeliveredBtn.enable();
+									createRelatedDeliveryBtn.disable();
+									showRelatedDeliveriesBtn.disable();
+								} else if (state == "06received") {
+									saveBtn.disable();
+									saveBackBtn.disable();
+									saveNewBtn.disable();
+									cancelBtn.disable();
+									deleteBtn.disable();
+									acceptBtn.disable();
+									declineDeliveryBtn.disable();
+									approveDeliveryBtn.disable();
+									copyOrderedProductToDeliveredBtn.disable();
+									createRelatedDeliveryBtn.enable();
+									showRelatedDeliveriesBtn.enable();
+								} else {
+									saveBtn.disable();
+									saveBackBtn.disable();
+									saveNewBtn.disable();
+									cancelBtn.disable();
+									deleteBtn.enable();
+									acceptBtn.disable();
+									declineDeliveryBtn.disable();
+									approveDeliveryBtn.disable();
+									copyOrderedProductToDeliveredBtn.disable();
+									createRelatedDeliveryBtn.disable();
+									showRelatedDeliveriesBtn.disable();
+								}
+								if (externalSynchronized == '0') {
+									saveBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									saveBackBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									saveNewBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									cancelBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									deleteBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									acceptBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									declineDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									approveDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									copyOrderedProductToDeliveredBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									generateDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									createRelatedDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									showRelatedDeliveriesBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								}
 							}
-							
-							saveBtn.enable();
-							saveBackBtn.enable();
-							saveNewBtn.enable();
-							if (! value.content.entityId) {
-								cancelBtn.disable();
-								deleteBtn.disable();
-								acceptBtn.disable();
-								declineDeliveryBtn.disable();
-								approveDeliveryBtn.disable();
-								generateOrderBtn.disable();
-								generateDeliveryBtn.disable();
-								return;
-							}
-							cancelBtn.enable();
-							generateOrderBtn.enable();
-							generateDeliveryBtn.enable();
-							
-							var state = #{state}.getValue().content.value;
-							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
-							if (!state) {
-								return;
-							}
-							
-							if (state == "01draft") {
-								deleteBtn.enable();
-								acceptBtn.enable();
-								acceptBtn.state = "draft";
-								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
-								acceptBtn.setIcon('startIcon16.png');
-								declineDeliveryBtn.enable();
-								declineDeliveryBtn.state = "decline";
-								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDeliveryBtn.setIcon('deleteIcon16.png');
-								approveDeliveryBtn.enable();
-								copyOrderedProductToDeliveredBtn.enable();
-								createRelatedDeliveryBtn.disable();
-								showRelatedDeliveriesBtn.disable();
-							} else if (state == "02prepared") {
-								deleteBtn.disable();
-								acceptBtn.enable();
-								acceptBtn.state = "prepare";
-								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
-								acceptBtn.setIcon('startIcon16.png');
-								declineDeliveryBtn.enable();
-								declineDeliveryBtn.state = "decline";
-								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDeliveryBtn.setIcon('deleteIcon16.png');
-								approveDeliveryBtn.enable();
-								copyOrderedProductToDeliveredBtn.enable();
-								createRelatedDeliveryBtn.disable();
-								showRelatedDeliveriesBtn.disable();
-							} else if (state == "03duringCorrection") {
-								deleteBtn.disable();
-								acceptBtn.disable();
-								acceptBtn.state = "correct";
-								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
-								acceptBtn.setIcon('acceptIcon16.png');
-								declineDeliveryBtn.enable();
-								declineDeliveryBtn.state = "decline";
-								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDeliveryBtn.setIcon('deleteIcon16.png');
-								approveDeliveryBtn.enable();
-								copyOrderedProductToDeliveredBtn.enable();
-								createRelatedDeliveryBtn.disable();
-								showRelatedDeliveriesBtn.disable();
-							} else if (state == "05approved") {
-								deleteBtn.disable();
-								acceptBtn.enable();
-								acceptBtn.state = "receive";
-								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
-								acceptBtn.setIcon('acceptIcon16.png');
-								declineDeliveryBtn.enable();
-								declineDeliveryBtn.state = "decline";
-								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDeliveryBtn.setIcon('deleteIcon16.png');
-								approveDeliveryBtn.disable();
-								copyOrderedProductToDeliveredBtn.enable();
-								createRelatedDeliveryBtn.disable();
-								showRelatedDeliveriesBtn.disable();
-							} else if (state == "06received") {
-								saveBtn.disable();
-								saveBackBtn.disable();
-								saveNewBtn.disable();
-								cancelBtn.disable();
-								deleteBtn.disable();
-								acceptBtn.disable();
-								declineDeliveryBtn.disable();
-								approveDeliveryBtn.disable();
-								copyOrderedProductToDeliveredBtn.disable();
-								createRelatedDeliveryBtn.enable();
-								showRelatedDeliveriesBtn.enable();
-							} else {
-								saveBtn.disable();
-								saveBackBtn.disable();
-								saveNewBtn.disable();
-								cancelBtn.disable();
-								deleteBtn.enable();
-								acceptBtn.disable();
-								declineDeliveryBtn.disable();
-								approveDeliveryBtn.disable();
-								copyOrderedProductToDeliveredBtn.disable();
-								createRelatedDeliveryBtn.disable();
-								showRelatedDeliveriesBtn.disable();
-							}
-							if(externalSynchronized == '0') {
-								saveBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								saveBackBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								saveNewBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								cancelBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								deleteBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								acceptBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								declineDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								approveDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								copyOrderedProductToDeliveredBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								generateDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								createRelatedDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								showRelatedDeliveriesBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-							}
-						}
-					});
+						});
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
@@ -374,9 +379,12 @@
 				<listener event="printOrderReport"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 					method="printOrderReport" />
-				<listener event="copyOrderedProductToDelivered"
+				<listener event="copyProductsWithoutQuantityAndPrice"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
-					method="copyOrderedProductToDelivered" />
+					method="copyProductsWithoutQuantityAndPrice" />
+				<listener event="copyProductsWithQuantityAndPrice"
+					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+					method="copyProductsWithQuantityAndPrice" />
 				<listener event="createRelatedDelivery"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 					method="createRelatedDelivery" />
