@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.basicProductionCounting.aop;
 
-import static com.qcadoo.mes.orders.states.constants.OrderStateChangePhase.DEFAULT;
+import static com.qcadoo.mes.orders.states.constants.OrderStateChangePhase.LAST;
 import static com.qcadoo.mes.orders.states.constants.OrderStateStringValues.ACCEPTED;
 import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 
@@ -50,7 +50,7 @@ public class BpcOrderStateListenerAspect extends AbstractStateListenerAspect {
     @Autowired
     private BpcOrderStateListenerService listenerService;
 
-    @RunInPhase(DEFAULT)
+    @RunInPhase(LAST)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = ACCEPTED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onAccept(final StateChangeContext stateChangeContext, final int phase) {
