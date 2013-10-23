@@ -162,11 +162,11 @@ public class DeliveryDetailsListeners {
 
         if (copyQuantityAndPrice) {
             deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY,
-                    orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY));
+                    numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY)));
             deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT,
-                    orderedProduct.getBelongsToField(OrderedProductFields.PRICE_PER_UNIT));
+                    numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT)));
             deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE,
-                    orderedProduct.getBelongsToField(OrderedProductFields.TOTAL_PRICE));
+                    numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
         }
 
         return deliveredProduct;
@@ -310,10 +310,12 @@ public class DeliveryDetailsListeners {
     public final void showProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent orderedProductGrid = (GridComponent) view.getComponentByReference(L_ORDERED_PRODUCTS);
         GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(L_DELIVERED_PRODUCTS);
+
         List<Entity> selectedEntities = orderedProductGrid.getSelectedEntities();
         if (selectedEntities.isEmpty()) {
             selectedEntities = deliveredProductsGrid.getSelectedEntities();
         }
+
         Entity selectedEntity = selectedEntities.iterator().next();
         Entity product = selectedEntity.getBelongsToField(L_PRODUCT);
 

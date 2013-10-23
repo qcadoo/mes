@@ -96,10 +96,10 @@
 				</smallButton>
 			</group>
 			<group name="copyOrderedProductsToDelivered">
-				<bigButton name="copyWithoutQuantityAndPrice" icon="copyIcon24.png"
-					state="disabled" action="#{form}.fireEvent(copyWithoutQuantityAndPrice);" />
-				<bigButton name="copyWithQuantityAndPrice" icon="copyIcon24.png"
-					state="disabled" action="#{form}.fireEvent(copyWithQuantityAndPrice);" />
+				<bigButton name="copyProductsWithoutQuantityAndPrice" icon="copyIcon24.png"
+					state="disabled" action="#{form}.fireEvent(copyProductsWithoutQuantityAndPrice);" />
+				<bigButton name="copyProductsWithQuantityAndPrice" icon="copyIcon24.png"
+					state="disabled" action="#{form}.fireEvent(copyProductsWithQuantityAndPrice);" />
 			</group>
 			<group name="relatedDelivery">
 				<bigButton name="createRelatedDelivery" icon="genealogyIcon24.png"
@@ -129,7 +129,8 @@
 						var acceptBtn = #{window}.getRibbonItem("status.accept");
 						var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
 						var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
-						var copyOrderedProductToDeliveredBtn = #{window}.getRibbonItem("copy.copyOrderedProductToDelivered");
+						var copyProductsWithoutQuantityAndPriceBtn = #{window}.getRibbonItem("copyOrderedProductsToDelivered.copyProductsWithoutQuantityAndPrice");
+						var copyProductsWithQuantityAndPriceBtn = #{window}.getRibbonItem("copyOrderedProductsToDelivered.copyProductsWithQuantityAndPrice");
 						
 						var generateOrderBtn = #{window}.getRibbonItem("generate.generateOrder");
 						var generateDeliveryBtn = #{window}.getRibbonItem("generate.generateDelivery");
@@ -180,7 +181,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
-									copyOrderedProductToDeliveredBtn.enable();
+									copyProductsWithoutQuantityAndPriceBtn.enable();
+									copyProductsWithQuantityAndPriceBtn.enable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "02prepared") {
@@ -194,7 +196,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
-									copyOrderedProductToDeliveredBtn.enable();
+									copyProductsWithoutQuantityAndPriceBtn.enable();
+									copyProductsWithQuantityAndPriceBtn.enable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "03duringCorrection") {
@@ -208,7 +211,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
-									copyOrderedProductToDeliveredBtn.enable();
+									copyProductsWithoutQuantityAndPriceBtn.enable();
+									copyProductsWithQuantityAndPriceBtn.enable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "05approved") {
@@ -222,7 +226,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.disable();
-									copyOrderedProductToDeliveredBtn.enable();
+									copyProductsWithoutQuantityAndPriceBtn.enable();
+									copyProductsWithQuantityAndPriceBtn.enable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "06received") {
@@ -234,7 +239,8 @@
 									acceptBtn.disable();
 									declineDeliveryBtn.disable();
 									approveDeliveryBtn.disable();
-									copyOrderedProductToDeliveredBtn.disable();
+									copyProductsWithoutQuantityAndPriceBtn.disable();
+									copyProductsWithQuantityAndPriceBtn.disable();
 									createRelatedDeliveryBtn.enable();
 									showRelatedDeliveriesBtn.enable();
 								} else {
@@ -246,7 +252,8 @@
 									acceptBtn.disable();
 									declineDeliveryBtn.disable();
 									approveDeliveryBtn.disable();
-									copyOrderedProductToDeliveredBtn.disable();
+									copyProductsWithoutQuantityAndPriceBtn.disable();
+									copyProductsWithQuantityAndPriceBtn.disable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								}
@@ -259,7 +266,8 @@
 									acceptBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									declineDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									approveDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-									copyOrderedProductToDeliveredBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									copyProductsWithoutQuantityAndPriceBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									copyProductsWithQuantityAndPriceBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									generateDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									createRelatedDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
