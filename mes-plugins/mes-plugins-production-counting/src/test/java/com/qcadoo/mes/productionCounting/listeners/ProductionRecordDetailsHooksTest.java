@@ -21,11 +21,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.internal;
+package com.qcadoo.mes.productionCounting.listeners;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -44,9 +45,9 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
-public class ProductionRecordViewServiceTest {
+public class ProductionRecordDetailsHooksTest {
 
-    private ProductionRecordViewService productionRecordViewService;
+    private ProductionRecordDetailsHooks productionRecordDetailsHooks;
 
     @Mock
     private ViewDefinitionState view;
@@ -75,9 +76,9 @@ public class ProductionRecordViewServiceTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-        productionRecordViewService = new ProductionRecordViewService();
+        productionRecordDetailsHooks = new ProductionRecordViewService();
 
-        ReflectionTestUtils.setField(productionRecordViewService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(productionRecordDetailsHooks, "dataDefinitionService", dataDefinitionService);
 
         given(view.getComponentByReference(Mockito.anyString())).willReturn(dummyComponent);
 
@@ -104,7 +105,7 @@ public class ProductionRecordViewServiceTest {
         given(order.getBooleanField("registerProductionTime")).willReturn(false);
         given(view.getComponentByReference("borderLayoutTime")).willReturn(borderLayoutTime);
         // when
-        productionRecordViewService.initializeRecordDetailsView(view);
+        productionRecordDetailsHooks.initializeRecordDetailsView(view);
 
         // then
         verify(borderLayoutTime).setVisible(false);
@@ -117,7 +118,7 @@ public class ProductionRecordViewServiceTest {
         given(view.getComponentByReference("borderLayoutPiecework")).willReturn(borderLayoutPiecework);
 
         // when
-        productionRecordViewService.initializeRecordDetailsView(view);
+        productionRecordDetailsHooks.initializeRecordDetailsView(view);
 
         // then
         verify(borderLayoutPiecework).setVisible(false);
@@ -132,7 +133,7 @@ public class ProductionRecordViewServiceTest {
         given(view.getComponentByReference("borderLayoutTime")).willReturn(borderLayoutTime);
 
         // when
-        productionRecordViewService.initializeRecordDetailsView(view);
+        productionRecordDetailsHooks.initializeRecordDetailsView(view);
 
         // then
         verify(borderLayoutTime).setVisible(false);
@@ -147,7 +148,7 @@ public class ProductionRecordViewServiceTest {
         given(view.getComponentByReference("borderLayoutPiecework")).willReturn(borderLayoutPiecework);
 
         // when
-        productionRecordViewService.initializeRecordDetailsView(view);
+        productionRecordDetailsHooks.initializeRecordDetailsView(view);
 
         // then
         verify(borderLayoutPiecework).setVisible(true);

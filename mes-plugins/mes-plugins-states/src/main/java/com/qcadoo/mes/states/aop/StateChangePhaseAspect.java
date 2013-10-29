@@ -27,12 +27,22 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.DeclareError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.StateChangePhaseUtil;
 
 @Aspect
 public class StateChangePhaseAspect {
+
+    private static final String CANCELING_MSG_TMPL = "Canceling state change execution and marking transition as failure. "
+            + "Context: %s. See also state change messages for more info.";
+
+    private static final String CANNOT_SAVE_STATE_CHANGE_ENTITY = "Cannot mark %s as failed due to its entity validation errors";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(StateChangePhaseAspect.class);
 
     @DeclareError("(execution(@com.qcadoo.mes.states.annotation.StateChangePhase * *.*(!com.qcadoo.mes.states.StateChangeContext,..)) "
             + "|| execution(@com.qcadoo.mes.states.annotation.StateChangePhase * *.*()))")
@@ -44,9 +54,20 @@ public class StateChangePhaseAspect {
             + "&& args(stateChangeContext,..) && within(com.qcadoo.mes.states.service.StateChangeService+)")
     public Object omitExecutionIfStateChangeEntityHasErrors(final ProceedingJoinPoint pjp,
             final StateChangeContext stateChangeContext) throws Throwable {
+        stateChangeContext.save();
         Object result = null;
         if (StateChangePhaseUtil.canRun(stateChangeContext)) {
             result = pjp.proceed(pjp.getArgs());
+        } else {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(String.format(CANCELING_MSG_TMPL, stateChangeContext));
+            }
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+            if (!stateChangeContext.save()) {
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error(String.format(CANNOT_SAVE_STATE_CHANGE_ENTITY, stateChangeContext));
+                }
+            }
         }
         return result;
     }

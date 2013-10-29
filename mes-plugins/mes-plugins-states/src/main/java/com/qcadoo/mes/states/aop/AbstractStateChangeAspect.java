@@ -74,7 +74,6 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
 
     @Transactional
     private void performStateChange(final StateChangeContext stateChangeContext) {
-        stateChangeContext.save();
         performPreValidation(stateChangeContext);
         final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
 

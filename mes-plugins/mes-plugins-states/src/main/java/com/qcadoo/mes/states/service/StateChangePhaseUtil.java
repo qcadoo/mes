@@ -41,7 +41,7 @@ public final class StateChangePhaseUtil {
         List<Entity> messages = stateChangeContext.getAllMessages();
 
         Preconditions.checkNotNull(messages, "entity " + stateChangeContext.getStateChangeEntity()
-                + " should have messages has many field!");
+                + " should have messages in corresponding hasMany field!");
         return stateChangeContext.isOwnerValid() && stateChangeContext.getStatus().canContinue() && !hasFailureMessages(messages)
                 && !hasValidationErrorMessages(messages);
     }
