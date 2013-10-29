@@ -105,6 +105,10 @@
 			component="form" event="redirectToProductionPerShift"
 			class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 			method="redirectToProductionPerShift" />
+			
+		<view:view-hook plugin="orders" view="orderDetails"
+			type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderDetailsHooksPPS"
+			method="updateViewPPSButtonState" />
 	</modules>
 	
 	<features>
