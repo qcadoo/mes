@@ -26,9 +26,8 @@ package com.qcadoo.mes.productionCounting.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordStateChangeDescriber;
-import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.states.ProductionRecordStatesHelper;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -36,13 +35,11 @@ import com.qcadoo.model.api.Entity;
 public class ProductionRecordModelHooks {
 
     @Autowired
-    private StateChangeEntityBuilder stateChangeEntityBuilder;
-
-    @Autowired
-    private ProductionRecordStateChangeDescriber describer;
+    private ProductionRecordStatesHelper statesHelper;
 
     public void setInitialState(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        stateChangeEntityBuilder.buildInitial(describer, productionRecord, ProductionRecordState.DRAFT);
+        productionRecord.setField(ProductionRecordFields.IS_EXTERNAL_SYNCHRONIZED, true);
+        statesHelper.setInitialState(productionRecord);
     }
 
 }

@@ -59,7 +59,7 @@ public class ProductionRecordBasicListenerAspect extends AbstractStateListenerAs
         productionRecordBasicListenerService.validationOnAccept(stateChangeContext);
     }
 
-    @RunInPhase(ProductionRecordStateChangePhase.DEFAULT)
+    @RunInPhase(ProductionRecordStateChangePhase.LAST)
     @RunForStateTransition(targetState = ProductionRecordStateStringValues.ACCEPTED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onAccept(final StateChangeContext stateChangeContext, final int phase) {
@@ -71,6 +71,13 @@ public class ProductionRecordBasicListenerAspect extends AbstractStateListenerAs
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onChangeFromAcceptedToDecline(final StateChangeContext stateChangeContext, final int phase) {
         productionRecordBasicListenerService.onChangeFromAcceptedToDeclined(stateChangeContext);
+    }
+
+    @RunInPhase(ProductionRecordStateChangePhase.DEFAULT)
+    @RunForStateTransition(sourceState = ProductionRecordStateStringValues.DRAFT)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onChangeFromDraftToAny(final StateChangeContext stateChangeContext, final int phase) {
+        productionRecordBasicListenerService.onLeavingDraft(stateChangeContext);
     }
 
 }

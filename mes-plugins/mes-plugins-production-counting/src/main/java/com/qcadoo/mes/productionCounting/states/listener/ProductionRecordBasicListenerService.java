@@ -29,10 +29,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.*;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 
 import java.math.BigDecimal;
@@ -85,6 +82,13 @@ public final class ProductionRecordBasicListenerService {
 
     @Autowired
     private OrderClosingHelper orderClosingHelper;
+
+    public void onLeavingDraft(final StateChangeContext stateChangeContext) {
+        Entity productionRecord = stateChangeContext.getOwner();
+        productionRecord.setField(ProductionRecordFields.LAST_STATE_CHANGE_FAILS, false);
+        productionRecord.setField(ProductionRecordFields.LAST_STATE_CHANGE_FAIL_CAUSE, null);
+        stateChangeContext.setOwner(productionRecord);
+    }
 
     public void validationOnAccept(final StateChangeContext stateChangeContext) {
         checkIfRecordOperationProductComponentsWereFilled(stateChangeContext);

@@ -23,25 +23,41 @@
  */
 package com.qcadoo.mes.techSubcontrForProductionCounting.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class ProductionRecordDetailsHooksTSFPC {
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void disabledSubcontractorFieldForState(final ViewDefinitionState view) {
-        FieldComponent state = (FieldComponent) view.getComponentByReference("state");
-        FieldComponent subcontractor = (FieldComponent) view.getComponentByReference("subcontractor");
-        if (state.getFieldValue().toString().equals(ProductionRecordState.ACCEPTED.getStringValue())
-                || state.getFieldValue().toString().equals(ProductionRecordState.DECLINED.getStringValue())) {
-            subcontractor.setEnabled(false);
-        } else {
-            subcontractor.setEnabled(true);
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
         }
-        subcontractor.requestComponentUpdateState();
+        Entity productionRecord = getProductionRecord(form.getEntityId());
+        String stateFieldValue = productionRecord.getStringField(ProductionRecordFields.STATE);
+        boolean isDraft = ProductionRecordState.DRAFT.equals(stateFieldValue);
+        boolean isExternalSynchronized = productionRecord.getBooleanField(ProductionRecordFields.IS_EXTERNAL_SYNCHRONIZED);
+
+        ComponentState subcontractor = view.getComponentByReference("subcontractor");
+        subcontractor.setEnabled(isDraft && isExternalSynchronized);
+    }
+
+    private Entity getProductionRecord(final Long id) {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_RECORD).get(id);
     }
 
 }
