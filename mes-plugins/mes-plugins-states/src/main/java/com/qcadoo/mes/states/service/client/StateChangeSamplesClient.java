@@ -40,4 +40,15 @@ public interface StateChangeSamplesClient {
      * @return entity whose state was changed
      */
     Entity changeState(final Entity entity, final String targetState);
+
+    /**
+     * Resume paused state change
+     * 
+     * @param entity
+     *            an entity whose state change will be resumed
+     * 
+     * @param stateChangeEntity
+     *            state change entity representing paused state change
+     */
+    void resumeStateChange(final Entity entity, final Entity stateChangeEntity);
 }

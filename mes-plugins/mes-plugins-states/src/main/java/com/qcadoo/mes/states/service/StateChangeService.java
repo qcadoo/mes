@@ -36,8 +36,8 @@ public interface StateChangeService {
     /**
      * Perform state change.
      * 
-     * @param stateChangeEntity
-     *            entity which persist state change flow
+     * @param stateChangeContext
+     *            state change context
      */
     void changeState(final StateChangeContext stateChangeContext);
 
