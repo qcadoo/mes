@@ -13,3 +13,12 @@ INSERT INTO qcadoomodel_dictionary(id, name, pluginidentifier, active)
 ALTER TABLE deliveries_delivery paymentForm;
 
 -- end
+
+-- Table: productioncounting_productionrecord
+-- changed: 30.10.2013 [maku]
+
+ALTER TABLE productioncounting_productionrecord ADD COLUMN laststatechangefails boolean DEFAULT false;
+ALTER TABLE productioncounting_productionrecord ADD COLUMN laststatechangefailcause character varying(255);
+ALTER TABLE productioncounting_productionrecord ADD COLUMN isexternalsynchronized boolean DEFAULT true;
+
+-- end
