@@ -21,20 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.internal;
+package com.qcadoo.mes.productionCountingWithCosts.constants;
 
-import java.util.Observable;
+public final class CalculationOperationComponentFieldsPCWC {
 
-import org.springframework.stereotype.Service;
+    private CalculationOperationComponentFieldsPCWC() {
 
-import com.qcadoo.model.api.Entity;
-
-@Service
-public class ProductionCountingGenerateProductionBalance extends Observable {
-
-    public void notifyObserversThatTheBalanceIsBeingGenerated(final Entity entity) {
-        setChanged();
-        notifyObservers(entity);
     }
+
+    public static final String PRODUCTION_BALANCE = "productionBalance";
 
 }

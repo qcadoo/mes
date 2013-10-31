@@ -42,7 +42,10 @@ import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.costCalculation.CostCalculationService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.internal.ProductionBalanceService;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
 import com.qcadoo.mes.productionCountingWithCosts.pdf.ProductionBalanceWithCostsPdfService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -69,10 +72,10 @@ public class GenerateProductionBalanceWithCostsTest {
     private ProductionBalanceService productionBalanceService;
 
     @Mock
-    private Entity balance, order, technology, company, productionLine;
+    private Entity productionBalance, order, technology, productionLine;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private DataDefinition productionBalanceDD;
 
     @Before
     public void init() {
@@ -98,45 +101,54 @@ public class GenerateProductionBalanceWithCostsTest {
             }
         });
 
-        given(balance.getBelongsToField("order")).willReturn(order);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        given(balance.getDataDefinition()).willReturn(dataDefinition);
+        given(productionBalance.getBelongsToField(ProductionBalanceFields.ORDER)).willReturn(order);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
+
+        given(productionBalance.getDataDefinition()).willReturn(productionBalanceDD);
     }
 
     @Test
     public void shouldSetQuantityTechnologyProductionLineAndTechnicalProductionCostPerUnitFieldsAndSaveEntity() {
         // given
         BigDecimal quantity = BigDecimal.TEN;
-        given(balance.getDecimalField("totalTechnicalProductionCosts")).willReturn(BigDecimal.valueOf(100));
-        given(order.getDecimalField("plannedQuantity")).willReturn(quantity);
-        given(order.getBelongsToField("productionLine")).willReturn(productionLine);
+
+        given(productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS)).willReturn(
+                BigDecimal.valueOf(100));
+        given(order.getDecimalField(OrderFields.PLANNED_QUANTITY)).willReturn(quantity);
+        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
 
         // when
-        generateProductionBalanceWithCosts.doTheCostsPart(balance);
+        generateProductionBalanceWithCosts.doTheCostsPart(productionBalance);
 
         // then
-        verify(balance).setField("quantity", quantity);
-        verify(balance).setField("technology", technology);
-        verify(balance).setField("productionLine", productionLine);
-        verify(balance).setField("totalTechnicalProductionCostPerUnit", BigDecimal.TEN.setScale(5, RoundingMode.HALF_EVEN));
+        verify(productionBalance).setField(ProductionBalanceFieldsPCWC.QUANTITY, quantity);
+        verify(productionBalance).setField(ProductionBalanceFieldsPCWC.TECHNOLOGY, technology);
+        verify(productionBalance).setField(ProductionBalanceFieldsPCWC.PRODUCTION_LINE, productionLine);
+        verify(productionBalance).setField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
+                BigDecimal.TEN.setScale(5, RoundingMode.HALF_EVEN));
 
-        verify(dataDefinition).save(balance);
+        // verify(dataDefinition).save(balance);
     }
 
     @Test
     public void shouldGenerateReportCorrectly() throws Exception {
         // given
         Locale locale = Locale.getDefault();
-        Entity balanceWithFileName = mock(Entity.class);
         String localePrefix = "productionCounting.productionBalanceWithCosts.report.fileName";
-        given(fileService.updateReportFileName(balance, "date", localePrefix)).willReturn(balanceWithFileName);
+
+        Entity productionBalanceWithFileName = mock(Entity.class);
+        given(productionBalanceWithFileName.getDataDefinition()).willReturn(productionBalanceDD);
+
+        given(fileService.updateReportFileName(productionBalance, ProductionBalanceFields.DATE, localePrefix)).willReturn(
+                productionBalanceWithFileName);
 
         // when
-        generateProductionBalanceWithCosts.generateBalanceWithCostsReport(balance);
+        generateProductionBalanceWithCosts.generateBalanceWithCostsReport(productionBalance);
 
         // then
-        verify(balance).setField("generatedWithCosts", Boolean.TRUE);
-        verify(productionBalanceWithCostsPdfService).generateDocument(balanceWithFileName, locale, localePrefix);
-        verify(dataDefinition).save(balance);
+        verify(productionBalanceWithCostsPdfService).generateDocument(productionBalanceWithFileName, locale, localePrefix);
+        verify(productionBalanceWithFileName).setField(ProductionBalanceFieldsPCWC.GENERATED_WITH_COSTS, Boolean.TRUE);
+        verify(productionBalanceDD).save(productionBalanceWithFileName);
     }
+
 }
