@@ -324,7 +324,7 @@
 					</layoutElement>
 					<layoutElement column="2" row="6">
 						<component type="select" name="paymentForm" field="paymentForm"
-							reference="paymentForm" defaultEnabled="never" />
+							reference="paymentForm" hasDescription="true" defaultEnabled="never" />
 					</layoutElement>
 					<layoutElement column="3" row="1">
 						<component type="select" name="state" field="state"
