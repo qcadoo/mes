@@ -10,7 +10,7 @@ INSERT INTO qcadoomodel_dictionary(id, name, pluginidentifier, active)
 -- Table: deliveries_delivery
 -- changed: 18.10.2013
 
-ALTER TABLE deliveries_delivery paymentForm;
+ALTER TABLE deliveries_delivery DROP COLUMN paymentForm;
 
 -- end
 

@@ -25,8 +25,7 @@
 
 -->
 <model name="productionBalance" activable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<boolean name="generated" />
@@ -43,32 +42,33 @@
 		</integer>
 		<string name="description" />
 		<string name="fileName">
-			<validatesLength max="1024"/>
+			<validatesLength max="1024" />
 		</string>
-		
-		<boolean name="printOperationNorms" default="true"/>
+
+		<boolean name="printOperationNorms" default="true" />
 		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"
 			required="true" default="01hourly" />
 
 		<boolean name="includeTPZ" default="true" />
 		<boolean name="includeAdditionalTime" default="true" />
-		
+
 		<integer name="plannedMachineTime" />
 		<integer name="machineTime" />
 		<integer name="machineTimeBalance" />
-		
+
 		<integer name="plannedLaborTime" />
 		<integer name="laborTime" />
 		<integer name="laborTimeBalance" />
-	
+
 		<hasMany name="balanceOperationProductInComponents" joinField="productionBalance"
 			model="balanceOperationProductInComponent" cascade="delete" />
-		<hasMany name="balanceOperationProductOutComponents" joinField="productionBalance"
-			model="balanceOperationProductOutComponent" cascade="delete" />
-			
+		<hasMany name="balanceOperationProductOutComponents"
+			joinField="productionBalance" model="balanceOperationProductOutComponent"
+			cascade="delete" />
+
 		<hasMany name="operationTimeComponents" joinField="productionBalance"
 			model="operationTimeComponent" cascade="delete" />
-			
+
 		<hasMany name="operationPieceworkComponents" joinField="productionBalance"
 			model="operationPieceworkComponent" cascade="delete" />
 	</fields>
