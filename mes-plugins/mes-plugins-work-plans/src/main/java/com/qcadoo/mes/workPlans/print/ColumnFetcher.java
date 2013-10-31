@@ -47,6 +47,8 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ColumnFetcher {
 
+    private static final String L_COLUMN_FILLER = "columnFiller";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -56,7 +58,7 @@ public class ColumnFetcher {
     public Map<Entity, Map<String, String>> getOrderColumnValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
 
-        fetchColumnValues(valuesMap, "columnForOrders", "getOrderValues", orders);
+        fetchColumnValues(valuesMap, WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS, "getOrderValues", orders);
 
         return valuesMap;
     }
@@ -65,7 +67,8 @@ public class ColumnFetcher {
         final Map<Long, Map<Entity, Map<String, String>>> order2opColumnValues = Maps.newHashMap();
         for (final Entity order : orders) {
             Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
-            for (final String columnsModel : Arrays.asList("columnForInputProducts", "columnForOutputProducts")) {
+            for (final String columnsModel : Arrays.asList(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS,
+                    WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS)) {
                 fetchColumnValues(valuesMap, columnsModel, "getValues", Lists.newArrayList(order));
             }
             order2opColumnValues.put(order.getId(), valuesMap);
@@ -84,7 +87,7 @@ public class ColumnFetcher {
         Set<String> classNames = new HashSet<String>();
 
         for (Entity columnDefinition : columnDefinitions) {
-            String className = columnDefinition.getStringField("columnFiller");
+            String className = columnDefinition.getStringField(L_COLUMN_FILLER);
             classNames.add(className);
         }
 

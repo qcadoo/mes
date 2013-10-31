@@ -40,17 +40,28 @@
 		
 		<belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
 			lazy="false" />
+<<<<<<< HEAD
 
 		<boolean name="externalSynchronized" default="true" copyable="false" />
 
+=======
+			
+		<belongsTo name="technologyPrototype" model="technology" />
+				
+>>>>>>> dev
 		<boolean name="master" default="false" />
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
 		<tree name="operationComponents" model="technologyOperationComponent"
 			joinField="technology" cascade="delete" copyable="true" />
+			
 		<enum name="state" values="01draft,02accepted,03declined,04outdated,05checked"
 			default="01draft" required="true" />
+		
+		<enum name="technologyType"
+			values="01patternTechnology,02ownTechnology"/>
+			
 		<hasMany name="stateChanges" joinField="technology" model="technologyStateChange"
 			cascade="delete" />
 	</fields>

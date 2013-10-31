@@ -32,7 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksFieldsOTFOF;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -44,7 +44,7 @@ public class OperationalTasksDetailsHooksOTFOTest {
     private ViewDefinitionState viewDefinitionState;
 
     @Mock
-    private FieldComponent typeField, nameField, descriptionField, orderField, productionLineField, tiocField;
+    private FieldComponent typeField, nameField, descriptionField, orderField, productionLineField, tocField;
 
     @Before
     public void init() {
@@ -55,12 +55,10 @@ public class OperationalTasksDetailsHooksOTFOTest {
         Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFields.NAME)).thenReturn(nameField);
         Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFields.DESCRIPTION))
                 .thenReturn(descriptionField);
-        Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksOTFOFields.ORDER)).thenReturn(orderField);
+        Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFieldsOTFOF.ORDER)).thenReturn(orderField);
         Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFields.PRODUCTION_LINE)).thenReturn(
                 productionLineField);
-        Mockito.when(
-                viewDefinitionState.getComponentByReference(OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT))
-                .thenReturn(tiocField);
+        Mockito.when(viewDefinitionState.getComponentByReference("technologyOperationComponent")).thenReturn(tocField);
     }
 
     @Test
@@ -75,7 +73,7 @@ public class OperationalTasksDetailsHooksOTFOTest {
         Mockito.verify(descriptionField).setEnabled(false);
         Mockito.verify(productionLineField).setEnabled(false);
         Mockito.verify(orderField).setEnabled(true);
-        Mockito.verify(tiocField).setEnabled(true);
+        Mockito.verify(tocField).setEnabled(true);
     }
 
     @Test
@@ -90,6 +88,6 @@ public class OperationalTasksDetailsHooksOTFOTest {
         Mockito.verify(descriptionField).setEnabled(true);
         Mockito.verify(productionLineField).setEnabled(true);
         Mockito.verify(orderField).setEnabled(false);
-        Mockito.verify(tiocField).setEnabled(false);
+        Mockito.verify(tocField).setEnabled(false);
     }
 }

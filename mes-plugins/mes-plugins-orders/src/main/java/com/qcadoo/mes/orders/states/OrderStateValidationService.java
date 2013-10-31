@@ -27,39 +27,60 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.service.client.StateChangeSamplesClient;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
+import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.PluginUtils;
 
 @Service
 public class OrderStateValidationService {
 
+    @Autowired
+    private CopyOfTechnologyValidationService copyOfTechnologyValidationService;
+
+    @Autowired
+    private TechnologyTreeValidators technologyTreeValidators;
+
+    @Autowired
+    private StateChangeSamplesClient stateChangeSamplesClient;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     private static final String ENTITY_IS_NULL = "entity is null";
 
     public void validationOnAccepted(final StateChangeContext stateChangeContext) {
-        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
+        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM);
         checkRequired(references, stateChangeContext);
 
         validateTechnologyState(stateChangeContext);
     }
 
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
-        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
+        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM);
         checkRequired(references, stateChangeContext);
 
         validateTechnologyState(stateChangeContext);
     }
 
     public void validationOnCompleted(final StateChangeContext stateChangeContext) {
-        final List<String> fieldNames = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY);
+        final List<String> fieldNames = Arrays.asList(DATE_TO, DATE_FROM, DONE_QUANTITY);
         checkRequired(fieldNames, stateChangeContext);
     }
 
@@ -77,14 +98,33 @@ public class OrderStateValidationService {
         checkArgument(stateChangeContext != null, ENTITY_IS_NULL);
 
         final Entity order = stateChangeContext.getOwner();
-        final Entity technology = order.getBelongsToField(TECHNOLOGY);
+        final Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         if (technology == null) {
             return;
         }
-        final TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(TechnologyFields.STATE));
-        if (!TechnologyState.ACCEPTED.equals(technologyState)) {
-            stateChangeContext.addFieldValidationError(TECHNOLOGY, "orders.validate.technology.error.wrongState.accepted");
+
+        copyOfTechnologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext, technology);
+        technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology,
+                false);
+        copyOfTechnologyValidationService.checkIfTechnologyHasAtLeastOneComponent(stateChangeContext, technology);
+        copyOfTechnologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext, technology);
+        copyOfTechnologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext, technology);
+        if (PluginUtils.isEnabled("timeNormsForOperations")) {
+            copyOfTechnologyValidationService.checkIfTreeOperationIsValid(stateChangeContext, technology);
         }
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+
+        Entity technologyDB = technologyDD.get(technology.getId());
+        if (technologyDB.getStringField(TechnologyFields.STATE).equals(TechnologyState.DRAFT.getStringValue())
+                || technologyDB.getStringField(TechnologyFields.STATE).equals(TechnologyState.CHECKED.getStringValue())) {
+            final StateChangeStatus status = stateChangeContext.getStatus();
+
+            if (IN_PROGRESS.equals(status)) {
+                technologyDB = stateChangeSamplesClient.changeState(technologyDB, "02accepted");
+            }
+        }
+
     }
 
 }

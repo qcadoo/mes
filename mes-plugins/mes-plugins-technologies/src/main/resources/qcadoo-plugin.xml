@@ -105,7 +105,7 @@
 			<model:belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
 				lazy="false" />
 		</model:model-field>
-		
+	
 		<menu:menu-category name="technology" />
 
 		<menu:menu-item name="technologies" category="technology"
@@ -158,7 +158,7 @@
 			type="beforeRender" 
 			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooksT"
 			method="updateRibbonState" />
-		
+				
 		<custom:custom class="com.qcadoo.mes.technologies.states.module.TechnologyStateServiceRegisterModule" />
 	</modules>
 	

@@ -22,6 +22,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
@@ -75,7 +76,7 @@ public class OrderValidatorsMOTest {
 
         given(order.getBelongsToField(OrderFields.PRODUCT)).willReturn(product);
         given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
-
+        given(order.getStringField(OrderFields.ORDER_TYPE)).willReturn(OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue());
         given(masterDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);

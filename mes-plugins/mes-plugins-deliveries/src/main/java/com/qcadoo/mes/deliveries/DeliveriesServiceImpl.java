@@ -37,10 +37,13 @@ import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCR
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
 
 import java.math.BigDecimal;
+<<<<<<< HEAD
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+=======
+>>>>>>> dev
 import java.util.List;
 import java.util.Locale;
 
@@ -78,6 +81,7 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
 
+<<<<<<< HEAD
     private static final String L_WINDOW = "window";
 
     private static final String L_PRODUCT = "product";
@@ -88,6 +92,12 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     private static final String L_TOTAL_PRICE = "totalPrice";
 
+=======
+    private static final String L_TOTAL_PRICE = "totalPrice";
+
+    private static final String L_PRICE_PER_UNIT = "pricePerUnit";
+
+>>>>>>> dev
     @Autowired
     private ParameterService parameterService;
 
@@ -147,7 +157,11 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public List<Entity> getColumnsForOrders() {
+<<<<<<< HEAD
         List<Entity> columns = new LinkedList<Entity>();
+=======
+        List<Entity> columns = Lists.newLinkedList();
+>>>>>>> dev
         List<Entity> columnComponents = getColumnForOrdersDD().find()
                 .addOrder(SearchOrders.asc(ColumnForOrdersFields.SUCCESSION)).list().getEntities();
 
@@ -299,6 +313,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         }
     }
 
+<<<<<<< HEAD
     private boolean changedFieldValue(final Entity entity, final BigDecimal fieldValue, final String reference) {
         if (entity.getId() == null) {
             return true;
@@ -314,6 +329,21 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             pricePerUnit = null;
         } else {
             pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
+=======
+        if (totalPrice == null) {
+            entity.setField(L_PRICE_PER_UNIT, null);
+            entity.setField(L_TOTAL_PRICE, null);
+        } else {
+            if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
+                entity.setField(L_PRICE_PER_UNIT, null);
+                entity.setField(L_TOTAL_PRICE, numberService.setScale(totalPrice));
+            } else {
+                BigDecimal pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
+
+                entity.setField(L_PRICE_PER_UNIT, numberService.setScale(pricePerUnit));
+                entity.setField(L_TOTAL_PRICE, numberService.setScale(totalPrice));
+            }
+>>>>>>> dev
         }
         return pricePerUnit;
     }

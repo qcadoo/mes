@@ -204,15 +204,17 @@ public class TechnologyService {
         }
 
         List<Entity> inProducts = new ArrayList<Entity>();
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                BigDecimal.ONE, MrpAlgorithm.ALL_PRODUCTS_IN);
+        Map<Long, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology, BigDecimal.ONE,
+                MrpAlgorithm.ALL_PRODUCTS_IN);
 
-        for (Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
+        for (Entry<Long, BigDecimal> productQuantity : productQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
+
             Entity inProduct = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
 
             inProduct.setField(L_OPERATION_COMPONENT, rootOperation);
-            inProduct.setField(L_PRODUCT, productQuantity.getKey());
+            inProduct.setField(L_PRODUCT, product);
             inProduct.setField(L_QUANTITY, productQuantity.getValue());
             inProducts.add(inProduct);
         }

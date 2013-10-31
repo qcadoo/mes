@@ -69,7 +69,7 @@
 	<modules>
 		<localization:translation path="locales" />
 	
-		<model:model model="technologyInstOperProductInComp" resource="model/technologyInstOperProductInComp.xml" />
+		<model:model model="technologyOperationProductInComp" resource="model/technologyOperationProductInComp.xml" />
 		<model:model model="operationCostComponent" resource="model/operationCostComponent.xml" />
 		<model:model model="operationPieceworkCostComponent" resource="model/operationPieceworkCostComponent.xml" />
 		
@@ -140,8 +140,8 @@
 		</model:model-field>
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:hasMany name="technologyInstOperProductInComps" joinField="productionBalance"
-				model="technologyInstOperProductInComp" plugin="productionCountingWithCosts" 
+			<model:hasMany name="technologyOperationProductInComponents" joinField="productionBalance"
+				model="technologyOperationProductInComp" plugin="productionCountingWithCosts" 
 				cascade="delete" />
 		</model:model-field>
 		
@@ -213,7 +213,6 @@
 				model="operationPieceworkCostComponent" plugin="productionCountingWithCosts" 
 				cascade="delete" />
 		</model:model-field>
-		
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="registeredTotalTechnicalProductionCosts">
@@ -319,6 +318,7 @@
 			<model:belongsTo name="productionLine" model="productionLine" plugin="productionLines" />
 		</model:model-field>
 		
+<<<<<<< HEAD
 		<model:model-hook model="productionBalance" plugin="productionCounting">
 			<model:validatesWith
 				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceModelValidators"
@@ -331,16 +331,18 @@
 				method="checkIfOptionsAreAvailable" />
 		</model:model-hook>
 			
+=======
+>>>>>>> dev
 		<model:model-hook model="productionBalance" plugin="productionCounting">
 			<model:validatesWith
-				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceModelValidators"
-				method="checkIfAverageCostsAreDefined" />
+				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceValidatorsPCWC"
+				method="validatesWith" />
 		</model:model-hook>
 		
 		<model:model-hook model="productionBalance" plugin="productionCounting">
 			<model:onCopy
 				class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceHooksPCWC"
-				method="clearFieldsOfSummaryCosts" />
+				method="onCopy" />
 		</model:model-hook>
 			
 		<view:view-ribbon-group resource="view/ribbonExtensions/productionBalancesList.xml" />
@@ -350,27 +352,27 @@
 		
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
-			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="changeFieldsAndGridsVisibility" />
 		
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
-			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="changeAssumptionsVisibility" />
 			
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
-			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="fillCurrencyAndUnitFields" />
 		
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
-			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="disableFieldsAndGridsWhenGenerated" />
 		
 		<view:view-listener plugin="productionCounting" view="productionBalanceDetails"
 			component="calculateOperationCostsMode" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="changeAssumptionsVisibility" />
 			
 		<custom:custom

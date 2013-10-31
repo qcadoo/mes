@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.2.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view name="productionTrackingReportsList" modelName="productionTrackingReport"
+	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+	<component type="window" name="window" reference="window">
+
+		<ribbon>
+			<template name="standardGridTemplate" />
+			<group name="export">
+				<bigButton name="pdf" icon="pdfIcon24.png"
+					action="#{grid}.fireEvent(printProductionTrackingReport,pdf);" state="disabled"
+					message="qcadooView.message.noRecordSelected" />
+			</group>
+		</ribbon>
+
+		<component type="grid" name="productionTrackingReportsList"
+			reference="grid">
+
+			<script>
+				<![CDATA[
+					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
+					
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								pdfRibbonItem.disable();
+							} else if (selectedEntitiesArray.length > 1) {
+								pdfRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");	
+							} else if (selectedEntitiesArray[0].fields.generated == '0') {
+								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");								
+							} else {
+								pdfRibbonItem.enable();
+							}
+						}
+					}
+					
+					this.addOnChangeListener(listener);
+				]]>
+			</script>
+
+			<option type="column" name="name" fields="name" link="true" />
+			<option type="column" name="order" fields="order" link="true"
+				width="250" expression="#order['name']" />
+			<option type="column" name="product" fields="product" link="true"
+				width="250" expression="#product['name']" />
+			<option type="column" name="generated" fields="generated"
+				width="150" />
+			<option type="column" name="date" fields="date" width="175" />
+			<option type="column" name="worker" fields="worker" width="150" />
+
+			<option type="correspondingView" value="productionCounting/productionTrackingReportDetails" />
+			<option type="correspondingComponent" value="form" />
+
+			<option type="order" column="order" direction="asc" />
+
+			<option type="searchable" value="name,order,product,generated,date,worker" />
+			<option type="orderable" value="name,order,product,generated,date,worker" />
+
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+
+
+			<listener event="printProductionTrackingReport"
+				class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingReportsListListeners"
+				method="printProductionTrackingReport" />
+		</component>
+
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+
+</view>

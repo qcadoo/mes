@@ -47,6 +47,7 @@
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
+						
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit" />
 					</component>
@@ -65,6 +66,7 @@
 			<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 		</component>
 	</component>
+	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
 			method="fillProductUnitBeforeRender" />

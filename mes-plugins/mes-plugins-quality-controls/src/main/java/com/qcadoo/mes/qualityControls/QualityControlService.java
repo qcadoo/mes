@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -54,6 +55,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public final class QualityControlService {
@@ -140,6 +142,21 @@ public final class QualityControlService {
 
     @Autowired
     private QualityControlForNumberService qualityControlForNumber;
+
+    public void setTechnology(final ViewDefinitionState view) {
+        Entity order = ((LookupComponent) view.getComponentByReference("order")).getEntity();
+        if (order == null) {
+            return;
+        }
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+        FieldComponent technologyField = (FieldComponent) view.getComponentByReference("technology");
+        technologyField.setFieldValue(technologyDD.get(order.getBelongsToField(OrderFields.TECHNOLOGY).getId()).getId());
+        technologyField.requestComponentUpdateState();
+        LookupComponent comp = (LookupComponent) view.getComponentByReference("operation");
+        comp.setEnabled(true);
+        comp.requestComponentUpdateState();
+    }
 
     public void checkIfCommentIsRequiredBasedOnResult(final ViewDefinitionState state) {
         FieldComponent comment = (FieldComponent) state.getComponentByReference(FIELD_COMMENT);

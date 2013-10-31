@@ -88,4 +88,17 @@ public interface MessageService {
      */
     void addValidationError(final StateChangeContext stateChangeContext, final String correspondField,
             final String translationKey, final String... translationArgs);
+
+    /**
+     * Create & add validation error message to state change entity
+     * 
+     * @param stateChangeEntity
+     * @param describer
+     * @param correspondField
+     * @param translationKey
+     * @param autoClose
+     * @param translationArgs
+     */
+    void addValidationError(final StateChangeContext stateChangeContext, final String correspondField,
+            final String translationKey, final boolean autoClose, final String... translationArgs);
 }

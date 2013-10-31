@@ -53,6 +53,7 @@ public class TechnologyValidators {
         boolean isValid = true;
         isValid = isValid && checkTechnologyDefault(dataDefinition, technology);
         isValid = isValid && productService.checkIfProductIsNotRemoved(dataDefinition, technology);
+<<<<<<< HEAD
         isValid = isValid && checkIfTreeOperationIsValid(dataDefinition, technology);
         return isValid;
     }
@@ -76,6 +77,8 @@ public class TechnologyValidators {
         if (!isValid) {
             technology.addGlobalError("technologies.technology.validate.error.OperationTreeNotValid", message);
         }
+=======
+>>>>>>> dev
         return isValid;
     }
 

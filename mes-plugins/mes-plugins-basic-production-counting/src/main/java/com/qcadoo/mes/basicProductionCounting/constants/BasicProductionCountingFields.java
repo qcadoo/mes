@@ -39,4 +39,6 @@ public final class BasicProductionCountingFields {
 
     public static final String PRODUCED_QUANTITY = "producedQuantity";
 
+    public static final String PRODUCTION_COUNTING_QUANTITIES = "productionCountingQuantities";
+
 }

@@ -27,11 +27,11 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -44,7 +44,8 @@ public class DeliveryStateValidationService {
     private static final String ENTITY_IS_NULL = "entity is null";
 
     public void validationOnApproved(final StateChangeContext stateChangeContext) {
-        final List<String> references = Arrays.asList(DELIVERY_DATE);
+        final List<String> references = Lists.newArrayList(DELIVERY_DATE);
+
         checkRequired(references, stateChangeContext);
     }
 

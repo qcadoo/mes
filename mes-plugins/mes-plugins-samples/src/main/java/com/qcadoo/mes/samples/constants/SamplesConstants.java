@@ -30,97 +30,99 @@ public final class SamplesConstants {
 
     public static final String PLUGIN_IDENTIFIER = "samples";
 
-    public static final String BASIC_PLUGIN_IDENTIFIER = "basic";
+    public static final String L_BASIC_PLUGIN_IDENTIFIER = "basic";
 
-    public static final String BASIC_MODEL_COMPANY = "company";
+    public static final String L_BASIC_MODEL_COMPANY = "company";
 
-    public static final String BASIC_MODEL_COUNTRY = "country";
+    public static final String L_BASIC_MODEL_COUNTRY = "country";
 
-    public static final String BASIC_MODEL_CURRENCY = "currency";
+    public static final String L_BASIC_MODEL_CURRENCY = "currency";
 
-    public static final String BASIC_MODEL_PARAMETER = "parameter";
+    public static final String L_BASIC_MODEL_PARAMETER = "parameter";
 
-    public static final String BASIC_MODEL_SHIFT = "shift";
+    public static final String L_BASIC_MODEL_SHIFT = "shift";
 
-    public static final String BASIC_MODEL_WORKSTATION_TYPE = "workstationType";
+    public static final String L_BASIC_MODEL_WORKSTATION_TYPE = "workstationType";
 
-    public static final String BASIC_MODEL_STAFF = "staff";
+    public static final String L_BASIC_MODEL_STAFF = "staff";
 
-    public static final String BASIC_MODEL_PRODUCT = "product";
+    public static final String L_BASIC_MODEL_PRODUCT = "product";
 
-    public static final String BASIC_MODEL_CONVERSION = "conversion";
+    public static final String L_BASIC_MODEL_CONVERSION = "conversion";
 
-    public static final String BASIC_MODEL_CONVERSION_ITEM = "conversionItem";
+    public static final String L_BASIC_MODEL_CONVERSION_ITEM = "conversionItem";
 
-    public static final String BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING = "basicProductionCounting";
+    public static final String L_BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING = "basicProductionCounting";
 
-    public static final String BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER = "basicProductionCounting";
+    public static final String L_BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER = "basicProductionCounting";
 
-    public static final String QUALITYCONTROL_MODEL_QUALITYCONTROL = "qualityControl";
+    public static final String L_QUALITYCONTROL_MODEL_QUALITYCONTROL = "qualityControl";
 
-    public static final String QUALITYCONTROL_PLUGIN_IDENTIFIER = "qualityControls";
+    public static final String L_QUALITYCONTROL_PLUGIN_IDENTIFIER = "qualityControls";
 
-    public static final String MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS = "materialRequirement";
+    public static final String L_MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS = "materialRequirement";
 
-    public static final String MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER = "materialRequirements";
+    public static final String L_MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER = "materialRequirements";
 
-    public static final String PRODUCTIONBALANCE_MODEL_PRODUCTIONBALANCE = "productionBalance";
+    public static final String L_PRODUCTION_LINES_PLUGIN_IDENTIFIER = "productionLines";
 
-    public static final String PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD = "productionRecord";
+    public static final String L_PRODUCTION_LINES_MODEL_PRODUCTION_LINE = "productionLine";
 
-    public static final String PRODUCTION_LINES_PLUGIN_IDENTIFIER = "productionLines";
+    public static final String L_BASIC_MODEL_SUBSTITUTE = "substitute";
 
-    public static final String PRODUCTION_LINES_MODEL_PRODUCTION_LINE = "productionLine";
+    public static final String L_BASIC_MODEL_CONTRACTOR = "contractor";
 
-    public static final String BASIC_MODEL_SUBSTITUTE = "substitute";
+    public static final String L_PRODUCTS_PLUGIN_IDENTIFIER = "products";
 
-    public static final String BASIC_MODEL_CONTRACTOR = "contractor";
+    public static final String L_WORK_PLANS_PLUGIN_IDENTIFIER = "workPlans";
 
-    public static final String PRODUCTS_PLUGIN_IDENTIFIER = "products";
+    public static final String L_WORK_PLANS_MODEL_WORK_PLAN = "workPlan";
 
-    public static final String WORK_PLANS_PLUGIN_IDENTIFIER = "workPlans";
+    public static final String L_PRODUCTION_COUNTING_PLUGIN_IDENTIFIER = "productionCounting";
 
-    public static final String WORK_PLANS_MODEL_WORK_PLAN = "workPlan";
+    public static final String L_WAGE_GROUPS_PLUGIN_IDENTIFIER = "wageGroups";
 
-    public static final String PRODUCTION_COUNTING_PLUGIN_IDENTIFIER = "productionCounting";
+    public static final String L_WAGE_GROUPS_MODEL_IDENTIFIER = "wageGroup";
 
-    public static final String WAGE_GROUPS_PLUGIN_IDENTIFIER = "wageGroups";
+    public static final String L_PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING = "productionTracking";
 
-    public static final String WAGE_GROUPS_MODEL_IDENTIFIER = "wageGroup";
+    public static final String L_PRODUCTIONCOUNTING_MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT = "trackingOperationProductInComponent";
 
-    public static final String RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT = "recordOperationProductInComponent";
+    public static final String L_PRODUCTIONCOUNTING_MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT = "trackingOperationProductOutComponent";
 
-    public static final String RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT = "recordOperationProductOutComponent";
+    public static final String L_PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING_REPORT = "productionTrackingReport";
 
-    public static final String PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING = "productionCounting";
+    public static final String L_PRODUCTIONCOUNTING_MODEL_PRODUCTION_BALANCE = "productionBalance";
 
-    public static final String ORDERS_PLUGIN_IDENTIFIER = "orders";
+    public static final String L_ORDERS_PLUGIN_IDENTIFIER = "orders";
 
-    public static final String ORDERS_MODEL_ORDER = "order";
+    public static final String L_ORDERS_MODEL_ORDER = "order";
 
-    public static final String MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
+    public static final String L_TECHNOLOGIES_PLUGIN_IDENTIFIER = "technologies";
 
-    public static final String TECHNOLOGIES_PLUGIN_IDENTIFIER = "technologies";
+    public static final String L_TECHNOLOGY_MODEL_TECHNOLOGY = "technology";
 
-    public static final String TECHNOLOGY_MODEL_TECHNOLOGY = "technology";
+    public static final String L_TECHNOLOGY = "technology";
 
-    public static final String TECHNOLOGY_MODEL_OPERATION = "operation";
+    public static final String L_TECHNOLOGY_MODEL_OPERATION = "operation";
 
-    public static final String TECHNOLOGY_MODEL_OPERATION_PROD_IN_COMP = "operationProductInComponent";
+    public static final String L_TECHNOLOGY_MODEL_OPERATION_PROD_IN_COMP = "operationProductInComponent";
 
-    public static final String TECHNOLOGY_MODEL_OPERATION_PROD_OUT_COMP = "operationProductOutComponent";
+    public static final String L_TECHNOLOGY_MODEL_OPERATION_PROD_OUT_COMP = "operationProductOutComponent";
 
-    public static final String TECHNOLOGY_MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    public static final String L_TECHNOLOGY_MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    public static final String STATE_DRAFT = "01draft";
+    public static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    public static final String STATE_ACCEPTED = "02accepted";
+    public static final String L_STATE_DRAFT = "01draft";
 
-    public static final String ORDER_STATE_PENDING = "01pending";
+    public static final String L_STATE_ACCEPTED = "02accepted";
 
-    public static final String ORDER_STATE_IN_PROGRESS = "03inProgress";
+    public static final String L_ORDER_STATE_PENDING = "01pending";
 
-    public static final String BATCH_STATE_TRACKED = "01tracked";
+    public static final String L_ORDER_STATE_IN_PROGRESS = "03inProgress";
+
+    public static final String L_BATCH_STATE_TRACKED = "01tracked";
 
     public static final String L_UNIT_FROM = "unitFrom";
 
@@ -200,8 +202,6 @@ public final class SamplesConstants {
 
     public static final String L_PRODUCTION_COUNTING = "productionCounting";
 
-    public static final String L_PRODUCTION_RECORD = "productionRecord";
-
     public static final String L_PRODUCTION_BALANCE = "productionBalance";
 
     public static final String L_BATCHES = "batches";
@@ -228,7 +228,9 @@ public final class SamplesConstants {
 
     public static final String L_WORKSTATION_TYPE = "workstationType";
 
-    public static final String L_LAST_RECORD = "lastRecord";
+    public static final String L_LAST_TRACKING = "lastTracking";
+
+    public static final String L_TRACKINGS_NUMBER = "trackingsNumber";
 
     public static final String L_MACHINE_TIME = "machineTime";
 
@@ -278,11 +280,9 @@ public final class SamplesConstants {
 
     public static final String L_OPERATION = "operation";
 
-    public static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
+    public static final String L_NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
 
-    public static final String TPZ = "tpz";
-
-    public static final String TJ = "tj";
+    public static final String L_TJ = "tj";
 
     public static final String L_WAGE_GROUP = "wageGroup";
 
@@ -394,8 +394,6 @@ public final class SamplesConstants {
 
     public static final String L_2400 = "2400";
 
-    public static final String L_TECHNOLOGY_ISTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
-
     public static final String L_SUPPLY_NEGOTIATIONS = "supplyNegotiations";
 
     public static final String L_NEGOTIATION_PRODUCTS = "negotiationproducts";
@@ -404,19 +402,19 @@ public final class SamplesConstants {
 
     public static final String L_REQUEST_FOR_QUOTION_PRODUCTS = "requestForQuotationProducts";
 
-    public static final String L_REQUEST_FOR_QUOTION = "requestForQuotations";
+    public static final String L_REQUEST_FOR_QUOTIONS = "requestForQuotations";
 
     public static final String L_NEGOTIATION_STATE_CHANGE = "negotiationStateChanges";
 
     public static final String L_REQUEST_FOR_QUOTION_STATE_CHANGE = "requestForQuotationStateChanges";
 
-    public static final String L_OFFER = "offers";
+    public static final String L_OFFERS = "offers";
 
     public static final String L_OFFER_PRODUCTS = "offerProducts";
 
     public static final String L_FARTHESTLIMITDATE = "FARTHESTLIMITDATE";
 
-    public static final String L_DELIVERY = "deliveries";
+    public static final String L_DELIVERIES = "deliveries";
 
     public static final String L_DELIVERY_DELIVERY = "deliveries";
 
@@ -424,13 +422,13 @@ public final class SamplesConstants {
 
     public static final String L_NEGOTIATION_STATE_GENERATEDREQUESTS = "02generatedRequests";
 
-    public static final String DELIVERY = "delivery";
+    public static final String L_DELIVERY = "delivery";
 
-    public static final String OFFER = "offer";
+    public static final String L_OFFER = "offer";
 
-    public static final String NEGOTIATION = "negotiation";
+    public static final String L_NEGOTIATION = "negotiation";
 
-    public static final String REQUEST_FOR_QUOTION = "requestForQuotation";
+    public static final String L_REQUEST_FOR_QUOTION = "requestForQuotation";
 
     public static final String L_DELIVERY_STATE_CHANGES = "deliveryStateChanges";
 
@@ -444,14 +442,22 @@ public final class SamplesConstants {
 
     public static final String L_PHASE = "phase";
 
+<<<<<<< HEAD
+=======
+    public static final String L_DATE_AND_TIME = "dateAndTime";
+
+>>>>>>> dev
     public static final String L_STATUS = "status";
 
     public static final String L_TARGET_STATE = "targetState";
 
     public static final String L_SOURCE_STATE = "sourceState";
 
+<<<<<<< HEAD
     public static final String L_DATE_AND_TIME = "dateAndTime";
 
+=======
+>>>>>>> dev
     public static final String L_ITEM = "item";
 
     public static final String L_EMAIL = "email";

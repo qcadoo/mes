@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksFieldsOTFOF.ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import org.springframework.stereotype.Service;

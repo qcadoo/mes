@@ -23,30 +23,36 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PIECEWORK;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class ParametersHooksPC {
 
-    public void checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse(final ViewDefinitionState viewDefinitionState) {
-        String typeOfProductionRecording = ((FieldComponent) viewDefinitionState
-                .getComponentByReference(TYPE_OF_PRODUCTION_RECORDING)).getFieldValue().toString();
-        FieldComponent registerPiecework = (FieldComponent) viewDefinitionState.getComponentByReference(REGISTER_PIECEWORK);
-        if (typeOfProductionRecording != null
-                && typeOfProductionRecording.equals(TypeOfProductionRecording.CUMULATED.getStringValue())) {
-            registerPiecework.setFieldValue(false);
-            registerPiecework.setEnabled(false);
+    @Autowired
+    private ProductionCountingService productionCountingService;
+
+    public void checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse(final ViewDefinitionState view) {
+        FieldComponent typeOfProductionRecordingField = (FieldComponent) view
+                .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        FieldComponent registerPieceworkField = (FieldComponent) view
+                .getComponentByReference(OrderFieldsPC.REGISTER_PIECEWORK);
+
+        String typeOfProductionRecording = (String) typeOfProductionRecordingField.getFieldValue();
+
+        if ((typeOfProductionRecording != null)
+                && productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
+            registerPieceworkField.setFieldValue(false);
+            registerPieceworkField.setEnabled(false);
         } else {
-            registerPiecework.setEnabled(true);
+            registerPieceworkField.setEnabled(true);
         }
-        registerPiecework.requestComponentUpdateState();
+        registerPieceworkField.requestComponentUpdateState();
     }
 
 }

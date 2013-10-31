@@ -76,29 +76,29 @@
 
 		<model:model-hook plugin="basic" model="parameter">
 			<model:validatesWith
-				class="com.qcadoo.mes.materialRequirements.internal.hooks.ParameterHooksMR"
-				method="checkIfInputProductsRequiredForTypeIsSelected" />
+				class="com.qcadoo.mes.materialRequirements.validators.ParameterValidatorsMR"
+				method="validatesWith" />
 		</model:model-hook>
 		<model:model-hook plugin="basic" model="parameter">
 			<model:onCreate
-				class="com.qcadoo.mes.materialRequirements.internal.hooks.ParameterHooksMR"
-				method="setInputProductsRequiredForTypeDefaultValue" />
+				class="com.qcadoo.mes.materialRequirements.hooks.ParameterHooksMR"
+				method="onCreate" />
 		</model:model-hook>
 
 		<model:model-hook plugin="orders" model="order">
 			<model:validatesWith
-				class="com.qcadoo.mes.materialRequirements.internal.hooks.OrderHooksMR"
-				method="checkIfInputProductsRequiredForTypeIsSelected" />
+				class="com.qcadoo.mes.materialRequirements.validators.OrderValidatorsMR"
+				method="validatesWith" />
 		</model:model-hook>
 		<model:model-hook plugin="orders" model="order">
 			<model:onCreate
-				class="com.qcadoo.mes.materialRequirements.internal.hooks.OrderHooksMR"
-				method="setInputProductsRequiredForTypeDefaultValue" />
+				class="com.qcadoo.mes.materialRequirements.hooks.OrderHooksMR"
+				method="onCreate" />
 		</model:model-hook>
 		<model:model-hook plugin="orders" model="order">
 			<model:onCopy
-				class="com.qcadoo.mes.materialRequirements.internal.hooks.OrderHooksMR"
-				method="setInputProductsRequiredForTypeDefaultValueOnCopy" />
+				class="com.qcadoo.mes.materialRequirements.hooks.OrderHooksMR"
+				method="onCopy" />
 		</model:model-hook>
 
 		<menu:menu-category name="requirements" />
@@ -115,12 +115,12 @@
 
 		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="grid" event="printMaterialReqForOrder"
-			class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl"
-			method="printMaterialReqForOrder" />
+			class="com.qcadoo.mes.materialRequirements.listeners.OrdersPlanningListListenersMR"
+			method="printMaterialRequirementForOrder" />
 
 		<view:view-hook view="orderDetails" type="beforeRender"
 			plugin="orders"
-			class="com.qcadoo.mes.materialRequirements.internal.hooks.OrderDetailsHooksMR"
+			class="com.qcadoo.mes.materialRequirements.hooks.OrderDetailsHooksMR"
 			method="setInputProductsRequiredForTypeFromParameters" />
 
 	</modules>

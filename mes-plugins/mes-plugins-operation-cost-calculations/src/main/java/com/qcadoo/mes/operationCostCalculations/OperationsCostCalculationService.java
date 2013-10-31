@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
+import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
 
@@ -38,8 +38,9 @@ public interface OperationsCostCalculationService {
     void calculateOperationsCost(final Entity costCalculation);
 
     Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent, final BigDecimal margin,
-            final BigDecimal plannedQuantity, final Map<Entity, OperationWorkTime> realizationTimes);
+            final BigDecimal plannedQuantity, final OperationTimesContainer realizationTimes);
 
     BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
-            final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity);
+            final Map<Long, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity);
+
 }

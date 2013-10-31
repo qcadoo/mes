@@ -23,49 +23,82 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class BasicProductionCountingListHooks {
 
+    private static final String L_ORDER = "order";
+
+    private static final String L_WINDOW = "window";
+
+    private static final String L_GRID = "grid";
+
+    private static final String L_PRODUCTION_COUNTING = "productionCounting";
+
+    private static final String L_SHOW_DETAILED_PRODUCTION_COUNTING_AND_PROGRESS = "showDetailedProductionCountingAndProgress";
+
+    private static final String L_SHOW_DETAILED_PRODUCTION_COUNTING = "showDetailedProductionCounting";
+
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private OrderService orderService;
 
-    public void setUneditableGridWhenOrderTypeRecordingIsBasic(final ViewDefinitionState view) {
-        FormComponent order = (FormComponent) view.getComponentByReference(ORDER);
+    @Autowired
+    private ProductionProgressModifyLockHelper progressModifyLockHelper;
 
-        if (order.getEntityId() == null) {
+    public void updateRibbonState(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_ORDER);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup technologies = (RibbonGroup) window.getRibbon().getGroupByName(L_PRODUCTION_COUNTING);
+
+        RibbonActionItem showDetailedProductionCountingAndProgress = (RibbonActionItem) technologies
+                .getItemByName(L_SHOW_DETAILED_PRODUCTION_COUNTING_AND_PROGRESS);
+        RibbonActionItem showDetailedProductionCounting = (RibbonActionItem) technologies
+                .getItemByName(L_SHOW_DETAILED_PRODUCTION_COUNTING);
+
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
             return;
         }
 
-        Entity orderFromDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                order.getEntityId());
+        Entity order = orderService.getOrder(orderId);
 
-        if (orderFromDB == null) {
+        boolean isSaved = (order != null);
+        boolean isForEach = ("03forEach".equals(order.getStringField("typeOfProductionRecording")));
+
+        updateButtonState(showDetailedProductionCountingAndProgress, isSaved && isForEach);
+        updateButtonState(showDetailedProductionCounting, isSaved && !isForEach);
+    }
+
+    private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
+        ribbonActionItem.setEnabled(isEnabled);
+        ribbonActionItem.requestUpdate(true);
+    }
+
+    public void setGridEditableDependsOfOrderState(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_ORDER);
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+
+        Long orderId = orderForm.getEntityId();
+        if (orderId == null) {
             return;
         }
 
-        String orderState = orderFromDB.getStringField(STATE);
-        String productionRecordType = orderFromDB.getStringField("typeOfProductionRecording");
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
-
-        if (("01basic".equals(productionRecordType)) && (OrderStateStringValues.IN_PROGRESS.equals(orderState))) {
-            grid.setEditable(true);
-        } else {
-            grid.setEditable(false);
-        }
+        boolean isLocked = progressModifyLockHelper.isLocked(orderService.getOrder(orderId));
+        grid.setEnabled(!isLocked);
     }
 
 }

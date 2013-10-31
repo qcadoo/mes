@@ -48,7 +48,7 @@ public class QuantityService {
     public void checkMinimalAffordableQuantity(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
 
-        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technologyPrototype");
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("plannedQuantity");
         if (plannedQuantity == null || "".equals(plannedQuantity.getFieldValue())) {
             return;

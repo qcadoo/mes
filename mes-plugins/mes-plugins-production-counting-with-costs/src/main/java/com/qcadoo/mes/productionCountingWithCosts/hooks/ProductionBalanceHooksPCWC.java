@@ -33,13 +33,17 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ProductionBalanceHooksPCWC {
 
-    public void clearFieldsOfSummaryCosts(final DataDefinition dataDefinition, final Entity entity) {
-        for (String reference : Arrays.asList("registeredTotalTechnicalProductionCosts",
+    public void onCopy(final DataDefinition productionBalanceDD, final Entity productionBalance) {
+        clearFieldsOfSummaryCosts(productionBalance);
+    }
+
+    private void clearFieldsOfSummaryCosts(final Entity productionBalance) {
+        for (String fieldName : Arrays.asList("registeredTotalTechnicalProductionCosts",
                 "registeredTotalTechnicalProductionCostPerUnit", "totalTechnicalProductionCosts",
                 "totalTechnicalProductionCostPerUnit", "balanceTechnicalProductionCosts",
                 "balanceTechnicalProductionCostPerUnit", "productionCostMarginValue", "materialCostMarginValue",
                 "additionalOverheadValue", "totalOverhead", "totalCosts", "totalCostPerUnit")) {
-            entity.setField(reference, null);
+            productionBalance.setField(fieldName, null);
         }
     }
 

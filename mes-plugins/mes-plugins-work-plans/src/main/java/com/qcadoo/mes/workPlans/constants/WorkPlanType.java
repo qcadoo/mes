@@ -37,18 +37,18 @@ public enum WorkPlanType {
         return type;
     }
 
-    public static WorkPlanType parseString(final String type) {
-        if ("01noDistinction".equals(type)) {
+    public static WorkPlanType parseString(final String string) {
+        if ("01noDistinction".equals(string)) {
             return NO_DISTINCTION;
-        } else if ("02byEndProduct".equals(type)) {
+        } else if ("02byEndProduct".equals(string)) {
             return BY_END_PRODUCT;
-        } else if ("03byWorkstationType".equals(type)) {
+        } else if ("03byWorkstationType".equals(string)) {
             return BY_WORKSTATION_TYPE;
-        } else if ("04byDivision".equals(type)) {
+        } else if ("04byDivision".equals(string)) {
             return BY_DIVISION;
         }
 
-        throw new IllegalStateException("Unsupported workPlan type '" + type + "'");
+        throw new IllegalStateException("Unsupported work plan type '" + string + "'");
     }
 
 }

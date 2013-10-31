@@ -42,7 +42,7 @@ public class MaterialRequirementServiceImplTSOverrideAspect {
     @Autowired
     private MaterialRequirementServiceImplTSOverrideUtil materialRequirementServiceImplTSOverrideUtil;
 
-    @Pointcut("execution(public com.qcadoo.mes.technologies.constants.MrpAlgorithm com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl.getDefaultMrpAlgorithm(..))")
+    @Pointcut("execution(public com.qcadoo.mes.technologies.constants.MrpAlgorithm com.qcadoo.mes.materialRequirements.MaterialRequirementServiceImpl.getDefaultMrpAlgorithm(..))")
     public void getDefaultMrpAlgorithmExecution() {
     }
 

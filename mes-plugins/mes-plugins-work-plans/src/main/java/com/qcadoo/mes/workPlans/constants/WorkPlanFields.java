@@ -31,15 +31,19 @@ public final class WorkPlanFields {
 
     public static final String NAME = "name";
 
-    public static final String TYPE = "type";
-
     public static final String DATE = "date";
 
     public static final String WORKER = "worker";
 
     public static final String GENERATED = "generated";
 
+    public static final String FILE_NAME = "fileName";
+
     public static final String DONT_PRINT_ORDERS_IN_WORK_PLANS = "dontPrintOrdersInWorkPlans";
+
+    public static final String TYPE = "type";
+
+    public static final String WORK_PLAN_ORDER_COLUMNS = "workPlanOrderColumns";
 
     public static final String ORDERS = "orders";
 

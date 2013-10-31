@@ -32,7 +32,7 @@ import java.lang.reflect.Modifier;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl;
+import com.qcadoo.mes.materialRequirements.MaterialRequirementServiceImpl;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 
 public class MaterialRequirementServiceImplTSOverrideAspectTest {
@@ -40,7 +40,7 @@ public class MaterialRequirementServiceImplTSOverrideAspectTest {
     @Test
     public final void checkGetDefaultMrpAlgorithmExecution() throws NoSuchMethodException {
         Class<?> clazz = MaterialRequirementServiceImpl.class;
-        assertEquals("com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl", clazz.getCanonicalName());
+        assertEquals("com.qcadoo.mes.materialRequirements.MaterialRequirementServiceImpl", clazz.getCanonicalName());
         final Method method = clazz.getDeclaredMethod("getDefaultMrpAlgorithm");
         assertNotNull(method);
         assertTrue(Modifier.isPublic(method.getModifiers()));

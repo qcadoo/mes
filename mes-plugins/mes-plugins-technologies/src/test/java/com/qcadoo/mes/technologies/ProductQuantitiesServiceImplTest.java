@@ -43,7 +43,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -209,7 +211,8 @@ public class ProductQuantitiesServiceImplTest {
     @Test
     public void shouldReturnCorrectQuantities() {
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
+        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
+                .getProductComponentQuantities(orders);
 
         // then
         assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
@@ -225,27 +228,27 @@ public class ProductQuantitiesServiceImplTest {
         // given
 
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology, plannedQty,
+        Map<Long, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology, plannedQty,
                 MrpAlgorithm.ALL_PRODUCTS_IN);
 
         // then
         assertEquals(3, productQuantities.size());
-        assertEquals(new BigDecimal(50), productQuantities.get(product1));
-        assertEquals(new BigDecimal(10), productQuantities.get(product2));
-        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+        assertEquals(new BigDecimal(50), productQuantities.get(product1.getId()));
+        assertEquals(new BigDecimal(10), productQuantities.get(product2.getId()));
+        assertEquals(new BigDecimal(5), productQuantities.get(product3.getId()));
     }
 
     @Test
     public void shouldReturnQuantitiesOfInputProductsForOrdersAndIfToldCountOnlyComponents() {
         // given
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(orders,
+        Map<Long, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(orders,
                 MrpAlgorithm.ONLY_COMPONENTS);
 
         // then
         assertEquals(2, productQuantities.size());
-        assertEquals(new BigDecimal(50), productQuantities.get(product1));
-        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+        assertEquals(new BigDecimal(50), productQuantities.get(product1.getId()));
+        assertEquals(new BigDecimal(5), productQuantities.get(product3.getId()));
 
     }
 
@@ -255,56 +258,56 @@ public class ProductQuantitiesServiceImplTest {
         Entity component = mock(Entity.class);
         when(component.getBelongsToField("order")).thenReturn(order);
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantitiesForComponents(
+        Map<Long, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantitiesForComponents(
                 Arrays.asList(component), MrpAlgorithm.ALL_PRODUCTS_IN);
 
         // then
         assertEquals(3, productQuantities.size());
-        assertEquals(new BigDecimal(50), productQuantities.get(product1));
-        assertEquals(new BigDecimal(10), productQuantities.get(product2));
-        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+        assertEquals(new BigDecimal(50), productQuantities.get(product1.getId()));
+        assertEquals(new BigDecimal(10), productQuantities.get(product2.getId()));
+        assertEquals(new BigDecimal(5), productQuantities.get(product3.getId()));
     }
 
     @Test
     public void shouldReturnOperationRuns() {
         // given
-        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
         // when
         productQuantitiesService.getNeededProductQuantities(orders, MrpAlgorithm.ALL_PRODUCTS_IN, operationRuns);
 
         // then
         assertEquals(2, operationRuns.size());
-        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2));
-        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1));
+        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2.getId()));
+        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1.getId()));
     }
 
     @Test
     public void shouldReturnOperationRunsAlsoForComponents() {
         // given
-        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
         // when
         productQuantitiesService.getProductComponentQuantities(orders, operationRuns);
 
         // then
         assertEquals(2, operationRuns.size());
-        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2));
-        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1));
+        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2.getId()));
+        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1.getId()));
     }
 
     @Test
     public void shouldReturnOperationRunsAlsoForPlainTechnology() {
         // given
-        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
         // when
         productQuantitiesService.getProductComponentQuantities(technology, plannedQty, operationRuns);
 
         // then
         assertEquals(2, operationRuns.size());
-        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2));
-        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1));
+        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2.getId()));
+        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1.getId()));
     }
 
     @Test
@@ -324,7 +327,8 @@ public class ProductQuantitiesServiceImplTest {
         when(refTech.getTreeField("operationComponents")).thenReturn(refTree);
 
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
+        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
+                .getProductComponentQuantities(orders);
 
         // then
         assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
@@ -343,7 +347,7 @@ public class ProductQuantitiesServiceImplTest {
         when(operationComponent1.getBooleanField("isTjDivisible")).thenReturn(true);
         when(operationComponent2.getBooleanField("isTjDivisible")).thenReturn(true);
 
-        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
         // when
         productQuantitiesService.getNeededProductQuantities(orders, MrpAlgorithm.ALL_PRODUCTS_IN, operationRuns);
@@ -361,7 +365,8 @@ public class ProductQuantitiesServiceImplTest {
         when(operationComponent2.getBooleanField("areProductQuantitiesDivisible")).thenReturn(true);
 
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
+        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
+                .getProductComponentQuantities(orders);
 
         // then
         assertEquals(0, new BigDecimal(45).compareTo(productQuantities.get(productInComponent1)));
@@ -370,4 +375,5 @@ public class ProductQuantitiesServiceImplTest {
         assertEquals(0, new BigDecimal(9).compareTo(productQuantities.get(productOutComponent2)));
         assertEquals(0, new BigDecimal(4.5).compareTo(productQuantities.get(productOutComponent4)));
     }
+
 }

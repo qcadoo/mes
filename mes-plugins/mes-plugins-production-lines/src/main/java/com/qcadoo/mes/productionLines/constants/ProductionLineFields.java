@@ -29,8 +29,6 @@ public final class ProductionLineFields {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "productionCountingWithCosts";
-
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";

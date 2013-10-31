@@ -50,7 +50,8 @@ public class TechnologyTreeValidators {
     @Autowired
     private TechnologyTreeValidationService technologyTreeValidationService;
 
-    public boolean checkConsumingTheSameProductFromManySubOperations(final DataDefinition technologyDD, final Entity technology) {
+    public boolean checkConsumingTheSameProductFromManySubOperations(final DataDefinition technologyDD, final Entity technology,
+            final boolean autoCloseMessage) {
         Entity techFromDB = technologyDD.get(technology.getId());
 
         EntityTree tree = techFromDB.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
@@ -65,7 +66,7 @@ public class TechnologyTreeValidators {
 
                 technology.addGlobalError(
                         "technologies.technology.validate.global.error.subOperationsProduceTheSameProductThatIsConsumed",
-                        parentNodeNumber, productName, productNumber);
+                        autoCloseMessage, parentNodeNumber, productName, productNumber);
             }
         }
         return nodesMap.isEmpty();

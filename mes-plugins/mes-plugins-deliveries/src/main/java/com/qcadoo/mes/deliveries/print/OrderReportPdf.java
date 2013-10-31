@@ -36,7 +36,6 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -311,7 +310,7 @@ public class OrderReportPdf extends ReportPdfView {
         document.add(new Paragraph(translationService.translate("deliveries.order.report.orderedProducts.title", locale),
                 FontUtils.getDejavuBold10Dark()));
 
-        List<String> productsHeader = new ArrayList<String>();
+        List<String> productsHeader = Lists.newArrayList();
 
         for (Entity columnForOrders : columnsForOrders) {
             String name = columnForOrders.getStringField(NAME);

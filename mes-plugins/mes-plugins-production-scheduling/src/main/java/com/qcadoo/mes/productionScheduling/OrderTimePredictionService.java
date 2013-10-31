@@ -34,7 +34,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -57,7 +57,6 @@ import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -101,19 +100,31 @@ public class OrderTimePredictionService {
         if (order == null) {
             return;
         }
-        DataDefinition dataDefinition = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
-        List<Entity> operations = dataDefinition.find().add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order))
-                .list().getEntities();
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (technology == null) {
+            return;
+        }
+
+        DataDefinition dataDefinitionTOC = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+
+        List<Entity> operations = dataDefinitionTOC.find()
+                .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGY, technology)).list().getEntities();
 
         Date orderStartDate = (Date) order.getField(START_DATE);
         for (Entity operation : operations) {
-            Integer offset = (Integer) operation.getField("operationOffSet");
-            Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
+            Entity techOperCompTimeCalculations = operation.getBelongsToField("techOperCompTimeCalculations");
 
-            operation.setField(EFFECTIVE_DATE_FROM, null);
-            operation.setField(EFFECTIVE_DATE_TO, null);
+            if (techOperCompTimeCalculations == null) {
+                continue;
+            }
+            Integer offset = (Integer) techOperCompTimeCalculations.getField("operationOffSet");
+            Integer duration = (Integer) techOperCompTimeCalculations.getField("effectiveOperationRealizationTime");
+
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_FROM, null);
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_TO, null);
 
             if (offset == null || duration == null) {
                 continue;
@@ -129,12 +140,55 @@ public class OrderTimePredictionService {
             if (dateTo == null) {
                 continue;
             }
-            operation.setField(EFFECTIVE_DATE_FROM, dateFrom);
-            operation.setField(EFFECTIVE_DATE_TO, dateTo);
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_FROM, dateFrom);
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_TO, dateTo);
+            techOperCompTimeCalculations.getDataDefinition().save(techOperCompTimeCalculations);
         }
-        // TODO ALBR
+    }
+
+    private void scheduleOperationComponents(final Long technologyId, final Date startDate) {
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
+
+        if (technology == null) {
+            return;
+        }
+
+        DataDefinition dataDefinitionTOC = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+
+        List<Entity> operations = dataDefinitionTOC.find()
+                .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGY, technology)).list().getEntities();
+
         for (Entity operation : operations) {
-            dataDefinition.save(operation);
+            Entity techOperCompTimeCalculations = operation.getBelongsToField("techOperCompTimeCalculations");
+
+            if (techOperCompTimeCalculations == null) {
+                continue;
+            }
+            Integer offset = (Integer) techOperCompTimeCalculations.getField("operationOffSet");
+            Integer duration = (Integer) techOperCompTimeCalculations.getField("effectiveOperationRealizationTime");
+
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_FROM, null);
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_TO, null);
+
+            if (offset == null || duration == null) {
+                continue;
+            }
+            if (duration.equals(0)) {
+                duration = duration + 1;
+            }
+            Date dateFrom = shiftsService.findDateToForOrder(startDate, offset);
+            if (dateFrom == null) {
+                continue;
+            }
+            Date dateTo = shiftsService.findDateToForOrder(startDate, offset + duration);
+            if (dateTo == null) {
+                continue;
+            }
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_FROM, dateFrom);
+            techOperCompTimeCalculations.setField(EFFECTIVE_DATE_TO, dateTo);
+            techOperCompTimeCalculations.getDataDefinition().save(techOperCompTimeCalculations);
         }
     }
 
@@ -163,16 +217,19 @@ public class OrderTimePredictionService {
 
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntity().getId());
-        Entity technology = order.getBelongsToField("technology");
+        // copy of technology from order
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Validate.notNull(technology, "technology is null");
         BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                 viewDefinitionState.getLocale());
 
+        // Included in work time
         Boolean includeTpz = "1".equals(viewDefinitionState.getComponentByReference("includeTpz").getFieldValue());
         Boolean includeAdditionalTime = "1".equals(viewDefinitionState.getComponentByReference("includeAdditionalTime")
                 .getFieldValue());
 
-        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
+        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+
         productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
 
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz,
@@ -181,7 +238,7 @@ public class OrderTimePredictionService {
 
         order = getActualOrderWithChanges(order);
         int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(
-                order.getTreeField("technologyInstanceOperationComponents").getRoot(), quantity, includeTpz,
+                technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
                 includeAdditionalTime, productionLine);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
@@ -224,7 +281,8 @@ public class OrderTimePredictionService {
     public Date getDateFromOrdersFromOperation(final List<Entity> operations) {
         Date beforeOperation = null;
         for (Entity operation : operations) {
-            Date operationDateFrom = operation.getDateField(TechnologyOperCompTNFOFields.EFFECTIVE_DATE_FROM);
+            Date operationDateFrom = operation.getBelongsToField("techOperCompTimeCalculations")
+                    .getDateField("effectiveDateFrom");
             if (operationDateFrom != null) {
                 if (beforeOperation == null) {
                     beforeOperation = operationDateFrom;
@@ -240,7 +298,7 @@ public class OrderTimePredictionService {
     public Date getDateToOrdersFromOperation(final List<Entity> operations) {
         Date laterOperation = null;
         for (Entity operation : operations) {
-            Date operationDateTo = operation.getDateField(TechnologyOperCompTNFOFields.EFFECTIVE_DATE_TO);
+            Date operationDateTo = operation.getBelongsToField("techOperCompTimeCalculations").getDateField("effectiveDateTo");
             if (operationDateTo != null) {
                 if (laterOperation == null) {
                     laterOperation = operationDateTo;
@@ -336,7 +394,9 @@ public class OrderTimePredictionService {
 
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
-        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
+
+        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+
         productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
 
         boolean saved = true;
@@ -369,6 +429,9 @@ public class OrderTimePredictionService {
             } else {
                 dateTo.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
             }
+
+            scheduleOperationComponents(technology.getId(), startTime);
+
         }
         laborWorkTime.requestComponentUpdateState();
         machineWorkTime.requestComponentUpdateState();

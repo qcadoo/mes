@@ -35,21 +35,22 @@
 				<bigButton name="generate" icon="generateIcon24.png"
 					action="#{form}.fireEvent(generateWorkPlan);" state="enabled" />
 			</group>
-			<group name="exportWorkPlan">
+			<group name="export">
 				<bigButton name="printWorkPlan" icon="pdfIcon24.png"
-					action="#{form}.fireEvent(printWorkPlan,pdf);" state="enabled" />
+					action="#{form}.fireEvent(printWorkPlan,pdf);" state="disabled" />
 			</group>
 		</ribbon>
+		
 		<component type="form" name="workPlan" reference="form">
 			<script>
 				<![CDATA[
-					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
-					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
-					var printWorkPlan = #{window}.getRibbonItem("exportWorkPlan.printWorkPlan");
-					var generate = #{window}.getRibbonItem("generate.generate");
-					var saveBack = #{window}.getRibbonItem("actions.saveBack");
-					var saveNew = #{window}.getRibbonItem("actions.saveNew");
-					var cancel = #{window}.getRibbonItem("actions.cancel");
+					var saveButton = #{window}.getRibbonItem("actions.save");
+					var saveBackButton = #{window}.getRibbonItem("actions.saveBack");
+					var saveNewButton = #{window}.getRibbonItem("actions.saveNew");
+					var copyButton = #{window}.getRibbonItem("actions.copy");
+					var cancelButton = #{window}.getRibbonItem("actions.cancel");
+					var generateButton = #{window}.getRibbonItem("generate.generate");
+					var printWorkPlanButton = #{window}.getRibbonItem("export.printWorkPlan");
 					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
@@ -68,7 +69,7 @@
 						}
 					});
 					
-					#{workPlanComponents}.addOnChangeListener({
+					#{orders}.addOnChangeListener({
 						onSetValue: function(value) {
 							if (value.content.totalEntities > 0) {
 								containsAtLeastOneOrder = true;
@@ -81,7 +82,7 @@
 					
 					function updateRibbon() {
 						if (entityExists) {
-							copyRibbonItem.enable();
+							 copyButton.enable();
 
 							var isGeneratedCheckboxValue = #{generated}.getValue();
 							var generated = false;
@@ -90,44 +91,40 @@
 								generated = true;
 							}
 							
-							if (containsAtLeastOneOrder && !generated) {
-								enableGeneration(true);
-							} else {
-								enableGeneration(false);
-							}
-						} else {
-							copyRibbonItem.disable("#{translate(recordNotCreated)}");
-							generate.disable("#{translate(recordNotCreated)}");
-						}
-					}
-					
-					function enableGeneration(enable) {
-						if (enable) {
-							generate.enable();
-							saveBack.enable();
-							saveNew.enable();
-							cancel.enable();
-							printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-							saveRibbonItem.enable();
-						} else {
 							if (containsAtLeastOneOrder) {
-								generate.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
-								saveBack.disable();
-								saveNew.disable();
-								cancel.disable();
-								printWorkPlan.enable();
-								saveRibbonItem.disable();
-							} else {	
-								generate.disable("#{translate(orders.ribbon.message.noOrders)}");
-								saveBack.disable();
-								saveNew.disable();
-								cancel.disable();
-								printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-								saveRibbonItem.enable();
+								if (generated) {
+									saveButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordAlreadyGenerated)}");
+									saveBackButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordAlreadyGenerated)}");
+									saveNewButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordAlreadyGenerated)}");
+									cancelButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordAlreadyGenerated)}");
+									generateButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordAlreadyGenerated)}");
+									printWorkPlanButton.enable();
+								} else {
+									saveButton.enable();
+									saveBackButton.enable();
+									saveNewButton.enable();
+									cancelButton.enable();
+									generateButton.enable();
+									printWorkPlanButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordNotGenerated)}");
+								}
+							} else {
+								saveButton.enable();
+								saveBackButton.disable();
+								saveNewButton.disable();
+								cancelButton.disable();
+								generateButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.noOrders)}");
+								printWorkPlan.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordNotGenerated)}");
 							}
+						} else {
+							saveButton.enable();
+							saveBackButton.enable();
+							saveNewButton.enable();
+							cancelButton.enable();
+							copyButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordNotGenerated)}");
+							generateButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordNotGenerated)}");
+							printWorkPlanButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordNotGenerated)}");
 						}
 					}
-					
 				]]>
 			</script>
 			<component type="gridLayout" name="gridLayout" columns="3"
@@ -163,22 +160,25 @@
 						field="orders" defaultVisible="false" persistent="false" hasLabel="false">
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
+							
 						<option type="searchable" value="number,name" />
 						<option type="orderable" value="number,name" />
+						
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
+						
 						<option type="multiselect" value="true" />
 					</component>
-					<component type="grid" name="workPlanComponents"
-						reference="workPlanComponents" source="#{form}.orders">
+					<component type="grid" name="orders"
+						reference="orders" source="#{form}.orders">
 						<option type="column" name="number" fields="number" width="50" />
 						<option type="column" name="name" fields="name" />
 
+						<option type="order" column="number" direction="desc" />
+						
 						<option type="searchable" value="number,name" />
 						<option type="orderable" value="number,name" />
-
-						<option type="order" column="number" direction="desc" />
 
 						<option type="paginable" value="false" />
 						<option type="multiselect" value="true" />
@@ -202,15 +202,15 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="7" height="4" width="2">
-					<component type="grid" name="columnsForOrders"
-						source="#{form}.workPlanOrderColumns" reference="columnsForOrders">
+					<component type="grid" name="workPlanOrderColumns"
+						source="#{form}.workPlanOrderColumns" reference="workPlanOrderColumns">
 						<option type="column" name="name" fields="columnForOrders"
 							expression="'@' + #columnForOrders.get('name')" link="true" />
 
+						<option type="order" column="succession" direction="desc" />
+						
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
-
-						<option type="order" column="succession" direction="desc" />
 
 						<option type="correspondingView" value="workPlans/workPlanOrderColumnDetails" />
 						<option type="correspondingComponent" value="form" />
@@ -228,13 +228,20 @@
 			<option type="expression" value="#name" />
 
 			<listener event="printWorkPlan"
-				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" method="printWorkPlan" />
+				class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners" 
+				method="printWorkPlan" />
 			<listener event="generateWorkPlan"
-				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" method="generateWorkPlan" />
+				class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners" 
+				method="generateWorkPlan" />
 		</component>
+		
 	</component>
+	
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
+		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanDetailsHooks"
 			method="disableFormForGeneratedWorkPlan" />
+		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanDetailsHooks"
+			method="setWorkPlanDefaultValues" />
 	</hooks>
+	
 </view>

@@ -28,6 +28,7 @@ import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATI
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.convertViewMessageType;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.isAutoClosed;
 import static org.apache.commons.lang.StringUtils.join;
 import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
@@ -91,7 +92,7 @@ public class StateChangeViewClientValidationUtil {
         if (StringUtils.isNotBlank(correspondFieldName) && dataDefinition.getFields().containsKey(correspondFieldName)) {
             entity.addError(entity.getDataDefinition().getField(correspondFieldName), getKey(message), getArgs(message));
         } else {
-            entity.addGlobalError(getKey(message), getArgs(message));
+            entity.addGlobalError(getKey(message), isAutoClosed(message), getArgs(message));
         }
     }
 

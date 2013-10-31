@@ -31,7 +31,7 @@ public final class OperationCostComponentFields {
 
     public static final String PRODUCTION_BALANCE = "productionBalance";
 
-    public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     public static final String PLANNED_MACHINE_COSTS = "plannedMachineCosts";
 

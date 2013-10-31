@@ -27,62 +27,44 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-public interface WorkPlansConstants {
+public final class WorkPlansConstants {
 
-    String PLUGIN_IDENTIFIER = "workPlans";
+    private WorkPlansConstants() {
+
+    }
+
+    public static final String PLUGIN_IDENTIFIER = "workPlans";
 
     // MODEL
-    String MODEL_WORK_PLAN = "workPlan";
+    public static final String MODEL_WORK_PLAN = "workPlan";
 
-    String MODEL_COLUMN_FOR_ORDERS = "columnForOrders";
+    public static final String MODEL_WORK_PLAN_ORDER_COLUMN = "workPlanOrderColumn";
 
-    String MODEL_COLUMN_FOR_INPUT_PRODUCTS = "columnForInputProducts";
+    public static final String MODEL_COLUMN_FOR_ORDERS = "columnForOrders";
 
-    String MODEL_COLUMN_FOR_OUTPUT_PRODUCTS = "columnForOutputProducts";
+    public static final String MODEL_COLUMN_FOR_INPUT_PRODUCTS = "columnForInputProducts";
 
-    String MODEL_PARAMETER_ORDER_COLUMN = "parameterOrderColumn";
+    public static final String MODEL_COLUMN_FOR_OUTPUT_PRODUCTS = "columnForOutputProducts";
 
-    String MODEL_PARAMETER_INPUT_COLUMN = "parameterInputColumn";
+    public static final String MODEL_PARAMETER_ORDER_COLUMN = "parameterOrderColumn";
 
-    String MODEL_PARAMETER_OUTPUT_COLUMN = "parameterOutputColumn";
+    public static final String MODEL_PARAMETER_INPUT_COLUMN = "parameterInputColumn";
 
-    String MODEL_OPERATION_INPUT_COLUMN = "operationInputColumn";
+    public static final String MODEL_PARAMETER_OUTPUT_COLUMN = "parameterOutputColumn";
 
-    String MODEL_OPERATION_OUTPUT_COLUMN = "operationOutputColumn";
+    public static final String MODEL_OPERATION_INPUT_COLUMN = "operationInputColumn";
 
-    String MODEL_TECHNOLOGY_OPERATION_INPUT_COLUMN = "technologyOperationInputColumn";
+    public static final String MODEL_OPERATION_OUTPUT_COLUMN = "operationOutputColumn";
 
-    String MODEL_TECHNOLOGY_OPERATION_OUTPUT_COLUMN = "technologyOperationOutputColumn";
+    public static final String MODEL_TECHNOLOGY_OPERATION_INPUT_COLUMN = "technologyOperationInputColumn";
 
-    String MODEL_ORDER_OPERATION_INPUT_COLUMN = "orderOperationInputColumn";
-
-    String MODEL_ORDER_OPERATION_OUTPUT_COLUMN = "orderOperationOutputColumn";
-
-    String MODEL_WORK_PLAN_ORDER_COLUMN = "workPlanOrderColumn";
+    public static final String MODEL_TECHNOLOGY_OPERATION_OUTPUT_COLUMN = "technologyOperationOutputColumn";
 
     // VIEW
-    String VIEW_WORK_PLAN_DETAILS = "workPlanDetails";
+    public static final String VIEW_WORK_PLAN_DETAILS = "workPlanDetails";
 
-    String VIEW_WORK_PLANS_LIST = "workPlansList";
+    public static final String VIEW_WORK_PLANS_LIST = "workPlansList";
 
-    // FIELDS
-
-    String HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD = "hideDescriptionInWorkPlans";
-
-    String HIDE_DETAILS_IN_WORK_PLANS_FIELD = "hideDetailsInWorkPlans";
-
-    String HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD = "hideTechnologyAndOrderInWorkPlans";
-
-    String DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD = "dontPrintInputProductsInWorkPlans";
-
-    String DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD = "dontPrintOutputProductsInWorkPlans";
-
-    String IMAGE_URL_IN_WORK_PLAN_FIELD = "imageUrlInWorkPlan";
-
-    Set<String> WORKPLAN_PARAMETERS = Sets.newHashSet(HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD, HIDE_DETAILS_IN_WORK_PLANS_FIELD,
-            HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, IMAGE_URL_IN_WORK_PLAN_FIELD,
-            DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD);
-
-    Set<String> FILE_EXTENSIONS = Sets.newHashSet("bmp", "gif", "jpg", "jpeg", "png", "tiff", "wmf", "eps");
+    public static final Set<String> FILE_EXTENSIONS = Sets.newHashSet("bmp", "gif", "jpg", "jpeg", "png", "tiff", "wmf", "eps");
 
 }

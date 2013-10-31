@@ -65,7 +65,7 @@
 
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
 
-		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:hasMany name="qualityControls" joinField="operation" model="qualityControl" plugin="qualityControls" cascade="delete"/>
 		</model:model-field>
 		
@@ -136,11 +136,16 @@
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
-
+		<view:view-tab resource="view/tabExtensions/copyOfTechnologyDetails.xml" />
+		
 		<view:view-hook plugin="technologies" view="technologyDetails"
 			type="beforeRender" class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="changeQualityControlType" />
 
+		<view:view-hook plugin="orders" view="copyOfTechnologyDetails"
+			type="beforeRender" class="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="changeQualityControlType" />
+			
 		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="grid" event="generateQualityControl"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />

@@ -138,7 +138,6 @@
 		<view:view resource="view/productsFamilies.xml" />
 		<view:view resource="view/productFamiliesAddProduct.xml" />
 
-
 		<view:view resource="view/workstationTypesList.xml" />
 		<view:view resource="view/workstationTypeDetails.xml" />
 

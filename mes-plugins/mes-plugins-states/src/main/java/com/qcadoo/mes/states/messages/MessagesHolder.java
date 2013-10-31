@@ -42,6 +42,8 @@ public interface MessagesHolder {
 
     void addValidationError(final String translationKey, final String... translationArgs);
 
+    void addValidationError(final String translationKey, final boolean autoClose, final String... translationArgs);
+
     List<Entity> getAllMessages();
 
     MessageService getMessageService();

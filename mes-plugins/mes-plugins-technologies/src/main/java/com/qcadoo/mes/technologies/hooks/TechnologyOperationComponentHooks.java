@@ -57,17 +57,17 @@ public class TechnologyOperationComponentHooks {
 
     private void copyReferencedTechnology(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
-        if (!TechnologyOperationComponentFields.REFERENCETECHNOLOGY.equals(technologyOperationComponent
+        if (!TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY.equals(technologyOperationComponent
                 .getField(TechnologyOperationComponentFields.ENTITY_TYPE))
-                && technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY) == null) {
+                && technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY) == null) {
             return;
         }
 
-        boolean copy = "02copy".equals(technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCEMODE));
+        boolean copy = "02copy".equals(technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCE_MODE));
 
         Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
         Entity referencedTechnology = technologyOperationComponent
-                .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY);
+                .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
 
         Set<Long> technologies = new HashSet<Long>();
         technologies.add(technology.getId());
@@ -76,7 +76,7 @@ public class TechnologyOperationComponentHooks {
 
         if (cyclic) {
             technologyOperationComponent.addError(
-                    technologyOperationComponentDD.getField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY),
+                    technologyOperationComponentDD.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY),
                     "technologies.technologyReferenceTechnologyComponent.error.cyclicDependency");
             return;
         }

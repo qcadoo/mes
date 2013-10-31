@@ -76,6 +76,13 @@ public class TechnologyDetailsViewHooks {
         view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE).setEnabled(treeTabShouldBeEnabled);
     }
 
+    public void setTreeTabEditable(final ViewDefinitionState view, final boolean treeTabShouldBeEnabled) {
+        for (String componentReference : Sets.newHashSet(OUT_PRODUCTS_REFERENCE, IN_PRODUCTS_REFERENCE)) {
+            ((GridComponent) view.getComponentByReference(componentReference)).setEditable(treeTabShouldBeEnabled);
+        }
+        view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE).setEnabled(treeTabShouldBeEnabled);
+    }
+
     private boolean technologyIsAlreadySaved(final ViewDefinitionState view) {
         final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         return form.getEntityId() != null;

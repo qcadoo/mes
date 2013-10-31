@@ -82,7 +82,11 @@ public class OperationWorkTimeServiceTest {
 
     private Map<Entity, BigDecimal> operationsRuns = Maps.newHashMap();
 
+    private Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+
     private Map<Entity, Integer> workstations = Maps.newHashMap();
+
+    private Map<Long, Integer> workstationsMap = Maps.newHashMap();
 
     @Before
     public void init() {
@@ -159,9 +163,17 @@ public class OperationWorkTimeServiceTest {
         workstations.put(operComp2, workstations2);
         workstations.put(operComp3, workstations3);
 
+        workstationsMap.put(operComp1.getId(), workstations1);
+        workstationsMap.put(operComp2.getId(), workstations2);
+        workstationsMap.put(operComp3.getId(), workstations3);
+
         operationsRuns.put(operComp1, new BigDecimal(3));
         operationsRuns.put(operComp2, new BigDecimal(1.5));
         operationsRuns.put(operComp3, new BigDecimal(7));
+
+        operationRuns.put(operComp1.getId(), new BigDecimal(3));
+        operationRuns.put(operComp2.getId(), new BigDecimal(1.5));
+        operationRuns.put(operComp3.getId(), new BigDecimal(7));
     }
 
     private static EntityList mockEntityList(final List<Entity> entities) {
@@ -473,8 +485,8 @@ public class OperationWorkTimeServiceTest {
 
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // when
-        operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationsRuns, true, true,
-                workstations, false);
+        operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationRuns, true, true,
+                workstationsMap, false);
         // then
         assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(10470));
         assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(7050));
@@ -485,9 +497,9 @@ public class OperationWorkTimeServiceTest {
         // given
 
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
-        // when
-        operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationsRuns, true, false,
-                workstations, false);
+        // // when
+        operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationRuns, true, false,
+                workstationsMap, false);
         // then
         assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(8430));
         assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(5655));
@@ -495,13 +507,13 @@ public class OperationWorkTimeServiceTest {
 
     @Test
     public void shouldEstimateTotalOrderTimeWithAdditionalTime() throws Exception {
-        // given
+        // // given
 
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // when
-        operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationsRuns, false, true,
-                workstations, false);
-        // then
+        operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationRuns, false, true,
+                workstationsMap, false);
+        // // then
         assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(7110));
         assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(3210));
     }

@@ -90,6 +90,19 @@
 					});
 				]]>
 			</script>
+			<component type="lookup" name="technology" field="technology"
+					reference="technology" hasLabel="false" defaultVisible="false">
+					<option type="column" name="name" fields="name" link="true" />
+					
+					<option type="searchable" value="name,number" />
+					<option type="orderable" value="name,number" />
+
+					<option type="order" column="number" direction="desc" />
+
+					<option type="expression"
+						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+					<option type="fieldCode" value="number" />
+			</component>
 			<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="9">
 				<layoutElement column="1" row="1">
@@ -112,7 +125,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="lookup" name="operation" reference="operation"
-						field="operation" source="#{order}.technologyInstanceOperationComponents">
+						field="operation" source="#{technology}.operationComponents" >
 						<option type="column" name="name" fields="operation" link="true" expression="#operation['name']"
 							width="200" />
 						<option type="searchable" value="name" />
@@ -161,6 +174,8 @@
 		</component>
 	</component>
 	<hooks>
+		<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
+			method="setTechnology" />
 		<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="checkIfCommentIsRequiredBasedOnResult" />
 		<beforeRender class="com.qcadoo.mes.qualityControls.QualityControlService"

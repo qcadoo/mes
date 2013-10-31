@@ -39,6 +39,8 @@ public final class ColumnForOrdersFields {
 
     public static final String ALIGNMENT = "alignment";
 
-    public static final String ACTIVE = "active";
+    public static final String PARAMETER_ORDER_COLUMNS = "parameterOrderColumns";
+
+    public static final String WORK_PLAN_ORDER_COLUMNS = "workPlanOrderColumns";
 
 }

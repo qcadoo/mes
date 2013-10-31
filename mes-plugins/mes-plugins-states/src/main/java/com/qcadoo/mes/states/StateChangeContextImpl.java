@@ -228,4 +228,10 @@ public final class StateChangeContextImpl implements StateChangeContext {
         return ownerValid;
     }
 
+    @Override
+    public void addValidationError(String translationKey, boolean autoClose, String... translationArgs) {
+        messageService.addValidationError(this, null, translationKey, autoClose, translationArgs);
+
+    }
+
 }

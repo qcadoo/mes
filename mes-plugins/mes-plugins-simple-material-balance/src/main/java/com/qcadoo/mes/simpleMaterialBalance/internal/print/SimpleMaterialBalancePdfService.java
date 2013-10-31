@@ -44,7 +44,6 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
-import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.simpleMaterialBalance.util.EntityLocationNumberComparator;
 import com.qcadoo.mes.simpleMaterialBalance.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -52,7 +51,6 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
-import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
@@ -151,26 +149,46 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS);
         MrpAlgorithm mrpAlgorithm = MrpAlgorithm.parseString(simpleMaterialBalance.getStringField("mrpAlgorithm"));
 
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantitiesForComponents(
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantitiesForComponents(
                 simpleMaterialBalanceOrdersComponents, mrpAlgorithm);
 
         List<Entity> simpleMaterialBalanceLocationComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS);
+<<<<<<< HEAD
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField(L_NUMBER).toString(), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(entry.getKey().getField(L_NAME).toString(), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(entry.getKey().getField(L_UNIT).toString(), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuRegular7Dark()));
+=======
+
+        // TODO LUPO fix comparator
+        // products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
+
+        for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
+
+            table.addCell(new Phrase(product.getField(L_NUMBER).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(product.getField(L_NAME).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(product.getField(L_UNIT).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils
+                    .getDejavuRegular9Dark()));
+>>>>>>> dev
             BigDecimal available = BigDecimal.ZERO;
             for (Entity simpleMaterialBalanceLocationComponent : simpleMaterialBalanceLocationComponents) {
                 available = available.add(materialFlowService.calculateShouldBeInLocation(simpleMaterialBalanceLocationComponent
-                        .getBelongsToField(L_LOCATION).getId(), entry.getKey().getId(), (Date) simpleMaterialBalance
-                        .getField(L_DATE)));
+                        .getBelongsToField(L_LOCATION).getId(), product.getId(), (Date) simpleMaterialBalance.getField(L_DATE)));
             }
+<<<<<<< HEAD
             table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(numberService.format(available.subtract(entry.getValue(), numberService.getMathContext())),
                     FontUtils.getDejavuBold9Dark()));
+=======
+            table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(available.subtract(neededProductQuantity.getValue(),
+                    numberService.getMathContext())), FontUtils.getDejavuBold9Dark()));
+>>>>>>> dev
         }
         document.add(table);
     }

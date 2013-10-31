@@ -98,17 +98,34 @@
 			</group>
 			<group name="export">
 				<bigButton name="print" icon="pdfIcon24.png"
-					action="#{form}.generateReportForEntity('orders','order','pdf')" />
+					action="#{form}.generateReportForEntity('orders','order','pdf')" >
+					<script>
+						<![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (! value || ! value.content) {
+										return;
+									}
+									if (! value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});					
+						]]>
+					</script>
+				</bigButton>
 			</group>
-			<group name="orderParameters">
-				<bigButton name="orderParameters" icon="settingsIcon24.png"
+			<group name="orderCopyOfTechnology">
+				<bigButton name="orderCopyOfTechnology" icon="settingsIcon24.png"
 					state="disabled">
 					<script>
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 										if(window.canClose()) {
-											#{form}.performEvent('showOrderParameters', []);
+											#{form}.performEvent('showCopyOfTechnology', []);
 										}
 								}
 							});		
@@ -253,8 +270,16 @@
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="9">
+					rows="10">
 					<layoutElement column="1" row="1">
+						<component type="select" name="orderType" field="orderType"
+							reference="orderType" hasDescription="true" >
+						<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+								method="onOrderTypeChange" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
 						<component type="input" name="number" reference="number"
 							field="number">
 							<option type="alignment" value="right" />
@@ -262,15 +287,15 @@
 						<component type="hidden" name="externalSynchronized"
 							field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
-					<layoutElement column="1" row="2" height="2">
+					<layoutElement column="1" row="3" height="2">
 						<component type="textarea" name="name" field="name"
 							reference="name" hasDescription="true" />
 					</layoutElement>
-					<layoutElement column="1" row="4" height="2">
+					<layoutElement column="1" row="5" height="2">
 						<component type="textarea" name="description" field="description"
 							reference="description" />
 					</layoutElement>
-					<layoutElement column="1" row="6">
+					<layoutElement column="1" row="7">
 						<component type="lookup" name="company" reference="company"
 							field="company">
 							<option type="column" name="name" fields="name" />
@@ -283,7 +308,7 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="7">
+					<layoutElement column="1" row="8">
 						<component type="calendar" name="dateFrom" field="startDate"
 							reference="dateFrom">
 							<option type="labelWidth" value="50" />
@@ -293,7 +318,7 @@
 								method="copyStartDateToDetails" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="8">
+					<layoutElement column="1" row="9">
 						<component type="calendar" name="dateTo" field="finishDate"
 							reference="dateTo">
 							<option type="labelWidth" value="50" />
@@ -303,7 +328,7 @@
 								method="copyFinishDateToDetails" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="9">
+					<layoutElement column="1" row="10">
 						<component type="calendar" name="deadline" field="deadline"
 							reference="deadline">
 							<option type="labelWidth" value="50" />
@@ -333,28 +358,40 @@
 								method="setDefaultNameUsingTechnology" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="2">
-						<component type="input" name="defaultTechnology"
-							reference="defaultTechnology" field="defaultTechnology"
-							defaultEnabled="false" />
-					</layoutElement>
-					<layoutElement column="2" row="3">
-						<component type="lookup" name="technology" reference="technology"
-							field="technology" source="#{product}.technologies">
-							<option type="column" name="name" fields="name" link="true"
-								width="300" />
+					<layoutElement column="2" row="2" height="2">
+						<component type="borderLayout" name="predefinedTechnology" reference="predefinedTechnology">
+							<component type="gridLayout" name="predefinedTechnologyGridLayout"
+									columns="1" rows="2" reference="predefinedTechnologyGridLayout"
+									hasBorders="false">
+							
+							<layoutElement column="1" row="1">
+								<component type="input" name="defaultTechnology"
+									reference="defaultTechnology" field="defaultTechnology"
+									defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="lookup" name="technology" reference="technologyPrototype"
+									field="technologyPrototype" source="#{product}.technologies">
+									<option type="column" name="name" fields="name" link="true"
+									width="300" />
+									<option type="column" name="state" fields="state" />
+									<option type="searchable" value="name,number" />
+									<option type="orderable" value="name,number" />
 
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-
-							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
-								method="setDefaultNameUsingTechnology" />
+									<option type="expression"
+										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+									<option type="fieldCode" value="number" />
+									<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers" method="showPatternTechnology" />
+									<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
+										method="setDefaultNameUsingTechnology" />
+								</component>
+							</layoutElement>	
+							
+							</component>
+							<option type="label" value="predefinedTechnologyLabel" />
 						</component>
 					</layoutElement>
+					
 					<layoutElement column="2" row="4">
 						<component type="lookup" name="productionLine"
 							reference="productionLine" field="productionLine">
@@ -385,6 +422,8 @@
 							reference="doneQuantity" hasDescription="true">
 							<option type="labelWidth" value="55" />
 							<option type="alignment" value="right" />
+							<listener event="onInputChange" method="setProductQuantities"
+								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="8">
@@ -403,8 +442,9 @@
 				<listener event="changeState"
 					class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient"
 					method="changeState" />
-				<listener event="showOrderParameters" method="showOrderParameters"
+				<listener event="showCopyOfTechnology" method="showCopyOfTechnology"
 					class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
+					
 			</component>
 		</windowTab>
 
@@ -728,6 +768,8 @@
 										reference="amountOfProductProduced" field="#{form}.amountOfProductProduced">
 										<option type="labelWidth" value="55" />
 										<option type="alignment" value="right" />
+										<listener event="onInputChange" method="setDoneQuantity"
+											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="1">

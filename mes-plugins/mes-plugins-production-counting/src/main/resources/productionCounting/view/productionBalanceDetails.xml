@@ -29,6 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
 	<component type="window" name="window" reference="window">
+
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="generate">
@@ -40,9 +41,11 @@
 					action="#{form}.fireEvent(printProductionBalance,pdf,0);" state="disabled" />
 			</group>
 		</ribbon>
+
 		<windowTab name="mainTab">
 			<component type="form" name="productionBalanceDetails"
 				reference="form">
+
 				<script>
 					<![CDATA[
 						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
@@ -53,6 +56,7 @@
 						var entityExists = false;
 						var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
 						var deletedRibbonItem =  #{window}.getRibbonItem("actions.delete");
+						
 						this.addOnChangeListener({
 							onSetValue: function(value) {
 								if (!value || !value.content) {
@@ -100,6 +104,7 @@
 						}
 					]]>
 				</script>
+
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="9">
 					<layoutElement column="1" row="1">
@@ -134,10 +139,12 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
-								method="fillProductAndRecordsNumber" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
+								class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
+								method="fillProductAndTrackingsNumber" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
 								method="setDefaultNameUsingOrder" />
 						</component>
 					</layoutElement>
@@ -145,12 +152,12 @@
 						<component type="lookup" name="product" field="product"
 							reference="product" defaultEnabled="false">
 							<option type="column" name="name" fields="name" link="true" />
-							
+
 							<option type="required" value="true" />
-							
+
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
-							
+
 							<option type="expression" value="#name" />
 							<option type="fieldCode" value="number" />
 						</component>
@@ -164,8 +171,8 @@
 							reference="description" />
 					</layoutElement>
 					<layoutElement column="2" row="2">
-						<component type="input" name="recordsNumber" field="recordsNumber"
-							reference="recordsNumber" defaultEnabled="false">
+						<component type="input" name="trackingsNumber" field="trackingsNumber"
+							reference="trackingsNumber" defaultEnabled="false">
 							<option type="alignment" value="right" />
 							<option type="textRepresentationOnDisabled" value="true" />
 						</component>
@@ -183,9 +190,10 @@
 								columns="1" rows="3">
 								<layoutElement column="1" row="1">
 									<component type="select" name="calculateOperationsCostsMode"
-										field="calculateOperationCostsMode" reference="calculateOperationCostsMode" >
+										field="calculateOperationCostsMode" reference="calculateOperationCostsMode">
+
 										<listener event="onSelectedEntityChange"
-											class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
+											class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
 											method="disableCheckboxes" />
 									</component>
 								</layoutElement>
@@ -194,27 +202,28 @@
 										reference="includeTPZ" />
 								</layoutElement>
 								<layoutElement column="1" row="3">
-									<component type="checkbox" name="includeAdditionalTime" field="includeAdditionalTime"
-										reference="includeAdditionalTime" />
+									<component type="checkbox" name="includeAdditionalTime"
+										field="includeAdditionalTime" reference="includeAdditionalTime" />
 								</layoutElement>
 							</component>
-			
+
 							<option type="label" value="parameters" />
 						</component>
 					</layoutElement>
 				</component>
-				
+
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 
-				<listener event="printProductionBalance"
-					class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
-					method="printProductionBalance" />
 				<listener event="generateProductionBalance"
-					class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+					class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
 					method="generateProductionBalance" />
+				<listener event="printProductionBalance"
+					class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
+					method="printProductionBalance" />
 			</component>
 		</windowTab>
+
 		<windowTab name="inputProductsTab">
 			<component type="grid" name="inputProducts"
 				source="#{form}.balanceOperationProductInComponents" reference="inputProductsGrid">
@@ -232,10 +241,11 @@
 					expression="(#balance == null) ? '' :  #balance" />
 				<option type="column" name="inputProductUnit" fields="product"
 					expression="#product['unit']" />
-					
+
 				<option type="order" column="inputProductNumber" direction="asc" />
 			</component>
 		</windowTab>
+
 		<windowTab name="outputProductsTab">
 			<component type="grid" name="outputProducts"
 				source="#{form}.balanceOperationProductOutComponents" reference="outputProductsGrid">
@@ -253,10 +263,11 @@
 					expression="(#balance == null) ? '' :  #balance" />
 				<option type="column" name="outputProductUnit" fields="product"
 					expression="#product['unit']" />
-					
+
 				<option type="order" column="outputProductNumber" direction="asc" />
 			</component>
 		</windowTab>
+
 		<windowTab name="workTab">
 			<component type="gridLayout" name="workGridLayout"
 				reference="workGridLayout" columns="1" rows="2">
@@ -273,9 +284,8 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="2" row="1">
-								<component type="time" name="machineTime"
-									field="#{form}.machineTime" reference="machineTime"
-									defaultEnabled="false">
+								<component type="time" name="machineTime" field="#{form}.machineTime"
+									reference="machineTime" defaultEnabled="false">
 									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
@@ -297,23 +307,20 @@
 						<component type="gridLayout" name="laborTimeGridLayout"
 							columns="3" rows="1" hasBorders="false">
 							<layoutElement column="1" row="1">
-								<component type="time" name="plannedLaborTime"
-									field="#{form}.plannedLaborTime" reference="plannedLaborTime"
-									defaultEnabled="false">
+								<component type="time" name="plannedLaborTime" field="#{form}.plannedLaborTime"
+									reference="plannedLaborTime" defaultEnabled="false">
 									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 							<layoutElement column="2" row="1">
-								<component type="time" name="laborTime"
-									field="#{form}.laborTime" reference="laborTime"
-									defaultEnabled="false">
+								<component type="time" name="laborTime" field="#{form}.laborTime"
+									reference="laborTime" defaultEnabled="false">
 									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 							<layoutElement column="3" row="1">
-								<component type="time" name="laborTimeBalance"
-									field="#{form}.laborTimeBalance" reference="laborTimeBalance"
-									defaultEnabled="false">
+								<component type="time" name="laborTimeBalance" field="#{form}.laborTimeBalance"
+									reference="laborTimeBalance" defaultEnabled="false">
 									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
@@ -323,55 +330,66 @@
 					</component>
 				</layoutElement>
 			</component>
+
 			<component type="grid" name="operationsTime" reference="operationsTimeGrid"
 				source="#{form}.operationTimeComponents">
-				<option type="column" name="operationLevel" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('nodeNumber')" />
-				<option type="column" name="operationNumber" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('number')" />	
-				<option type="column" name="operationName" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('name')" />
-				<option type="column" name="plannedMachineTime" fields="plannedMachineTime" 
+				<option type="column" name="operationLevel"
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')" />
+				<option type="column" name="operationNumber"
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')" />
+				<option type="column" name="operationName"
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')" />
+				<option type="column" name="plannedMachineTime" fields="plannedMachineTime"
 					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#plannedMachineTime)" />
-				<option type="column" name="machineTime" fields="machineTime" 
+				<option type="column" name="machineTime" fields="machineTime"
 					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineTime)" />
-				<option type="column" name="machineTimeBalance" fields="machineTimeBalance" 
+				<option type="column" name="machineTimeBalance" fields="machineTimeBalance"
 					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineTimeBalance)" />
-				<option type="column" name="plannedLaborTime" fields="plannedLaborTime" 
+				<option type="column" name="plannedLaborTime" fields="plannedLaborTime"
 					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#plannedLaborTime)" />
-				<option type="column" name="laborTime" fields="laborTime" 
-					 expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTime)" />
-				<option type="column" name="laborTimeBalance" fields="laborTimeBalance" 
-					 expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTimeBalance)"/>
-				
+				<option type="column" name="laborTime" fields="laborTime"
+					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTime)" />
+				<option type="column" name="laborTimeBalance" fields="laborTimeBalance"
+					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTimeBalance)" />
+
 				<option type="order" column="operationNumber" direction="asc" />
 			</component>
-			<component type="grid" name="operationsPiecework" reference="operationsPieceworkGrid"
-				source="#{form}.operationPieceworkComponents">
-				<option type="column" name="operationLevel" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('nodeNumber')" />
-				<option type="column" name="operationNumber" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('number')" />	
-				<option type="column" name="operationName" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent == null) ? '' : #technologyInstanceOperationComponent.get('operation').get('name')" />
+
+			<component type="grid" name="operationsPiecework"
+				reference="operationsPieceworkGrid" source="#{form}.operationPieceworkComponents">
+				<option type="column" name="operationLevel"
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')" />
+				<option type="column" name="operationNumber"
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')" />
+				<option type="column" name="operationName"
+					fields="technologyOperationComponent"
+					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')" />
 				<option type="column" name="plannedCycles" fields="plannedCycles"
 					expression="#plannedCycles" />
 				<option type="column" name="cycles" fields="cycles" />
 				<option type="column" name="cyclesBalance" fields="cyclesBalance" />
-				
+
 				<option type="order" column="operationNumber" direction="asc" />
 			</component>
 		</windowTab>
+
 	</component>
+
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
 			method="changeFieldsAndGridsVisibility" />
 		<beforeRender
-			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
 			method="disableCheckboxes" />
 		<beforeRender
-			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
 			method="disableFieldsAndGridsWhenGenerated" />
 	</hooks>
+
 </view>

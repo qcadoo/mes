@@ -23,20 +23,26 @@
  */
 package com.qcadoo.mes.technologies.states.listener;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
@@ -49,9 +55,14 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
 public class TechnologyValidationService {
+
+    private static final String L_OPERATION = "operation";
+
+    private static final String L_PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
 
     @Autowired
     private TechnologyService technologyService;
@@ -59,7 +70,11 @@ public class TechnologyValidationService {
     @Autowired
     private TechnologyTreeValidationService technologyTreeValidationService;
 
-    private static final String L_OPERATION = "operation";
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private ProductQuantitiesService productQuantitiyService;
 
     public void checkIfTechnologyIsNotUsedInActiveOrder(final StateChangeContext stateContext) {
         final Entity technology = stateContext.getOwner();
@@ -124,7 +139,7 @@ public class TechnologyValidationService {
                 continue;
             }
             final Entity referenceTechnology = operation
-                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY);
+                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
             if (referenceTechnology != null
                     && !TechnologyState.ACCEPTED.getStringValue().equals(referenceTechnology.getStringField(STATE))) {
                 stateContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
@@ -180,7 +195,7 @@ public class TechnologyValidationService {
         for (Entity technologyOperation : technologyOperations) {
             final Entity parent = technologyOperation.getBelongsToField(TechnologyOperationComponentFields.PARENT);
             if (parent == null
-                    || TechnologyOperationComponentFields.REFERENCETECHNOLOGY.equals(parent
+                    || TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY.equals(parent
                             .getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
                 continue;
             }
@@ -215,7 +230,7 @@ public class TechnologyValidationService {
                 }
             } else {
                 final Entity prodOut = technologyOperation
-                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY);
+                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
 
                 if (prodOut == null) {
                     operations.add(parent);
@@ -251,5 +266,109 @@ public class TechnologyValidationService {
             }
         }
         return false;
+    }
+
+    public boolean checkIfTreeOperationIsValid(final StateChangeContext stateContext) {
+        Entity technology = stateContext.getOwner();
+        if (technology == null || technology.getId() == null) {
+            return true;
+        }
+        Entity techFromDB = technology.getDataDefinition().get(technology.getId());
+        if (techFromDB == null) {
+            return true;
+        }
+        String message = "";
+        boolean isValid = true;
+        for (Entity operationComponent : techFromDB.getTreeField("operationComponents")) {
+            boolean valid = true;
+
+            valid = valid && checkIfUnitMatch(operationComponent);
+            valid = valid && checkIfUnitsInTechnologyMatch(operationComponent);
+
+            if (!valid) {
+                isValid = false;
+                message = createMessageForValidationErrors(message, operationComponent);
+            }
+        }
+        if (!isValid) {
+            stateContext.addValidationError("technologies.technology.validate.error.OperationTreeNotValid", message);
+        }
+        return isValid;
+    }
+
+    private String createMessageForValidationErrors(final String message, final Entity entity) {
+        List<ErrorMessage> errors = Lists.newArrayList();
+        if (!entity.getErrors().isEmpty()) {
+            errors.addAll(entity.getErrors().values());
+        }
+        if (!entity.getGlobalErrors().isEmpty()) {
+            errors.addAll(entity.getGlobalErrors());
+        }
+
+        StringBuilder errorMessages = new StringBuilder();
+        errorMessages.append(message).append("\n");
+        for (ErrorMessage error : errors) {
+
+            if (!error.getMessage().equals("qcadooView.validate.global.error.custom")) {
+                String translatedErrorMessage = translationService.translate(error.getMessage(), Locale.getDefault(),
+                        error.getVars());
+                errorMessages.append("- ").append(translatedErrorMessage);
+                errorMessages.append(",\n ");
+            }
+        }
+        String msg = errorMessages.toString();
+        int length = msg.length();
+        String lastSign = msg.substring(length - 3);
+        if (",\n ".equals(lastSign)) {
+            msg = msg.substring(0, length - 3);
+        }
+        return msg;
+    }
+
+    public boolean checkIfUnitMatch(final Entity technologyOperationComponent) {
+        DataDefinition dataDefinition = technologyOperationComponent.getDataDefinition();
+        String productionInOneCycleUnit = technologyOperationComponent.getStringField(L_PRODUCTION_IN_ONE_CYCLE_UNIT);
+        String nextOperationAfterProducedQuantityUnit = technologyOperationComponent
+                .getStringField("nextOperationAfterProducedQuantityUNIT");
+        String nextOperationAfterProducedType = (String) technologyOperationComponent.getField("nextOperationAfterProducedType");
+
+        if (productionInOneCycleUnit == null) {
+            return true;
+        }
+
+        if ("02specified".equals(nextOperationAfterProducedType)
+                && !productionInOneCycleUnit.equals(nextOperationAfterProducedQuantityUnit)) {
+            technologyOperationComponent.addError(dataDefinition.getField("nextOperationAfterProducedQuantityUNIT"),
+                    "technologies.operationDetails.validate.error.UnitsNotMatch");
+            return false;
+        }
+        return true;
+
+    }
+
+    public boolean checkIfUnitsInTechnologyMatch(final Entity technologyOperationComponent) {
+        final String productionInOneCycleUNIT = technologyOperationComponent.getStringField(L_PRODUCTION_IN_ONE_CYCLE_UNIT);
+        DataDefinition dataDefinition = technologyOperationComponent.getDataDefinition();
+        if (productionInOneCycleUNIT == null) {
+            technologyOperationComponent.addError(dataDefinition.getField(L_PRODUCTION_IN_ONE_CYCLE_UNIT),
+                    "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
+            return false;
+        }
+
+        if (technologyOperationComponent.getId() == null) {
+            return true;
+        }
+
+        final Entity outputProduct = productQuantitiyService
+                .getOutputProductsFromOperationComponent(technologyOperationComponent);
+        if (outputProduct != null) {
+            final String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
+            if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
+                technologyOperationComponent.addError(dataDefinition.getField(L_PRODUCTION_IN_ONE_CYCLE_UNIT),
+                        "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
+                return false;
+            }
+        }
+        return true;
     }
 }

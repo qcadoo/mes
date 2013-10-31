@@ -55,10 +55,10 @@ public class TechInstOperCompHooksPPSTest {
     private TechInstOperCompHooksPPS techInstOperCompHooksPPS;
 
     @Mock
-    private DataDefinition technologyInstanceOperationComponentDD;
+    private DataDefinition technologyOperationComponentDD;
 
     @Mock
-    private Entity technologyInstanceOperationComponent;
+    private Entity technologyOperationComponent;
 
     @Mock
     private EntityList progressForDays;
@@ -87,12 +87,12 @@ public class TechInstOperCompHooksPPSTest {
     @Test
     public void shouldReturnTrueWhenProgressForDayHMIsEmpty() {
         // given
-        when(technologyInstanceOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
+        when(technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
         when(progressForDays.isEmpty()).thenReturn(true);
 
         // when
-        boolean result = techInstOperCompHooksPPS.checkGrowingNumberOfDays(technologyInstanceOperationComponentDD,
-                technologyInstanceOperationComponent);
+        boolean result = techInstOperCompHooksPPS.checkGrowingNumberOfDays(technologyOperationComponentDD,
+                technologyOperationComponent);
 
         // then
         Assert.assertTrue(result);
@@ -109,19 +109,19 @@ public class TechInstOperCompHooksPPSTest {
         List<Entity> pfds = asList(pfd1, pfd2);
         EntityList progressForDays = mockEntityList(pfds);
 
-        when(technologyInstanceOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
+        when(technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
         when(progressForDays.get(0)).thenReturn(pfd1);
         when(progressForDays.get(1)).thenReturn(pfd2);
         when(pfd1.getField(DAY)).thenReturn(day1);
         when(pfd2.getField(DAY)).thenReturn(day2);
 
         // when
-        boolean result = techInstOperCompHooksPPS.checkGrowingNumberOfDays(technologyInstanceOperationComponentDD,
-                technologyInstanceOperationComponent);
+        boolean result = techInstOperCompHooksPPS.checkGrowingNumberOfDays(technologyOperationComponentDD,
+                technologyOperationComponent);
 
         // then
         Assert.assertFalse(result);
-        Mockito.verify(technologyInstanceOperationComponent).addGlobalError(
+        Mockito.verify(technologyOperationComponent).addGlobalError(
                 "productionPerShift.progressForDay.daysAreNotInAscendingOrder", day2.toString());
     }
 
@@ -136,15 +136,15 @@ public class TechInstOperCompHooksPPSTest {
         List<Entity> pfds = asList(pfd1, pfd2);
         EntityList progressForDays = mockEntityList(pfds);
 
-        when(technologyInstanceOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
+        when(technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
         when(progressForDays.get(0)).thenReturn(pfd1);
         when(progressForDays.get(1)).thenReturn(pfd2);
         when(pfd1.getField(DAY)).thenReturn(day1);
         when(pfd2.getField(DAY)).thenReturn(day2);
 
         // when
-        boolean result = techInstOperCompHooksPPS.checkGrowingNumberOfDays(technologyInstanceOperationComponentDD,
-                technologyInstanceOperationComponent);
+        boolean result = techInstOperCompHooksPPS.checkGrowingNumberOfDays(technologyOperationComponentDD,
+                technologyOperationComponent);
 
         // then
         Assert.assertTrue(result);
@@ -154,12 +154,12 @@ public class TechInstOperCompHooksPPSTest {
     public void shouldReturnTrueWhenPFDIsEmpty() {
         // given
         progressForDays = mockEntityList(Collections.<Entity> emptyList());
-        when(technologyInstanceOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
+        when(technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
         when(progressForDays.isEmpty()).thenReturn(true);
 
         // when
-        boolean result = techInstOperCompHooksPPS.checkShiftsIfWorks(technologyInstanceOperationComponentDD,
-                technologyInstanceOperationComponent);
+        boolean result = techInstOperCompHooksPPS
+                .checkShiftsIfWorks(technologyOperationComponentDD, technologyOperationComponent);
 
         // then
         Assert.assertTrue(result);
@@ -174,15 +174,15 @@ public class TechInstOperCompHooksPPSTest {
         List<Entity> pfds = asList(pfd1);
 
         EntityList progressForDays = mockEntityList(pfds);
-        when(technologyInstanceOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
+        when(technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
         when(progressForDays.get(0)).thenReturn(pfd1);
         when(pfd1.getField(DAY)).thenReturn(day);
         when(pfd1.getBooleanField(CORRECTED)).thenReturn(true);
-        when(technologyInstanceOperationComponent.getBooleanField(HAS_CORRECTIONS)).thenReturn(false);
+        when(technologyOperationComponent.getBooleanField(HAS_CORRECTIONS)).thenReturn(false);
 
         // when
-        boolean result = techInstOperCompHooksPPS.checkShiftsIfWorks(technologyInstanceOperationComponentDD,
-                technologyInstanceOperationComponent);
+        boolean result = techInstOperCompHooksPPS
+                .checkShiftsIfWorks(technologyOperationComponentDD, technologyOperationComponent);
 
         // then
         Assert.assertTrue(result);

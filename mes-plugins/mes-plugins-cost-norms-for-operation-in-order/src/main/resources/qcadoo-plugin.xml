@@ -71,7 +71,7 @@
 		<view:view-ribbon-group resource="view/ribbonExtensions/hourlyCostNormsInOrder.xml"/>
 		
 		<view:view-listener plugin="orders"
-			view="technologyInstanceOperationComponentList" component="form"
+			view="copyOfTechnologyDetails" component="form"
 			event="showHourlyCostNorms"
 			class="com.qcadoo.mes.costNormsForOperationInOrder.listeners.HourlyCostNormsInOrderListeners"
 			method="showHourlyCostNorms" />

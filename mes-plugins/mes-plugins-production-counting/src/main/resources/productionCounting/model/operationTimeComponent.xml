@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="productionBalance" model="productionBalance" />
-		<belongsTo name="technologyInstanceOperationComponent" model="technologyInstanceOperationComponent"
+		<belongsTo name="technologyOperationComponent" model="technologyOperationComponent"
 			plugin="technologies" />
 		
 		<integer name="plannedMachineTime" />

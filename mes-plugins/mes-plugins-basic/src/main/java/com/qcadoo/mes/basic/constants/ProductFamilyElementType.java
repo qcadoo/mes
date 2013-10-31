@@ -43,7 +43,7 @@ public enum ProductFamilyElementType {
             return PRODUCTS_FAMILY;
         }
 
-        throw new IllegalStateException("Unsupported ElementHierarchyInFamilyEnumStringValue: " + productFamilyElementType);
+        throw new IllegalStateException("Unsupported ProductFamilyElementType: " + productFamilyElementType);
     }
 
 }

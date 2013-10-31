@@ -33,10 +33,14 @@ public class EntityOperationInPairNumberComparator implements Comparator<Pair<En
 
     private static final long serialVersionUID = 678028538725290392L;
 
+    private static final String L_OPERATION = "operation";
+
+    private static final String L_NUMBER = "number";
+
     @Override
     public int compare(final Pair<Entity, Entity> o1, final Pair<Entity, Entity> o2) {
-        return ((Entity) o1.getKey().getField("operation")).getField("number").toString()
-                .compareTo(((Entity) o2.getKey().getField("operation")).getField("number").toString());
+        return ((Entity) o1.getKey().getField(L_OPERATION)).getField(L_NUMBER).toString()
+                .compareTo(((Entity) o2.getKey().getField(L_OPERATION)).getField(L_NUMBER).toString());
     }
 
 }

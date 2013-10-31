@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.workPlansColumnExtension;
 
-import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
-import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
-import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCT;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
-
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,7 +34,13 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.print.ColumnFiller;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -54,36 +50,21 @@ import com.qcadoo.model.api.NumberService;
 @Component
 public class WorkPlansColumnFiller implements ColumnFiller {
 
-    // TODO mici, those constants will end up as duplication somewhere,
-    // in the columnLoader probably, they should be either here or there.
+    private static final String L_ORDER_NAME = "orderName";
 
-    private static final String L_OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
+    private static final String L_ORDER_NUMBER = "orderNumber";
 
-    private static final String L_OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
+    private static final String L_PLANNED_QUANTITY = "plannedQuantity";
 
-    private static final String L_ENTITY_TYPE = "entityType";
+    private static final String L_PLANNED_END_DATE = "plannedEndDate";
 
-    private static final String L_REFERENCE_TECHNOLOGY = "referenceTechnology";
-
-    private static final String PRODUCT_COLUMN = "productName";
-
-    private static final String QUANTITY_COLUMN = "plannedQuantity";
-
-    private static final String ORDER_NAME_COLUMN = "orderName";
-
-    private static final String ORDER_NUMBER_COLUMN = "orderNumber";
-
-    private static final String ORDER_PRODUCT_NAME_COLUMN = "productName";
-
-    private static final String PLANNED_QUANTITY_COLUMN = "plannedQuantity";
-
-    private static final String PLANNED_END_DATE_COLUMN = "plannedEndDate";
-
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
+    private static final String L_PRODUCT_NAME = "productName";
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
 
     @Override
     public Map<Entity, Map<String, String>> getOrderValues(final List<Entity> orders) {
@@ -100,6 +81,22 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         return values;
     }
 
+    @Override
+    public Map<Entity, Map<String, String>> getValues(final List<Entity> orders) {
+        Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
+
+        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
+                .getProductComponentQuantities(orders);
+
+        for (Entity order : orders) {
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            fillProductNames(technology, values);
+            fillPlannedQuantities(technology, productQuantities, values);
+        }
+
+        return values;
+    }
+
     private void initMap(final Map<Entity, Map<String, String>> valuesMap, final Entity order) {
         if (valuesMap.get(order) == null) {
             valuesMap.put(order, new HashMap<String, String>());
@@ -108,24 +105,26 @@ public class WorkPlansColumnFiller implements ColumnFiller {
 
     private void fillOrderNames(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
         initMap(valuesMap, order);
-        valuesMap.get(order).put(ORDER_NAME_COLUMN, order.getStringField(NAME));
+
+        valuesMap.get(order).put(L_ORDER_NAME, order.getStringField(OrderFields.NAME));
     }
 
     private void fillOrderNumbers(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
         initMap(valuesMap, order);
-        valuesMap.get(order).put(ORDER_NUMBER_COLUMN, order.getStringField(NUMBER));
+
+        valuesMap.get(order).put(L_ORDER_NUMBER, order.getStringField(OrderFields.NUMBER));
     }
 
     private void fillOrderPlannedQuantity(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
         initMap(valuesMap, order);
 
         String qty = "-";
-        if (order.getField(PLANNED_QUANTITY_COLUMN) != null) {
-            qty = numberService.format(order.getField(PLANNED_QUANTITY_COLUMN)) + " "
-                    + order.getBelongsToField(PRODUCT).getStringField(UNIT);
+        if (order.getField(OrderFields.PLANNED_QUANTITY) != null) {
+            qty = numberService.format(order.getField(OrderFields.PLANNED_QUANTITY)) + " "
+                    + order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT);
         }
 
-        valuesMap.get(order).put(PLANNED_QUANTITY_COLUMN, qty);
+        valuesMap.get(order).put(L_PLANNED_QUANTITY, qty);
     }
 
     private void fillOrderPlannedEndDate(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
@@ -133,109 +132,117 @@ public class WorkPlansColumnFiller implements ColumnFiller {
 
         String formattedDateTo = "-";
 
-        if (order.getField(DATE_TO) != null) {
+        if (order.getField(OrderFields.DATE_TO) != null) {
             synchronized (this) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat(DateUtils.L_DATE_FORMAT, LocaleContextHolder.getLocale());
-                formattedDateTo = dateFormat.format((Date) order.getField(DATE_TO));
+                formattedDateTo = dateFormat.format((Date) order.getField(OrderFields.DATE_TO));
             }
         }
 
-        valuesMap.get(order).put(PLANNED_END_DATE_COLUMN, formattedDateTo);
+        valuesMap.get(order).put(L_PLANNED_END_DATE, formattedDateTo);
     }
 
     private void fillOrderProductNumbers(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
         initMap(valuesMap, order);
 
-        Entity product = order.getBelongsToField(PRODUCT);
-        String name = product.getStringField(NAME) + " (" + product.getStringField(NUMBER) + ")";
-        valuesMap.get(order).put(ORDER_PRODUCT_NAME_COLUMN, name);
-    }
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+        String name = product.getStringField(ProductFields.NAME) + " (" + product.getStringField(ProductFields.NUMBER) + ")";
 
-    @Override
-    public Map<Entity, Map<String, String>> getValues(final List<Entity> orders) {
-        Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
-
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
-
-        for (Entity order : orders) {
-            Entity technology = order.getBelongsToField(TECHNOLOGY);
-            fillProductNames(technology, values);
-            fillPlannedQuantities(technology, productQuantities, values);
-        }
-
-        return values;
+        valuesMap.get(order).put(L_PRODUCT_NAME, name);
     }
 
     private void fillProductNames(final Entity technology, final Map<Entity, Map<String, String>> valuesMap) {
-        // TODO mici, change those to technologyInstanceOperationComponents?
-        EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS);
+        EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         for (Entity operationComponent : operationComponents) {
-            if (L_REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField(L_ENTITY_TYPE))) {
-                Entity refTech = operationComponent.getBelongsToField(L_REFERENCE_TECHNOLOGY);
-                fillProductNames(refTech, valuesMap);
+            if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(
+                    operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+                Entity referenceTechnology = operationComponent
+                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
+
+                fillProductNames(referenceTechnology, valuesMap);
+
                 continue;
             }
 
-            EntityList inputProducts = operationComponent.getHasManyField(L_OPERATION_PRODUCT_IN_COMPONENTS);
-            EntityList outputProducts = operationComponent.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
+            EntityList operationProductInComponents = operationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+            EntityList operationProductOutComponents = operationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
 
-            for (Entity productComponent : outputProducts) {
-                initMap(valuesMap, productComponent);
+            for (Entity operationProductInComponent : operationProductInComponents) {
+                initMap(valuesMap, operationProductInComponent);
 
-                valuesMap.get(productComponent).put(PRODUCT_COLUMN, getProductName(productComponent));
+                valuesMap.get(operationProductInComponent).put(L_PRODUCT_NAME,
+                        getProductNameAndNumber(operationProductInComponent));
             }
 
-            for (Entity productComponent : inputProducts) {
-                initMap(valuesMap, productComponent);
+            for (Entity operationProductOutComponent : operationProductOutComponents) {
+                initMap(valuesMap, operationProductOutComponent);
 
-                valuesMap.get(productComponent).put(PRODUCT_COLUMN, getProductName(productComponent));
+                valuesMap.get(operationProductOutComponent).put(L_PRODUCT_NAME,
+                        getProductNameAndNumber(operationProductOutComponent));
             }
         }
     }
 
-    private void fillPlannedQuantities(final Entity technology, final Map<Entity, BigDecimal> productQuantities,
+    private void fillPlannedQuantities(final Entity technology,
+            final OperationProductComponentWithQuantityContainer productQuantities,
             final Map<Entity, Map<String, String>> valuesMap) {
-        // TODO mici, change those to technologyInstanceOperationComponents?
-        EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS);
+        EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         for (Entity operationComponent : operationComponents) {
-            if (L_REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField(L_ENTITY_TYPE))) {
-                Entity refTech = operationComponent.getBelongsToField(L_REFERENCE_TECHNOLOGY);
-                fillPlannedQuantities(refTech, productQuantities, valuesMap);
+            if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(
+                    operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+                Entity referenceTechnology = operationComponent
+                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
+
+                fillPlannedQuantities(referenceTechnology, productQuantities, valuesMap);
+
                 continue;
             }
 
-            EntityList inputProducts = operationComponent.getHasManyField(L_OPERATION_PRODUCT_IN_COMPONENTS);
-            EntityList outputProducts = operationComponent.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
+            EntityList operationProductInComponents = operationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+            EntityList operationProductOutComponents = operationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
 
-            for (Entity productComponent : outputProducts) {
-                initMap(valuesMap, productComponent);
+            for (Entity operationProductInComponent : operationProductInComponents) {
+                initMap(valuesMap, operationProductInComponent);
 
-                String unit = productComponent.getBelongsToField(MODEL_PRODUCT).getStringField(UNIT);
-                String quantityString = numberService.format(productQuantities.get(productComponent)) + " " + unit;
-                valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
+                valuesMap.get(operationProductInComponent).put(L_PLANNED_QUANTITY,
+                        getProductQuantityAndUnit(operationProductInComponent, productQuantities));
             }
 
-            for (Entity productComponent : inputProducts) {
-                initMap(valuesMap, productComponent);
+            for (Entity operationProductOutComponent : operationProductOutComponents) {
+                initMap(valuesMap, operationProductOutComponent);
 
-                String unit = productComponent.getBelongsToField(MODEL_PRODUCT).getStringField(UNIT);
-                String quantityString = numberService.format(productQuantities.get(productComponent)) + " " + unit;
-                valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
+                valuesMap.get(operationProductOutComponent).put(L_PLANNED_QUANTITY,
+                        getProductQuantityAndUnit(operationProductOutComponent, productQuantities));
             }
         }
     }
 
-    private String getProductName(final Entity productComponent) {
-        Entity product = productComponent.getBelongsToField(MODEL_PRODUCT);
+    private String getProductNameAndNumber(final Entity operationProductComponent) {
+        Entity product = operationProductComponent.getBelongsToField("product");
 
-        StringBuilder productString = new StringBuilder(product.getStringField(NAME));
-        productString.append(" (");
-        productString.append(product.getStringField(NUMBER));
-        productString.append(")");
+        String name = product.getStringField(ProductFields.NAME);
+        String number = product.getStringField(ProductFields.NUMBER);
 
-        return productString.toString();
+        String productNameAndNumber = name + " (" + number + ")";
+
+        return productNameAndNumber;
+    }
+
+    private String getProductQuantityAndUnit(final Entity operationProductComponent,
+            final OperationProductComponentWithQuantityContainer productQuantities) {
+        Entity product = operationProductComponent.getBelongsToField("product");
+
+        String unit = product.getStringField(ProductFields.UNIT);
+        String quantity = numberService.format(productQuantities.get(operationProductComponent));
+        String productQuantityAndUnit = quantity + " " + unit;
+
+        return productQuantityAndUnit;
     }
 
 }
