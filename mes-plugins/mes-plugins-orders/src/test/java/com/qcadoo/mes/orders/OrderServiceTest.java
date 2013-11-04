@@ -63,6 +63,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Iterator;
 
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -1113,5 +1114,26 @@ public class OrderServiceTest {
 
         // then
         verify(fieldComponent).setEnabled(false);
+    }
+
+    @Test
+    public final void shouldRecognizeIfOrderWasStarted() {
+        mustNotBeStarted(null);
+        mustNotBeStarted(OrderState.PENDING.getStringValue());
+        mustNotBeStarted(OrderState.ACCEPTED.getStringValue());
+        mustNotBeStarted(OrderState.DECLINED.getStringValue());
+        mustNotBeStarted(OrderState.ABANDONED.getStringValue());
+
+        mustBeStarted(OrderState.IN_PROGRESS.getStringValue());
+        mustBeStarted(OrderState.COMPLETED.getStringValue());
+        mustBeStarted(OrderState.INTERRUPTED.getStringValue());
+    }
+
+    private void mustBeStarted(final String state) {
+        assertTrue(orderService.isOrderStarted(state));
+    }
+
+    private void mustNotBeStarted(final String state) {
+        assertFalse(orderService.isOrderStarted(state));
     }
 }
