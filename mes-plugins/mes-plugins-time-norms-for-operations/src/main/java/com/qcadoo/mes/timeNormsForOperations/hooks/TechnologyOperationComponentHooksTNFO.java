@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
@@ -27,19 +27,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 
-<<<<<<< HEAD
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
-=======
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
->>>>>>> dev
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -48,7 +42,9 @@ import com.qcadoo.model.api.Entity;
 public class TechnologyOperationComponentHooksTNFO {
 
     @Autowired
-<<<<<<< HEAD
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
     private UnitService unitService;
 
     public void onCreate(final DataDefinition dd, final Entity technologyOperationComponent) {
@@ -61,8 +57,7 @@ public class TechnologyOperationComponentHooksTNFO {
             String defaultUnit = unitService.getDefaultUnitFromSystemParameters();
             technologyOperationComponent.setField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT, defaultUnit);
         }
-=======
-    private DataDefinitionService dataDefinitionService;
+    }
 
     public void createTechOperCompTimeCalculations(final DataDefinition dd, final Entity technologyOperationComponent) {
         DataDefinition techOperCompTimeCalculationsDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
@@ -71,7 +66,6 @@ public class TechnologyOperationComponentHooksTNFO {
         techOperCompTimeCalculations = techOperCompTimeCalculationsDD.save(techOperCompTimeCalculations);
         technologyOperationComponent.setField("techOperCompTimeCalculations", techOperCompTimeCalculations);
         // technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
->>>>>>> dev
     }
 
     public void copyTimeNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {

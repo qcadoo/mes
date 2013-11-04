@@ -44,14 +44,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
-<<<<<<< HEAD
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.orders.constants.OrderFields;
-=======
-import com.qcadoo.mes.basic.ShiftsService;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
->>>>>>> dev
 import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
@@ -61,7 +55,7 @@ import com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks;
 import com.qcadoo.mes.productionPerShift.util.OrderRealizationDaysResolver;
 import com.qcadoo.mes.productionPerShift.util.OrderRealizationDaysResolver.OrderRealizationDayWithShifts;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -92,6 +86,8 @@ public class ProductionPerShiftListeners {
     private static final String L_DAY = "day";
 
     private static final String L_DATE = "date";
+
+    private static final String L_ORDER = "order";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -217,12 +213,15 @@ public class ProductionPerShiftListeners {
                 plannedProgressCorrectionTypesADL.requestComponentUpdateState();
 
                 Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
-                EntityTree techInstOperComps = order.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
-                if (techInstOperComps.isEmpty()) {
+                DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_TECHNOLOGY);
+                EntityTree techOperComps = technologyDD.get(order.getBelongsToField(OrderFields.TECHNOLOGY).getId())
+                        .getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+                if (techOperComps.isEmpty()) {
                     return;
                 }
-                Entity root = techInstOperComps.getRoot();
-                if (!root.getId().equals(tioc.getId())) {
+                Entity root = techOperComps.getRoot();
+                if (!root.getId().equals(toc.getId())) {
                     return;
                 }
                 BigDecimal productionQuantity = new BigDecimal(0);
@@ -265,8 +264,6 @@ public class ProductionPerShiftListeners {
         return plannedPrograssForDay;
     }
 
-<<<<<<< HEAD
-=======
     private List<Entity> addCorrectedToPlannedProgressForDay(final Entity toc, final List<Entity> progressForDays) {
         Entity techOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(toc.getId());
@@ -275,7 +272,6 @@ public class ProductionPerShiftListeners {
         return plannedPrograssForDay;
     }
 
->>>>>>> dev
     public void changeView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         detailsHooks.disablePlannedProgressTypeForPendingOrder(view);
         detailsHooks.disableReasonOfCorrection(view);
@@ -293,22 +289,14 @@ public class ProductionPerShiftListeners {
                     .toString();
             List<Entity> progressForDays = getProgressForDayFromTOC(toc,
                     plannedProgressType.equals(PlannedProgressType.PLANNED.getStringValue()));
-            deleteCorrectedProgressForDays(view, tioc);
+            deleteCorrectedProgressForDays(view, toc);
             for (Entity progressForDay : progressForDays) {
                 Entity copyProgressForDay = progressForDayDD.copy(progressForDay.getId()).get(0);
-                copyProgressForDay = progressForDayDD.get(copyProgressForDay.getId());
                 copyProgressForDay.setField(CORRECTED, true);
                 progressForDayDD.save(copyProgressForDay);
             }
-<<<<<<< HEAD
-            tioc.setField(HAS_CORRECTIONS, true);
-            tioc.getDataDefinition().save(tioc);
-=======
             toc.setField(HAS_CORRECTIONS, true);
-            deleteProgressForDays(view, toc);
-            toc.setField(PROGRESS_FOR_DAYS, addCorrectedToPlannedProgressForDay(toc, copiedProgressForDays));
             toc.getDataDefinition().save(toc);
->>>>>>> dev
         }
         detailsHooks.fillProgressForDays(view);
     }
@@ -318,20 +306,13 @@ public class ProductionPerShiftListeners {
         if (toc == null) {
             return;
         } else {
-<<<<<<< HEAD
-            deleteCorrectedProgressForDays(view, tioc);
-=======
-            deleteProgressForDays(view, toc);
->>>>>>> dev
+            deleteCorrectedProgressForDays(view, toc);
         }
         detailsHooks.fillProgressForDays(view);
     }
 
-<<<<<<< HEAD
-    private void deleteCorrectedProgressForDays(final ViewDefinitionState view, final Entity tioc) {
-=======
-    private void deleteProgressForDays(final ViewDefinitionState view, final Entity toc) {
->>>>>>> dev
+    private void deleteCorrectedProgressForDays(final ViewDefinitionState view, final Entity toc) {
+
         String plannedProgressType = ((FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE)).getFieldValue()
                 .toString();
         List<Entity> progressForDays = getProgressForDayFromTOC(toc,
@@ -353,17 +334,10 @@ public class ProductionPerShiftListeners {
         return productionPerShiftOperationLookup.getEntity().getBelongsToField(L_ORDER);
     }
 
-<<<<<<< HEAD
     public void updateProgressForDays(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
                 .getComponentByReference(L_PROGRESS_FOR_DAYS);
         Entity order = getOrderFromOperationLookup(view);
-=======
-        Entity toc = productionPerShiftOperationLookup.getEntity();
-        Entity technology = toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                .add(SearchRestrictions.belongsTo(OrderFields.TECHNOLOGY, technology)).uniqueResult();
->>>>>>> dev
 
         int lastDay = 0;
         boolean isFirstRow = true;

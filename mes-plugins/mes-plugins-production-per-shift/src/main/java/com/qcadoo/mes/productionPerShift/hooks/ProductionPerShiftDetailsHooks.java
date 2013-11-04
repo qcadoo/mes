@@ -269,12 +269,7 @@ public class ProductionPerShiftDetailsHooks {
 
     public void refreshProgressForDaysADL(final ViewDefinitionState view) {
         fillUnitFields(view);
-<<<<<<< HEAD
-        if (!progressTypeWasChange(view) || !tiocWasChanged(view)) {
-=======
-        disableComponents(view);
         if (!progressTypeWasChange(view) || !tocWasChanged(view)) {
->>>>>>> dev
             return;
         }
         fillProgressForDays(view);
