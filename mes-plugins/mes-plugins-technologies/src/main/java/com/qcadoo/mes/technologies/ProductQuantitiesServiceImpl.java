@@ -38,13 +38,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-<<<<<<< HEAD
-import com.qcadoo.mes.technologies.constants.ProductComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-=======
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
@@ -53,7 +49,6 @@ import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.DataDefinitionService;
->>>>>>> dev
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
@@ -512,18 +507,11 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             return null;
         } else {
             final List<Entity> parentOperationProductInComponents = parentOperation
-<<<<<<< HEAD
-                    .getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS);
-            for (Entity product : operationProductOutComponents) {
-                if (findProductParentOperation(product, parentOperationProductInComponents)) {
-                    return product;
-=======
                     .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
 
             for (Entity operationProductOutComponent : operationProductOutComponents) {
                 if (findProductParentOperation(operationProductOutComponent, parentOperationProductInComponents)) {
                     return operationProductOutComponent;
->>>>>>> dev
                 }
             }
 
