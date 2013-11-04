@@ -61,11 +61,10 @@ public class PcOrderStatesListenerService {
                 .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
                 .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, true)).list();
 
+        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && result.getTotalNumberOfEntities() == 0) {
 <<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/orderStates/PcOrderStatesListenerService.java
-        if (order.getBooleanField("allowToClose") && productionRecordingsResult.getTotalNumberOfEntities() == 0) {
             stateChangeContext.addMessage("orders.order.state.allowToClose.failureCumulated", StateMessageType.FAILURE);
 =======
-        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && result.getTotalNumberOfEntities() == 0) {
             stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
 >>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/PcOrderStatesListenerService.java
         }
@@ -89,11 +88,11 @@ public class PcOrderStatesListenerService {
                 trackingsNumber++;
             }
         }
+
+        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && technologyOperationComponents.size() != trackingsNumber) {
 <<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/orderStates/PcOrderStatesListenerService.java
-        if (order.getBooleanField("allowToClose") && operations.size() != numberOfRecord) {
             stateChangeContext.addMessage("orders.order.state.allowToClose.failureForEach", StateMessageType.FAILURE);
 =======
-        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && technologyOperationComponents.size() != trackingsNumber) {
             stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
 >>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/PcOrderStatesListenerService.java
         }

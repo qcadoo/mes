@@ -146,7 +146,7 @@
 
 							<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
 							<option type="fieldCode" value="nodeNumber" />
-							
+
 							<criteriaModifier
 								class="com.qcadoo.mes.productionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersPC"
 								method="restrictTechnologyOperationComponentsToOrderTechnology" />
@@ -404,27 +404,18 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/resources/productionCounting/view/productionRecordDetails.xml
-				<component type="borderLayout" name="borderLayoutPiecework" defaultVisible="false" reference="borderLayoutPiecework">
-					<option type="label" value="piecework" />
-					<component type="gridLayout" name="pieceworkGridLayout" columns="1" rows="1">
-						<layoutElement column="1" row="1">
-							<component type="input" name="executedOperationCycles" reference="executedOperationCycles" field="#{form}.executedOperationCycles" >
-								<option type="alignment" value="right" />
-							</component>
-						</layoutElement>
-=======
 					<component type="borderLayout" name="borderLayoutPiecework"
 						defaultVisible="false" reference="borderLayoutPiecework">
 						<option type="label" value="piecework" />
 						<component type="gridLayout" name="pieceworkGridLayout"
 							columns="1" rows="1">
 							<layoutElement column="1" row="1">
-								<component type="input" name="executedOperationCycles"
-									reference="executedOperationCycles" field="#{form}.executedOperationCycles" />
+                                <component type="input" name="executedOperationCycles"
+									reference="executedOperationCycles" field="#{form}.executedOperationCycles">
+                                    <option type="alignment" value="right" />
+                                </component>
 							</layoutElement>
 						</component>
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/resources/productionCounting/view/productionTrackingDetails.xml
 					</component>
 				</layoutElement>
 			</component>
@@ -464,7 +455,7 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
 			method="updateRibbonState" />
-		<beforeRender
+        <beforeRender
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
 			method="filterStateChangeHistory" />
 	</hooks>
