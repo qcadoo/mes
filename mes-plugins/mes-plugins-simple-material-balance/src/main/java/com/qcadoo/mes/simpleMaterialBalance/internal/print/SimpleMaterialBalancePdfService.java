@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.simpleMaterialBalance.internal.print;
@@ -154,14 +154,6 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
 
         List<Entity> simpleMaterialBalanceLocationComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS);
-<<<<<<< HEAD
-        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
-        for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
-            table.addCell(new Phrase(entry.getKey().getField(L_NUMBER).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(L_NAME).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(L_UNIT).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuRegular7Dark()));
-=======
 
         // TODO LUPO fix comparator
         // products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
@@ -169,26 +161,18 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
 
-            table.addCell(new Phrase(product.getField(L_NUMBER).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(product.getField(L_NAME).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(product.getField(L_UNIT).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils
-                    .getDejavuRegular9Dark()));
->>>>>>> dev
+            table.addCell(new Phrase(product.getField(L_NUMBER).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(product.getField(L_NAME).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(product.getField(L_UNIT).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuRegular7Dark()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity simpleMaterialBalanceLocationComponent : simpleMaterialBalanceLocationComponents) {
                 available = available.add(materialFlowService.calculateShouldBeInLocation(simpleMaterialBalanceLocationComponent
                         .getBelongsToField(L_LOCATION).getId(), product.getId(), (Date) simpleMaterialBalance.getField(L_DATE)));
             }
-<<<<<<< HEAD
             table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(numberService.format(available.subtract(entry.getValue(), numberService.getMathContext())),
-                    FontUtils.getDejavuBold9Dark()));
-=======
-            table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular9Dark()));
             table.addCell(new Phrase(numberService.format(available.subtract(neededProductQuantity.getValue(),
-                    numberService.getMathContext())), FontUtils.getDejavuBold9Dark()));
->>>>>>> dev
+                    numberService.getMathContext())), FontUtils.getDejavuBold7Dark()));
         }
         document.add(table);
     }
