@@ -140,7 +140,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                     alignColumn(orderTable.getDefaultCell(),
                             ColumnAlignment.parseString(columnForOrders.getStringField(ColumnForOrdersFields.ALIGNMENT)));
 
-                    orderTable.addCell(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
+                    orderTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
                 }
             }
 
@@ -169,24 +169,12 @@ public class WorkPlanPdfService extends PdfDocumentService {
         document.add(new Paragraph(translationService.translate("workPlans.workPlan.report.ordersTable", locale), FontUtils
                 .getDejavuBold11Dark()));
 
-<<<<<<< HEAD
-            document.add(new Paragraph(entry.getKey().getString(), FontUtils.getDejavuBold11Dark()));
-            int count = 0;
-            for (Entity operationComponent : entry.getValue()) {
-                count++;
-                PdfPTable operationTable = pdfHelper.createPanelTable(3);
-                addOperationInfoToTheOperationHeader(operationTable, operationComponent, locale);
-                if (haveManyOrders && isOrderInfoEnabled(operationComponent)) {
-                    addOrderInfoToTheOperationHeader(operationTable, order, locale);
-                }
-=======
         List<String> orderHeader = Lists.newArrayList();
 
         for (Entity columnForOrders : columnsForOrders) {
             String nameKey = columnForOrders.getStringField(ColumnForOrdersFields.NAME);
             orderHeader.add(translationService.translate(nameKey, locale));
         }
->>>>>>> dev
 
         return orderHeader;
     }
@@ -206,16 +194,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
             final Long orderId = orderIdWithTitleAndOperationComponent.getKey();
             final Entity order = orderIdWithOrderMap.get(orderId);
 
-<<<<<<< HEAD
-                addAdditionalFields(document, operationComponent, locale);
-                if (count != entry.getValue().size()) {
-                    document.add(Chunk.NEXTPAGE);
-                }
-            }
-=======
             addOperationsForSpecifiedOrder(document, orderIdWithTitleAndOperationComponent.getValue(),
                     orderColumnValues.get(orderId), order, haveManyOrders, locale);
->>>>>>> dev
         }
     }
 
@@ -432,17 +412,11 @@ public class WorkPlanPdfService extends PdfDocumentService {
         PdfPTable table = pdfHelper.createPanelTable(1);
         table.getDefaultCell().setBackgroundColor(null);
 
-<<<<<<< HEAD
-                alignColumn(table.getDefaultCell(), ColumnAlignment.parseString(column.getStringField("alignment")));
-                table.addCell(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
-            }
-=======
         String commentLabel = translationService.translate("workPlans.workPlan.report.operation.comment", locale);
         String commentContent = operationComponent.getStringField(TechnologyOperationComponentFields.COMMENT);
 
         if (commentContent == null) {
             return;
->>>>>>> dev
         }
 
         pdfHelper.addTableCellAsOneColumnTable(table, commentLabel, commentContent);
@@ -500,21 +474,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         List<Entity> columnsForProducts = getProductColumnDefinitions(direction, operationComponent);
 
-<<<<<<< HEAD
-        document.add(Chunk.NEWLINE);
-    }
-
-    void addMainHeader(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        String documenTitle = translationService.translate("workPlans.workPlan.report.title", locale);
-        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, entity.getField(L_NAME).toString(), documenTitle, documentAuthor,
-                (Date) entity.getField("date"));
-    }
-=======
         if (columnsForProducts.isEmpty()) {
             return;
         }
->>>>>>> dev
 
         PdfPTable table = pdfHelper.createTableWithHeader(columnsForProducts.size(),
                 prepareProductsTableHeader(document, columnsForProducts, direction, locale), false);
