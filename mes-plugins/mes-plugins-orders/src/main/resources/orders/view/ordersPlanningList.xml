@@ -212,17 +212,15 @@
 				]]>
 			</script>
 			<option type="column" name="number" fields="number" link="true" width="30" />
+            <option type="column" name="name" fields="name" link="true" width="30" />
 			<option type="column" name="state" fields="state" width="35" />
+            <option type="column" name="dateFrom" fields="startDate" width="50" />
+            <option type="column" name="dateTo" fields="finishDate" width="50" />
+            <option type="column" name="technologyNumber" fields="technology" expression="#technology['number']" width="30" />
 			<option type="column" name="productNumber" fields="product" expression="#product['number']" width="30" />
-			<option type="column" name="technologyNumber" fields="technology" expression="#technology['number']" width="30" />
-			<option type="column" name="description" fields="description" link="true" width="60" />
-			<option type="column" name="dateFrom" fields="startDate" width="50" />
-			<option type="column" name="dateTo" fields="finishDate" width="50" />
- 			<option type="column" name="plannedQuantity" fields="plannedQuantity" width="35" />
-			<option type="column" name="unit" fields="product" expression="#product['unit']" width="30" />
-			<option type="column" name="productionLine" fields="productionLine" expression="#productionLine['name']" width="35" />
-			<option type="column" name="productionLinePlace" fields="productionLine" expression="#productionLine['place']" width="35" />
-			
+            <option type="column" name="plannedQuantity" fields="plannedQuantity" width="35" />
+            <option type="column" name="unit" fields="product" expression="#product['unit']" width="30" />
+
  			<option type="column" name="externalNumber" fields="externalNumber" hidden="true" />
  			<option type="column" name="externalSynchronized" fields="externalSynchronized" expression="#externalSynchronized?'1':'0'" hidden="true" />
 			

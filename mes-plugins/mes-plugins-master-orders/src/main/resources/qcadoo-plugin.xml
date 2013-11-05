@@ -77,6 +77,13 @@
 				width="50" />
 		</view:view-grid-column>
 
+        <view:view-grid-column plugin="orders"
+            view="ordersPlanningList" component="grid">
+            <view:column name="masterOrder" fields="masterOrder"
+                orderable="true" searchable="true" expression="#masterOrder['number']"
+                width="50" />
+        </view:view-grid-column>
+
 	</modules>
 	
 	<features>

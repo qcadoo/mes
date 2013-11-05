@@ -68,11 +68,11 @@
 		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
 			<model:hasMany name="qualityControls" joinField="operation" model="qualityControl" plugin="qualityControls" cascade="delete"/>
 		</model:model-field>
-		
+
 		<model:model-field plugin="technologies" model="technology">
 			<model:enum name="qualityControlType" values="02forUnit,03forOrder" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="technologies" model="technology">
 			<model:decimal name="unitSamplingNr">
 				<model:validatesRange from="0" />
@@ -80,7 +80,7 @@
  				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
+
 		<model:model-field plugin="technologies" model="technology">
 			<model:string name="qualityControlInstruction">
 				<model:validatesLength max="255" />
@@ -91,7 +91,7 @@
 			<model:boolean name="checkDoneOrderForQuality"
 				required="true" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="autoGenerateQualityControl"
 				required="true" />
@@ -106,11 +106,11 @@
 			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
 				method="generateOnSaveQualityControl" />
 		</model:model-hook>
-		
+
 		<model:model-hook model="parameter" plugin="basic">
 		    <model:onCreate class="com.qcadoo.mes.qualityControls.ParameterServiceQC" method="addFieldsForParameter"/>
 		</model:model-hook>
-		
+
 		<model:model-hook plugin="technologies" model="technology">
 			<model:validatesWith class="com.qcadoo.mes.qualityControls.TechnologyModelValidatorQC"
 				method="checkIfUnitSampligNrIsReq" />
@@ -132,7 +132,6 @@
 		<view:view resource="view/qualityControlReport.xml" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
-		<view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml" />
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
@@ -141,10 +140,6 @@
 			type="beforeRender" class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="changeQualityControlType" />
 
-		<view:view-listener plugin="orders" view="ordersPlanningList"
-			component="grid" event="generateQualityControl"
-			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
-
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="changeOrderStateForForm"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
@@ -152,7 +147,7 @@
 			component="form" event="generateQualityControl"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>

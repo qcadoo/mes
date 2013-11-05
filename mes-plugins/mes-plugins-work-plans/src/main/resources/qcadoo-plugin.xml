@@ -56,7 +56,7 @@
 	<dependencies>
 		<dependency>
 			<plugin>orders</plugin>
-			<version>[1.1.7</version>
+			<version>[1.2.1</version>
 		</dependency>
 		<dependency>
 			<plugin>columnExtension</plugin>
@@ -283,6 +283,7 @@
 			view="workPlansList" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml" />
+        <view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
 		<view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml" />
 
 		<view:view resource="view/workPlansList.xml" />
@@ -314,6 +315,11 @@
 			component="grid" event="addSelectedOrdersToWorkPlan" 
 			class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
 			method="addSelectedOrdersToWorkPlan" />
+
+        <view:view-listener plugin="orders" view="ordersList"
+            component="grid" event="addSelectedOrdersToWorkPlan"
+            class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
+            method="addSelectedOrdersToWorkPlan" />
 
 		<view:view-hook plugin="technologies" view="operationDetails"
 			type="beforeRender" class="com.qcadoo.mes.workPlans.hooks.OperationViewHooks"
