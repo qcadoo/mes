@@ -28,18 +28,6 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-<<<<<<< HEAD
-		<belongsTo name="order" model="order" plugin="orders" required="true" />
-		<belongsTo name="operationProductInComponent"
-			model="operationProductInComponent" plugin="technologies" />
-		<belongsTo name="operationProductOutComponent"
-			model="operationProductOutComponent" plugin="technologies" />
-		<belongsTo name="product" model="product" plugin="basic" required="true" />
-		<decimal name="plannedQuantity" required="true">
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
-=======
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
 		<belongsTo name="technologyOperationComponent" model="technologyOperationComponent"
@@ -52,14 +40,22 @@
 			required="true" />
 		<enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
 			default="01component" required="true" />
->>>>>>> dev
 		<boolean name="isNonComponent" default="false" required="true" />
 		<decimal name="plannedQuantity" required="true">
-			<validatesWith class="com.qcadoo.mes.basicProductionCounting.validators.ProductionCountingQuantityValidators" 
-				method="validatePlannedQuantity"/>
+			<validatesWith
+				class="com.qcadoo.mes.basicProductionCounting.validators.ProductionCountingQuantityValidators"
+				method="validatePlannedQuantity" />
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
 		</decimal>
-		<decimal name="usedQuantity" persistent="false" />
-		<decimal name="producedQuantity" persistent="false" />
+		<decimal name="usedQuantity" persistent="false">
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="producedQuantity" persistent="false">
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
+		</decimal>
 	</fields>
 
 	<hooks>

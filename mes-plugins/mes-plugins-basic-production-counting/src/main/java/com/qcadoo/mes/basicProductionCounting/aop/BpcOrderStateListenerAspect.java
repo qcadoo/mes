@@ -23,13 +23,8 @@
  */
 package com.qcadoo.mes.basicProductionCounting.aop;
 
-<<<<<<< HEAD
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangePhase.LAST;
-import static com.qcadoo.mes.orders.states.constants.OrderStateStringValues.ACCEPTED;
-import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 
-=======
->>>>>>> dev
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -39,7 +34,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.qcadoo.mes.basicProductionCounting.BpcOrderStateListenerService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
-import com.qcadoo.mes.orders.states.constants.OrderStateChangePhase;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
@@ -56,13 +50,8 @@ public class BpcOrderStateListenerAspect extends AbstractStateListenerAspect {
     @Autowired
     private BpcOrderStateListenerService listenerService;
 
-<<<<<<< HEAD
     @RunInPhase(LAST)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = ACCEPTED)
-=======
-    @RunInPhase(OrderStateChangePhase.DEFAULT)
     @RunForStateTransition(sourceState = RunForStateTransitionAspect.WILDCARD_STATE, targetState = OrderStateStringValues.ACCEPTED)
->>>>>>> dev
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onAccept(final StateChangeContext stateChangeContext, final int phase) {
         listenerService.onAccept(stateChangeContext);

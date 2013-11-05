@@ -30,7 +30,6 @@
 	<fields>
 		<belongsTo name="order" model="order" plugin="orders" />
 		<belongsTo name="product" model="product" plugin="basic" />
-<<<<<<< HEAD
 		<decimal name="plannedQuantity" persistent="false">
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
@@ -43,14 +42,9 @@
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
-=======
-		<decimal name="plannedQuantity" persistent="false" />
-		<decimal name="usedQuantity" />
-		<decimal name="producedQuantity" />
 	
 		<hasMany name="productionCountingQuantities" model="productionCountingQuantity"
 			plugin="basicProductionCounting" joinField="basicProductionCounting" cascade="delete" />
->>>>>>> dev
 	</fields>
 	
 	<hooks>
