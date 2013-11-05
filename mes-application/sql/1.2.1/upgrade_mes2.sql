@@ -59,7 +59,6 @@ CREATE TABLE deliveries_parameterdeliveryordercolumn
 );
 
 -- end
-<<<<<<< HEAD
 
 
 -- Table: deliveries_delivery
@@ -154,5 +153,3 @@ ALTER TABLE technologies_technology ALTER COLUMN externalsynchronized SET DEFAUL
 UPDATE technologies_technology SET externalsynchronized = true;
 
 -- end
-=======
->>>>>>> dev
