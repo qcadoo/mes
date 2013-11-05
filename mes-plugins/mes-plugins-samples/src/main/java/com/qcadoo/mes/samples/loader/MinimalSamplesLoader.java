@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.samples.loader;
@@ -125,11 +125,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         Entity user = dataDefinitionService.get("qcadooSecurity", "user").create();
 
         user.setField("userName", values.get("login"));
-<<<<<<< HEAD
-        user.setField(L_EMAIL, values.get(L_EMAIL));
-=======
         user.setField(L_EMAIL, values.get(SamplesConstants.L_EMAIL));
->>>>>>> dev
         user.setField("firstName", values.get("firstname"));
         user.setField("lastName", values.get("lastname"));
         user.setField("password", "123");

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.samples.loader;
@@ -276,11 +276,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         requestForQuotationStateChange.setField(L_STATUS, values.get(L_STATUS));
         requestForQuotationStateChange.setField(L_PHASE, values.get(L_PHASE));
         requestForQuotationStateChange.setField(L_WORKER, values.get(L_WORKER));
-<<<<<<< HEAD
-        requestForQuotationStateChange.setField(REQUEST_FOR_QUOTION,
-=======
         requestForQuotationStateChange.setField(L_REQUEST_FOR_QUOTION,
->>>>>>> dev
                 getRequestForQuotationByNumber(values.get("requestforquotation")));
         requestForQuotationStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         requestForQuotationStateChange.getDataDefinition().save(requestForQuotationStateChange);
@@ -296,11 +292,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         offerStateChange.setField(L_STATUS, values.get(L_STATUS));
         offerStateChange.setField(L_PHASE, values.get(L_PHASE));
         offerStateChange.setField(L_WORKER, values.get(L_WORKER));
-<<<<<<< HEAD
-        offerStateChange.setField(OFFER, getOfferByNumber(values.get(OFFER)));
-=======
         offerStateChange.setField(L_OFFER, getOfferByNumber(values.get(L_OFFER)));
->>>>>>> dev
         offerStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         offerStateChange.getDataDefinition().save(offerStateChange);
 
@@ -315,11 +307,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         negotiationStateChange.setField(L_STATUS, values.get(L_STATUS));
         negotiationStateChange.setField(L_PHASE, values.get(L_PHASE));
         negotiationStateChange.setField(L_WORKER, values.get(L_WORKER));
-<<<<<<< HEAD
-        negotiationStateChange.setField(NEGOTIATION, getNegotationByNumber(values.get(NEGOTIATION)));
-=======
         negotiationStateChange.setField(L_NEGOTIATION, getNegotationByNumber(values.get(L_NEGOTIATION)));
->>>>>>> dev
         negotiationStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         negotiationStateChange.getDataDefinition().save(negotiationStateChange);
 
@@ -327,22 +315,14 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void addDeliveryStateChange(final Map<String, String> values) {
         long date = System.currentTimeMillis();
-<<<<<<< HEAD
-        Entity deliveryStateChange = dataDefinitionService.get(L_DELIVERY, "deliveryStateChange").create();
-=======
         Entity deliveryStateChange = dataDefinitionService.get(L_DELIVERIES, "deliveryStateChange").create();
->>>>>>> dev
         deliveryStateChange.setField(L_DATE_AND_TIME, new Date(date));
         deliveryStateChange.setField(L_SOURCE_STATE, values.get(L_SOURCESTATE));
         deliveryStateChange.setField(L_TARGET_STATE, values.get(L_TARGETSTATE));
         deliveryStateChange.setField(L_STATUS, values.get(L_STATUS));
         deliveryStateChange.setField(L_PHASE, values.get(L_PHASE));
         deliveryStateChange.setField(L_WORKER, values.get(L_WORKER));
-<<<<<<< HEAD
-        deliveryStateChange.setField(DELIVERY, getDeliveryByNumber(values.get(DELIVERY)));
-=======
         deliveryStateChange.setField(L_DELIVERY, getDeliveryByNumber(values.get(L_DELIVERY)));
->>>>>>> dev
         deliveryStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         deliveryStateChange.getDataDefinition().save(deliveryStateChange);
     }
@@ -989,7 +969,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             technology.setField("shiftFeatureRequired", false);
             technology.setField("technologyBatchRequired", false);
             technology.setField("externalSynchronized", true);
-
             if (isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION)
                     && L_QUALITY_CONTROLS_FOR_OPERATION.equals(values.get(L_QUALITYCONTROLTYPE_3))) {
                 technology.setField(L_QUALITY_CONTROL_TYPE2, L_QUALITY_CONTROLS_FOR_OPERATION);

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.samples.loader;
@@ -111,7 +111,6 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     protected void addDictionaryItems(final Map<String, String> values) {
         Entity dictionary = getDictionaryByName(values.get(L_NAME));
 
-<<<<<<< HEAD
         if (dictionary != null) {
             Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
             item.setField("dictionary", dictionary);
@@ -122,19 +121,8 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
                 LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(L_NAME) + ", item="
                         + item.getField(L_NAME) + ", description=" + item.getField("description") + "}");
             }
-=======
-        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
-        item.setField("dictionary", dictionary);
-        item.setField(L_NAME, values.get("item"));
-        item.setField("description", values.get("description"));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(L_NAME) + ", item=" + item.getField(L_NAME)
-                    + ", description=" + item.getField("description") + "}");
-        }
->>>>>>> dev
-
             item.getDataDefinition().save(item);
+
         }
     }
 
@@ -233,13 +221,8 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     }
 
     private Entity getCompany(final String number) {
-<<<<<<< HEAD
-        return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
-=======
         return dataDefinitionService.get(SamplesConstants.L_BASIC_PLUGIN_IDENTIFIER, SamplesConstants.L_BASIC_MODEL_COMPANY)
                 .find().add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
->>>>>>> dev
     }
 
     private Entity getCurrency(final String code) {
