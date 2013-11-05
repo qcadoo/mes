@@ -92,17 +92,10 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         orderHeader.add(translationService.translate("orders.order.number.label", locale));
         orderHeader.add(translationService.translate("orders.order.name.label", locale));
         orderHeader.add(translationService.translate("orders.order.product.label", locale));
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
-        orderHeader.add(translationService.translate("materialRequirements.materialRequirement.report.order.plannedQuantity",
-                locale));
-        orderHeader.add(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale));
-        addOrderSeries(document, entity, orderHeader);
-=======
         orderHeader.add(translationService.translate("basic.product.unit.label", locale));
         orderHeader.add(translationService.translate("orders.order.plannedQuantity.label", locale));
         addOrderSeries(document, materialRequirement, orderHeader);
 
->>>>>>> dev:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
         document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah2",
                 locale), FontUtils.getDejavuBold11Dark()));
 
@@ -110,13 +103,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
         productHeader.add(translationService.translate("basic.product.number.label", locale));
         productHeader.add(translationService.translate("basic.product.name.label", locale));
+        productHeader.add(translationService.translate("basic.product.unit.label", locale));
         productHeader.add(translationService.translate("technologies.technologyOperationComponent.quantity.label", locale));
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
-        productHeader.add(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale));
-        addTechnologySeries(document, entity, productHeader);
-=======
         addTechnologySeries(document, materialRequirement, productHeader);
->>>>>>> dev:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
     }
 
     private void addPanel(final Document document, final Entity materialRequirement, final Locale locale)
@@ -154,37 +143,21 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         // neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
 
         PdfPTable table = pdfHelper.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
-        for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
-            table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuBold7Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            Object unit = entry.getKey().getField(UNIT_FIELD);
-=======
 
         for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
 
-            table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
             String unit = product.getStringField(ProductFields.UNIT);
->>>>>>> dev:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
             if (unit == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
-                table.addCell(new Phrase(unit.toString(), FontUtils.getDejavuRegular7Dark()));
-            }
-
-=======
-                table.addCell(new Phrase(unit, FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuBold9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
->>>>>>> dev:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
         }
         document.add(table);
     }
@@ -196,29 +169,14 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         PdfPTable table = pdfHelper.createTableWithHeader(5, orderHeader, true, defaultMatReqHeaderColumnWidth);
 
         for (Entity order : orders) {
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
-            table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(order.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
-            Entity product = (Entity) order.getField(PRODUCT_FIELD);
-=======
-            table.addCell(new Phrase(order.getStringField(OrderFields.NUMBER), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(order.getStringField(OrderFields.NAME), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(order.getStringField(OrderFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(order.getStringField(OrderFields.NAME), FontUtils.getDejavuRegular7Dark()));
             Entity product = (Entity) order.getField(OrderFields.PRODUCT);
->>>>>>> dev:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
             if (product == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
-                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
-=======
-                table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular9Dark()));
->>>>>>> dev:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
+                table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
             }
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_FIELD);
-            plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
-            table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             if (product == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
@@ -226,20 +184,14 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 if (unit == null) {
                     table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                 } else {
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
-                    table.addCell(new Phrase(unit.toString(), FontUtils.getDejavuRegular7Dark()));
-                }
-            }
-=======
-                    table.addCell(new Phrase(unit, FontUtils.getDejavuRegular9Dark()));
+                    table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
                 }
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
-            table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
->>>>>>> dev:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
         }
         document.add(table);
     }
