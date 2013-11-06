@@ -42,8 +42,6 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    public static final String MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
-
     public static final String MODEL_OPERATION_NUMBER_FIELD_NAME = "number";
 
     public static final String MODEL_TECHNOLOGY_STATE_CHANGE = "technologyStateChange";
