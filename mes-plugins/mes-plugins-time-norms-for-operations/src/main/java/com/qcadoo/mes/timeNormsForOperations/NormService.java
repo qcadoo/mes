@@ -88,7 +88,7 @@ public class NormService {
             return operationComponent.getDecimalField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE);
         } else if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(entityType)) {
             Entity refOperationComp = operationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY)
+                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
                     .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
             return refOperationComp.getDecimalField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE);
         } else {

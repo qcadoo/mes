@@ -60,7 +60,7 @@ public class OperationHooksOTFOTest {
     private OperationHooksOTFO hooksOTFO;
 
     @Mock
-    private DataDefinition dataDefinition, techInstOperCompDD, operationalTasksDD;
+    private DataDefinition dataDefinition, techOperCompDD, operationalTasksDD;
 
     @Mock
     private Entity entity, operation, tioc1, task1;
@@ -83,8 +83,8 @@ public class OperationHooksOTFOTest {
         PowerMockito.mockStatic(SearchRestrictions.class);
         when(
                 dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).thenReturn(techInstOperCompDD);
-        when(techInstOperCompDD.find()).thenReturn(builder1);
+                        TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)).thenReturn(techOperCompDD);
+        when(techOperCompDD.find()).thenReturn(builder1);
         SearchCriterion criterion = SearchRestrictions.belongsTo(TechnologyInstanceOperCompFields.OPERATION, operation);
         when(builder1.add(criterion)).thenReturn(builder1);
         when(builder1.list()).thenReturn(result1);

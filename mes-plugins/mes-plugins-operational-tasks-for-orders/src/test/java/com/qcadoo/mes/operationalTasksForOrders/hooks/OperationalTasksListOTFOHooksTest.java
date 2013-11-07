@@ -103,7 +103,7 @@ public class OperationalTasksListOTFOHooksTest {
         // QUERY FOR TIOC
         when(
                 dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).thenReturn(tiocDD);
+                        TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)).thenReturn(tiocDD);
         when(tiocDD.find()).thenReturn(tiocBuilder);
         SearchCriterion tiocCriterion = SearchRestrictions.belongsTo(
                 TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT, techOperComp);
