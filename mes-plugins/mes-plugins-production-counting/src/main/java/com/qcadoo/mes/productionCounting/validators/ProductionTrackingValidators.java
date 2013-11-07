@@ -111,11 +111,11 @@ public class ProductionTrackingValidators {
             if (tracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
                 if (productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT) == null) {
                     productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.ORDER),
-                            "productionCounting.record.messages.error.final");
+                            "productionCounting.productionTracking.messages.error.final");
                 } else {
                     productionTracking.addError(
                             productionTrackingDD.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT),
-                            "productionCounting.record.messages.error.operationFinal");
+                            "productionCounting.productionTracking.messages.error.operationFinal");
                 }
 
                 return false;
@@ -133,7 +133,7 @@ public class ProductionTrackingValidators {
 
         if (!isOrderStarted(state)) {
             productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.ORDER),
-                    "productionCounting.record.messages.error.orderIsNotStarted");
+                    "productionCounting.productionTracking.messages.error.orderIsNotStarted");
 
             isStarted = false;
         }
