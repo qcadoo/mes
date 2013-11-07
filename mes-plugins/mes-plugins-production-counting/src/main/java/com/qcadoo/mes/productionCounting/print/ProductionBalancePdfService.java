@@ -150,13 +150,9 @@ public class ProductionBalancePdfService extends PdfDocumentService {
     }
 
     public PdfPTable createLeftPanel(final Entity productionBalance, final Locale locale) {
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/print/ProductionBalancePdfService.java
-        final PdfPTable leftPanel = pdfHelper.createPanelTableWithSimpleFormat(1);
-=======
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
-        PdfPTable leftPanel = pdfHelper.createPanelTable(1);
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/print/ProductionBalancePdfService.java
+        PdfPTable leftPanel = pdfHelper.createPanelTableWithSimpleFormat(1);
 
         addTableCellAsTable(leftPanel,
                 translationService.translate("productionCounting.productionBalance.report.panel.name", locale),
@@ -205,13 +201,9 @@ public class ProductionBalancePdfService extends PdfDocumentService {
     }
 
     public PdfPTable createRightPanel(final Entity productionBalance, final Locale locale) {
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/print/ProductionBalancePdfService.java
-        final PdfPTable rightPanel = pdfHelper.createPanelTableWithSimpleFormat(1);
-=======
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
-        PdfPTable rightPanel = pdfHelper.createPanelTable(1);
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/print/ProductionBalancePdfService.java
+        PdfPTable rightPanel = pdfHelper.createPanelTableWithSimpleFormat(1);
 
         rightPanel
                 .addCell(new Phrase(translationService.translate(
@@ -302,28 +294,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             PdfPTable inputProductsTable = pdfHelper.createTableWithHeader(6, inputProductsTableHeader, false);
 
             for (Entity inputProduct : inputProductsList) {
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/print/ProductionBalancePdfService.java
-                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT).getStringField(NUMBER), FontUtils
-                        .getDejavuRegular7Dark()));
-                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT).getStringField(NAME), FontUtils
-                        .getDejavuRegular7Dark()));
-
-                inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-                inputProductsTable.addCell(new Phrase(numberService.format(inputProduct.getField("plannedQuantity")), FontUtils
-                        .getDejavuRegular7Dark()));
-                if (inputProduct.getField(USED_QUANTITY_LITERAL) == null) {
-                    inputProductsTable.addCell(new Phrase(N_A_LITERAL, FontUtils.getDejavuRegular7Dark()));
-                    inputProductsTable.addCell(new Phrase(N_A_LITERAL, FontUtils.getDejavuRegular7Dark()));
-                } else {
-                    inputProductsTable.addCell(new Phrase(numberService.format(inputProduct.getField(USED_QUANTITY_LITERAL)),
-                            FontUtils.getDejavuRegular7Dark()));
-                    inputProductsTable.addCell(new Phrase(numberService.format(inputProduct.getField("balance")), FontUtils
-                            .getDejavuRegular7Dark()));
-                }
-                inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT).getStringField("unit"), FontUtils
-                        .getDejavuRegular7Dark()));
-=======
                 inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(
                         BalanceOperationProductInComponentFields.PRODUCT).getStringField(ProductFields.NUMBER), FontUtils
                         .getDejavuRegular9Dark()));
@@ -351,7 +321,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(
                         BalanceOperationProductInComponentFields.PRODUCT).getStringField(ProductFields.UNIT), FontUtils
                         .getDejavuRegular9Dark()));
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/print/ProductionBalancePdfService.java
             }
 
             document.add(inputProductsTable);
@@ -387,28 +356,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             PdfPTable outputProductsTable = pdfHelper.createTableWithHeader(6, outputProductsTableHeader, false);
 
             for (Entity outputProduct : outputProductsList) {
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/print/ProductionBalancePdfService.java
-                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT).getStringField(NUMBER), FontUtils
-                        .getDejavuRegular7Dark()));
-                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT).getStringField(NAME), FontUtils
-                        .getDejavuRegular7Dark()));
-
-                outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-                outputProductsTable.addCell(new Phrase(numberService.format(outputProduct.getField("plannedQuantity")), FontUtils
-                        .getDejavuRegular7Dark()));
-                if (outputProduct.getField(USED_QUANTITY_LITERAL) == null) {
-                    outputProductsTable.addCell(new Phrase(N_A_LITERAL, FontUtils.getDejavuRegular7Dark()));
-                    outputProductsTable.addCell(new Phrase(N_A_LITERAL, FontUtils.getDejavuRegular7Dark()));
-                } else {
-                    outputProductsTable.addCell(new Phrase(numberService.format(outputProduct.getField(USED_QUANTITY_LITERAL)),
-                            FontUtils.getDejavuRegular7Dark()));
-                    outputProductsTable.addCell(new Phrase(numberService.format(outputProduct.getField("balance")), FontUtils
-                            .getDejavuRegular7Dark()));
-                }
-                outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT).getStringField("unit"), FontUtils
-                        .getDejavuRegular7Dark()));
-=======
                 outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(
                         BalanceOperationProductOutComponentFields.PRODUCT).getStringField(ProductFields.NUMBER), FontUtils
                         .getDejavuRegular9Dark()));
@@ -435,7 +382,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(
                         BalanceOperationProductOutComponentFields.PRODUCT).getStringField(ProductFields.UNIT), FontUtils
                         .getDejavuRegular9Dark()));
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/print/ProductionBalancePdfService.java
             }
 
             document.add(outputProductsTable);
@@ -469,19 +415,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         if (!operationTimeComponents.isEmpty()) {
             for (Entity operationTimeComponent : operationTimeComponents) {
                 machineTimeTable.addCell(new Phrase(operationTimeComponent.getBelongsToField(
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/print/ProductionBalancePdfService.java
-                        TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL).getStringField("nodeNumber"), FontUtils
-                        .getDejavuRegular7Dark()));
-                machineTimeTable.addCell(new Phrase(operationTimeComponent
-                        .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL).getBelongsToField("operation")
-                        .getStringField("number"), FontUtils.getDejavuRegular7Dark()));
-                machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) operationTimeComponent
-                        .getField(PLANNED_MACHINE_TIME)), FontUtils.getDejavuRegular7Dark()));
-                machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) operationTimeComponent
-                        .getField(MACHINE_TIME)), FontUtils.getDejavuRegular7Dark()));
-                machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) operationTimeComponent
-                        .getField(MACHINE_TIME_BALANCE)), FontUtils.getDejavuRegular7Dark()));
-=======
                         OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
                         TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
                 machineTimeTable.addCell(new Phrase(operationTimeComponent
@@ -494,21 +427,10 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                         .getIntegerField(OperationTimeComponentFields.MACHINE_TIME)), FontUtils.getDejavuRegular9Dark()));
                 machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(operationTimeComponent
                         .getIntegerField(OperationTimeComponentFields.MACHINE_TIME_BALANCE)), FontUtils.getDejavuRegular9Dark()));
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/print/ProductionBalancePdfService.java
             }
         }
 
         machineTimeTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/print/ProductionBalancePdfService.java
-                locale), FontUtils.getDejavuRegular7Dark()));
-        machineTimeTable.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
-        machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionBalance
-                .getField(PLANNED_MACHINE_TIME)), FontUtils.getDejavuRegular7Dark()));
-        machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionBalance
-                .getField(MACHINE_TIME)), FontUtils.getDejavuRegular7Dark()));
-        machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionBalance
-                .getField(MACHINE_TIME_BALANCE)), FontUtils.getDejavuRegular7Dark()));
-=======
                 locale), FontUtils.getDejavuRegular9Dark()));
         machineTimeTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
         machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(productionBalance
@@ -517,7 +439,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 .getIntegerField(ProductionBalanceFields.MACHINE_TIME)), FontUtils.getDejavuRegular9Dark()));
         machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(productionBalance
                 .getIntegerField(ProductionBalanceFields.MACHINE_TIME_BALANCE)), FontUtils.getDejavuRegular9Dark()));
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/print/ProductionBalancePdfService.java
 
         document.add(machineTimeTable);
     }
@@ -549,19 +470,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         if (!operationTimeComponents.isEmpty()) {
             for (Entity operationTimeComponent : operationTimeComponents) {
                 laborTimeTable.addCell(new Phrase(operationTimeComponent.getBelongsToField(
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/print/ProductionBalancePdfService.java
-                        TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL).getStringField("nodeNumber"), FontUtils
-                        .getDejavuRegular7Dark()));
-                laborTimeTable.addCell(new Phrase(operationTimeComponent
-                        .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL).getBelongsToField("operation")
-                        .getStringField("number"), FontUtils.getDejavuRegular7Dark()));
-                laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) operationTimeComponent
-                        .getField(PLANNED_LABOR_TIME)), FontUtils.getDejavuRegular7Dark()));
-                laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) operationTimeComponent
-                        .getField(LABOR_TIME)), FontUtils.getDejavuRegular7Dark()));
-                laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) operationTimeComponent
-                        .getField(LABOR_TIME_BALANCE)), FontUtils.getDejavuRegular7Dark()));
-=======
                         OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
                         TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
                 laborTimeTable.addCell(new Phrase(operationTimeComponent
@@ -574,21 +482,10 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                         .getIntegerField(OperationTimeComponentFields.LABOR_TIME)), FontUtils.getDejavuRegular9Dark()));
                 laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(operationTimeComponent
                         .getIntegerField(OperationTimeComponentFields.LABOR_TIME_BALANCE)), FontUtils.getDejavuRegular9Dark()));
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/print/ProductionBalancePdfService.java
             }
         }
 
         laborTimeTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/print/ProductionBalancePdfService.java
-                locale), FontUtils.getDejavuRegular7Dark()));
-        laborTimeTable.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
-        laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionBalance
-                .getField(PLANNED_LABOR_TIME)), FontUtils.getDejavuRegular7Dark()));
-        laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionBalance
-                .getField(LABOR_TIME)), FontUtils.getDejavuRegular7Dark()));
-        laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionBalance
-                .getField(LABOR_TIME_BALANCE)), FontUtils.getDejavuRegular7Dark()));
-=======
                 locale), FontUtils.getDejavuRegular9Dark()));
         laborTimeTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
         laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(productionBalance
@@ -597,7 +494,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 .getIntegerField(ProductionBalanceFields.LABOR_TIME)), FontUtils.getDejavuRegular9Dark()));
         laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString(productionBalance
                 .getIntegerField(ProductionBalanceFields.LABOR_TIME_BALANCE)), FontUtils.getDejavuRegular9Dark()));
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/print/ProductionBalancePdfService.java
 
         document.add(laborTimeTable);
     }
@@ -639,19 +535,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                         .getDecimalField(OperationPieceworkComponentFields.CYCLES_BALANCE);
 
                 pieceworkTable.addCell(new Phrase(operationPieceworkComponent.getBelongsToField(
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/print/ProductionBalancePdfService.java
-                        TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL).getStringField("nodeNumber"), FontUtils
-                        .getDejavuRegular7Dark()));
-                pieceworkTable.addCell(new Phrase(operationPieceworkComponent
-                        .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL).getBelongsToField("operation")
-                        .getStringField("number"), FontUtils.getDejavuRegular7Dark()));
-                pieceworkTable.addCell(new Phrase(numberService.format(operationPieceworkComponent.getField(PLANNED_CYCLES)),
-                        FontUtils.getDejavuRegular7Dark()));
-                pieceworkTable.addCell(new Phrase(numberService.format(operationPieceworkComponent.getField(CYCLES)), FontUtils
-                        .getDejavuRegular7Dark()));
-                pieceworkTable.addCell(new Phrase(numberService.format(operationPieceworkComponent.getField(CYCLES_BALANCE)),
-                        FontUtils.getDejavuRegular7Dark()));
-=======
                         OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
                         TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
                 pieceworkTable.addCell(new Phrase(operationPieceworkComponent
@@ -665,27 +548,15 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 totalPlannedCycles = totalPlannedCycles.add(plannedCycles, numberService.getMathContext());
                 totalCycles = totalPlannedCycles.add(cycles, numberService.getMathContext());
                 totalCyclesBalance = totalPlannedCycles.add(cyclesBalance, numberService.getMathContext());
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/print/ProductionBalancePdfService.java
             }
         }
 
         pieceworkTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/print/ProductionBalancePdfService.java
-                locale), FontUtils.getDejavuRegular7Dark()));
-        pieceworkTable.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
-        pieceworkTable.addCell(new Phrase(numberService.format(productionBalance.getField(PLANNED_CYCLES)), FontUtils
-                .getDejavuRegular7Dark()));
-        pieceworkTable.addCell(new Phrase(numberService.format(productionBalance.getField(CYCLES)), FontUtils
-                .getDejavuRegular7Dark()));
-        pieceworkTable.addCell(new Phrase(numberService.format(productionBalance.getField(CYCLES_BALANCE)), FontUtils
-                .getDejavuRegular7Dark()));
-=======
                 locale), FontUtils.getDejavuRegular9Dark()));
         pieceworkTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
         pieceworkTable.addCell(new Phrase(numberService.format(totalPlannedCycles), FontUtils.getDejavuRegular9Dark()));
         pieceworkTable.addCell(new Phrase(numberService.format(totalCycles), FontUtils.getDejavuRegular9Dark()));
         pieceworkTable.addCell(new Phrase(numberService.format(totalCyclesBalance), FontUtils.getDejavuRegular9Dark()));
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/print/ProductionBalancePdfService.java
 
         document.add(pieceworkTable);
     }

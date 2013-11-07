@@ -56,11 +56,7 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
     @RunForStateTransition(targetState = ProductionTrackingStateStringValues.ACCEPTED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void validationOnAccept(final StateChangeContext stateChangeContext, final int phase) {
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/aop/listener/ProductionRecordBasicListenerAspect.java
-        productionRecordBasicListenerService.validationOnAccept(stateChangeContext);
-=======
-        productionTrackingListenerService.checkIfExistsFinalTracking(stateChangeContext);
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/aop/listener/ProductionTrackingListenerAspect.java
+        productionTrackingListenerService.validationOnAccept(stateChangeContext);
     }
 
     @RunInPhase(ProductionTrackingStateChangePhase.DEFAULT)

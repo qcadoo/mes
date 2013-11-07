@@ -62,11 +62,7 @@ public class PcOrderStatesListenerService {
                 .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, true)).list();
 
         if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && result.getTotalNumberOfEntities() == 0) {
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/orderStates/PcOrderStatesListenerService.java
             stateChangeContext.addMessage("orders.order.state.allowToClose.failureCumulated", StateMessageType.FAILURE);
-=======
-            stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/PcOrderStatesListenerService.java
         }
     }
 
@@ -90,11 +86,7 @@ public class PcOrderStatesListenerService {
         }
 
         if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && technologyOperationComponents.size() != trackingsNumber) {
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/orderStates/PcOrderStatesListenerService.java
             stateChangeContext.addMessage("orders.order.state.allowToClose.failureForEach", StateMessageType.FAILURE);
-=======
-            stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/PcOrderStatesListenerService.java
         }
     }
 

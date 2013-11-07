@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.states.listener;
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionRecordBasicListenerService.java
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
-import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
-import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
-
-=======
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionTrackingListenerService.java
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
@@ -47,14 +32,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionRecordBasicListenerService.java
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
-import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
-import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
-=======
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
@@ -66,15 +43,8 @@ import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionTrackingListenerService.java
 import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionRecordBasicListenerService.java
-import com.qcadoo.mes.states.service.StateChangeContextBuilder;
-import com.qcadoo.model.api.DataDefinitionService;
-=======
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionTrackingListenerService.java
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -82,20 +52,14 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionRecordBasicListenerService.java
-public final class ProductionRecordBasicListenerService {
-
-    private static final String L_PRODUCED_QUANTITY = "producedQuantity";
+public final class ProductionTrackingListenerService {
 
     private static final String L_USED_QUANTITY = "usedQuantity";
-=======
-public final class ProductionTrackingListenerService {
 
     private static final String L_PRODUCT = "product";
 
     @Autowired
     private NumberService numberService;
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionTrackingListenerService.java
 
     @Autowired
     private TranslationService translationService;
@@ -105,15 +69,6 @@ public final class ProductionTrackingListenerService {
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
-
-    @Autowired
-    private OrderStateChangeAspect orderStateChangeAspect;
-
-    @Autowired
-    private StateChangeContextBuilder stateChangeContextBuilder;
-
-    @Autowired
-    private OrderClosingHelper orderClosingHelper;
 
     public void validationOnAccept(final StateChangeContext stateChangeContext) {
         checkIfRecordOperationProductComponentsWereFilled(stateChangeContext);
@@ -134,45 +89,39 @@ public final class ProductionTrackingListenerService {
         setOrderDoneQuantity(productionTracking);
     }
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionRecordBasicListenerService.java
     private void checkIfRecordOperationProductComponentsWereFilled(final StateChangeContext stateChangeContext) {
-        final Entity productionRecord = stateChangeContext.getOwner();
+        final Entity productionTracking = stateChangeContext.getOwner();
 
-        if (!checkIfUsedQuantitiesWereFilled(productionRecord, ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS)
-                && !checkIfUsedQuantitiesWereFilled(productionRecord,
-                        ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS)) {
+        if (!checkIfUsedQuantitiesWereFilled(productionTracking,
+                ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS)
+                && !checkIfUsedQuantitiesWereFilled(productionTracking,
+                        ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
             stateChangeContext
-                    .addValidationError("productionCounting.productionRecord.messages.error.recordOperationProductComponentsNotFilled");
+                    .addValidationError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
-    private boolean checkIfUsedQuantitiesWereFilled(final Entity productionRecord, final String modelName) {
-        final SearchCriteriaBuilder searchBuilder = productionRecord.getHasManyField(modelName).find()
+    private boolean checkIfUsedQuantitiesWereFilled(final Entity productionTracking, final String modelName) {
+        final SearchCriteriaBuilder searchBuilder = productionTracking.getHasManyField(modelName).find()
                 .add(SearchRestrictions.isNotNull(L_USED_QUANTITY));
 
         return (searchBuilder.list().getTotalNumberOfEntities() != 0);
     }
 
     private void checkIfTimesWereFilled(final StateChangeContext stateChangeContext) {
-        final Entity productionRecord = stateChangeContext.getOwner();
-        Integer machineTime = productionRecord.getIntegerField(ProductionRecordFields.MACHINE_TIME);
-        Integer laborTime = productionRecord.getIntegerField(ProductionRecordFields.LABOR_TIME);
+        final Entity productionTracking = stateChangeContext.getOwner();
+        Integer machineTime = productionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
+        Integer laborTime = productionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);
 
         if ((machineTime == null) || (laborTime == null)) {
-            stateChangeContext.addValidationError("productionCounting.productionRecord.messages.error.timesNotFilled");
+            stateChangeContext.addValidationError("productionCounting.productionTracking.messages.error.timesNotFilled");
         }
     }
 
-    private void checkIfExistsFinalRecord(final StateChangeContext stateChangeContext) {
-        final Entity productionRecord = stateChangeContext.getOwner();
-        final Entity order = productionRecord.getBelongsToField(ORDER);
-        final String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
-=======
-    public void checkIfExistsFinalTracking(final StateChangeContext stateChangeContext) {
+    public void checkIfExistsFinalRecord(final StateChangeContext stateChangeContext) {
         final Entity productionTracking = stateChangeContext.getOwner();
         final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         final String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionTrackingListenerService.java
 
         final SearchCriteriaBuilder searchBuilder = productionTracking.getDataDefinition().find();
         searchBuilder.add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED));
@@ -183,8 +132,9 @@ public final class ProductionTrackingListenerService {
             searchBuilder.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
                     productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT)));
         }
+
         if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
-            stateChangeContext.addValidationError("productionCounting.productionRecord.messages.error.finalExists");
+            stateChangeContext.addValidationError("productionCounting.productionTracking.messages.error.finalExists");
         }
     }
 
@@ -192,36 +142,10 @@ public final class ProductionTrackingListenerService {
         final Entity productionTracking = stateChangeContext.getOwner();
         final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 
-        if (!orderClosingHelper.orderShouldBeClosed(productionRecord)) {
+        if (order == null) {
             return;
         }
-        if (order.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-            stateChangeContext.addMessage("productionCounting.order.orderIsAlreadyClosed", StateMessageType.INFO, false);
-            return;
-        }
-        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
-                orderStateChangeAspect.getChangeEntityDescriber(), order, OrderState.COMPLETED.getStringValue());
-        orderStateChangeAspect.changeState(orderStateChangeContext);
-        Entity orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
-        if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-            stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
-        } else if (StateChangeStatus.PAUSED.equals(orderStateChangeContext.getStatus())) {
-            stateChangeContext.addMessage("productionCounting.order.orderWillBeClosedAfterExtSync", StateMessageType.INFO, false);
-        } else {
-            stateChangeContext.addMessage("productionCounting.order.orderCannotBeClosed", StateMessageType.FAILURE, false);
 
-            List<ErrorMessage> errors = Lists.newArrayList();
-
-            if (!orderFromDB.getErrors().isEmpty()) {
-                errors.addAll(order.getErrors().values());
-            }
-            if (!orderFromDB.getGlobalErrors().isEmpty()) {
-                errors.addAll(order.getGlobalErrors());
-            }
-
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionRecordBasicListenerService.java
-            if (!errors.isEmpty()) {
-=======
         Boolean autoCloseOrder = order.getBooleanField(OrderFieldsPC.AUTO_CLOSE_ORDER);
 
         if (autoCloseOrder && productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
@@ -242,43 +166,27 @@ public final class ProductionTrackingListenerService {
                     errors.addAll(order.getGlobalErrors());
                 }
 
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionTrackingListenerService.java
                 StringBuilder errorMessages = new StringBuilder();
-
-                for (ErrorMessage errorMessage : errors) {
-                    String translatedErrorMessage = translationService.translate(errorMessage.getMessage(), Locale.getDefault(),
-                            errorMessage.getVars());
+                for (ErrorMessage message : errors) {
+                    String translatedErrorMessage = translationService.translate(message.getMessage(), Locale.getDefault(),
+                            message.getVars());
                     errorMessages.append(translatedErrorMessage);
                     errorMessages.append(", ");
                 }
-
                 stateChangeContext.addValidationError("orders.order.orderStates.error", errorMessages.toString());
             }
         }
     }
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionRecordBasicListenerService.java
-    private void setOrderDoneQuantity(final Entity productionRecord) {
-        final Entity order = productionRecord.getBelongsToField(ORDER);
-=======
     private void setOrderDoneQuantity(final Entity productionTracking) {
         final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionTrackingListenerService.java
 
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
         product = product.getDataDefinition().get(product.getId());
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionRecordBasicListenerService.java
-        final List<Entity> basicProductionCountings = dataDefinitionService
-                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
-                .add(SearchRestrictions.belongsTo(ORDER, order)).add(SearchRestrictions.belongsTo(PRODUCT, product)).list()
-                .getEntities();
-=======
         final List<Entity> basicProductionCountings = basicProductionCountingService.getBasicProductionCountingDD().find()
                 .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.ORDER, order))
                 .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.PRODUCT, product)).list().getEntities();
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionTrackingListenerService.java
 
         BigDecimal producedQuantity = BigDecimal.ZERO;
 
@@ -343,14 +251,6 @@ public final class ProductionTrackingListenerService {
         }
     }
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionRecordBasicListenerService.java
-    private Entity getBasicProductionCounting(final Entity productIn, final List<Entity> productionCountings) {
-        Entity product = productIn.getBelongsToField(PRODUCT);
-
-        for (Entity productionCounting : productionCountings) {
-            if (productionCounting.getBelongsToField(PRODUCT).getId().equals(product.getId())) {
-                return productionCounting;
-=======
     private Entity getBasicProductionCounting(final Entity trackingOperationProductComponent,
             final List<Entity> basicProductionCountings) {
         Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
@@ -358,7 +258,6 @@ public final class ProductionTrackingListenerService {
         for (Entity basicProductionCounting : basicProductionCountings) {
             if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId().equals(product.getId())) {
                 return basicProductionCounting;
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionTrackingListenerService.java
             }
         }
 
@@ -414,51 +313,4 @@ public final class ProductionTrackingListenerService {
 
     }
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionRecordBasicListenerService.java
-    private void updateBasicProductionCounting(final Entity productionRecord, final Operation operation) {
-        final Entity order = productionRecord.getBelongsToField(ORDER);
-
-        final List<Entity> basicProductionCountings = dataDefinitionService
-                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
-                .add(SearchRestrictions.belongsTo(ORDER, order)).list().getEntities();
-
-        final List<Entity> productsIn = productionRecord.getHasManyField(RECORD_OPERATION_PRODUCT_IN_COMPONENTS);
-        final List<Entity> productsOut = productionRecord.getHasManyField(RECORD_OPERATION_PRODUCT_OUT_COMPONENTS);
-
-        for (Entity productIn : productsIn) {
-            Entity basicProductionCounting;
-
-            try {
-                basicProductionCounting = getBasicProductionCounting(productIn, basicProductionCountings);
-            } catch (IllegalStateException e) {
-                continue;
-            }
-
-            final BigDecimal usedQuantity = (BigDecimal) basicProductionCounting.getField(L_USED_QUANTITY);
-            final BigDecimal productQuantity = (BigDecimal) productIn.getField(L_USED_QUANTITY);
-            final BigDecimal result = operation.perform(usedQuantity, productQuantity);
-            basicProductionCounting.setField(L_USED_QUANTITY, result);
-            basicProductionCounting = basicProductionCounting.getDataDefinition().save(basicProductionCounting);
-        }
-
-        for (Entity productOut : productsOut) {
-            Entity productionCounting;
-
-            try {
-                productionCounting = getBasicProductionCounting(productOut, basicProductionCountings);
-            } catch (IllegalStateException e) {
-                continue;
-            }
-
-            final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField(L_PRODUCED_QUANTITY);
-            final BigDecimal productQuantity = (BigDecimal) productOut.getField(L_USED_QUANTITY);
-            final BigDecimal result = operation.perform(usedQuantity, productQuantity);
-            productionCounting.setField(L_PRODUCED_QUANTITY, result);
-            productionCounting = productionCounting.getDataDefinition().save(productionCounting);
-        }
-    }
-
-=======
->>>>>>> dev:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/listener/ProductionTrackingListenerService.java
 }

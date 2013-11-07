@@ -43,7 +43,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class ProductionTrackingValidators {
 
-    private static final Set<String> ORDER_STARTED_STATES_SET = Sets.newHashSet(OrderStateStringValues.IN_PROGRESS,
+    private static final Set<String> L_ORDER_STARTED_STATES_SET = Sets.newHashSet(OrderStateStringValues.IN_PROGRESS,
             OrderStateStringValues.COMPLETED, OrderStateStringValues.INTERRUPTED);
 
     @Autowired
@@ -142,7 +142,7 @@ public class ProductionTrackingValidators {
     }
 
     private boolean isOrderStarted(final String state) {
-        return ORDER_STARTED_STATES_SET.contains(state);
+        return L_ORDER_STARTED_STATES_SET.contains(state);
     }
 
 }
