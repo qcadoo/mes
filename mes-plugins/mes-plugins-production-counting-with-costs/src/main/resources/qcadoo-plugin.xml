@@ -318,21 +318,6 @@
 			<model:belongsTo name="productionLine" model="productionLine" plugin="productionLines" />
 		</model:model-field>
 		
-<<<<<<< HEAD
-		<model:model-hook model="productionBalance" plugin="productionCounting">
-			<model:validatesWith
-				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceModelValidators"
-				method="checkIfOptionsAreNotNull" />
-		</model:model-hook>
-		
-		<model:model-hook model="productionBalance" plugin="productionCounting">
-			<model:validatesWith
-				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceModelValidators"
-				method="checkIfOptionsAreAvailable" />
-		</model:model-hook>
-			
-=======
->>>>>>> dev
 		<model:model-hook model="productionBalance" plugin="productionCounting">
 			<model:validatesWith
 				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceValidatorsPCWC"

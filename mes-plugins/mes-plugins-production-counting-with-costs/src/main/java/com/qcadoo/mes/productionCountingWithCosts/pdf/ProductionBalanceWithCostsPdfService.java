@@ -231,73 +231,39 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
             String currency = " " + currencyService.getCurrencyAlphabeticCode();
 
-<<<<<<< HEAD
-            for (Entity product : products) {
-                productsTable.addCell(new Phrase(product.getBelongsToField(PRODUCT).getStringField("number"), FontUtils
+            for (Entity technologyOperationProductInComponent : technologyOperationProductInComponents) {
+                productsTable.addCell(new Phrase(technologyOperationProductInComponent.getBelongsToField(
+                        TechnologyOperationProductInCompFields.PRODUCT).getStringField(ProductFields.NUMBER), FontUtils
                         .getDejavuRegular7Dark()));
 
-                String plannedCost = numberService.format(product.getField("plannedCost"));
-                productsTable.addCell(new Phrase((plannedCost == null) ? NULL_OBJECT : (plannedCost + currency), FontUtils
+                String plannedCost = numberService.format(technologyOperationProductInComponent
+                        .getField(TechnologyOperationProductInCompFields.PLANNED_COST));
+                productsTable.addCell(new Phrase((plannedCost == null) ? L_NULL_OBJECT : (plannedCost + currency), FontUtils
                         .getDejavuRegular7Dark()));
-                String registeredCost = numberService.format(product.getField("registeredCost"));
-                productsTable.addCell(new Phrase((registeredCost == null) ? NULL_OBJECT : (registeredCost + currency), FontUtils
-                        .getDejavuRegular7Dark()));
-                String balance = numberService.format(product.getField("balance"));
-                productsTable.addCell(new Phrase((balance == null) ? NULL_OBJECT : (balance + currency), FontUtils
+                String registeredCost = numberService.format(technologyOperationProductInComponent
+                        .getField(TechnologyOperationProductInCompFields.REGISTERED_COST));
+                productsTable.addCell(new Phrase((registeredCost == null) ? L_NULL_OBJECT : (registeredCost + currency),
+                        FontUtils.getDejavuRegular7Dark()));
+                String balance = numberService.format(technologyOperationProductInComponent
+                        .getField(TechnologyOperationProductInCompFields.BALANCE));
+                productsTable.addCell(new Phrase((balance == null) ? L_NULL_OBJECT : (balance + currency), FontUtils
                         .getDejavuRegular7Dark()));
             }
 
             productsTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
                     locale), FontUtils.getDejavuRegular7Dark()));
-            String plannedComponentsCosts = numberService.format((BigDecimal) productionBalance
-                    .getField(ProductionBalanceFieldsPCWC.PLANNED_COMPONENTS_COSTS));
-            productsTable.addCell(new Phrase(
-                    (plannedComponentsCosts == null) ? NULL_OBJECT : (plannedComponentsCosts + currency), FontUtils
-                            .getDejavuRegular7Dark()));
-            String componentsCosts = numberService.format((BigDecimal) productionBalance
-                    .getField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS));
-            productsTable.addCell(new Phrase((componentsCosts == null) ? NULL_OBJECT : (componentsCosts + currency), FontUtils
-                    .getDejavuRegular7Dark()));
-            String componentsCostsBalance = numberService.format((BigDecimal) productionBalance
-                    .getField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS_BALANCE));
-            productsTable.addCell(new Phrase(
-                    (componentsCostsBalance == null) ? NULL_OBJECT : (componentsCostsBalance + currency), FontUtils
-                            .getDejavuRegular7Dark()));
-=======
-            for (Entity technologyOperationProductInComponent : technologyOperationProductInComponents) {
-                productsTable.addCell(new Phrase(technologyOperationProductInComponent.getBelongsToField(
-                        TechnologyOperationProductInCompFields.PRODUCT).getStringField(ProductFields.NUMBER), FontUtils
-                        .getDejavuRegular9Dark()));
-
-                String plannedCost = numberService.format(technologyOperationProductInComponent
-                        .getField(TechnologyOperationProductInCompFields.PLANNED_COST));
-                productsTable.addCell(new Phrase((plannedCost == null) ? L_NULL_OBJECT : (plannedCost + currency), FontUtils
-                        .getDejavuRegular9Dark()));
-                String registeredCost = numberService.format(technologyOperationProductInComponent
-                        .getField(TechnologyOperationProductInCompFields.REGISTERED_COST));
-                productsTable.addCell(new Phrase((registeredCost == null) ? L_NULL_OBJECT : (registeredCost + currency),
-                        FontUtils.getDejavuRegular9Dark()));
-                String balance = numberService.format(technologyOperationProductInComponent
-                        .getField(TechnologyOperationProductInCompFields.BALANCE));
-                productsTable.addCell(new Phrase((balance == null) ? L_NULL_OBJECT : (balance + currency), FontUtils
-                        .getDejavuRegular9Dark()));
-            }
-
-            productsTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
-                    locale), FontUtils.getDejavuRegular9Dark()));
             String plannedComponentsCosts = numberService.format(productionBalance
                     .getDecimalField(ProductionBalanceFieldsPCWC.PLANNED_COMPONENTS_COSTS));
             productsTable.addCell(new Phrase((plannedComponentsCosts == null) ? L_NULL_OBJECT
-                    : (plannedComponentsCosts + currency), FontUtils.getDejavuRegular9Dark()));
+                    : (plannedComponentsCosts + currency), FontUtils.getDejavuRegular7Dark()));
             String componentsCosts = numberService.format(productionBalance
                     .getDecimalField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS));
             productsTable.addCell(new Phrase((componentsCosts == null) ? L_NULL_OBJECT : (componentsCosts + currency), FontUtils
-                    .getDejavuRegular9Dark()));
+                    .getDejavuRegular7Dark()));
             String componentsCostsBalance = numberService.format(productionBalance
                     .getDecimalField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS_BALANCE));
             productsTable.addCell(new Phrase((componentsCostsBalance == null) ? L_NULL_OBJECT
-                    : (componentsCostsBalance + currency), FontUtils.getDejavuRegular9Dark()));
->>>>>>> dev
+                    : (componentsCostsBalance + currency), FontUtils.getDejavuRegular7Dark()));
 
             document.add(productsTable);
         }
@@ -343,40 +309,22 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             String currency = " " + currencyService.getCurrencyAlphabeticCode();
 
             for (Entity operationComponent : operationComponents) {
-<<<<<<< HEAD
-                costsTable.addCell(new Phrase(operationComponent.getBelongsToField("technologyInstanceOperationComponent")
-                        .getStringField("nodeNumber"), FontUtils.getDejavuRegular7Dark()));
-                costsTable.addCell(new Phrase(operationComponent.getBelongsToField("technologyInstanceOperationComponent")
-                        .getBelongsToField("operation").getStringField("name"), FontUtils.getDejavuRegular7Dark()));
-=======
                 costsTable.addCell(new Phrase(operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT)
-                        .getStringField(TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
+                        .getStringField(TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular7Dark()));
                 costsTable.addCell(new Phrase(operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT)
                         .getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NAME),
-                        FontUtils.getDejavuRegular9Dark()));
->>>>>>> dev
+                        FontUtils.getDejavuRegular7Dark()));
 
                 String plannedCost = numberService.format(operationComponent.getField(L_PLANNED
                         + upperCaseFirstLetter(type, locale) + L_COSTS));
-<<<<<<< HEAD
-                costsTable.addCell(new Phrase((plannedCost == null) ? NULL_OBJECT : (plannedCost + currency), FontUtils
-                        .getDejavuRegular7Dark()));
-                String registeredCost = numberService.format(operationComponent.getField(type + L_COSTS));
-                costsTable.addCell(new Phrase((registeredCost == null) ? NULL_OBJECT : (registeredCost + currency), FontUtils
-                        .getDejavuRegular7Dark()));
-                String balance = numberService.format(operationComponent.getField(type + "CostsBalance"));
-                costsTable.addCell(new Phrase((balance == null) ? NULL_OBJECT : (balance + currency), FontUtils
-                        .getDejavuRegular7Dark()));
-=======
                 costsTable.addCell(new Phrase((plannedCost == null) ? L_NULL_OBJECT : (plannedCost + currency), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
                 String registeredCost = numberService.format(operationComponent.getField(type + L_COSTS));
                 costsTable.addCell(new Phrase((registeredCost == null) ? L_NULL_OBJECT : (registeredCost + currency), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
                 String balance = numberService.format(operationComponent.getField(type + L_COSTS_BALANCE));
                 costsTable.addCell(new Phrase((balance == null) ? L_NULL_OBJECT : (balance + currency), FontUtils
-                        .getDejavuRegular9Dark()));
->>>>>>> dev
+                        .getDejavuRegular7Dark()));
             }
 
             costsTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
@@ -385,25 +333,14 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
             String plannedCosts = numberService.format(productionBalance.getDecimalField(L_PLANNED
                     + upperCaseFirstLetter(type, locale) + L_COSTS));
-<<<<<<< HEAD
-            costsTable.addCell(new Phrase((plannedCosts == null) ? NULL_OBJECT : (plannedCosts + currency), FontUtils
-                    .getDejavuRegular7Dark()));
-            String registeredCosts = numberService.format((BigDecimal) productionBalance.getField(type + L_COSTS));
-            costsTable.addCell(new Phrase((registeredCosts == null) ? NULL_OBJECT : (registeredCosts + currency), FontUtils
-                    .getDejavuRegular7Dark()));
-            String costsBalance = numberService.format((BigDecimal) productionBalance.getField(type + "CostsBalance"));
-            costsTable.addCell(new Phrase((costsBalance == null) ? NULL_OBJECT : (costsBalance + currency), FontUtils
-                    .getDejavuRegular7Dark()));
-=======
             costsTable.addCell(new Phrase((plannedCosts == null) ? L_NULL_OBJECT : (plannedCosts + currency), FontUtils
-                    .getDejavuRegular9Dark()));
+                    .getDejavuRegular7Dark()));
             String registeredCosts = numberService.format(productionBalance.getDecimalField(type + L_COSTS));
             costsTable.addCell(new Phrase((registeredCosts == null) ? L_NULL_OBJECT : (registeredCosts + currency), FontUtils
-                    .getDejavuRegular9Dark()));
+                    .getDejavuRegular7Dark()));
             String costsBalance = numberService.format(productionBalance.getDecimalField(type + L_COSTS_BALANCE));
             costsTable.addCell(new Phrase((costsBalance == null) ? L_NULL_OBJECT : (costsBalance + currency), FontUtils
-                    .getDejavuRegular9Dark()));
->>>>>>> dev
+                    .getDejavuRegular7Dark()));
 
             document.add(costsTable);
         }
@@ -425,7 +362,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 "productionCounting.productionBalance.sourceOfMaterialCosts.value." + sourceOfMaterialCostsField, locale);
         pdfHelper.addTableCellAsTable(content,
                 translationService.translate("productionCounting.productionBalance.sourceOfMaterialCosts.label", locale),
-                sourceOfMaterialCosts, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
+                sourceOfMaterialCosts, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular7Dark(), 2);
 
         String calculateMaterialCostsModeField = productionBalance
                 .getStringField(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE);
@@ -434,7 +371,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 locale);
         pdfHelper.addTableCellAsTable(content,
                 translationService.translate("productionCounting.productionBalance.calculateMaterialCostsMode.label", locale),
-                calculateMaterialCostsMode, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
+                calculateMaterialCostsMode, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular7Dark(), 2);
 
         parametersForCostsPanel.addCell(content);
 
@@ -456,14 +393,14 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         String averageMachineHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageMachineHourlyCost.label", locale);
         pdfHelper.addTableCellAsTable(content, averageMachineHourlyCostLabel, numberService.format(averageMachineHourlyCost),
-                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
+                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular7Dark(), 2);
 
         BigDecimal averageLaborHourlyCost = productionBalance
                 .getDecimalField(ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST);
         String averageLaborHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageLaborHourlyCost.label", locale);
         pdfHelper.addTableCellAsTable(content, averageLaborHourlyCostLabel, numberService.format(averageLaborHourlyCost),
-                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
+                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular7Dark(), 2);
 
         parametersForCostsPanel.addCell(content);
 
@@ -495,8 +432,8 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
     private void addCurrencyNumericWithLabel(final PdfPTable table, final String labelLocale, final Object value,
             final Locale locale) {
-        addCurrencyNumericWithLabel(table, labelLocale, value, locale, FontUtils.getDejavuRegular9Dark(),
-                FontUtils.getDejavuRegular9Dark());
+        addCurrencyNumericWithLabel(table, labelLocale, value, locale, FontUtils.getDejavuRegular7Dark(),
+                FontUtils.getDejavuRegular7Dark());
     }
 
     private void addRegisteredTechnicalCosts(final PdfPTable content, final Entity productionBalance, final Locale locale) {
@@ -557,7 +494,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 productionBalance.getField(ProductionBalanceFieldsPCWC.ADDITIONAL_OVERHEAD_VALUE), locale);
         addCurrencyNumericWithLabel(content, "productionCounting.productionBalance.totalOverhead.label",
                 productionBalance.getField(ProductionBalanceFieldsPCWC.TOTAL_OVERHEAD), locale,
-                FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuBold9Dark());
+                FontUtils.getDejavuRegular7Dark(), FontUtils.getDejavuBold9Dark());
 
         content.addCell(new Phrase(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.summaryForRegisteredCosts", locale),
