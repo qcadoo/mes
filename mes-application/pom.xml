@@ -498,7 +498,7 @@
 			</dependencies>
 		</profile>
 		<profile>
-			<id>emhyr</id>
+			<id>muffinka</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -507,11 +507,11 @@
 						<version>${maven.antrun.plugin.version}</version>
 						<executions>
 							<execution>
-								<id>deploy-to-emhyr</id>
+								<id>deploy-to-muffinka</id>
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Users/tomcat/deploy/${profile.name}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/home/demo/deploy/${profile.name}.zip" />
 									</target>
 								</configuration>
 								<goals>
