@@ -36,6 +36,10 @@
 			required="true" />
 		<belongsTo name="basicProductionCounting" model="basicProductionCounting"
 			plugin="basicProductionCounting" />
+        <belongsTo name="operationProductInComponent" model="operationProductInComponent"
+                   plugin="technologies" />
+        <belongsTo name="operationProductOutComponent" model="operationProductOutComponent"
+                   plugin="technologies" />
 		<enum name="role" values="01used,02produced" default="01used"
 			required="true" />
 		<enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
