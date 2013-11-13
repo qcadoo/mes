@@ -544,11 +544,11 @@
 						<version>${maven.antrun.plugin.version}</version>
 						<executions>
 							<execution>
-								<id>package-to-emhyr</id>
+								<id>package-to-muffinka</id>
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Shared Items/Public/qcdmes_bin_daily_build/${package.filename}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/home/packages/qcdmes_bin_daily_build/${package.filename}.zip" />
 									</target>
 								</configuration>
 								<goals>
