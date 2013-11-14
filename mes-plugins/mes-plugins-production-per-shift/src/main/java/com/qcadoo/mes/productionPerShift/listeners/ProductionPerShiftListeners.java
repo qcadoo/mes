@@ -329,9 +329,8 @@ public class ProductionPerShiftListeners {
     }
 
     private Entity getOrderFromOperationLookup(final ViewDefinitionState view) {
-        LookupComponent productionPerShiftOperationLookup = (LookupComponent) view
-                .getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
-        return productionPerShiftOperationLookup.getEntity().getBelongsToField(L_ORDER);
+
+        return ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
     }
 
     public void updateProgressForDays(final ViewDefinitionState view, final ComponentState state, final String[] args) {
