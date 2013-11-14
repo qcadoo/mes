@@ -63,4 +63,5 @@ public class DeliveredProductDetailsListeners {
     public void calculatePrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         orderedProductDetailsListeners.recalculatePrice(view, DeliveredProductFields.DELIVERED_QUANTITY);
     }
+
 }
