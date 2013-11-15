@@ -32,10 +32,15 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class OrderedProductDetailsHooks {
+
+    private static final String L_FORM = "form";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -48,8 +53,11 @@ public class OrderedProductDetailsHooks {
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity orderedProduct = form.getEntity();
+        Entity delivery = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY);
 
-        deliveriesService.fillCurrencyFields(view, referenceNames);
+        deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
     }
 
 }

@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeDescriber;
 import com.qcadoo.model.api.DataDefinition;
@@ -66,6 +67,7 @@ public class TechnologyModelHooks {
 
     public void onCopy(final DataDefinition technologyDD, final Entity technology) {
         technology.setField(MASTER, false);
+        technology.setField(TechnologyFields.EXTERNAL_SYNCHRONIZED, true);
         setInitialState(technology);
     }
 

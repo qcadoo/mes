@@ -65,6 +65,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
+import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
@@ -118,12 +119,36 @@ public class OrderHooks {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
+    @Autowired
+    private TechnologyServiceO technologyServiceO;
+
     public boolean onValidate(final DataDefinition orderDD, final Entity order) {
         Entity parameter = parameterService.getParameter();
         return orderService.checkOrderDates(orderDD, order) && orderService.checkOrderPlannedQuantity(orderDD, order)
                 && productService.checkIfProductIsNotRemoved(orderDD, order)
                 && checkReasonOfStartDateCorrection(parameter, order) && checkReasonOfEndDateCorrection(parameter, order)
                 && checkEffectiveDeviation(parameter, order);
+    }
+
+    public void onCreate(final DataDefinition dataDefinition, final Entity order) {
+        setInitialState(dataDefinition, order);
+        setCommissionedPlannedQuantity(dataDefinition, order);
+    }
+
+    public void onSave(final DataDefinition dataDefinition, final Entity order) {
+        orderService.fillProductionLine(dataDefinition, order);
+        copyStartDate(dataDefinition, order);
+        copyEndDate(dataDefinition, order);
+        copyProductQuantity(dataDefinition, order);
+        onCorrectingTheRequestedVolume(dataDefinition, order);
+        technologyServiceO.createOrUpdateTechnology(dataDefinition, order);
+    }
+
+    public void onCopy(final DataDefinition dataDefinition, final Entity order) {
+        setInitialState(dataDefinition, order);
+        clearOrSetSpecyfiedValueOrderFieldsOnCopy(dataDefinition, order);
+        setProductQuantity(dataDefinition, order);
+        setCopyOfTechnology(dataDefinition, order);
     }
 
     public void setInitialState(final DataDefinition dataDefinition, final Entity order) {

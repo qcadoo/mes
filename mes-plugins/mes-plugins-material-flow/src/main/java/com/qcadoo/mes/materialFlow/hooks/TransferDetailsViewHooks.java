@@ -30,6 +30,9 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TRANSFORMATIONS_CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,20 +42,33 @@ import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 
 @Component
 public class TransferDetailsViewHooks {
 
     private static final String L_FORM = "form";
 
+    private static final String L_WINDOW = "window";
+
+    private static final String RIBBON_GROUP = "actions";
+
+    private static final List<String> RIBBON_ACTION_ITEM = Arrays.asList("saveBack", "saveNew", "save");
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private MaterialFlowService materialFlowService;
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        checkIfTransferHasTransformations(view);
+        disableFormWhenTransferIsSaved(view);
+    }
 
     public void checkIfTransferHasTransformations(final ViewDefinitionState view) {
         FormComponent transferForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -85,6 +101,28 @@ public class TransferDetailsViewHooks {
         }
     }
 
+    public void disableFormWhenTransferIsSaved(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        FormComponent transferForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Long transferId = transferForm.getEntityId();
+        if (transferId == null) {
+            return;
+        }
+
+        transferForm.setFormEnabled(false);
+        enableRibbon(window, false);
+
+    }
+
+    private void enableRibbon(final WindowComponent window, final boolean enable) {
+        for (String actionItem : RIBBON_ACTION_ITEM) {
+            window.getRibbon().getGroupByName(RIBBON_GROUP).getItemByName(actionItem).setEnabled(enable);
+            window.getRibbon().getGroupByName(RIBBON_GROUP).getItemByName(actionItem).requestUpdate(true);
+        }
+        window.requestRibbonRender();
+    }
+
     public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         checkIfLocationFromHasExternalNumber(view);
@@ -100,6 +138,16 @@ public class TransferDetailsViewHooks {
 
     public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view) {
         materialFlowService.checkIfLocationHasExternalNumber(view, LOCATION_FROM);
+    }
+
+    public void showMessageAfterSaving(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+
+        Long transferId = (Long) componentState.getFieldValue();
+
+        if (transferId != null) {
+            view.getComponentByReference(L_FORM).addMessage("materialFlow.transformations.save.infoAterSave", MessageType.INFO,
+                    false);
+        }
     }
 
 }

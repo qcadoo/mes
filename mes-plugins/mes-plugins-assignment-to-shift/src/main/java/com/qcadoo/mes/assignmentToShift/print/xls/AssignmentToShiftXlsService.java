@@ -176,6 +176,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 if (assignmentToShiftXlsHelper.getProductionLinesWithStaff(productionLine).isEmpty()) {
                     assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, rowNum,
                             assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
+                    rowNum++;
                     continue;
                 }
                 int columnNumber = 1;

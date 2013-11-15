@@ -41,6 +41,10 @@ public final class DeliveryFields {
 
     public static final String DELIVERY_ADDRESS = "deliveryAddress";
 
+    public static final String DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
+
+    public static final String PAYMENT_FORM = "paymentForm";
+
     public static final String RELATED_DELIVERY = "relatedDelivery";
 
     public static final String RELATED_DELIVERIES = "relatedDeliveries";
@@ -64,4 +68,7 @@ public final class DeliveryFields {
     public static final String DELIVERED_PRODUCTS_CUMULATED_QUANTITY = "deliveredProductsCumulatedQuantity";
 
     public static final String DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE = "deliveredProductsCumulatedTotalPrice";
+
+    public static final String CURRENCY = "currency";
+
 }

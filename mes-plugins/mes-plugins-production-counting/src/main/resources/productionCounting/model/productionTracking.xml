@@ -47,11 +47,11 @@
 
 		<boolean name="lastTracking" />
 
-		<integer name="machineTime" />
-		
-		<integer name="laborTime" />
-		
-		<decimal name="executedOperationCycles">
+		<integer name="machineTime" copyable="false"/>
+
+		<integer name="laborTime" copyable="false"/>
+
+		<decimal name="executedOperationCycles" copyable="false">
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
 		</decimal>
@@ -68,14 +68,14 @@
 		<validatesWith
 			class="com.qcadoo.mes.productionCounting.validators.ProductionTrackingValidators"
 			method="validatesWith" />
-		<onCreate 
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingHooks" 
+		<onCreate
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingHooks"
 			method="onCreate" />
 		<onSave
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingHooks"
 			method="onSave" />
-		<onCopy 
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingHooks" 
+		<onCopy
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingHooks"
 			method="onCopy" />
 	</hooks>
 	<identifier expression="#number" />

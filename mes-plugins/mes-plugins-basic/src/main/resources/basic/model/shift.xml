@@ -34,6 +34,8 @@
 		<boolean name="mondayWorking" default="true" />
 		<string name="mondayHours" required="false">
 			<validatesLength max="255" />
+			<!-- TODO DEV_TEAM - imho we should add regex validators for all of *Working fields -->
+			<!-- <validatesRegex pattern="\d{1,2}:\d{2}-\d{1,2}:\d{2}(,\d{1,2}:\d{2}-\d{1,2}:\d{2})*" message="some msg" /> -->
 		</string>
 		<boolean name="tuesdayWorking" default="true" />
 		<string name="tuesdayHours" required="false">

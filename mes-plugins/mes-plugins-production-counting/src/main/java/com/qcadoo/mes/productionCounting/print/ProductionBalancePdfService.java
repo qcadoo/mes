@@ -152,7 +152,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
     public PdfPTable createLeftPanel(final Entity productionBalance, final Locale locale) {
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
-        PdfPTable leftPanel = pdfHelper.createPanelTable(1);
+        PdfPTable leftPanel = pdfHelper.createPanelTableWithSimpleFormat(1);
 
         addTableCellAsTable(leftPanel,
                 translationService.translate("productionCounting.productionBalance.report.panel.name", locale),
@@ -203,7 +203,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
     public PdfPTable createRightPanel(final Entity productionBalance, final Locale locale) {
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
-        PdfPTable rightPanel = pdfHelper.createPanelTable(1);
+        PdfPTable rightPanel = pdfHelper.createPanelTableWithSimpleFormat(1);
 
         rightPanel
                 .addCell(new Phrase(translationService.translate(

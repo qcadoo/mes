@@ -76,12 +76,12 @@
 
 		<decimal name="plannedQuantity" required="true">
 			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="5" />
+			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="doneQuantity">
 			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="5" />
+			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
 		</decimal>
 
@@ -92,25 +92,25 @@
 
 		<decimal name="commissionedPlannedQuantity">
 			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="5" />
+			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
 		</decimal>
 		
 		<decimal name="commissionedCorrectedQuantity">
 			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="5" />
+			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
 		</decimal>
 		
 		<decimal name="amountOfProductProduced">
 			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="5" />
+			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
 		</decimal>
 		
 		<decimal name="remainingAmountOfProductToProduce">
 			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="5" />
+			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
 		</decimal>
 
@@ -128,23 +128,15 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="onValidate" />
-	
+		
 		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="setInitialState" />
-		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="setCommissionedPlannedQuantity" />
-		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
-
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyProductQuantity" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="onCorrectingTheRequestedVolume" />
-		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
-		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="clearOrSetSpecyfiedValueOrderFieldsOnCopy" />
-		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setProductQuantity" />
-		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setCopyOfTechnology" />
-		<onSave class="com.qcadoo.mes.orders.TechnologyServiceO"
-			method="createOrUpdateTechnology" />
+			method="onCreate" />
+		
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks"
+			method="onSave" />
+			
+		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks"
+			method="onCopy" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

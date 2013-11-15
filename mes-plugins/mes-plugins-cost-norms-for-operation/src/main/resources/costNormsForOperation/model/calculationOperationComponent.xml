@@ -111,7 +111,6 @@
 		<integer name="numberOfOperations" default="1">
 			<validatesRange from="0" exclusively="true" />
 			<validatesUnscaledValue max="7" />
-			<validatesScale max="0" />
 		</integer>
 	</fields>
 	<hooks />

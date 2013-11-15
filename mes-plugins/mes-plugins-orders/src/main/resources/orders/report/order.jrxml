@@ -21,7 +21,7 @@
 			company.email AS email,
 			company.phone AS phone,
 			company.tax AS tax,
-			country.country AS country,
+			company.country.country AS country_country,
 			parameter.additionalTextInFooter AS additional_text,
 			orders.number AS orders_order_number,
 			orders.name AS orders_order_name,
@@ -75,7 +75,7 @@
 	<field name="flat" class="java.lang.String"/>
 	<field name="zipCode" class="java.lang.String"/>
 	<field name="city" class="java.lang.String"/>
-	<field name="country" class="java.lang.String"/>
+	<field name="country_country" class="java.lang.String"/>
 	<field name="email" class="java.lang.String"/>
 	<field name="phone" class="java.lang.String"/>
 	<field name="tax" class="java.lang.String"/>
@@ -281,7 +281,7 @@
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="18" width="380" height="13"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{street} + " " + $F{house} + ($F{flat} != null ? "/" + $F{flat} : "") + ", " + $F{zipCode} + " " + $F{city} + ($F{country} != null ? ", " + $F{country} : "")) : ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{email} != null ? "E-mail: " + $F{email} : "") )]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{street} + " " + $F{house} + ($F{flat} != null ? "/" + $F{flat} : "") + ", " + $F{zipCode} + " " + $F{city} + ($F{country_country} != null ? ", " + $F{country_country} : "")) : ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{email} != null ? "E-mail: " + $F{email} : "") )]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="33" width="380" height="13"/>
@@ -323,7 +323,7 @@
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="18" width="380" height="13"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{street} + " " + $F{house} + ($F{flat} != null ? "/" + $F{flat} : "") + ", " + $F{zipCode} + " " + $F{city} + ($F{country} != null ? ", " + $F{country} : "")) : ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{email} != null ? "E-mail: " + $F{email} : "") )]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{street} + " " + $F{house} + ($F{flat} != null ? "/" + $F{flat} : "") + ", " + $F{zipCode} + " " + $F{city} + ($F{country_country} != null ? ", " + $F{country_country} : "")) : ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{email} != null ? "E-mail: " + $F{email} : "") )]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="qcadooPageNumber" x="3" y="33" width="380" height="13"/>

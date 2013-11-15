@@ -38,9 +38,11 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.states.service.client.StateChangeSamplesClient;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
 import com.qcadoo.model.api.DataDefinition;
@@ -62,6 +64,12 @@ public class OrderStateValidationService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private StateChangeContextBuilder stateChangeContextBuilder;
+
+    @Autowired
+    private TechnologyStateChangeAspect technologyStateChangeAspect;
 
     private static final String ENTITY_IS_NULL = "entity is null";
 
@@ -121,7 +129,12 @@ public class OrderStateValidationService {
             final StateChangeStatus status = stateChangeContext.getStatus();
 
             if (IN_PROGRESS.equals(status)) {
-                technologyDB = stateChangeSamplesClient.changeState(technologyDB, "02accepted");
+                final StateChangeContext stateChangeContextT = stateChangeContextBuilder.build(
+                        technologyStateChangeAspect.getChangeEntityDescriber(), technologyDB, "02accepted");
+
+                stateChangeContextT.setStatus(StateChangeStatus.IN_PROGRESS);
+                technologyStateChangeAspect.changeState(stateChangeContextT);
+
             }
         }
 

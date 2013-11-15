@@ -41,19 +41,21 @@ import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.view.api.ComponentState;
@@ -61,6 +63,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
@@ -104,6 +107,11 @@ public class TechnologyService {
     private static final String L_OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
 
     private static final String L_OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
+
+    private static final String IS_SYNCHRONIZED_QUERY = String.format(
+            "SELECT t.id as id, t.%s as %s from #%s_%s t where t.id = :technologyId", TechnologyFields.EXTERNAL_SYNCHRONIZED,
+            TechnologyFields.EXTERNAL_SYNCHRONIZED, TechnologiesConstants.PLUGIN_IDENTIFIER,
+            TechnologiesConstants.MODEL_TECHNOLOGY);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -223,57 +231,52 @@ public class TechnologyService {
                 TechnologiesConstants.MODEL_TECHNOLOGY_GROUP, L_FORM, L_NUMBER);
     }
 
-    public void generateTechnologyNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
-        if (!(componentState instanceof FieldComponent)) {
+    public void generateTechnologyNumber(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        if (!(state instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
         }
-        FieldComponent number = (FieldComponent) state.getComponentByReference(L_NUMBER);
-        FieldComponent productState = (FieldComponent) componentState;
 
-        if (!numberGeneratorService.checkIfShouldInsertNumber(state, L_FORM, L_NUMBER) || productState.getFieldValue() == null) {
-            return;
-        }
+        FieldComponent numberField = (FieldComponent) view.getComponentByReference(TechnologyFields.NUMBER);
+        LookupComponent productLookup = (LookupComponent) state;
 
-        Entity product = getProductById((Long) productState.getFieldValue());
+        Entity product = productLookup.getEntity();
 
         if (product == null) {
             return;
         }
 
-        String numberValue = product.getField(L_NUMBER)
+        String number = product.getField(ProductFields.NUMBER)
                 + "-"
                 + numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
                         TechnologiesConstants.MODEL_TECHNOLOGY, 3);
-        number.setFieldValue(numberValue);
+
+        numberField.setFieldValue(number);
+        numberField.requestComponentUpdateState();
     }
 
-    public void generateTechnologyName(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
-        if (!(componentState instanceof FieldComponent)) {
+    public void generateTechnologyName(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        if (!(state instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
         }
-        FieldComponent name = (FieldComponent) state.getComponentByReference(L_NAME);
-        FieldComponent productState = (FieldComponent) componentState;
 
-        if (StringUtils.hasText((String) name.getFieldValue()) || productState.getFieldValue() == null) {
-            return;
-        }
+        FieldComponent nameField = (FieldComponent) view.getComponentByReference(TechnologyFields.NAME);
+        LookupComponent productLookup = (LookupComponent) state;
 
-        Entity product = getProductById((Long) productState.getFieldValue());
+        Entity product = productLookup.getEntity();
 
         if (product == null) {
             return;
         }
 
-        Calendar cal = Calendar.getInstance(state.getLocale());
-        cal.setTime(new Date());
+        Calendar calendar = Calendar.getInstance(state.getLocale());
+        calendar.setTime(new Date());
 
-        name.setFieldValue(translationService.translate("technologies.operation.name.default", state.getLocale(),
-                product.getStringField(L_NAME), product.getStringField(L_NUMBER),
-                cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1)));
-    }
+        String name = translationService.translate("technologies.operation.name.default", state.getLocale(),
+                product.getStringField(ProductFields.NAME), product.getStringField(ProductFields.NUMBER),
+                calendar.get(Calendar.YEAR) + "." + (calendar.get(Calendar.MONTH) + 1));
 
-    private Entity getProductById(final Long productId) {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+        nameField.setFieldValue(name);
+        nameField.requestComponentUpdateState();
     }
 
     public void setLookupDisableInTechnologyOperationComponent(final ViewDefinitionState viewDefinitionState) {
@@ -449,6 +452,25 @@ public class TechnologyService {
      */
     public BigDecimal getProductCountForOperationComponent(final Entity operationComponent) {
         return getMainOutputProductComponent(operationComponent).getDecimalField(L_QUANTITY);
+    }
+
+    /**
+     * Check if technology with given id is external synchronized.
+     * 
+     * @param technologyId
+     *            identifier of the queried technology
+     * @return true if technology is external synchronized
+     */
+    public boolean isExternalSynchronized(final Long technologyId) {
+        SearchQueryBuilder sqb = getTechnologyDataDefinition().find(IS_SYNCHRONIZED_QUERY);
+        sqb.setLong("technologyId", technologyId).setMaxResults(1);
+        Entity projection = sqb.uniqueResult();
+        Preconditions.checkNotNull(projection, String.format("Technology with id = '%s' does not exists.", technologyId));
+        return projection.getBooleanField(TechnologyFields.EXTERNAL_SYNCHRONIZED);
+    }
+
+    private DataDefinition getTechnologyDataDefinition() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
     }
 
 }

@@ -10,10 +10,14 @@
 		<belongsTo name="masterOrder" model="masterOrder" />
 
 		<decimal name="masterOrderQuantity">
-			<validatesRange from="0"  />
+			<validatesRange from="0" />
+			<validatesUnscaledValue max="9" />
+       		<validatesScale max="5" /> 
 		</decimal>
 		<decimal name="cumulatedOrderQuantity">
 			<validatesRange from="0" />
+			<validatesUnscaledValue max="9" />
+       		<validatesScale max="5" /> 
 		</decimal>
 
 		<string name="defaultTechnology" persistent="false" />
@@ -30,5 +34,7 @@
 			method="checkIfCanChangedTechnology" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
 			method="countCumulatedOrderQuantity" />
+		<onDelete class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
+			method="checkAssignedOrder" />
 	</hooks>
 </model>

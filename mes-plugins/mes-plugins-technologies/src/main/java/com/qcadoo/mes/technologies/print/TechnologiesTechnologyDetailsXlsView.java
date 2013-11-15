@@ -82,7 +82,7 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
     private void addOrderHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
         int columnCounter = 0;
-        for (String headerText : newArrayList("level", "name", "direction", "product", "quantity", "unit")) {
+        for (String headerText : newArrayList("level", "name", "direction", "productNumber", "productName", "quantity", "unit")) {
             HSSFCell cell = header.createCell(columnCounter);
             cell.setCellValue(translationService.translate("technologies.technologiesTechnologyDetails.report.columnHeader."
                     + headerText, locale));
@@ -118,9 +118,10 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
                 row.createCell(0).setCellValue(nodeNumber);
                 row.createCell(1).setCellValue(operationName);
                 row.createCell(2).setCellValue(translationService.translate(productType, locale));
-                row.createCell(3).setCellValue(product.getBelongsToField("product").getStringField("name"));
-                row.createCell(4).setCellValue(product.getField("quantity").toString());
-                row.createCell(5).setCellValue(product.getBelongsToField("product").getStringField("unit"));
+                row.createCell(3).setCellValue(product.getBelongsToField("product").getStringField("number"));
+                row.createCell(4).setCellValue(product.getBelongsToField("product").getStringField("name"));
+                row.createCell(5).setCellValue(product.getField("quantity").toString());
+                row.createCell(6).setCellValue(product.getBelongsToField("product").getStringField("unit"));
             }
 
         }
@@ -131,5 +132,7 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
         sheet.autoSizeColumn((short) 3);
         sheet.autoSizeColumn((short) 4);
         sheet.autoSizeColumn((short) 5);
+        sheet.autoSizeColumn((short) 6);
+
     }
 }

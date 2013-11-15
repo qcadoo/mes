@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.samples.loader;
@@ -111,17 +111,19 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     protected void addDictionaryItems(final Map<String, String> values) {
         Entity dictionary = getDictionaryByName(values.get(L_NAME));
 
-        Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
-        item.setField("dictionary", dictionary);
-        item.setField(L_NAME, values.get("item"));
-        item.setField("description", values.get("description"));
+        if (dictionary != null) {
+            Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
+            item.setField("dictionary", dictionary);
+            item.setField(L_NAME, values.get("item"));
+            item.setField("description", values.get("description"));
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(L_NAME) + ", item=" + item.getField(L_NAME)
-                    + ", description=" + item.getField("description") + "}");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(L_NAME) + ", item="
+                        + item.getField(L_NAME) + ", description=" + item.getField("description") + "}");
+            }
+            item.getDataDefinition().save(item);
+
         }
-
-        item.getDataDefinition().save(item);
     }
 
     protected String getRandomDictionaryItem(final String dictionaryName) {

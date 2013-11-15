@@ -36,11 +36,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -76,6 +76,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ProductionBalanceDetailsListeners {
@@ -145,7 +146,7 @@ public class ProductionBalanceDetailsListeners {
             if (productionBalance == null) {
                 state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
-            } else if (StringUtils.hasText(productionBalance.getStringField(ProductionBalanceFields.FILE_NAME))) {
+            } else if (StringUtils.isNotEmpty(productionBalance.getStringField(ProductionBalanceFields.FILE_NAME))) {
                 state.addMessage("productionCounting.productionBalance.report.error.documentsWasGenerated", MessageType.FAILURE);
                 return;
             }
@@ -591,21 +592,22 @@ public class ProductionBalanceDetailsListeners {
             return;
         }
 
-        FieldComponent orderField = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.ORDER);
-        FieldComponent name = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.NAME);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionBalanceFields.ORDER);
+        FieldComponent nameField = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.NAME);
 
-        if (orderField.getFieldValue() == null || StringUtils.hasText((String) name.getFieldValue())) {
+        Entity order = orderLookup.getEntity();
+
+        if (order == null) {
             return;
         }
 
-        Entity orderEntity = orderService.getOrder((Long) orderField.getFieldValue());
-
-        if (orderEntity == null) {
-            return;
-        }
-
+        String name = (String) nameField.getFieldValue();
         Locale locale = component.getLocale();
-        name.setFieldValue(makeDefaultName(orderEntity, locale));
+        String defaultName = makeDefaultName(order, locale);
+
+        if (StringUtils.isEmpty(name) || !defaultName.equals(name)) {
+            nameField.setFieldValue(defaultName);
+        }
     }
 
     public String makeDefaultName(final Entity order, final Locale locale) {

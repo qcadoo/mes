@@ -50,13 +50,19 @@ public class TechInstOperCompHooksPPS {
                     || progressForDay.getField(DAY) == null) {
                 continue;
             }
-            if (!(progressForDay.getField(DAY) instanceof Long)) {
+            Object dayObject = progressForDay.getField(DAY);
+            if (!(dayObject instanceof Long) && !(dayObject instanceof Integer)) {
                 progressForDay.addError(progressForDay.getDataDefinition().getField(DAY),
                         "productionPerShift.progressForDay.haveToBeInteger");
                 return false;
             }
-            Integer day = ((Long) progressForDay.getField(DAY)).intValue();
-            if (day != null && dayNumber.compareTo(day) == -1) {
+            Integer day = Integer.valueOf(0);
+            if (dayObject instanceof Integer) {
+                day = progressForDay.getIntegerField(DAY);
+            } else {
+                day = ((Long) progressForDay.getField(DAY)).intValue();
+            }
+            if (day != null && dayNumber.compareTo(day) <= 0) {
                 dayNumber = day;
             } else {
                 technologyOperationComponent.addGlobalError("productionPerShift.progressForDay.daysAreNotInAscendingOrder",

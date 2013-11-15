@@ -42,13 +42,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.print.DeliveryColumnFiller;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.mes.deliveries.print.OrderColumnFiller;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
@@ -62,14 +63,15 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     private NumberService numberService;
 
     @Autowired
-    private CurrencyService currencyService;
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(final List<DeliveryProduct> deliveryProducts) {
         Map<DeliveryProduct, Map<String, String>> values = new HashMap<DeliveryProduct, Map<String, String>>();
 
+        Integer succession = 0;
         for (DeliveryProduct deliveryProduct : deliveryProducts) {
-
+            succession++;
             if (!values.containsKey(deliveryProduct)) {
                 values.put(deliveryProduct, new HashMap<String, String>());
             }
@@ -77,6 +79,8 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
             fillProductNumber(values, deliveryProduct);
             fillProductName(values, deliveryProduct);
             fillProductUnit(values, deliveryProduct);
+
+            fillSuccession(values, deliveryProduct, succession);
 
             fillOrderedQuantity(values, deliveryProduct);
             fillDeliveredQuantity(values, deliveryProduct);
@@ -197,6 +201,12 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         }
 
         values.get(deliveryProduct).put("productUnit", productUnit);
+    }
+
+    private void fillSuccession(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct,
+            final Integer succession) {
+
+        values.get(deliveryProduct).put("succession", succession.toString());
     }
 
     private void fillOrderedQuantity(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
@@ -343,31 +353,27 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     }
 
     private void fillCurrency(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
-        String currency = null;
-
-        Entity currentCurrency = currencyService.getCurrentCurrency();
-
-        if (currentCurrency == null) {
-            currency = "";
-        } else {
-            currency = currencyService.getCurrencyAlphabeticCode();
-        }
-
+        Entity delivery = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY);
+        String currency = deliveriesService.getCurrency(delivery);
         values.get(orderedProduct).put("currency", currency);
     }
 
     private void fillCurrency(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
-        String currency = null;
-
-        Entity currentCurrency = currencyService.getCurrentCurrency();
-
-        if (currentCurrency == null) {
-            currency = "";
+        Entity entity = null;
+        String currency = "";
+        if (deliveryProduct.getDeliveredProductId() != null) {
+            entity = dataDefinitionService
+                    .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT).get(
+                            deliveryProduct.getDeliveredProductId());
         } else {
-            currency = currencyService.getCurrencyAlphabeticCode();
+
+            entity = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT)
+                    .get(deliveryProduct.getOrderedProductId());
+
         }
+        Entity delivery = entity.getBelongsToField(DeliveredProductFields.DELIVERY);
+        currency = deliveriesService.getCurrency(delivery);
 
         values.get(deliveryProduct).put("currency", currency);
     }
-
 }

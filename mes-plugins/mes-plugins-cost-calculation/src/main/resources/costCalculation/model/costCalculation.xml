@@ -44,50 +44,56 @@
 		<decimal name="quantity" required="true" />
 		<belongsTo name="order" model="order" plugin="orders" />
 		<decimal name="totalMaterialCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="totalMachineHourlyCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="totalPieceworkCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="totalLaborHourlyCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="totalTechnicalProductionCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="productionCostMargin" default="0">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="productionCostMarginValue" />
+		<decimal name="productionCostMarginValue">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+		</decimal>
 		<decimal name="materialCostMargin" default="0">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="materialCostMarginValue" />
+		<decimal name="materialCostMarginValue">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+		</decimal>
 		<decimal name="additionalOverhead" default="0">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="additionalOverheadValue" default="0" />
 		<decimal name="totalOverhead">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="totalCosts">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="totalCostPerUnit">
-			<validatesUnscaledValue max="7" />
+			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<string name="description">

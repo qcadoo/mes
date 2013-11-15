@@ -138,6 +138,10 @@
 							reference="generated" defaultVisible="false" />
 					</layoutElement>
 				</component>
+				
+				<option type="header" value="true" />
+				<option type="expression" value="' '" />
+				
 				<listener event="printAssignmentToShiftReport"
 					class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftReportDetailsListeners"
 					method="printAssignmentToShiftReport" />

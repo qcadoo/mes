@@ -49,6 +49,7 @@ public class WorkstationTypeComponentHooks {
         List<Entity> entities = dataDefinitionService
                 .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_WORKSTATION_TYPE_COMPONENT)
                 .find()
+                .add(SearchRestrictions.ne("id", entity.getId()))
                 .add(SearchRestrictions.and(
                         SearchRestrictions.belongsTo(WorkstationTypeComponentFields.PRODUCTIONLINE,
                                 entity.getBelongsToField(WorkstationTypeComponentFields.PRODUCTIONLINE)),

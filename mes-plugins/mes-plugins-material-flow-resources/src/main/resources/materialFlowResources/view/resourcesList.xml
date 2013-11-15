@@ -38,7 +38,9 @@
 		<component type="grid" name="resourceGrid" reference="grid">
 			<option type="column" name="location" fields="location"
 				expression="#location['name']" />
-			<option type="column" name="product" fields="product"
+			<option type="column" name="productNumber" fields="product"
+				expression="#product['number']" />
+			<option type="column" name="productName" fields="product"
 				expression="#product['name']" />
 			<option type="column" name="quantity" fields="quantity" />
 			<option type="column" name="price" fields="price" />
@@ -46,8 +48,8 @@
 
 			<option type="order" column="product" direction="asc" />
 
-			<option type="searchable" value="location,product,quantity,price,time" />
-			<option type="orderable" value="location,product,quantity,price,time" />
+			<option type="searchable" value="location,productNumber,productName,quantity,price,time" />
+			<option type="orderable" value="location,productNumber,productName,quantity,price,time" />
 
 			<option type="correspondingView" value="materialFlowResources/resourceDetails" />
 			<option type="correspondingComponent" value="form" />

@@ -44,7 +44,11 @@
 			<validatesLength max="2048" />
 		</string>
 		
+		<integer name="deliveryDateBuffer" persistent="false" />
+		<dictionary name="paymentForm" dictionary="paymentForm" persistent="false" />
+		
 		<belongsTo name="relatedDelivery" model="delivery" />
+		<belongsTo name="currency" model="currency" plugin="basic"/>
 		<hasMany name="relatedDeliveries" joinField="relatedDelivery" model="delivery"
 			cascade="nullify" />
 		
@@ -56,7 +60,7 @@
 		<decimal name="deliveredProductsCumulatedTotalPrice" persistent="false"/>
 		
 		<enum name="state"
-			values="01draft,02prepared,03duringCorrection,04declined,05approved,06received"
+			values="01draft,02prepared,03duringCorrection,04declined,05approved,06received,07receiveConfirmWaiting"
 			default="01draft" required="true" />
 		<hasMany name="stateChanges" joinField="delivery" model="deliveryStateChange"
 			cascade="delete" />

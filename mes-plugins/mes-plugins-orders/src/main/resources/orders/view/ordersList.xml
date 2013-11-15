@@ -55,19 +55,23 @@
 								copyButton.disable();
 							} else {
 								copyButton.enable();
-								var hasClosed = false;
+								var canNotDelete = false;
               					var hasExternal = false;
                					for (var i in selectedEntitiesArray) {
-                  					if (selectedEntitiesArray[i].fields.state == "04completed") {
-                   			 			hasClosed = true;
-                    					break;
+               						var state = selectedEntitiesArray[i].fields.state;
+                  					if (state =="02accepted" || state =="03inProgress" || state == "04completed" || state =="06interrupted" || state =="07abandoned") {
+                   			 			canNotDelete = true;
+                   			 			break;
+                 					 } else if (selectedEntitiesArray[i].fields.state == "03inProgress") {
+                   			 			isInProgress = true;
+                   			 			break;
                  					 } else if (selectedEntitiesArray[0].fields.externalSynchronized == '0' || (selectedEntitiesArray[i].fields.externalNumber != '' && selectedEntitiesArray[i].fields.externalNumber != undefined)) {
                     					hasExternal = true;
                     					break;  
                   					}
                 				}
-               					if (hasClosed) {
-                  					deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsDone)}");
+               					if (canNotDelete) {
+                  					deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsIncorrectForDelete)}");
                 				} else if (hasExternal) {
                  					deleteButton.disable("#{translate(orders.orders.ribbon.message.someOrderIsExternal)}");
                 				} else {
@@ -88,7 +92,8 @@
  			<option type="column" name="plannedQuantity" fields="plannedQuantity" width="35" />
 			<option type="column" name="unit" fields="product" expression="#product['unit']" width="30"/>
 			<option type="column" name="companyName" fields="company" expression="#company['name']" width="50"/>
-			
+			<option type="column" name="state" fields="state" hidden="true" />
+
 			<option type="correspondingView" value="orders/orderDetails" />
 			<option type="correspondingComponent" value="form" />
 			

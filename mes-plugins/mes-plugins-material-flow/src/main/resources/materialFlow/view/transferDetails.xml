@@ -122,6 +122,10 @@
 				</layoutElement>
 			</component>
 		
+			<listener event="save"
+				class="com.qcadoo.mes.materialFlow.hooks.TransferDetailsViewHooks"
+				method="showMessageAfterSaving" />
+				
 			<option type="header" value="true" />
 			<option type="expression" value="#number" />
 		</component>
@@ -133,6 +137,6 @@
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 			method="disableLocationFieldForParticularTransferType" />
 		<beforeRender class="com.qcadoo.mes.materialFlow.hooks.TransferDetailsViewHooks"
-			method="checkIfTransferHasTransformations" />
+			method="onBeforeRender" />
 	</hooks>
 </view>

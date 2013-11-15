@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.simpleMaterialBalance.internal.print;
@@ -161,19 +161,18 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
 
-            table.addCell(new Phrase(product.getField(L_NUMBER).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(product.getField(L_NAME).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(product.getField(L_UNIT).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils
-                    .getDejavuRegular9Dark()));
+            table.addCell(new Phrase(product.getField(L_NUMBER).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(product.getField(L_NAME).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(product.getField(L_UNIT).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuRegular7Dark()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity simpleMaterialBalanceLocationComponent : simpleMaterialBalanceLocationComponents) {
                 available = available.add(materialFlowService.calculateShouldBeInLocation(simpleMaterialBalanceLocationComponent
                         .getBelongsToField(L_LOCATION).getId(), product.getId(), (Date) simpleMaterialBalance.getField(L_DATE)));
             }
-            table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(numberService.format(available.subtract(neededProductQuantity.getValue(),
-                    numberService.getMathContext())), FontUtils.getDejavuBold9Dark()));
+                    numberService.getMathContext())), FontUtils.getDejavuBold7Dark()));
         }
         document.add(table);
     }
@@ -195,8 +194,8 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 simpleMaterialBalance.getHasManyField(L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS));
         Collections.sort(orders, new EntityOrderNumberComparator());
         for (Entity e : orders) {
-            table.addCell(new Phrase(e.getBelongsToField(L_ORDER).getStringField(L_NUMBER), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField(L_ORDER).getStringField(L_NAME), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(L_ORDER).getStringField(L_NUMBER), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(L_ORDER).getStringField(L_NAME), FontUtils.getDejavuRegular7Dark()));
         }
         document.add(table);
     }
@@ -219,9 +218,9 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         Collections.sort(simpleMaterialBalanceLocationComponents, new EntityLocationNumberComparator());
         for (Entity simpleMaterialBalanceLocationComponent : simpleMaterialBalanceLocationComponents) {
             table.addCell(new Phrase(simpleMaterialBalanceLocationComponent.getBelongsToField(L_LOCATION)
-                    .getStringField(L_NUMBER), FontUtils.getDejavuRegular9Dark()));
+                    .getStringField(L_NUMBER), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(simpleMaterialBalanceLocationComponent.getBelongsToField(L_LOCATION).getStringField(L_NAME),
-                    FontUtils.getDejavuRegular9Dark()));
+                    FontUtils.getDejavuRegular7Dark()));
         }
         document.add(table);
     }

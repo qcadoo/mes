@@ -61,9 +61,9 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
@@ -97,9 +97,6 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     @Autowired
     private ParameterService parameterService;
-
-    @Autowired
-    private CurrencyService currencyService;
 
     @Autowired
     private NumberService numberService;
@@ -201,21 +198,25 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     private Map<String, Object> createThirdColumn(final Entity delivery, final Locale locale) {
         Map<String, Object> column = new LinkedHashMap<String, Object>();
-        if (delivery.getStringField(STATE) != null) {
+        if (StringUtils.isNotEmpty(delivery.getStringField(STATE))) {
             column.put("deliveries.delivery.report.columnHeader.state",
                     translationService.translate("deliveries.delivery.state.value." + delivery.getStringField(STATE), locale));
         }
         if (delivery.getField("createDate") != null) {
             column.put("deliveries.delivery.report.columnHeader.createDate",
-                    getStringFromDate((Date) delivery.getField("createDate")));
+                    getStringFromDate(delivery.getDateField("createDate")));
         }
         if (getPrepareOrderDate(delivery) != null) {
-            column.put("deliveries.delivery.report.columnHeader.createOrderDate",
-                    getStringFromDate((Date) getPrepareOrderDate(delivery).getField("dateAndTime")));
+            column.put("deliveries.delivery.report.columnHeader.createOrderDate", getStringFromDate(getPrepareOrderDate(delivery)
+                    .getDateField("dateAndTime")));
         }
         if (getReceivedOrderDate(delivery) != null) {
             column.put("deliveries.delivery.report.columnHeader.receivedOrderDate",
-                    getStringFromDate((Date) getReceivedOrderDate(delivery).getField("dateAndTime")));
+                    getStringFromDate(getReceivedOrderDate(delivery).getDateField("dateAndTime")));
+        }
+        if (StringUtils.isNotEmpty(delivery.getBelongsToField(SUPPLIER).getStringField(CompanyFieldsD.PAYMENT_FORM))) {
+            column.put("deliveries.delivery.report.columnHeader.paymentForm", delivery.getBelongsToField(SUPPLIER)
+                    .getStringField(CompanyFieldsD.PAYMENT_FORM));
         }
         return column;
     }
@@ -254,7 +255,7 @@ public class DeliveryReportPdf extends ReportPdfView {
 
                         prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
 
-                        productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                        productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
                     }
                 }
 
@@ -277,7 +278,7 @@ public class DeliveryReportPdf extends ReportPdfView {
         DeliveryPricesAndQuantities pricesAndQntts = new DeliveryPricesAndQuantities(delivery, numberService);
 
         PdfPCell total = new PdfPCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
-                FontUtils.getDejavuRegular9Dark()));
+                FontUtils.getDejavuRegular7Dark()));
 
         total.setColspan(2);
         total.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -293,20 +294,20 @@ public class DeliveryReportPdf extends ReportPdfView {
                     && columnsName.indexOf(OrderedProductFields.ORDERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getOrderedCumulatedQuantity()), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
             } else if (columnsName.contains(DeliveredProductFields.DELIVERED_QUANTITY)
                     && columnsName.indexOf(DeliveredProductFields.DELIVERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getDeliveredCumulatedQuantity()), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
             } else if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)
                     && columnsName.indexOf(DeliveredProductFields.TOTAL_PRICE) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getDeliveredTotalPrice()), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
             } else if (columnsName.contains(L_CURRENCY) && columnsName.indexOf(L_CURRENCY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                productsTable.addCell(new Phrase(currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular9Dark()));
+                productsTable.addCell(new Phrase(deliveriesService.getCurrency(delivery), FontUtils.getDejavuRegular7Dark()));
             } else {
                 productsTable.addCell("");
             }

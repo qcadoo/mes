@@ -76,8 +76,10 @@
 						var locked = shouldLockStatusRibbonItems(selectedEntitiesArray);
 						var lockedMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}";
 						var differentStatesMessage = "#{translate(technologies.technologiesList.window.ribbon.status.differentStates)}";
+						var externalMessage = "#{translate(technologies.technology.ribbon.message.technologyIsSynchronized)}";
 						var differentStates = statesAreDifferent(selectedEntitiesArray);
-
+						var isSynchronized = isSomeSynchronized(selectedEntitiesArray);
+						
 						for (var elementKey in toggleRibbonItems) {
 							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
 							if (!ribbonItem) {
@@ -92,7 +94,7 @@
 								ribbonItem.enable();
 							}
 						}
-
+						
 						if (!differentStates) {
 							var state = selectedEntitiesArray[0].fields.state;
 						}
@@ -109,13 +111,20 @@
 						acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 						acceptState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.acceptTechnology)}");
 						cancelState.disable();
+						cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.cancelTechnology)}");
+						checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
 						
 						if (!state) {
 							acceptState.disable(differentStatesMessage);
 							cancelState.disable(differentStatesMessage);
-							cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.cancelTechnology)}");
 							checkState.disable(differentStatesMessage);
-							checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
+							return;
+						}
+						if(isSynchronized){
+							acceptState.disable(externalMessage);
+							cancelState.disable(externalMessage);
+							checkState.disable(externalMessage);
+							getRibbonItem("actions.delete").disable(externalMessage);
 							return;
 						}
 						
@@ -175,6 +184,15 @@
 						}
 						return false;
 					}
+					
+					function isSomeSynchronized(selectedEntitiesArray) {
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.externalSynchronized == '0') {
+								return true;
+							}
+						}
+						return false;
+					}
 				]]>
 			</script>
 			
@@ -188,6 +206,7 @@
 			<option type="column" name="state" fields="state" />
 			<option type="column" name="master" fields="master" />
 			<option type="column" name="technologyGroupNumber" fields="technologyGroup" expression="#technologyGroup['number']" />
+			<option type="column" name="externalSynchronized" fields="externalSynchronized" hidden="true" />
 			<option type="order" column="number" direction="desc" />
 			<option type="searchable" value="name,number,productName,state,technologyGroupNumber" />
 			<option type="orderable" value="name,number,productName,state,technologyGroupNumber" />

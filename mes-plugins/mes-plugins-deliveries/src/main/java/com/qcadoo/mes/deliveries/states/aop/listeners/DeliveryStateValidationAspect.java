@@ -38,6 +38,7 @@ import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangePhase;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
+import com.qcadoo.mes.states.annotation.RunForStateTransitions;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.plugin.api.RunIfEnabled;
@@ -62,7 +63,9 @@ public class DeliveryStateValidationAspect extends AbstractStateListenerAspect {
     }
 
     @RunInPhase(DeliveryStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = DeliveryStateStringValues.APPROVED, targetState = DeliveryStateStringValues.RECEIVED)
+    @RunForStateTransitions({
+            @RunForStateTransition(sourceState = DeliveryStateStringValues.APPROVED, targetState = DeliveryStateStringValues.RECEIVED),
+            @RunForStateTransition(sourceState = DeliveryStateStringValues.APPROVED, targetState = DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING) })
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnReceived(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnReceived(stateChangeContext);

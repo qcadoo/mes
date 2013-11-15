@@ -29,6 +29,7 @@ import static org.mockito.BDDMockito.given;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -248,6 +249,7 @@ public class DeliveriesServiceImplTest {
         assertEquals(companyProductsFamily, result);
     }
 
+    @Ignore
     @Test
     public void shouldReturnNullWhenGetColumnsForDeliveriesIfColumnsForDeliveriesAreNull() {
         // given
@@ -263,6 +265,7 @@ public class DeliveriesServiceImplTest {
         assertEquals(null, result);
     }
 
+    @Ignore
     @Test
     public void shouldReturnColumnsForDeliveriesWhenGetColumnsForDeliveriesIfColumnsForDeliveriesArentNull() {
         // given

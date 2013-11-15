@@ -185,19 +185,20 @@
 									interruptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
 								}
 								copyButton.enable();
-								var hasClosed = false;
+								var canNotDelete = false;
 								var hasExternal = false;
 								for (var i in selectedEntitiesArray) {
-									if (selectedEntitiesArray[i].fields.state == "04completed") {
-										hasClosed = true;
+									var state = selectedEntitiesArray[i].fields.state;
+									if (state =="02accepted" || state =="03inProgress" || state == "04completed" || state =="06interrupted" || state =="07abandoned") {
+                   			 			canNotDelete = true;
 										break;
 									} else if (selectedEntitiesArray[0].fields.externalSynchronized == '0' || (selectedEntitiesArray[i].fields.externalNumber != '' && selectedEntitiesArray[i].fields.externalNumber != undefined)) {
 										hasExternal = true;
 										break;	
 									}
 								}
-								if (hasClosed) {
-									deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsDone)}");
+								if (canNotDelete) {
+                  					deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsIncorrectForDelete)}");
 								} else if (hasExternal) {
 									deleteButton.disable("#{translate(orders.orders.ribbon.message.someOrderIsExternal)}");
 								} else {
@@ -214,6 +215,7 @@
 			<option type="column" name="state" fields="state" width="35" />
 			<option type="column" name="productNumber" fields="product" expression="#product['number']" width="30" />
 			<option type="column" name="technologyNumber" fields="technology" expression="#technology['number']" width="30" />
+			<option type="column" name="description" fields="description" link="true" width="60" />
 			<option type="column" name="dateFrom" fields="startDate" width="50" />
 			<option type="column" name="dateTo" fields="finishDate" width="50" />
  			<option type="column" name="plannedQuantity" fields="plannedQuantity" width="35" />
@@ -229,8 +231,8 @@
 			
 			<option type="order" column="dateFrom" direction="asc" />
 			
-			<option type="searchable" value="number,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
-			<option type="orderable" value="number,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
+			<option type="searchable" value="number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
+			<option type="orderable" value="number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
 			
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />

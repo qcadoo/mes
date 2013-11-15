@@ -77,7 +77,7 @@ public class OrderTimePredictionService {
 
     private static final String L_QUANTITY = "quantity";
 
-    private static final Integer MAX = 5;
+    private static final Integer MAX = 7;
 
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;

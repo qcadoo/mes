@@ -565,7 +565,7 @@ public class WorkPlanPdfServiceTest {
             verify(document).add(table);
             verify(cell, times(2)).setHorizontalAlignment(Element.ALIGN_LEFT);
             verify(cell, times(2)).setHorizontalAlignment(Element.ALIGN_RIGHT);
-            verify(table, times(4)).addCell(new Phrase(Mockito.anyString(), FontUtils.getDejavuRegular9Dark()));
+            verify(table, times(4)).addCell(new Phrase(Mockito.anyString(), FontUtils.getDejavuRegular7Dark()));
         } catch (DocumentException e) {
         }
     }

@@ -250,7 +250,7 @@ public class MaterialFlowService {
         String number = "";
 
         if (product != null) {
-            String generatedNumber = numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
+            String generatedNumber = generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
 
             String prefix = product.getStringField(NUMBER);
 
@@ -471,6 +471,29 @@ public class MaterialFlowService {
             locationLookup.addMessage("materialFlow.validate.global.error.locationHasExternalNumber",
                     ComponentState.MessageType.FAILURE);
         }
+    }
+
+    public String generateNumber(final String plugin, final String entityName, int digtsNumber) {
+        DataDefinition dataDefinition = dataDefinitionService.get(plugin, entityName);
+        SearchResult results = dataDefinition.find().setMaxResults(1).addOrder(SearchOrders.desc("id")).list();
+
+        long longValue = 0;
+
+        if (results.getEntities().isEmpty()) {
+            longValue++;
+        } else {
+            longValue = results.getEntities().get(0).getId();
+            while (numberAlreadyExist(dataDefinition, longValue, digtsNumber)) {
+                longValue++;
+            }
+        }
+
+        return String.format("%0" + digtsNumber + "d", longValue);
+    }
+
+    private boolean numberAlreadyExist(final DataDefinition dataDefinition, final long longValue, final int digitsNumber) {
+        return dataDefinition.find().add(SearchRestrictions.eq("number", String.format("%0" + digitsNumber + "d", longValue)))
+                .setMaxResults(1).uniqueResult() != null;
     }
 
 }

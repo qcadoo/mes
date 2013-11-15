@@ -36,17 +36,30 @@
 			required="true" />
 		<belongsTo name="basicProductionCounting" model="basicProductionCounting"
 			plugin="basicProductionCounting" />
+        <belongsTo name="operationProductInComponent" model="operationProductInComponent"
+                   plugin="technologies" />
+        <belongsTo name="operationProductOutComponent" model="operationProductOutComponent"
+                   plugin="technologies" />
 		<enum name="role" values="01used,02produced" default="01used"
 			required="true" />
 		<enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
 			default="01component" required="true" />
 		<boolean name="isNonComponent" default="false" required="true" />
 		<decimal name="plannedQuantity" required="true">
-			<validatesWith class="com.qcadoo.mes.basicProductionCounting.validators.ProductionCountingQuantityValidators" 
-				method="validatePlannedQuantity"/>
+			<validatesWith
+				class="com.qcadoo.mes.basicProductionCounting.validators.ProductionCountingQuantityValidators"
+				method="validatePlannedQuantity" />
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
 		</decimal>
-		<decimal name="usedQuantity" persistent="false" />
-		<decimal name="producedQuantity" persistent="false" />
+		<decimal name="usedQuantity" persistent="false">
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="producedQuantity" persistent="false">
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
+		</decimal>
 	</fields>
 
 	<hooks>

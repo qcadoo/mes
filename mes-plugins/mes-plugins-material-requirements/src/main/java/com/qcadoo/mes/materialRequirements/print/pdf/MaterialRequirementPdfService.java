@@ -147,13 +147,13 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
 
-            table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
             String unit = product.getStringField(ProductFields.UNIT);
             if (unit == null) {
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
-                table.addCell(new Phrase(unit, FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuBold9Dark()));
@@ -169,28 +169,28 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         PdfPTable table = pdfHelper.createTableWithHeader(5, orderHeader, true, defaultMatReqHeaderColumnWidth);
 
         for (Entity order : orders) {
-            table.addCell(new Phrase(order.getStringField(OrderFields.NUMBER), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(order.getStringField(OrderFields.NAME), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(order.getStringField(OrderFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(order.getStringField(OrderFields.NAME), FontUtils.getDejavuRegular7Dark()));
             Entity product = (Entity) order.getField(OrderFields.PRODUCT);
             if (product == null) {
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
-                table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
             }
             if (product == null) {
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
                 String unit = product.getStringField(ProductFields.UNIT);
                 if (unit == null) {
-                    table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                    table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                 } else {
-                    table.addCell(new Phrase(unit, FontUtils.getDejavuRegular9Dark()));
+                    table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
                 }
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
-            table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);

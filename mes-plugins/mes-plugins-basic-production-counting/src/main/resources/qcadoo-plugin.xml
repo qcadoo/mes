@@ -72,7 +72,30 @@
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="lockProductionProgress" default="false" />
 		</model:model-field>
-
+		
+		<model:model-field model="product" plugin="basic">
+			<model:hasMany name="basicProductionCountings" model="basicProductionCounting"
+				plugin="basicProductionCounting" joinField="product" cascade="delete" />
+		</model:model-field>
+		<model:model-field model="product" plugin="basic">
+			<model:hasMany name="productionCountingQuantities"
+				model="productionCountingQuantity" plugin="basicProductionCounting"
+				joinField="product" cascade="delete" />
+		</model:model-field>
+		
+		<model:model-field model="technologyOperationComponent"
+			plugin="technologies">
+			<model:hasMany name="productionCountingQuantities"
+				model="productionCountingQuantity" plugin="basicProductionCounting"
+				joinField="technologyOperationComponent" cascade="delete" />
+		</model:model-field>
+		<model:model-field model="technologyOperationComponent"
+			plugin="technologies">
+			<model:hasMany name="productionCountingOperationRuns"
+				model="productionCountingOperationRun" plugin="basicProductionCounting"
+				joinField="technologyOperationComponent" cascade="delete" />
+		</model:model-field>
+		
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="basicProductionCountings" model="basicProductionCounting"
 				plugin="basicProductionCounting" joinField="order" cascade="delete" />
@@ -86,43 +109,6 @@
 			<model:hasMany name="productionCountingOperationRuns"
 				model="productionCountingOperationRun" plugin="basicProductionCounting"
 				joinField="order" cascade="delete" />
-		</model:model-field>
-
-		<model:model-field model="technologyOperationComponent"
-			plugin="technologies">
-			<model:hasMany name="productionCountingQuantities"
-				model="productionCountingQuantity" plugin="basicProductionCounting"
-				joinField="technologyOperationComponent" cascade="delete" />
-		</model:model-field>
-		<model:model-field model="technologyOperationComponent"
-			plugin="technologies">
-			<model:hasMany name="productionCountingOperationRuns"
-				model="productionCountingOperationRun" plugin="basicProductionCounting"
-				joinField="technologyOperationComponent" cascade="delete" />
-		</model:model-field>
-
-		<model:model-field model="operationProductInComponent"
-			plugin="technologies">
-			<model:hasMany name="productionCountingQuantities"
-				model="productionCountingQuantity" plugin="basicProductionCounting"
-				joinField="operationProductInComponent" cascade="delete" />
-		</model:model-field>
-
-		<model:model-field model="operationProductOutComponent"
-			plugin="technologies">
-			<model:hasMany name="productionCountingQuantities"
-				model="productionCountingQuantity" plugin="basicProductionCounting"
-				joinField="operationProductOutComponent" cascade="delete" />
-		</model:model-field>
-
-		<model:model-field model="product" plugin="basic">
-			<model:hasMany name="basicProductionCountings" model="basicProductionCounting"
-				plugin="basicProductionCounting" joinField="product" cascade="delete" />
-		</model:model-field>
-		<model:model-field model="product" plugin="basic">
-			<model:hasMany name="productionCountingQuantities"
-				model="productionCountingQuantity" plugin="basicProductionCounting"
-				joinField="product" cascade="delete" />
 		</model:model-field>
 
 		<model:model-hook model="order" plugin="orders">

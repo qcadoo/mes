@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
 	<component type="window" name="window" reference="window">
-	
+
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="generate">
@@ -63,41 +63,43 @@
 									}
 								}
 							});
-							]]>
+						]]>
 					</script>
 				</smallButton>
 				<smallButton name="declineDelivery" icon="deleteIcon16.png"
 					state="disabled">
 					<script>
-					<![CDATA[
-						this.addOnChangeListener({
-							onClick: function() {
-								if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery.confirm)}")) {
-									#{form}.performEvent('changeState', ['04declined']);
-								};
-							}
-						});
-							]]>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery.confirm)}")) {
+										#{form}.performEvent('changeState', ['04declined']);
+									};
+								}
+							});
+						]]>
 					</script>
 				</smallButton>
 				<smallButton name="approveDelivery" icon="acceptIcon16.png"
 					state="disabled">
 					<script>
 						<![CDATA[
-						this.addOnChangeListener({
-							onClick: function() {
-								if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
-									#{form}.performEvent('changeState', ['05approved']);
-								};
-							}
-						});
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
+										#{form}.performEvent('changeState', ['05approved']);
+									};
+								}
+							});
 						]]>
 					</script>
 				</smallButton>
 			</group>
-			<group name="copy">
-				<bigButton name="copyOrderedProductToDelivered" icon="copyIcon24.png"
-					state="disabled" action="#{form}.fireEvent(copyOrderedProductToDelivered);" />
+			<group name="copyOrderedProductsToDelivered">
+				<bigButton name="copyProductsWithoutQuantityAndPrice" icon="copyIcon24.png"
+					state="disabled" action="#{form}.fireEvent(copyProductsWithoutQuantityAndPrice);" />
+				<bigButton name="copyProductsWithQuantityAndPrice" icon="copyIcon24.png"
+					state="disabled" action="#{form}.fireEvent(copyProductsWithQuantityAndPrice);" />
 			</group>
 			<group name="relatedDelivery">
 				<bigButton name="createRelatedDelivery" icon="genealogyIcon24.png"
@@ -105,166 +107,183 @@
 				<bigButton name="showRelatedDeliveries" icon="genealogyIcon24.png"
 					state="disabled" action="#{form}.fireEvent(showRelatedDeliveries);" />
 			</group>
+			<group name="product">
+				<bigButton name="showProduct" icon="genealogyIcon24.png"
+					state="disabled" action="#{form}.fireEvent(showProduct);" />
+			</group>
 		</ribbon>
 
 		<windowTab name="mainTab">
 			<component type="form" name="deliveriesDetails" reference="form">
 				<script>
 					<![CDATA[
-					var saveBtn = #{window}.getRibbonItem("actions.save");
-					var saveBackBtn = #{window}.getRibbonItem("actions.saveBack");
-					var saveNewBtn = #{window}.getRibbonItem("actions.saveNew");
-					var cancelBtn = #{window}.getRibbonItem("actions.cancel");
-					var deleteBtn = #{window}.getRibbonItem("actions.delete");
-					
-					var generateOrderBtn =  #{window}.getRibbonItem("generate.generateOrder");
-					var generateDeliveryBtn =  #{window}.getRibbonItem("generate.generateDelivery");
-					
-					var acceptBtn = #{window}.getRibbonItem("status.accept");
-					var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
-					var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
-					var copyOrderedProductToDeliveredBtn = #{window}.getRibbonItem("copy.copyOrderedProductToDelivered");
-					
-					var generateOrderBtn = #{window}.getRibbonItem("generate.generateOrder");
-					var generateDeliveryBtn = #{window}.getRibbonItem("generate.generateDelivery");
-					
-					var createRelatedDeliveryBtn = #{window}.getRibbonItem("relatedDelivery.createRelatedDelivery");
-					var showRelatedDeliveriesBtn = #{window}.getRibbonItem("relatedDelivery.showRelatedDeliveries");
-					
-					this.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
+						var saveBtn = #{window}.getRibbonItem("actions.save");
+						var saveBackBtn = #{window}.getRibbonItem("actions.saveBack");
+						var saveNewBtn = #{window}.getRibbonItem("actions.saveNew");
+						var cancelBtn = #{window}.getRibbonItem("actions.cancel");
+						var deleteBtn = #{window}.getRibbonItem("actions.delete");
+						
+						var generateOrderBtn =  #{window}.getRibbonItem("generate.generateOrder");
+						var generateDeliveryBtn =  #{window}.getRibbonItem("generate.generateDelivery");
+						
+						var acceptBtn = #{window}.getRibbonItem("status.accept");
+						var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
+						var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
+						var copyProductsWithoutQuantityAndPriceBtn = #{window}.getRibbonItem("copyOrderedProductsToDelivered.copyProductsWithoutQuantityAndPrice");
+						var copyProductsWithQuantityAndPriceBtn = #{window}.getRibbonItem("copyOrderedProductsToDelivered.copyProductsWithQuantityAndPrice");
+						
+						var generateOrderBtn = #{window}.getRibbonItem("generate.generateOrder");
+						var generateDeliveryBtn = #{window}.getRibbonItem("generate.generateDelivery");
+						
+						var createRelatedDeliveryBtn = #{window}.getRibbonItem("relatedDelivery.createRelatedDelivery");
+						var showRelatedDeliveriesBtn = #{window}.getRibbonItem("relatedDelivery.showRelatedDeliveries");
+						
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								
+								saveBtn.enable();
+								saveBackBtn.enable();
+								saveNewBtn.enable();
+								
+								if (! value.content.entityId) {
+									cancelBtn.disable();
+									deleteBtn.disable();
+									acceptBtn.disable();
+									declineDeliveryBtn.disable();
+									approveDeliveryBtn.disable();
+									generateOrderBtn.disable();
+									generateDeliveryBtn.disable();
+									return;
+								}
+								
+								cancelBtn.enable();
+								generateOrderBtn.enable();
+								generateDeliveryBtn.enable();
+								
+								var state = #{state}.getValue().content.value;
+								var externalSynchronized = #{externalSynchronized}.getValue().content.value;
+								
+								if (!state) {
+									return;
+								}
+								
+								if (state == "01draft") {
+									deleteBtn.enable();
+									acceptBtn.enable();
+									acceptBtn.state = "draft";
+									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
+									acceptBtn.setIcon('startIcon16.png');
+									declineDeliveryBtn.enable();
+									declineDeliveryBtn.state = "decline";
+									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+									declineDeliveryBtn.setIcon('deleteIcon16.png');
+									approveDeliveryBtn.enable();
+									copyProductsWithoutQuantityAndPriceBtn.enable();
+									copyProductsWithQuantityAndPriceBtn.enable();
+									createRelatedDeliveryBtn.disable();
+									showRelatedDeliveriesBtn.disable();
+								} else if (state == "02prepared") {
+									deleteBtn.disable();
+									acceptBtn.enable();
+									acceptBtn.state = "prepare";
+									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
+									acceptBtn.setIcon('startIcon16.png');
+									declineDeliveryBtn.enable();
+									declineDeliveryBtn.state = "decline";
+									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+									declineDeliveryBtn.setIcon('deleteIcon16.png');
+									approveDeliveryBtn.enable();
+									copyProductsWithoutQuantityAndPriceBtn.enable();
+									copyProductsWithQuantityAndPriceBtn.enable();
+									createRelatedDeliveryBtn.disable();
+									showRelatedDeliveriesBtn.disable();
+								} else if (state == "03duringCorrection") {
+									deleteBtn.disable();
+									acceptBtn.disable();
+									acceptBtn.state = "correct";
+									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+									acceptBtn.setIcon('acceptIcon16.png');
+									declineDeliveryBtn.enable();
+									declineDeliveryBtn.state = "decline";
+									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+									declineDeliveryBtn.setIcon('deleteIcon16.png');
+									approveDeliveryBtn.enable();
+									copyProductsWithoutQuantityAndPriceBtn.enable();
+									copyProductsWithQuantityAndPriceBtn.enable();
+									createRelatedDeliveryBtn.disable();
+									showRelatedDeliveriesBtn.disable();
+								} else if (state == "05approved") {
+									deleteBtn.disable();
+									acceptBtn.enable();
+									acceptBtn.state = "receive";
+									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+									acceptBtn.setIcon('acceptIcon16.png');
+									declineDeliveryBtn.enable();
+									declineDeliveryBtn.state = "decline";
+									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+									declineDeliveryBtn.setIcon('deleteIcon16.png');
+									approveDeliveryBtn.disable();
+									copyProductsWithoutQuantityAndPriceBtn.enable();
+									copyProductsWithQuantityAndPriceBtn.enable();
+									createRelatedDeliveryBtn.disable();
+									showRelatedDeliveriesBtn.disable();
+								} else if (state == "06received") {
+									saveBtn.disable();
+									saveBackBtn.disable();
+									saveNewBtn.disable();
+									cancelBtn.disable();
+									deleteBtn.disable();
+									acceptBtn.disable();
+									declineDeliveryBtn.disable();
+									approveDeliveryBtn.disable();
+									copyProductsWithoutQuantityAndPriceBtn.disable();
+									copyProductsWithQuantityAndPriceBtn.disable();
+									createRelatedDeliveryBtn.enable();
+									showRelatedDeliveriesBtn.enable();
+								} else {
+									saveBtn.disable();
+									saveBackBtn.disable();
+									saveNewBtn.disable();
+									cancelBtn.disable();
+									deleteBtn.enable();
+									acceptBtn.disable();
+									declineDeliveryBtn.disable();
+									approveDeliveryBtn.disable();
+									copyProductsWithoutQuantityAndPriceBtn.disable();
+									copyProductsWithQuantityAndPriceBtn.disable();
+									createRelatedDeliveryBtn.disable();
+									showRelatedDeliveriesBtn.disable();
+								}
+								if (externalSynchronized == '0') {
+									saveBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									saveBackBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									saveNewBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									cancelBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									deleteBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									acceptBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									declineDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									approveDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									copyProductsWithoutQuantityAndPriceBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									copyProductsWithQuantityAndPriceBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									generateDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									createRelatedDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									showRelatedDeliveriesBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								}
 							}
-							
-							saveBtn.enable();
-							saveBackBtn.enable();
-							saveNewBtn.enable();
-							if (! value.content.entityId) {
-								cancelBtn.disable();
-								deleteBtn.disable();
-								acceptBtn.disable();
-								declineDeliveryBtn.disable();
-								approveDeliveryBtn.disable();
-								generateOrderBtn.disable();
-								generateDeliveryBtn.disable();
-								return;
-							}
-							cancelBtn.enable();
-							generateOrderBtn.enable();
-							generateDeliveryBtn.enable();
-							
-							var state = #{state}.getValue().content.value;
-							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
-							if (!state) {
-								return;
-							}
-							
-							if (state == "01draft") {
-								deleteBtn.enable();
-								acceptBtn.enable();
-								acceptBtn.state = "draft";
-								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
-								acceptBtn.setIcon('startIcon16.png');
-								declineDeliveryBtn.enable();
-								declineDeliveryBtn.state = "decline";
-								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDeliveryBtn.setIcon('deleteIcon16.png');
-								approveDeliveryBtn.enable();
-								copyOrderedProductToDeliveredBtn.enable();
-								createRelatedDeliveryBtn.disable();
-								showRelatedDeliveriesBtn.disable();
-							} else if (state == "02prepared") {
-								deleteBtn.disable();
-								acceptBtn.enable();
-								acceptBtn.state = "prepare";
-								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
-								acceptBtn.setIcon('startIcon16.png');
-								declineDeliveryBtn.enable();
-								declineDeliveryBtn.state = "decline";
-								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDeliveryBtn.setIcon('deleteIcon16.png');
-								approveDeliveryBtn.enable();
-								copyOrderedProductToDeliveredBtn.enable();
-								createRelatedDeliveryBtn.disable();
-								showRelatedDeliveriesBtn.disable();
-							} else if (state == "03duringCorrection") {
-								deleteBtn.disable();
-								acceptBtn.disable();
-								acceptBtn.state = "correct";
-								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
-								acceptBtn.setIcon('acceptIcon16.png');
-								declineDeliveryBtn.enable();
-								declineDeliveryBtn.state = "decline";
-								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDeliveryBtn.setIcon('deleteIcon16.png');
-								approveDeliveryBtn.enable();
-								copyOrderedProductToDeliveredBtn.enable();
-								createRelatedDeliveryBtn.disable();
-								showRelatedDeliveriesBtn.disable();
-							} else if (state == "05approved") {
-								deleteBtn.disable();
-								acceptBtn.enable();
-								acceptBtn.state = "receive";
-								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
-								acceptBtn.setIcon('acceptIcon16.png');
-								declineDeliveryBtn.enable();
-								declineDeliveryBtn.state = "decline";
-								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDeliveryBtn.setIcon('deleteIcon16.png');
-								approveDeliveryBtn.disable();
-								copyOrderedProductToDeliveredBtn.enable();
-								createRelatedDeliveryBtn.disable();
-								showRelatedDeliveriesBtn.disable();
-							} else if (state == "06received") {
-								saveBtn.disable();
-								saveBackBtn.disable();
-								saveNewBtn.disable();
-								cancelBtn.disable();
-								deleteBtn.disable();
-								acceptBtn.disable();
-								declineDeliveryBtn.disable();
-								approveDeliveryBtn.disable();
-								copyOrderedProductToDeliveredBtn.disable();
-								createRelatedDeliveryBtn.enable();
-								showRelatedDeliveriesBtn.enable();
-							} else {
-								saveBtn.disable();
-								saveBackBtn.disable();
-								saveNewBtn.disable();
-								cancelBtn.disable();
-								deleteBtn.enable();
-								acceptBtn.disable();
-								declineDeliveryBtn.disable();
-								approveDeliveryBtn.disable();
-								copyOrderedProductToDeliveredBtn.disable();
-								createRelatedDeliveryBtn.disable();
-								showRelatedDeliveriesBtn.disable();
-							}
-							if(externalSynchronized == '0') {
-								saveBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								saveBackBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								saveNewBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								cancelBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								deleteBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								acceptBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								declineDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								approveDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								copyOrderedProductToDeliveredBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								generateDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								createRelatedDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								showRelatedDeliveriesBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-							}
-						}
-					});
+						});
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="6">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
-							reference="number" />
+							reference="number">
+							<option type="alignment" value="right" />
+						</component>
 						<component type="hidden" name="externalSynchronized"
 							field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
@@ -280,17 +299,17 @@
 						<component type="lookup" name="supplier" reference="supplier"
 							field="supplier">
 							<option type="column" name="name" fields="name" link="true" />
-							
+
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
-							
+
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							
+
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
-								method="fillBufferForSupplier" />
+								method="fillCompanyFieldsForSupplier" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -303,6 +322,10 @@
 						<component type="textarea" name="deliveryAddress" field="deliveryAddress"
 							reference="deliveryAddress" />
 					</layoutElement>
+					<layoutElement column="2" row="6">
+						<component type="select" name="paymentForm" field="paymentForm"
+							reference="paymentForm" defaultEnabled="never" />
+					</layoutElement>
 					<layoutElement column="3" row="1">
 						<component type="select" name="state" field="state"
 							reference="state" defaultEnabled="never" />
@@ -311,8 +334,8 @@
 						<component type="gridLayout" name="gridLayoutDeliveryDateBuffer"
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="deliveryDateBuffer"
-									reference="deliveryDateBuffer" defaultEnabled="never" >
+								<component type="input" name="deliveryDateBuffer" field="deliveryDateBuffer"
+									reference="deliveryDateBuffer" defaultEnabled="never">
 									<option type="labelWidth" value="40" />
 								</component>
 							</layoutElement>
@@ -325,22 +348,36 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="3" row="4">
-						<component type="lookup" name="relatedDelivery" reference="relatedDelivery"
-							field="relatedDelivery">
+						<component type="lookup" name="relatedDelivery"
+							reference="relatedDelivery" field="relatedDelivery">
 							<option type="column" name="name" fields="name" link="true" />
-							
+
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
-							
+
 							<option type="expression" value="#number" />
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
+					<layoutElement column="3" row="5">
+						<component type="lookup" name="currency" reference="currency"
+							field="currency">
+							<option type="column" name="currency" fields="currency"
+								link="true" />
+
+							<option type="searchable" value="currency,alphabeticCode" />
+							<option type="orderable" value="currency,alphabeticCode" />
+
+							<option type="expression" value="#alphabeticCode + ' - ' + #currency" />
+							<option type="fieldCode" value="alphabeticCode" />
+						</component>
+					</layoutElement>
+
 				</component>
-				
+
 				<option type="header" value="true" />
 				<option type="expression" value="#number" />
-				
+
 				<listener event="changeState"
 					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
 					method="changeState" />
@@ -350,27 +387,34 @@
 				<listener event="printOrderReport"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 					method="printOrderReport" />
-				<listener event="copyOrderedProductToDelivered"
+				<listener event="copyProductsWithoutQuantityAndPrice"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
-					method="copyOrderedProductToDelivered" />
+					method="copyProductsWithoutQuantityAndPrice" />
+				<listener event="copyProductsWithQuantityAndPrice"
+					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+					method="copyProductsWithQuantityAndPrice" />
 				<listener event="createRelatedDelivery"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 					method="createRelatedDelivery" />
 				<listener event="showRelatedDeliveries"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 					method="showRelatedDeliveries" />
+				<listener event="showProduct"
+					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+					method="showProduct" />
 			</component>
 		</windowTab>
-		
+
 		<windowTab name="orderedProductTab">
 			<component type="gridLayout" name="orderedProductsGridLayout"
 				columns="4" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="input" name="orderedProductsCumulatedQuantity" field="#{form}.orderedProductsCumulatedQuantity"
-						reference="orderedProductsCumulatedQuantity" defaultEnabled="never" >
+					<component type="input" name="orderedProductsCumulatedQuantity"
+						field="#{form}.orderedProductsCumulatedQuantity" reference="orderedProductsCumulatedQuantity"
+						defaultEnabled="never">
 						<option type="alignment" value="right" />
 						<option type="boldTextRepresentationOnDisabled" value="true" />
-					</component>										
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="4">
 					<component type="grid" name="orderedProducts" reference="orderedProducts"
@@ -381,13 +425,16 @@
 							expression="#product['number']" link="true" width="80" />
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
-						<option type="column" name="orderedQuantity" fields="orderedQuantity"  width="80"/>
+						<option type="column" name="orderedQuantity" fields="orderedQuantity"
+							width="80" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="30" />
-						<option type="column" name="pricePerUnit" fields="pricePerUnit" width="80" />
-						<option type="column" name="totalPrice" fields="totalPrice" width="80" />
+						<option type="column" name="pricePerUnit" fields="pricePerUnit"
+							width="80" />
+						<option type="column" name="totalPrice" fields="totalPrice"
+							width="80" />
 						<option type="column" name="description" fields="description"
-							 width="140" />
+							width="140" />
 						<option type="order" column="succession" direction="asc" />
 
 						<option type="searchable" value="number,name,orderedQuantity,unit" />
@@ -402,22 +449,27 @@
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="fixedHeight" value="true" />
+						
+						<listener event="select" method="disableShowProductButton"
+							class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
-					<component type="gridLayout" name="orderedProductsCumulatedTotalPriceGridLayout"
-						hasBorders="false" columns="4" rows="1">
+					<component type="gridLayout"
+						name="orderedProductsCumulatedTotalPriceGridLayout" hasBorders="false"
+						columns="4" rows="1">
 						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="orderedProductsCumulatedTotalPrice" field="#{form}.orderedProductsCumulatedTotalPrice"
-								reference="orderedProductsCumulatedTotalPrice" defaultEnabled="never" >
+							<component type="input" name="orderedProductsCumulatedTotalPrice"
+								field="#{form}.orderedProductsCumulatedTotalPrice" reference="orderedProductsCumulatedTotalPrice"
+								defaultEnabled="never">
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>										
+							</component>
 						</layoutElement>
 						<layoutElement column="4" row="1">
-							<component type="input" name="orderedProductsCumulatedTotalPriceCurrency"
-								reference="orderedProductsCumulatedTotalPriceCurrency" defaultEnabled="never"
-								hasLabel="false">
+							<component type="input"
+								name="orderedProductsCumulatedTotalPriceCurrency" reference="orderedProductsCumulatedTotalPriceCurrency"
+								defaultEnabled="never" hasLabel="false">
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
@@ -425,16 +477,17 @@
 				</layoutElement>
 			</component>
 		</windowTab>
-		
+
 		<windowTab name="deliveredProductTab">
 			<component type="gridLayout" name="deliveredProductsGridLayout"
 				columns="4" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="input" name="deliveredProductsCumulatedQuantity" field="#{form}.deliveredProductsCumulatedQuantity"
-						reference="deliveredProductsCumulatedQuantity" defaultEnabled="never" >
+					<component type="input" name="deliveredProductsCumulatedQuantity"
+						field="#{form}.deliveredProductsCumulatedQuantity" reference="deliveredProductsCumulatedQuantity"
+						defaultEnabled="never">
 						<option type="alignment" value="right" />
 						<option type="boldTextRepresentationOnDisabled" value="true" />
-					</component>										
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="4">
 					<component type="grid" name="deliveredProducts"
@@ -450,38 +503,47 @@
 						<option type="column" name="damagedQuantity" fields="damagedQuantity" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="60" />
-						<option type="column" name="pricePerUnit" fields="pricePerUnit" width="80" />
-						<option type="column" name="totalPrice" fields="totalPrice" width="80" />	
+						<option type="column" name="pricePerUnit" fields="pricePerUnit"
+							width="80" />
+						<option type="column" name="totalPrice" fields="totalPrice"
+							width="80" />
 						<option type="order" column="succession" direction="asc" />
-						
-						<option type="searchable" value="number,name,unit,deliveredQuantity,damagedQuantity" />
-						<option type="orderable" value="succession,number,name,unit,deliveredQuantity,damagedQuantity" />
-						
+
+						<option type="searchable"
+							value="number,name,unit,deliveredQuantity,damagedQuantity" />
+						<option type="orderable"
+							value="succession,number,name,unit,deliveredQuantity,damagedQuantity" />
+
 						<option type="correspondingView" value="deliveries/deliveredProductDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
-						
+
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="fixedHeight" value="true" />
+						
+						<listener event="select" method="disableShowProductButton"
+							class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
-					<component type="gridLayout" name="orderedProductsCumulatedTotalPriceGridLayout"
-						hasBorders="false" columns="4" rows="1">
+					<component type="gridLayout"
+						name="orderedProductsCumulatedTotalPriceGridLayout" hasBorders="false"
+						columns="4" rows="1">
 						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="deliveredProductsCumulatedTotalPrice" field="#{form}.deliveredProductsCumulatedTotalPrice"
-							reference="deliveredProductsCumulatedTotalPrice" defaultEnabled="never" >
+							<component type="input" name="deliveredProductsCumulatedTotalPrice"
+								field="#{form}.deliveredProductsCumulatedTotalPrice" reference="deliveredProductsCumulatedTotalPrice"
+								defaultEnabled="never">
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>										
+							</component>
 						</layoutElement>
 						<layoutElement column="4" row="1">
-							<component type="input" name="deliveredProductsCumulatedTotalPriceCurrency"
-								reference="deliveredProductsCumulatedTotalPriceCurrency" defaultEnabled="never"
-								hasLabel="false">
+							<component type="input"
+								name="deliveredProductsCumulatedTotalPriceCurrency" reference="deliveredProductsCumulatedTotalPriceCurrency"
+								defaultEnabled="never" hasLabel="false">
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
@@ -489,9 +551,9 @@
 				</layoutElement>
 			</component>
 		</windowTab>
-		
+
 		<windowTab name="historyTab">
-			<component type="gridLayout" name="loggingsGridLayout" 
+			<component type="gridLayout" name="loggingsGridLayout"
 				columns="2" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="grid" name="loggingsGrid" reference="loggingsGrid"
@@ -499,26 +561,26 @@
 						<option type="column" name="dateAndTime" fields="dateAndTime" />
 						<option type="column" name="currentState" fields="targetState" />
 						<option type="column" name="worker" fields="worker" />
-						
+
 						<option type="order" column="dateAndTime" direction="asc" />
-						
+
 						<option type="searchable" value="dateAndTime,targetState,worker" />
 						<option type="orderable" value="dateAndTime,targetState,worker" />
-						
+
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
-		
+
 	</component>
-	
+
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="generateDeliveryNumber" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="fillBufferForSupplier" />
+			method="fillCompanyFieldsForSupplier" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="fillDeliveryAddressDefaultValue" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
@@ -531,6 +593,8 @@
 			method="filterStateChangeHistory" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="fillCurrencyFields" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="disableShowProductButton" />
 	</hooks>
-	
+
 </view>

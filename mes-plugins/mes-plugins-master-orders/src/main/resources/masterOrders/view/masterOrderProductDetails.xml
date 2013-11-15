@@ -61,7 +61,9 @@
 								hasBorders="false">
 								<layoutElement column="1" row="1" width="3">
 									<component type="input" name="masterOrderQuantity"
-										field="masterOrderQuantity" reference="masterOrderQuantity" />
+										field="masterOrderQuantity" reference="masterOrderQuantity" >
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="1">
 									<component type="input" name="masterOrderQuantityUnit"
@@ -72,7 +74,9 @@
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="cumulatedOrderQuantity"
 										field="cumulatedOrderQuantity" reference="cumulatedOrderQuantity"
-										defaultEnabled="never" />
+										defaultEnabled="never" >
+										<option type="alignment" value="right" />
+									</component>
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="cumulatedOrderQuantityUnit"

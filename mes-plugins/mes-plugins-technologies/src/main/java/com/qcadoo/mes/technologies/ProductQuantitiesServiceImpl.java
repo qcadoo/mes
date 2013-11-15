@@ -40,6 +40,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
@@ -496,7 +497,14 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         final Entity parentOperation = operationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT);
 
         if (parentOperation == null) {
-            return operationProductOutComponents.get(0);
+            Entity technology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+            Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
+            for (Entity product : operationProductOutComponents) {
+                if (product.getBelongsToField(ProductComponentFields.PRODUCT).getId().equals(technologyProduct.getId())) {
+                    return product;
+                }
+            }
+            return null;
         } else {
             final List<Entity> parentOperationProductInComponents = parentOperation
                     .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);

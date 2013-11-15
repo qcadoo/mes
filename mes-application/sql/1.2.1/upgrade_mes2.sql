@@ -59,3 +59,97 @@ CREATE TABLE deliveries_parameterdeliveryordercolumn
 );
 
 -- end
+
+
+-- Table: deliveries_delivery
+-- changed: 16.07.2013
+
+ALTER TABLE deliveries_delivery ADD COLUMN paymentform character varying(1024);
+
+-- end
+
+
+-- Table: basicproductioncounting_basicproductioncounting
+-- changed: 19.07.2013
+
+ALTER TABLE basicproductioncounting_basicproductioncounting DROP COLUMN plannedquantity;
+
+-- end
+
+
+-- Table: orders_order
+-- changed: 19.07.2013
+
+ALTER TABLE orders_order DROP COLUMN alert;
+ALTER TABLE orders_order DROP COLUMN ignoremissingrequiredcomponents;
+ALTER TABLE orders_order DROP COLUMN requiredcomponent_id;
+
+-- end
+
+
+-- Table: deliveries_delivery
+-- changed: 19.07.2013
+
+ALTER TABLE deliveries_delivery DROP COLUMN delivery_id;
+
+-- end
+
+
+-- Table: productioncounting_recordoperationproductincomponent
+-- changed: 19.07.2013
+
+ALTER TABLE productioncounting_recordoperationproductincomponent DROP COLUMN plannedquantity;
+
+-- end
+
+
+-- Table: productioncounting_recordoperationproductoutcomponent
+-- changed: 19.07.2013
+
+ALTER TABLE productioncounting_recordoperationproductoutcomponent DROP COLUMN plannedquantity;
+
+-- end
+
+
+-- Table: productionpershift_productionpershift
+-- changed: 19.07.2013
+
+ALTER TABLE  productionpershift_productionpershift DROP COLUMN technologyinstanceoperationcomponent_id;
+
+-- end
+
+
+-- Table: technologies_operation
+-- changed: 19.07.2013
+
+ALTER TABLE technologies_operation DROP COLUMN machine_id;
+
+-- end
+
+
+-- Table: masterorders_masterorder
+-- changed: 26.07.2013
+
+ALTER TABLE masterorders_masterorder ADD COLUMN active boolean;
+ALTER TABLE masterorders_masterorder ALTER COLUMN active SET DEFAULT true;
+
+-- end
+
+
+-- Table: deliveries_delivery
+-- changed: 29.07.2013
+
+ALTER TABLE deliveries_delivery ADD COLUMN currency_id bigint;
+
+-- end
+
+
+-- Table: technologies_technology
+-- changed: 30.07.2013
+
+ALTER TABLE technologies_technology ADD COLUMN externalsynchronized boolean;
+ALTER TABLE technologies_technology ALTER COLUMN externalsynchronized SET DEFAULT true;
+
+UPDATE technologies_technology SET externalsynchronized = true;
+
+-- end

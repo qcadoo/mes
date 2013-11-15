@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model name="masterOrder" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="masterOrder" activable="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
@@ -21,9 +21,13 @@
 
 		<decimal name="masterOrderQuantity">
 			<validatesRange from="0" />
+	      	<validatesUnscaledValue max="9" />
+       		<validatesScale max="5" /> 
 		</decimal>
 		<decimal name="cumulatedOrderQuantity" persistent="false">
 			<validatesRange from="0" />
+	      	<validatesUnscaledValue max="9" />
+       		<validatesScale max="5" /> 
 		</decimal>
 
 		<enum name="masterOrderType" values="01undefined,02oneProduct,03manyProducts"
@@ -46,7 +50,7 @@
 	<hooks>
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedCompany" />
+			method="checkIfCanChangeCompany" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
 			method="checkIfCanChangeMasterOrderPreffixField" />
@@ -55,16 +59,16 @@
 			method="checkIsProductSelected" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedProduct" />
+			method="checkIfCanChangeProduct" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedTechnology" />
+			method="checkIfCanChangeTechnology" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedDeadline" />
+			method="checkIfCanChangeDeadline" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedType" />
+			method="checkIfCanChangeType" />
 		<onCreate class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
 			method="setExternalSynchronizedField" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"

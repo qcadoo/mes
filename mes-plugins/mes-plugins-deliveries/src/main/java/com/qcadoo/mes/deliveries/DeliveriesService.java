@@ -23,12 +23,15 @@
  */
 package com.qcadoo.mes.deliveries;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 public interface DeliveriesService {
 
@@ -191,8 +194,22 @@ public interface DeliveriesService {
      * 
      * @param referenceNames
      *            reference names to unit fields
+     * @param delivery
+     *            entity need to get currency
      */
     void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames);
+
+    /**
+     * Fills currency fields
+     * 
+     * @param view
+     *            view
+     * 
+     * @param referenceNames
+     *            reference names to unit fields
+     * 
+     */
+    void fillCurrencyFieldsForDelivery(final ViewDefinitionState view, final List<String> referenceNames, final Entity delivery);
 
     /**
      * Filters currency column
@@ -203,5 +220,64 @@ public interface DeliveriesService {
      * @return list of filtered columns
      */
     List<Entity> getColumnsWithFilteredCurrencies(final List<Entity> columns);
+
+    /**
+     * Gets currency for delivery
+     * 
+     * @param delivery
+     *            delivery entity
+     * @return selected or default currency
+     */
+    String getCurrency(final Entity delivery);
+
+    /**
+     * Gets last purchase price
+     * 
+     * @param pluginIdentifier
+     *            plugin identifier
+     * @param joinModelName
+     *            join model name
+     * @param joinModelStateName
+     *            join model state name
+     * @param joinModelState
+     *            join model state
+     * @param productModelName
+     *            product model name
+     * @param productModelProductName
+     *            product model product name
+     * @param product
+     *            product
+     * 
+     * @return lastPurchase price if entity exist or null
+     */
+    BigDecimal findLastPurchasePrice(final String pluginIdentifier, final String joinModelName, final String joinModelStateName,
+            final String joinModelState, final String productModelName, final String productModelProductName, final Entity product);
+
+    /**
+     * Fills last purchase price
+     * 
+     * @param view
+     * @param lastPurchasePrice
+     *            last purchase price
+     */
+    void fillLastPurchasePrice(final ViewDefinitionState view, final BigDecimal lastPurchasePrice);
+
+    /**
+     * Gets big decimal from field
+     * 
+     * @param fieldComponent
+     *            field component
+     * @param locale
+     *            locale
+     * @return BigDecimal
+     */
+    BigDecimal getBigDecimalFromField(final FieldComponent fieldComponent, final Locale locale);
+
+    /**
+     * Disables show product button
+     * 
+     * @param view
+     */
+    void disableShowProductButton(final ViewDefinitionState view);
 
 }

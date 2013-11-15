@@ -54,6 +54,8 @@ import com.qcadoo.model.api.validators.ErrorMessage;
 @Service
 public final class ProductionTrackingListenerService {
 
+    private static final String L_USED_QUANTITY = "usedQuantity";
+
     private static final String L_PRODUCT = "product";
 
     @Autowired
@@ -68,6 +70,12 @@ public final class ProductionTrackingListenerService {
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
+    public void validationOnAccept(final StateChangeContext stateChangeContext) {
+        checkIfRecordOperationProductComponentsWereFilled(stateChangeContext);
+        checkIfTimesWereFilled(stateChangeContext);
+        checkIfExistsFinalRecord(stateChangeContext);
+    }
+
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity productionTracking = stateChangeContext.getOwner();
         updateBasicProductionCounting(productionTracking, new Addition());
@@ -81,7 +89,36 @@ public final class ProductionTrackingListenerService {
         setOrderDoneQuantity(productionTracking);
     }
 
-    public void checkIfExistsFinalTracking(final StateChangeContext stateChangeContext) {
+    private void checkIfRecordOperationProductComponentsWereFilled(final StateChangeContext stateChangeContext) {
+        final Entity productionTracking = stateChangeContext.getOwner();
+
+        if (!checkIfUsedQuantitiesWereFilled(productionTracking,
+                ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS)
+                && !checkIfUsedQuantitiesWereFilled(productionTracking,
+                        ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
+            stateChangeContext
+                    .addValidationError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
+        }
+    }
+
+    private boolean checkIfUsedQuantitiesWereFilled(final Entity productionTracking, final String modelName) {
+        final SearchCriteriaBuilder searchBuilder = productionTracking.getHasManyField(modelName).find()
+                .add(SearchRestrictions.isNotNull(L_USED_QUANTITY));
+
+        return (searchBuilder.list().getTotalNumberOfEntities() != 0);
+    }
+
+    private void checkIfTimesWereFilled(final StateChangeContext stateChangeContext) {
+        final Entity productionTracking = stateChangeContext.getOwner();
+        Integer machineTime = productionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
+        Integer laborTime = productionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);
+
+        if ((machineTime == null) || (laborTime == null)) {
+            stateChangeContext.addValidationError("productionCounting.productionTracking.messages.error.timesNotFilled");
+        }
+    }
+
+    public void checkIfExistsFinalRecord(final StateChangeContext stateChangeContext) {
         final Entity productionTracking = stateChangeContext.getOwner();
         final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         final String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
@@ -95,8 +132,9 @@ public final class ProductionTrackingListenerService {
             searchBuilder.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
                     productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT)));
         }
+
         if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
-            stateChangeContext.addValidationError("productionCounting.record.messages.error.finalExists");
+            stateChangeContext.addValidationError("productionCounting.productionTracking.messages.error.finalExists");
         }
     }
 

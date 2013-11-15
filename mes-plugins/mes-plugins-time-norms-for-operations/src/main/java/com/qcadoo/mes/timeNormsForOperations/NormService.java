@@ -31,6 +31,11 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.model.api.Entity;
 
 @Service
@@ -42,7 +47,7 @@ public class NormService {
     public List<String> checkOperationOutputQuantities(final Entity technology) {
         List<String> messages = Lists.newArrayList();
 
-        List<Entity> operationComponents = technology.getTreeField("operationComponents");
+        List<Entity> operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         for (Entity operationComponent : operationComponents) {
             BigDecimal timeNormsQuantity = getProductionInOneCycle(operationComponent);
@@ -56,7 +61,21 @@ public class NormService {
             }
 
             if (timeNormsQuantity == null || timeNormsQuantity.compareTo(currentQuantity) != 0) {
-                messages.add(operationComponent.getStringField("nodeNumber"));
+                String nodeNumber = operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER);
+
+                if (nodeNumber == null) {
+                    Entity operation = operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+                    if (operation != null) {
+                        String name = operation.getStringField(OperationFields.NAME);
+
+                        if (name != null) {
+                            messages.add(name);
+                        }
+                    }
+                } else {
+                    messages.add(nodeNumber);
+                }
             }
         }
 
@@ -64,15 +83,17 @@ public class NormService {
     }
 
     private BigDecimal getProductionInOneCycle(final Entity operationComponent) {
-        String entityType = operationComponent.getStringField("entityType");
-        if ("operation".equals(entityType)) {
-            return operationComponent.getDecimalField("productionInOneCycle");
-        } else if ("referenceTechnology".equals(entityType)) {
-            Entity refOperationComp = operationComponent.getBelongsToField("referenceTechnology")
-                    .getTreeField("operationComponents").getRoot();
-            return refOperationComp.getDecimalField("productionInOneCycle");
+        String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
+        if (TechnologyOperationComponentType.OPERATION.getStringValue().equals(entityType)) {
+            return operationComponent.getDecimalField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE);
+        } else if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(entityType)) {
+            Entity refOperationComp = operationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
+                    .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+            return refOperationComp.getDecimalField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE);
         } else {
             throw new IllegalStateException("operationComponent has illegal type, id = " + operationComponent.getId());
         }
     }
+
 }

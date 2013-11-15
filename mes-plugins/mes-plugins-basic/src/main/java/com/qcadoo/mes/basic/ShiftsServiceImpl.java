@@ -30,17 +30,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -80,10 +81,37 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     private static final String FROM_DATE_FIELD = "fromDate";
 
+    private static final long STEP = DateTimeConstants.MILLIS_PER_WEEK;
+
+    private static final long MAX_TIMESTAMP = new DateTime(2100, 1, 1, 0, 0, 0, 0).toDate().getTime();
+
+    private static final long MIN_TIMESTAMP = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate().getTime();
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     private static final String[] WEEK_DAYS = { L_MONDAY, L_TUESDAY, L_WENSDAY, L_THURSDAY, L_FRIDAY, L_SATURDAY, L_SUNDAY };
+
+    private static final Map<Integer, String> DAY_OF_WEEK = buildDayNumToNameMap();
+
+    private static Map<Integer, String> buildDayNumToNameMap() {
+        Map<Integer, String> dayNumsToDayName = Maps.newHashMapWithExpectedSize(7);
+        dayNumsToDayName.put(Calendar.MONDAY, L_MONDAY);
+        dayNumsToDayName.put(Calendar.TUESDAY, L_TUESDAY);
+        dayNumsToDayName.put(Calendar.WEDNESDAY, L_WENSDAY);
+        dayNumsToDayName.put(Calendar.THURSDAY, L_THURSDAY);
+        dayNumsToDayName.put(Calendar.FRIDAY, L_FRIDAY);
+        dayNumsToDayName.put(Calendar.SATURDAY, L_SATURDAY);
+        dayNumsToDayName.put(Calendar.SUNDAY, L_SUNDAY);
+        return Collections.unmodifiableMap(dayNumsToDayName);
+    }
+
+    @Override
+    public String getWeekDayName(final DateTime dateTime) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(dateTime.toDate());
+        return DAY_OF_WEEK.get(c.get(Calendar.DAY_OF_WEEK));
+    }
 
     public boolean validateShiftTimetableException(final DataDefinition dataDefinition, final Entity entity) {
         Date dateFrom = (Date) entity.getField(FROM_DATE_FIELD);
@@ -153,12 +181,6 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
         return true;
     }
-
-    private static final long STEP = 604800000;
-
-    private static final long MAX_TIMESTAMP = new DateTime(2100, 1, 1, 0, 0, 0, 0).toDate().getTime();
-
-    private static final long MIN_TIMESTAMP = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate().getTime();
 
     @Override
     public Date findDateToForOrder(final Date dateFrom, final long seconds) {
@@ -500,32 +522,21 @@ public class ShiftsServiceImpl implements ShiftsService {
     }
 
     @Override
+    @Deprecated
     public boolean checkIfShiftWorkAtDate(final Date date, final Entity shift) {
         List<Entity> shifts = getShiftsWorkingAtDate(date);
-
-        if (shifts.contains(shift)) {
-            return true;
-        }
-        return false;
+        return shifts.contains(shift);
     }
 
     private String getDayOfWeekName(final Date date) {
-        Map<Integer, String> dayOfWeek = new HashMap<Integer, String>();
-        dayOfWeek.put(Calendar.MONDAY, L_MONDAY);
-        dayOfWeek.put(Calendar.TUESDAY, L_TUESDAY);
-        dayOfWeek.put(Calendar.WEDNESDAY, L_WENSDAY);
-        dayOfWeek.put(Calendar.THURSDAY, L_THURSDAY);
-        dayOfWeek.put(Calendar.FRIDAY, L_FRIDAY);
-        dayOfWeek.put(Calendar.SATURDAY, L_SATURDAY);
-        dayOfWeek.put(Calendar.SUNDAY, L_SUNDAY);
-
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         int day = cal.get(Calendar.DAY_OF_WEEK);
 
-        return dayOfWeek.get(day);
+        return DAY_OF_WEEK.get(day);
     }
 
+    // TODO replace this class with DateRange/TimeRange
     public static class ShiftHour {
 
         private final Date dateTo;

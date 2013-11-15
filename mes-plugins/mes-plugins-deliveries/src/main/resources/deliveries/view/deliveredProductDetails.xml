@@ -26,7 +26,8 @@
 -->
 <view name="deliveredProductDetails" modelName="deliveredProduct"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	windowWidth="640" windowHeight="430">
 
 	<component type="window" name="window">
 
@@ -100,6 +101,8 @@
 												hasDescription="true">
 												<option type="alignment" value="right" />
 												<option type="labelWidth" value="40" />
+												<listener event="onInputChange" method="calculatePrice"
+													class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
 											</component>
 										</layoutElement>
 										<layoutElement column="4" row="1">
@@ -146,6 +149,8 @@
 												reference="totalPrice">
 												<option type="alignment" value="right" />
 												<option type="labelWidth" value="40" />
+												<listener event="onInputChange" method="calculatePriceFromTotalPrice"
+													class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
 											</component>
 										</layoutElement>
 										<layoutElement column="4" row="1">
@@ -162,9 +167,11 @@
 										hasBorders="false" columns="4" rows="1">
 										<layoutElement column="1" row="1" width="3">
 											<component type="input" name="pricePerUnit" field="#{form}.pricePerUnit"
-												reference="pricePerUnit" defaultEnabled="never">
+												reference="pricePerUnit" >
 												<option type="alignment" value="right" />
 												<option type="labelWidth" value="40" />
+												<listener event="onInputChange" method="calculatePriceFromPricePerUnit"
+													class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
 											</component>
 										</layoutElement>
 										<layoutElement column="4" row="1">

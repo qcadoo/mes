@@ -257,9 +257,6 @@
 			method="fillUnitField" />
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-			method="generateMasterOrderNumer" />
-		<beforeRender
-			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
 			method="fillDefaultTechnology" />
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"

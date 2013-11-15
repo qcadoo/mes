@@ -56,7 +56,7 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
     @RunForStateTransition(targetState = ProductionTrackingStateStringValues.ACCEPTED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void validationOnAccept(final StateChangeContext stateChangeContext, final int phase) {
-        productionTrackingListenerService.checkIfExistsFinalTracking(stateChangeContext);
+        productionTrackingListenerService.validationOnAccept(stateChangeContext);
     }
 
     @RunInPhase(ProductionTrackingStateChangePhase.DEFAULT)

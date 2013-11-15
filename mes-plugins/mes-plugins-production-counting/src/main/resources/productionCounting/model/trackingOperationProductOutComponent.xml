@@ -30,11 +30,19 @@
 	<fields>
 		<belongsTo name="productionTracking" model="productionTracking" />
 		<belongsTo name="product" model="product" plugin="basic" />
-		<decimal name="plannedQuantity" persistent="false" />
-		<decimal name="usedQuantity">
-			<validatesRange from="0" exclusively="true" />
+		<decimal name="plannedQuantity" persistent="false">
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
 		</decimal>
-		<decimal name="balance" />
+		<decimal name="usedQuantity">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="balance">
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
+		</decimal>
 	</fields>
 	<hooks>
 		<onView

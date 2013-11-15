@@ -126,4 +126,21 @@ public class ProductDetailsListenersT {
         view.redirectTo(url, false, true, parameters);
     }
 
+    public final void showTechnologiesWithUsingProduct(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity product = productForm.getEntity();
+
+        if (product.getId() == null) {
+            return;
+        }
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("form.id", product.getId());
+
+        String url = "../page/technologies/technologiesWithUsingProductList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
 }

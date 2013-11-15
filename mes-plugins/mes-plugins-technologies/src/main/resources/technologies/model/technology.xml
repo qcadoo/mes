@@ -31,6 +31,7 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
+		
 		<string name="name" required="true">
 			<validatesLength max="2048" />
 		</string>
@@ -40,13 +41,17 @@
 		
 		<belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
 			lazy="false" />
-			
-		<belongsTo name="technologyPrototype" model="technology" />
 				
+		<belongsTo name="technologyPrototype" model="technology" />
+		
+		<boolean name="externalSynchronized" default="true" copyable="false" />
+		
 		<boolean name="master" default="false" />
+		
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
+		
 		<tree name="operationComponents" model="technologyOperationComponent"
 			joinField="technology" cascade="delete" copyable="true" />
 			

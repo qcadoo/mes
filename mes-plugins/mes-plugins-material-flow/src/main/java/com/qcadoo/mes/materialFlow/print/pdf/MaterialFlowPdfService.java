@@ -110,12 +110,12 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
         PdfPTable table = pdfHelper.createTableWithHeader(4, tableHeader, false);
 
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
-            table.addCell(new Phrase(data.getKey().getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(data.getKey().getStringField(NAME), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField(NUMBER), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField(NAME), FontUtils.getDejavuRegular7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(data.getValue()), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(data.getValue()), FontUtils.getDejavuRegular7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            table.addCell(new Phrase(data.getKey().getStringField(UNIT), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField(UNIT), FontUtils.getDejavuRegular7Dark()));
         }
         document.add(table);
     }

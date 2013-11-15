@@ -23,28 +23,18 @@
  */
 package com.qcadoo.mes.orders;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.DEFAULT_TECHNOLOGY;
-import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_BATCH_REQUIRED;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
+import static com.qcadoo.mes.orders.constants.OrderFields.*;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.*;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.DECLINED;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Sets;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -76,6 +66,10 @@ public class OrderService {
 
     private static final String L_EMPTY_NUMBER = "";
 
+    private static final Set<String> ORDER_STARTED_STATES = Collections.unmodifiableSet(Sets.newHashSet(
+            OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue(),
+            OrderState.INTERRUPTED.getStringValue()));
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -103,6 +97,10 @@ public class OrderService {
 
     private DataDefinition getOrderDataDefinition() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+    }
+
+    public boolean isOrderStarted(final String orderState) {
+        return ORDER_STARTED_STATES.contains(orderState);
     }
 
     public final void fillProductionLine(final ViewDefinitionState view, final ComponentState component, final String[] args) {

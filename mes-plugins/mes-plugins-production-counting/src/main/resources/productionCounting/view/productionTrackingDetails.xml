@@ -146,7 +146,7 @@
 
 							<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
 							<option type="fieldCode" value="nodeNumber" />
-							
+
 							<criteriaModifier
 								class="com.qcadoo.mes.productionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersPC"
 								method="restrictTechnologyOperationComponentsToOrderTechnology" />
@@ -410,8 +410,10 @@
 						<component type="gridLayout" name="pieceworkGridLayout"
 							columns="1" rows="1">
 							<layoutElement column="1" row="1">
-								<component type="input" name="executedOperationCycles"
-									reference="executedOperationCycles" field="#{form}.executedOperationCycles" />
+                                <component type="input" name="executedOperationCycles"
+									reference="executedOperationCycles" field="#{form}.executedOperationCycles">
+                                    <option type="alignment" value="right" />
+                                </component>
 							</layoutElement>
 						</component>
 					</component>
@@ -453,7 +455,7 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
 			method="updateRibbonState" />
-		<beforeRender
+        <beforeRender
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
 			method="filterStateChangeHistory" />
 	</hooks>

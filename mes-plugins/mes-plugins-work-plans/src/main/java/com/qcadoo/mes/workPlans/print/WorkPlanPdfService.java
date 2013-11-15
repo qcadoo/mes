@@ -140,7 +140,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                     alignColumn(orderTable.getDefaultCell(),
                             ColumnAlignment.parseString(columnForOrders.getStringField(ColumnForOrdersFields.ALIGNMENT)));
 
-                    orderTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                    orderTable.addCell(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
                 }
             }
 
@@ -488,7 +488,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
                 alignColumn(table.getDefaultCell(), ColumnAlignment.parseString(column.getStringField(L_ALIGNMENT)));
 
-                table.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                table.addCell(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
             }
         }
 

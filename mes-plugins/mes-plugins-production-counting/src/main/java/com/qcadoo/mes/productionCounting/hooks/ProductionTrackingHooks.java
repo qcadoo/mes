@@ -63,7 +63,6 @@ public class ProductionTrackingHooks {
 
     public void onCopy(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         setInitialState(productionTracking);
-        clearLaborAndMachineTime(productionTracking);
     }
 
     public void onSave(final DataDefinition productionTrackingDD, final Entity productionTracking) {
@@ -125,10 +124,5 @@ public class ProductionTrackingHooks {
             productionTracking.setField(ProductionTrackingFields.NUMBER, numberGeneratorService.generateNumber(
                     ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING));
         }
-    }
-
-    private void clearLaborAndMachineTime(final Entity productionTracking) {
-        productionTracking.setField(ProductionTrackingFields.LABOR_TIME, 0);
-        productionTracking.setField(ProductionTrackingFields.MACHINE_TIME, 0);
     }
 }

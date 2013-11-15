@@ -56,7 +56,7 @@
 					</layoutElement>
 					<layoutElement column="4" row="1">
 						<component type="input" name="costForNumberUnit"
-							reference="costForNumberUnit" hasLabel="false" defaultEnabledd="never" />
+							reference="costForNumberUnit" hasLabel="false" defaultEnabled="never" />
 					</layoutElement>
 				</component>
 			</layoutElement>

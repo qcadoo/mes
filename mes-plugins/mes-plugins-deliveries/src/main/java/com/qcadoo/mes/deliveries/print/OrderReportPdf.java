@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -61,10 +62,10 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
@@ -103,9 +104,6 @@ public class OrderReportPdf extends ReportPdfView {
 
     @Autowired
     private ParameterService parameterService;
-
-    @Autowired
-    private CurrencyService currencyService;
 
     @Autowired
     private NumberService numberService;
@@ -213,6 +211,10 @@ public class OrderReportPdf extends ReportPdfView {
             column.put("deliveries.delivery.report.columnHeader.createOrderDate",
                     getStringFromDate((Date) getPrepareOrderDate(delivery).getField("dateAndTime")));
         }
+        if (StringUtils.isNotEmpty(delivery.getBelongsToField(SUPPLIER).getStringField(CompanyFieldsD.PAYMENT_FORM))) {
+            column.put("deliveries.delivery.report.columnHeader.paymentForm", delivery.getBelongsToField(SUPPLIER)
+                    .getStringField(CompanyFieldsD.PAYMENT_FORM));
+        }
         return column;
     }
 
@@ -250,7 +252,7 @@ public class OrderReportPdf extends ReportPdfView {
 
                         prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
 
-                        productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                        productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
                     }
                 }
 
@@ -272,7 +274,7 @@ public class OrderReportPdf extends ReportPdfView {
         DeliveryPricesAndQuantities pricesAndQntts = new DeliveryPricesAndQuantities(delivery, numberService);
 
         PdfPCell total = new PdfPCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
-                FontUtils.getDejavuRegular9Dark()));
+                FontUtils.getDejavuRegular7Dark()));
 
         total.setColspan(2);
         total.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -288,15 +290,15 @@ public class OrderReportPdf extends ReportPdfView {
                     && columnsName.indexOf(OrderedProductFields.ORDERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getOrderedCumulatedQuantity()), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
             } else if (columnsName.contains(OrderedProductFields.TOTAL_PRICE)
                     && columnsName.indexOf(OrderedProductFields.TOTAL_PRICE) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getOrderedTotalPrice()), FontUtils
-                        .getDejavuRegular9Dark()));
+                        .getDejavuRegular7Dark()));
             } else if (columnsName.contains(L_CURRENCY) && columnsName.indexOf(L_CURRENCY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                productsTable.addCell(new Phrase(currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular9Dark()));
+                productsTable.addCell(new Phrase(deliveriesService.getCurrency(delivery), FontUtils.getDejavuRegular7Dark()));
             } else {
                 productsTable.addCell("");
             }
@@ -306,7 +308,7 @@ public class OrderReportPdf extends ReportPdfView {
     private List<String> prepareProductsTableHeader(final Document document, final List<Entity> columnsForOrders,
             final Locale locale) throws DocumentException {
         document.add(new Paragraph(translationService.translate("deliveries.order.report.orderedProducts.title", locale),
-                FontUtils.getDejavuBold11Dark()));
+                FontUtils.getDejavuBold10Dark()));
 
         List<String> productsHeader = Lists.newArrayList();
 

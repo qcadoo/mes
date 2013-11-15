@@ -54,6 +54,9 @@ public class CurrencyService {
      * @return alphabetic (ISO-4217) code for currently used currency.
      */
     public String getCurrencyAlphabeticCode() {
+        if (getCurrentCurrency() == null) {
+            return "";
+        }
         return getCurrentCurrency().getStringField("alphabeticCode");
     }
 }

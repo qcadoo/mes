@@ -42,7 +42,7 @@ public class DeliveryDetailsListenersTSFDOverrideAspectTest {
     public final void checkCreateDeliveredProductExecution() throws NoSuchMethodException {
         Class<?> clazz = DeliveryDetailsListeners.class;
         assertEquals("com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners", clazz.getCanonicalName());
-        final Method method = clazz.getDeclaredMethod("createDeliveredProduct", Entity.class);
+        final Method method = clazz.getDeclaredMethod("createDeliveredProduct", Entity.class, boolean.class);
         assertNotNull(method);
         assertTrue(Modifier.isPrivate(method.getModifiers()));
         assertEquals(Entity.class, method.getReturnType());

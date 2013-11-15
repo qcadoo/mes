@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.samples.loader;
@@ -968,7 +968,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             technology.setField("otherFeatureRequired", false);
             technology.setField("shiftFeatureRequired", false);
             technology.setField("technologyBatchRequired", false);
-
+            technology.setField("externalSynchronized", true);
             if (isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION)
                     && L_QUALITY_CONTROLS_FOR_OPERATION.equals(values.get(L_QUALITYCONTROLTYPE_3))) {
                 technology.setField(L_QUALITY_CONTROL_TYPE2, L_QUALITY_CONTROLS_FOR_OPERATION);

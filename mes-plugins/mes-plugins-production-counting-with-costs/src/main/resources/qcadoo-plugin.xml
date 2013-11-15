@@ -122,19 +122,19 @@
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="plannedComponentsCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="componentsCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="componentsCostsBalance">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
@@ -147,38 +147,38 @@
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="plannedMachineCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="machineCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="machineCostsBalance">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="plannedLaborCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="laborCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="laborCostsBalance">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
@@ -191,19 +191,19 @@
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="plannedCyclesCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="cyclesCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="cyclesCostsBalance">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
@@ -216,81 +216,84 @@
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="registeredTotalTechnicalProductionCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="registeredTotalTechnicalProductionCostPerUnit">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="totalTechnicalProductionCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="totalTechnicalProductionCostPerUnit">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="balanceTechnicalProductionCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="balanceTechnicalProductionCostPerUnit">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="productionCostMarginValue" default="0">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="materialCostMarginValue" default="0">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="additionalOverheadValue" default="0">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="totalOverhead">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="totalCosts">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="totalCostPerUnit">
-				<model:validatesUnscaledValue max="7" />
+				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:decimal name="quantity" />
+			<model:decimal name="quantity">
+				<model:validatesUnscaledValue max="7" />
+				<model:validatesScale max="5" />
+			</model:decimal>
 		</model:model-field>
 		
 		<model:model-field plugin="costNormsForOperation" model="calculationOperationComponent">

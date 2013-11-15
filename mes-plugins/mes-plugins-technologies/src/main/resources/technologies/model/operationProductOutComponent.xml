@@ -34,7 +34,7 @@
 			required="true" />
 		<decimal name="quantity" required="true">
 			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="5" />
+			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
 	</fields>
