@@ -141,7 +141,6 @@
 			type="beforeRender" class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="changeQualityControlType" />
 
-<<<<<<< HEAD
 		<view:view-hook plugin="orders" view="copyOfTechnologyDetails"
 			type="beforeRender" class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="changeQualityControlType" />
@@ -150,11 +149,10 @@
 			component="grid" event="generateQualityControl"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
-=======
->>>>>>> master
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="changeOrderStateForForm"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
+		
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="generateQualityControl"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
