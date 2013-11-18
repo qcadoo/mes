@@ -78,8 +78,6 @@
 		<model:model model="technologyOperationComponent"
 			resource="model/technologyOperationComponent.xml" />
 		
-		<model:model model="technologyInstanceOperationComponent" resource="model/technologyInstanceOperationComponent.xml" />
-
 		<model:model model="technologyStateChange" resource="model/technologyStateChange.xml" />
 		
 		<model:model model="technologyGroup" resource="model/technologyGroup.xml" />
@@ -127,7 +125,6 @@
 		<view:view resource="view/technologyReferenceTechnologyComponentDetails.xml" />
 		<view:view resource="view/operationProductInComponentDetails.xml" />
 		<view:view resource="view/operationProductOutComponentDetails.xml" />
-		<view:view resource="view/technologyInstanceOperationComponentDetails.xml" />
 		<view:view resource="view/technologiesWithUsingProductList.xml" />
 		
 		<view:view resource="view/technologyGroupsList.xml" />
