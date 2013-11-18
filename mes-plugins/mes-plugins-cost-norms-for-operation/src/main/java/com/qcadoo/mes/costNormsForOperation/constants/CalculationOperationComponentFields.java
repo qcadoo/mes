@@ -29,13 +29,7 @@ public final class CalculationOperationComponentFields {
 
     }
 
-<<<<<<< HEAD
     public static final String NODE_NUMBER = "nodeNumber";
-=======
-    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
-    public static final String MACHINE_HOURLY_COST = "machineHourlyCost";
->>>>>>> master
 
     public static final String OPERATION = "operation";
 
