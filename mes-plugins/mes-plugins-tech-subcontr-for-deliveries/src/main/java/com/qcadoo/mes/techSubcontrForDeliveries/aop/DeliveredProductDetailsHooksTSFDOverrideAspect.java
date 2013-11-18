@@ -32,14 +32,17 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.qcadoo.mes.techSubcontrForDeliveries.constants.TechSubcontrForDeliveriesConstants;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @Configurable
+@RunIfEnabled(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER)
 public class DeliveredProductDetailsHooksTSFDOverrideAspect {
 
     @Autowired
-    private DeliveredProductDetailsHooksTSFDOverrideUtil deliveredProductDetialsHooksTSFDOverrideUtil;
+    private DeliveredProductDetailsHooksTSFDOverrideUtil deliveredProductDetailsHooksTSFDOverrideUtil;
 
     @Pointcut("execution(private java.math.BigDecimal com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks.getOrderedProductQuantity(..)) "
             + "&& args(deliveredProduct)")
@@ -49,8 +52,8 @@ public class DeliveredProductDetailsHooksTSFDOverrideAspect {
     @Around("getOrderedProductQuantityExecution(deliveredProduct)")
     public BigDecimal aroundGetOrderedProductQuantityExecution(final ProceedingJoinPoint pjp, final Entity deliveredProduct)
             throws Throwable {
-        if (deliveredProductDetialsHooksTSFDOverrideUtil.shouldOverride(deliveredProduct)) {
-            return deliveredProductDetialsHooksTSFDOverrideUtil.getOrderedProductQuantityWithOperation(deliveredProduct);
+        if (deliveredProductDetailsHooksTSFDOverrideUtil.shouldOverride(deliveredProduct)) {
+            return deliveredProductDetailsHooksTSFDOverrideUtil.getOrderedProductQuantityWithOperation(deliveredProduct);
         } else {
             return (BigDecimal) pjp.proceed();
         }

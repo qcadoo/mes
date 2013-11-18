@@ -29,11 +29,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import org.jdom.Element;
 import org.joda.time.DateTime;
@@ -45,10 +41,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.samples.constants.SamplesConstants;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Component
@@ -1186,8 +1184,19 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void prepareProductionRecords(final Map<String, String> values) {
         Entity order = getOrderByNumber(values.get(L_ORDER));
         for (Entity productionRecord : order.getHasManyField("productionRecords")) {
-            getStateChangeSamplesClient().changeState(productionRecord, STATE_ACCEPTED);
+            Entity savedProductionRecord = getStateChangeSamplesClient().changeState(productionRecord, STATE_ACCEPTED);
+            savedProductionRecord.setField("isExternalSynchronized", true);
+            Entity pausedStateChange = findPausedStateChangeEntityForPR(savedProductionRecord);
+            if (pausedStateChange != null) {
+                getStateChangeSamplesClient().resumeStateChange(productionRecord, pausedStateChange);
+            }
         }
+    }
+
+    private Entity findPausedStateChangeEntityForPR(final Entity productionRecord) {
+        SearchCriteriaBuilder scb = productionRecord.getHasManyField("stateChanges").find();
+        scb.add(SearchRestrictions.eq("status", StateChangeStatus.PAUSED.getStringValue()));
+        return scb.setMaxResults(1).uniqueResult();
     }
 
     void addProductionCounting(final Map<String, String> values) {

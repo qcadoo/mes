@@ -89,6 +89,8 @@ public final class ProductionBalanceFieldsPCWC {
 
     public static final String GENERATED_WITH_COSTS = "generatedWithCosts";
 
+    public static final String PRODUCTION_LINE = "productionLine";
+
     public static final String TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS = "technologyInstOperProductInComps";
 
     public static final String OPERATION_COST_COMPONENTS = "operationCostComponents";

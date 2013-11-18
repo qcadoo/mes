@@ -46,6 +46,8 @@ public interface ProductionBalanceService {
 
     void generateProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args);
 
+    void fillFieldsAndGrids(final Entity productionBalance);
+
     void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,
             DocumentException;
 

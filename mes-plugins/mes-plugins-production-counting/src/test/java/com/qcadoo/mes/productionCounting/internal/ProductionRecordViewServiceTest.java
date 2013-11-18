@@ -33,7 +33,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -52,59 +51,32 @@ public class ProductionRecordViewServiceTest {
     private ViewDefinitionState view;
 
     @Mock
-    private FormComponent form;
+    private FieldComponent technologyInstanceOperationComponent;
 
     @Mock
-    private FieldComponent state, technologyInstanceOperationComponent;
+    private ComponentState dummyComponent, borderLayoutTime, borderLayoutPiecework;
 
     @Mock
-    private ComponentState lookup, dummyComponent, borderLayoutTime, borderLayoutPiecework;
-
-    @Mock
-    private Entity formEntity, order;
-
-    @Mock
-    private LookupComponent lookupComponent;
-
-    @Mock
-    private DataDefinition dataDefinition;
-
-    @Mock
-    private DataDefinitionService dataDefinitionService;
+    private Entity order;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
         productionRecordViewService = new ProductionRecordViewService();
 
-        ReflectionTestUtils.setField(productionRecordViewService, "dataDefinitionService", dataDefinitionService);
-
         given(view.getComponentByReference(Mockito.anyString())).willReturn(dummyComponent);
 
         given(view.getComponentByReference("technologyInstanceOperationComponent")).willReturn(
                 technologyInstanceOperationComponent);
-        given(view.getComponentByReference("form")).willReturn(form);
-        given(view.getComponentByReference("state")).willReturn(state);
-        given(view.getComponentByReference("order")).willReturn(lookupComponent);
 
-        given(lookupComponent.getEntity()).willReturn(order);
-
-        given(form.getEntity()).willReturn(formEntity);
-        given(formEntity.getDataDefinition()).willReturn(dataDefinition);
-        given(form.getEntityId()).willReturn(1L);
-        given(dataDefinition.get(1L)).willReturn(formEntity);
-        given(view.getComponentByReference("order")).willReturn(lookupComponent);
-
-        given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
+        given(view.getComponentByReference("borderLayoutTime")).willReturn(borderLayoutTime);
+        given(view.getComponentByReference("borderLayoutPiecework")).willReturn(borderLayoutPiecework);
     }
 
     @Test
     public void shouldDisableTimePanelIfTimeRegistrationIsDisabled() {
-        // given
-        given(order.getBooleanField("registerProductionTime")).willReturn(false);
-        given(view.getComponentByReference("borderLayoutTime")).willReturn(borderLayoutTime);
         // when
-        productionRecordViewService.initializeRecordDetailsView(view);
+        productionRecordViewService.setTimeAndPiecworkComponentsVisible(null, order, view);
 
         // then
         verify(borderLayoutTime).setVisible(false);
@@ -112,12 +84,8 @@ public class ProductionRecordViewServiceTest {
 
     @Test
     public void shouldDisablePieceworkPanelIfPieceworkRegistrationIsDisabled() {
-        // given
-        given(order.getBooleanField("registerPiecework")).willReturn(false);
-        given(view.getComponentByReference("borderLayoutPiecework")).willReturn(borderLayoutPiecework);
-
         // when
-        productionRecordViewService.initializeRecordDetailsView(view);
+        productionRecordViewService.setTimeAndPiecworkComponentsVisible(null, order, view);
 
         // then
         verify(borderLayoutPiecework).setVisible(false);
@@ -125,14 +93,9 @@ public class ProductionRecordViewServiceTest {
 
     @Test
     public void shouldEnableTimePanelIfProductionRecordingTypeIsntSetToSimpleAndRegisterTimeIsSetToTrue() {
-        // given
-        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.FOR_EACH.getStringValue());
-        given(order.getBooleanField("registerProductionTime")).willReturn(false);
-        given(view.getComponentByReference("borderLayoutTime")).willReturn(borderLayoutTime);
-
         // when
-        productionRecordViewService.initializeRecordDetailsView(view);
+        productionRecordViewService.setTimeAndPiecworkComponentsVisible(TypeOfProductionRecording.FOR_EACH.getStringValue(),
+                order, view);
 
         // then
         verify(borderLayoutTime).setVisible(false);
@@ -141,13 +104,11 @@ public class ProductionRecordViewServiceTest {
     @Test
     public void shouldEnablePieceworkPanelIfProductionRecordingTypeIsForOperationAndRegisterPiecworkIsSetToTrue() {
         // given
-        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.FOR_EACH.getStringValue());
         given(order.getBooleanField("registerPiecework")).willReturn(true);
-        given(view.getComponentByReference("borderLayoutPiecework")).willReturn(borderLayoutPiecework);
 
         // when
-        productionRecordViewService.initializeRecordDetailsView(view);
+        productionRecordViewService.setTimeAndPiecworkComponentsVisible(TypeOfProductionRecording.FOR_EACH.getStringValue(),
+                order, view);
 
         // then
         verify(borderLayoutPiecework).setVisible(true);

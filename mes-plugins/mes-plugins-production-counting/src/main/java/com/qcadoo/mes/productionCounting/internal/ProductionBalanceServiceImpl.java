@@ -23,59 +23,10 @@
  */
 package com.qcadoo.mes.productionCounting.internal;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.BalanceOperationProductInComponentFields.BALANCE;
-import static com.qcadoo.mes.productionCounting.internal.constants.BalanceOperationProductInComponentFields.PLANNED_QUANTITY;
-import static com.qcadoo.mes.productionCounting.internal.constants.BalanceOperationProductInComponentFields.PRODUCT;
-import static com.qcadoo.mes.productionCounting.internal.constants.BalanceOperationProductInComponentFields.USED_QUANTITY;
-import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
-import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.PIECEWORK;
-import static com.qcadoo.mes.productionCounting.internal.constants.OperationPieceworkComponentFields.CYCLES;
-import static com.qcadoo.mes.productionCounting.internal.constants.OperationPieceworkComponentFields.CYCLES_BALANCE;
-import static com.qcadoo.mes.productionCounting.internal.constants.OperationPieceworkComponentFields.PLANNED_CYCLES;
-import static com.qcadoo.mes.productionCounting.internal.constants.OperationPieceworkComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
-import static com.qcadoo.mes.productionCounting.internal.constants.OperationTimeComponentFields.LABOR_TIME;
-import static com.qcadoo.mes.productionCounting.internal.constants.OperationTimeComponentFields.LABOR_TIME_BALANCE;
-import static com.qcadoo.mes.productionCounting.internal.constants.OperationTimeComponentFields.MACHINE_TIME;
-import static com.qcadoo.mes.productionCounting.internal.constants.OperationTimeComponentFields.MACHINE_TIME_BALANCE;
-import static com.qcadoo.mes.productionCounting.internal.constants.OperationTimeComponentFields.PLANNED_LABOR_TIME;
-import static com.qcadoo.mes.productionCounting.internal.constants.OperationTimeComponentFields.PLANNED_MACHINE_TIME;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PIECEWORK;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PRODUCTION_TIME;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT;
-import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_IN_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.DATE;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.FILE_NAME;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.GENERATED;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_TPZ;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.OPERATION_PIECEWORK_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.OPERATION_TIME_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.RECORDS_NUMBER;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.WORKER;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_BALANCE_OPERATION_PRODUCT_OUT_COMPONENT;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.EXECUTED_OPERATION_CYCLES;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
-import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.BASIC;
-import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
-import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
-import static com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState.ACCEPTED;
-import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
 import static java.util.Arrays.asList;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -84,7 +35,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -93,21 +43,30 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lowagie.text.DocumentException;
-import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
+import com.qcadoo.mes.productionCounting.internal.constants.OperationPieceworkComponentFields;
+import com.qcadoo.mes.productionCounting.internal.constants.OperationTimeComponentFields;
+import com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -119,6 +78,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class ProductionBalanceServiceImpl implements ProductionBalanceService {
+
+    private static final String L_BALANCE = "balance";
+
+    private static final String L_USED_QUANTITY = "usedQuantity";
+
+    private static final String L_PLANNED_QUANTITY = "plannedQuantity";
+
+    private static final String L_PRODUCT = "product";
 
     private static final String L_PLANNED_MACHINE_TIME = "plannedMachineTime";
 
@@ -153,46 +120,47 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
     @Override
     public void updateRecordsNumber(final DataDefinition productionBalanceDD, final Entity productionBalance) {
-        Entity order = productionBalance.getBelongsToField(MODEL_ORDER);
+        Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
         if ((order != null) && !isTypeOfProductionRecordingBasic(order)) {
             int recordsNumber = dataDefinitionService
                     .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
-                    .find().add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue()))
-                    .add(SearchRestrictions.belongsTo(ORDER, order)).list().getEntities().size();
+                    .find()
+                    .add(SearchRestrictions.eq(ProductionRecordFields.STATE, ProductionRecordState.ACCEPTED.getStringValue()))
+                    .add(SearchRestrictions.belongsTo(ProductionRecordFields.ORDER, order)).list().getEntities().size();
 
-            productionBalance.setField(RECORDS_NUMBER, recordsNumber);
+            productionBalance.setField(ProductionBalanceFields.RECORDS_NUMBER, recordsNumber);
         }
     }
 
     @Override
     public void clearGeneratedOnCopy(final DataDefinition productionBalanceDD, final Entity productionBalance) {
-        productionBalance.setField(FILE_NAME, null);
-        productionBalance.setField(GENERATED, false);
-        productionBalance.setField(DATE, null);
-        productionBalance.setField(WORKER, null);
+        productionBalance.setField(ProductionBalanceFields.FILE_NAME, null);
+        productionBalance.setField(ProductionBalanceFields.GENERATED, false);
+        productionBalance.setField(ProductionBalanceFields.DATE, null);
+        productionBalance.setField(ProductionBalanceFields.WORKER, null);
     }
 
     @Override
     public boolean validateOrder(final DataDefinition productionBalanceDD, final Entity productionBalance) {
-        Entity order = productionBalance.getBelongsToField(MODEL_ORDER);
+        Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
         if ((order == null) || isTypeOfProductionRecordingBasic(order)) {
-            productionBalance.addError(productionBalanceDD.getField(MODEL_ORDER),
+            productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
 
             return false;
         }
 
-        if (!order.getBooleanField(REGISTER_PRODUCTION_TIME)
-                && HOURLY.getStringValue().equals(productionBalance.getField(CALCULATE_OPERATION_COST_MODE))) {
-            productionBalance.addError(productionBalanceDD.getField(MODEL_ORDER),
+        if (!order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)
+                && isCalculateOperationCostModeHourly(productionBalance)) {
+            productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRegisterProductionTime");
 
             return false;
-        } else if (!order.getBooleanField(REGISTER_PIECEWORK)
-                && PIECEWORK.getStringValue().equals(productionBalance.getField(CALCULATE_OPERATION_COST_MODE))) {
-            productionBalance.addError(productionBalanceDD.getField(MODEL_ORDER),
+        } else if (!order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)
+                && isCalculateOperationCostModePiecework(productionBalance)) {
+            productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRegisterPiecework");
 
             return false;
@@ -201,7 +169,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         List<Entity> productionRecordList = getProductionRecordsFromDB(order);
 
         if (productionRecordList.isEmpty()) {
-            productionBalance.addError(productionBalanceDD.getField(MODEL_ORDER),
+            productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutProductionRecords");
 
             return false;
@@ -229,18 +197,16 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             if (productionBalance == null) {
                 state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
-            } else if (StringUtils.hasText(productionBalance.getStringField(FILE_NAME))) {
+            } else if (StringUtils.hasText(productionBalance.getStringField(ProductionBalanceFields.FILE_NAME))) {
                 state.addMessage("productionCounting.productionBalance.report.error.documentsWasGenerated", MessageType.FAILURE);
                 return;
             }
 
-            if (!productionBalance.getBooleanField(GENERATED)) {
+            if (!productionBalance.getBooleanField(ProductionBalanceFields.GENERATED)) {
                 fillReportValues(productionBalance);
 
                 fillFieldsAndGrids(productionBalance);
             }
-
-            productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
 
             checkOrderDoneQuantity(state, productionBalance);
 
@@ -275,7 +241,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
         String localePrefix = "productionCounting.productionBalance.report.fileName";
 
-        Entity productionBalanceWithFileName = fileService.updateReportFileName(productionBalance, DATE, localePrefix);
+        Entity productionBalanceWithFileName = fileService.updateReportFileName(productionBalance, ProductionBalanceFields.DATE,
+                localePrefix);
 
         try {
             productionBalancePdfService.generateDocument(productionBalanceWithFileName, locale);
@@ -289,14 +256,14 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     }
 
     private void fillReportValues(final Entity productionBalance) {
-        productionBalance.setField(GENERATED, true);
-        productionBalance.setField(DATE,
-                new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, LocaleContextHolder.getLocale()).format(new Date()));
-        productionBalance.setField(WORKER, securityService.getCurrentUserName());
+        productionBalance.setField(ProductionBalanceFields.GENERATED, true);
+        productionBalance.setField(ProductionBalanceFields.DATE, new Date());
+        productionBalance.setField(ProductionBalanceFields.WORKER, securityService.getCurrentUserName());
     }
 
-    private void fillFieldsAndGrids(final Entity productionBalance) {
-        Entity order = productionBalance.getBelongsToField(ORDER);
+    @Override
+    public void fillFieldsAndGrids(final Entity productionBalance) {
+        Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
         if ((order == null) || isTypeOfProductionRecordingBasic(order)) {
             return;
@@ -307,27 +274,34 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Map<Long, Entity> productionRecordsWithRegisteredTimes = groupProductionRecordsRegisteredTimes(productionBalance,
                 productionRecords);
 
-        if (order.getBooleanField(REGISTER_QUANTITY_IN_PRODUCT)) {
-            fillBalanceOperationProductComponents(productionBalance, productionRecords, RECORD_OPERATION_PRODUCT_IN_COMPONENTS,
-                    BALANCE_OPERATION_PRODUCT_IN_COMPONENTS, MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT);
+        if (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT)) {
+            fillBalanceOperationProductComponents(productionBalance, productionRecords,
+                    ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS,
+                    ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_IN_COMPONENTS,
+                    ProductionCountingConstants.MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT);
         }
 
-        if (order.getBooleanField(REGISTER_QUANTITY_OUT_PRODUCT)) {
-            fillBalanceOperationProductComponents(productionBalance, productionRecords, RECORD_OPERATION_PRODUCT_OUT_COMPONENTS,
-                    BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS, MODEL_BALANCE_OPERATION_PRODUCT_OUT_COMPONENT);
+        if (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT)) {
+            fillBalanceOperationProductComponents(productionBalance, productionRecords,
+                    ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS,
+                    ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS,
+                    ProductionCountingConstants.MODEL_BALANCE_OPERATION_PRODUCT_OUT_COMPONENT);
         }
 
-        if (isCalculateOperationCostModeHourly(productionBalance) && order.getBooleanField(REGISTER_PRODUCTION_TIME)) {
+        if (isCalculateOperationCostModeHourly(productionBalance)
+                && order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
             Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes = fillProductionRecordsWithPlannedTimes(
                     productionBalance, productionRecords);
 
             calculatePlannedTimeValues(productionBalance);
             fillTimeValues(productionBalance, productionRecordsWithRegisteredTimes, productionRecordsWithPlannedTimes);
+
             if (isTypeOfProductionRecordingForEach(order)) {
                 fillOperationTimeComponents(productionBalance, productionRecordsWithRegisteredTimes,
                         productionRecordsWithPlannedTimes);
             }
-        } else if (isCalculateOperationCostModePiecework(productionBalance) && order.getBooleanField(REGISTER_PIECEWORK)) {
+        } else if (isCalculateOperationCostModePiecework(productionBalance)
+                && order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)) {
             fillOperationPieceworkComponents(productionBalance, productionRecordsWithRegisteredTimes);
         }
     }
@@ -338,11 +312,11 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Map<Long, Entity> groupedProductionRecords = Maps.newHashMap();
 
         if ((productionBalance != null) && (productionRecords != null)) {
-            Entity order = productionBalance.getBelongsToField(ORDER);
+            Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
             for (Entity productionRecord : productionRecords) {
                 Entity technologyInstanceOperationComponent = productionRecord
-                        .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+                        .getBelongsToField(ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
                 if (isTypeOfProductionRecordingForEach(order)) {
                     Long technologyInstanceOperationComponentId = technologyInstanceOperationComponent.getId();
@@ -369,14 +343,16 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
     private void addProductionRecordRegisteredTimes(final Map<Long, Entity> groupedProductionRecords,
             final Entity productionRecord, final Long technologyInstanceOperationComponentId) {
+        Integer machineTime = IntegerUtils.convertNullToZero(productionRecord
+                .getIntegerField(ProductionRecordFields.MACHINE_TIME));
+        Integer laborTime = IntegerUtils.convertNullToZero(productionRecord.getIntegerField(ProductionRecordFields.LABOR_TIME));
+        BigDecimal executedOperationCycles = BigDecimalUtils.convertNullToZero(productionRecord
+                .getDecimalField(ProductionRecordFields.EXECUTED_OPERATION_CYCLES));
 
-        Integer machineTime = getNotNullInteger((Integer) productionRecord.getField(MACHINE_TIME));
-        Integer laborTime = getNotNullInteger((Integer) productionRecord.getField(LABOR_TIME));
-        BigDecimal executedOperationCycles = getNotNullBigDecimal(productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES));
-
-        productionRecord.setField(MACHINE_TIME, machineTime);
-        productionRecord.setField(LABOR_TIME, laborTime);
-        productionRecord.setField(EXECUTED_OPERATION_CYCLES, numberService.setScale(executedOperationCycles));
+        productionRecord.setField(ProductionRecordFields.MACHINE_TIME, machineTime);
+        productionRecord.setField(ProductionRecordFields.LABOR_TIME, laborTime);
+        productionRecord.setField(ProductionRecordFields.EXECUTED_OPERATION_CYCLES,
+                numberService.setScale(executedOperationCycles));
 
         groupedProductionRecords.put(technologyInstanceOperationComponentId, productionRecord);
     }
@@ -385,19 +361,20 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             final Entity productionRecord, final Long technologyInstanceOperationComponentId) {
         Entity addedProductionRecord = groupedProductionRecords.get(technologyInstanceOperationComponentId);
 
-        Integer machineTime = (Integer) addedProductionRecord.getField(MACHINE_TIME);
-        Integer laborTime = (Integer) addedProductionRecord.getField(LABOR_TIME);
-        BigDecimal executedOperationCycles = addedProductionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES);
+        Integer machineTime = addedProductionRecord.getIntegerField(ProductionRecordFields.MACHINE_TIME);
+        Integer laborTime = addedProductionRecord.getIntegerField(ProductionRecordFields.LABOR_TIME);
+        BigDecimal executedOperationCycles = addedProductionRecord
+                .getDecimalField(ProductionRecordFields.EXECUTED_OPERATION_CYCLES);
 
-        machineTime += getNotNullInteger((Integer) productionRecord.getField(MACHINE_TIME));
-        laborTime += getNotNullInteger((Integer) productionRecord.getField(LABOR_TIME));
-        executedOperationCycles = executedOperationCycles
-                .add(getNotNullBigDecimal(productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES)),
-                        numberService.getMathContext());
+        machineTime += IntegerUtils.convertNullToZero(productionRecord.getIntegerField(ProductionRecordFields.MACHINE_TIME));
+        laborTime += IntegerUtils.convertNullToZero(productionRecord.getIntegerField(ProductionRecordFields.LABOR_TIME));
+        executedOperationCycles = executedOperationCycles.add(BigDecimalUtils.convertNullToZero(productionRecord
+                .getDecimalField(ProductionRecordFields.EXECUTED_OPERATION_CYCLES)), numberService.getMathContext());
 
-        addedProductionRecord.setField(MACHINE_TIME, machineTime);
-        addedProductionRecord.setField(LABOR_TIME, laborTime);
-        addedProductionRecord.setField(EXECUTED_OPERATION_CYCLES, numberService.setScale(executedOperationCycles));
+        addedProductionRecord.setField(ProductionRecordFields.MACHINE_TIME, machineTime);
+        addedProductionRecord.setField(ProductionRecordFields.LABOR_TIME, laborTime);
+        addedProductionRecord.setField(ProductionRecordFields.EXECUTED_OPERATION_CYCLES,
+                numberService.setScale(executedOperationCycles));
 
         groupedProductionRecords.put(technologyInstanceOperationComponentId, addedProductionRecord);
     }
@@ -409,7 +386,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             return;
         }
 
-        Entity order = productionBalance.getBelongsToField(ORDER);
+        Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
         Map<Long, Entity> balanceOperationProductComponents = Maps.newHashMap();
         Set<Long> addedTechnologyInstanceOperationComponents = Sets.newHashSet();
@@ -421,21 +398,18 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                     .getHasManyField(recordOperationProductComponentsModel);
 
             Entity technologyInstanceOperationComponent = productionRecord
-                    .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+                    .getBelongsToField(ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
             if (isTypeOfProductionRecordingForEach(order)) {
                 Long technologyInstanceOperationComponentId = technologyInstanceOperationComponent.getId();
 
-                if (addedTechnologyInstanceOperationComponents.contains(technologyInstanceOperationComponentId)) {
-                    shouldAddPlannedQuantity = false;
-                } else {
-                    shouldAddPlannedQuantity = true;
-                }
+                shouldAddPlannedQuantity = !addedTechnologyInstanceOperationComponents
+                        .contains(technologyInstanceOperationComponentId);
             }
 
             if (recordOperationProductComponents != null) {
                 for (Entity recordOperationProductComponent : recordOperationProductComponents) {
-                    Entity product = recordOperationProductComponent.getBelongsToField(PRODUCT);
+                    Entity product = recordOperationProductComponent.getBelongsToField(L_PRODUCT);
 
                     if (product != null) {
                         Long productId = product.getId();
@@ -460,8 +434,6 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
         productionBalance.setField(balanceOperationProductComponentsModel,
                 Lists.newArrayList(balanceOperationProductComponents.values()));
-
-        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     private void addBalanceOperationComponent(final Map<Long, Entity> balanceOperationProductComponents,
@@ -469,16 +441,18 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Entity balanceOperationProductComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 balanceOperationProductComponentModel).create();
 
-        BigDecimal plannedQuantity = getNotNullBigDecimal(recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY));
-        BigDecimal usedQuantity = getNotNullBigDecimal(recordOperationProductComponent.getDecimalField(USED_QUANTITY));
+        BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(recordOperationProductComponent
+                .getDecimalField(L_PLANNED_QUANTITY));
+        BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(recordOperationProductComponent
+                .getDecimalField(L_USED_QUANTITY));
 
         BigDecimal balance = usedQuantity.subtract(plannedQuantity, numberService.getMathContext());
 
-        balanceOperationProductComponent.setField(PRODUCT, recordOperationProductComponent.getField(PRODUCT));
+        balanceOperationProductComponent.setField(L_PRODUCT, recordOperationProductComponent.getBelongsToField(L_PRODUCT));
 
-        balanceOperationProductComponent.setField(PLANNED_QUANTITY, numberService.setScale(plannedQuantity));
-        balanceOperationProductComponent.setField(USED_QUANTITY, numberService.setScale(usedQuantity));
-        balanceOperationProductComponent.setField(BALANCE, numberService.setScale(balance));
+        balanceOperationProductComponent.setField(L_PLANNED_QUANTITY, numberService.setScale(plannedQuantity));
+        balanceOperationProductComponent.setField(L_USED_QUANTITY, numberService.setScale(usedQuantity));
+        balanceOperationProductComponent.setField(L_BALANCE, numberService.setScale(balance));
 
         balanceOperationProductComponents.put(productId, balanceOperationProductComponent);
     }
@@ -487,23 +461,24 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             final Entity recordOperationProductComponent, final Long productId, final boolean shouldAddPlannedQuantity) {
         Entity addedBalanceOperationProductInComponent = balanceOperationProductComponents.get(productId);
 
-        BigDecimal plannedQuantity = addedBalanceOperationProductInComponent.getDecimalField(PLANNED_QUANTITY);
-        BigDecimal usedQuantity = addedBalanceOperationProductInComponent.getDecimalField(USED_QUANTITY);
+        BigDecimal plannedQuantity = addedBalanceOperationProductInComponent.getDecimalField(L_PLANNED_QUANTITY);
+        BigDecimal usedQuantity = addedBalanceOperationProductInComponent.getDecimalField(L_USED_QUANTITY);
 
         if (shouldAddPlannedQuantity) {
             plannedQuantity = plannedQuantity.add(
-                    getNotNullBigDecimal(recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY)),
+                    BigDecimalUtils.convertNullToZero(recordOperationProductComponent.getDecimalField(L_PLANNED_QUANTITY)),
                     numberService.getMathContext());
         }
 
-        usedQuantity = usedQuantity.add(getNotNullBigDecimal(recordOperationProductComponent.getDecimalField(USED_QUANTITY)),
+        usedQuantity = usedQuantity.add(
+                BigDecimalUtils.convertNullToZero(recordOperationProductComponent.getDecimalField(L_USED_QUANTITY)),
                 numberService.getMathContext());
 
         BigDecimal balance = usedQuantity.subtract(plannedQuantity, numberService.getMathContext());
 
-        addedBalanceOperationProductInComponent.setField(PLANNED_QUANTITY, numberService.setScale(plannedQuantity));
-        addedBalanceOperationProductInComponent.setField(USED_QUANTITY, numberService.setScale(usedQuantity));
-        addedBalanceOperationProductInComponent.setField(BALANCE, numberService.setScale(balance));
+        addedBalanceOperationProductInComponent.setField(L_PLANNED_QUANTITY, numberService.setScale(plannedQuantity));
+        addedBalanceOperationProductInComponent.setField(L_USED_QUANTITY, numberService.setScale(usedQuantity));
+        addedBalanceOperationProductInComponent.setField(L_BALANCE, numberService.setScale(balance));
 
         balanceOperationProductComponents.put(productId, addedBalanceOperationProductInComponent);
     }
@@ -513,6 +488,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         if (productionBalance == null) {
             return;
         }
+
         Integer machineTime = 0;
         Integer laborTime = 0;
 
@@ -520,21 +496,20 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             for (Map.Entry<Long, Entity> productionRecordWithRegisteredTimesEntry : productionRecordsWithRegisteredTimes
                     .entrySet()) {
                 Entity productionRecordWithRegisteredTimes = productionRecordWithRegisteredTimesEntry.getValue();
-                machineTime += (Integer) productionRecordWithRegisteredTimes.getField(MACHINE_TIME);
-                laborTime += (Integer) productionRecordWithRegisteredTimes.getField(LABOR_TIME);
+                machineTime += productionRecordWithRegisteredTimes.getIntegerField(ProductionRecordFields.MACHINE_TIME);
+                laborTime += productionRecordWithRegisteredTimes.getIntegerField(ProductionRecordFields.LABOR_TIME);
             }
         }
 
-        final int machineTimeBalance = machineTime - (Integer) productionBalance.getField(PLANNED_MACHINE_TIME);
-        final int laborTimeBalance = laborTime - (Integer) productionBalance.getField(PLANNED_LABOR_TIME);
+        final int machineTimeBalance = machineTime
+                - productionBalance.getIntegerField(ProductionBalanceFields.PLANNED_MACHINE_TIME);
+        final int laborTimeBalance = laborTime - productionBalance.getIntegerField(ProductionBalanceFields.PLANNED_LABOR_TIME);
 
-        productionBalance.setField(MACHINE_TIME, machineTime);
-        productionBalance.setField(MACHINE_TIME_BALANCE, machineTimeBalance);
+        productionBalance.setField(ProductionBalanceFields.MACHINE_TIME, machineTime);
+        productionBalance.setField(ProductionBalanceFields.MACHINE_TIME_BALANCE, machineTimeBalance);
 
-        productionBalance.setField(LABOR_TIME, laborTime);
-        productionBalance.setField(LABOR_TIME_BALANCE, laborTimeBalance);
-
-        productionBalance.getDataDefinition().save(productionBalance);
+        productionBalance.setField(ProductionBalanceFields.LABOR_TIME, laborTime);
+        productionBalance.setField(ProductionBalanceFields.LABOR_TIME_BALANCE, laborTimeBalance);
     }
 
     private void calculatePlannedTimeValues(final Entity productionBalance) {
@@ -543,16 +518,18 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         final boolean includeAdditionalTime = productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
         final Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
         final Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
+
         productQuantitiesService.getNeededProductQuantities(Lists.newArrayList(order), MrpAlgorithm.ONLY_COMPONENTS,
                 operationRuns);
+
         final OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns,
                 includeTpz, includeAdditionalTime, productionLine, false);
 
         final int plannedMachineTime = operationWorkTime.getMachineWorkTime();
         final int plannedLaborTime = operationWorkTime.getLaborWorkTime();
 
-        productionBalance.setField(PLANNED_LABOR_TIME, plannedLaborTime);
-        productionBalance.setField(PLANNED_MACHINE_TIME, plannedMachineTime);
+        productionBalance.setField(ProductionBalanceFields.PLANNED_LABOR_TIME, plannedLaborTime);
+        productionBalance.setField(ProductionBalanceFields.PLANNED_MACHINE_TIME, plannedMachineTime);
     }
 
     private void fillOperationTimeComponents(final Entity productionBalance,
@@ -575,35 +552,34 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
                 Integer plannedMachineTime = productionRecordsWithPlannedTimes.get(technologyInstanceOperationComponentId).get(
                         L_PLANNED_MACHINE_TIME);
-                Integer machineTime = (Integer) productionRecordWithRegisteredTimes.getField(MACHINE_TIME);
+                Integer machineTime = productionRecordWithRegisteredTimes.getIntegerField(ProductionBalanceFields.MACHINE_TIME);
 
                 Integer machineTimeBalance = machineTime - plannedMachineTime;
 
                 Integer plannedLaborTime = productionRecordsWithPlannedTimes.get(technologyInstanceOperationComponentId).get(
                         L_PLANNED_LABOR_TIME);
-                Integer laborTime = (Integer) productionRecordWithRegisteredTimes.getField(LABOR_TIME);
+                Integer laborTime = productionRecordWithRegisteredTimes.getIntegerField(ProductionRecordFields.LABOR_TIME);
 
                 Integer laborTimeBalance = laborTime - plannedLaborTime;
 
-                operationTimeComponent.setField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
-                        productionRecordWithRegisteredTimes.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
+                operationTimeComponent.setField(OperationTimeComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
+                        productionRecordWithRegisteredTimes
+                                .getBelongsToField(ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
 
-                operationTimeComponent.setField(PLANNED_MACHINE_TIME, plannedMachineTime);
-                operationTimeComponent.setField(MACHINE_TIME, machineTime);
-                operationTimeComponent.setField(MACHINE_TIME_BALANCE, machineTimeBalance);
+                operationTimeComponent.setField(OperationTimeComponentFields.PLANNED_MACHINE_TIME, plannedMachineTime);
+                operationTimeComponent.setField(OperationTimeComponentFields.MACHINE_TIME, machineTime);
+                operationTimeComponent.setField(OperationTimeComponentFields.MACHINE_TIME_BALANCE, machineTimeBalance);
 
-                operationTimeComponent.setField(PLANNED_LABOR_TIME, plannedLaborTime);
-                operationTimeComponent.setField(LABOR_TIME, laborTime);
-                operationTimeComponent.setField(LABOR_TIME_BALANCE, laborTimeBalance);
+                operationTimeComponent.setField(OperationTimeComponentFields.PLANNED_LABOR_TIME, plannedLaborTime);
+                operationTimeComponent.setField(OperationTimeComponentFields.LABOR_TIME, laborTime);
+                operationTimeComponent.setField(OperationTimeComponentFields.LABOR_TIME_BALANCE, laborTimeBalance);
 
                 operationTimeComponents.add(operationTimeComponent);
             }
 
         }
 
-        productionBalance.setField(OPERATION_TIME_COMPONENTS, operationTimeComponents);
-
-        productionBalance.getDataDefinition().save(productionBalance);
+        productionBalance.setField(ProductionBalanceFields.OPERATION_TIME_COMPONENTS, operationTimeComponents);
     }
 
     private void fillOperationPieceworkComponents(final Entity productionBalance,
@@ -617,25 +593,28 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
 
         Map<Entity, BigDecimal> productComponents = productQuantitiesService.getProductComponentQuantities(
-                asList(productionBalance.getBelongsToField(ORDER)), operationRuns);
+                asList(productionBalance.getBelongsToField(ProductionBalanceFields.ORDER)), operationRuns);
 
         if (!productComponents.isEmpty()) {
             for (Map.Entry<Long, Entity> productionRecordWithRegisteredTimesEntry : productionRecordsWithRegisteredTimes
                     .entrySet()) {
                 Entity productionRecordWithRegisteredTimes = productionRecordWithRegisteredTimesEntry.getValue();
 
-                if (productionRecordWithRegisteredTimes.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) != null) {
+                if (productionRecordWithRegisteredTimes
+                        .getBelongsToField(ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) != null) {
                     Entity operationPieceworkComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                             ProductionCountingConstants.MODEL_OPERATION_PIECEWORK_COMPONENT).create();
 
-                    operationPieceworkComponent.setField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
-                            productionRecordWithRegisteredTimes.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
+                    operationPieceworkComponent.setField(
+                            OperationPieceworkComponentFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
+                            productionRecordWithRegisteredTimes
+                                    .getBelongsToField(ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
 
                     Entity technologyInstanceOperationComponent = productionRecordWithRegisteredTimes
-                            .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+                            .getBelongsToField(ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
                     Entity proxyTechnologyOperationComponent = technologyInstanceOperationComponent
-                            .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
+                            .getBelongsToField(TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT);
                     Long technologyOperationComponentId = proxyTechnologyOperationComponent.getId();
 
                     Entity technologyOperationComponent = getTechnologyOperationComponentFromDB(technologyOperationComponentId);
@@ -643,13 +622,17 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                     if ((technologyOperationComponent != null) && operationRuns.containsKey(technologyOperationComponent)) {
                         BigDecimal plannedCycles = operationRuns.get(technologyOperationComponent);
 
-                        BigDecimal cycles = productionRecordWithRegisteredTimes.getDecimalField(EXECUTED_OPERATION_CYCLES);
+                        BigDecimal cycles = productionRecordWithRegisteredTimes
+                                .getDecimalField(ProductionRecordFields.EXECUTED_OPERATION_CYCLES);
 
                         BigDecimal cyclesBalance = cycles.subtract(plannedCycles, numberService.getMathContext());
 
-                        operationPieceworkComponent.setField(PLANNED_CYCLES, numberService.setScale(plannedCycles));
-                        operationPieceworkComponent.setField(CYCLES, numberService.setScale(cycles));
-                        operationPieceworkComponent.setField(CYCLES_BALANCE, numberService.setScale(cyclesBalance));
+                        operationPieceworkComponent.setField(OperationPieceworkComponentFields.PLANNED_CYCLES,
+                                numberService.setScale(plannedCycles));
+                        operationPieceworkComponent.setField(OperationPieceworkComponentFields.CYCLES,
+                                numberService.setScale(cycles));
+                        operationPieceworkComponent.setField(OperationPieceworkComponentFields.CYCLES_BALANCE,
+                                numberService.setScale(cyclesBalance));
 
                         operationPieceworkComponents.add(operationPieceworkComponent);
                     }
@@ -657,9 +640,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             }
         }
 
-        productionBalance.setField(OPERATION_PIECEWORK_COMPONENTS, operationPieceworkComponents);
-
-        productionBalance.getDataDefinition().save(productionBalance);
+        productionBalance.setField(ProductionBalanceFields.OPERATION_PIECEWORK_COMPONENTS, operationPieceworkComponents);
     }
 
     @Override
@@ -668,14 +649,14 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes = Maps.newHashMap();
 
         if ((productionBalance != null) && (productionRecords != null)) {
-            Entity order = productionBalance.getBelongsToField(ORDER);
+            Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
             for (Entity productionRecord : productionRecords) {
                 Map<String, Integer> plannedTimes = countPlannedTimes(productionBalance, productionRecord);
 
                 if (!plannedTimes.isEmpty()) {
                     Entity technologyInstanceOperationComponent = productionRecord
-                            .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+                            .getBelongsToField(ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
                     if (isTypeOfProductionRecordingForEach(order)) {
                         Long technologyInstanceOperationComponentId = technologyInstanceOperationComponent.getId();
@@ -705,7 +686,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         if ((productionBalance != null) && (productionRecord != null)) {
             Entity order = productionRecord.getBelongsToField(OrdersConstants.MODEL_ORDER);
 
-            if ((order == null) || !order.getBooleanField(REGISTER_PRODUCTION_TIME)) {
+            if ((order == null) || !order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
                 return plannedTimes;
             }
 
@@ -717,15 +698,17 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                     order.getDecimalField(OrderFields.PLANNED_QUANTITY), operationRuns);
 
             Map<Entity, OperationWorkTime> operationLaborAndMachineWorkTime = operationWorkTimeService
-                    .estimateOperationsWorkTimeForOrder(order, operationRuns, productionBalance.getBooleanField(INCLUDE_TPZ),
-                            productionBalance.getBooleanField(INCLUDE_ADDITIONAL_TIME), order.getBelongsToField(PRODUCTION_LINE),
-                            false);
+                    .estimateOperationsWorkTimeForOrder(order, operationRuns,
+                            productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_TPZ),
+                            productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME),
+                            order.getBelongsToField(OrderFields.PRODUCTION_LINE), false);
 
             if (isTypeOfProductionRecordingForEach(order)) {
                 countTimeOperation(plannedTimes, operationLaborAndMachineWorkTime.get(productionRecord
-                        .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)));
+                        .getBelongsToField(ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)));
             } else if (isTypeOfProductionRecordingCumulated(order)) {
-                EntityTree technologyInstanceOperationComponents = order.getTreeField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+                EntityTree technologyInstanceOperationComponents = order
+                        .getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
 
                 for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponents) {
                     countTimeOperation(plannedTimes, operationLaborAndMachineWorkTime.get(technologyInstanceOperationComponent));
@@ -744,20 +727,6 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         plannedTimes.put(L_PLANNED_LABOR_TIME, plannedLaborTime);
     }
 
-    private static BigDecimal getNotNullBigDecimal(final BigDecimal value) {
-        if (value == null) {
-            return BigDecimal.ZERO;
-        }
-        return value;
-    }
-
-    private static Integer getNotNullInteger(final Integer value) {
-        if (value == null) {
-            return 0;
-        }
-        return value;
-    }
-
     @Override
     public Entity getProductionBalanceFromDB(final Long productionBalanceId) {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
@@ -768,8 +737,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     public List<Entity> getProductionRecordsFromDB(final Entity order) {
         return dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue())).add(SearchRestrictions.belongsTo(ORDER, order))
-                .list().getEntities();
+                .add(SearchRestrictions.eq(ProductionRecordFields.STATE, ProductionRecordState.ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.belongsTo(ProductionRecordFields.ORDER, order)).list().getEntities();
     }
 
     @Override
@@ -785,26 +754,32 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
     @Override
     public boolean isCalculateOperationCostModeHourly(final Entity productionBalance) {
-        return HOURLY.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE));
+        return CalculateOperationCostsMode.HOURLY.getStringValue().equals(
+                productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE));
     }
 
     @Override
     public boolean isCalculateOperationCostModePiecework(final Entity productionBalance) {
-        return PIECEWORK.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE));
+        return CalculateOperationCostsMode.PIECEWORK.getStringValue().equals(
+                productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE));
     }
 
     @Override
     public boolean isTypeOfProductionRecordingBasic(final Entity order) {
-        return BASIC.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
+        return TypeOfProductionRecording.BASIC.getStringValue().equals(
+                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
     }
 
     @Override
     public boolean isTypeOfProductionRecordingForEach(final Entity order) {
-        return FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
+        return TypeOfProductionRecording.FOR_EACH.getStringValue().equals(
+                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
     }
 
     @Override
     public boolean isTypeOfProductionRecordingCumulated(final Entity order) {
-        return CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
+        return TypeOfProductionRecording.CUMULATED.getStringValue().equals(
+                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
     }
+
 }

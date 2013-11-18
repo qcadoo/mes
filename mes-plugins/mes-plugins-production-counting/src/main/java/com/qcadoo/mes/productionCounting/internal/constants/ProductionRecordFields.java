@@ -26,7 +26,6 @@ package com.qcadoo.mes.productionCounting.internal.constants;
 public final class ProductionRecordFields {
 
     private ProductionRecordFields() {
-
     }
 
     public static final String NUMBER = "number";
@@ -36,6 +35,12 @@ public final class ProductionRecordFields {
     public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
     public static final String SHIFT = "shift";
+
+    public static final String LAST_STATE_CHANGE_FAILS = "lastStateChangeFails";
+
+    public static final String LAST_STATE_CHANGE_FAIL_CAUSE = "lastStateChangeFailCause";
+
+    public static final String IS_EXTERNAL_SYNCHRONIZED = "isExternalSynchronized";
 
     public static final String STATE = "state";
 
@@ -49,15 +54,7 @@ public final class ProductionRecordFields {
 
     public static final String LABOR_TIME = "laborTime";
 
-    public static final String USED_QUANTITY = "usedQuantity";
-
-    public static final String BALANCE = "balance";
-
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
-
     public static final String EXECUTED_OPERATION_CYCLES = "executedOperationCycles";
-
-    public static final String PRODUCT = "product";
 
     public static final String STAFF = "staff";
 

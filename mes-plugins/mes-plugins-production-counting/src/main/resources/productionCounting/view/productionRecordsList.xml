@@ -25,16 +25,17 @@
 
 -->
 <view name="productionRecordsList" modelName="productionRecord"
-	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
-	<component type="window" name="window" reference="window">
-		<ribbon>
-			<template name="standardGridTemplate" />
-				<group name="status">
-				<smallButton name="acceptRecord" icon="startIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+      menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <template name="standardGridTemplate"/>
+            <group name="status">
+                <smallButton name="acceptRecord" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(productionCounting.productionRecordsList.window.ribbon.status.acceptRecord.confirm)}")) {
@@ -43,12 +44,12 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="cancelRecord" icon="deleteIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="cancelRecord" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(productionCounting.productionRecordsList.window.ribbon.status.declineRecord.confirm)}")) {
@@ -57,14 +58,14 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-			</group>
-		</ribbon>
-		<component type="grid" name="productionRecordsList"
-			reference="grid">
-			<script>
-			<![CDATA[ 
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
+        <component type="grid" name="productionRecordsList"
+                   reference="grid">
+            <script>
+                <![CDATA[
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
 					var copyButton = #{window}.getRibbonItem("actions.copy");
 					var acceptRecord = #{window}.getRibbonItem("status.acceptRecord");
@@ -151,39 +152,37 @@
 					
 		
 				]]>
-			</script>
-			<listener event="changeState"
-				class="com.qcadoo.mes.productionCounting.states.client.ProductionRecordStateChangeViewClient"
-				method="changeState" />
-			<option type="column" name="number" fields="number" link="true"
-				width="150" />
-			<option type="column" name="order" fields="order" link="true"
-				width="250" expression="#order['number']" />
-			<option type="column" name="technologyInstanceOperationComponent"
-				fields="technologyInstanceOperationComponent" link="true" width="250"
-				expression="(#technologyInstanceOperationComponent != null) ? #technologyInstanceOperationComponent['nodeNumber'] + ' ' + #technologyInstanceOperationComponent['operation']['name'] : ''" />
-			<option type="column" name="shift" fields="shift" link="true"
-				width="100" expression="#shift['name']" />
-			<option type="column" name="worker" fields="createUser" link="true" width="200" />
-			<option type="column" name="state" fields="state" reference="state"
-				width="150" />
-			<option type="column" name="createDate" fields="createDate"
-				link="true" width="250" />
-			<option type="column" name="orderState" fields="order" hidden="true"
-				expression="(#order == null) ? '' : #order['state']" />
-			<option type="column" name="lastRecord" fields="lastRecord"
-				expression="#lastRecord" />
-			<option type="order" column="number" direction="asc" />
-			<option type="searchable" value="number,order,shift,state" />
-			<option type="orderable" value="number,order,shift,state" />
+            </script>
+            <listener event="changeState"
+                      class="com.qcadoo.mes.productionCounting.states.client.ProductionRecordStateChangeViewClient"
+                      method="changeState"/>
 
-			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
-			<option type="correspondingComponent" value="form" />
+            <option type="column" name="number" fields="number" link="true" width="150"/>
+            <option type="column" name="order" fields="order" link="true" width="250" expression="#order['number']"/>
+            <option type="column" name="technologyInstanceOperationComponent"
+                    fields="technologyInstanceOperationComponent" link="true" width="250"
+                    expression="(#technologyInstanceOperationComponent != null) ? #technologyInstanceOperationComponent['nodeNumber'] + ' ' + #technologyInstanceOperationComponent['operation']['name'] : ''"/>
+            <option type="column" name="state" fields="state" reference="state" width="150"/>
+            <option type="column" name="workstationTypeNumber" fields="workstationType"
+                    reference="workstationTypeNumber" width="150" expression="#workstationType?.get('number')"/>
+            <option type="column" name="division" fields="division" reference="division" width="150"
+                    expression="#division?.get('name')"/>
+            <option type="column" name="lastRecord" fields="lastRecord" expression="#lastRecord"/>
+            <option type="column" name="createDate" fields="createDate" link="true" width="250"/>
+            <option type="column" name="orderState" fields="order" hidden="true"
+                    expression="(#order == null) ? '' : #order['state']"/>
 
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
-		</component>
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-	</component>
+            <option type="order" column="number" direction="asc"/>
+            <option type="searchable" value="number,order,shift,state"/>
+            <option type="orderable" value="number,order,shift,state"/>
+
+            <option type="correspondingView" value="productionCounting/productionRecordDetails"/>
+            <option type="correspondingComponent" value="form"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+        </component>
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
 </view>

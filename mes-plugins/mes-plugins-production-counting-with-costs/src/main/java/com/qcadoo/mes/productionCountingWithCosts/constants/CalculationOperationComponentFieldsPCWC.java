@@ -21,28 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.states.service;
+package com.qcadoo.mes.productionCountingWithCosts.constants;
 
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasFailureMessages;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasValidationErrorMessages;
+public final class CalculationOperationComponentFieldsPCWC {
 
-import java.util.List;
+    private CalculationOperationComponentFieldsPCWC() {
 
-import com.google.common.base.Preconditions;
-import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.model.api.Entity;
-
-public final class StateChangePhaseUtil {
-
-    private StateChangePhaseUtil() {
     }
 
-    public static boolean canRun(final StateChangeContext stateChangeContext) {
-        List<Entity> messages = stateChangeContext.getAllMessages();
+    public static final String PRODUCTION_BALANCE = "productionBalance";
 
-        Preconditions.checkNotNull(messages, "entity " + stateChangeContext.getStateChangeEntity()
-                + " should have messages in corresponding hasMany field!");
-        return stateChangeContext.isOwnerValid() && stateChangeContext.getStatus().canContinue() && !hasFailureMessages(messages)
-                && !hasValidationErrorMessages(messages);
-    }
 }

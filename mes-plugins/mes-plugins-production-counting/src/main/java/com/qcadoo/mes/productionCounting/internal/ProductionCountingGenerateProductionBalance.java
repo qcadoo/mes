@@ -36,4 +36,5 @@ public class ProductionCountingGenerateProductionBalance extends Observable {
         setChanged();
         notifyObservers(entity);
     }
+
 }

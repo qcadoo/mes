@@ -120,7 +120,7 @@
 							checkState.disable(differentStatesMessage);
 							return;
 						}
-						if(isSynchronized){
+						if (isSynchronized) {
 							acceptState.disable(externalMessage);
 							cancelState.disable(externalMessage);
 							checkState.disable(externalMessage);
