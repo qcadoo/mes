@@ -23,16 +23,30 @@
  */
 package com.qcadoo.mes.techSubcontrForProductionCounting.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+<<<<<<< HEAD:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionTrackingDetailsHooksTSFPC.java
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
+=======
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
+>>>>>>> master:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionRecordDetailsHooksTSFPC.java
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class ProductionTrackingDetailsHooksTSFPC {
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void disabledSubcontractorFieldForState(final ViewDefinitionState view) {
+<<<<<<< HEAD:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionTrackingDetailsHooksTSFPC.java
         FieldComponent state = (FieldComponent) view.getComponentByReference("state");
         FieldComponent subcontractor = (FieldComponent) view.getComponentByReference("subcontractor");
         if (state.getFieldValue().toString().equals(ProductionTrackingState.ACCEPTED.getStringValue())
@@ -40,8 +54,24 @@ public class ProductionTrackingDetailsHooksTSFPC {
             subcontractor.setEnabled(false);
         } else {
             subcontractor.setEnabled(true);
+=======
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+>>>>>>> master:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionRecordDetailsHooksTSFPC.java
         }
-        subcontractor.requestComponentUpdateState();
+        Entity productionRecord = getProductionRecord(form.getEntityId());
+        String stateFieldValue = productionRecord.getStringField(ProductionRecordFields.STATE);
+        boolean isDraft = ProductionRecordState.DRAFT.equals(stateFieldValue);
+        boolean isExternalSynchronized = productionRecord.getBooleanField(ProductionRecordFields.IS_EXTERNAL_SYNCHRONIZED);
+
+        ComponentState subcontractor = view.getComponentByReference("subcontractor");
+        subcontractor.setEnabled(isDraft && isExternalSynchronized);
+    }
+
+    private Entity getProductionRecord(final Long id) {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_RECORD).get(id);
     }
 
 }

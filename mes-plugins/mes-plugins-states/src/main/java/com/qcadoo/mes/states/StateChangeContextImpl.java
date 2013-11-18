@@ -41,6 +41,8 @@ import com.qcadoo.model.api.EntityList;
 
 public final class StateChangeContextImpl implements StateChangeContext {
 
+    private static final String TO_STRING_TMPL = "StateChange[id=%s, status=%s, isOwnerValid=%s]";
+
     private final MessageService messageService;
 
     private final StateChangeEntityDescriber describer;
@@ -229,9 +231,15 @@ public final class StateChangeContextImpl implements StateChangeContext {
     }
 
     @Override
+<<<<<<< HEAD
     public void addValidationError(String translationKey, boolean autoClose, String... translationArgs) {
         messageService.addValidationError(this, null, translationKey, autoClose, translationArgs);
 
     }
 
+=======
+    public String toString() {
+        return String.format(TO_STRING_TMPL, entity.getId(), getStatus(), isOwnerValid());
+    }
+>>>>>>> master
 }

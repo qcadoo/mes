@@ -59,8 +59,13 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
         productionTrackingListenerService.validationOnAccept(stateChangeContext);
     }
 
+<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/aop/listener/ProductionTrackingListenerAspect.java
     @RunInPhase(ProductionTrackingStateChangePhase.DEFAULT)
     @RunForStateTransition(targetState = ProductionTrackingStateStringValues.ACCEPTED)
+=======
+    @RunInPhase(ProductionRecordStateChangePhase.LAST)
+    @RunForStateTransition(targetState = ProductionRecordStateStringValues.ACCEPTED)
+>>>>>>> master:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/states/aop/listener/ProductionRecordBasicListenerAspect.java
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onAccept(final StateChangeContext stateChangeContext, final int phase) {
         productionTrackingListenerService.onAccept(stateChangeContext);
@@ -71,6 +76,13 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onChangeFromAcceptedToDecline(final StateChangeContext stateChangeContext, final int phase) {
         productionTrackingListenerService.onChangeFromAcceptedToDeclined(stateChangeContext);
+    }
+
+    @RunInPhase(ProductionRecordStateChangePhase.DEFAULT)
+    @RunForStateTransition(sourceState = ProductionRecordStateStringValues.DRAFT)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onChangeFromDraftToAny(final StateChangeContext stateChangeContext, final int phase) {
+        productionRecordBasicListenerService.onLeavingDraft(stateChangeContext);
     }
 
 }

@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
-import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.ORDERED_QUANTITY;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -36,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -60,10 +56,10 @@ public class DeliveredProductDetailsHooks {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity deliveredProduct = deliveredProductForm.getEntity();
 
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(PRODUCT);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
         Entity product = productLookup.getEntity();
 
-        FieldComponent orderedQuantity = (FieldComponent) view.getComponentByReference(ORDERED_QUANTITY);
+        FieldComponent orderedQuantity = (FieldComponent) view.getComponentByReference(OrderedProductFields.ORDERED_QUANTITY);
 
         if (product == null) {
             orderedQuantity.setFieldValue(null);
@@ -75,17 +71,17 @@ public class DeliveredProductDetailsHooks {
     }
 
     private BigDecimal getOrderedProductQuantity(final Entity deliveredProduct) {
-        Entity delivery = deliveredProduct.getBelongsToField(DELIVERY);
-        Entity product = deliveredProduct.getBelongsToField(PRODUCT);
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
 
         BigDecimal orderedQuantity = null;
 
         Entity orderedProduct = deliveriesService.getOrderedProductDD().find()
-                .add(SearchRestrictions.belongsTo(DELIVERY, delivery)).add(SearchRestrictions.belongsTo(PRODUCT, product))
-                .setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY, delivery))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, product)).setMaxResults(1).uniqueResult();
 
         if (orderedProduct != null) {
-            orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
+            orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
         }
 
         return orderedQuantity;
@@ -94,7 +90,7 @@ public class DeliveredProductDetailsHooks {
     public void fillUnitFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("damagedQuantityUnit", "deliveredQuantityUnit", "orderedQuantityUnit");
 
-        deliveriesService.fillUnitFields(view, PRODUCT, referenceNames);
+        deliveriesService.fillUnitFields(view, DeliveredProductFields.PRODUCT, referenceNames);
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
@@ -102,13 +98,13 @@ public class DeliveredProductDetailsHooks {
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity deliveredProduct = form.getEntity();
-        Entity delivery = deliveredProduct.getBelongsToField(OrderedProductFields.DELIVERY);
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
 
         deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
     }
 
     public void setDeliveredQuantityFieldRequired(final ViewDefinitionState view) {
-        FieldComponent delivedQuantity = (FieldComponent) view.getComponentByReference(DELIVERED_QUANTITY);
+        FieldComponent delivedQuantity = (FieldComponent) view.getComponentByReference(DeliveredProductFields.DELIVERED_QUANTITY);
         delivedQuantity.setRequired(true);
         delivedQuantity.requestComponentUpdateState();
     }

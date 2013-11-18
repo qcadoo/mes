@@ -23,9 +23,7 @@
  */
 package com.qcadoo.mes.states.service.client;
 
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.getCorrespondFieldName;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.*;
 import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 import java.util.List;
@@ -71,6 +69,19 @@ public class StateChangeSamplesClientImpl implements StateChangeSamplesClient {
             resultEntity = performChange(stateChangeService, entity, targetState);
         }
         return resultEntity;
+    }
+
+    @Override
+    public void resumeStateChange(final Entity entity, final Entity stateChangeEntity) {
+        entity.getDataDefinition().save(entity);
+        final StateChangeService stateChangeService = stateChangeServiceResolver.get(entity.getDataDefinition());
+        if (stateChangeService != null) {
+            final StateChangeEntityDescriber describer = stateChangeService.getChangeEntityDescriber();
+            final StateChangeContext stateChangeContext = stateChangeContextBuilder.build(describer, stateChangeEntity);
+            stateChangeContext.setStatus(StateChangeStatus.IN_PROGRESS);
+            stateChangeService.changeState(stateChangeContext);
+            checkResults(stateChangeContext);
+        }
     }
 
     private Entity performChange(final StateChangeService stateChangeService, final Entity entity, final String targetState) {

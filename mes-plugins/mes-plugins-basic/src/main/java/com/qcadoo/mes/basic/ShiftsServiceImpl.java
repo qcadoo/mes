@@ -24,14 +24,7 @@
 package com.qcadoo.mes.basic;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -407,6 +400,9 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public LocalTime[][] convertDayHoursToInt(final String string) {
+        if (!StringUtils.hasText(string)) {
+            return new LocalTime[][] {};
+        }
         String[] parts = string.trim().split(",");
 
         LocalTime[][] hours = new LocalTime[parts.length][];

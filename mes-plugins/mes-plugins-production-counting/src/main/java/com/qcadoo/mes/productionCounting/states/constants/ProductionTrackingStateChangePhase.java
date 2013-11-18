@@ -29,7 +29,9 @@ public final class ProductionTrackingStateChangePhase {
 
     public static final int DEFAULT = 3;
 
-    public static final int LAST = DEFAULT + 1;
+    public static final int EXT_SYNC = 4;
+
+    public static final int LAST = EXT_SYNC + 1;
 
     private ProductionTrackingStateChangePhase() {
     }

@@ -59,6 +59,8 @@ public class QcadooErrorLogStore implements ErrorLogStore {
 
     private String logdiggerJiraPass;
 
+    private String logdiggerJiraProject;
+
     @Override
     public void destroy() {
         jdbcErrorLogStore.destroy();
@@ -111,6 +113,7 @@ public class QcadooErrorLogStore implements ErrorLogStore {
         logdiggerJira = String.valueOf(attributeProvider.getAttribute("logdiggerJira"));
         logdiggerJiraUser = String.valueOf(attributeProvider.getAttribute("logdiggerJiraUser"));
         logdiggerJiraPass = String.valueOf(attributeProvider.getAttribute("logdiggerJiraPass"));
+        logdiggerJiraProject = String.valueOf(attributeProvider.getAttribute("logdiggerJiraProject"));
     }
 
     @Override
@@ -155,29 +158,32 @@ public class QcadooErrorLogStore implements ErrorLogStore {
                     "[\n\t\r]+", "\\\n");
             String summary = "LogDigger " + errorLog.getLogSnippet().split("\n")[0];
 
-            JerseyJiraRestClientFactory f = new JerseyJiraRestClientFactory();
+            JerseyJiraRestClientFactory jerseyJiraRestClientFactory = new JerseyJiraRestClientFactory();
+
             try {
-                URI jiraServerUri = new URI(logdiggerJira);
-                NullProgressMonitor progressMonitor = new NullProgressMonitor();
+                URI jiraServerURI = new URI(logdiggerJira);
+                NullProgressMonitor nullProgressMonitor = new NullProgressMonitor();
 
-                JiraRestClient jc = f.createWithBasicHttpAuthentication(jiraServerUri, logdiggerJiraUser, logdiggerJiraPass);
+                JiraRestClient jiraRestClient = jerseyJiraRestClientFactory.createWithBasicHttpAuthentication(jiraServerURI,
+                        logdiggerJiraUser, logdiggerJiraPass);
 
-                IssueInputBuilder ib = new IssueInputBuilder("QCADOOCLS", (long) 1);
-                ib.setReporterName("logdigger");
-                ib.setSummary(summary);
-                ib.setDescription(description);
-                ib.setPriorityId((long) 3);
-                IssueInput issue = ib.build();
+                IssueInputBuilder issueInputBuilder = new IssueInputBuilder(logdiggerJiraProject, (long) 1);
+                issueInputBuilder.setReporterName(logdiggerJiraUser);
+                issueInputBuilder.setSummary(summary);
+                issueInputBuilder.setDescription(description);
+                issueInputBuilder.setPriorityId((long) 3);
 
-                jc.getIssueClient().createIssue(issue, progressMonitor);
+                IssueInput issueInput = issueInputBuilder.build();
 
-                LOG.info(" Logdigger: " + issue.toString());
+                jiraRestClient.getIssueClient().createIssue(issueInput, nullProgressMonitor);
+
+                LOG.info(" Logdigger: " + issueInput.toString());
             } catch (URISyntaxException e) {
                 LOG.warn(e.getMessage(), e);
             }
-
         }
 
         return id;
     }
+
 }

@@ -497,6 +497,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
+<<<<<<< HEAD
         <profile>
             <id>muffinka</id>
             <build>
@@ -534,6 +535,45 @@
                 </snapshotRepository>
             </distributionManagement>
         </profile>
+=======
+		<profile>
+			<id>muffinka</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>${maven.antrun.plugin.version}</version>
+						<executions>
+							<execution>
+								<id>deploy-to-muffinka</id>
+								<phase>deploy</phase>
+								<configuration>
+									<target>
+										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/home/demo/deploy/${profile.name}.zip" />
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<distributionManagement>
+				<repository>
+					<id>qcadoo-releases-repository</id>
+					<url>file://target</url>
+				</repository>
+				<snapshotRepository>
+					<id>qcadoo-snapshots-repository</id>
+					<url>file://target</url>
+					<uniqueVersion>false</uniqueVersion>
+				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+>>>>>>> master
 		<profile>
 			<id>package</id>
 			<build>
@@ -544,11 +584,11 @@
 						<version>${maven.antrun.plugin.version}</version>
 						<executions>
 							<execution>
-								<id>package-to-emhyr</id>
+								<id>package-to-muffinka</id>
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Shared Items/Public/qcdmes_bin_daily_build/${package.filename}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/home/packages/qcdmes_bin_daily_build/${package.filename}.zip" />
 									</target>
 								</configuration>
 								<goals>
