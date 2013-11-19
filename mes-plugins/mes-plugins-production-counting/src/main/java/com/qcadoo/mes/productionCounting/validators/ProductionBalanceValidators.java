@@ -26,12 +26,7 @@ package com.qcadoo.mes.productionCounting.validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/validators/ProductionBalanceValidators.java
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
-=======
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
-import com.qcadoo.mes.productionCounting.states.ProductionRecordStatesHelper;
->>>>>>> master:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/hooks/ProductionRecordModelHooks.java
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -39,7 +34,6 @@ import com.qcadoo.model.api.Entity;
 public class ProductionBalanceValidators {
 
     @Autowired
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/validators/ProductionBalanceValidators.java
     private ProductionCountingService productionCountingService;
 
     public boolean validatesWith(final DataDefinition productionBalanceDD, final Entity productionBalance) {
@@ -48,13 +42,6 @@ public class ProductionBalanceValidators {
 
     private boolean validateOrder(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         return productionCountingService.validateOrder(productionBalanceDD, productionBalance);
-=======
-    private ProductionRecordStatesHelper statesHelper;
-
-    public void setInitialState(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        productionRecord.setField(ProductionRecordFields.IS_EXTERNAL_SYNCHRONIZED, true);
-        statesHelper.setInitialState(productionRecord);
->>>>>>> master:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/hooks/ProductionRecordModelHooks.java
     }
 
 }
