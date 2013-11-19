@@ -26,52 +26,45 @@ package com.qcadoo.mes.techSubcontrForProductionCounting.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionTrackingDetailsHooksTSFPC.java
-import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
-=======
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
+import com.qcadoo.mes.techSubcontrForProductionCounting.constants.ProductionTrackingFieldTSFPC;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
->>>>>>> master:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionRecordDetailsHooksTSFPC.java
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ProductionTrackingDetailsHooksTSFPC {
+
+    private static final String L_FORM = "form";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public void disabledSubcontractorFieldForState(final ViewDefinitionState view) {
-<<<<<<< HEAD:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionTrackingDetailsHooksTSFPC.java
-        FieldComponent state = (FieldComponent) view.getComponentByReference("state");
-        FieldComponent subcontractor = (FieldComponent) view.getComponentByReference("subcontractor");
-        if (state.getFieldValue().toString().equals(ProductionTrackingState.ACCEPTED.getStringValue())
-                || state.getFieldValue().toString().equals(ProductionTrackingState.DECLINED.getStringValue())) {
-            subcontractor.setEnabled(false);
-        } else {
-            subcontractor.setEnabled(true);
-=======
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form.getEntityId() == null) {
-            return;
->>>>>>> master:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionRecordDetailsHooksTSFPC.java
-        }
-        Entity productionRecord = getProductionRecord(form.getEntityId());
-        String stateFieldValue = productionRecord.getStringField(ProductionRecordFields.STATE);
-        boolean isDraft = ProductionRecordState.DRAFT.equals(stateFieldValue);
-        boolean isExternalSynchronized = productionRecord.getBooleanField(ProductionRecordFields.IS_EXTERNAL_SYNCHRONIZED);
+        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+        LookupComponent subcontractorLookup = (LookupComponent) view
+                .getComponentByReference(ProductionTrackingFieldTSFPC.SUBCONTRACTOR);
 
-        ComponentState subcontractor = view.getComponentByReference("subcontractor");
-        subcontractor.setEnabled(isDraft && isExternalSynchronized);
+        if (productionRecordForm.getEntityId() == null) {
+            return;
+        }
+
+        Entity productionRecord = getProductionTrackingFromDB(productionRecordForm.getEntityId());
+        String state = productionRecord.getStringField(ProductionTrackingFields.STATE);
+
+        boolean isDraft = ProductionTrackingStateStringValues.DRAFT.equals(state);
+        boolean isExternalSynchronized = productionRecord.getBooleanField(ProductionTrackingFields.IS_EXTERNAL_SYNCHRONIZED);
+
+        subcontractorLookup.setEnabled(isDraft && isExternalSynchronized);
     }
 
-    private Entity getProductionRecord(final Long id) {
+    private Entity getProductionTrackingFromDB(final Long productionTrackingId) {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_RECORD).get(id);
+                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).get(productionTrackingId);
     }
 
 }
