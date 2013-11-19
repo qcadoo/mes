@@ -252,11 +252,6 @@
 			class="com.qcadoo.mes.workPlans.listeners.ParametersListenersWP"
 			method="redirectToWorkPlanParameters" />
 
-        <view:view-listener plugin="orders" view="ordersList"
-            component="grid" event="addSelectedOrdersToWorkPlan"
-            class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
-            method="addSelectedOrdersToWorkPlan" />
-
 		<view:view-hook plugin="technologies" view="operationDetails"
 			type="beforeRender" class="com.qcadoo.mes.workPlans.hooks.OperationDetailsHooksWP"
 			method="setOperationDefaultValues" />
@@ -267,6 +262,11 @@
 			class="com.qcadoo.mes.workPlans.listeners.TechnologyOperationComponentDetailsListenersWP"
 			method="setTechnologyOperationComponentDefaultValues" />
 
+		 <view:view-listener plugin="orders" view="ordersList"
+            component="grid" event="addSelectedOrdersToWorkPlan"
+            class="com.qcadoo.mes.workPlans.listeners.OrdersListListenersWP"
+            method="addSelectedOrdersToWorkPlan" />
+            
 		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="grid" event="addSelectedOrdersToWorkPlan"
 			class="com.qcadoo.mes.workPlans.listeners.OrdersPlanningListListenersWP" 
