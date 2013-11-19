@@ -43,13 +43,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-<<<<<<< HEAD
 import com.qcadoo.mes.productionCounting.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
-=======
-import com.qcadoo.mes.productionCounting.internal.ProductionBalanceService;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
->>>>>>> master
 import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
 import com.qcadoo.mes.productionCountingWithCosts.pdf.ProductionBalanceWithCostsPdfService;
 import com.qcadoo.model.api.DataDefinition;
@@ -108,10 +103,7 @@ public class GenerateProductionBalanceWithCostsTest {
 
         given(productionBalance.getBelongsToField(ProductionBalanceFields.ORDER)).willReturn(order);
         given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
-<<<<<<< HEAD
-=======
 
->>>>>>> master
         given(productionBalance.getDataDefinition()).willReturn(productionBalanceDD);
     }
 
@@ -119,10 +111,7 @@ public class GenerateProductionBalanceWithCostsTest {
     public void shouldSetQuantityTechnologyProductionLineAndTechnicalProductionCostPerUnitFieldsAndSaveEntity() {
         // given
         BigDecimal quantity = BigDecimal.TEN;
-<<<<<<< HEAD
-=======
 
->>>>>>> master
         given(productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS)).willReturn(
                 BigDecimal.valueOf(100));
         given(order.getDecimalField(OrderFields.PLANNED_QUANTITY)).willReturn(quantity);
@@ -134,19 +123,9 @@ public class GenerateProductionBalanceWithCostsTest {
         // then
         verify(productionBalance).setField(ProductionBalanceFieldsPCWC.QUANTITY, quantity);
         verify(productionBalance).setField(ProductionBalanceFieldsPCWC.TECHNOLOGY, technology);
-<<<<<<< HEAD
-        // verify(productionBalance).setField("productionLine", productionLine);
-        verify(productionBalance).setField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
-                BigDecimal.TEN.setScale(5, RoundingMode.HALF_EVEN));
-
-        verify(productionBalanceDD).save(productionBalance);
-=======
         verify(productionBalance).setField(ProductionBalanceFieldsPCWC.PRODUCTION_LINE, productionLine);
         verify(productionBalance).setField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
                 BigDecimal.TEN.setScale(5, RoundingMode.HALF_EVEN));
-
-        // verify(dataDefinition).save(balance);
->>>>>>> master
     }
 
     @Test
@@ -154,31 +133,20 @@ public class GenerateProductionBalanceWithCostsTest {
         // given
         Locale locale = Locale.getDefault();
         String localePrefix = "productionCounting.productionBalanceWithCosts.report.fileName";
-<<<<<<< HEAD
-        given(fileService.updateReportFileName(productionBalance, ProductionBalanceFields.DATE, localePrefix)).willReturn(
-                balanceWithFileName);
-=======
 
         Entity productionBalanceWithFileName = mock(Entity.class);
         given(productionBalanceWithFileName.getDataDefinition()).willReturn(productionBalanceDD);
 
         given(fileService.updateReportFileName(productionBalance, ProductionBalanceFields.DATE, localePrefix)).willReturn(
                 productionBalanceWithFileName);
->>>>>>> master
 
         // when
         generateProductionBalanceWithCosts.generateBalanceWithCostsReport(productionBalance);
 
         // then
-<<<<<<< HEAD
-        verify(productionBalance).setField(ProductionBalanceFieldsPCWC.GENERATED_WITH_COSTS, Boolean.TRUE);
-        verify(productionBalanceWithCostsPdfService).generateDocument(balanceWithFileName, locale, localePrefix);
-        verify(productionBalanceDD).save(productionBalance);
-=======
         verify(productionBalanceWithCostsPdfService).generateDocument(productionBalanceWithFileName, locale, localePrefix);
         verify(productionBalanceWithFileName).setField(ProductionBalanceFieldsPCWC.GENERATED_WITH_COSTS, Boolean.TRUE);
         verify(productionBalanceDD).save(productionBalanceWithFileName);
->>>>>>> master
     }
 
 }
