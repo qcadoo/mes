@@ -35,7 +35,12 @@
                    required="true" />
         <belongsTo name="technologyInstanceOperationComponent" model="technologyInstanceOperationComponent"
                    plugin="technologies" />
+
         <belongsTo name="shift" model="shift" plugin="basic" />
+        <date name="shiftStartDay" />
+
+        <date name="timeRangeFrom" />
+        <date name="timeRangeTo" />
 
         <boolean name="lastStateChangeFails" default="false" copyable="false" />
         <string name="lastStateChangeFailCause" copyable="false" />
@@ -51,8 +56,8 @@
         <boolean name="lastRecord" />
 
         <integer name="machineTime" copyable="false" />
-
         <integer name="laborTime" copyable="false" />
+        <hasMany name="staffWorkTimes" model="staffWorkTime" joinField="productionRecord" copyable="false" />
 
         <decimal name="executedOperationCycles" copyable="false">
             <validatesUnscaledValue max="7" />

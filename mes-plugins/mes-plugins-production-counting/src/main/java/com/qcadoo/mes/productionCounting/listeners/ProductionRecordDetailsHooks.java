@@ -47,7 +47,7 @@ public class ProductionRecordDetailsHooks {
     private static final Set<String> COMPONENTS_TO_DISABLE = Sets.newHashSet("lastRecord", "number", "order",
             "technologyInstanceOperationComponent", "staff", "shift", "workstationType", "division",
             "recordOperationProductInComponent", "recordOperationProductOutComponent", "laborTime", "machineTime",
-            "executedOperationCycles");
+            "executedOperationCycles", "timeRangeFrom", "timeRangeTo", "shift", "shiftStartDay", "staffWorkTimes");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductionRecordDetailsListeners.class);
 
@@ -59,6 +59,7 @@ public class ProductionRecordDetailsHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        productionRecordViewService.fillProductionLineLookup(view);
         if (form.getEntityId() == null) {
             setStateFieldValueToDraft(view);
         } else {

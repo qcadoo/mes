@@ -32,14 +32,18 @@ import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProduct
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -49,6 +53,9 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class ProductionRecordViewService {
@@ -81,6 +88,17 @@ public class ProductionRecordViewService {
     @Autowired
     private StateChangeHistoryService stateChangeHistoryService;
 
+    public void fillProductionLineLookup(final ViewDefinitionState view) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference("order");
+        Entity order = orderLookup.getEntity();
+        Long productionLineId = null;
+        if (order != null) {
+            productionLineId = order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId();
+        }
+        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference("productionLine");
+        productionLineLookup.setFieldValue(productionLineId);
+    }
+
     public void setTimeAndPiecworkComponentsVisible(final String recordingType, final Entity order, final ViewDefinitionState view) {
         boolean recordingTypeEqualsForEach = FOR_EACH.getStringValue().equals(recordingType);
         boolean recordingTypeEqualsBasic = BASIC.getStringValue().equals(recordingType);
@@ -88,10 +106,28 @@ public class ProductionRecordViewService {
         view.getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).setVisible(recordingTypeEqualsForEach);
 
         boolean registerProductionTime = order.getBooleanField(REGISTER_PRODUCTION_TIME);
-        view.getComponentByReference("borderLayoutTime").setVisible(registerProductionTime && !recordingTypeEqualsBasic);
+        view.getComponentByReference("timeTab").setVisible(registerProductionTime && !recordingTypeEqualsBasic);
+
+        ProductionRecordState recordState = getRecordState(view);
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonActionItem calcTotalLaborTimeBtn = window.getRibbon().getGroupByName("workTime")
+                .getItemByName("calcTotalLaborTime");
+        calcTotalLaborTimeBtn.setEnabled(registerProductionTime && !recordingTypeEqualsBasic
+                && ProductionRecordState.DRAFT.equals(recordState));
+        calcTotalLaborTimeBtn.requestUpdate(true);
 
         boolean registerPiecework = order.getBooleanField(REGISTER_PIECEWORK);
-        view.getComponentByReference("borderLayoutPiecework").setVisible(registerPiecework && recordingTypeEqualsForEach);
+        view.getComponentByReference("pieceworkTab").setVisible(registerPiecework && recordingTypeEqualsForEach);
+    }
+
+    public ProductionRecordState getRecordState(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity productionRecordFormEntity = form.getEntity();
+        String stateStringValue = productionRecordFormEntity.getStringField(ProductionRecordFields.STATE);
+        if (StringUtils.isEmpty(stateStringValue)) {
+            return ProductionRecordState.DRAFT;
+        }
+        return ProductionRecordState.parseString(stateStringValue);
     }
 
     public void fillFieldFromProduct(final ViewDefinitionState view) {
