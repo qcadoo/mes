@@ -45,19 +45,19 @@ public class ProductionTrackingDetailsHooksTSFPC {
     private DataDefinitionService dataDefinitionService;
 
     public void disabledSubcontractorFieldForState(final ViewDefinitionState view) {
-        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
         LookupComponent subcontractorLookup = (LookupComponent) view
                 .getComponentByReference(ProductionTrackingFieldTSFPC.SUBCONTRACTOR);
 
-        if (productionRecordForm.getEntityId() == null) {
+        if (productionTrackingForm.getEntityId() == null) {
             return;
         }
 
-        Entity productionRecord = getProductionTrackingFromDB(productionRecordForm.getEntityId());
-        String state = productionRecord.getStringField(ProductionTrackingFields.STATE);
+        Entity productionTracking = getProductionTrackingFromDB(productionTrackingForm.getEntityId());
+        String state = productionTracking.getStringField(ProductionTrackingFields.STATE);
 
         boolean isDraft = ProductionTrackingStateStringValues.DRAFT.equals(state);
-        boolean isExternalSynchronized = productionRecord.getBooleanField(ProductionTrackingFields.IS_EXTERNAL_SYNCHRONIZED);
+        boolean isExternalSynchronized = productionTracking.getBooleanField(ProductionTrackingFields.IS_EXTERNAL_SYNCHRONIZED);
 
         subcontractorLookup.setEnabled(isDraft && isExternalSynchronized);
     }

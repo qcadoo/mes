@@ -31,7 +31,6 @@ import static org.mockito.Mockito.verify;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -89,13 +88,15 @@ public class ProductionTrackingDetailsHooksTest {
     public void shouldSetStateToDraftWhenInitializeTrackingDetailsViewIfProductionTrackingIsntSaved() {
         // given
         given(productionTrackingForm.getEntityId()).willReturn(null);
+        given(productionTrackingForm.getEntity()).willReturn(productionTracking);
+        given(productionTracking.getField(ProductionTrackingFields.STATE)).willReturn(ProductionTrackingStateStringValues.DRAFT);
 
         // when
-        productionTrackingDetailsHooks.initializeTrackingDetailsView(view);
+        productionTrackingDetailsHooks.initializeProductionTrackingDetailsView(view);
 
         // then
-        verify(stateField, Mockito.times(1)).setFieldValue(ProductionTrackingStateStringValues.DRAFT);
-        verify(isDisabledField, never()).setFieldValue(false);
+        verify(stateField, times(1)).setFieldValue(ProductionTrackingStateStringValues.DRAFT);
+        verify(isDisabledField, times(1)).setFieldValue(false);
         verify(productionTrackingService, never()).setTimeAndPieceworkComponentsVisible(view, order);
     }
 
@@ -109,7 +110,7 @@ public class ProductionTrackingDetailsHooksTest {
         given(orderLookup.getEntity()).willReturn(order);
 
         // when
-        productionTrackingDetailsHooks.initializeTrackingDetailsView(view);
+        productionTrackingDetailsHooks.initializeProductionTrackingDetailsView(view);
 
         // then
         verify(stateField, times(1)).setFieldValue(ProductionTrackingStateStringValues.ACCEPTED);

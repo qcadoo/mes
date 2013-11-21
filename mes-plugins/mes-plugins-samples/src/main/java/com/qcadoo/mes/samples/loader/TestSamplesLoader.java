@@ -1213,8 +1213,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
     }
 
-    private Entity findPausedStateChangeEntityForPR(final Entity productionRecord) {
-        SearchCriteriaBuilder scb = productionRecord.getHasManyField("stateChanges").find();
+    private Entity findPausedStateChangeEntityForPR(final Entity productionTracking) {
+        SearchCriteriaBuilder scb = productionTracking.getHasManyField("stateChanges").find();
         scb.add(SearchRestrictions.eq("status", StateChangeStatus.PAUSED.getStringValue()));
         return scb.setMaxResults(1).uniqueResult();
     }

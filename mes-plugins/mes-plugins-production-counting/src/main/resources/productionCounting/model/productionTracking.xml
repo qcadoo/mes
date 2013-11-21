@@ -37,19 +37,26 @@
 			plugin="technologies" />
 		<belongsTo name="shift" model="shift" plugin="basic" />
 
+		<boolean name="lastStateChangeFails" default="false" copyable="false" />
+		<string name="lastStateChangeFailCause" copyable="false" />
+		<boolean name="isExternalSynchronized" default="true"
+			copyable="false" />
+
 		<enum name="state" values="01draft,02accepted,03declined"
 			default="01draft" required="true" />
 
-		<hasMany name="trackingOperationProductInComponents" joinField="productionTracking"
-			model="trackingOperationProductInComponent" cascade="delete" />
-		<hasMany name="trackingOperationProductOutComponents" joinField="productionTracking"
-			model="trackingOperationProductOutComponent" cascade="delete" />
+		<hasMany name="trackingOperationProductInComponents"
+			joinField="productionTracking" model="trackingOperationProductInComponent"
+			cascade="delete" />
+		<hasMany name="trackingOperationProductOutComponents"
+			joinField="productionTracking" model="trackingOperationProductOutComponent"
+			cascade="delete" />
 
 		<boolean name="lastTracking" />
 
-		<integer name="machineTime" copyable="false"/>
+		<integer name="machineTime" copyable="false" />
 
-		<integer name="laborTime" copyable="false"/>
+		<integer name="laborTime" copyable="false" />
 
 		<decimal name="executedOperationCycles" copyable="false">
 			<validatesUnscaledValue max="7" />

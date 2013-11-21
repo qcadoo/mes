@@ -25,21 +25,22 @@ package com.qcadoo.mes.productionCounting.hooks;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
-import com.qcadoo.mes.states.constants.StateChangeStatus;
-import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -55,6 +56,10 @@ public class ProductionTrackingDetailsHooks {
 
     private static final String L_FORM = "form";
 
+    private static final String L_STATE = "state";
+
+    private static final String L_IS_DISABLED = "isDisabled";
+
     private static final String L_WINDOW = "window";
 
     private static final String L_ACTIONS = "actions";
@@ -65,8 +70,6 @@ public class ProductionTrackingDetailsHooks {
 
     private static final String L_COPY_PLANNED_QUANTITY_TO_USED_QUANTITY = "copyPlannedQuantityToUsedQuantity";
 
-    private static final String L_IS_DISABLED = "isDisabled";
-
     private static final List<String> L_PRODUCTION_TRACKING_FIELD_NAMES = Lists.newArrayList(
             ProductionTrackingFields.LAST_TRACKING, ProductionTrackingFields.NUMBER, ProductionTrackingFields.ORDER,
             ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, ProductionTrackingFields.STAFF,
@@ -75,13 +78,30 @@ public class ProductionTrackingDetailsHooks {
             ProductionTrackingFields.EXECUTED_OPERATION_CYCLES);
 
     @Autowired
-    private StateChangeHistoryService stateChangeHistoryService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private ProductionCountingService productionCountingService;
 
     @Autowired
     private ProductionTrackingService productionTrackingService;
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        setCriteriaModifierParameters(view);
+
+        if (productionTrackingForm.getEntityId() == null) {
+            setStateFieldValueToDraft(view);
+        } else {
+            Entity productionTracking = getProductionTrackingFromDB(productionTrackingForm.getEntityId());
+
+            initializeProductionTrackingDetailsView(view);
+            showLastStateChangeFailNotification(productionTrackingForm, productionTracking);
+            changeFieldComponentsEnabledAndGridsEditable(view);
+            updateRibbonState(view);
+        }
+    }
 
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -104,19 +124,23 @@ public class ProductionTrackingDetailsHooks {
         }
     }
 
-    public void initializeTrackingDetailsView(final ViewDefinitionState view) {
+    private void setStateFieldValueToDraft(final ViewDefinitionState view) {
+        FieldComponent stateField = (FieldComponent) view.getComponentByReference(L_STATE);
+        stateField.setFieldValue(ProductionTrackingState.DRAFT.getStringValue());
+        stateField.requestComponentUpdateState();
+    }
+
+    private Entity getProductionTrackingFromDB(final Long productionTrackingId) {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).get(productionTrackingId);
+    }
+
+    public void initializeProductionTrackingDetailsView(final ViewDefinitionState view) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.STATE);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.ORDER);
         FieldComponent isDisabledField = (FieldComponent) view.getComponentByReference(L_IS_DISABLED);
-
-        if (productionTrackingForm.getEntityId() == null) {
-            stateField.setFieldValue(ProductionTrackingStateStringValues.DRAFT);
-            stateField.requestComponentUpdateState();
-
-            return;
-        }
 
         Entity productionTracking = productionTrackingForm.getEntity();
 
@@ -130,10 +154,27 @@ public class ProductionTrackingDetailsHooks {
         productionTrackingService.setTimeAndPieceworkComponentsVisible(view, order);
     }
 
-    public void disableFieldsWhenStateNotDraft(final ViewDefinitionState view) {
+    private void showLastStateChangeFailNotification(final FormComponent productionTrackingForm, final Entity productionTracking) {
+        boolean lastStateChangeFails = productionTracking.getBooleanField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS);
+
+        if (lastStateChangeFails) {
+            String lastStateChangeFailCause = productionTracking
+                    .getStringField(ProductionTrackingFields.LAST_STATE_CHANGE_FAIL_CAUSE);
+
+            if (StringUtils.isEmpty(lastStateChangeFailCause)) {
+                productionTrackingForm.addMessage("productionCounting.productionTracking.info.lastStateChangeFails",
+                        ComponentState.MessageType.INFO, true, lastStateChangeFailCause);
+            } else {
+                productionTrackingForm.addMessage("productionCounting.productionTracking.info.lastStateChangeFails.withCause",
+                        ComponentState.MessageType.INFO, false, lastStateChangeFailCause);
+            }
+        }
+    }
+
+    public void changeFieldComponentsEnabledAndGridsEditable(final ViewDefinitionState view) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        if (productionTrackingForm.getEntity() == null) {
+        if (productionTrackingForm.getEntityId() == null) {
             return;
         }
 
@@ -142,8 +183,9 @@ public class ProductionTrackingDetailsHooks {
         String state = productionTracking.getStringField(ProductionTrackingFields.STATE);
 
         boolean isDraft = (ProductionTrackingStateStringValues.DRAFT.equals(state));
+        boolean isExternalSynchronized = productionTracking.getBooleanField(ProductionTrackingFields.IS_EXTERNAL_SYNCHRONIZED);
 
-        setFieldComponentsEnabledAndGridsEditable(view, isDraft);
+        setFieldComponentsEnabledAndGridsEditable(view, isDraft && isExternalSynchronized);
     }
 
     private void setFieldComponentsEnabledAndGridsEditable(final ViewDefinitionState view, final boolean isEnabled) {
@@ -194,23 +236,6 @@ public class ProductionTrackingDetailsHooks {
 
         copyPlannedQuantityToUsedQuantity.setEnabled(isDraft);
         copyPlannedQuantityToUsedQuantity.requestUpdate(true);
-    }
-
-    public void filterStateChangeHistory(final ViewDefinitionState view) {
-        GridComponent stateChangesGrid = (GridComponent) view.getComponentByReference(ProductionTrackingFields.STATE_CHANGES);
-
-        CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(
-                OrderStateChangeFields.STATUS, Lists.newArrayList(StateChangeStatus.SUCCESSFUL.getStringValue()));
-
-        stateChangesGrid.setCustomRestriction(onlySuccessfulRestriction);
-    }
-
-    public void fillShiftAndDivisionField(final ViewDefinitionState view) {
-        productionTrackingService.fillShiftAndDivisionField(view);
-    }
-
-    public void fillDivisionField(final ViewDefinitionState view) {
-        productionTrackingService.fillDivisionField(view);
     }
 
 }

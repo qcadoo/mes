@@ -63,7 +63,7 @@ public class OrderClosingHelperTest {
         // given
         orderHasEnabledAutoClose();
         stubTypeOfProductionRecording(TypeOfProductionRecording.CUMULATED);
-        productionRecordIsLast();
+        productionTrackingIsLast();
 
         // when
         boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
@@ -76,7 +76,7 @@ public class OrderClosingHelperTest {
     public final void shouldOrderCanNotBeClosedWhenTypeIsCummulativeAndAcceptingLastRecordButAutoCloseIsNotEnabled() {
         // given
         stubTypeOfProductionRecording(TypeOfProductionRecording.CUMULATED);
-        productionRecordIsLast();
+        productionTrackingIsLast();
 
         // when
         boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
@@ -117,7 +117,7 @@ public class OrderClosingHelperTest {
         // given
         orderHasEnabledAutoClose();
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L);
 
         // when
@@ -146,7 +146,7 @@ public class OrderClosingHelperTest {
         // given
         orderHasEnabledAutoClose();
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L, 3L);
 
         // when
@@ -160,7 +160,7 @@ public class OrderClosingHelperTest {
     public final void shouldOrderCanNotBeClosedWhenTypeIsForEachOpAndRecordIsLastAndThereIsEnoughtLastRecordsButAutoCloseIsNotEnabled() {
         // given
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L, 3L);
 
         // when
@@ -174,7 +174,7 @@ public class OrderClosingHelperTest {
     public final void shouldOrderCanBeClosedWhenTypeIsForEachOpAndRecordIsLastAndThereIsMoreThanEnoughtLastRecords() {
         // given
         orderHasEnabledAutoClose();
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
         stubSearchCriteriaResults(1L, 2L, 3L, 4L, 5L, 6L);
 
@@ -189,7 +189,7 @@ public class OrderClosingHelperTest {
     public final void shouldOrderCanNotBeClosedWhenTypeIsForEachOpAndRecordIsLastAndThereIsMoreThanEnoughtLastRecordsButAutoCloseIsNotEnabled() {
         // given
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L, 3L, 4L, 5L, 6L);
 
         // when
@@ -204,7 +204,7 @@ public class OrderClosingHelperTest {
         // given
         orderHasEnabledAutoClose();
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L, 3L, PRODUCTION_RECORD_ID);
 
         // when
@@ -218,7 +218,7 @@ public class OrderClosingHelperTest {
     public final void shouldOrderCanNotBeClosedWhenTypeIsForEachOpAndRecordIsLastButIsAlreadyAccepted() {
         // given
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L, PRODUCTION_RECORD_ID);
 
         // when
@@ -233,7 +233,7 @@ public class OrderClosingHelperTest {
         given(order.getField(OrderFieldsPC.AUTO_CLOSE_ORDER)).willReturn(true);
     }
 
-    private void productionRecordIsLast() {
+    private void productionTrackingIsLast() {
         given(productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)).willReturn(true);
         given(productionTracking.getField(ProductionTrackingFields.LAST_TRACKING)).willReturn(true);
     }
