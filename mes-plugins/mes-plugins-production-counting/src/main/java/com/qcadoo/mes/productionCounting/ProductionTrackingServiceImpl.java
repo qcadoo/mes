@@ -114,7 +114,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         boolean isForEach = productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording);
 
         technologyOperationComponentLookup.setVisible(isForEach);
-        technologyOperationComponentLookup.requestComponentUpdateState();
 
         borderLayoutTime.setVisible(registerProductionTime && !isBasic);
         borderLayoutPiecework.setVisible(registerPiecework && isForEach);

@@ -82,8 +82,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
     private static final String L_PLANNED_LABOR_TIME = "plannedLaborTime";
 
-    private static final String L_PRODUCTION_LINE = "produtionLine";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -177,7 +175,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                 numberService.setScale(perUnit));
     }
 
-    private void fillFieldsAndGrids(final Entity productionBalance) {
+    public void fillFieldsAndGrids(final Entity productionBalance) {
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
         if ((order == null)
@@ -311,8 +309,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         productionBalance.setField(ProductionBalanceFieldsPCWC.TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS,
                 technologyOperationProductInComponents);
-
-        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     private void fillCostValues(final Entity productionBalance, final Map<Long, Entity> productionTrackingsWithRegisteredTimes,
@@ -527,8 +523,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         }
 
         productionBalance.setField(ProductionBalanceFieldsPCWC.OPERATION_COST_COMPONENTS, operationCostComponents);
-
-        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     private void fillPieceworkCostValues(final Entity productionBalance,
@@ -568,8 +562,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         productionBalance.setField(ProductionBalanceFieldsPCWC.PLANNED_CYCLES_COSTS, numberService.setScale(plannedCyclesCosts));
         productionBalance.setField(ProductionBalanceFieldsPCWC.CYCLES_COSTS, numberService.setScale(cyclesCosts));
         productionBalance.setField(ProductionBalanceFieldsPCWC.CYCLES_COSTS_BALANCE, numberService.setScale(cyclesCostsBalance));
-
-        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     private void fillOperationPieceworkCostComponents(final Entity productionBalance,
@@ -625,8 +617,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         productionBalance.setField(ProductionBalanceFieldsPCWC.OPERATION_PIECEWORK_COST_COMPONENTS,
                 operationPieceworkCostComponents);
-
-        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     private void sumarizeCostValues(final Entity productionBalance, final Entity order) {

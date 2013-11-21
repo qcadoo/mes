@@ -35,9 +35,7 @@ import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.OperationProductsExtractor;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeDescriber;
-import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
+import com.qcadoo.mes.productionCounting.states.ProductionTrackingStatesHelper;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -49,10 +47,7 @@ public class ProductionTrackingHooks {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private StateChangeEntityBuilder stateChangeEntityBuilder;
-
-    @Autowired
-    private ProductionTrackingStateChangeDescriber describer;
+    private ProductionTrackingStatesHelper productionTrackingStatesHelper;
 
     @Autowired
     private OperationProductsExtractor operationProductsExtractor;
@@ -116,7 +111,8 @@ public class ProductionTrackingHooks {
     }
 
     private void setInitialState(final Entity productionTracking) {
-        stateChangeEntityBuilder.buildInitial(describer, productionTracking, ProductionTrackingState.DRAFT);
+        productionTracking.setField(ProductionTrackingFields.IS_EXTERNAL_SYNCHRONIZED, true);
+        productionTrackingStatesHelper.setInitialState(productionTracking);
     }
 
     private void generateNumberIfNeeded(final Entity productionTracking) {
@@ -125,4 +121,5 @@ public class ProductionTrackingHooks {
                     ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING));
         }
     }
+
 }

@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +57,8 @@ import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ProductionCountingServiceImpl implements ProductionCountingService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductionCountingServiceImpl.class);
 
     private static final String L_FORM = "form";
 
@@ -214,24 +218,39 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     @Override
     public void setComponentsState(final ViewDefinitionState view, final List<String> componentReferenceNames,
             final boolean isEnabled, final boolean requestComponentUpdateState) {
-        for (String componentReference : componentReferenceNames) {
-            view.getComponentByReference(componentReference).setEnabled(isEnabled);
+        for (String componentReferenceName : componentReferenceNames) {
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(componentReferenceName);
 
-            if (requestComponentUpdateState) {
-                ((FieldComponent) view.getComponentByReference(componentReference)).requestComponentUpdateState();
+            if (fieldComponent == null) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(String.format("Cannot find component with reference='%s'", componentReferenceName));
+                }
+            } else {
+                fieldComponent.setEnabled(isEnabled);
+
+                if (requestComponentUpdateState) {
+                    fieldComponent.requestComponentUpdateState();
+                }
             }
         }
-
     }
 
     @Override
     public void setComponentsVisibility(final ViewDefinitionState view, final List<String> componentReferenceNames,
             final boolean isVisible, final boolean requestComponentUpdateState) {
-        for (String componentReference : componentReferenceNames) {
-            view.getComponentByReference(componentReference).setVisible(isVisible);
+        for (String componentReferenceName : componentReferenceNames) {
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(componentReferenceName);
 
-            if (requestComponentUpdateState) {
-                ((FieldComponent) view.getComponentByReference(componentReference)).requestComponentUpdateState();
+            if (fieldComponent == null) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(String.format("Cannot find component with reference='%s'", componentReferenceName));
+                }
+            } else {
+                fieldComponent.setVisible(isVisible);
+
+                if (requestComponentUpdateState) {
+                    fieldComponent.requestComponentUpdateState();
+                }
             }
         }
     }

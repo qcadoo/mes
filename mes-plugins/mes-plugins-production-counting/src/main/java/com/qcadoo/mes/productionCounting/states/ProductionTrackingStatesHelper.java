@@ -19,7 +19,7 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
-public class ProductionRecordStatesHelper {
+public class ProductionTrackingStatesHelper {
 
     @Autowired
     private StateChangeEntityBuilder stateChangeEntityBuilder;
@@ -36,34 +36,39 @@ public class ProductionRecordStatesHelper {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void setInitialState(final Entity productionRecord) {
-        stateChangeEntityBuilder.buildInitial(stateChangeDescriber, productionRecord, ProductionTrackingState.DRAFT);
+    public void setInitialState(final Entity productionTracking) {
+        stateChangeEntityBuilder.buildInitial(stateChangeDescriber, productionTracking, ProductionTrackingState.DRAFT);
     }
 
     public void resumeStateChange(final StateChangeContext context) {
         context.setStatus(StateChangeStatus.IN_PROGRESS);
+
         productionTrackingStateChangeAspect.changeState(context);
     }
 
     public void cancelStateChange(final StateChangeContext context) {
         context.setStatus(StateChangeStatus.FAILURE);
+
         productionTrackingStateChangeAspect.changeState(context);
     }
 
-    public StateChangeContext findPausedStateTransition(final Entity productionRecord) {
-        Entity stateChangeEntity = findPausedStateChangeEntity(productionRecord);
+    public StateChangeContext findPausedStateTransition(final Entity productionTracking) {
+        Entity stateChangeEntity = findPausedStateChangeEntity(productionTracking);
+
         if (stateChangeEntity == null) {
             return null;
         }
+
         return stateChangeContextBuilder.build(stateChangeDescriber, stateChangeEntity);
     }
 
-    private Entity findPausedStateChangeEntity(final Entity productionRecord) {
+    private Entity findPausedStateChangeEntity(final Entity productionTracking) {
         DataDefinition stateChangeDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_PRODUCTION_TRACKING_STATE_CHANGE);
         SearchCriteriaBuilder scb = stateChangeDD.find();
-        scb.add(SearchRestrictions.belongsTo(ProductionTrackingStateChangeFields.PRODUCTION_TRACKING, productionRecord));
+        scb.add(SearchRestrictions.belongsTo(ProductionTrackingStateChangeFields.PRODUCTION_TRACKING, productionTracking));
         scb.add(SearchRestrictions.eq(ProductionTrackingStateChangeFields.STATUS, StateChangeStatus.PAUSED.getStringValue()));
+
         return scb.setMaxResults(1).uniqueResult();
     }
 

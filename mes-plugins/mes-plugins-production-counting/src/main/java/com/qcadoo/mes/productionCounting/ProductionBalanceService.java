@@ -65,4 +65,12 @@ public interface ProductionBalanceService {
      */
     void disableCheckboxes(final ViewDefinitionState view);
 
+    /**
+     * Fills fields and grids
+     * 
+     * @param productionBalance
+     *            productionBalance
+     */
+    void fillFieldsAndGrids(final Entity productionBalance);
+
 }

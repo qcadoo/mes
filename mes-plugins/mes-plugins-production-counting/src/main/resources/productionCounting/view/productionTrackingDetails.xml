@@ -93,7 +93,7 @@
 				</script>
 
 				<component type="gridLayout" name="mainGridLayout"
-					columns="3" rows="5">
+					columns="3" rows="6">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="lastTracking" field="lastTracking"
 							reference="lastTracking" />
@@ -153,6 +153,88 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
+						<component type="select" name="state" field="state"
+							reference="state" defaultEnabled="never">
+							<script>
+								 <![CDATA[
+									this.addOnChangeListener({
+										onSetValue: function(newValue) {
+											if (!newValue || !newValue.content) {
+												return;
+											}
+											
+											var state = newValue.content.value;
+											updateRibbon(state);
+										}
+									});
+
+									function toggleEditable(enabled, message) {
+										var toggleRibbonItems = [
+											"actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel", "actions.delete",
+											"status.cancelTracking", "status.acceptTracking",
+											"copy.copyPlannedQuantityToUsedQuantity"
+										],
+										
+										elementKey = {},
+										ribbonItemName = "",
+										ribbonItem = {};
+										
+										for (elementKey in toggleRibbonItems) {
+											ribbonItemName = toggleRibbonItems[elementKey];
+											ribbonItem = #{window}.getRibbonItem(ribbonItemName);
+										
+											if (!ribbonItem) {
+												continue;
+											}
+											
+											if (enabled) {
+												ribbonItem.enable();
+											} else {
+												ribbonItem.disable(message);
+											}
+										}
+									}
+
+									function enableDeleteButton() {
+										#{window}.getRibbonItem("actions.delete").enable();
+									}
+
+									function updateRibbon(state) {
+										var acceptState = #{window}.getRibbonItem("status.acceptTracking");
+										var cancelState = #{window}.getRibbonItem("status.cancelTracking");
+										
+										acceptState.disable();
+										acceptState.forState="02accepted";
+										acceptState.confirmMessage = "#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.acceptTracking.confirm)}";
+										
+										cancelState.disable();
+										cancelState.forState="03declined";
+										cancelState.confirmMessage = "#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.declineTracking.confirm)}";
+										
+										if (#{isExternalSynchronized}.getValue().content.value == 0) {
+											var msg = "#{translate(productionCounting.productionTracking.info.isWaitingForSync)}";
+											toggleEditable(false, msg);
+										} else if (state == "01draft") {
+											toggleEditable(true);
+										} else if (state == "02accepted") {
+											toggleEditable(false);
+											cancelState.enable();
+										} else if (state == "03declined") {
+											toggleEditable(false);
+											enableDeleteButton();
+										} else{
+											QCD.error("Unknown state - '" + state + "'");
+											toggleEditable(true);
+										}
+									}
+									
+									this.updateRibbon = updateRibbon;
+
+								]]>
+							</script>
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="2">
 						<component type="lookup" name="staff" reference="staff"
 							field="staff">
 							<option type="column" name="name" fields="name" />
@@ -170,7 +252,7 @@
 								method="fillShiftAndDivisionField" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="2">
+					<layoutElement column="2" row="3">
 						<component type="lookup" name="shift" reference="shift"
 							field="shift">
 							<option type="searchable" value="name" />
@@ -180,7 +262,7 @@
 							<option type="fieldCode" value="name" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="3">
+					<layoutElement column="2" row="4">
 						<component type="lookup" name="workstationType"
 							reference="workstationType" field="workstationType">
 							<option type="column" name="name" fields="name" link="true" />
@@ -197,7 +279,7 @@
 								method="fillDivisionField" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="4">
+					<layoutElement column="2" row="5">
 						<component type="lookup" name="division" reference="division"
 							field="division">
 							<option type="column" name="name" fields="name" />
@@ -210,96 +292,12 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="5">
+					<layoutElement column="2" row="6">
 						<component type="checkbox" name="isDisabled" reference="isDisabled"
 							defaultVisible="false" hasLabel="false" />
-						<component type="select" name="state" field="state"
-							reference="state" hasLabel="false" defaultVisible="false">
-							<script>
-								<![CDATA[
-									this.addOnChangeListener({
-										onSetValue: function(newValue) {
-											if (!newValue || !newValue.content) {
-												return;
-											}
-											toggleEditable(newValue.content.value);
-											updateRibbon(newValue.content.value);											
-										}
-									});
-									
-									var onSetValueListener = {
-										onSetValue: function(value) {
-											toggleEditable(#{state}.getValue().content.value);
-										}
-									};
-									
-									function toggleEditable(state) {
-										var enabled = state == "01draft";
-									
-										var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
-											"actions.cancel", "status.cancelTracking", "status.acceptTracking"];
-										for (var elementKey in toggleRibbonItems) {
-											var ribbonItemName = toggleRibbonItems[elementKey];
-											var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
-											
-											if (!ribbonItem) {
-												continue;
-											}
-											
-											if (enabled) {
-												ribbonItem.enable();
-											} else {
-												ribbonItem.disable();
-											}
-										}
-										if (!enabled) {
-											#{window}.getRibbonItem("actions.delete").enable();
-										} else {
-											#{window}.getRibbonItem("actions.delete").disable();
-										}
-									}
-									
-									function updateRibbon(state) {
-										var acceptState = #{window}.getRibbonItem("status.acceptTracking");
-										var cancelState = #{window}.getRibbonItem("status.cancelTracking");
-										var actionDelete = #{window}.getRibbonItem("actions.delete");
-											
-										var itemsToDisable = ["actions.save","actions.saveNew","actions.saveBack"];
-										acceptState.disable();
-										acceptState.forState="02accepted";
-										acceptState.confirmMessage = "#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.acceptTracking.confirm)}";
-
-										cancelState.disable();
-										cancelState.forState="03declined";
-										cancelState.confirmMessage = "#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.declineTracking.confirm)}";
-										
-										
-										if (state == "01draft") {
-											acceptState.enable();
-											cancelState.enable();
-										} else if (state == "02accepted") {
-											for(var elementKey in itemsToDisable){  
-   												var ribbonItem = #{window}.getRibbonItem(itemsToDisable[elementKey]);    
-   												ribbonItem.disable(); 
-   											}
-											actionDelete.disable();
-											cancelState.enable();
-											cancelState.forState="03declined";
-										} else if ((state == "03declined")) {
-											for(var elementKey in itemsToDisable){  
-   												var ribbonItem = #{window}.getRibbonItem(itemsToDisable[elementKey]);    
-   												ribbonItem.disable(); 
-   											}
-											actionDelete.enable();
-										} else{
-											cancelState.enable();
-										}
-									}
-									
-									this.updateRibbon = updateRibbon;
-								]]>
-							</script>
-						</component>
+						<component type="hidden" name="isExternalSynchronized"
+							reference="isExternalSynchronized" defaultVisible="false"
+							field="isExternalSynchronized" />
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
@@ -410,10 +408,10 @@
 						<component type="gridLayout" name="pieceworkGridLayout"
 							columns="1" rows="1">
 							<layoutElement column="1" row="1">
-                                <component type="input" name="executedOperationCycles"
+								<component type="input" name="executedOperationCycles"
 									reference="executedOperationCycles" field="#{form}.executedOperationCycles">
-                                    <option type="alignment" value="right" />
-                                </component>
+									<option type="alignment" value="right" />
+								</component>
 							</layoutElement>
 						</component>
 					</component>
@@ -435,6 +433,10 @@
 
 						<option type="searchable" value="dateAndTime,targetState,worker" />
 						<option type="orderable" value="dateAndTime,targetState,worker" />
+
+						<criteriaModifier
+							class="com.qcadoo.mes.states.criteriaModifier.CommonCriteriaModifiers"
+							method="filterHistory" />
 					</component>
 				</layoutElement>
 			</component>
@@ -445,19 +447,7 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
-			method="setCriteriaModifierParameters" />
-		<beforeRender
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
-			method="initializeTrackingDetailsView" />
-		<beforeRender
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
-			method="disableFieldsWhenStateNotDraft" />
-		<beforeRender
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
-			method="updateRibbonState" />
-        <beforeRender
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
-			method="filterStateChangeHistory" />
+			method="onBeforeRender" />
 	</hooks>
 
 </view>
