@@ -39,14 +39,11 @@
 				width="50" />
 			<option type="column" name="name" fields="name" link="true"
 				width="100" />
-			<option type="column" name="division" fields="division"
-				expression="(#division == null) ? '' : #division.get('number') + ' - ' + #division.get('name')"
-				link="true" />
 				
 			<option type="order" column="number" direction="desc" />
 			
-			<option type="searchable" value="name,number,division" />
-			<option type="orderable" value="name,number,division" />
+			<option type="searchable" value="name,number" />
+			<option type="orderable" value="name,number" />
 			
 			<option type="correspondingView" value="basic/workstationTypeDetails" />
 			<option type="correspondingComponent" value="form" />

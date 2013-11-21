@@ -57,6 +57,8 @@ public final class BasicConstants {
 
     public static final String MODEL_REPORT_COLUMN_WIDTH = "reportColumnWidth";
 
+    public static final String MODEL_WORKSTATION = "workstation";
+
     // VIEW
 
     public static final String VIEW_MACHINE_DETAILS = "machineDetails";
