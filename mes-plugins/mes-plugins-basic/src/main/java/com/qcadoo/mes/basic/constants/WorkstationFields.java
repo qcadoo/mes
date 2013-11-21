@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0
+ * Version: 1.2.1
  *
  * This file is part of Qcadoo.
  *
@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public final class WorkstationTypeFields {
+public final class WorkstationFields {
 
-    private WorkstationTypeFields() {
+    private WorkstationFields() {
 
     }
 
@@ -35,6 +35,6 @@ public final class WorkstationTypeFields {
 
     public static final String DESCRIPTION = "description";
 
-    public static final String DIVISIONS = "divisions";
+    public static final String WORKSTATION_TYPE = "workstationType";
 
 }

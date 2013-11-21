@@ -37,7 +37,7 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		<belongsTo name="division" model="division" />
+		<manyToMany name="divisions" model="division" joinField="workstationTypes" />
 	</fields>
 	
 	<hooks />

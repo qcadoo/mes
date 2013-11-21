@@ -35,4 +35,6 @@ public final class DivisionFields {
 
     public static final String SUPERVISOR = "supervisor";
 
+    public static final String WORKSTATION_TYPES = "workstationTypes";
+
 }

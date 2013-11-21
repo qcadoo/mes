@@ -298,7 +298,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 title = new PrioritizedString(translationService.translate("workPlans.workPlan.report.title.noDivision", locale),
                         1);
             } else {
-                Entity division = workstationType.getBelongsToField(WorkstationTypeFields.DIVISION);
+                // TODO to change
+                Entity division = null;
+                // Entity division = workstationType.getBelongsToField(WorkstationTypeFields.DIVISION);
 
                 if (division == null) {
                     title = new PrioritizedString(translationService.translate("workPlans.workPlan.report.title.noDivision",
@@ -386,8 +388,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         if (workstationType != null) {
             workstationTypeName = workstationType.getStringField(WorkstationTypeFields.NAME);
-
-            Entity division = workstationType.getBelongsToField(WorkstationTypeFields.DIVISION);
+            // TODO to change
+            Entity division = null;
+            // Entity division = workstationType.getBelongsToField(WorkstationTypeFields.DIVISION);
             if (division != null) {
                 divisionName = division.getStringField(DivisionFields.NAME);
                 divisionLabel = translationService.translate("workPlans.workPlan.report.operation.division", locale);

@@ -152,8 +152,8 @@ public class WorkPlanPdfServiceTest {
         when(division1.getStringField(DivisionFields.NAME)).thenReturn("division1");
         when(division2.getStringField(DivisionFields.NAME)).thenReturn("division2");
 
-        when(workstation1.getBelongsToField(WorkstationTypeFields.DIVISION)).thenReturn(division1);
-        when(workstation2.getBelongsToField(WorkstationTypeFields.DIVISION)).thenReturn(division2);
+        // when(workstation1.getBelongsToField(WorkstationTypeFields.DIVISION)).thenReturn(division1);
+        // when(workstation2.getBelongsToField(WorkstationTypeFields.DIVISION)).thenReturn(division2);
 
         when(workstation1.getStringField(WorkstationTypeFields.NAME)).thenReturn("workstation1");
         when(workstation2.getStringField(WorkstationTypeFields.NAME)).thenReturn("workstation2");

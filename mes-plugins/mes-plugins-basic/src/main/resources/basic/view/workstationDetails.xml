@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0
+    Version: 1.2.1
 
     This file is part of Qcadoo.
 
@@ -26,7 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="workstationTypeDetails" modelName="workstationType">
+	name="workstationDetails" modelName="workstation">
 
 	<component type="window" name="window">
 	
@@ -34,7 +34,7 @@
 			<template name="standardFormTemplate" />
 		</ribbon>
 		
-		<component type="form" name="workstationType" reference="form">
+		<component type="form" name="workstation" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="6">
 				<layoutElement column="1" row="1">
@@ -47,6 +47,18 @@
 				</layoutElement>
 				<layoutElement column="1" row="4" height="2">
 					<component type="textarea" name="description" field="description" />
+				</layoutElement>
+				<layoutElement column="1" row="6">
+					<component type="lookup" name="workstationType" field="workstationType"
+						reference="workstationType">
+						<option type="column" name="name" fields="name" />
+						
+						<option type="searchable" value="name,number" />
+						<option type="orderable" value="name,number" />
+						
+						<option type="expression" value="#number + ' - ' + #name" />
+						<option type="fieldCode" value="number" />
+					</component>
 				</layoutElement>
 			</component>
 			
