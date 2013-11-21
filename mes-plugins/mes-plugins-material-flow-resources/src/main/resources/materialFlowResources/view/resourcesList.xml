@@ -36,20 +36,24 @@
 		</ribbon>
 
 		<component type="grid" name="resourceGrid" reference="grid">
-			<option type="column" name="location" fields="location"
+			<option type="column" name="locationNumber" fields="location"
+				expression="#location['number']" />
+			<option type="column" name="locationName" fields="location"
 				expression="#location['name']" />
 			<option type="column" name="productNumber" fields="product"
 				expression="#product['number']" />
 			<option type="column" name="productName" fields="product"
 				expression="#product['name']" />
 			<option type="column" name="quantity" fields="quantity" />
+			<option type="column" name="productUnit" fields="product" 
+				expression="#product['unit']" />
 			<option type="column" name="price" fields="price" />
 			<option type="column" name="time" fields="time" />
 
-			<option type="order" column="product" direction="asc" />
+			<option type="order" column="productNumber" direction="asc" />
 
-			<option type="searchable" value="location,productNumber,productName,quantity,price,time" />
-			<option type="orderable" value="location,productNumber,productName,quantity,price,time" />
+			<option type="searchable" value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time" />
+			<option type="orderable" value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time" />
 
 			<option type="correspondingView" value="materialFlowResources/resourceDetails" />
 			<option type="correspondingComponent" value="form" />
