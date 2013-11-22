@@ -30,7 +30,7 @@
 	plugin="basic" view="companyDetails">
 
 	<windowTab name="performsTab" reference="performsTab">
-		<component type="gridLayout" name="performsTabGridLayout"
+		<component type="gridLayout" name="performsGridLayout"
 			columns="2" rows="1">
 			<layoutElement column="1" row="1">
 				<component type="lookup" name="operationGroupsLookup" reference="operationGroupsLookup"

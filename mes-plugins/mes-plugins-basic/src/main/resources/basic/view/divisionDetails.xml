@@ -80,6 +80,7 @@
 						<option type="fieldCode" value="number" />
 						<option type="multiselect" value="true" />
 					</component>
+
 					<component type="grid" name="workstations" reference="workstationsGrid"
 							source="#{form}.workstations">
 						<option type="column" name="number" fields="number" />
@@ -130,6 +131,8 @@
 				</layoutElement>
 			</component>					
 		</windowTab>
-	</component>
-	
+
+
+		</component>
+
 </view>
