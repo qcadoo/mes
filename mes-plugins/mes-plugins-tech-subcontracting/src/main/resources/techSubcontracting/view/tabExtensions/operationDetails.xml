@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
 	plugin="technologies" view="operationDetails">
 
-	<windowTab name="techSubcontracting" reference="techSubcontracting">
+	<windowTab name="techSubcontractingTab" reference="techSubcontractingTab">
 		<component type="gridLayout" name="gridLayout"
 			hasBorders="false" columns="2" rows="1">
 			<layoutElement column="1" row="1">
