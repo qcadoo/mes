@@ -65,16 +65,16 @@ CREATE TABLE basic_workstation
 
 -- end
 
--- Table: basic_workstation
+-- Table: jointable_division_workstationtype
 -- changed: 22.11.2013
-CREATE TABLE jointable_company_negotiation
+CREATE TABLE jointable_division_workstationtype
 (
-  negotiation_id bigint NOT NULL,
-  company_id bigint NOT NULL,
-  CONSTRAINT jointable_company_negotiation_pkey PRIMARY KEY (company_id, negotiation_id),
-  CONSTRAINT basic_company_fkey FOREIGN KEY (company_id)
-      REFERENCES basic_company (id) DEFERRABLE,
-  CONSTRAINT supplynegotiations_negotiation_fkey FOREIGN KEY (negotiation_id)
-      REFERENCES supplynegotiations_negotiation (id) DEFERRABLE
+  workstationtype_id bigint NOT NULL,
+  division_id bigint NOT NULL,
+  CONSTRAINT jointable_division_workstationtype_pkey PRIMARY KEY (division_id, workstationtype_id),
+  CONSTRAINT basic_workstationtype_fkey FOREIGN KEY (workstationtype_id)
+      REFERENCES basic_workstationtype (id) DEFERRABLE,
+  CONSTRAINT basic_division_fkey FOREIGN KEY (division_id)
+      REFERENCES basic_division (id) DEFERRABLE
 );
 --end
