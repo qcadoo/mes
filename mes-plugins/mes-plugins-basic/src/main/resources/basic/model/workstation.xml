@@ -38,6 +38,7 @@
 			<validatesLength max="2048" />
 		</string>
 		<belongsTo name="workstationType" model="workstationType" />
+		<belongsTo name="division" model="division" />
 	</fields>
 	
 	<hooks />

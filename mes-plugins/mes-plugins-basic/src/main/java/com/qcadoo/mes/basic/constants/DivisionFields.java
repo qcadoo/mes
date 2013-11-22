@@ -37,4 +37,6 @@ public final class DivisionFields {
 
     public static final String WORKSTATION_TYPES = "workstationTypes";
 
+    public static final String WORKSTATIONS = "workstations";
+
 }

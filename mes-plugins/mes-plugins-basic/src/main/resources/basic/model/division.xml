@@ -36,6 +36,7 @@
 		</string>
 		<belongsTo name="supervisor" model="staff" />
 		<manyToMany name="workstationTypes" model="workstationType" joinField="divisions" />
+		<hasMany name="workstations" model="workstation" joinField="division" />
 	</fields>
 	
 	<hooks />

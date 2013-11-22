@@ -33,38 +33,103 @@
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
+		<windowTab name="mainTab">
+		
+			<component type="form" name="division" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="4">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="4" height="1">
+						<component type="lookup" name="supervisor" field="supervisor"
+							reference="supervisor">
+							<option type="column" name="name" fields="name" />
+							<option type="column" name="surname" fields="surname" />
+							<option type="column" name="post" fields="post" />
 
-		<component type="form" name="division" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="4">
-				<layoutElement column="1" row="1">
-					<component type="input" name="number" field="number">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" height="2">
-					<component type="textarea" name="name" field="name" />
-				</layoutElement>
-				<layoutElement column="1" row="4" height="1">
-					<component type="lookup" name="supervisor" field="supervisor"
-						reference="supervisor">
-						<option type="column" name="name" fields="name" />
-						<option type="column" name="surname" fields="surname" />
-						<option type="column" name="post" fields="post" />
+							<option type="searchable" value="name,surname,post" />
+							<option type="orderable" value="name,surname,post" />
 
-						<option type="searchable" value="name,surname,post" />
-						<option type="orderable" value="name,surname,post" />
+							<option type="expression" value="#number + ' - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+				</component>
 
+				<option type="header" value="true" />
+				<option type="expression" value="#name" />
+			</component>
+		</windowTab>
+		<windowTab name="workstation">
+			<component type="gridLayout" name="workstationGridLayout" columns="2"
+					rows="8">
+				<layoutElement column="1" row="1" height="8">
+					<component type="lookup" name="workstationsLookup" reference="workstationsLookup"
+						field="#{form}.workstations" defaultVisible="false" persistent="false"
+						hasLabel="false">
+						<option type="column" name="name" fields="name" link="true" />
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
 						<option type="expression" value="#number + ' - ' + #name" />
 						<option type="fieldCode" value="number" />
+						<option type="multiselect" value="true" />
+					</component>
+					<component type="grid" name="workstations" reference="workstationsGrid"
+							source="#{form}.workstations">
+						<option type="column" name="number" fields="number" />
+						<option type="column" name="name" fields="name" />
+
+						<option type="order" column="number" direction="asc" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="weakRelation" value="true" />
+						<option type="correspondingLookup" value="workstationsLookup" />
+						<option type="paginable" value="false" />
+						<option type="multiselect" value="true" />
+						<option type="deletable" value="true" />
+						<option type="creatable" value="true" />
 					</component>
 				</layoutElement>
-			</component>
 
-			<option type="header" value="true" />
-			<option type="expression" value="#name" />
-		</component>
-		
+				<layoutElement column="2" row="1" height="8">
+					<component type="lookup" name="workstationTypesLookup" reference="workstationTypesLookup"
+						field="#{form}.workstationTypes" defaultVisible="false" persistent="false"
+						hasLabel="false">
+						<option type="column" name="name" fields="name" link="true" />
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+						<option type="expression" value="#number + ' - ' + #name" />
+						<option type="fieldCode" value="number" />
+						<option type="multiselect" value="true" />
+					</component>
+					<component type="grid" name="workstationTypes" reference="workstationTypesGrid"
+							source="#{form}.workstationTypes">
+						<option type="column" name="number" fields="number" />
+						<option type="column" name="name" fields="name" />
+
+						<option type="order" column="number" direction="asc" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="weakRelation" value="true" />
+						<option type="correspondingLookup" value="workstationTypesLookup" />
+						<option type="paginable" value="false" />
+						<option type="multiselect" value="true" />
+						<option type="deletable" value="true" />
+						<option type="creatable" value="true" />
+					</component>
+				</layoutElement>
+			</component>					
+		</windowTab>
 	</component>
 	
 </view>
