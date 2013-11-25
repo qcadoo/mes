@@ -123,8 +123,8 @@
 		<menu:menu-item-url name="conversion" category="basic"
 			url="/unitConversions.html" />
 
-	<menu:menu-item name="workstation" category="basic"
-			view="workstationList" />
+	<menu:menu-item name="workstations" category="basic"
+			view="workstationsList" />
 			
 		<view:view resource="view/reportColumnWidthDetails.xml" />
 		<view:view resource="view/companiesList.xml" />
@@ -151,7 +151,7 @@
 
 		<view:view resource="view/parameters.xml" />
 			
-		<view:view resource="view/workstationList.xml" />
+		<view:view resource="view/workstationsList.xml" />
 		<view:view resource="view/workstationDetails.xml" />
 		
 		<model:model-field model="unitConversionItem" plugin="qcadooModel">
