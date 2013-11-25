@@ -33,7 +33,7 @@
 		<component type="gridLayout" name="locationsGridLayout"
 			columns="3" rows="3">
 			<layoutElement column="1" row="1">
-				<component type="lookup" name="componentsLocation" field="componentsLocation"
+				<component type="lookup" name="componentsLocation" field="#{form}.componentsLocation"
 					reference="componentsLocation">
 					<option type="column" name="name" fields="name" />
 					<option type="column" name="type" fields="type" />
@@ -52,7 +52,7 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">
-				<component type="lookup" name="componentsOutputLocation" field="componentsOutputLocation"
+				<component type="lookup" name="componentsOutputLocation" field="#{form}.componentsOutputLocation"
 					reference="componentsOutputLocation">
 					<option type="column" name="name" fields="name" />
 					<option type="column" name="type" fields="type" />
@@ -71,7 +71,7 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
-				<component type="lookup" name="productsInputLocation" field="productsInputLocation"
+				<component type="lookup" name="productsInputLocation" field="#{form}.productsInputLocation"
 					reference="productsInputLocation">
 					<option type="column" name="name" fields="name" />
 					<option type="column" name="type" fields="type" />

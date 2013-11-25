@@ -81,7 +81,34 @@
 
 		<model:model-enum-value plugin="materialFlow"
 			model="location" enum="type" value="02warehouse" />
-   		
+			
+		<model:model-field plugin="basic" model="division">
+			<model:belongsTo name="componentsLocation" model="location" plugin="materialFlow" />
+		</model:model-field>
+		
+		<model:model-field plugin="basic" model="division">
+			<model:belongsTo name="componentsOutputLocation" model="location" plugin="materialFlow" />
+		</model:model-field>
+		
+		<model:model-field plugin="basic" model="division">
+			<model:belongsTo name="productsInputLocation" model="location" plugin="materialFlow" />
+		</model:model-field>
+		
+		<model:model-field plugin="materialFlow" model="location">
+			<model:hasMany name="componentsLocationDivisions" model="division"
+			plugin="basic" joinField="componentsLocation" cascade="nullify"/>
+		</model:model-field>
+		
+		<model:model-field plugin="materialFlow" model="location">
+			<model:hasMany name="componentsOutputLocationDivisions" model="division"
+			plugin="basic" joinField="componentsOutputLocation" cascade="nullify"/>
+		</model:model-field>
+		
+		<model:model-field plugin="materialFlow" model="location">
+			<model:hasMany name="productsInputLocationDivisions" model="division"
+			plugin="basic" joinField="productsInputLocation" cascade="nullify"/>
+		</model:model-field>
+		
    		<model:model-hook plugin="basic" model="parameter">
 			<model:validatesWith
 				class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
@@ -148,10 +175,17 @@
 			class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsDetailsViewHooksMFR" 
 			method="disableDateField" />
 			
+		<view:view-hook plugin="materialFlow" view="locationDetails" 
+			type="beforeRender"
+			class="com.qcadoo.mes.materialFlowResources.hooks.LocationDetailsMFR"
+			method="setCriteriaModifierParameters" />
+			
 		<view:view resource="view/resourceDetails.xml" />
 		<view:view resource="view/resourcesList.xml" />
 		
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+		<view:view-tab resource="view/tabExtensions/divisionDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/locationDetails.xml" />
 	
 		<view:resource uri="public/**/*" />
 	</modules>
