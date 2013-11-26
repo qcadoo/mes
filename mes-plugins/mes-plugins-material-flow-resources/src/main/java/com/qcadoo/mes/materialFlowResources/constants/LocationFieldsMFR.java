@@ -21,38 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.materialFlowResources.constants;
 
-public final class OperationFields {
+public final class LocationFieldsMFR {
 
-    private OperationFields() {
+    private LocationFieldsMFR() {
 
     }
 
-    public static final String NUMBER = "number";
+    public static final String COMPONENTS_LOCATION_DIVISIONS = "componentsLocationDivisions";
 
-    public static final String NAME = "name";
+    public static final String COMPONENTS_OUTPUT_LOCATION_DIVISIONS = "componentsOutputLocationDivisions";
 
-    public static final String COMMENT = "comment";
-
-    public static final String WORKSTATION_TYPE = "workstationType";
-
-    public static final String OPERATION_COMPONENTS = "operationComponents";
-
-    public static final String ATTACHMENT = "attachment";
-
-    public static final String ARE_PRODUCT_QUANTITIES_DIVISIBLE = "areProductQuantitiesDivisible";
-
-    public static final String IS_TJ_DIVISIBLE = "isTjDivisible";
-
-    public static final String PRODUCT_IN_COMPONENTS = "productInComponents";
-
-    public static final String PRODUCT_OUT_COMPONENTS = "productOutComponents";
-
-    public static final String OPERATION_GROUP = "operationGroup";
-
-    public static final String WORKSTATIONS = "workstations";
-
-    public static final String WORKSTATION_TYPES = "workstationTypes";
+    public static final String PRODUCTS_INPUT_LOCATION_DIVISIONS = "productsInputLocationDivisions";
 
 }

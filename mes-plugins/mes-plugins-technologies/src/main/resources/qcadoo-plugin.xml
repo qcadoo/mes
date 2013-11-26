@@ -63,10 +63,6 @@
 	<modules>
 		<localization:translation path="locales" />
 
-		<model:model-field plugin="states" model="message">
-		    <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange" />
-		</model:model-field>
-
 		<model:model model="productComponent" resource="model/productComponent.xml" />
 		<model:model model="operation" resource="model/operation.xml" />
 		<model:model model="operationGroup" resource="model/operationGroup.xml" />
@@ -82,6 +78,10 @@
 		
 		<model:model model="technologyGroup" resource="model/technologyGroup.xml" />
 
+		<model:model-field plugin="states" model="message">
+		    <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange" />
+		</model:model-field>
+		
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="operationProductInComponents"
 				plugin="technologies" model="operationProductInComponent" joinField="product"
@@ -102,6 +102,14 @@
 		<model:model-field plugin="basic" model="product">
 			<model:belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
 				lazy="false" />
+		</model:model-field>
+		
+		<model:model-field plugin="basic" model="workstation">
+			<model:belongsTo name="operation" plugin="technologies" model="operation" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="workstationType">
+			<model:manyToMany name="operations" plugin="technologies"
+				model="operation" joinField="workstationTypes" copyable="true" />
 		</model:model-field>
 	
 		<menu:menu-category name="technology" />

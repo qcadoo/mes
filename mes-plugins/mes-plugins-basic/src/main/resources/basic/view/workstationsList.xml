@@ -26,7 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="workstationList" modelName="workstation" menuAccessible="true">
+	name="workstationsList" modelName="workstation" menuAccessible="true">
 
 	<component type="window" name="window">
 	
@@ -40,12 +40,12 @@
 			<option type="column" name="name" fields="name" link="true"
 				width="100" />
 			<option type="column" name="workstationType" fields="workstationType"
-				expression="(#workstationType == null) ? '' : #workstationType.get('name')"
+				expression="#workstationType?.get('name')"
 				link="true" />
 			<option type="order" column="number" direction="desc" />
 			
-			<option type="searchable" value="name,number" />
-			<option type="orderable" value="name,number" />
+			<option type="searchable" value="name,number,workstationType" />
+			<option type="orderable" value="name,number,workstationType" />
 			
 			<option type="correspondingView" value="basic/workstationDetails" />
 			<option type="correspondingComponent" value="form" />

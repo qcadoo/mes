@@ -3,6 +3,7 @@ package com.qcadoo.mes.technologies.constants;
 public final class ProductFieldsT {
 
     private ProductFieldsT() {
+
     }
 
     public static final String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";

@@ -27,14 +27,31 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="basic" view="parameters">
+	plugin="materialFlow" view="locationDetails">
 
-	<windowTab name="materialFlowResourcesTab" reference="materialFlowResourcesTab">
-		<component type="gridLayout" name="materialFlowResourcesGridLayout" columns="3" rows="1">
+	<windowTab name="divisionsTab" reference="divisionsTab">
+		<component type="gridLayout" name="divisionsGridLayout" columns="2" rows="1">
 			<layoutElement column="1" row="1">
-				<component type="select" name="changeDateWhenTransferToWarehouseType"
-					field="#{form}.changeDateWhenTransferToWarehouseType" reference="changeDateWhenTransferToWarehouseType" 
-					hasDescription="true" />
+				<component type="grid" name="divisions" plugin="basic" model="division"
+					reference="divisions" defaultEnabled="never">
+					<option type="column" name="number" fields="number" link="true" />
+					<option type="column" name="name" fields="name" link="true" />
+			
+					<option type="order" column="number" direction="desc" />
+			
+					<option type="searchable" value="number,name" />
+					<option type="orderable" value="number,name" />
+			
+					<option type="correspondingView" value="basic/divisionDetails" />
+					<option type="correspondingComponent" value="form" />
+			
+					<option type="fullscreen" value="true" />
+					<option type="multiselect" value="true" />
+					
+					<criteriaModifier
+						class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.DivisionCriteriaModifiers"
+						method="restrictDivisionsToLocation" />
+				</component>
 			</layoutElement>
 		</component>
 	</windowTab>

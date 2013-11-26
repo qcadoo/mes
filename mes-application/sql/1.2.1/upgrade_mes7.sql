@@ -44,6 +44,7 @@ ALTER TABLE basic_division
 
 -- end
 
+
 -- Table: basic_workstation
 -- changed: 22.11.2013
       
@@ -55,26 +56,49 @@ CREATE TABLE basic_workstation
   description character varying(2048),
   workstationtype_id bigint,
   division_id bigint,
+  operation_id bigint,
   active boolean DEFAULT true,
   CONSTRAINT basic_workstation_pkey PRIMARY KEY (id),
-  CONSTRAINT basic_workstationtype_fkey FOREIGN KEY (workstationtype_id)
+  CONSTRAINT workstation_workstationtype_fkey FOREIGN KEY (workstationtype_id)
       REFERENCES basic_workstationtype (id) DEFERRABLE,
-  CONSTRAINT basic_divisiontion_fkey FOREIGN KEY (division_id)
-      REFERENCES basic_division (id) DEFERRABLE
+  CONSTRAINT workstation_divisiontion_fkey FOREIGN KEY (division_id)
+      REFERENCES basic_division (id) DEFERRABLE,
+  CONSTRAINT workstation_operation_fkey FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id) DEFERRABLE
 );
 
 -- end
 
+
 -- Table: jointable_division_workstationtype
 -- changed: 22.11.2013
+
 CREATE TABLE jointable_division_workstationtype
 (
   workstationtype_id bigint NOT NULL,
   division_id bigint NOT NULL,
   CONSTRAINT jointable_division_workstationtype_pkey PRIMARY KEY (division_id, workstationtype_id),
-  CONSTRAINT basic_workstationtype_fkey FOREIGN KEY (workstationtype_id)
+  CONSTRAINT division_workstationtype_fkey FOREIGN KEY (workstationtype_id)
       REFERENCES basic_workstationtype (id) DEFERRABLE,
-  CONSTRAINT basic_division_fkey FOREIGN KEY (division_id)
+  CONSTRAINT workstationtype_division_fkey FOREIGN KEY (division_id)
       REFERENCES basic_division (id) DEFERRABLE
 );
---end
+
+-- end
+
+
+-- Table: jointable_operation_workstationtype
+-- changed: 22.11.2013
+
+CREATE TABLE jointable_operation_workstationtype
+(
+  workstationtype_id bigint NOT NULL,
+  operation_id bigint NOT NULL,
+  CONSTRAINT jointable_operation_workstationtype_pkey PRIMARY KEY (operation_id, workstationtype_id),
+  CONSTRAINT operation_workstationtype_fkey FOREIGN KEY (workstationtype_id)
+      REFERENCES basic_workstationtype (id) DEFERRABLE,
+  CONSTRAINT workstationtype_operation_fkey FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id) DEFERRABLE
+);
+
+-- end

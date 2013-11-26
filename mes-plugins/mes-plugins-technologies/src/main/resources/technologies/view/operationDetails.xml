@@ -26,14 +26,14 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="operationDetails" 
-	modelName="operation">
+	name="operationDetails" modelName="operation">
 
 	<component type="window" name="window">
+	
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
-	
+
 		<windowTab name="mainTab">
 			<component type="form" name="operation" reference="form">
 				<component type="gridLayout" name="mainTabGridLayout"
@@ -50,7 +50,7 @@
 					<layoutElement column="1" row="6">
 						<component type="file" name="attachment" field="attachment" />
 					</layoutElement>
-					
+
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="workstationType" field="workstationType">
 							<option type="column" name="name" fields="name" link="true"
@@ -78,6 +78,84 @@
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>
+
+		<windowTab name="workstationsTab" reference="workstationsTab">
+			<component type="gridLayout" name="workstationsTabGridLayout"
+				columns="2" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="lookup" name="workstationLookup"
+						reference="workstationLookup" field="#{form}.workstations"
+						defaultVisible="false" persistent="false" hasLabel="false">
+
+						<option type="column" name="name" fields="name" link="true"
+							width="100" />
+						<option type="column" name="workstationType" fields="workstationType" link="true" 
+							width="50" />
+
+						<option type="searchable" value="number,name,workstationType" />
+						<option type="orderable" value="number,name,workstationType" />
+
+						<option type="expression" value="#number + ' - ' + #name" />
+						<option type="fieldCode" value="number" />
+
+						<option type="multiselect" value="true" />
+					</component>
+					<component type="grid" name="workstations" reference="workstations"
+						source="#{form}.workstations">
+						<option type="column" name="number" fields="number" width="50" />
+						<option type="column" name="name" fields="name" width="100" />
+
+						<option type="order" column="number" direction="desc" />
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="weakRelation" value="true" />
+						<option type="correspondingLookup" value="workstationLookup" />
+
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1">
+					<component type="lookup" name="workstationTypeLookup"
+						reference="workstationTypeLookup" field="#{form}.workstationTypes"
+						defaultVisible="false" persistent="false" hasLabel="false">
+
+						<option type="column" name="name" fields="name" link="true"
+							width="100" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="expression" value="#number + ' - ' + #name" />
+						<option type="fieldCode" value="number" />
+
+						<option type="multiselect" value="true" />
+					</component>
+					<component type="grid" name="workstationTypes" reference="workstationTypes"
+						source="#{form}.workstationTypes">
+						<option type="column" name="number" fields="number" width="50" />
+						<option type="column" name="name" fields="name" width="100" />
+
+						<option type="order" column="number" direction="desc" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="weakRelation" value="true" />
+						<option type="correspondingLookup" value="workstationTypeLookup" />
+
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+
 		<windowTab name="productInOutComponents">
 			<component type="gridLayout" name="productInOutComponentsGridLayout"
 				columns="2" rows="1">
@@ -86,7 +164,7 @@
 						<component type="awesomeDynamicList" name="productInComponents"
 							source="#{form}.productInComponents" reference="productInComponents">
 							<components>
-								<component type="gridLayout" name="productInComponentGridLayout" 
+								<component type="gridLayout" name="productInComponentGridLayout"
 									columns="1" rows="1">
 									<layoutElement column="1" row="1">
 										<component type="lookup" name="product" field="product">
@@ -100,21 +178,21 @@
 									</layoutElement>
 								</component>
 							</components>
-							
+
 							<option type="hasBorder" value="false" />
 							<option type="hasButtons" value="true" />
 						</component>
-	
+
 						<option type="label" value="productInComponents" />
 					</component>
-	
+
 				</layoutElement>
 				<layoutElement column="2" row="1">
 					<component type="borderLayout" name="productOutComponentsBorderLayout">
 						<component type="awesomeDynamicList" name="productOutComponents"
 							source="#{form}.productOutComponents" reference="productOutComponents">
 							<components>
-								<component type="gridLayout" name="productOutComponentGridLayout" 
+								<component type="gridLayout" name="productOutComponentGridLayout"
 									columns="1" rows="1">
 									<layoutElement column="1" row="1">
 										<component type="lookup" name="product" field="product">
@@ -128,15 +206,17 @@
 									</layoutElement>
 								</component>
 							</components>
-							
+
 							<option type="hasBorder" value="false" />
 							<option type="hasButtons" value="true" />
 						</component>
-	
+
 						<option type="label" value="productOutComponents" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
+
 	</component>
+
 </view>
