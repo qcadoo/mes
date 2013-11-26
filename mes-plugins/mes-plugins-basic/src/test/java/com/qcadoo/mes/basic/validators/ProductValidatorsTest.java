@@ -1,4 +1,4 @@
-package com.qcadoo.mes.basic.hooks;
+package com.qcadoo.mes.basic.validators;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.validators.ProductValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;

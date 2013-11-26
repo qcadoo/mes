@@ -1,4 +1,4 @@
-package com.qcadoo.mes.basic.hooks;
+package com.qcadoo.mes.basic.validators;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
