@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -45,19 +46,22 @@ public class StaffService {
     private static final String L_FORM = "form";
 
     public void setOwnerCompany(final ViewDefinitionState view) {
-        FieldComponent lookup = (FieldComponent) view.getComponentByReference("workFor");
+        FormComponent staffForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent workForLookup = (FieldComponent) view.getComponentByReference(StaffFields.WORK_FOR);
+
         Entity ownerCompany = companyService.getCompany();
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form.getEntityId() != null || lookup.getFieldValue() != null || ownerCompany == null) {
+
+        if ((staffForm.getEntityId() != null) || (workForLookup.getFieldValue() != null) || (ownerCompany == null)) {
             return;
         }
-        lookup.setFieldValue(ownerCompany.getId());
-        lookup.requestComponentUpdateState();
+
+        workForLookup.setFieldValue(ownerCompany.getId());
+        workForLookup.requestComponentUpdateState();
     }
 
-    public void generateStaffNumber(final ViewDefinitionState state) {
-        numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF,
-                L_FORM, "number");
+    public void generateStaffNumber(final ViewDefinitionState view) {
+        numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF,
+                L_FORM, StaffFields.NUMBER);
     }
 
 }

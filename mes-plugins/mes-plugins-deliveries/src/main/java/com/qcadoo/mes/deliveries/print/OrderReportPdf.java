@@ -189,8 +189,9 @@ public class OrderReportPdf extends ReportPdfView {
 
     private Map<String, Object> createSecondColumn(final Entity delivery) {
         Map<String, Object> column = new LinkedHashMap<String, Object>();
-        if (companyService.getCompany() != null) {
-            column.put("deliveries.order.report.columnHeader.contracting", companyService.getCompany().getStringField(NAME));
+        Entity company = companyService.getCompany();
+        if (company != null) {
+            column.put("deliveries.order.report.columnHeader.contracting", company.getStringField(NAME));
         }
         if (delivery.getStringField(DELIVERY_ADDRESS) != null) {
             column.put("deliveries.order.report.columnHeader.deliveryAddress", delivery.getStringField(DELIVERY_ADDRESS));
