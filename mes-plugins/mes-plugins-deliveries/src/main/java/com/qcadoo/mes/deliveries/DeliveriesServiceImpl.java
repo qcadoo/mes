@@ -435,7 +435,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             return;
         }
 
-        pricePerUnit.setFieldValue(lastPurchasePrice);
+        pricePerUnit.setFieldValue(numberService.format(lastPurchasePrice));
         pricePerUnit.requestComponentUpdateState();
     }
 
