@@ -10,8 +10,7 @@
 	</parameter>
 	<parameter name="EntityIds" class="java.util.List"/>
 	<queryString language="hql">
-		<![CDATA[
-			SELECT
+		<![CDATA[SELECT
 			company.name AS company_name,
 			company.street AS street,
 			company.house AS house,
@@ -33,7 +32,10 @@
 			orders.effectiveDateFrom AS orders_order_effectivedatefrom,
 			orders.effectiveDateTo AS orders_order_effectivedateto,
 			technology.name AS technologies_technology_name,
+			technology.number AS technologies_technology_number,
 			product.name AS basic_product_name,
+			masterOrder.name AS masterorders_masterorder_name,
+			masterOrder.number AS masterorders_masterorder_number,
 			(
 				SELECT 
 					stateChange.worker AS startWorker 
@@ -58,16 +60,17 @@
 			) AS orders_order_endworker
 			FROM 
 			com.qcadoo.model.beans.basic.BasicCompany AS company, 
-			com.qcadoo.model.beans.basic.BasicCountry AS country, 
+			com.qcadoo.model.beans.basic.BasicCountry AS country,  
 			com.qcadoo.model.beans.basic.BasicParameter AS parameter,
-			com.qcadoo.model.beans.orders.OrdersOrder AS orders 
+			com.qcadoo.model.beans.orders.OrdersOrder AS orders  
 			LEFT OUTER JOIN
 			orders.technology AS technology 
 			LEFT OUTER JOIN
 			orders.product AS product 
+			LEFT OUTER JOIN
+			orders.masterOrder AS masterOrder 
 			WHERE 
-			orders.id IN ($P{EntityIds}) AND company.id = parameter.company AND country.id = company.country
-			]]>
+			orders.id IN ($P{EntityIds}) AND company.id = parameter.company AND country.id = company.country]]>
 	</queryString>
 	<field name="company_name" class="java.lang.String"/>
 	<field name="street" class="java.lang.String"/>
@@ -92,7 +95,10 @@
 	<field name="orders_order_startworker" class="java.lang.String"/>
 	<field name="orders_order_endworker" class="java.lang.String"/>
 	<field name="technologies_technology_name" class="java.lang.String"/>
+	<field name="technologies_technology_number" class="java.lang.String"/>
 	<field name="basic_product_name" class="java.lang.String"/>
+	<field name="masterorders_masterorder_name" class="java.lang.String"/>
+	<field name="masterorders_masterorder_number" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -132,139 +138,376 @@
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="491" splitType="Stretch">
+		<band height="490" splitType="Stretch">
 			<frame>
-				<reportElement style="qcadooMainDataBox" stretchType="RelativeToTallestObject" x="0" y="15" width="555" height="175"/>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="15" width="555" height="110">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#464646"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
 				<textField>
-					<reportElement style="qcadooLabel" x="10" y="10" width="250" height="15"/>
-					<textElement/>
+					<reportElement key="" style="qcadooLabel7" x="10" y="10" width="170" height="15"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.number.label}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="qcadooValue" x="10" y="30" width="250" height="30"/>
+					<reportElement style="qcadooValue9" x="10" y="25" width="170" height="30">
+						<property name="local_mesure_unity" value="pixel"/>
+					</reportElement>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_number}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="qcadooLabel" x="10" y="65" width="250" height="15"/>
-					<textElement/>
+					<reportElement key="" style="qcadooLabel7" x="190" y="10" width="170" height="15">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="7"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.name.label}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="qcadooValue" x="10" y="85" width="250" height="30"/>
+					<reportElement style="qcadooValue9" x="190" y="25" width="170" height="30">
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_name}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="qcadooLabel" x="10" y="120" width="250" height="15"/>
-					<textElement/>
+					<reportElement style="qcadooLabel7" x="10" y="60" width="170" height="15">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="7"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.product.label}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement style="qcadooValue" x="10" y="140" width="250" height="30"/>
+					<reportElement style="qcadooValue9" x="10" y="75" width="170" height="30">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{basic_product_name}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="qcadooLabel" x="290" y="10" width="250" height="15"/>
-					<textElement/>
+					<reportElement key="" style="qcadooLabel7" x="370" y="60" width="170" height="15">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="7"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateFrom.label}]]></textFieldExpression>
 				</textField>
-				<textField>
-					<reportElement style="qcadooValue" x="290" y="30" width="250" height="30"/>
+				<textField isBlankWhenNull="true">
+					<reportElement style="qcadooValue9" x="370" y="75" width="170" height="30">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="local_mesure_unity" value="pixel"/>
+					</reportElement>
 					<textElement/>
 					<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_datefrom}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="qcadooLabel" x="290" y="65" width="250" height="15"/>
-					<textElement/>
+					<reportElement style="qcadooLabel7" x="190" y="60" width="170" height="15">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="7"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateTo.label}]]></textFieldExpression>
 				</textField>
-				<textField>
-					<reportElement style="qcadooValue" x="290" y="85" width="250" height="30"/>
+				<textField isBlankWhenNull="true">
+					<reportElement style="qcadooValue9" x="190" y="75" width="170" height="30">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
 					<textElement/>
 					<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_dateto}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="qcadooLabel" x="290" y="120" width="250" height="15"/>
-					<textElement/>
+					<reportElement style="qcadooLabel7" x="370" y="10" width="170" height="15">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="7"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.state.label}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement style="qcadooValue" x="290" y="140" width="250" height="30"/>
+					<reportElement style="qcadooValue9" x="370" y="25" width="170" height="30">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA[($F{orders_order_state}.startsWith("01"))?$R{orders.order.state.value.01pending}:(($F{orders_order_state}.startsWith("02"))?$R{orders.order.state.value.02accepted}:(($F{orders_order_state}.startsWith("03"))?$R{orders.order.state.value.03inProgress} : $R{orders.order.state.value.04completed}))]]></textFieldExpression>
 				</textField>
 			</frame>
 			<textField>
-				<reportElement style="qcadooLabel" x="10" y="205" width="250" height="15"/>
+				<reportElement style="qcadooParagraph" x="10" y="150" width="250" height="15"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.effectiveDateFrom.label}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.Date.label}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="qcadooValue" x="10" y="225" width="250" height="30"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_effectivedatefrom}]]></textFieldExpression>
-			</textField>
+			<frame>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="166" width="555" height="55">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#464646"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textField isBlankWhenNull="true">
+					<reportElement style="qcadooValue9" x="10" y="23" width="250" height="30">
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_effectivedatefrom}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="qcadooLabel7" x="10" y="8" width="250" height="15">
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.effectiveDateFrom.label}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="qcadooLabel7" x="290" y="8" width="250" height="15">
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.effectiveDateTo.label}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="qcadooValue9" x="290" y="23" width="250" height="30">
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_effectivedateto}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="255" width="555" height="55">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#464646"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textField isBlankWhenNull="true">
+					<reportElement style="qcadooValue9" x="10" y="23" width="250" height="30">
+						<property name="local_mesure_unity" value="pixel"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{orders_order_plannedquantity}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="qcadooLabel7" x="10" y="8" width="250" height="15">
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.plannedQuantity.label}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="qcadooLabel7" x="290" y="8" width="250" height="15">
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.doneQuantity.label}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="qcadooValue9" x="290" y="23" width="250" height="30">
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{orders_order_donequantity}]]></textFieldExpression>
+				</textField>
+			</frame>
 			<textField>
-				<reportElement style="qcadooLabel" x="10" y="260" width="250" height="15"/>
+				<reportElement style="qcadooParagraph" x="10" y="240" width="250" height="15"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.effectiveDateTo.label}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.ProductQuantity.label}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="qcadooValue" x="10" y="280" width="250" height="30"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{orders_order_effectivedateto}]]></textFieldExpression>
-			</textField>
+			<frame>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="345" width="555" height="55">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#464646"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textField isBlankWhenNull="true">
+					<reportElement style="qcadooValue9" x="290" y="23" width="250" height="30">
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{technologies_technology_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="qcadooLabel7" x="290" y="8" width="250" height="15">
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.technologyName.label}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="qcadooValue9" x="11" y="21" width="250" height="30">
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{technologies_technology_number}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="qcadooLabel7" x="11" y="7" width="250" height="15">
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.technologyNumber.label}]]></textFieldExpression>
+				</textField>
+			</frame>
 			<textField>
-				<reportElement style="qcadooLabel" x="10" y="315" width="250" height="15"/>
+				<reportElement style="qcadooParagraph" x="10" y="330" width="250" height="15"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.startWorker.label}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.Techology.label}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="qcadooValue" x="10" y="335" width="250" height="30"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_startworker}]]></textFieldExpression>
-			</textField>
+			<frame>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="431" width="555" height="55">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#464646"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textField isBlankWhenNull="true">
+					<reportElement style="qcadooValue9" x="290" y="23" width="250" height="30">
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{masterorders_masterorder_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="qcadooLabel7" x="290" y="8" width="250" height="15">
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.masterOrderName.label}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="qcadooValue9" x="11" y="21" width="250" height="30">
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{masterorders_masterorder_number}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="qcadooLabel7" x="11" y="7" width="250" height="15">
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.masterOrderNumber.label}]]></textFieldExpression>
+				</textField>
+			</frame>
 			<textField>
-				<reportElement style="qcadooLabel" x="10" y="370" width="250" height="15"/>
+				<reportElement style="qcadooParagraph" x="10" y="415" width="250" height="15">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.endWorker.label}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="qcadooValue" x="10" y="395" width="250" height="30"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_endworker}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement style="qcadooLabel" x="290" y="205" width="250" height="15"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.plannedQuantity.label}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="qcadooValue" x="290" y="225" width="250" height="30"/>
-				<textElement/>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{orders_order_plannedquantity}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement style="qcadooLabel" x="290" y="260" width="250" height="15"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.doneQuantity.label}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="qcadooValue" x="290" y="280" width="250" height="30"/>
-				<textElement/>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{orders_order_donequantity}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement style="qcadooLabel" x="290" y="315" width="250" height="15"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.technology.label}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="qcadooValue" x="290" y="335" width="250" height="30"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{technologies_technology_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.MasterOrder.label}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -330,7 +573,7 @@
 				<textElement textAlignment="Left"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[($F{street} != null && $F{house} != null && $F{zipCode} != null && $F{city} != null ? ($F{phone} != null ? ( $R{basic.company.phone.label} + ": " + $F{phone}) : "") + ($F{email} != null && $F{phone} != null ? ", " : "") + ($F{email} != null ? "E-mail: " + $F{email} : "") : "")]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement style="qcadooPageNumber" x="250" y="3" width="190" height="50"/>
 				<textElement textAlignment="Left"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{additional_text}]]></textFieldExpression>
