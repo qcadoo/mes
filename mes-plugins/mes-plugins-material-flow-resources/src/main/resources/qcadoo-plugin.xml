@@ -180,6 +180,11 @@
 			class="com.qcadoo.mes.materialFlowResources.hooks.LocationDetailsMFR"
 			method="setCriteriaModifierParameters" />
 			
+		<view:view-hook plugin="materialFlow" view="locationDetails" 
+			type="beforeRender"
+			class="com.qcadoo.mes.materialFlowResources.hooks.LocationDetailsMFR"
+			method="changeDivisionsGridVisibility" />
+			
 		<view:view resource="view/resourceDetails.xml" />
 		<view:view resource="view/resourcesList.xml" />
 		

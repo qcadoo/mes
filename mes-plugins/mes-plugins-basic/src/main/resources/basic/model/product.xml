@@ -36,7 +36,8 @@
 		</string>
 		<enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste" />
 		<string name="ean">
-			<validatesWith class="com.qcadoo.mes.basic.hooks.ProductValidators" method="checkEanUniqueness"/>
+			<validatesWith class="com.qcadoo.mes.basic.validators.ProductValidators"
+				method="checkEanUniqueness" />
 		</string>
 		<dictionary name="category" dictionary="categories" />
 		<dictionary name="unit" dictionary="units" required="true" />
@@ -76,7 +77,8 @@
 		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
 			method="generateNodeNumber" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
-		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks" method="calculateConversionOnCreate" />
+		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
+			method="calculateConversionOnCreate" />
 
 		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="updateNodeNumber" />
 		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged" />
@@ -85,7 +87,8 @@
 		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearExternalIdOnCopy" />
 		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearEanOnCopy" />
 
-		<onUpdate class="com.qcadoo.mes.basic.hooks.ProductHooks" method="calculateConversionIfUnitChanged" />
+		<onUpdate class="com.qcadoo.mes.basic.hooks.ProductHooks"
+			method="calculateConversionIfUnitChanged" />
 	</hooks>
 
 	<identifier expression="#number + ' - ' + #name" />

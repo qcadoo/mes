@@ -39,8 +39,8 @@
 		</string>
 		<manyToMany name="divisions" model="division" joinField="workstationTypes" />
 	</fields>
-	
+
 	<hooks />
-	
+
 	<identifier expression="#number + ' - ' + #name" />
 </model>

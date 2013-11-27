@@ -105,7 +105,11 @@
 		</model:model-field>
 		
 		<model:model-field plugin="basic" model="workstation">
-			<model:belongsTo name="operation" plugin="technologies" model="operation" />
+			<model:belongsTo name="operation" plugin="technologies" model="operation">
+				<model:validatesWith
+					class="com.qcadoo.mes.technologies.validators.WorkstationValidatorsT"
+					method="checkIfOperationChanged" />
+			</model:belongsTo>
 		</model:model-field>
 		<model:model-field plugin="basic" model="workstationType">
 			<model:manyToMany name="operations" plugin="technologies"

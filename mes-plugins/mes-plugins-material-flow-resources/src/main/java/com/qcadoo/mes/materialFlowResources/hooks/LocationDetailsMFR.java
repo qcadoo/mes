@@ -25,6 +25,8 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -52,6 +54,18 @@ public class LocationDetailsMFR {
 
             divisionsGrid.setFilterValue(filterValueHolder);
         }
+    }
+
+    public void changeDivisionsGridVisibility(final ViewDefinitionState view) {
+        FormComponent locationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        GridComponent divisionsGrid = (GridComponent) view.getComponentByReference(L_DIVISIONS);
+
+        Entity location = locationForm.getEntity();
+        String type = location.getStringField(LocationFields.TYPE);
+
+        boolean isVisible = ((location.getId() != null) && (LocationTypeMFR.WAREHOUSE.getStringValue().equals(type)));
+
+        divisionsGrid.setVisible(isVisible);
     }
 
 }
