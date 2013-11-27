@@ -38,7 +38,7 @@ public final class RecordOperationProductInComponentFields {
 
     public static final String USED_QUANTITY = "usedQuantity";
 
-    public static final String WASTE_QUANTITY = "wasteQuantity";
+    public static final String REMAINED_QUANTITY = "remainedQuantity";
 
     public static final String EFFECTIVE_USED_QUANTITY = "effectiveUsedQuantity";
 

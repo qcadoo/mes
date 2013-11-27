@@ -24,7 +24,7 @@ public class RecordProductQuantitiesCalculator {
      */
     public BigDecimal getEffectiveUsed(final Entity recordInputProductComponent) {
         BigDecimal wasteQuantity = recordInputProductComponent
-                .getDecimalField(RecordOperationProductInComponentFields.WASTE_QUANTITY);
+                .getDecimalField(RecordOperationProductInComponentFields.REMAINED_QUANTITY);
         BigDecimal usedQuantity = recordInputProductComponent
                 .getDecimalField(RecordOperationProductInComponentFields.USED_QUANTITY);
 
