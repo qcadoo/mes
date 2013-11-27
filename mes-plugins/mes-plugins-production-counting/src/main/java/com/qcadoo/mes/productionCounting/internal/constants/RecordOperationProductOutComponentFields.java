@@ -37,6 +37,8 @@ public final class RecordOperationProductOutComponentFields {
 
     public static final String USED_QUANTITY = "usedQuantity";
 
+    public static final String WASTED_QUANTITY = "wastedQuantity";
+
     public static final String BALANCE = "balance";
 
 }

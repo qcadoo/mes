@@ -66,6 +66,16 @@
 					<component type="input" name="usedQuantityUNIT" 
 						reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
 				</layoutElement>
+                <layoutElement column="1" row="5" width="5">
+                    <component type="input" name="wastedQuantity" field="wastedQuantity"
+                               reference="wastedQuantity">
+                        <option type="alignment" value="right" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="6" row="5" >
+                    <component type="input" name="wastedQuantityUNIT"
+                               reference="wastedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
+                </layoutElement>
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#product['name']" />
@@ -73,8 +83,8 @@
 	</component>
 	
 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-			method="fillFieldFromProduct" />
+        <beforeRender
+                class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
+                method="onBeforeRender" />
 	</hooks>
 </view>

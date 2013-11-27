@@ -43,3 +43,19 @@ CREATE TABLE productioncounting_staffworktime
 )
 
 -- end
+
+-- QCDN-2, additional production record's input product fields
+-- changed: 27.11.2013 [maku]
+
+ALTER TABLE productioncounting_recordoperationproductincomponent ADD COLUMN obtainedQuantity numeric(14,5);
+ALTER TABLE productioncounting_recordoperationproductincomponent ADD COLUMN remainedQuantity numeric(14,5);
+ALTER TABLE productioncounting_recordoperationproductincomponent ADD COLUMN effectiveUsedQuantity numeric(15,5);
+
+-- end
+
+-- QCDN-2, additional production record's input product fields
+-- changed: 27.11.2013 [maku]
+
+ALTER TABLE productioncounting_recordoperationproductoutcomponent ADD COLUMN wastedQuantity numeric(14,5);
+
+-- end

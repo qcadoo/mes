@@ -28,8 +28,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="productionRecord" model="productionRecord" />
-		<belongsTo name="product" model="product" plugin="basic" />
+		<belongsTo name="productionRecord" model="productionRecord" required="true" />
+		<belongsTo name="product" model="product" plugin="basic" required="true" />
 		<decimal name="plannedQuantity" persistent="false">
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
@@ -39,6 +39,11 @@
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
+        <decimal name="wastedQuantity">
+            <validatesRange from="0" exclusively="false" />
+            <validatesUnscaledValue max="9" />
+            <validatesScale max="5" />
+        </decimal>
 		<decimal name="balance">
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />

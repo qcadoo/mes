@@ -23,9 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PLANNED_QUANTITY;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
+import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.*;
 import static com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES;
 import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
@@ -40,6 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.utils.RecordProductQuantitiesCalculator;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -50,6 +50,19 @@ public class RecordOperationProductInComponentHooks {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private RecordProductQuantitiesCalculator recordProductQuantitiesCalculator;
+
+    public void onSave(final DataDefinition dataDefinition, final Entity recordOperationProductInComponent) {
+        fillEfectiveUsedQuantity(recordOperationProductInComponent);
+    }
+
+    private void fillEfectiveUsedQuantity(final Entity recordOperationProductInComponent) {
+        BigDecimal effectiveUsed = recordProductQuantitiesCalculator.getEffectiveUsed(recordOperationProductInComponent);
+        recordOperationProductInComponent
+                .setField(RecordOperationProductInComponentFields.EFFECTIVE_USED_QUANTITY, effectiveUsed);
+    }
 
     public void fillPlannedQuantity(final DataDefinition recordOperationProductInComponentDD,
             final Entity recordOperationProductInComponent) {

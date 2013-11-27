@@ -36,7 +36,7 @@
 
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
-				columns="6" rows="6" hasBorders="false">
+				columns="6" rows="7" hasBorders="false">
 				<layoutElement column="1" row="1" width="5">
 					<component type="input" name="number" reference="number"
 						defaultEnabled="false">
@@ -57,15 +57,60 @@
 					<component type="input" name="plannedQuantityUNIT" 
 						reference="plannedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
 				</layoutElement>
-				<layoutElement column="1" row="4" width="5">
-					<component type="input" name="usedQuantity" field="usedQuantity">
+                <layoutElement column="1" row="4" width="5">
+                    <component type="input" name="obtainedQuantity" field="obtainedQuantity" defaultEnabled="false">
+                        <option type="alignment" value="right" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="6" row="4" >
+                    <component type="input" name="obtainedQuantityUNIT"
+                               reference="obtainedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
+                </layoutElement>
+				<layoutElement column="1" row="5" width="5">
+					<component type="input" name="usedQuantity" field="usedQuantity"
+                               reference="usedQuantity">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-				<layoutElement column="6" row="4" >
+				<layoutElement column="6" row="5" >
 					<component type="input" name="usedQuantityUNIT" 
 						reference="usedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
 				</layoutElement>
+                <layoutElement column="1" row="6" width="5">
+                    <component type="input" name="remainedQuantity" field="remainedQuantity"
+                               reference="remainedQuantity">
+                        <option type="alignment" value="right" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="6" row="6" >
+                    <component type="input" name="remainedQuantityUNIT"
+                               reference="remainedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
+                </layoutElement>
+                <layoutElement column="1" row="7" width="5">
+                    <component type="input" name="effectiveUsedQuantity" field="effectiveUsedQuantity"
+                               reference="effectiveUsedQuantity" defaultEnabled="false">
+                        <option type="alignment" value="right" />
+                        <script>
+                            <![CDATA[
+                                var listener = {
+                                    "onChange" : function (newData) {
+                                        var effectiveQuantityComponent = #{effectiveUsedQuantity};
+                                        effectiveQuantityComponent.fireEvent(effectiveQuantityComponent, 'calcEffectiveQuantity', []);
+                                    }
+                                };
+                                #{remainedQuantity}.addOnChangeListener(listener);
+                                #{usedQuantity}.addOnChangeListener(listener);
+                            ]]>
+                        </script>
+                        <listener event="calcEffectiveQuantity"
+                                  class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
+                                  method="calcEffectiveQuantity"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="6" row="7" >
+                    <component type="input" name="effectiveUsedQuantityUNIT"
+                               reference="effectiveUsedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+                </layoutElement>
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#product['name']" />
@@ -74,7 +119,7 @@
 
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-			method="fillFieldFromProduct" />
+			class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
+			method="onBeforeRender" />
 	</hooks>
 </view>

@@ -31,12 +31,15 @@ import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProduct
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -64,17 +67,9 @@ public class ProductionRecordViewService {
 
     private static final String L_FORM = "form";
 
-    private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUNIT";
-
-    private static final String L_USED_QUANTITY_UNIT = "usedQuantityUNIT";
-
     private static final String L_PRODUCT = "product";
 
     private static final String L_DONE_QUANTITY = "doneQuantity";
-
-    private static final String L_UNIT = "unit";
-
-    private static final String L_NAME = "name";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -84,9 +79,6 @@ public class ProductionRecordViewService {
 
     @Autowired
     private ParameterService parameterService;
-
-    @Autowired
-    private StateChangeHistoryService stateChangeHistoryService;
 
     public void fillProductionLineLookup(final ViewDefinitionState view) {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference("order");
@@ -128,21 +120,6 @@ public class ProductionRecordViewService {
             return ProductionRecordState.DRAFT;
         }
         return ProductionRecordState.parseString(stateStringValue);
-    }
-
-    public void fillFieldFromProduct(final ViewDefinitionState view) {
-        Entity recordProduct = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity();
-        recordProduct = recordProduct.getDataDefinition().get(recordProduct.getId());
-        Entity product = recordProduct.getBelongsToField(L_PRODUCT);
-
-        view.getComponentByReference(NUMBER).setFieldValue(product.getField(NUMBER));
-        view.getComponentByReference(L_NAME).setFieldValue(product.getField(L_NAME));
-
-        view.getComponentByReference(L_USED_QUANTITY_UNIT).setFieldValue(product.getStringField(L_UNIT));
-        view.getComponentByReference(L_PLANNED_QUANTITY_UNIT).setFieldValue(product.getStringField(L_UNIT));
-        for (String reference : Arrays.asList(NUMBER, L_NAME, L_USED_QUANTITY_UNIT, L_PLANNED_QUANTITY_UNIT)) {
-            ((FieldComponent) view.getComponentByReference(reference)).requestComponentUpdateState();
-        }
     }
 
     public void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState) {
