@@ -6,6 +6,6 @@ public final class WorkstationFieldsT {
 
     }
 
-    public static final String OPERATION = "operation";
+    public static final String OPERATIONS = "operations";
 
 }

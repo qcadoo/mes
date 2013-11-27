@@ -87,8 +87,25 @@ CREATE TABLE jointable_division_workstationtype
 -- end
 
 
+-- Table: jointable_operation_workstation
+-- changed: 27.11.2013
+
+CREATE TABLE jointable_operation_workstation
+(
+  workstation_id bigint NOT NULL,
+  operation_id bigint NOT NULL,
+  CONSTRAINT jointable_operation_workstation_pkey PRIMARY KEY (operation_id, workstation_id),
+  CONSTRAINT operation_workstation_fkey FOREIGN KEY (workstation_id)
+      REFERENCES basic_workstation (id) DEFERRABLE,
+  CONSTRAINT workstation_operation_fkey FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id) DEFERRABLE
+);
+
+-- end
+
+
 -- Table: jointable_operation_workstationtype
--- changed: 22.11.2013
+-- changed: 27.11.2013
 
 CREATE TABLE jointable_operation_workstationtype
 (

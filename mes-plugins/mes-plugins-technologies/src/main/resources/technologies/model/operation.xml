@@ -52,8 +52,8 @@
 		<hasMany name="productOutComponents" model="productComponent"
 			joinField="operationOut" cascade="delete" copyable="true" />
 		
-		<hasMany name="workstations" plugin="basic" model="workstation"
-			joinField="operation" cascade="delete" copyable="true" />
+		<manyToMany name="workstations" plugin="basic" model="workstation"
+			joinField="operations" cascade="delete" copyable="true" />
 			
 		<manyToMany name="workstationTypes" plugin="basic" model="workstationType"
 			joinField="operations" />
