@@ -233,9 +233,9 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     private String generateAddressFromCompany() {
-        Entity company = companyService.getCompany();
-
         StringBuffer address = new StringBuffer();
+
+        Entity company = companyService.getCompany();
 
         if (company != null) {
             String street = company.getStringField(STREET);

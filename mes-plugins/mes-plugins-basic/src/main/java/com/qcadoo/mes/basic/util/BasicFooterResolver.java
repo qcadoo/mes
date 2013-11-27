@@ -80,7 +80,6 @@ public class BasicFooterResolver implements FooterResolver {
             StringBuilder companyData = new StringBuilder();
 
             companyData = companyData.append(company.getStringField("name"));
-
             if (company.getStringField("tax") != null) {
                 companyData = companyData.append(", ");
                 companyData = companyData.append(translationService.translate("qcadooReport.commons.tax.label", locale) + ": ");
@@ -134,4 +133,5 @@ public class BasicFooterResolver implements FooterResolver {
                 "qcadooReport.commons.of.label", locale), companyName, address, phoneEmail, generatedBy.toString(),
                 additionalText);
     }
+
 }
