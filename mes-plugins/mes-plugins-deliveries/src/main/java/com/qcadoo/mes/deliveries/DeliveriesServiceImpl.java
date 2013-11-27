@@ -234,36 +234,38 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     private String generateAddressFromCompany() {
-        Entity company = companyService.getCompany();
-
         StringBuffer address = new StringBuffer();
 
-        String street = company.getStringField(STREET);
-        String house = company.getStringField(HOUSE);
-        String flat = company.getStringField(FLAT);
-        String zipCode = company.getStringField(ZIP_CODE);
-        String city = company.getStringField(CITY);
+        Entity company = companyService.getCompany();
 
-        if (StringUtils.isNotEmpty(street)) {
-            address.append(street);
-            if (StringUtils.isNotEmpty(house)) {
-                address.append(" ");
-                address.append(house);
-                if (StringUtils.isNotEmpty(flat)) {
-                    address.append("/");
-                    address.append(flat);
+        if (company != null) {
+            String street = company.getStringField(STREET);
+            String house = company.getStringField(HOUSE);
+            String flat = company.getStringField(FLAT);
+            String zipCode = company.getStringField(ZIP_CODE);
+            String city = company.getStringField(CITY);
+
+            if (StringUtils.isNotEmpty(street)) {
+                address.append(street);
+                if (StringUtils.isNotEmpty(house)) {
+                    address.append(" ");
+                    address.append(house);
+                    if (StringUtils.isNotEmpty(flat)) {
+                        address.append("/");
+                        address.append(flat);
+                    }
+                }
+                if (StringUtils.isNotEmpty(city)) {
+                    address.append(", ");
                 }
             }
             if (StringUtils.isNotEmpty(city)) {
-                address.append(", ");
+                if (StringUtils.isNotEmpty(zipCode)) {
+                    address.append(zipCode);
+                    address.append(" ");
+                }
+                address.append(city);
             }
-        }
-        if (StringUtils.isNotEmpty(city)) {
-            if (StringUtils.isNotEmpty(zipCode)) {
-                address.append(zipCode);
-                address.append(" ");
-            }
-            address.append(city);
         }
 
         return address.toString();
