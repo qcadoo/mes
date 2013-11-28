@@ -1,4 +1,3 @@
-
 -- Plugin: masterorders
 -- Table: masterorders_masterorder, masterorderproduct 
 -- changed: 26.09.2013
@@ -9,6 +8,7 @@ ALTER TABLE masterorders_masterorderproduct ALTER COLUMN masterorderquantity TYP
 ALTER TABLE masterorders_masterorderproduct ALTER COLUMN cumulatedorderquantity TYPE numeric(14, 5);
 
 -- end
+
 
 -- Plugin: costcalculation
 -- Table: costcalculation_costcalculation
@@ -153,4 +153,3 @@ ALTER TABLE productioncountingwithcosts_technologyinstoperproductincomp ALTER CO
 ALTER TABLE productioncountingwithcosts_technologyinstoperproductincomp ALTER COLUMN balance TYPE numeric(19, 5);
 
 -- end
-
