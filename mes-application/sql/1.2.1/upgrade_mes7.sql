@@ -22,3 +22,11 @@ ALTER TABLE productioncounting_productionrecord ADD COLUMN laststatechangefailca
 ALTER TABLE productioncounting_productionrecord ADD COLUMN isexternalsynchronized boolean DEFAULT true;
 
 -- end
+
+
+-- Table: basic_company
+-- changed: 28.11.2013
+
+ALTER TABLE basic_company ADD COLUMN paymentform character varying(255);
+
+-- end
