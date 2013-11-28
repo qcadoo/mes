@@ -589,7 +589,7 @@
 								<configuration>
 									<serverId>qcadoo-public</serverId>
 									<fromFile>${basedir}/target/${project.artifactId}.zip</fromFile>
-									<toFile>${profile}.zip</toFile>
+									<toFile>${destination.file.name}.zip</toFile>
 									<url>${wagon.url}</url>
 								</configuration>
 							</execution>
