@@ -14,12 +14,21 @@ ALTER TABLE deliveries_delivery DROP COLUMN paymentForm;
 
 -- end
 
+
 -- Table: productioncounting_productionrecord
 -- changed: 30.10.2013 [maku]
 
 ALTER TABLE productioncounting_productionrecord ADD COLUMN laststatechangefails boolean DEFAULT false;
 ALTER TABLE productioncounting_productionrecord ADD COLUMN laststatechangefailcause character varying(255);
 ALTER TABLE productioncounting_productionrecord ADD COLUMN isexternalsynchronized boolean DEFAULT true;
+
+-- end
+
+
+-- Table: basic_company
+-- changed: 28.11.2013
+
+ALTER TABLE basic_company ADD COLUMN paymentform character varying(255);
 
 -- end
 
