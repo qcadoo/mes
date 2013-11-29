@@ -14,6 +14,7 @@ ALTER TABLE deliveries_delivery DROP COLUMN paymentForm;
 
 -- end
 
+
 -- Table: productioncounting_productionrecord
 -- changed: 30.10.2013 [maku]
 
