@@ -28,7 +28,9 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN productioncostmargin TY
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN productioncostmarginvalue TYPE numeric(19, 5);
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN materialcostmargin TYPE numeric(19, 5);
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN materialcostmarginvalue TYPE numeric(19, 5);
+
 -- end
+
 
 -- Plugin: technologies
 -- Table: technologies_operationproductincomponent, technologies_operationproductoutcomponent
