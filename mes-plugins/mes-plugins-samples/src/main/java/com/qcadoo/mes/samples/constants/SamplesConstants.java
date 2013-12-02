@@ -458,4 +458,5 @@ public final class SamplesConstants {
 
     public static final String L_COUNTRY = "country";
 
+    public static final String L_PRODUCT_FLOW_THRU_DIVISION = "productFlowThruDivision";
 }

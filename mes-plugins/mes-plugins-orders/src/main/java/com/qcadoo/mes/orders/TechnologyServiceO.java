@@ -57,7 +57,6 @@ public class TechnologyServiceO {
             if (order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE) == null) {
                 return;
             }
-
             DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY);
 

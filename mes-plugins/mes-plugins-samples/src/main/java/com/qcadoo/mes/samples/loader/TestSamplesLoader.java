@@ -994,7 +994,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             if (isEnabledOrEnabling(SamplesConstants.L_GOOD_FOOD)) {
                 technology.setField("formula", "123");
             }
-
+            if (isEnabledOrEnabling(SamplesConstants.L_PRODUCT_FLOW_THRU_DIVISION)) {
+                technology.setField("range", "02manyDivisions");
+            }
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getField(L_NAME) + ", "
                         + L_NUMBER + "=" + technology.getField(L_NUMBER) + ", technology product="
