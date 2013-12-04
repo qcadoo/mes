@@ -54,11 +54,18 @@ public class ProductionCountingOrderStatesListenerAspect extends AbstractStateLi
     protected void targetServicePointcut() {
     }
 
+    @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnComplete(final StateChangeContext stateChangeContext, final int phase) {
+        listenerService.validationOnComplete(stateChangeContext);
+    }
+
     @RunInPhase(OrderStateChangePhase.DEFAULT)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
     @Before(PHASE_EXECUTION_POINTCUT)
-    public void onCompleted(final StateChangeContext stateChangeContext, final int phase) {
-        listenerService.onCompleted(stateChangeContext);
+    public void onComplete(final StateChangeContext stateChangeContext, final int phase) {
+        listenerService.onComplete(stateChangeContext);
     }
 
 }

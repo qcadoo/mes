@@ -33,9 +33,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -47,7 +48,10 @@ public class PcOrderStatesListenerService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void onCompleted(final StateChangeContext stateChangeContext) {
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
+
+    public void validationOnComplete(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
         String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         if (CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
@@ -57,6 +61,15 @@ public class PcOrderStatesListenerService {
         }
     }
 
+    public void onComplete(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
+
+        order.setField(OrderFields.DONE_QUANTITY,
+                basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order));
+
+        stateChangeContext.setOwner(order);
+    }
+
     private void checkFinalProductionCountingForOrderCumulated(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
         final SearchResult productionRecordingsResult = dataDefinitionService
@@ -64,7 +77,7 @@ public class PcOrderStatesListenerService {
                 .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("lastRecord", true)).list();
 
         if (order.getBooleanField("allowToClose") && productionRecordingsResult.getTotalNumberOfEntities() == 0) {
-            stateChangeContext.addMessage("orders.order.state.allowToClose.failureCumulated", StateMessageType.FAILURE);
+            stateChangeContext.addValidationError("orders.order.state.allowToClose.failureCumulated");
         }
     }
 
@@ -83,7 +96,7 @@ public class PcOrderStatesListenerService {
             }
         }
         if (order.getBooleanField("allowToClose") && operations.size() != numberOfRecord) {
-            stateChangeContext.addMessage("orders.order.state.allowToClose.failureForEach", StateMessageType.FAILURE);
+            stateChangeContext.addValidationError("orders.order.state.allowToClose.failureForEach");
         }
     }
 

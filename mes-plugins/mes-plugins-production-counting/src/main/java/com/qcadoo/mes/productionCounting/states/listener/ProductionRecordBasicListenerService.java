@@ -29,7 +29,10 @@ import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.*;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 
 import java.math.BigDecimal;
@@ -41,6 +44,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
@@ -82,6 +86,9 @@ public final class ProductionRecordBasicListenerService {
 
     @Autowired
     private OrderClosingHelper orderClosingHelper;
+
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
 
     public void onLeavingDraft(final StateChangeContext stateChangeContext) {
         Entity productionRecord = stateChangeContext.getOwner();
@@ -203,31 +210,12 @@ public final class ProductionRecordBasicListenerService {
     }
 
     private void setOrderDoneQuantity(final Entity productionRecord) {
-        final Entity order = productionRecord.getBelongsToField(ORDER);
+        Entity order = productionRecord.getBelongsToField(ProductionRecordFields.ORDER);
 
-        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
-        product = product.getDataDefinition().get(product.getId());
-
-        final List<Entity> basicProductionCountings = dataDefinitionService
-                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
-                .add(SearchRestrictions.belongsTo(ORDER, order)).add(SearchRestrictions.belongsTo(PRODUCT, product)).list()
-                .getEntities();
-
-        BigDecimal producedQuantity = BigDecimal.ZERO;
-
-        for (Entity basicProductionCounting : basicProductionCountings) {
-            BigDecimal qty = (BigDecimal) basicProductionCounting.getField(L_PRODUCED_QUANTITY);
-            if (qty == null) {
-                qty = BigDecimal.ZERO;
-            }
-            producedQuantity = producedQuantity.add(qty, numberService.getMathContext());
-        }
-
-        order.setField("doneQuantity", producedQuantity);
+        order.setField(OrderFields.DONE_QUANTITY,
+                basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order));
 
         order.getDataDefinition().save(order);
-
     }
 
     private Entity getBasicProductionCounting(final Entity productIn, final List<Entity> productionCountings) {

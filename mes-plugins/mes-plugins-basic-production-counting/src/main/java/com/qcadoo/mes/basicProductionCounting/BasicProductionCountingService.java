@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
+import java.math.BigDecimal;
+
 import com.qcadoo.model.api.Entity;
 
 public interface BasicProductionCountingService {
@@ -50,5 +52,15 @@ public interface BasicProductionCountingService {
      *            order
      */
     void createBasicProductionCountings(final Entity order);
+
+    /**
+     * Gets produced quantity from basic production countings
+     * 
+     * @param order
+     *            order
+     * 
+     * @return doneQuantity
+     */
+    BigDecimal getProducedQuantityFromBasicProductionCountings(final Entity order);
 
 }
