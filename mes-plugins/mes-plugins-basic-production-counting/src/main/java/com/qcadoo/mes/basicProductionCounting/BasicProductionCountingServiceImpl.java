@@ -260,7 +260,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             doneQuantity = doneQuantity.add(producedQuantity, numberService.getMathContext());
         }
 
-        return doneQuantity;
+        return numberService.setScale(doneQuantity);
     }
 
 }
