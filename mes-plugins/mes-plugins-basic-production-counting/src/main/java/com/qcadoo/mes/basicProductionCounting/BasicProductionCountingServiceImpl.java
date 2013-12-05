@@ -47,8 +47,11 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -236,6 +239,28 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         basicProductionCounting = basicProductionCounting.getDataDefinition().save(basicProductionCounting);
 
         return basicProductionCounting;
+    }
+
+    @Override
+    public BigDecimal getProducedQuantityFromBasicProductionCountings(final Entity order) {
+        BigDecimal doneQuantity = BigDecimal.ZERO;
+
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+
+        List<Entity> basicProductionCountings = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
+                .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.PRODUCT, product)).list().getEntities();
+
+        for (Entity basicProductionCounting : basicProductionCountings) {
+            BigDecimal producedQuantity = BigDecimalUtils.convertNullToZero(basicProductionCounting
+                    .getDecimalField(BasicProductionCountingFields.PRODUCED_QUANTITY));
+
+            doneQuantity = doneQuantity.add(producedQuantity, numberService.getMathContext());
+        }
+
+        return doneQuantity;
     }
 
 }

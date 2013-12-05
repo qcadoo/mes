@@ -14,6 +14,7 @@ ALTER TABLE deliveries_delivery DROP COLUMN paymentForm;
 
 -- end
 
+
 -- Table: productioncounting_productionrecord
 -- changed: 19.11.2013 [maku]
 
@@ -57,5 +58,13 @@ ALTER TABLE productioncounting_recordoperationproductincomponent ADD COLUMN effe
 -- changed: 27.11.2013 [maku]
 
 ALTER TABLE productioncounting_recordoperationproductoutcomponent ADD COLUMN wastedQuantity numeric(14,5);
+
+-- end
+
+
+-- Table: basic_company
+-- changed: 28.11.2013
+
+ALTER TABLE basic_company ADD COLUMN paymentform character varying(255);
 
 -- end

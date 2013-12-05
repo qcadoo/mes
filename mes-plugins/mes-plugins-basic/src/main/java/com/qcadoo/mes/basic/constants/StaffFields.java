@@ -21,46 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basicProductionCounting;
+package com.qcadoo.mes.basic.constants;
 
-import java.math.BigDecimal;
+public final class StaffFields {
 
-import com.qcadoo.model.api.Entity;
+    private StaffFields() {
 
-public interface BasicProductionCountingService {
+    }
 
-    /**
-     * Creates production counting quantities
-     * 
-     * @param order
-     *            order
-     */
-    void createProductionCountingQuantitiesAndOperationRuns(final Entity order);
+    public static final String NAME = "name";
 
-    /**
-     * Updates production counting quantities
-     * 
-     * @param order
-     *            order
-     */
-    void updateProductionCountingQuantitiesAndOperationRuns(final Entity order);
+    public static final String NUMBER = "number";
 
-    /**
-     * Create basic production countings
-     * 
-     * @param order
-     *            order
-     */
-    void createBasicProductionCountings(final Entity order);
+    public static final String SURNAME = "surname";
 
-    /**
-     * Gets produced quantity from basic production countings
-     * 
-     * @param order
-     *            order
-     * 
-     * @return doneQuantity
-     */
-    BigDecimal getProducedQuantityFromBasicProductionCountings(final Entity order);
+    public static final String PHONE = "phone";
+
+    public static final String EMAIL = "email";
+
+    public static final String POST = "post";
+
+    public static final String WORK_FOR = "workFor";
+
+    public static final String SHIFT = "shift";
+
+    public static final String DIVISION = "division";
 
 }

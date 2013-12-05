@@ -66,6 +66,7 @@ public class BasicFooterResolver implements FooterResolver {
         Entity parameter = parameterService.getParameter();
         Entity company = companyService.getCompany();
         String additionalText = parameter.getStringField(ADDITIONAL_TEXT_IN_FOOTER);
+
         if (additionalText == null) {
             additionalText = "";
         }
@@ -76,7 +77,6 @@ public class BasicFooterResolver implements FooterResolver {
         generatedBy = generatedBy.append(pdfHelper.getDocumentAuthor());
 
         if (company != null) {
-
             StringBuilder companyData = new StringBuilder();
 
             companyData = companyData.append(company.getStringField("name"));
@@ -133,4 +133,5 @@ public class BasicFooterResolver implements FooterResolver {
                 "qcadooReport.commons.of.label", locale), companyName, address, phoneEmail, generatedBy.toString(),
                 additionalText);
     }
+
 }
