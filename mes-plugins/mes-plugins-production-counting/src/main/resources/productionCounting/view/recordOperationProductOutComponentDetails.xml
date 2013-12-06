@@ -36,7 +36,7 @@
 		
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
-				columns="6" rows="6" hasBorders="false">
+				columns="6" rows="4" hasBorders="false">
 				<layoutElement column="1" row="1" width="5">
 					<component type="input" name="number" reference="number"
 						defaultEnabled="false">
@@ -66,16 +66,6 @@
 					<component type="input" name="usedQuantityUNIT" 
 						reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
 				</layoutElement>
-                <layoutElement column="1" row="5" width="5">
-                    <component type="input" name="wastedQuantity" field="wastedQuantity"
-                               reference="wastedQuantity">
-                        <option type="alignment" value="right" />
-                    </component>
-                </layoutElement>
-                <layoutElement column="6" row="5" >
-                    <component type="input" name="wastedQuantityUNIT"
-                               reference="wastedQuantityUNIT" defaultEnabled="false"  hasLabel="false"/>
-                </layoutElement>
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#product['name']" />

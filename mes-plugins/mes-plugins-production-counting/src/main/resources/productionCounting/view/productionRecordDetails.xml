@@ -360,14 +360,8 @@
                                 expression="#product['number']" link="true" width="100"/>
                         <option type="column" name="name" fields="product"
                                 expression="#product['name']" link="true" width="200"/>
-                        <option type="column" name="obtainedQuantity" fields="obtainedQuantity"
-                                width="100"/>
                         <option type="column" name="usedQuantity" fields="usedQuantity"
                                 width="100"/>
-                        <option type="column" name="remainedQuantity" fields="remainedQuantity"
-                                width="100"/>
-                        <option type="column" name="effectiveUsedQuantity" fields="effectiveUsedQuantity"
-                                width="100" />
                         <option type="column" name="unit" fields="product"
                                 expression="#product['unit']" link="false" width="70"/>
 
@@ -379,9 +373,9 @@
                         <option type="correspondingViewInModal" value="true"/>
 
                         <option type="searchable"
-                                value="number,name,obtainedQuantity,usedQuantity,remainedQuantity,effectiveUsedQuantity,unit"/>
+                                value="number,name,usedQuantity,unit"/>
                         <option type="orderable"
-                                value="number,name,obtainedQuantity,usedQuantity,remainedQuantity,effectiveUsedQuantity,unit"/>
+                                value="number,name,usedQuantity,unit"/>
 
                         <option type="creatable" value="false"/>
                         <option type="deletable" value="false"/>
@@ -400,8 +394,6 @@
                                 expression="#product['name']" link="true" width="200"/>
                         <option type="column" name="usedQuantity" fields="usedQuantity"
                                 width="100"/>
-                        <option type="column" name="wastedQuantity" fields="wastedQuantity"
-                                width="100"/>
                         <option type="column" name="unit" fields="product"
                                 expression="#product['unit']" link="false" width="70"/>
 
@@ -412,8 +404,8 @@
                         <option type="correspondingComponent" value="form"/>
                         <option type="correspondingViewInModal" value="true"/>
 
-                        <option type="searchable" value="number,name,usedQuantity,wastedQuantity,unit"/>
-                        <option type="orderable" value="number,name,usedQuantity,wastedQuantity,unit"/>
+                        <option type="searchable" value="number,name,usedQuantity,unit"/>
+                        <option type="orderable" value="number,name,usedQuantity,unit"/>
 
                         <option type="creatable" value="false"/>
                         <option type="deletable" value="false"/>

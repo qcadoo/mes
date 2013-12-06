@@ -34,13 +34,7 @@ public final class RecordOperationProductInComponentFields {
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
-    public static final String OBTAINED_QUANTITY = "obtainedQuantity";
-
     public static final String USED_QUANTITY = "usedQuantity";
-
-    public static final String REMAINED_QUANTITY = "remainedQuantity";
-
-    public static final String EFFECTIVE_USED_QUANTITY = "effectiveUsedQuantity";
 
     public static final String BALANCE = "balance";
 

@@ -34,26 +34,11 @@
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
-        <decimal name="obtainedQuantity">
-            <validatesRange from="0" exclusively="false" />
-            <validatesUnscaledValue max="9" />
-            <validatesScale max="5" />
-        </decimal>
 		<decimal name="usedQuantity">
 			<validatesRange from="0" exclusively="false" />
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
-        <decimal name="remainedQuantity">
-            <validatesRange from="0" exclusively="false"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <decimal name="effectiveUsedQuantity">
-            <validatesRange from="0" exclusively="false" />
-            <validatesUnscaledValue max="10" />
-            <validatesScale max="5" />
-        </decimal>
 		<decimal name="balance">
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
@@ -63,8 +48,5 @@
 		<onView
 			class="com.qcadoo.mes.productionCounting.hooks.RecordOperationProductInComponentHooks"
 			method="fillPlannedQuantity" />
-        <onSave
-            class="com.qcadoo.mes.productionCounting.hooks.RecordOperationProductInComponentHooks"
-            method="onSave"/>
 	</hooks>
 </model>
