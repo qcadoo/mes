@@ -51,6 +51,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -417,6 +418,28 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     private DataDefinition getProductionCountingOperationRunDD() {
         return dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                 BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_OPERATON_RUN);
+    }
+
+    @Override
+    public BigDecimal getProducedQuantityFromBasicProductionCountings(final Entity order) {
+        BigDecimal doneQuantity = BigDecimal.ZERO;
+
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+
+        List<Entity> basicProductionCountings = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
+                .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.PRODUCT, product)).list().getEntities();
+
+        for (Entity basicProductionCounting : basicProductionCountings) {
+            BigDecimal producedQuantity = BigDecimalUtils.convertNullToZero(basicProductionCounting
+                    .getDecimalField(BasicProductionCountingFields.PRODUCED_QUANTITY));
+
+            doneQuantity = doneQuantity.add(producedQuantity, numberService.getMathContext());
+        }
+
+        return numberService.setScale(doneQuantity);
     }
 
     @Override

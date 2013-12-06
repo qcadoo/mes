@@ -148,6 +148,16 @@ public interface BasicProductionCountingService {
     DataDefinition getProductionCountingQuantityDD();
 
     /**
+     * Gets produced quantity from basic production countings
+     * 
+     * @param order
+     *            order
+     * 
+     * @return doneQuantity
+     */
+    BigDecimal getProducedQuantityFromBasicProductionCountings(final Entity order);
+
+    /**
      * Fills unit fields
      * 
      * @param view

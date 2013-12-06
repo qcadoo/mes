@@ -209,26 +209,10 @@ public final class ProductionTrackingListenerService {
     }
 
     private void setOrderDoneQuantity(final Entity productionTracking) {
-        final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 
-        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
-        product = product.getDataDefinition().get(product.getId());
-
-        final List<Entity> basicProductionCountings = basicProductionCountingService.getBasicProductionCountingDD().find()
-                .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.ORDER, order))
-                .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.PRODUCT, product)).list().getEntities();
-
-        BigDecimal producedQuantity = BigDecimal.ZERO;
-
-        for (Entity basicProductionCounting : basicProductionCountings) {
-            BigDecimal qty = basicProductionCounting.getDecimalField(BasicProductionCountingFields.PRODUCED_QUANTITY);
-            if (qty == null) {
-                qty = BigDecimal.ZERO;
-            }
-            producedQuantity = producedQuantity.add(qty, numberService.getMathContext());
-        }
-
-        order.setField(OrderFields.DONE_QUANTITY, producedQuantity);
+        order.setField(OrderFields.DONE_QUANTITY,
+                basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order));
 
         order.getDataDefinition().save(order);
     }

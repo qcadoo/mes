@@ -28,24 +28,27 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
 @Service
-public class PcOrderStatesListenerService {
+public class ProductionCountingOrderStatesListenerService {
+
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
 
     @Autowired
     private ProductionCountingService productionCountingService;
 
-    public void onCompleted(final StateChangeContext stateChangeContext) {
+    public void validationOnComplete(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
@@ -55,6 +58,15 @@ public class PcOrderStatesListenerService {
         }
     }
 
+    public void onComplete(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
+
+        order.setField(OrderFields.DONE_QUANTITY,
+                basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order));
+
+        stateChangeContext.setOwner(order);
+    }
+
     private void checkFinalProductionCountingForOrderCumulated(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
         final SearchResult result = productionCountingService.getProductionTrackingDD().find()
@@ -62,7 +74,7 @@ public class PcOrderStatesListenerService {
                 .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, true)).list();
 
         if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && result.getTotalNumberOfEntities() == 0) {
-            stateChangeContext.addMessage("orders.order.state.allowToClose.failureCumulated", StateMessageType.FAILURE);
+            stateChangeContext.addValidationError("orders.order.state.allowToClose.failureCumulated");
         }
     }
 
@@ -86,7 +98,7 @@ public class PcOrderStatesListenerService {
         }
 
         if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && technologyOperationComponents.size() != trackingsNumber) {
-            stateChangeContext.addMessage("orders.order.state.allowToClose.failureForEach", StateMessageType.FAILURE);
+            stateChangeContext.addValidationError("orders.order.state.allowToClose.failureForEach");
         }
     }
 
