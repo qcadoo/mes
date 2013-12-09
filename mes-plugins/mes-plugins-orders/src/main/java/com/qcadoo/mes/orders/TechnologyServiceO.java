@@ -121,6 +121,18 @@ public class TechnologyServiceO {
                     order.setField(OrderFields.TECHNOLOGY, technology);
                     setQuantityOfWorkstationTypes(order, technology);
 
+                } else if (!isTechnologySet(order)) {
+                    Entity technology = technologyDD.create();
+                    technology = technologyDD.copy(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).getId()).get(0);
+                    technology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
+                            TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
+                    technology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE,
+                            order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+                    technology
+                            .setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
+                    technology = technology.getDataDefinition().save(technology);
+                    order.setField(OrderFields.TECHNOLOGY, technology);
+                    setQuantityOfWorkstationTypes(order, technology);
                 }
             }
         } else if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))) {
@@ -241,6 +253,16 @@ public class TechnologyServiceO {
     private boolean isTechnologyCopied(final Entity order) {
 
         if (order.getField(OrderFields.TECHNOLOGY) == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isTechnologySet(final Entity order) {
+        DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+        Entity orderDB = orderDD.get(order.getId());
+        if (orderDB.getField(OrderFields.TECHNOLOGY) == null) {
             return false;
         }
 
