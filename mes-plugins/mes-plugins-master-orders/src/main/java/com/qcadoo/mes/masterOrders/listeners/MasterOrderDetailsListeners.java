@@ -18,6 +18,8 @@ import com.qcadoo.view.api.components.LookupComponent;
 @Service
 public class MasterOrderDetailsListeners {
 
+    private static final String L_FORM = "form";
+
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
@@ -58,7 +60,7 @@ public class MasterOrderDetailsListeners {
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         form.performEvent(view, "refresh");
     }
 
@@ -66,4 +68,17 @@ public class MasterOrderDetailsListeners {
             final String[] args) {
         masterOrderDetailsHooks.setUneditableWhenEntityHasUnsaveChanges(view);
     }
+
+    public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity masterOrder = masterOrderForm.getEntity();
+
+        if (masterOrder.getId() == null) {
+            return;
+        }
+
+        String url = "../page/orders/orderDetails.html?context={form.masterOrder: " + masterOrder.getId() + "}";
+        view.redirectTo(url, false, true);
+    }
+
 }

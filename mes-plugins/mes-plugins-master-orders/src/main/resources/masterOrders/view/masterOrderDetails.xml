@@ -6,6 +6,22 @@
 
 		<ribbon>
 			<template name="standardFormTemplate" />
+			
+			<group name="orders">
+				<bigButton name="createOrder" icon="generateIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('createOrder', []);
+									}
+								}
+							});	
+						]]>
+					</script>	
+				</bigButton>
+			</group>
 		</ribbon>
 
 		<windowTab name="mainTab">
@@ -61,6 +77,10 @@
 
 				<option type="header" value="true" />
 				<option type="expression" value="#number" />
+				
+				<listener event="createOrder" 
+					class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" 
+					method="createOrder" />
 			</component>
 		</windowTab>
 
@@ -206,11 +226,11 @@
 			</component>
 			<component type="grid" name="orders" reference="ordersGrid"
 				source="#{form}.orders">
-				<option type="column" name="number" fields="number" />
+				<option type="column" name="number" fields="number" link="true" />
 				<option type="column" name="productNumber" fields="product"
-					expression="#product['number']" />
+					expression="#product['number']" link="true" />
 				<option type="column" name="technologyNumber" fields="technology"
-					expression="#technology['number']" />
+					expression="#technology['number']" link="true" />
 				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
 				<option type="column" name="unit" fields="product"
 					expression="#product['unit']" />
@@ -227,6 +247,10 @@
 
 				<option type="weakRelation" value="true" />
 				<option type="correspondingLookup" value="ordersLookup" />
+				
+				<option type="correspondingView" value="orders/orderDetails" />
+				<option type="correspondingComponent" value="form" />
+				<option type="correspondingViewInModal" value="false" />
 				
 				<option type="multiselect" value="true" />
 				<option type="deletable" value="true" />
@@ -267,6 +291,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
 			method="setUneditableWhenEntityHasUnsaveChanges" />
+		<beforeRender
+			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+			method="changeRibbonState" />	
 	</hooks>
 
 </view>
