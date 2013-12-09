@@ -39,9 +39,11 @@ public class MasterOrderHooks {
         if (masterOrder.getId() == null) {
             return;
         }
+
         if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             return;
         }
+
         masterOrder.setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY,
                 countCumulatedOrderQuantityForMasterOrder(masterOrder, masterOrder.getBelongsToField(MasterOrderFields.PRODUCT)));
     }
@@ -52,10 +54,12 @@ public class MasterOrderHooks {
                 .add(SearchRestrictions.belongsTo(OrderFieldsMO.MASTER_ORDER, masterOrder))
                 .add(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product)).list().getEntities();
         BigDecimal cumulatedOrderPlannedQUantity = BigDecimal.ZERO;
+
         for (Entity order : ordersWithProducts) {
             cumulatedOrderPlannedQUantity = cumulatedOrderPlannedQUantity
                     .add(order.getDecimalField(OrderFields.PLANNED_QUANTITY));
         }
+
         return cumulatedOrderPlannedQUantity;
     }
 
@@ -63,51 +67,67 @@ public class MasterOrderHooks {
         if (masterOrder.getId() == null) {
             return;
         }
+
         Date deadline = masterOrder.getDateField(DEADLINE);
         Entity customer = masterOrder.getBelongsToField(COMPANY);
+
         if (deadline == null && customer == null) {
             return;
         }
+
         List<Entity> actualOrders = Lists.newArrayList();
         List<Entity> allOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
+
         boolean hasChange = false;
+
         for (Entity order : allOrders) {
             if (!order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
                 actualOrders.add(order);
                 continue;
             }
+
             if (deadline != null && !order.getDateField(OrderFields.DEADLINE).equals(deadline)) {
                 order.setField(OrderFields.DEADLINE, deadline);
                 hasChange = true;
             }
+
             if (customer != null && !order.getBelongsToField(OrderFields.COMPANY).equals(customer)) {
                 order.setField(OrderFields.COMPANY, customer);
                 hasChange = true;
             }
+
             actualOrders.add(order);
         }
+
         if (!hasChange) {
             return;
         }
+
         masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);
     }
 
     public void changedTypeFromOneToMany(final DataDefinition masterOrderDD, final Entity masterOrder) {
         Long masterOrderId = masterOrder.getId();
+
         if (masterOrderId == null) {
             return;
         }
+
         Entity masterOrderFromDB = masterOrderDD.get(masterOrderId);
+
         if (!(masterOrderFromDB.getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue()) && masterOrder
                 .getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.MANY_PRODUCTS.getStringValue()))) {
             return;
         }
+
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
         Entity technology = masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
         Entity masterOrderProduct = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
                 MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).create();
+
         masterOrderProduct.setField(MasterOrderProductFields.PRODUCT, product);
         masterOrderProduct.setField(MasterOrderProductFields.TECHNOLOGY, technology);
+
         masterOrder.setField(MasterOrderFields.PRODUCT, null);
         masterOrder.setField(MasterOrderFields.TECHNOLOGY, null);
         masterOrder.setField(MasterOrderFields.MASTER_ORDER_PRODUCTS, Lists.newArrayList(masterOrderProduct));
@@ -117,4 +137,5 @@ public class MasterOrderHooks {
         masterOrder.setField(MasterOrderFields.EXTERNAL_NUMBER, null);
         masterOrder.setField(MasterOrderFields.EXTERNAL_SYNCHRONIZED, true);
     }
+
 }

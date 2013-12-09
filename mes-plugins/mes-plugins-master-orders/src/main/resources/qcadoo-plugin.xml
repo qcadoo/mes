@@ -83,7 +83,12 @@
                 orderable="true" searchable="true" expression="#masterOrder['number']"
                 width="50" />
         </view:view-grid-column>
-
+		
+		<view:view-hook plugin="orders" view="orderDetails"
+			type="beforeRender" 
+			class="com.qcadoo.mes.masterOrders.hooks.OrderDetailsHooksMO"
+			method="fillMasterOrderFields" />
+			
 	</modules>
 	
 	<features>

@@ -28,11 +28,21 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class MasterOrderDetailsHooks {
 
     private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
+
+    private static final String L_ORDERS = "orders";
+
+    private static final String L_CREATE_ORDER = "createOrder";
 
     private static final String L_ORDERS_GRID = "ordersGrid";
 
@@ -80,6 +90,7 @@ public class MasterOrderDetailsHooks {
         if (product != null) {
             unit = product.getStringField(UNIT);
         }
+
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
@@ -95,14 +106,17 @@ public class MasterOrderDetailsHooks {
         FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
 
         Entity product = productField.getEntity();
+
         if (product == null || technologyServiceO.getDefaultTechnology(product) == null) {
             defaultTechnology.setFieldValue(null);
             defaultTechnology.requestComponentUpdateState();
             return;
         }
+
         Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
         String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                 view.getLocale());
+
         defaultTechnology.setFieldValue(defaultTechnologyValue);
         defaultTechnology.requestComponentUpdateState();
     }
@@ -110,12 +124,15 @@ public class MasterOrderDetailsHooks {
     public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity masterOrder = form.getEntity();
+
         if (masterOrder == null) {
             return;
         }
+
         if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             return;
         }
+
         BigDecimal cumulatedQuantity = masterOrder.getDecimalField(CUMULATED_ORDER_QUANTITY);
         BigDecimal masterQuantity = masterOrder.getDecimalField(MASTER_ORDER_QUANTITY);
 
@@ -127,11 +144,14 @@ public class MasterOrderDetailsHooks {
     public void disabledGridWhenMasterOrderDoesnotHaveProduct(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity masterOrder = form.getEntity();
+
         if (masterOrder == null) {
             return;
         }
+
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(L_ORDERS_GRID);
         GridComponent productsGrid = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
+
         if (masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
                 .equals(MasterOrderType.MANY_PRODUCTS.getStringValue()) && productsGrid.getEntities().isEmpty()) {
             ordersGrid.setEditable(false);
@@ -143,18 +163,44 @@ public class MasterOrderDetailsHooks {
     public void setUneditableWhenEntityHasUnsaveChanges(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Long masterOrderId = form.getEntityId();
+
         if (masterOrderId == null) {
             return;
         }
+
         FieldComponent masterOrderTypeField = (FieldComponent) view.getComponentByReference(MASTER_ORDER_TYPE);
         Entity masterOrder = form.getEntity().getDataDefinition().get(masterOrderId);
         String masterOrderType = masterOrderTypeField.getFieldValue().toString();
         GridComponent productsGrid = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
+
         if (!masterOrder.getStringField(MASTER_ORDER_TYPE).equals(masterOrderType)) {
             productsGrid.setEditable(false);
         } else {
             productsGrid.setEditable(true);
         }
+    }
+
+    public void changeRibbonState(final ViewDefinitionState view) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        boolean isEnabled = (masterOrderForm.getEntityId() != null);
+
+        changeButtonsState(view, isEnabled);
+    }
+
+    private void changeButtonsState(final ViewDefinitionState view, final boolean isEnabled) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+
+        Ribbon ribbon = window.getRibbon();
+
+        RibbonGroup orders = ribbon.getGroupByName(L_ORDERS);
+
+        RibbonActionItem createOrder = orders.getItemByName(L_CREATE_ORDER);
+
+        createOrder.setEnabled(isEnabled);
+        createOrder.requestUpdate(true);
+
+        window.requestRibbonRender();
     }
 
 }
