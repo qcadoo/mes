@@ -29,10 +29,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.*;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 
 import java.math.BigDecimal;
@@ -112,7 +109,7 @@ public final class ProductionRecordBasicListenerService {
 
     public void onChangeFromAcceptedToDeclined(final StateChangeContext stateChangeContext) {
         final Entity productionRecord = stateChangeContext.getOwner();
-        updateBasicProductionCounting(productionRecord, new Substraction());
+        updateBasicProductionCounting(productionRecord, new Subtraction());
         setOrderDoneQuantity(productionRecord);
     }
 
@@ -218,16 +215,15 @@ public final class ProductionRecordBasicListenerService {
         order.getDataDefinition().save(order);
     }
 
+    // FIXME MAKU It could be replaced with just a single db query..
     private Entity getBasicProductionCounting(final Entity productIn, final List<Entity> productionCountings) {
         Entity product = productIn.getBelongsToField(PRODUCT);
-
         for (Entity productionCounting : productionCountings) {
             if (productionCounting.getBelongsToField(PRODUCT).getId().equals(product.getId())) {
                 return productionCounting;
             }
         }
-
-        throw new IllegalStateException("No basic production counting found for product");
+        return null;
     }
 
     private interface Operation {
@@ -257,28 +253,29 @@ public final class ProductionRecordBasicListenerService {
 
     }
 
-    private class Substraction implements Operation {
+    private class Subtraction implements Operation {
 
         @Override
-        public BigDecimal perform(final BigDecimal orginalValue, final BigDecimal substrahend) {
+        public BigDecimal perform(final BigDecimal originalValue, final BigDecimal subtrahend) {
             BigDecimal value;
             BigDecimal sub;
-            if (orginalValue == null) {
+            if (originalValue == null) {
                 value = BigDecimal.ZERO;
             } else {
-                value = orginalValue;
+                value = originalValue;
             }
 
-            if (substrahend == null) {
+            if (subtrahend == null) {
                 sub = BigDecimal.ZERO;
             } else {
-                sub = substrahend;
+                sub = subtrahend;
             }
             return value.subtract(sub, numberService.getMathContext());
         }
 
     }
 
+    // FIXME MAKU this method isn't well efficient..
     private void updateBasicProductionCounting(final Entity productionRecord, final Operation operation) {
         final Entity order = productionRecord.getBelongsToField(ORDER);
 
@@ -291,27 +288,21 @@ public final class ProductionRecordBasicListenerService {
         final List<Entity> productsOut = productionRecord.getHasManyField(RECORD_OPERATION_PRODUCT_OUT_COMPONENTS);
 
         for (Entity productIn : productsIn) {
-            Entity basicProductionCounting;
-
-            try {
-                basicProductionCounting = getBasicProductionCounting(productIn, basicProductionCountings);
-            } catch (IllegalStateException e) {
+            Entity basicProductionCounting = getBasicProductionCounting(productIn, basicProductionCountings);
+            if (basicProductionCounting == null) {
                 continue;
             }
 
-            final BigDecimal usedQuantity = (BigDecimal) basicProductionCounting.getField(L_USED_QUANTITY);
-            final BigDecimal productQuantity = (BigDecimal) productIn.getField(L_USED_QUANTITY);
+            final BigDecimal usedQuantity = basicProductionCounting.getDecimalField(L_USED_QUANTITY);
+            final BigDecimal productQuantity = productIn.getDecimalField(L_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             basicProductionCounting.setField(L_USED_QUANTITY, result);
-            basicProductionCounting = basicProductionCounting.getDataDefinition().save(basicProductionCounting);
+            basicProductionCounting.getDataDefinition().save(basicProductionCounting);
         }
 
         for (Entity productOut : productsOut) {
-            Entity productionCounting;
-
-            try {
-                productionCounting = getBasicProductionCounting(productOut, basicProductionCountings);
-            } catch (IllegalStateException e) {
+            Entity productionCounting = getBasicProductionCounting(productOut, basicProductionCountings);
+            if (productionCounting == null) {
                 continue;
             }
 
@@ -319,7 +310,7 @@ public final class ProductionRecordBasicListenerService {
             final BigDecimal productQuantity = (BigDecimal) productOut.getField(L_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             productionCounting.setField(L_PRODUCED_QUANTITY, result);
-            productionCounting = productionCounting.getDataDefinition().save(productionCounting);
+            productionCounting.getDataDefinition().save(productionCounting);
         }
     }
 

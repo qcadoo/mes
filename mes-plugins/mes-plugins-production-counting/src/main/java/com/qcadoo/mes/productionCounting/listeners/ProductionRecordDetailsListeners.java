@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.utils.StaffTimeCalculator;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -72,6 +73,20 @@ public class ProductionRecordDetailsListeners {
 
     @Autowired
     private ProductionRecordViewService productionRecordViewService;
+
+    @Autowired
+    private StaffTimeCalculator staffTimeCalculator;
+
+    public void calcTotalLaborTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Long id = form.getEntityId();
+        if (id == null) {
+            return;
+        }
+        Long totalLabor = staffTimeCalculator.countTotalLaborTime(id);
+        FieldComponent laborTimeInput = (FieldComponent) view.getComponentByReference("laborTime");
+        laborTimeInput.setFieldValue(totalLabor);
+    }
 
     public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);

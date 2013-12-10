@@ -90,6 +90,7 @@
 			resource="model/balanceOperationProductOutComponent.xml" />
 		<model:model model="operationTimeComponent" resource="model/operationTimeComponent.xml" />
 		<model:model model="operationPieceworkComponent" resource="model/operationPieceworkComponent.xml" />
+        <model:model model="staffWorkTime" resource="model/staffWorkTime.xml" />
 
 		<menu:menu-item name="productionCounting" category="ordersTracking"
 			view="productionRecordsList" />
@@ -106,6 +107,7 @@
 		<view:view resource="view/productionCountingDetails.xml" />
 		<view:view resource="view/recordOperationProductInComponentDetails.xml" />
 		<view:view resource="view/recordOperationProductOutComponentDetails.xml" />
+        <view:view resource="view/staffWorkTimeDetails.xml" />
 
 		<model:model-field plugin="states" model="message">
 			<model:belongsTo name="productionRecordStateChange"

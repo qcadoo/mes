@@ -36,7 +36,7 @@
 		
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
-				columns="6" rows="6" hasBorders="false">
+				columns="6" rows="4" hasBorders="false">
 				<layoutElement column="1" row="1" width="5">
 					<component type="input" name="number" reference="number"
 						defaultEnabled="false">
@@ -73,8 +73,8 @@
 	</component>
 	
 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-			method="fillFieldFromProduct" />
+        <beforeRender
+                class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
+                method="onBeforeRender" />
 	</hooks>
 </view>

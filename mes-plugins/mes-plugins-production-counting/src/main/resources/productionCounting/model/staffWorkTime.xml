@@ -24,29 +24,14 @@
     ***************************************************************************
 
 -->
-<model name="recordOperationProductInComponent"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="productionRecord" model="productionRecord" required="true" />
-		<belongsTo name="product" model="product" plugin="basic" required="true" />
-		<decimal name="plannedQuantity" persistent="false">
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="usedQuantity">
-			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="balance">
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
-	</fields>
-	<hooks>
-		<onView
-			class="com.qcadoo.mes.productionCounting.hooks.RecordOperationProductInComponentHooks"
-			method="fillPlannedQuantity" />
-	</hooks>
+<model name="staffWorkTime"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="productionRecord" model="productionRecord" required="true" />
+        <belongsTo name="worker" model="staff" plugin="basic" required="true" />
+        <integer name="laborTime" copyable="false" default="0" />
+    </fields>
+    <hooks>
+    </hooks>
 </model>

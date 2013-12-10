@@ -52,6 +52,8 @@ public final class ProductionCountingConstants {
 
     public static final String MODEL_BALANCE_OPERATION_PRODUCT_OUT_COMPONENT = "balanceOperationProductOutComponent";
 
+    public static final String MODEL_STAFF_WORK_TIME = "staffWorkTime";
+
     // VIEW
     public static final String VIEW_PRODUCTION_RECORDS_LIST = "productionRecordsList";
 

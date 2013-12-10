@@ -16,11 +16,14 @@ ALTER TABLE deliveries_delivery DROP COLUMN paymentForm;
 
 
 -- Table: productioncounting_productionrecord
--- changed: 30.10.2013 [maku]
+-- changed: 19.11.2013 [maku]
 
 ALTER TABLE productioncounting_productionrecord ADD COLUMN laststatechangefails boolean DEFAULT false;
 ALTER TABLE productioncounting_productionrecord ADD COLUMN laststatechangefailcause character varying(255);
 ALTER TABLE productioncounting_productionrecord ADD COLUMN isexternalsynchronized boolean DEFAULT true;
+ALTER TABLE productioncounting_productionrecord ADD COLUMN timerangefrom date;
+ALTER TABLE productioncounting_productionrecord ADD COLUMN timerangeto date;
+ALTER TABLE productioncounting_productionrecord ADD COLUMN shiftstartday date;
 
 -- end
 

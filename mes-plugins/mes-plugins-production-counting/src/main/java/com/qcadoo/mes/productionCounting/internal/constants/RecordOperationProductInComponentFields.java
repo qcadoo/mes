@@ -26,7 +26,6 @@ package com.qcadoo.mes.productionCounting.internal.constants;
 public final class RecordOperationProductInComponentFields {
 
     private RecordOperationProductInComponentFields() {
-
     }
 
     public static final String PRODUCTION_RECORD = "productionRecord";

@@ -31,17 +31,17 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class ProductionRecordViewServiceTest {
 
@@ -54,10 +54,25 @@ public class ProductionRecordViewServiceTest {
     private FieldComponent technologyInstanceOperationComponent;
 
     @Mock
-    private ComponentState dummyComponent, borderLayoutTime, borderLayoutPiecework;
+    private WindowComponentState windowComponent;
 
     @Mock
-    private Entity order;
+    private Ribbon ribbon;
+
+    @Mock
+    private RibbonGroup workTimeRibbonGroup;
+
+    @Mock
+    private RibbonActionItem calcTotalLaborTimeBtn;
+
+    @Mock
+    private ComponentState dummyComponent, timeTab, pieceworkTab;
+
+    @Mock
+    private Entity order, formEntity;
+
+    @Mock
+    private FormComponent formComponent;
 
     @Before
     public void init() {
@@ -69,8 +84,15 @@ public class ProductionRecordViewServiceTest {
         given(view.getComponentByReference("technologyInstanceOperationComponent")).willReturn(
                 technologyInstanceOperationComponent);
 
-        given(view.getComponentByReference("borderLayoutTime")).willReturn(borderLayoutTime);
-        given(view.getComponentByReference("borderLayoutPiecework")).willReturn(borderLayoutPiecework);
+        given(view.getComponentByReference("timeTab")).willReturn(timeTab);
+        given(view.getComponentByReference("pieceworkTab")).willReturn(pieceworkTab);
+        given(view.getComponentByReference("window")).willReturn(windowComponent);
+        given(windowComponent.getRibbon()).willReturn(ribbon);
+        given(ribbon.getGroupByName("workTime")).willReturn(workTimeRibbonGroup);
+        given(workTimeRibbonGroup.getItemByName("calcTotalLaborTime")).willReturn(calcTotalLaborTimeBtn);
+
+        given(view.getComponentByReference("form")).willReturn(formComponent);
+        given(formComponent.getEntity()).willReturn(formEntity);
     }
 
     @Test
@@ -79,7 +101,8 @@ public class ProductionRecordViewServiceTest {
         productionRecordViewService.setTimeAndPiecworkComponentsVisible(null, order, view);
 
         // then
-        verify(borderLayoutTime).setVisible(false);
+        verify(timeTab).setVisible(false);
+        verify(calcTotalLaborTimeBtn).setEnabled(false);
     }
 
     @Test
@@ -88,7 +111,7 @@ public class ProductionRecordViewServiceTest {
         productionRecordViewService.setTimeAndPiecworkComponentsVisible(null, order, view);
 
         // then
-        verify(borderLayoutPiecework).setVisible(false);
+        verify(pieceworkTab).setVisible(false);
     }
 
     @Test
@@ -98,7 +121,8 @@ public class ProductionRecordViewServiceTest {
                 order, view);
 
         // then
-        verify(borderLayoutTime).setVisible(false);
+        verify(timeTab).setVisible(false);
+        verify(calcTotalLaborTimeBtn).setEnabled(false);
     }
 
     @Test
@@ -111,6 +135,6 @@ public class ProductionRecordViewServiceTest {
                 order, view);
 
         // then
-        verify(borderLayoutPiecework).setVisible(true);
+        verify(pieceworkTab).setVisible(true);
     }
 }
