@@ -106,9 +106,8 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
 
             OperationProductComponentEntityType entityType = getEntityType(role);
 
-            OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
-                    product.getId(), technologyOperationComponent.getId(), product.getDataDefinition(),
-                    technologyOperationComponent.getDataDefinition(), entityType);
+            OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(product,
+                    technologyOperationComponent, entityType);
 
             productComponentWithQuantities.put(operationProductComponentHolder, plannedQuantity);
         }
@@ -146,9 +145,8 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
 
             OperationProductComponentEntityType entityType = getEntityType(role);
 
-            OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
-                    product.getId(), technologyOperationComponent.getId(), product.getDataDefinition(),
-                    technologyOperationComponent.getDataDefinition(), entityType);
+            OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(product,
+                    technologyOperationComponent, entityType);
 
             nonComponents.add(operationProductComponentHolder);
         }

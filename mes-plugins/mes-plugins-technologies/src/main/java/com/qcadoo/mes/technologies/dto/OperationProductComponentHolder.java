@@ -8,6 +8,10 @@ import com.qcadoo.model.api.Entity;
 
 public class OperationProductComponentHolder {
 
+    private static final String L_OPERATION_COMPONENT = "operationComponent";
+
+    private static final String L_PRODUCT = "product";
+
     private final Long productId;
 
     private final Long technologyOperationComponentId;
@@ -19,8 +23,8 @@ public class OperationProductComponentHolder {
     private final OperationProductComponentEntityType entityType;
 
     public OperationProductComponentHolder(final Entity operationProductComponent) {
-        Entity product = operationProductComponent.getBelongsToField("product");
-        Entity technologyOperationComponent = operationProductComponent.getBelongsToField("operationComponent");
+        Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
+        Entity technologyOperationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);
 
         OperationProductComponentEntityType entityType = OperationProductComponentEntityType
                 .parseString(operationProductComponent.getDataDefinition().getName());
@@ -29,6 +33,23 @@ public class OperationProductComponentHolder {
         this.technologyOperationComponentId = technologyOperationComponent.getId();
         this.productDD = product.getDataDefinition();
         this.technologyOperationComponentDD = technologyOperationComponent.getDataDefinition();
+        this.entityType = entityType;
+    }
+
+    public OperationProductComponentHolder(final Entity product, final Entity technologyOperationComponent,
+            final OperationProductComponentEntityType entityType) {
+
+        Long productId = product.getId();
+        Long technologyOperationComponentId = (technologyOperationComponent == null) ? null : technologyOperationComponent
+                .getId();
+        DataDefinition productDD = product.getDataDefinition();
+        DataDefinition technologyOperationComponentDD = (technologyOperationComponent == null) ? null
+                : technologyOperationComponent.getDataDefinition();
+
+        this.productId = productId;
+        this.technologyOperationComponentId = technologyOperationComponentId;
+        this.productDD = productDD;
+        this.technologyOperationComponentDD = technologyOperationComponentDD;
         this.entityType = entityType;
     }
 
@@ -63,11 +84,19 @@ public class OperationProductComponentHolder {
     }
 
     public Entity getProduct() {
-        return getProductDD().get(getProductId());
+        if ((getProductId() == null) || (getProductDD() == null)) {
+            return null;
+        } else {
+            return getProductDD().get(getProductId());
+        }
     }
 
     public Entity getTechnologyOperationComponent() {
-        return getTechnologyOperationComponentDD().get(getTechnologyOperationComponentId());
+        if ((getTechnologyOperationComponentId() == null) || (getTechnologyOperationComponentDD() == null)) {
+            return null;
+        } else {
+            return getTechnologyOperationComponentDD().get(getTechnologyOperationComponentId());
+        }
     }
 
     public boolean isEntityTypeSame(final String operationProductComponentModelName) {
