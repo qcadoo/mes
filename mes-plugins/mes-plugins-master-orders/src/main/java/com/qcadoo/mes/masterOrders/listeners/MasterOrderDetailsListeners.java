@@ -2,9 +2,12 @@ package com.qcadoo.mes.masterOrders.listeners;
 
 import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
@@ -20,11 +23,13 @@ public class MasterOrderDetailsListeners {
 
     private static final String L_FORM = "form";
 
-    @Autowired
-    private MasterOrderDetailsHooks masterOrderDetailsHooks;
+    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     @Autowired
     private ExpressionService expressionService;
+
+    @Autowired
+    private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
@@ -43,13 +48,16 @@ public class MasterOrderDetailsListeners {
         FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
 
         Entity product = productField.getEntity();
+
         if (product == null || technologyServiceO.getDefaultTechnology(product) == null) {
             defaultTechnology.setFieldValue(null);
             technology.setFieldValue(null);
             defaultTechnology.requestComponentUpdateState();
             technology.requestComponentUpdateState();
+
             return;
         }
+
         Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
         String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                 view.getLocale());
@@ -73,12 +81,19 @@ public class MasterOrderDetailsListeners {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity masterOrder = masterOrderForm.getEntity();
 
-        if (masterOrder.getId() == null) {
+        Long masterOrderId = masterOrder.getId();
+
+        if (masterOrderId == null) {
             return;
         }
 
-        String url = "../page/orders/orderDetails.html?context={form.masterOrder: " + masterOrder.getId() + "}";
-        view.redirectTo(url, false, true);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.masterOrder", masterOrderId);
+
+        parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
+
+        String url = "../page/orders/orderDetails.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
 }
