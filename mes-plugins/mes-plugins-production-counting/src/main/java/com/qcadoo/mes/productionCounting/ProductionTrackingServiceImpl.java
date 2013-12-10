@@ -113,6 +113,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         boolean isBasic = productionCountingService.isTypeOfProductionRecordingBasic(typeOfProductionRecording);
         boolean isForEach = productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording);
 
+        technologyOperationComponentLookup.setEnabled(isForEach);
         technologyOperationComponentLookup.setVisible(isForEach);
 
         borderLayoutTime.setVisible(registerProductionTime && !isBasic);
