@@ -511,7 +511,7 @@
                                 <phase>deploy</phase>
                                 <configuration>
                                     <target>
-                                        <copy file="${basedir}/target/${project.artifactId}.zip" tofile="/home/demo/deploy/${profile.name}.zip" />
+                                    	<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/home/${shell.user}/deploy/${shell.user}.zip" />
                                     </target>
                                 </configuration>
                                 <goals>
@@ -589,7 +589,7 @@
 								<configuration>
 									<serverId>qcadoo-public</serverId>
 									<fromFile>${basedir}/target/${project.artifactId}.zip</fromFile>
-									<toFile>${profile}.zip</toFile>
+									<toFile>${destination.file.name}.zip</toFile>
 									<url>${wagon.url}</url>
 								</configuration>
 							</execution>
