@@ -56,24 +56,26 @@ public class ProductQuantitiesServiceImplTSOverrideUtil {
             Entity product = nonComponent.getProduct();
             Entity technologyOperationComponent = nonComponent.getTechnologyOperationComponent();
 
-            List<Entity> children = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.CHILDREN)
-                    .find().add(SearchRestrictions.eq(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING, true)).list()
-                    .getEntities();
+            if (technologyOperationComponent != null) {
+                List<Entity> children = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.CHILDREN)
+                        .find().add(SearchRestrictions.eq(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING, true)).list()
+                        .getEntities();
 
-            boolean isSubcontracting = false;
-            for (Entity child : children) {
-                Entity operationProductOutComponent = child
-                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).find()
-                        .add(SearchRestrictions.belongsTo(OperationProductOutComponentFields.PRODUCT, product)).setMaxResults(1)
-                        .uniqueResult();
+                boolean isSubcontracting = false;
+                for (Entity child : children) {
+                    Entity operationProductOutComponent = child
+                            .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                            .add(SearchRestrictions.belongsTo(OperationProductOutComponentFields.PRODUCT, product))
+                            .setMaxResults(1).uniqueResult();
 
-                if (operationProductOutComponent != null) {
-                    isSubcontracting = true;
+                    if (operationProductOutComponent != null) {
+                        isSubcontracting = true;
+                    }
                 }
-            }
 
-            if (!isSubcontracting) {
-                productComponentWithQuantities.remove(nonComponent);
+                if (!isSubcontracting) {
+                    productComponentWithQuantities.remove(nonComponent);
+                }
             }
         }
 

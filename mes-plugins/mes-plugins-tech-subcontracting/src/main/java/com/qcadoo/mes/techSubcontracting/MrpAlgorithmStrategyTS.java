@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.techSubcontracting.constants.TechnologyOperationComponentFieldsTS;
 import com.qcadoo.mes.technologies.MrpAlgorithmStrategy;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
@@ -71,21 +72,24 @@ public class MrpAlgorithmStrategyTS implements MrpAlgorithmStrategy {
                 Entity product = operationProductComponentHolder.getProduct();
                 Entity technologyOperationComponent = operationProductComponentHolder.getTechnologyOperationComponent();
 
-                List<Entity> children = technologyOperationComponent.getHasManyField(CHILDREN).find()
-                        .add(SearchRestrictions.eq("isSubcontracting", true)).list().getEntities();
+                if (technologyOperationComponent != null) {
+                    List<Entity> children = technologyOperationComponent.getHasManyField(CHILDREN).find()
+                            .add(SearchRestrictions.eq(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING, true)).list()
+                            .getEntities();
 
-                boolean isSubcontracting = false;
-                for (Entity child : children) {
-                    Entity operationProductOutComponent = child.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS).find()
-                            .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
+                    boolean isSubcontracting = false;
+                    for (Entity child : children) {
+                        Entity operationProductOutComponent = child.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                                .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
 
-                    if (operationProductOutComponent != null) {
-                        isSubcontracting = true;
+                        if (operationProductOutComponent != null) {
+                            isSubcontracting = true;
+                        }
                     }
-                }
 
-                if (!isSubcontracting) {
-                    continue;
+                    if (!isSubcontracting) {
+                        continue;
+                    }
                 }
             }
 
