@@ -54,6 +54,7 @@ import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -96,7 +97,6 @@ public final class ProductionRecordBasicListenerService {
 
     public void validationOnAccept(final StateChangeContext stateChangeContext) {
         checkIfRecordOperationProductComponentsWereFilled(stateChangeContext);
-        checkIfTimesWereFilled(stateChangeContext);
         checkIfExistsFinalRecord(stateChangeContext);
     }
 
@@ -124,21 +124,13 @@ public final class ProductionRecordBasicListenerService {
         }
     }
 
-    private boolean checkIfUsedQuantitiesWereFilled(final Entity productionRecord, final String modelName) {
-        final SearchCriteriaBuilder searchBuilder = productionRecord.getHasManyField(modelName).find()
-                .add(SearchRestrictions.isNotNull(L_USED_QUANTITY));
-
-        return (searchBuilder.list().getTotalNumberOfEntities() != 0);
-    }
-
-    private void checkIfTimesWereFilled(final StateChangeContext stateChangeContext) {
-        final Entity productionRecord = stateChangeContext.getOwner();
-        Integer machineTime = productionRecord.getIntegerField(ProductionRecordFields.MACHINE_TIME);
-        Integer laborTime = productionRecord.getIntegerField(ProductionRecordFields.LABOR_TIME);
-
-        if ((machineTime == null) || (laborTime == null)) {
-            stateChangeContext.addValidationError("productionCounting.productionRecord.messages.error.timesNotFilled");
+    private boolean checkIfUsedQuantitiesWereFilled(final Entity productionRecord, final String productComponentsFieldName) {
+        EntityList productComponents = productionRecord.getHasManyField(productComponentsFieldName);
+        if (productComponents.isEmpty()) {
+            return true;
         }
+        final SearchCriteriaBuilder searchBuilder = productComponents.find().add(SearchRestrictions.isNotNull(L_USED_QUANTITY));
+        return (searchBuilder.list().getTotalNumberOfEntities() != 0);
     }
 
     private void checkIfExistsFinalRecord(final StateChangeContext stateChangeContext) {
