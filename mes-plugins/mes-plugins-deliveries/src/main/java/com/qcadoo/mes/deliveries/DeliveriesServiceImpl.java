@@ -65,7 +65,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -405,40 +404,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         } else {
             return currency.getDataDefinition().get(currency.getId()).getStringField(CurrencyFields.ALPHABETIC_CODE);
         }
-    }
-
-    @Override
-    public BigDecimal findLastPurchasePrice(final String pluginIdentifier, final String joinModelName,
-            final String joinModelStateName, final String joinModelState, final String productModelName,
-            final String productModelProductName, final Entity product) {
-        String query = String.format("SELECT entity FROM #%s_%s AS entity "
-                + "INNER JOIN entity.%s AS joinModel WHERE joinModel.%s = :state"
-                + " AND entity.%s = :product ORDER BY joinModel.updateDate DESC", pluginIdentifier, productModelName,
-                joinModelName, joinModelStateName, productModelProductName);
-
-        SearchQueryBuilder searchQueryBuilder = dataDefinitionService.get(pluginIdentifier, productModelName).find(query);
-        searchQueryBuilder.setEntity("product", product);
-        searchQueryBuilder.setString("state", joinModelState);
-
-        Entity entity = searchQueryBuilder.setMaxResults(1).uniqueResult();
-
-        if (entity != null) {
-            return entity.getDecimalField(L_PRICE_PER_UNIT);
-        }
-
-        return null;
-    }
-
-    @Override
-    public void fillLastPurchasePrice(final ViewDefinitionState view, final BigDecimal lastPurchasePrice) {
-        FieldComponent pricePerUnit = (FieldComponent) view.getComponentByReference(L_PRICE_PER_UNIT);
-
-        if (StringUtils.isNotEmpty((String) pricePerUnit.getFieldValue())) {
-            return;
-        }
-
-        pricePerUnit.setFieldValue(numberService.format(lastPurchasePrice));
-        pricePerUnit.requestComponentUpdateState();
     }
 
     @Override

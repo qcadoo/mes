@@ -1,10 +1,9 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
-import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
@@ -17,6 +16,8 @@ import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class MasterOrderDetailsListeners {
+
+    private static final String L_FORM = "form";
 
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
@@ -36,18 +37,21 @@ public class MasterOrderDetailsListeners {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent productField = (LookupComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
-        FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
-        FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
+        LookupComponent productField = (LookupComponent) view.getComponentByReference(MasterOrderFields.PRODUCT);
+        FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference(MasterOrderFields.DEFAULT_TECHNOLOGY);
+        FieldComponent technology = (FieldComponent) view.getComponentByReference(MasterOrderFields.TECHNOLOGY);
 
         Entity product = productField.getEntity();
+
         if (product == null || technologyServiceO.getDefaultTechnology(product) == null) {
             defaultTechnology.setFieldValue(null);
             technology.setFieldValue(null);
             defaultTechnology.requestComponentUpdateState();
             technology.requestComponentUpdateState();
+
             return;
         }
+
         Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
         String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                 view.getLocale());
@@ -58,7 +62,7 @@ public class MasterOrderDetailsListeners {
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         form.performEvent(view, "refresh");
     }
 
@@ -66,4 +70,5 @@ public class MasterOrderDetailsListeners {
             final String[] args) {
         masterOrderDetailsHooks.setUneditableWhenEntityHasUnsaveChanges(view);
     }
+
 }

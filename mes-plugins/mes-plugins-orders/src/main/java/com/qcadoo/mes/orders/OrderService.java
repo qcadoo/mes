@@ -205,8 +205,8 @@ public class OrderService {
         orderState.setFieldValue(OrderState.PENDING.getStringValue());
     }
 
-    public void generateOrderNumber(final ViewDefinitionState state) {
-        numberGeneratorService.generateAndInsertNumber(state, OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
+    public void generateOrderNumber(final ViewDefinitionState view) {
+        numberGeneratorService.generateAndInsertNumber(view, OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
                 FIELD_FORM, FIELD_NUMBER);
     }
 
