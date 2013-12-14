@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordStateStringValues;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -48,7 +48,7 @@ public class ProductionRecordDetailsHooksTSFPC {
         }
         Entity productionRecord = getProductionRecord(form.getEntityId());
         String stateFieldValue = productionRecord.getStringField(ProductionRecordFields.STATE);
-        boolean isDraft = ProductionRecordState.DRAFT.equals(stateFieldValue);
+        boolean isDraft = ProductionRecordStateStringValues.DRAFT.equals(stateFieldValue);
         boolean isExternalSynchronized = productionRecord.getBooleanField(ProductionRecordFields.IS_EXTERNAL_SYNCHRONIZED);
 
         ComponentState subcontractor = view.getComponentByReference("subcontractor");
