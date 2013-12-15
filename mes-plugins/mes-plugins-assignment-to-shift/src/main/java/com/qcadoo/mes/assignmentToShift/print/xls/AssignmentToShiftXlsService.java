@@ -45,10 +45,12 @@ import java.util.Locale;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.assignmentToShift.constants.OccupationType;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
@@ -145,13 +147,12 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             List<Entity> productionlines = assignmentToShiftXlsHelper.getProductionLines();
 
             if (!productionlines.isEmpty()) {
-                fillColumnWithStaffForWorkOnLine(sheet, rowNum, entity, days, productionlines,
+                rowNum = fillColumnWithStaffForWorkOnLine(sheet, rowNum, entity, days, productionlines,
                         getDictionaryItemWithProductionOnLine());
-                rowNum += productionlines.size();
             }
             for (Entity dictionaryItem : occupationTypesWithoutTechnicalCode) {
-                fillColumnWithStaffForOtherTypes(sheet, rowNum, entity, days, dictionaryItem);
-                rowNum++;
+                rowNum = fillColumnWithStaffForOtherTypes(sheet, rowNum, entity, days, dictionaryItem);
+                // rowNum++;
             }
             fillColumnWithStaffForOtherTypes(sheet, rowNum, entity, days, getDictionaryItemWithOtherCase());
             sheet.autoSizeColumn(0);
@@ -159,11 +160,19 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
     }
 
-    private void fillColumnWithStaffForWorkOnLine(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
+    private int fillColumnWithStaffForWorkOnLine(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
             final List<DateTime> days, final List<Entity> productionLines, final Entity dictionaryItem) {
         if ((assignmentToShiftReport != null) && (days != null) && (productionLines != null)) {
+
             for (Entity productionLine : productionLines) {
-                HSSFRow row = sheet.createRow(rowNum);
+                int rowNumFromLastSection = rowNum;
+                int numberOfColumnsForWorkers = getNumberOfRowsForWorkers(assignmentToShiftReport, days, productionLine,
+                        dictionaryItem);
+                for (int i = 0; i < numberOfColumnsForWorkers; i++) {
+                    HSSFRow row = sheet.createRow(rowNum);
+                    rowNum++;
+                }
+
                 String productionLineValue = null;
                 if (productionLine.getStringField(PLACE) == null) {
                     productionLineValue = productionLine.getStringField(NUMBER);
@@ -171,16 +180,20 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                     productionLineValue = productionLine.getStringField(NUMBER) + "-"
                             + productionLine.getStringField(ProductionLineFields.PLACE);
                 }
-
-                row.createCell(0).setCellValue(productionLineValue);
-                if (assignmentToShiftXlsHelper.getProductionLinesWithStaff(productionLine).isEmpty()) {
-                    assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, rowNum,
-                            assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
+                HSSFRow firstRowInSection = null;
+                if (sheet.getRow(rowNumFromLastSection) == null) {
+                    firstRowInSection = sheet.createRow(rowNumFromLastSection);
                     rowNum++;
-                    continue;
+                } else {
+                    firstRowInSection = sheet.getRow(rowNumFromLastSection);
+
                 }
+                HSSFCell cell = firstRowInSection.createCell(0);
+                cell.setCellValue(productionLineValue);
+                sheet.addMergedRegion(new CellRangeAddress(rowNumFromLastSection, rowNum - 1, 0, 0));
                 int columnNumber = 1;
                 int maxLength = 0;
+
                 for (DateTime day : days) {
                     Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                             assignmentToShiftReport.getBelongsToField(SHIFT), day.toDate());
@@ -188,7 +201,6 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                         columnNumber += 3;
                         continue;
                     }
-
                     List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
                             dictionaryItem.getStringField(NAME), productionLine);
                     if (staffs.isEmpty()) {
@@ -197,30 +209,103 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                     }
                     String staffsValue = assignmentToShiftXlsHelper.getListOfWorkers(staffs);
 
-                    row.createCell(columnNumber).setCellValue(staffsValue);
+                    List<String> workers = assignmentToShiftXlsHelper.getListOfWorker(staffs);
+
+                    int rowIndex = rowNumFromLastSection;
+
+                    for (String worker : workers) {
+                        sheet.getRow(rowIndex).createCell(columnNumber).setCellValue(worker);
+                        rowIndex++;
+                    }
+                    if (workers.isEmpty()) {
+                        sheet.getRow(rowIndex).createCell(columnNumber).setCellValue(" ");
+
+                    }
                     if (maxLength < staffsValue.length()) {
                         maxLength = staffsValue.length();
                     }
-                    row.setHeightInPoints(assignmentToShiftXlsStyleHelper.getHeightForRow(maxLength, 22, 14));
-
+                    // row.setHeightInPoints(assignmentToShiftXlsStyleHelper.getHeightForRow(maxLength, 22, 14));
                     columnNumber += 3;
                 }
+                for (int i = rowNumFromLastSection; i < rowNum; i++) {
+                    assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, i,
+                            assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
 
-                assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, rowNum,
-                        assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
-
-                rowNum++;
+                }
             }
+
         }
+        return rowNum;
     }
 
-    private void fillColumnWithStaffForOtherTypes(final HSSFSheet sheet, final int rowNum, final Entity assignmentToShiftReport,
+    private int getNumberOfRowsForWorkers(final Entity assignmentToShiftReport, final List<DateTime> days,
+            final Entity productionLine, final Entity dictionaryItem) {
+        int numberOfWorkers = 0;
+
+        for (DateTime day : days) {
+            Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
+                    assignmentToShiftReport.getBelongsToField(SHIFT), day.toDate());
+            List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
+                    dictionaryItem.getStringField(NAME), productionLine);
+
+            List<String> workers = assignmentToShiftXlsHelper.getListOfWorker(staffs);
+            if (workers.size() > numberOfWorkers) {
+                numberOfWorkers = workers.size();
+            }
+        }
+
+        return numberOfWorkers;
+    }
+
+    private int getNumberOfRowsForWorkersForOtherTypes(final Entity assignmentToShiftReport, final List<DateTime> days,
+            final Entity occupationType) {
+        int numberOfWorkers = 0;
+
+        for (DateTime day : days) {
+            Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
+                    assignmentToShiftReport.getBelongsToField(SHIFT), day.toDate());
+            List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
+                    occupationType.getStringField(NAME), null);
+
+            List<String> workers = Lists.newArrayList();
+            if (OccupationType.OTHER_CASE.getStringValue().equals(occupationType.getStringField(TECHNICAL_CODE))) {
+                workers = assignmentToShiftXlsHelper.getListOfWorkerWithOtherCases(staffs);
+            } else {
+                workers = assignmentToShiftXlsHelper.getListOfWorker(staffs);
+            }
+
+            if (workers.size() > numberOfWorkers) {
+                numberOfWorkers = workers.size();
+            }
+        }
+
+        return numberOfWorkers;
+    }
+
+    private int fillColumnWithStaffForOtherTypes(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
             final List<DateTime> days, final Entity occupationType) {
         if ((assignmentToShiftReport != null) && (days != null) && (occupationType != null)) {
-            HSSFRow row = sheet.createRow(rowNum);
+
+            int rowNumFromLastSection = rowNum;
+
+            int numberOfColumnsForWorkers = getNumberOfRowsForWorkersForOtherTypes(assignmentToShiftReport, days, occupationType);
+            for (int i = 0; i < numberOfColumnsForWorkers; i++) {
+                HSSFRow row = sheet.createRow(rowNum);
+                rowNum++;
+            }
             String occupationTypeValue = occupationType.getStringField(NAME);
 
-            row.createCell(0).setCellValue(occupationTypeValue);
+            HSSFRow firstRowInSection = null;
+            if (sheet.getRow(rowNumFromLastSection) == null) {
+                firstRowInSection = sheet.createRow(rowNumFromLastSection);
+                rowNum++;
+            } else {
+                firstRowInSection = sheet.getRow(rowNumFromLastSection);
+
+            }
+            HSSFCell cell = firstRowInSection.createCell(0);
+            cell.setCellValue(occupationTypeValue);
+            sheet.addMergedRegion(new CellRangeAddress(rowNumFromLastSection, rowNum - 1, 0, 0));
 
             int columnNumber = 1;
             int maxLength = 0;
@@ -234,25 +319,33 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
                         occupationType.getStringField(NAME), null);
 
-                String staffsValue = null;
+                List<String> workers = Lists.newArrayList();
                 if (OccupationType.OTHER_CASE.getStringValue().equals(occupationType.getStringField(TECHNICAL_CODE))) {
-                    staffsValue = assignmentToShiftXlsHelper.getListOfWorkersWithOtherCases(staffs);
+                    workers = assignmentToShiftXlsHelper.getListOfWorkerWithOtherCases(staffs);
                 } else {
-                    staffsValue = assignmentToShiftXlsHelper.getListOfWorkers(staffs);
+                    workers = assignmentToShiftXlsHelper.getListOfWorker(staffs);
                 }
 
-                row.createCell(columnNumber).setCellValue(staffsValue);
-                if (maxLength < staffsValue.length()) {
-                    maxLength = staffsValue.length();
-                }
-                row.setHeightInPoints(assignmentToShiftXlsStyleHelper.getHeightForRow(maxLength, 22, 14));
+                int rowIndex = rowNumFromLastSection;
 
+                for (String worker : workers) {
+                    sheet.getRow(rowIndex).createCell(columnNumber).setCellValue(worker);
+                    rowIndex++;
+                }
+                if (workers.isEmpty()) {
+                    sheet.getRow(rowIndex).createCell(columnNumber).setCellValue(" ");
+
+                }
                 columnNumber += 3;
             }
 
-            assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, rowNum,
-                    assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
+            for (int i = rowNumFromLastSection; i < rowNum; i++) {
+                assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, i,
+                        assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
+            }
         }
+
+        return rowNum;
     }
 
     private List<Entity> getOccupationTypeDictionaryWithoutTechnicalCode() {
