@@ -23,23 +23,11 @@
  */
 package com.qcadoo.mes.deliveries;
 
-import static com.qcadoo.mes.basic.constants.CompanyFields.CITY;
-import static com.qcadoo.mes.basic.constants.CompanyFields.FLAT;
-import static com.qcadoo.mes.basic.constants.CompanyFields.HOUSE;
-import static com.qcadoo.mes.basic.constants.CompanyFields.STREET;
-import static com.qcadoo.mes.basic.constants.CompanyFields.ZIP_CODE;
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.deliveries.constants.DefaultAddressType.OTHER;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_ADDRESS;
-import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCRIPTION;
-import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
-
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -51,14 +39,18 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
+import com.qcadoo.mes.deliveries.constants.DefaultAddressType;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -66,8 +58,10 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -76,6 +70,8 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
+
+    private static final String L_FORM = "form";
 
     private static final String L_WINDOW = "window";
 
@@ -197,31 +193,22 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames) {
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(productName);
-        Entity product = productLookup.getEntity();
+    public String getDeliveryAddressDefaultValue() {
+        Entity parameter = parameterService.getParameter();
 
-        String unit = "";
-
-        if (product != null) {
-            unit = product.getStringField(UNIT);
-        }
-
-        for (String referenceName : referenceNames) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(referenceName);
-            field.setFieldValue(unit);
-            field.requestComponentUpdateState();
+        if (DefaultAddressType.OTHER.getStringValue().equals(parameter.getStringField(ParameterFieldsD.DEFAULT_ADDRESS))) {
+            return parameter.getStringField(ParameterFieldsD.OTHER_ADDRESS);
+        } else {
+            return generateAddressFromCompany();
         }
     }
 
     @Override
-    public String getDeliveryAddressDefaultValue() {
-        Entity parameter = parameterService.getParameter();
-
-        if (OTHER.getStringValue().equals(parameter.getStringField(DEFAULT_ADDRESS))) {
-            return parameter.getStringField(OTHER_ADDRESS);
+    public Entity getProduct(final DeliveryProduct deliveryProduct) {
+        if (deliveryProduct.getOrderedProductId() == null) {
+            return getDeliveredProduct(deliveryProduct.getDeliveredProductId()).getBelongsToField(DeliveredProductFields.PRODUCT);
         } else {
-            return generateAddressFromCompany();
+            return getOrderedProduct(deliveryProduct.getOrderedProductId()).getBelongsToField(OrderedProductFields.PRODUCT);
         }
     }
 
@@ -229,7 +216,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     public String getDescriptionDefaultValue() {
         Entity parameter = parameterService.getParameter();
 
-        return parameter.getStringField(DEFAULT_DESCRIPTION);
+        return parameter.getStringField(ParameterFieldsD.DEFAULT_DESCRIPTION);
     }
 
     private String generateAddressFromCompany() {
@@ -238,11 +225,11 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         Entity company = companyService.getCompany();
 
         if (company != null) {
-            String street = company.getStringField(STREET);
-            String house = company.getStringField(HOUSE);
-            String flat = company.getStringField(FLAT);
-            String zipCode = company.getStringField(ZIP_CODE);
-            String city = company.getStringField(CITY);
+            String street = company.getStringField(CompanyFields.STREET);
+            String house = company.getStringField(CompanyFields.HOUSE);
+            String flat = company.getStringField(CompanyFields.FLAT);
+            String zipCode = company.getStringField(CompanyFields.ZIP_CODE);
+            String city = company.getStringField(CompanyFields.CITY);
 
             if (StringUtils.isNotEmpty(street)) {
                 address.append(street);
@@ -271,62 +258,21 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public Entity getProduct(final DeliveryProduct deliveryProduct) {
-        if (deliveryProduct.getOrderedProductId() == null) {
-            return getDeliveredProduct(deliveryProduct.getDeliveredProductId()).getBelongsToField(DeliveredProductFields.PRODUCT);
-        } else {
-            return getOrderedProduct(deliveryProduct.getOrderedProductId()).getBelongsToField(OrderedProductFields.PRODUCT);
-        }
-    }
+    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(productName);
+        Entity product = productLookup.getEntity();
 
-    @Override
-    public void calculatePricePerUnit(final Entity entity, final String quantityFieldName) {
-        BigDecimal totalPrice = entity.getDecimalField(OrderedProductFields.TOTAL_PRICE);
-        BigDecimal pricePerUnit = entity.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
-        BigDecimal quantity = entity.getDecimalField(quantityFieldName);
-        boolean save = true;
-        if ((pricePerUnit != null && changedFieldValue(entity, pricePerUnit, OrderedProductFields.PRICE_PER_UNIT))
-                || (pricePerUnit != null && totalPrice == null)) {
-            totalPrice = numberService.setScale(calculateTotalPrice(quantity, pricePerUnit));
-        } else if ((totalPrice != null && changedFieldValue(entity, totalPrice, OrderedProductFields.TOTAL_PRICE))
-                || (totalPrice != null && pricePerUnit == null)) {
-            pricePerUnit = numberService.setScale(calculatePricePefUnit(quantity, totalPrice));
-        } else {
-            save = false;
-        }
-        if (save) {
-            entity.setField(L_PRICE_PER_UNIT, pricePerUnit);
-            entity.setField(L_TOTAL_PRICE, totalPrice);
-        }
-    }
+        String unit = "";
 
-    private boolean changedFieldValue(final Entity entity, final BigDecimal fieldValue, final String reference) {
-        if (entity.getId() == null) {
-            return true;
+        if (product != null) {
+            unit = product.getStringField(ProductFields.UNIT);
         }
-        Entity entityFromDB = entity.getDataDefinition().get(entity.getId());
-        return entityFromDB.getDecimalField(reference) == null
-                || !(fieldValue.compareTo(entityFromDB.getDecimalField(reference)) == 0);
-    }
 
-    private BigDecimal calculatePricePefUnit(final BigDecimal quantity, final BigDecimal totalPrice) {
-        BigDecimal pricePerUnit = BigDecimal.ZERO;
-        if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
-            pricePerUnit = null;
-        } else {
-            pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
+        for (String referenceName : referenceNames) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(referenceName);
+            field.setFieldValue(unit);
+            field.requestComponentUpdateState();
         }
-        return pricePerUnit;
-    }
-
-    private BigDecimal calculateTotalPrice(final BigDecimal quantity, final BigDecimal pricePerUnit) {
-        BigDecimal totalPrice = BigDecimal.ZERO;
-        if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
-            totalPrice = BigDecimal.ZERO;
-        } else {
-            totalPrice = pricePerUnit.multiply(quantity, numberService.getMathContext());
-        }
-        return totalPrice;
     }
 
     @Override
@@ -358,6 +304,192 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             field.setFieldValue(currency);
             field.requestComponentUpdateState();
         }
+    }
+
+    @Override
+    public String getCurrency(final Entity delivery) {
+        if (delivery == null) {
+            return "";
+        }
+
+        Entity currency = delivery.getBelongsToField(DeliveryFields.CURRENCY);
+
+        if (currency == null) {
+            return currencyService.getCurrencyAlphabeticCode();
+        } else {
+            return currency.getDataDefinition().get(currency.getId()).getStringField(CurrencyFields.ALPHABETIC_CODE);
+        }
+    }
+
+    @Override
+    public void recalculatePriceFromTotalPrice(final ViewDefinitionState view, final String quantityFieldReference) {
+        if (!isValidDecimalField(view, Arrays.asList(L_PRICE_PER_UNIT, L_TOTAL_PRICE, quantityFieldReference))) {
+            return;
+        }
+
+        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
+        FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(L_TOTAL_PRICE);
+
+        if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
+                && StringUtils.isNotEmpty((String) totalPriceField.getFieldValue())) {
+            calculatePriceUsingTotalCost(view, quantityField, totalPriceField);
+        }
+    }
+
+    private void calculatePriceUsingTotalCost(final ViewDefinitionState view, FieldComponent quantityField,
+            FieldComponent totalPriceField) {
+        FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(L_PRICE_PER_UNIT);
+
+        Locale locale = view.getLocale();
+
+        BigDecimal quantity = getBigDecimalFromField(quantityField, locale);
+        BigDecimal totalPrice = getBigDecimalFromField(totalPriceField, locale);
+
+        BigDecimal pricePerUnit = numberService.setScale(totalPrice.divide(quantity, numberService.getMathContext()));
+
+        pricePerUnitField.setFieldValue(numberService.format(pricePerUnit));
+        pricePerUnitField.requestComponentUpdateState();
+    }
+
+    @Override
+    public void recalculatePriceFromPricePerUnit(final ViewDefinitionState view, final String quantityFieldReference) {
+        if (!isValidDecimalField(view, Arrays.asList(L_PRICE_PER_UNIT, L_TOTAL_PRICE, quantityFieldReference))) {
+            return;
+        }
+
+        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
+        FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(L_PRICE_PER_UNIT);
+
+        if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
+                && StringUtils.isNotEmpty((String) pricePerUnitField.getFieldValue())) {
+            calculatePriceUsingPricePerUnit(view, quantityField, pricePerUnitField);
+        }
+    }
+
+    private void calculatePriceUsingPricePerUnit(final ViewDefinitionState view, FieldComponent quantityField,
+            FieldComponent pricePerUnitField) {
+        FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(L_TOTAL_PRICE);
+
+        Locale locale = view.getLocale();
+
+        BigDecimal pricePerUnit = getBigDecimalFromField(pricePerUnitField, locale);
+        BigDecimal quantity = getBigDecimalFromField(quantityField, locale);
+
+        BigDecimal totalPrice = numberService.setScale(pricePerUnit.multiply(quantity, numberService.getMathContext()));
+
+        totalPriceField.setFieldValue(numberService.format(totalPrice));
+        totalPriceField.requestComponentUpdateState();
+    }
+
+    @Override
+    public void recalculatePrice(final ViewDefinitionState view, final String quantityFieldReference) {
+        if (!isValidDecimalField(view, Arrays.asList(L_PRICE_PER_UNIT, L_TOTAL_PRICE, quantityFieldReference))) {
+            return;
+        }
+
+        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
+        FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(L_PRICE_PER_UNIT);
+        FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(L_TOTAL_PRICE);
+
+        if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
+                && StringUtils.isNotEmpty((String) pricePerUnitField.getFieldValue())) {
+            calculatePriceUsingPricePerUnit(view, quantityField, pricePerUnitField);
+        } else if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
+                && StringUtils.isNotEmpty((String) totalPriceField.getFieldValue())) {
+            calculatePriceUsingTotalCost(view, quantityField, totalPriceField);
+        }
+    }
+
+    @Override
+    public BigDecimal getBigDecimalFromField(final FieldComponent fieldComponent, final Locale locale) {
+        Object value = fieldComponent.getFieldValue();
+
+        try {
+            DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
+            format.setParseBigDecimal(true);
+
+            return new BigDecimal(format.parse(value.toString()).doubleValue());
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
+        boolean isValid = true;
+
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity entity = form.getEntity();
+
+        for (String field : fileds) {
+            try {
+                BigDecimal decimalField = entity.getDecimalField(field);
+            } catch (IllegalArgumentException e) {
+                form.findFieldComponentByName(field).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
+                        MessageType.FAILURE);
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    @Override
+    public void calculatePricePerUnit(final Entity entity, final String quantityFieldName) {
+        BigDecimal totalPrice = entity.getDecimalField(OrderedProductFields.TOTAL_PRICE);
+        BigDecimal pricePerUnit = entity.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
+        BigDecimal quantity = entity.getDecimalField(quantityFieldName);
+
+        boolean save = true;
+
+        if ((pricePerUnit != null && changedFieldValue(entity, pricePerUnit, OrderedProductFields.PRICE_PER_UNIT))
+                || (pricePerUnit != null && totalPrice == null)) {
+            totalPrice = numberService.setScale(calculateTotalPrice(quantity, pricePerUnit));
+        } else if ((totalPrice != null && changedFieldValue(entity, totalPrice, OrderedProductFields.TOTAL_PRICE))
+                || (totalPrice != null && pricePerUnit == null)) {
+            pricePerUnit = numberService.setScale(calculatePricePerUnit(quantity, totalPrice));
+        } else {
+            save = false;
+        }
+
+        if (save) {
+            entity.setField(L_PRICE_PER_UNIT, pricePerUnit);
+            entity.setField(L_TOTAL_PRICE, totalPrice);
+        }
+    }
+
+    private boolean changedFieldValue(final Entity entity, final BigDecimal fieldValue, final String reference) {
+        if (entity.getId() == null) {
+            return true;
+        }
+
+        Entity entityFromDB = entity.getDataDefinition().get(entity.getId());
+
+        return entityFromDB.getDecimalField(reference) == null
+                || !(fieldValue.compareTo(entityFromDB.getDecimalField(reference)) == 0);
+    }
+
+    private BigDecimal calculatePricePerUnit(final BigDecimal quantity, final BigDecimal totalPrice) {
+        BigDecimal pricePerUnit = BigDecimal.ZERO;
+
+        if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
+            pricePerUnit = null;
+        } else {
+            pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
+        }
+
+        return pricePerUnit;
+    }
+
+    private BigDecimal calculateTotalPrice(final BigDecimal quantity, final BigDecimal pricePerUnit) {
+        BigDecimal totalPrice = BigDecimal.ZERO;
+
+        if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
+            totalPrice = BigDecimal.ZERO;
+        } else {
+            totalPrice = pricePerUnit.multiply(quantity, numberService.getMathContext());
+        }
+
+        return totalPrice;
     }
 
     @Override
@@ -394,36 +526,9 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public String getCurrency(final Entity delivery) {
-        if (delivery == null) {
-            return "";
-        }
-        Entity currency = delivery.getBelongsToField(DeliveryFields.CURRENCY);
-        if (currency == null) {
-            return currencyService.getCurrencyAlphabeticCode();
-        } else {
-            return currency.getDataDefinition().get(currency.getId()).getStringField(CurrencyFields.ALPHABETIC_CODE);
-        }
-    }
-
-    @Override
-    public BigDecimal getBigDecimalFromField(final FieldComponent fieldComponent, final Locale locale) {
-        Object value = fieldComponent.getFieldValue();
-
-        try {
-            DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
-            format.setParseBigDecimal(true);
-
-            return new BigDecimal(format.parse(value.toString()).doubleValue());
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-
-    @Override
     public void disableShowProductButton(final ViewDefinitionState view) {
-        GridComponent orderedProductGrid = (GridComponent) view.getComponentByReference(ORDERED_PRODUCTS);
-        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DELIVERED_PRODUCTS);
+        GridComponent orderedProductGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup product = (RibbonGroup) window.getRibbon().getGroupByName(L_PRODUCT);

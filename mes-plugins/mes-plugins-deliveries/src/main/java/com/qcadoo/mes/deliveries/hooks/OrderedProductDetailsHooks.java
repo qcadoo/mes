@@ -53,8 +53,10 @@ public class OrderedProductDetailsHooks {
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity orderedProduct = form.getEntity();
+
+        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity orderedProduct = orderedProductForm.getEntity();
+
         Entity delivery = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY);
 
         deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);

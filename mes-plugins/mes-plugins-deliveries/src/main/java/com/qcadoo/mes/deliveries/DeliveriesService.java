@@ -144,18 +144,11 @@ public interface DeliveriesService {
     DataDefinition getColumnForOrdersDD();
 
     /**
-     * Fills unit fields
+     * Gets product for given delivery product
      * 
-     * @param view
-     *            view
-     * 
-     * @param productName
-     *            product lookup reference name
-     * 
-     * @param referenceNames
-     *            reference names to unit fields
+     * @return deliveryProduct
      */
-    void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames);
+    Entity getProduct(final DeliveryProduct deliveryProduct);
 
     /**
      * Gets delivery address default value
@@ -174,17 +167,18 @@ public interface DeliveriesService {
     String getDescriptionDefaultValue();
 
     /**
-     * Gets product for given delivery product
+     * Fills unit fields
      * 
-     * @return deliveryProduct
-     */
-    Entity getProduct(final DeliveryProduct deliveryProduct);
-
-    /**
+     * @param view
+     *            view
      * 
-     * @param entity
+     * @param productName
+     *            product lookup reference name
+     * 
+     * @param referenceNames
+     *            reference names to unit fields
      */
-    void calculatePricePerUnit(final Entity entity, final String quantityFieldName);
+    void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames);
 
     /**
      * Fills currency fields
@@ -212,16 +206,6 @@ public interface DeliveriesService {
     void fillCurrencyFieldsForDelivery(final ViewDefinitionState view, final List<String> referenceNames, final Entity delivery);
 
     /**
-     * Filters currency column
-     * 
-     * @param columns
-     *            columnsForOrders, columnsForDeliveries
-     * 
-     * @return list of filtered columns
-     */
-    List<Entity> getColumnsWithFilteredCurrencies(final List<Entity> columns);
-
-    /**
      * Gets currency for delivery
      * 
      * @param delivery
@@ -229,6 +213,36 @@ public interface DeliveriesService {
      * @return selected or default currency
      */
     String getCurrency(final Entity delivery);
+
+    /**
+     * Recalculate price form total price
+     * 
+     * @param view
+     *            view
+     * @param quantityFieldReference
+     *            quantity field reference
+     */
+    void recalculatePriceFromTotalPrice(final ViewDefinitionState view, final String quantityFieldReference);
+
+    /**
+     * Recalculate price from price per unit
+     * 
+     * @param view
+     *            view
+     * @param quantityFieldReference
+     *            quantity field reference
+     */
+    void recalculatePriceFromPricePerUnit(final ViewDefinitionState view, final String quantityFieldReference);
+
+    /**
+     * Recalculate price
+     * 
+     * @param view
+     *            view
+     * @param quantityFieldReference
+     *            quantity field reference
+     */
+    void recalculatePrice(final ViewDefinitionState view, final String quantityFieldReference);
 
     /**
      * Gets big decimal from field
@@ -240,6 +254,22 @@ public interface DeliveriesService {
      * @return BigDecimal
      */
     BigDecimal getBigDecimalFromField(final FieldComponent fieldComponent, final Locale locale);
+
+    /**
+     * 
+     * @param entity
+     */
+    void calculatePricePerUnit(final Entity entity, final String quantityFieldName);
+
+    /**
+     * Filters currency column
+     * 
+     * @param columns
+     *            columnsForOrders, columnsForDeliveries
+     * 
+     * @return list of filtered columns
+     */
+    List<Entity> getColumnsWithFilteredCurrencies(final List<Entity> columns);
 
     /**
      * Disables show product button
