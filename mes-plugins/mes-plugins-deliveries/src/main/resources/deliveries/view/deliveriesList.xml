@@ -222,7 +222,7 @@
 				<predefinedFilters>
 					<predefinedFilter name="all">
 					</predefinedFilter>
-					<predefinedFilter name="notRecieved">
+					<predefinedFilter name="notReceived">
 						<filterRestriction column="state" value="[01draft,02prepared,03duringCorrection,04declined,07receiveConfirmWaiting]" />
 					</predefinedFilter>
 					<predefinedFilter name="notDeclined">
