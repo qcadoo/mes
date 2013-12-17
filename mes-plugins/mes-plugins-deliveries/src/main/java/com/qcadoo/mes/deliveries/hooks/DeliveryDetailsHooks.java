@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.RELATED_DELIVERIES;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.APPROVED;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.PREPARED;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.RECEIVED;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.RECEIVE_CONFIRM_WAITING;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +34,9 @@ import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeFields;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
@@ -86,7 +74,7 @@ public class DeliveryDetailsHooks {
 
     public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_DELIVERY, L_FORM, NUMBER);
+                DeliveriesConstants.MODEL_DELIVERY, L_FORM, DeliveryFields.NUMBER);
     }
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view) {
@@ -112,16 +100,17 @@ public class DeliveryDetailsHooks {
     public void changeFieldsEnabledDependOnState(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE);
+        FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
         String state = stateField.getFieldValue().toString();
 
         if (deliveryForm.getEntityId() == null) {
             changeFieldsEnabled(view, true, false, false);
         } else {
-            if (PREPARED.getStringValue().equals(state) || APPROVED.getStringValue().equals(state)
-                    || RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
+            if (DeliveryState.PREPARED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state)
+                    || DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, true);
-            } else if (DECLINED.getStringValue().equals(state) || RECEIVED.getStringValue().equals(state)) {
+            } else if (DeliveryState.DECLINED.getStringValue().equals(state)
+                    || DeliveryState.RECEIVED.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, false);
             } else {
                 changeFieldsEnabled(view, true, true, true);
@@ -133,8 +122,8 @@ public class DeliveryDetailsHooks {
             final boolean enabledDeliveredGrid) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        GridComponent orderedProducts = (GridComponent) view.getComponentByReference(ORDERED_PRODUCTS);
-        GridComponent deliveredProducts = (GridComponent) view.getComponentByReference(DELIVERED_PRODUCTS);
+        GridComponent orderedProducts = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+        GridComponent deliveredProducts = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
 
         deliveryForm.setFormEnabled(enabledForm);
         orderedProducts.setEnabled(enabledOrderedGrid);
@@ -149,7 +138,7 @@ public class DeliveryDetailsHooks {
             return;
         }
 
-        FieldComponent deliveryAddressField = (FieldComponent) view.getComponentByReference(DELIVERY_ADDRESS);
+        FieldComponent deliveryAddressField = (FieldComponent) view.getComponentByReference(DeliveryFields.DELIVERY_ADDRESS);
         String deliveryAddress = (String) deliveryAddressField.getFieldValue();
 
         if (StringUtils.isEmpty(deliveryAddress)) {
@@ -164,7 +153,7 @@ public class DeliveryDetailsHooks {
             return;
         }
 
-        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(DESCRIPTION);
+        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(DeliveryFields.DESCRIPTION);
         String description = (String) descriptionField.getFieldValue();
 
         if (StringUtils.isEmpty(description)) {
@@ -175,7 +164,7 @@ public class DeliveryDetailsHooks {
     public void filterStateChangeHistory(final ViewDefinitionState view) {
         final GridComponent historyGrid = (GridComponent) view.getComponentByReference("loggingsGrid");
         final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(
-                DeliveryStateChangeFields.STATUS, Lists.newArrayList(SUCCESSFUL.getStringValue()));
+                DeliveryStateChangeFields.STATUS, Lists.newArrayList(StateChangeStatus.SUCCESSFUL.getStringValue()));
         historyGrid.setCustomRestriction(onlySuccessfulRestriction);
     }
 
@@ -194,12 +183,14 @@ public class DeliveryDetailsHooks {
         }
 
         Entity delivery = deliveriesService.getDelivery(deliveryId);
-        List<Entity> relatedDeliveries = delivery.getHasManyField(RELATED_DELIVERIES);
+        List<Entity> relatedDeliveries = delivery.getHasManyField(DeliveryFields.RELATED_DELIVERIES);
 
-        boolean received = RECEIVED.getStringValue().equals(delivery.getStringField(STATE));
+        boolean received = DeliveryState.RECEIVED.getStringValue().equals(delivery.getStringField(DeliveryFields.STATE));
+        boolean receiveConfirmWaiting = DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(
+                delivery.getStringField(DeliveryFields.STATE));
         boolean created = ((relatedDeliveries != null) && !relatedDeliveries.isEmpty());
 
-        updateButtonState(createRelatedDelivery, received && !created);
+        updateButtonState(createRelatedDelivery, (received || receiveConfirmWaiting) && !created);
         updateButtonState(showRelatedDelivery, received && created);
     }
 
