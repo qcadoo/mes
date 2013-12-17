@@ -176,8 +176,6 @@ public class TechnologyServiceO {
                     if (prototypeTechnology != null) {
                         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
                     }
-                    setQuantityOfWorkstationTypes(order, technology);
-
                 } else if (getExistingOrder(order).getBelongsToField(OrderFields.TECHNOLOGY) == null) {
                     Entity technology = technologyDD.create();
                     technology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
@@ -197,8 +195,6 @@ public class TechnologyServiceO {
                     if (prototypeTechnology != null) {
                         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
                     }
-                    setQuantityOfWorkstationTypes(order, technology);
-
                 }
             }
 
@@ -209,6 +205,9 @@ public class TechnologyServiceO {
     public void setQuantityOfWorkstationTypes(Entity order, final Entity technology) {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
+        if (technology.getId() == null) {
+            return;
+        }
         Entity technologyDB = technologyDD.get(technology.getId());
         if (technologyDB == null) {
             return;
