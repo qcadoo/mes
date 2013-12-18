@@ -26,11 +26,11 @@ package com.qcadoo.mes.productionCounting.states.listener;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.*;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,6 +47,8 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordStateChangeFields;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
@@ -57,6 +59,8 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
@@ -136,18 +140,31 @@ public final class ProductionRecordBasicListenerService {
     private void checkIfExistsFinalRecord(final StateChangeContext stateChangeContext) {
         final Entity productionRecord = stateChangeContext.getOwner();
         final Entity order = productionRecord.getBelongsToField(ORDER);
-        final String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
-
         final SearchCriteriaBuilder searchBuilder = productionRecord.getDataDefinition().find();
-        searchBuilder.add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue()));
-        searchBuilder.add(SearchRestrictions.belongsTo(ORDER, order));
-        searchBuilder.add(SearchRestrictions.eq(LAST_RECORD, true));
 
+        // check if record is accepted or during acceptation
+        searchBuilder.createCriteria(ProductionRecordFields.STATE_CHANGES, "sc")
+                .add(eq(ProductionRecordStateChangeFields.TARGET_STATE, ProductionRecordState.ACCEPTED.getStringValue()))
+                .add(ne(ProductionRecordStateChangeFields.STATUS, StateChangeStatus.FAILURE.getStringValue()))
+                .add(ne(ProductionRecordStateChangeFields.STATUS, StateChangeStatus.CANCELED.getStringValue()));
+
+        // omit current production record
+        searchBuilder.add(idNe(productionRecord.getId()));
+        searchBuilder.add(SearchRestrictions.belongsTo(ORDER, order));
+        searchBuilder.add(eq(LAST_RECORD, true));
+
+        final String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
             searchBuilder.add(SearchRestrictions.belongsTo(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
                     productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)));
         }
-        if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
+
+        searchBuilder.setProjection(SearchProjections.alias(SearchProjections.count("id"), "count"));
+        // Fix for (P)SQLException on missing id column.
+        searchBuilder.addOrder(SearchOrders.desc("count"));
+        Entity projectionResults = searchBuilder.setMaxResults(1).uniqueResult();
+        Long countValue = (Long) projectionResults.getField("count");
+        if (countValue > 0) {
             stateChangeContext.addValidationError("productionCounting.productionRecord.messages.error.finalExists");
         }
     }
