@@ -52,6 +52,22 @@ public class DeliveredProductDetailsHooks {
     @Autowired
     private DeliveriesService deliveriesService;
 
+    public void fillUnitFields(final ViewDefinitionState view) {
+        List<String> referenceNames = Lists.newArrayList("damagedQuantityUnit", "deliveredQuantityUnit", "orderedQuantityUnit");
+
+        deliveriesService.fillUnitFields(view, DeliveredProductFields.PRODUCT, referenceNames);
+    }
+
+    public void fillCurrencyFields(final ViewDefinitionState view) {
+        List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
+
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity deliveredProduct = form.getEntity();
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+
+        deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
+    }
+
     public void fillOrderedQuantities(final ViewDefinitionState view) {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity deliveredProduct = deliveredProductForm.getEntity();
@@ -85,22 +101,6 @@ public class DeliveredProductDetailsHooks {
         }
 
         return orderedQuantity;
-    }
-
-    public void fillUnitFields(final ViewDefinitionState view) {
-        List<String> referenceNames = Lists.newArrayList("damagedQuantityUnit", "deliveredQuantityUnit", "orderedQuantityUnit");
-
-        deliveriesService.fillUnitFields(view, DeliveredProductFields.PRODUCT, referenceNames);
-    }
-
-    public void fillCurrencyFields(final ViewDefinitionState view) {
-        List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
-
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity deliveredProduct = form.getEntity();
-        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-
-        deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
     }
 
     public void setDeliveredQuantityFieldRequired(final ViewDefinitionState view) {
