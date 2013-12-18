@@ -47,4 +47,5 @@ public enum TypeOfProductionRecording {
 
         throw new IllegalStateException("Unsupported typeOfProductionRecording: " + string);
     }
+
 }

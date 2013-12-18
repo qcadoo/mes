@@ -29,7 +29,11 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.jdom.Element;
 import org.joda.time.DateTime;
@@ -127,10 +131,13 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         if (isEnabledOrEnabling(L_PRODUCTION_COUNTING)) {
             readDataFromXML(dataset, L_PRODUCTION_RECORD, locale);
-            readDataFromXML(dataset, RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT, locale);
-            readDataFromXML(dataset, RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT, locale);
-            readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
-            readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
+
+            if (!isEnabledOrEnabling(L_GOOD_FOOD)) {
+                readDataFromXML(dataset, RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT, locale);
+                readDataFromXML(dataset, RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT, locale);
+                readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
+                readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
+            }
         }
 
         if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY)) {
@@ -1003,25 +1010,30 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private void addRecordOperationProductInComponent(final Map<String, String> values) {
-        DataDefinition productInComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+        DataDefinition recordOperationProductInComponentDD = dataDefinitionService.get(
+                SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT);
-        Entity productInComponent = productInComponentDD.find()
+
+        Entity productInComponent = recordOperationProductInComponentDD.find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
                 .uniqueResult();
         productInComponent.setField("usedQuantity", values.get("usedquantity"));
         productInComponent.setField(L_BALANCE, values.get(L_BALANCE));
-        productInComponentDD.save(productInComponent);
+
+        recordOperationProductInComponentDD.save(productInComponent);
     }
 
-    private Entity addRecordOperationProductOutComponent(final Map<String, String> values) {
-        DataDefinition productOutComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+    private void addRecordOperationProductOutComponent(final Map<String, String> values) {
+        DataDefinition recordOperationProductOutComponentDD = dataDefinitionService.get(
+                SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT);
-        Entity productOutComponent = productOutComponentDD.find()
+        Entity productOutComponent = recordOperationProductOutComponentDD.find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
                 .uniqueResult();
         productOutComponent.setField("usedQuantity", values.get("usedquantity"));
         productOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
-        return productOutComponentDD.save(productOutComponent);
+
+        recordOperationProductOutComponentDD.save(productOutComponent);
     }
 
     private void addOperationComponent(final Map<String, String> values) {
@@ -1156,9 +1168,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     void addProductionRecord(final Map<String, String> values) {
-
         Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
+
         productionRecord.setField(L_NUMBER, values.get(L_NUMBER));
         productionRecord.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
         productionRecord.setField(L_LAST_RECORD, values.get("lastrecord"));
@@ -1175,18 +1187,20 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .getStringField("typeOfProductionRecording");
         Object orderOperation = getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION),
                 getOrderByNumber(values.get(L_ORDER)));
+
         if (!(orderOperation == null && "03forEach".equals(typeOfProductionRecording))) {
             productionRecord.getDataDefinition().save(productionRecord);
         }
-
     }
 
     private void prepareProductionRecords(final Map<String, String> values) {
         Entity order = getOrderByNumber(values.get(L_ORDER));
+
         for (Entity productionRecord : order.getHasManyField("productionRecords")) {
             Entity savedProductionRecord = getStateChangeSamplesClient().changeState(productionRecord, STATE_ACCEPTED);
             savedProductionRecord.setField("isExternalSynchronized", true);
             Entity pausedStateChange = findPausedStateChangeEntityForPR(savedProductionRecord);
+
             if (pausedStateChange != null) {
                 getStateChangeSamplesClient().resumeStateChange(productionRecord, pausedStateChange);
             }
@@ -1196,12 +1210,14 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private Entity findPausedStateChangeEntityForPR(final Entity productionRecord) {
         SearchCriteriaBuilder scb = productionRecord.getHasManyField("stateChanges").find();
         scb.add(SearchRestrictions.eq("status", StateChangeStatus.PAUSED.getStringValue()));
+
         return scb.setMaxResults(1).uniqueResult();
     }
 
     void addProductionCounting(final Map<String, String> values) {
         Entity productionCounting = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING).create();
+
         productionCounting.setField(L_GENERATED, values.get(L_GENERATED));
         productionCounting.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
         productionCounting.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
@@ -1211,33 +1227,32 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productionCounting.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
         productionCounting.setField(L_FILE_NAME, values.get("filename"));
 
-        dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
-                SamplesConstants.PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING).save(productionCounting);
+        productionCounting.getDataDefinition().save(productionCounting);
     }
 
     void addProductionBalance(final Map<String, String> values) {
-        Entity productionbalance = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+        Entity productionBalance = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTIONBALANCE_MODEL_PRODUCTIONBALANCE).create();
-        productionbalance.setField(L_GENERATED, values.get(L_GENERATED));
-        productionbalance.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-        productionbalance.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
-        productionbalance.setField(L_NAME, values.get(L_NAME));
-        productionbalance.setField(L_DATE, values.get(L_DATE));
-        productionbalance.setField(L_WORKER, values.get(L_WORKER));
-        productionbalance.setField("recordsNumber", values.get("recordsnumber"));
-        productionbalance.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
-        productionbalance.setField(L_FILE_NAME, values.get("filename"));
-        productionbalance.setField("calculateOperationCostsMode", values.get("calculateoperationcostsmode"));
+        productionBalance.setField(L_GENERATED, values.get(L_GENERATED));
+        productionBalance.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
+        productionBalance.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
+        productionBalance.setField(L_NAME, values.get(L_NAME));
+        productionBalance.setField(L_DATE, values.get(L_DATE));
+        productionBalance.setField(L_WORKER, values.get(L_WORKER));
+        productionBalance.setField("recordsNumber", values.get("recordsnumber"));
+        productionBalance.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
+        productionBalance.setField(L_FILE_NAME, values.get("filename"));
+        productionBalance.setField("calculateOperationCostsMode", values.get("calculateoperationcostsmode"));
 
         if (isEnabledOrEnabling("productionCountingWithCosts")) {
-            productionbalance.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
-            productionbalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
+            productionBalance.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
+            productionBalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
 
-            productionbalance.setField("averageMachineHourlyCost", values.get("averagemachinehourlycost"));
-            productionbalance.setField("averageLaborHourlyCost", values.get("averagelaborhourlycost"));
+            productionBalance.setField("averageMachineHourlyCost", values.get("averagemachinehourlycost"));
+            productionBalance.setField("averageLaborHourlyCost", values.get("averagelaborhourlycost"));
         }
 
-        productionbalance.getDataDefinition().save(productionbalance);
+        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     void addQualityControl(final Map<String, String> values) {
