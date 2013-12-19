@@ -23,33 +23,17 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class OrderedProductDetailsListeners {
-
-    private static final String L_FORM = "form";
-
-    @Autowired
-    private NumberService numberService;
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -66,105 +50,15 @@ public class OrderedProductDetailsListeners {
     }
 
     public void calculatePriceFromTotalPrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        recalculatePriceFromTotalPrice(view, OrderedProductFields.ORDERED_QUANTITY);
-    }
-
-    public void recalculatePriceFromTotalPrice(final ViewDefinitionState view, final String quantityFieldReference) {
-        if (!isValidDecimalField(view,
-                Arrays.asList(OrderedProductFields.PRICE_PER_UNIT, quantityFieldReference, OrderedProductFields.TOTAL_PRICE))) {
-            return;
-        }
-        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
-        FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(OrderedProductFields.TOTAL_PRICE);
-        if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
-                && StringUtils.isNotEmpty((String) totalPriceField.getFieldValue())) {
-            calculatePriceUsingTotalCost(view, quantityField, totalPriceField);
-        }
-    }
-
-    private void calculatePriceUsingTotalCost(final ViewDefinitionState view, FieldComponent quantityField,
-            FieldComponent totalPriceField) {
-
-        Locale locale = view.getLocale();
-        BigDecimal quantity = deliveriesService.getBigDecimalFromField(quantityField, locale);
-        BigDecimal totalPrice = deliveriesService.getBigDecimalFromField(totalPriceField, locale);
-        FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(OrderedProductFields.PRICE_PER_UNIT);
-
-        BigDecimal pricePerUnit = numberService.setScale(totalPrice.divide(quantity, numberService.getMathContext()));
-        pricePerUnitField.setFieldValue(numberService.format(pricePerUnit));
-        pricePerUnitField.requestComponentUpdateState();
+        deliveriesService.recalculatePriceFromTotalPrice(view, OrderedProductFields.ORDERED_QUANTITY);
     }
 
     public void calculatePriceFromPricePerUnit(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        recalculatePriceFromPricePerUnit(view, OrderedProductFields.ORDERED_QUANTITY);
-    }
-
-    public void recalculatePriceFromPricePerUnit(final ViewDefinitionState view, final String quantityFieldReference) {
-        if (!isValidDecimalField(view,
-                Arrays.asList(OrderedProductFields.PRICE_PER_UNIT, quantityFieldReference, OrderedProductFields.TOTAL_PRICE))) {
-            return;
-        }
-        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
-        FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(OrderedProductFields.PRICE_PER_UNIT);
-        if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
-                && StringUtils.isNotEmpty((String) pricePerUnitField.getFieldValue())) {
-            calculatePriceUsingPricePerUnit(view, quantityField, pricePerUnitField);
-        }
-    }
-
-    private void calculatePriceUsingPricePerUnit(final ViewDefinitionState view, FieldComponent quantityField,
-            FieldComponent pricePerUnitField) {
-
-        Locale locale = view.getLocale();
-        BigDecimal pricePerUnit = deliveriesService.getBigDecimalFromField(pricePerUnitField, locale);
-        BigDecimal quantity = deliveriesService.getBigDecimalFromField(quantityField, locale);
-        FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(OrderedProductFields.TOTAL_PRICE);
-        BigDecimal totalPrice = numberService.setScale(pricePerUnit.multiply(quantity, numberService.getMathContext()));
-
-        totalPriceField.setFieldValue(numberService.format(totalPrice));
-        totalPriceField.requestComponentUpdateState();
+        deliveriesService.recalculatePriceFromPricePerUnit(view, OrderedProductFields.ORDERED_QUANTITY);
     }
 
     public void calculatePrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        recalculatePrice(view, OrderedProductFields.ORDERED_QUANTITY);
-    }
-
-    public void recalculatePrice(final ViewDefinitionState view, final String quantityFieldReference) {
-        if (!isValidDecimalField(view,
-                Arrays.asList(OrderedProductFields.PRICE_PER_UNIT, quantityFieldReference, OrderedProductFields.TOTAL_PRICE))) {
-            return;
-        }
-        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(quantityFieldReference);
-        FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(OrderedProductFields.PRICE_PER_UNIT);
-        FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(OrderedProductFields.TOTAL_PRICE);
-
-        if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
-                && StringUtils.isNotEmpty((String) pricePerUnitField.getFieldValue())) {
-            calculatePriceUsingPricePerUnit(view, quantityField, pricePerUnitField);
-        } else if (StringUtils.isNotEmpty((String) quantityField.getFieldValue())
-                && StringUtils.isNotEmpty((String) totalPriceField.getFieldValue())) {
-            calculatePriceUsingTotalCost(view, quantityField, totalPriceField);
-        }
-
-    }
-
-    private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
-        boolean isValid = true;
-
-        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity orderedProduct = orderedProductForm.getEntity();
-
-        for (String field : fileds) {
-            try {
-                BigDecimal decimalField = orderedProduct.getDecimalField(field);
-            } catch (IllegalArgumentException e) {
-                orderedProductForm.findFieldComponentByName(field).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
-                        MessageType.FAILURE);
-                isValid = false;
-            }
-        }
-
-        return isValid;
+        deliveriesService.recalculatePrice(view, OrderedProductFields.ORDERED_QUANTITY);
     }
 
 }
