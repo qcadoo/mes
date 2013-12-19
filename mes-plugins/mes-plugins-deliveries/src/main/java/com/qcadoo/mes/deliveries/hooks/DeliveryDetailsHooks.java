@@ -191,7 +191,7 @@ public class DeliveryDetailsHooks {
         boolean created = ((relatedDeliveries != null) && !relatedDeliveries.isEmpty());
 
         updateButtonState(createRelatedDelivery, (received || receiveConfirmWaiting) && !created);
-        updateButtonState(showRelatedDelivery, received && created);
+        updateButtonState(showRelatedDelivery, (received || receiveConfirmWaiting) && created);
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
