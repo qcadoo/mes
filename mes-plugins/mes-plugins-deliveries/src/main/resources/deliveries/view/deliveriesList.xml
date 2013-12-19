@@ -216,6 +216,19 @@
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 				
+				<option type="hasPredefinedFilters" value="true" />
+			
+				<predefinedFilters>
+					<predefinedFilter name="all">
+					</predefinedFilter>
+					<predefinedFilter name="notReceived">
+						<filterRestriction column="state" value="[01draft,02prepared,03duringCorrection,04declined,07receiveConfirmWaiting]" />
+					</predefinedFilter>
+					<predefinedFilter name="notDeclined">
+						<filterRestriction column="state" value="[01draft,02prepared,03duringCorrection,06received,07receiveConfirmWaiting]" />
+					</predefinedFilter>
+				</predefinedFilters>
+				
 				<listener event="changeState"
 					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
 					method="changeState" />
