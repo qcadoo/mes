@@ -1021,7 +1021,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             recordOperationProductInComponent.setField("usedQuantity", values.get("usedquantity"));
             recordOperationProductInComponent.setField(L_BALANCE, values.get(L_BALANCE));
 
-            recordOperationProductInComponentDD.save(productInComponent);
+            recordOperationProductInComponentDD.save(recordOperationProductInComponent);
         }
     }
 
@@ -1038,7 +1038,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             recordOperationProductOutComponent.setField("usedQuantity", values.get("usedquantity"));
             recordOperationProductOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
 
-            recordOperationProductOutComponentDD.save(productOutComponent);
+            recordOperationProductOutComponentDD.save(recordOperationProductOutComponent);
         }
     }
 
