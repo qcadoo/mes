@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +46,7 @@ public class OrderedProductDetailsHooks {
     public void fillUnitFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("orderedQuantityUnit");
 
-        deliveriesService.fillUnitFields(view, PRODUCT, referenceNames);
+        deliveriesService.fillUnitFields(view, OrderedProductFields.PRODUCT, referenceNames);
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
