@@ -1018,8 +1018,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .setMaxResults(1).uniqueResult();
                 
         if (recordOperationProductInComponent != null) {
-            productInComponent.setField("usedQuantity", values.get("usedquantity"));
-            productInComponent.setField(L_BALANCE, values.get(L_BALANCE));
+            recordOperationProductInComponent.setField("usedQuantity", values.get("usedquantity"));
+            recordOperationProductInComponent.setField(L_BALANCE, values.get(L_BALANCE));
 
             recordOperationProductInComponentDD.save(productInComponent);
         }
@@ -1035,8 +1035,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .setMaxResults(1).uniqueResult();
                 
         if (recordOperationProductOutComponent != null) {
-            productOutComponent.setField("usedQuantity", values.get("usedquantity"));
-            productOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
+            recordOperationProductOutComponent.setField("usedQuantity", values.get("usedquantity"));
+            recordOperationProductOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
 
             recordOperationProductOutComponentDD.save(productOutComponent);
         }
