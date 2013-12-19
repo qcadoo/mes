@@ -171,10 +171,8 @@ public interface DeliveriesService {
      * 
      * @param view
      *            view
-     * 
      * @param productName
      *            product lookup reference name
-     * 
      * @param referenceNames
      *            reference names to unit fields
      */
@@ -185,7 +183,6 @@ public interface DeliveriesService {
      * 
      * @param view
      *            view
-     * 
      * @param referenceNames
      *            reference names to unit fields
      * @param delivery
@@ -198,10 +195,8 @@ public interface DeliveriesService {
      * 
      * @param view
      *            view
-     * 
      * @param referenceNames
      *            reference names to unit fields
-     * 
      */
     void fillCurrencyFieldsForDelivery(final ViewDefinitionState view, final List<String> referenceNames, final Entity delivery);
 
@@ -210,6 +205,7 @@ public interface DeliveriesService {
      * 
      * @param delivery
      *            delivery entity
+     * 
      * @return selected or default currency
      */
     String getCurrency(final Entity delivery);
@@ -251,13 +247,18 @@ public interface DeliveriesService {
      *            field component
      * @param locale
      *            locale
+     * 
      * @return BigDecimal
      */
     BigDecimal getBigDecimalFromField(final FieldComponent fieldComponent, final Locale locale);
 
     /**
+     * Calculate price per unit
      * 
      * @param entity
+     *            entity
+     * @param quantityFieldName
+     *            quantity field name
      */
     void calculatePricePerUnit(final Entity entity, final String quantityFieldName);
 
