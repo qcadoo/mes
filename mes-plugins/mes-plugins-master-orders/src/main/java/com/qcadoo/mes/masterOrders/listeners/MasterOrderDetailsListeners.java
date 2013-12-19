@@ -20,13 +20,13 @@ public class MasterOrderDetailsListeners {
     private static final String L_FORM = "form";
 
     @Autowired
-    private MasterOrderDetailsHooks masterOrderDetailsHooks;
-
-    @Autowired
     private ExpressionService expressionService;
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
+    
+    @Autowired
+    private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
     public void hideFieldDependOnMasterOrderType(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
@@ -55,15 +55,17 @@ public class MasterOrderDetailsListeners {
         Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
         String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                 view.getLocale());
+        
         defaultTechnology.setFieldValue(defaultTechnologyValue);
         technology.setFieldValue(defaultTechnologyEntity.getId());
+        
         defaultTechnology.requestComponentUpdateState();
         technology.requestComponentUpdateState();
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        form.performEvent(view, "refresh");
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        masterOrderForm.performEvent(view, "refresh");
     }
 
     public void setUneditableWhenEntityHasUnsaveChanges(final ViewDefinitionState view, final ComponentState state,
