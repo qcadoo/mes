@@ -1149,7 +1149,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     + materialRequirement.getField("mrpAlgorithm") + ", generated=" + materialRequirement.getField(L_GENERATED) + "}");
         }
 
-        materialRequirement.getDataDefinition().save(requirement);
+        materialRequirement.getDataDefinition().save(materialRequirement);
     }
 
     private void addWorkPlan(final Map<String, String> values) {
