@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
@@ -20,6 +22,7 @@ import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentEntityType;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.Entity;
@@ -59,7 +62,7 @@ public class OperationProductsExtractor {
 
     private List<Entity> getOperationProductComponents(final Entity order, final Entity technologyOperationComponent) {
         List<Entity> trackingOperationProductComponents = Lists.newArrayList();
-        Set<Entity> alreadyAddedProducts = Sets.newHashSet();
+        Map<OperationProductComponentEntityType, Set<Entity>> entityTypeWithAlreadyAddedProducts = Maps.newHashMap();
 
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
@@ -83,13 +86,20 @@ public class OperationProductsExtractor {
                     }
                 }
             } else if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
+                OperationProductComponentEntityType entityType = operationProductComponentHolder.getEntityType();
                 Entity product = operationProductComponentHolder.getProduct();
 
-                if (product != null) {
-                    if (alreadyAddedProducts.contains(product)) {
-                        continue;
+                if ((product != null) && (entityType != null)) {
+                    if (entityTypeWithAlreadyAddedProducts.containsKey(entityType)) {
+                        if (entityTypeWithAlreadyAddedProducts.get(entityType).contains(product)) {
+                            continue;
+                        } else {
+                            Set<Entity> alreadAddedProducts = entityTypeWithAlreadyAddedProducts.get(entityType);
+
+                            entityTypeWithAlreadyAddedProducts.put(entityType, alreadAddedProducts);
+                        }
                     } else {
-                        alreadyAddedProducts.add(product);
+                        entityTypeWithAlreadyAddedProducts.put(entityType, Sets.newHashSet(product));
                     }
                 }
             }
