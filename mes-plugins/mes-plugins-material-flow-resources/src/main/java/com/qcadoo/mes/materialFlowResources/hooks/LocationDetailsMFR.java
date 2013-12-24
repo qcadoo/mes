@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -36,11 +37,13 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class LocationDetailsMFR {
 
+    private static final String L_FORM = "form";
+
     private static final String L_LOCATION = "location";
 
     private static final String L_DIVISIONS = "divisions";
 
-    private static final String L_FORM = "form";
+    private static final String L_DIVISIONS_TAB = "divisionsTab";
 
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
         FormComponent locationForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -59,6 +62,7 @@ public class LocationDetailsMFR {
     public void changeDivisionsGridVisibility(final ViewDefinitionState view) {
         FormComponent locationForm = (FormComponent) view.getComponentByReference(L_FORM);
         GridComponent divisionsGrid = (GridComponent) view.getComponentByReference(L_DIVISIONS);
+        ComponentState divisionsTab = view.getComponentByReference(L_DIVISIONS_TAB);
 
         Entity location = locationForm.getEntity();
         String type = location.getStringField(LocationFields.TYPE);
@@ -66,6 +70,7 @@ public class LocationDetailsMFR {
         boolean isVisible = ((location.getId() != null) && (LocationTypeMFR.WAREHOUSE.getStringValue().equals(type)));
 
         divisionsGrid.setVisible(isVisible);
+        divisionsTab.setVisible(isVisible);
     }
 
 }
