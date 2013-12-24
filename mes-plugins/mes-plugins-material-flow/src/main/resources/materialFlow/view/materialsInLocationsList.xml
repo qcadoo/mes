@@ -71,18 +71,20 @@
 				</script>
 				<option type="column" name="name" fields="name" link="true"
 					width="300" />
-				<option type="column" name="generated" fields="generated"
-					link="false" />
+				<option type="column" name="materialFlowForDate" fields="materialFlowForDate" link="true"
+					width="100" />
+				<option type="column" name="time" fields="time" link="true"
+					width="100" />
 				<option type="column" name="worker" fields="worker" width="200" />
-				
+			
 				<option type="order" column="name" direction="asc" />
-				
-				<option type="searchable" value="name,generated,worker" />
-				<option type="orderable" value="name,generated,worker" />
-				
+			
+				<option type="searchable" value="name,materialFlowForDate,time,worker" />
+				<option type="orderable" value="name,materialFlowForDate,time,worker" />
+			
 				<option type="correspondingView" value="materialFlow/materialsInLocationDetails" />
 				<option type="correspondingComponent" value="form" />
-				
+			
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 				

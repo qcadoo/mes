@@ -26,13 +26,17 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 import static com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants.MODEL_RESOURCE;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
@@ -41,6 +45,24 @@ public class ResourceModelHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
+
+    public void onView(final DataDefinition resourceDD, final Entity resource) {
+        BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
+        BigDecimal price = resource.getDecimalField(ResourceFields.PRICE);
+
+        BigDecimal value = null;
+
+        if (price == null) {
+            value = quantity;
+        } else {
+            value = quantity.multiply(price, numberService.getMathContext());
+        }
+
+        resource.setField(ResourceFields.VALUE, numberService.setScale(value));
+    }
 
     public void generateBatch(final DataDefinition resourceDD, final Entity resource) {
         if (resource.getField(BATCH) == null) {
