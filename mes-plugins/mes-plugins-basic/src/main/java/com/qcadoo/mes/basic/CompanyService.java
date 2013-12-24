@@ -90,6 +90,10 @@ public class CompanyService {
 
         Entity parameter = parameterService.getParameter();
         Entity owner = parameter.getBelongsToField(COMPANY);
+        
+        if (owner == null) {
+            return Boolean.FALSE;  
+        }
 
         return companyFromDB.getId().equals(owner.getId());
     }
