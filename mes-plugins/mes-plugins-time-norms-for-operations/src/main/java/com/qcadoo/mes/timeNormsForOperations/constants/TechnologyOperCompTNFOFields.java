@@ -53,4 +53,5 @@ public final class TechnologyOperCompTNFOFields {
 
     public static final String PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
 
+    public static final String TECH_OPER_COMP_TIME_CALCULATIONS = "techOperCompTimeCalculations";
 }

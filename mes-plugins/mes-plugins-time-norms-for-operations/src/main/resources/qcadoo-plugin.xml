@@ -283,7 +283,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
                         component="form" event="save"
                         class="com.qcadoo.mes.timeNormsForOperations.validators.ProductValidatorsTNFO"
                         method="checkIfProductUnitChange" />
-                        
+                
+                <view:view-listener component="technology"
+                        event="onSelectedEntityChange" plugin="productionScheduling"
+                        view="orderTimePrediction"
+                        class="com.qcadoo.mes.timeNormsForOperations.listeners.OrderTimePredictionListenersTNFO"
+                        method="clearValueOnTechnologyChange" />
         </modules>
         
         <features>
