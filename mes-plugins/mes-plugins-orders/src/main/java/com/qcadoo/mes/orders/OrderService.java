@@ -23,12 +23,25 @@
  */
 package com.qcadoo.mes.orders;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.*;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.*;
+import static com.qcadoo.mes.orders.constants.OrderFields.DEFAULT_TECHNOLOGY;
+import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_BATCH_REQUIRED;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.DECLINED;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -112,7 +125,7 @@ public class OrderService {
 
         FieldComponent productionLine = (FieldComponent) view.getComponentByReference(PRODUCTION_LINE);
 
-        if ((orderForm.getEntityId() == null) && (productionLine.getFieldValue() == null)) {
+        if ((orderForm.getEntityId() == null) && (productionLine.getFieldValue() == null) && getDefaultProductionLine() != null) {
             productionLine.setFieldValue(getDefaultProductionLine().getId());
             productionLine.requestComponentUpdateState();
         }
