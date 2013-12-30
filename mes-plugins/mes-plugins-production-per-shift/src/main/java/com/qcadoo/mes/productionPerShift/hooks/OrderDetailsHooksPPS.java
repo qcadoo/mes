@@ -36,9 +36,12 @@ public class OrderDetailsHooksPPS {
         Entity orderFromForm = orderForm.getPersistedEntityWithIncludedFormValues();
         if (orderFromForm.getStringField(OrderFields.ORDER_TYPE).equals(OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue())) {
             if (orderId != null
+                    && orderFromForm.getBelongsToField(OrderFields.TECHNOLOGY) != null
                     && orderFromForm.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE) != null
-                    && !orderFromForm.getBelongsToField(OrderFields.TECHNOLOGY).getStringField(TechnologyFields.STATE)
-                            .equals(TechnologyState.DRAFT.getStringValue())) {
+                    && (!orderFromForm.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).getStringField(TechnologyFields.STATE)
+                            .equals(TechnologyState.DRAFT.getStringValue()))
+                    || !orderFromForm.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).getStringField(TechnologyFields.STATE)
+                            .equals(TechnologyState.ACCEPTED.getStringValue())) {
                 productionPerShift.setEnabled(true);
                 productionPerShift.requestUpdate(true);
                 return;
