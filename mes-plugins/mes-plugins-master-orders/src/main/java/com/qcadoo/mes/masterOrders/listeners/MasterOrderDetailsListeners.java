@@ -1,13 +1,12 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
-import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
-
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
@@ -29,10 +28,10 @@ public class MasterOrderDetailsListeners {
     private ExpressionService expressionService;
 
     @Autowired
-    private MasterOrderDetailsHooks masterOrderDetailsHooks;
+    private TechnologyServiceO technologyServiceO;
 
     @Autowired
-    private TechnologyServiceO technologyServiceO;
+    private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
     public void hideFieldDependOnMasterOrderType(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
@@ -43,9 +42,9 @@ public class MasterOrderDetailsListeners {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent productField = (LookupComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
-        FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
-        FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
+        LookupComponent productField = (LookupComponent) view.getComponentByReference(MasterOrderFields.PRODUCT);
+        FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference(MasterOrderFields.DEFAULT_TECHNOLOGY);
+        FieldComponent technology = (FieldComponent) view.getComponentByReference(MasterOrderFields.TECHNOLOGY);
 
         Entity product = productField.getEntity();
 
@@ -61,15 +60,17 @@ public class MasterOrderDetailsListeners {
         Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
         String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                 view.getLocale());
+
         defaultTechnology.setFieldValue(defaultTechnologyValue);
         technology.setFieldValue(defaultTechnologyEntity.getId());
+
         defaultTechnology.requestComponentUpdateState();
         technology.requestComponentUpdateState();
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        form.performEvent(view, "refresh");
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        masterOrderForm.performEvent(view, "refresh");
     }
 
     public void setUneditableWhenEntityHasUnsaveChanges(final ViewDefinitionState view, final ComponentState state,

@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.basic;
 
-import static com.qcadoo.mes.basic.constants.ParameterFields.COMPANY;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,7 +87,11 @@ public class CompanyService {
         }
 
         Entity parameter = parameterService.getParameter();
-        Entity owner = parameter.getBelongsToField(COMPANY);
+        Entity owner = parameter.getBelongsToField(ParameterFields.COMPANY);
+
+        if (owner == null) {
+            return Boolean.FALSE;
+        }
 
         return companyFromDB.getId().equals(owner.getId());
     }

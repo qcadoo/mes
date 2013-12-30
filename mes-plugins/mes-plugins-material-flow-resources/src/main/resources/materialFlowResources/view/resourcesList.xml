@@ -48,6 +48,7 @@
 			<option type="column" name="productUnit" fields="product" 
 				expression="#product['unit']" />
 			<option type="column" name="price" fields="price" />
+			<option type="column" name="value" fields="value" />
 			<option type="column" name="time" fields="time" />
 
 			<option type="order" column="productNumber" direction="asc" />

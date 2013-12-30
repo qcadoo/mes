@@ -426,7 +426,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         negotation.setField(L_STATE, values.get(L_STATE));
         negotation.setField("includedCompanies", Lists.newArrayList(getCompany("2"), getCompany("3")));
         negotation.getDataDefinition().save(negotation);
-
     }
 
     private void changeddNegotiationState(final Map<String, String> values) {
@@ -1020,6 +1019,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (trackingOperationProductInComponent != null) {
             trackingOperationProductInComponent.setField("usedQuantity", values.get("usedquantity"));
             trackingOperationProductInComponent.setField(L_BALANCE, values.get(L_BALANCE));
+
             trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);
         }
     }
@@ -1130,33 +1130,34 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private void addMaterialRequirements(final Map<String, String> values) {
-        Entity requirement = dataDefinitionService.get(SamplesConstants.L_MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
+        Entity materialRequirement = dataDefinitionService.get(SamplesConstants.L_MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
                 SamplesConstants.L_MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS).create();
-        requirement.setField(L_NAME, values.get(L_NAME));
-        requirement.setField(L_NUMBER, values.get(L_NUMBER));
-        requirement.setField(L_DATE, values.get(L_DATE));
-        requirement.setField(L_WORKER, values.get(L_WORKER));
-        requirement.setField("mrpAlgorithm", "01onlyComponents");
-        requirement.setField(L_DATE, values.get(L_DATE));
-        requirement.setField(L_GENERATED, values.get(L_GENERATED));
-        requirement.setField(L_FILE_NAME, values.get(L_FILE_NAME));
-        requirement.setField("orders",
+
+        materialRequirement.setField(L_NAME, values.get(L_NAME));
+        materialRequirement.setField(L_NUMBER, values.get(L_NUMBER));
+        materialRequirement.setField(L_DATE, values.get(L_DATE));
+        materialRequirement.setField(L_WORKER, values.get(L_WORKER));
+        materialRequirement.setField("mrpAlgorithm", "01onlyComponents");
+        materialRequirement.setField(L_DATE, values.get(L_DATE));
+        materialRequirement.setField(L_GENERATED, values.get(L_GENERATED));
+        materialRequirement.setField(L_FILE_NAME, values.get(L_FILE_NAME));
+        materialRequirement.setField("orders",
                 Lists.newArrayList(getOrderByNumber(values.get("order1")), getOrderByNumber(values.get("order2"))));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test material requirement {name=" + requirement.getField(L_NAME) + ", date="
-                    + requirement.getField(L_DATE) + ", worker=" + requirement.getField(L_WORKER) + ", onlyComponents="
-                    + requirement.getField("mrpAlgorithm") + ", generated=" + requirement.getField(L_GENERATED) + "}");
+            LOG.debug("Add test material requirement {name=" + materialRequirement.getField(L_NAME) + ", date="
+                    + materialRequirement.getField(L_DATE) + ", worker=" + materialRequirement.getField(L_WORKER)
+                    + ", onlyComponents=" + materialRequirement.getField("mrpAlgorithm") + ", generated="
+                    + materialRequirement.getField(L_GENERATED) + "}");
         }
 
-        dataDefinitionService.get(SamplesConstants.L_MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
-                SamplesConstants.L_MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS).save(requirement);
+        materialRequirement.getDataDefinition().save(materialRequirement);
     }
 
     private void addWorkPlan(final Map<String, String> values) {
-
         Entity workPlan = dataDefinitionService.get(SamplesConstants.L_WORK_PLANS_PLUGIN_IDENTIFIER,
                 SamplesConstants.L_WORK_PLANS_MODEL_WORK_PLAN).create();
+
         workPlan.setField(L_NAME, values.get(L_NAME));
         workPlan.setField(L_GENERATED, values.get(L_GENERATED));
         workPlan.setField(L_DATE, values.get(L_DATE));
@@ -1170,11 +1171,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     + ", worker=" + workPlan.getField(L_WORKER) + ", generated=" + workPlan.getField(L_GENERATED) + "}");
         }
 
-        dataDefinitionService.get(SamplesConstants.L_WORK_PLANS_PLUGIN_IDENTIFIER, SamplesConstants.L_WORK_PLANS_MODEL_WORK_PLAN)
-                .save(workPlan);
+        workPlan.getDataDefinition().save(workPlan);
     }
 
-    void addProductionTracking(final Map<String, String> values) {
+    private void addProductionTracking(final Map<String, String> values) {
         Entity productionTracking = dataDefinitionService.get(SamplesConstants.L_PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.L_PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING).create();
 
@@ -1218,12 +1218,14 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private Entity findPausedStateChangeEntityForPR(final Entity productionTracking) {
         SearchCriteriaBuilder scb = productionTracking.getHasManyField("stateChanges").find();
         scb.add(SearchRestrictions.eq("status", StateChangeStatus.PAUSED.getStringValue()));
+
         return scb.setMaxResults(1).uniqueResult();
     }
 
-    void addProductionTrackingReport(final Map<String, String> values) {
+    private void addProductionTrackingReport(final Map<String, String> values) {
         Entity productionTrackingReport = dataDefinitionService.get(SamplesConstants.L_PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.L_PRODUCTIONCOUNTING_MODEL_PRODUCTION_TRACKING_REPORT).create();
+
         productionTrackingReport.setField(L_GENERATED, values.get(L_GENERATED));
         productionTrackingReport.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
         productionTrackingReport.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
@@ -1236,7 +1238,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productionTrackingReport.getDataDefinition().save(productionTrackingReport);
     }
 
-    void addProductionBalance(final Map<String, String> values) {
+    private void addProductionBalance(final Map<String, String> values) {
         Entity productionBalance = dataDefinitionService.get(SamplesConstants.L_PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.L_PRODUCTIONCOUNTING_MODEL_PRODUCTION_BALANCE).create();
 
@@ -1262,56 +1264,54 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productionBalance.getDataDefinition().save(productionBalance);
     }
 
-    void addQualityControl(final Map<String, String> values) {
-        Entity qualitycontrol = dataDefinitionService.get(SamplesConstants.L_QUALITYCONTROL_PLUGIN_IDENTIFIER,
+    private void addQualityControl(final Map<String, String> values) {
+        Entity qualityControl = dataDefinitionService.get(SamplesConstants.L_QUALITYCONTROL_PLUGIN_IDENTIFIER,
                 SamplesConstants.L_QUALITYCONTROL_MODEL_QUALITYCONTROL).create();
 
         if ("qualityControlsForUnit".equals(values.get(L_QUALITYCONTROLTYPE_3))) {
-            qualitycontrol.setField(L_NUMBER, values.get(L_NUMBER));
-            qualitycontrol.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-            qualitycontrol.setField(L_COMMENT, values.get(L_COMMENT));
-            qualitycontrol.setField(L_CLOSED, values.get(L_CLOSED));
-            qualitycontrol.setField("controlledQuantity", values.get("controlledquantity"));
-            qualitycontrol.setField("takenForControlQuantity", values.get("takenforcontrolquantity"));
-            qualitycontrol.setField("rejectedQuantity", values.get("rejectedquantity"));
-            qualitycontrol.setField("acceptedDefectsQuantity", values.get("accepteddefectsquantity"));
-            qualitycontrol.setField(L_STAFF, values.get(L_STAFF));
-            qualitycontrol.setField(L_DATE, values.get(L_DATE));
-            qualitycontrol.setField("controlInstruction", values.get("controlinstruction"));
-            qualitycontrol.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITYCONTROLTYPE_3));
-
+            qualityControl.setField(L_NUMBER, values.get(L_NUMBER));
+            qualityControl.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
+            qualityControl.setField(L_COMMENT, values.get(L_COMMENT));
+            qualityControl.setField(L_CLOSED, values.get(L_CLOSED));
+            qualityControl.setField("controlledQuantity", values.get("controlledquantity"));
+            qualityControl.setField("takenForControlQuantity", values.get("takenforcontrolquantity"));
+            qualityControl.setField("rejectedQuantity", values.get("rejectedquantity"));
+            qualityControl.setField("acceptedDefectsQuantity", values.get("accepteddefectsquantity"));
+            qualityControl.setField(L_STAFF, values.get(L_STAFF));
+            qualityControl.setField(L_DATE, values.get(L_DATE));
+            qualityControl.setField("controlInstruction", values.get("controlinstruction"));
+            qualityControl.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITYCONTROLTYPE_3));
         } else if ("qualityControlsForOrder".equals(values.get(L_QUALITYCONTROLTYPE_3))) {
-            qualitycontrol.setField(L_NUMBER, values.get(L_NUMBER));
-            qualitycontrol.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-            qualitycontrol.setField("ControlResult", values.get("controlresult"));
-            qualitycontrol.setField(L_COMMENT, values.get(L_COMMENT));
-            qualitycontrol.setField(L_CLOSED, values.get(L_CLOSED));
-            qualitycontrol.setField("controlInstruction", values.get("controlinstruction"));
-            qualitycontrol.setField(L_STAFF, values.get(L_STAFF));
-            qualitycontrol.setField(L_DATE, values.get(L_DATE));
-            qualitycontrol.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITYCONTROLTYPE_3));
-
+            qualityControl.setField(L_NUMBER, values.get(L_NUMBER));
+            qualityControl.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
+            qualityControl.setField("ControlResult", values.get("controlresult"));
+            qualityControl.setField(L_COMMENT, values.get(L_COMMENT));
+            qualityControl.setField(L_CLOSED, values.get(L_CLOSED));
+            qualityControl.setField("controlInstruction", values.get("controlinstruction"));
+            qualityControl.setField(L_STAFF, values.get(L_STAFF));
+            qualityControl.setField(L_DATE, values.get(L_DATE));
+            qualityControl.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITYCONTROLTYPE_3));
         } else if (L_QUALITY_CONTROLS_FOR_OPERATION.equals(values.get(L_QUALITYCONTROLTYPE_3))) {
-            qualitycontrol.setField(L_NUMBER, values.get(L_NUMBER));
-            qualitycontrol.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-            qualitycontrol.setField(
+            qualityControl.setField(L_NUMBER, values.get(L_NUMBER));
+            qualityControl.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
+            qualityControl.setField(
                     L_OPERATION,
                     getTechnologyOperationComponentByNumber(getOrderByNumber(values.get(L_ORDER)),
                             getOperationByNumber(values.get(L_OPERATION))));
-            qualitycontrol.setField("ControlResult", values.get("controlresult"));
-            qualitycontrol.setField(L_COMMENT, values.get(L_COMMENT));
-            qualitycontrol.setField(L_CLOSED, values.get(L_CLOSED));
-            qualitycontrol.setField(L_STAFF, values.get(L_STAFF));
-            qualitycontrol.setField(L_DATE, values.get(L_DATE));
-            qualitycontrol.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITYCONTROLTYPE_3));
-
+            qualityControl.setField("ControlResult", values.get("controlresult"));
+            qualityControl.setField(L_COMMENT, values.get(L_COMMENT));
+            qualityControl.setField(L_CLOSED, values.get(L_CLOSED));
+            qualityControl.setField(L_STAFF, values.get(L_STAFF));
+            qualityControl.setField(L_DATE, values.get(L_DATE));
+            qualityControl.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITYCONTROLTYPE_3));
         }
 
-        qualitycontrol = qualitycontrol.getDataDefinition().save(qualitycontrol);
+        qualityControl.getDataDefinition().save(qualityControl);
     }
 
     private void addWageGroups(final Map<String, String> values) {
         Entity wageGroups = dataDefinitionService.get(L_WAGE_GROUPS_PLUGIN_IDENTIFIER, L_WAGE_GROUPS_MODEL_IDENTIFIER).create();
+
         wageGroups.setField(L_NUMBER, values.get(L_NUMBER));
         wageGroups.setField(L_NAME, values.get(L_NAME));
         wageGroups.setField("superiorWageGroup", values.get("superior_wage_group"));
@@ -1319,10 +1319,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         Entity currency = dataDefinitionService
                 .get(SamplesConstants.L_BASIC_PLUGIN_IDENTIFIER, SamplesConstants.L_BASIC_MODEL_CURRENCY).find()
-                .add(SearchRestrictions.eq("alphabeticCode", values.get("code"))).uniqueResult();
-        wageGroups.setField("laborHourlyCostCURRENCY", currency);
-        wageGroups.getDataDefinition().save(wageGroups);
+                .add(SearchRestrictions.eq("alphabeticCode", values.get("code"))).setMaxResults(1).uniqueResult();
 
+        wageGroups.setField("laborHourlyCostCURRENCY", currency);
+
+        wageGroups.getDataDefinition().save(wageGroups);
     }
 
     private Entity getRandomStaff() {
