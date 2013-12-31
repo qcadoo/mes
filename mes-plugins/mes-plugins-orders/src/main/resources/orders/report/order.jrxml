@@ -21,6 +21,7 @@
 			company.phone AS phone,
 			company.tax AS tax,
 			company.country.country AS country_country,
+			product.unit AS unit,		
 			parameter.additionalTextInFooter AS additional_text,
 			orders.number AS orders_order_number,
 			orders.name AS orders_order_name,
@@ -31,6 +32,8 @@
 			orders.doneQuantity AS orders_order_donequantity,
 			orders.effectiveDateFrom AS orders_order_effectivedatefrom,
 			orders.effectiveDateTo AS orders_order_effectivedateto,
+			orders.startDate AS orders_order_startdate,
+			orders.finishDate AS orders_order_finishdate,
 			orders.orderType AS orders_order_ordertype,
 			technology.name AS technologies_technology_name,
 			technology.number AS technologies_technology_number,
@@ -61,7 +64,7 @@
 			) AS orders_order_endworker
 			FROM 
 			com.qcadoo.model.beans.basic.BasicCompany AS company, 
-			com.qcadoo.model.beans.basic.BasicCountry AS country,  
+			com.qcadoo.model.beans.basic.BasicCountry AS country,   
 			com.qcadoo.model.beans.basic.BasicParameter AS parameter,
 			com.qcadoo.model.beans.orders.OrdersOrder AS orders  
 			LEFT OUTER JOIN
@@ -96,11 +99,14 @@
 	<field name="orders_order_startworker" class="java.lang.String"/>
 	<field name="orders_order_endworker" class="java.lang.String"/>
 	<field name="orders_order_ordertype" class="java.lang.String"/>
+	<field name="orders_order_startdate" class="java.util.Date"/>
+	<field name="orders_order_finishdate" class="java.util.Date"/>
 	<field name="technologies_technology_name" class="java.lang.String"/>
 	<field name="technologies_technology_number" class="java.lang.String"/>
 	<field name="basic_product_name" class="java.lang.String"/>
 	<field name="masterorders_masterorder_name" class="java.lang.String"/>
 	<field name="masterorders_masterorder_number" class="java.lang.String"/>
+	<field name="unit" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -212,7 +218,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{basic_product_name}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement key="" style="qcadooLabel7" x="370" y="60" width="170" height="15">
+					<reportElement key="" style="qcadooLabel7" x="190" y="60" width="170" height="15">
 						<property name="local_mesure_unitwidth" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="local_mesure_unitx" value="pixel"/>
@@ -223,42 +229,42 @@
 					<textElement>
 						<font size="7"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateFrom.label}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement style="qcadooValue9" x="370" y="75" width="170" height="30">
-						<property name="local_mesure_unitwidth" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-						<property name="local_mesure_unitx" value="pixel"/>
-						<property name="local_mesure_unity" value="pixel"/>
-					</reportElement>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_datefrom} == null ? "-" : new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm").format($F{orders_order_datefrom})]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement style="qcadooLabel7" x="190" y="60" width="170" height="15">
-						<property name="local_mesure_unitwidth" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-						<property name="local_mesure_unity" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-						<property name="local_mesure_unitx" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					</reportElement>
-					<textElement>
-						<font size="7"/>
-					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.dateTo.label}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.dateFrom.label}]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement style="qcadooValue9" x="190" y="75" width="170" height="30">
 						<property name="local_mesure_unitwidth" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="local_mesure_unity" value="pixel"/>
+					</reportElement>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_startdate} == null ? "-" : new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm").format($F{orders_order_startdate})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="qcadooLabel7" x="370" y="60" width="170" height="15">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.dateTo.label}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="qcadooValue9" x="370" y="75" width="170" height="30">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="local_mesure_unity" value="pixel"/>
 						<property name="local_mesure_unitx" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					</reportElement>
 					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_dateto} == null ? "-" : new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm").format($F{orders_order_dateto})]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_finishdate} == null ? "-" : new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm").format($F{orders_order_finishdate})]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement style="qcadooLabel7" x="370" y="10" width="170" height="15">
@@ -307,7 +313,7 @@
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
 					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_effectivedatefrom} == null ? "-" : new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm").format($F{orders_order_effectivedatefrom})]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_datefrom} == null ? "-" : new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm").format($F{orders_order_datefrom})]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement style="qcadooLabel7" x="10" y="8" width="250" height="15">
@@ -335,7 +341,7 @@
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
 					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_effectivedateto} == null ? "-" : new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm").format($F{orders_order_effectivedateto})]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_dateto} == null ? "-" : new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm").format($F{orders_order_dateto})]]></textFieldExpression>
 				</textField>
 			</frame>
 			<frame>
@@ -356,7 +362,7 @@
 						<property name="local_mesure_unity" value="pixel"/>
 					</reportElement>
 					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_plannedquantity} == null ? "-" : $F{orders_order_plannedquantity}.toString()]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_plannedquantity} == null ? "-" : $F{orders_order_plannedquantity}.toString() + " " +$F{unit}]]></textFieldExpression>
 				
 				</textField>
 				<textField>
@@ -381,7 +387,7 @@
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
 					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_donequantity} == null ? "-" : $F{orders_order_donequantity}.toString()]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_donequantity} == null ? "-" : $F{orders_order_donequantity}.toString()  + " " +$F{unit}]]></textFieldExpression>
 				</textField>
 			</frame>
 			<textField>
