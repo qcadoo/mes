@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

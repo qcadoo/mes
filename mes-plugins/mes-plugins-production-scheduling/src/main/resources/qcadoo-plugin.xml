@@ -24,10 +24,11 @@
     ***************************************************************************
 
 -->
-<plugin plugin="productionScheduling" group="planning" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+<plugin plugin="productionScheduling" group="planning"
+	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
@@ -63,6 +64,7 @@
 			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
+
 	<modules>
 		<localization:translation path="locales" />
 
@@ -94,33 +96,37 @@
 			<model:datetime name="generatedEndDate" />
 		</model:model-field>
 
-		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
-
-		<view:view resource="view/orderTimePrediction.xml" />
-
 		<menu:menu-category name="calculations" />
 
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
 			category="calculations" />
 
+		<view:view resource="view/orderTimePrediction.xml" />
 		<view:view resource="view/operationDurationDetailsInOrder.xml" />
 
-		<view:view-listener plugin="productionScheduling"
-			view="orderTimePrediction" component="window" event="changeRealizationTime"
-			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
-			method="changeRealizationTime" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
+
+		<view:view-hook plugin="orders" view="orderDetails"
+			type="beforeRender" class="com.qcadoo.mes.productionScheduling.hooks.OrderDetailsHooksPS"
+			method="disabledButtonOperationDuration" />
 
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="redirectToOperationDurationDetailsInOrder"
 			class="com.qcadoo.mes.productionScheduling.listeners.OrderDetailsListenersPS"
 			method="redirectToOperationDurationDetailsInOrder" />
 
-		<view:view-hook plugin="orders" view="orderDetails"
-			type="beforeRender" class="com.qcadoo.mes.productionScheduling.hooks.OrderDetailsHooksPS"
-			method="disabledButtonOperationDuration" />
+		<view:view-listener plugin="productionScheduling"
+			view="orderTimePrediction" component="window" event="changeRealizationTime"
+			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
+			method="changeRealizationTime" />
+
+		<view:view-listener plugin="productionScheduling"
+			view="orderTimePrediction" component="technology" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.productionScheduling.listeners.OrderTimePredictionListeners"
+			method="clearValueOnTechnologyChange" />
 
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>

@@ -21,53 +21,49 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.timeNormsForOperations.listeners;
+package com.qcadoo.mes.productionScheduling.listeners;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompTimeCalculationsFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
-public class OrderTimePredictionListenersTNFO {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+public class OrderTimePredictionListeners {
 
     public static final String L_TECHNOLOGY = "technology";
 
     public void clearValueOnTechnologyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(L_TECHNOLOGY);
         Entity technology = technologyLookup.getEntity();
+
         if (technology == null) {
             return;
         }
 
-        List<Entity> operationsComponentsEntities = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+        List<Entity> operationsComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
 
-        for (Entity operationEntity : operationsComponentsEntities) {
-            Entity toctc = operationEntity.getBelongsToField(TechnologyOperCompTNFOFields.TECH_OPER_COMP_TIME_CALCULATIONS);
-            toctc.setField(TechOperCompTimeCalculationsFields.DURATION, null);
-            toctc.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
-            toctc.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
-            toctc.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME, null);
-            toctc.setField(TechOperCompTimeCalculationsFields.LABOR_WORK_TIME, null);
-            toctc.setField(TechOperCompTimeCalculationsFields.MACHINE_WORK_TIME, null);
-            toctc.setField(TechOperCompTimeCalculationsFields.OPERATION_OFF_SET, null);
+        for (Entity operationComponent : operationsComponents) {
+            Entity techOperCompTimeCalculations = operationComponent
+                    .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATIONS);
 
-            toctc = toctc.getDataDefinition().save(toctc);
+            techOperCompTimeCalculations.setField(TechOperCompTimeCalculationsFields.DURATION, null);
+            techOperCompTimeCalculations.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
+            techOperCompTimeCalculations.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
+            techOperCompTimeCalculations.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME, null);
+            techOperCompTimeCalculations.setField(TechOperCompTimeCalculationsFields.LABOR_WORK_TIME, null);
+            techOperCompTimeCalculations.setField(TechOperCompTimeCalculationsFields.MACHINE_WORK_TIME, null);
+            techOperCompTimeCalculations.setField(TechOperCompTimeCalculationsFields.OPERATION_OFF_SET, null);
+
+            techOperCompTimeCalculations = techOperCompTimeCalculations.getDataDefinition().save(techOperCompTimeCalculations);
         }
-
     }
 
 }
