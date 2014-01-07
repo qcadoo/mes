@@ -82,6 +82,7 @@ public class CopyOfTechnologyValidationService {
     }
 
     public void checkConsumingManyProductsFromOneSubOp(final StateChangeContext stateContext, Entity technology2) {
+        final Entity order = stateContext.getOwner();
         final Entity technology = stateContext.getOwner();
         final Map<String, Set<String>> parentChildNodeNums = technologyTreeValidationService
                 .checkConsumingManyProductsFromOneSubOp(technology.getTreeField(OPERATION_COMPONENTS));
@@ -336,6 +337,15 @@ public class CopyOfTechnologyValidationService {
                         "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
                 return false;
             }
+        }
+        return true;
+    }
+
+    public boolean checkIfTechnologyTreeIsSet(final StateChangeContext stateChangeContext, final Entity technology) {
+        final EntityTree operations = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+        if (operations.isEmpty()) {
+            stateChangeContext.addValidationError("technologies.technology.validate.global.error.emptyTechnologyTree");
+            return false;
         }
         return true;
     }
