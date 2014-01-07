@@ -25,28 +25,34 @@ package com.qcadoo.mes.costCalculation.hooks;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class CostCalculationModelHooks {
 
-    public void clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("fileName", null);
-        entity.setField("generated", false);
-        entity.setField("date", null);
+    private static final List<String> L_COST_CALCULATION_COST_FIELDS = Arrays.asList(CostCalculationFields.TOTAL_MATERIAL_COSTS,
+            CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS, CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS,
+            CostCalculationFields.TOTAL_PIECEWORK_COSTS, CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS,
+            CostCalculationFields.PRODUCTION_COST_MARGIN_VALUE, CostCalculationFields.MATERIAL_COST_MARGIN_VALUE,
+            CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE, CostCalculationFields.TOTAL_OVERHEAD,
+            CostCalculationFields.TOTAL_COSTS, CostCalculationFields.TOTAL_COST_PER_UNIT);
 
+    public void clearGeneratedOnCopy(final DataDefinition costCalculationDD, final Entity costCalculation) {
+        costCalculation.setField(CostCalculationFields.FILE_NAME, null);
+        costCalculation.setField(CostCalculationFields.GENERATED, false);
+        costCalculation.setField(CostCalculationFields.DATE, null);
     }
 
-    public void clearGeneratedCosts(final DataDefinition dataDefinition, final Entity entity) {
-        for (String reference : Arrays.asList("totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts",
-                "totalPieceworkCosts", "totalTechnicalProductionCostsLabel", "totalTechnicalProductionCosts",
-                "productionCostMarginValue", "materialCostMarginValue", "additionalOverheadValue", "totalOverhead", "totalCosts",
-                "totalCostPerUnit")) {
-            entity.setField(reference, BigDecimal.ZERO);
+    public void clearGeneratedCosts(final DataDefinition costCalculationDD, final Entity costCalculation) {
+        for (String fieldName : L_COST_CALCULATION_COST_FIELDS) {
+            costCalculation.setField(fieldName, BigDecimal.ZERO);
         }
     }
+
 }
