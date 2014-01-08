@@ -53,6 +53,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDatesService;
@@ -465,21 +466,21 @@ public class OrderService {
         if (DECLINED.getStringValue().equals(order.getStringField(STATE))) {
             return true;
         }
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))) {
+            if (order.isActive()) {
+                Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+                if (technology == null) {
+                    return true;
+                }
+                TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(STATE));
 
-        if (order.isActive()) {
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-            if (technology == null) {
-                return true;
-            }
-            TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(STATE));
-
-            if (TechnologyState.CHECKED != technologyState && TechnologyState.ACCEPTED != technologyState) {
-                order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE),
-                        "orders.validate.technology.error.wrongState.checked");
-                return false;
+                if (TechnologyState.CHECKED != technologyState && TechnologyState.ACCEPTED != technologyState) {
+                    order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE),
+                            "orders.validate.technology.error.wrongState.checked");
+                    return false;
+                }
             }
         }
-
         return true;
     }
 

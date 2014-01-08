@@ -371,4 +371,14 @@ public class TechnologyValidationService {
         }
         return true;
     }
+
+    public boolean checkIfTechnologyTreeIsSet(final StateChangeContext stateChangeContext) {
+        final Entity technology = stateChangeContext.getOwner();
+        final EntityTree operations = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+        if (operations.isEmpty()) {
+            stateChangeContext.addValidationError("technologies.technology.validate.global.error.emptyTechnologyTree");
+            return false;
+        }
+        return true;
+    }
 }

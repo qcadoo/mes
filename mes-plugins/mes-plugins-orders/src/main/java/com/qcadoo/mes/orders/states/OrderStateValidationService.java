@@ -110,7 +110,9 @@ public class OrderStateValidationService {
         if (technology == null) {
             return;
         }
-
+        if (!copyOfTechnologyValidationService.checkIfTechnologyTreeIsSet(stateChangeContext, technology)) {
+            return;
+        }
         copyOfTechnologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext, technology);
         technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology,
                 false);

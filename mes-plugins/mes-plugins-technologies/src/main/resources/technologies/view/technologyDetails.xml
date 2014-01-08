@@ -60,6 +60,7 @@
 						this.changeState = function(eventPerformer, ribbonItemName) {
 							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
 							var newState = ribbonItem.forState;
+
 							if (window.confirm(ribbonItem.confirmMessage)) {
 								#{form}.fireEvent(eventPerformer, 'changeState', [newState]);
 							}
@@ -75,6 +76,15 @@
 									return;
 								}
 								if (! value || ! value.content) {
+									return;
+								}
+								if (! value.content.entityId) {
+									var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
+									var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
+									var checkState = #{window}.getRibbonItem("status.checkTechnology");
+									acceptState.disable();
+									cancelState.disable();
+									checkState.disable();
 									return;
 								}
 								updateRibbon(state);

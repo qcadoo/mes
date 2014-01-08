@@ -64,6 +64,9 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
             @RunForStateTransition(targetState = TechnologyStateStringValues.CHECKED) })
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnAcceptingOrChecking(final StateChangeContext stateChangeContext, final int phase) {
+        if (!technologyValidationService.checkIfTechnologyTreeIsSet(stateChangeContext)) {
+            return;
+        }
         technologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext);
         Entity technology = stateChangeContext.getOwner();
         technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology,

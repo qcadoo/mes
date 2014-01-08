@@ -126,8 +126,8 @@ public class OrderHooks {
         Entity parameter = parameterService.getParameter();
         return orderService.checkOrderDates(orderDD, order) && orderService.checkOrderPlannedQuantity(orderDD, order)
                 && productService.checkIfProductIsNotRemoved(orderDD, order)
-                && checkReasonOfStartDateCorrection(parameter, order) && checkReasonOfEndDateCorrection(parameter, order)
-                && checkEffectiveDeviation(parameter, order);
+                && orderService.checkChosenTechnologyState(orderDD, order) && checkReasonOfStartDateCorrection(parameter, order)
+                && checkReasonOfEndDateCorrection(parameter, order) && checkEffectiveDeviation(parameter, order);
     }
 
     public void onCreate(final DataDefinition dataDefinition, final Entity order) {
