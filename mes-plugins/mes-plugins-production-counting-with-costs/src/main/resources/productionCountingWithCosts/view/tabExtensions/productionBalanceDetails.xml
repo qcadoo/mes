@@ -74,7 +74,8 @@
 						hasBorders="false">
 						<layoutElement column="1" row="1" width="3">
 							<component type="input" name="averageMachineHourlyCost"
-								field="#{form}.averageMachineHourlyCost" reference="averageMachineHourlyCost">
+								field="#{form}.averageMachineHourlyCost" reference="averageMachineHourlyCost"
+								hasDescription="true">
 								<option type="alignment" value="right" />
 							</component>
 						</layoutElement>
@@ -87,7 +88,8 @@
 						</layoutElement>
 						<layoutElement column="1" row="2" width="3">
 							<component type="input" name="averageLaborHourlyCost"
-								field="#{form}.averageLaborHourlyCost" reference="averageLaborHourlyCost">
+								field="#{form}.averageLaborHourlyCost" reference="averageLaborHourlyCost" 
+								hasDescription="true">
 								<option type="alignment" value="right" />
 							</component>
 						</layoutElement>
