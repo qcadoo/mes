@@ -310,7 +310,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="8">
 						<component type="calendar" name="dateFrom" field="startDate"
-							reference="dateFrom">
+							reference="dateFrom" hasDescription="true">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
 							<listener event="onChange"
@@ -320,7 +320,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="9">
 						<component type="calendar" name="dateTo" field="finishDate"
-							reference="dateTo">
+							reference="dateTo" hasDescription="true">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
 							<listener event="onChange"
@@ -458,7 +458,7 @@
 							<layoutElement column="1" row="1">
 								<component type="calendar" name="plannedDateFrom"
 									field="#{form}.dateFrom" reference="plannedDateFrom"
-									defaultEnabled="false">
+									hasDescription="true" defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
 
 									<listener event="onChange"
@@ -590,7 +590,7 @@
 							columns="1" rows="3" reference="endDatesGridLayout">
 							<layoutElement column="1" row="1">
 								<component type="calendar" name="plannedDateTo" field="#{form}.dateTo"
-									reference="plannedDateTo" defaultEnabled="false">
+									reference="plannedDateTo" hasDescription="true" defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
 
 									<listener event="onChange"
