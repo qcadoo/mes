@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +39,11 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ProductionBalanceHooks {
 
+    private static final List<String> L_PRODUCTION_BALANCE_TIME_FIELDS = Arrays.asList(
+            ProductionBalanceFields.PLANNED_MACHINE_TIME, ProductionBalanceFields.MACHINE_TIME,
+            ProductionBalanceFields.MACHINE_TIME_BALANCE, ProductionBalanceFields.PLANNED_LABOR_TIME,
+            ProductionBalanceFields.LABOR_TIME, ProductionBalanceFields.LABOR_TIME_BALANCE);
+
     @Autowired
     private ProductionCountingService productionCountingService;
 
@@ -44,6 +53,7 @@ public class ProductionBalanceHooks {
 
     public void onCopy(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         clearGeneratedOnCopy(productionBalance);
+        clearGeneratedTimes(productionBalance);
     }
 
     private void updateTrackingsNumber(final Entity productionBalance) {
@@ -63,6 +73,12 @@ public class ProductionBalanceHooks {
         productionBalance.setField(ProductionBalanceFields.GENERATED, false);
         productionBalance.setField(ProductionBalanceFields.DATE, null);
         productionBalance.setField(ProductionBalanceFields.WORKER, null);
+    }
+
+    private void clearGeneratedTimes(final Entity productionBalance) {
+        for (String fieldName : L_PRODUCTION_BALANCE_TIME_FIELDS) {
+            productionBalance.setField(fieldName, BigDecimal.ZERO);
+        }
     }
 
 }

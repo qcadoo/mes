@@ -646,7 +646,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                 productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS),
                 numberService.getMathContext());
 
-        productionBalance.setField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICALPRODUCTION_COSTS,
+        productionBalance.setField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COSTS,
                 numberService.setScale(registeredTotalTechnicalProductionCosts));
 
         productionBalance.setField(ProductionBalanceFieldsPCWC.BALANCE_TECHNICAL_PRODUCTION_COSTS,
