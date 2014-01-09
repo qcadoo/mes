@@ -37,11 +37,15 @@ public class OrderDetailsHooksMO {
         Entity order = orderForm.getEntity();
 
         if (order.getId() == null) {
-            Long masterOrderId = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER).getId();
+            Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
 
-            Entity masterOrder = getMasterOrder(masterOrderId);
+            if (masterOrder != null) {
+                Long masterOrderId = masterOrder.getId();
 
-            fillMasterOrderFields(view, masterOrder);
+                masterOrder = getMasterOrder(masterOrderId);
+
+                fillMasterOrderFields(view, masterOrder);
+            }
         }
     }
 
