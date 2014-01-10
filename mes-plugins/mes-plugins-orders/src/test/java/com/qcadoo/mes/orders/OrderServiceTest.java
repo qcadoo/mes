@@ -145,8 +145,16 @@ public class OrderServiceTest {
 
         Entity defaultProductionLine = mock(Entity.class);
 
+        Entity parameter = mock(Entity.class);
+
         given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
         given(orderForm.getEntityId()).willReturn(L_ID);
+
+        given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLineLookup);
+
+        given(parameterService.getParameter()).willReturn(parameter);
+
+        given(parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE)).willReturn(defaultProductionLine);
 
         given(defaultProductionLine.getId()).willReturn(L_ID);
 

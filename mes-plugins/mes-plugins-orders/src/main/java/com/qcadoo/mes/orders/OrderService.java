@@ -114,8 +114,10 @@ public class OrderService {
 
         FieldComponent productionLine = (FieldComponent) view.getComponentByReference(PRODUCTION_LINE);
 
-        if ((orderForm.getEntityId() == null) && (productionLine.getFieldValue() == null)) {
-            productionLine.setFieldValue(getDefaultProductionLine().getId());
+        Entity defaultProductionLine = getDefaultProductionLine();
+
+        if ((orderForm.getEntityId() == null) && (productionLine.getFieldValue() == null) && (defaultProductionLine != null)) {
+            productionLine.setFieldValue(defaultProductionLine.getId());
             productionLine.requestComponentUpdateState();
         }
     }
