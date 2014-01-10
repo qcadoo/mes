@@ -23,166 +23,138 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import static com.qcadoo.mes.basic.constants.CompanyFields.CITY;
-import static com.qcadoo.mes.basic.constants.CompanyFields.COUNTRY;
-import static com.qcadoo.mes.basic.constants.CompanyFields.EMAIL;
-import static com.qcadoo.mes.basic.constants.CompanyFields.FLAT;
-import static com.qcadoo.mes.basic.constants.CompanyFields.HOUSE;
-import static com.qcadoo.mes.basic.constants.CompanyFields.NAME;
-import static com.qcadoo.mes.basic.constants.CompanyFields.NUMBER;
-import static com.qcadoo.mes.basic.constants.CompanyFields.PHONE;
-import static com.qcadoo.mes.basic.constants.CompanyFields.STATE;
-import static com.qcadoo.mes.basic.constants.CompanyFields.STREET;
-import static com.qcadoo.mes.basic.constants.CompanyFields.TAX;
-import static com.qcadoo.mes.basic.constants.CompanyFields.TAX_COUNTRY_CODE;
-import static com.qcadoo.mes.basic.constants.CompanyFields.WEBSITE;
-import static com.qcadoo.mes.basic.constants.CompanyFields.ZIP_CODE;
-
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CompanyFields;
-import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class CompanyDetailsHooks {
 
+    private static final String L_FORM = "form";
+
+    private static final String L_ORDER_PRODUCTION = "orderProduction";
+
+    private static final String L_REDIRECT_TO_FILTERED_ORDER_PRODUCTION_LIST = "redirectToFilteredOrderProductionList";
+
+    private static final String L_DELETE = "delete";
+
+    private static final String L_ACTIONS = "actions";
+
+    private static final List<String> L_COMPANY_FIELDS = Arrays.asList(CompanyFields.NUMBER, CompanyFields.NAME,
+            CompanyFields.CITY, CompanyFields.COUNTRY, CompanyFields.EMAIL, CompanyFields.HOUSE, CompanyFields.FLAT,
+            CompanyFields.PHONE, CompanyFields.ZIP_CODE, CompanyFields.WEBSITE, CompanyFields.TAX_COUNTRY_CODE,
+            CompanyFields.TAX, CompanyFields.STREET, CompanyFields.STATE);
+
     @Autowired
     private ParameterService parameterService;
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private CompanyService companyService;
 
-    private static final String L_FORM = "form";
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     public void updateRibbonState(final ViewDefinitionState view) {
         disabledRedirectToFilteredOrderProductionListButton(view);
-        disabledRibbonForOwner(view);
-    }
-
-    private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
-        ribbonActionItem.setEnabled(isEnabled);
-        ribbonActionItem.requestUpdate(true);
+        disabledRibbonForOwnerOrExternal(view);
     }
 
     private void disabledRedirectToFilteredOrderProductionListButton(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity company = companyForm.getEntity();
 
-        Entity company = form.getEntity();
+        boolean isEnabled = (company.getId() != null);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-
-        RibbonGroup productionOrderGroups = (RibbonGroup) window.getRibbon().getGroupByName("orderProduction");
-
-        RibbonActionItem redirectToFilteredOrderProductionList = (RibbonActionItem) productionOrderGroups
-                .getItemByName("redirectToFilteredOrderProductionList");
-
-        if (company.getId() == null) {
-            updateButtonState(redirectToFilteredOrderProductionList, false);
-        } else {
-            updateButtonState(redirectToFilteredOrderProductionList, true);
-        }
+        companyService.disableButton(view, L_ORDER_PRODUCTION, L_REDIRECT_TO_FILTERED_ORDER_PRODUCTION_LIST, isEnabled, null);
     }
 
-    private void disabledRibbonForOwner(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() == null) {
-            return;
-        }
-        boolean enabled = true;
-        Entity company = form.getEntity();
-        Entity parameter = parameterService.getParameter();
-        Entity owner = parameter.getBelongsToField(ParameterFields.COMPANY);
+    private void disabledRibbonForOwnerOrExternal(final ViewDefinitionState view) {
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity company = companyForm.getEntity();
 
-        if (company.getId().equals(owner.getId())) {
-            enabled = false;
+        Boolean isOwner = companyService.isCompanyOwner(companyForm.getEntity());
+
+        boolean isEnabled = !isOwner;
+
+        String buttonMessage = "basic.company.isOwner";
+
+        if ((company != null) && !StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {
+            buttonMessage = "basic.company.isExternalNumber";
+
+            isEnabled = false;
         }
 
-        disabledButton(view, "actions", "delete", enabled, "basic.company.isOwner");
+        companyService.disableButton(view, L_ACTIONS, L_DELETE, isEnabled, buttonMessage);
     }
 
     public void generateCompanyNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
-                L_FORM, "number");
+                L_FORM, CompanyFields.NUMBER);
     }
 
     public void fillDefaultCountry(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() != null) {
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (companyForm.getEntityId() != null) {
             return;
         }
 
-        LookupComponent countryField = (LookupComponent) view.getComponentByReference(COUNTRY);
+        LookupComponent countryField = (LookupComponent) view.getComponentByReference(CompanyFields.COUNTRY);
+
         Entity country = countryField.getEntity();
 
         if (country == null) {
-            Entity defaultCountry = parameterService.getParameter().getBelongsToField(COUNTRY);
+            Entity defaultCountry = parameterService.getParameter().getBelongsToField(CompanyFields.COUNTRY);
 
             if (defaultCountry == null) {
                 countryField.setFieldValue(null);
             } else {
                 countryField.setFieldValue(defaultCountry.getId());
             }
+
             countryField.requestComponentUpdateState();
         }
     }
 
-    public void disabledFieldAndRibbonForExternalCompany(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() == null) {
-            form.setFormEnabled(true);
+    public void disabledFieldsForExternalCompany(final ViewDefinitionState view) {
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (companyForm.getEntityId() == null) {
+            companyForm.setFormEnabled(true);
+
             return;
         }
-        boolean enableButtons = true;
-        String buttonMessage = "basic.company.disableAfterWhenIsExternal";
-        Entity company = form.getEntity();
+
+        Entity company = companyForm.getEntity();
+
         if (!StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {
-            for (String reference : Arrays.asList(NUMBER, NAME, CITY, COUNTRY, EMAIL, HOUSE, FLAT, PHONE, ZIP_CODE, WEBSITE,
-                    TAX_COUNTRY_CODE, TAX, STREET, STATE)) {
-                disabledField(view, reference);
+            for (String fieldName : L_COMPANY_FIELDS) {
+                disabledField(view, fieldName);
             }
-            enableButtons = false;
-            buttonMessage = "basic.company.isExternalNumber";
         } else {
-            form.setFormEnabled(true);
-        }
-        for (String reference : Arrays.asList("delete")) {
-            disabledButton(view, "actions", reference, enableButtons, buttonMessage);
+            companyForm.setFormEnabled(true);
         }
     }
 
     private void disabledField(final ViewDefinitionState view, final String reference) {
-        FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-        field.setEnabled(false);
-        field.requestComponentUpdateState();
-    }
+        FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
 
-    private void disabledButton(final ViewDefinitionState view, final String groupName, final String buttonName,
-            final boolean enabled, final String message) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonGroup actions = (RibbonGroup) window.getRibbon().getGroupByName(groupName);
-        RibbonActionItem button = (RibbonActionItem) actions.getItemByName(buttonName);
-        button.setEnabled(enabled);
-        if (enabled) {
-            button.setMessage(null);
-        } else {
-            button.setMessage(message);
-        }
-        button.requestUpdate(true);
+        fieldComponent.setEnabled(false);
+        fieldComponent.requestComponentUpdateState();
     }
 
 }

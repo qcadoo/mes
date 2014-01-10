@@ -61,7 +61,7 @@
 
 			<listener event="select"
 				class="com.qcadoo.mes.basic.listeners.CompaniesListListeners"
-				method="checkIfIsOwner" />
+				method="disabledRibbonForOwnerOrExternal" />
 		</component>
 
 		<option type="fixedHeight" value="true" />

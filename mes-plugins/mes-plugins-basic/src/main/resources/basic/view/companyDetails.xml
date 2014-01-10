@@ -173,6 +173,6 @@
 		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
 			method="fillDefaultCountry" />
 		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
-			method="disabledFieldAndRibbonForExternalCompany" />
+			method="disabledFieldsForExternalCompany" />
 	</hooks>
 </view>

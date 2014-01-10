@@ -23,25 +23,29 @@
  */
 package com.qcadoo.mes.basic;
 
-import static com.qcadoo.mes.basic.constants.ParameterFields.COMPANY;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class CompanyService {
 
     private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -76,23 +80,39 @@ public class CompanyService {
         return parameter.getBelongsToField(ParameterFields.COMPANY);
     }
 
+    /**
+     * Returns company entity
+     * 
+     * @param companyId
+     *            companyId
+     * 
+     * @return company
+     */
+    @Transactional
+    public Entity getCompany(final Long companyId) {
+        return getCompanyDD().get(companyId);
+    }
+
+    private DataDefinition getCompanyDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
+    }
+
     public final Boolean isCompanyOwner(final Entity company) {
         if (company.getId() == null) {
             return Boolean.FALSE;
         }
 
-        Entity companyFromDB = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).get(
-                company.getId());
+        Entity companyFromDB = getCompanyDD().get(company.getId());
 
         if (companyFromDB == null) {
             return Boolean.FALSE;
         }
 
         Entity parameter = parameterService.getParameter();
-        Entity owner = parameter.getBelongsToField(COMPANY);
-        
+        Entity owner = parameter.getBelongsToField(ParameterFields.COMPANY);
+
         if (owner == null) {
-            return Boolean.FALSE;  
+            return Boolean.FALSE;
         }
 
         return companyFromDB.getId().equals(owner.getId());
@@ -100,18 +120,38 @@ public class CompanyService {
 
     public void disabledGridWhenCompanyIsOwner(final ViewDefinitionState view, final String... references) {
         FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Boolean isOwner = isCompanyOwner(companyForm.getEntity());
+        Entity company = companyForm.getEntity();
+
+        Boolean isOwner = isCompanyOwner(company);
 
         disableGridComponents(view, !isOwner, references);
     }
 
-    private void disableGridComponents(final ViewDefinitionState view, final Boolean enable, final String... references) {
+    private void disableGridComponents(final ViewDefinitionState view, final Boolean isEditable, final String... references) {
         for (String reference : references) {
             ComponentState component = view.getComponentByReference(reference);
             if (component instanceof GridComponent) {
-                ((GridComponent) component).setEditable(enable);
+                ((GridComponent) component).setEditable(isEditable);
             }
         }
+    }
+
+    public void disableButton(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonActionItemName,
+            final boolean isEnabled, final String message) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+
+        RibbonGroup ribbonGroup = (RibbonGroup) window.getRibbon().getGroupByName(ribbonGroupName);
+        RibbonActionItem ribbonActionItem = (RibbonActionItem) ribbonGroup.getItemByName(ribbonActionItemName);
+
+        ribbonActionItem.setEnabled(isEnabled);
+
+        if (isEnabled) {
+            ribbonActionItem.setMessage(null);
+        } else {
+            ribbonActionItem.setMessage(message);
+        }
+
+        ribbonActionItem.requestUpdate(true);
     }
 
 }
