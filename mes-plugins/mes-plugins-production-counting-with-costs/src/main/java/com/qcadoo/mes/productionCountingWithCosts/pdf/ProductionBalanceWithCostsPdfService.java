@@ -429,7 +429,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         addCurrencyNumericWithLabel(
                 content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.registeredTotalTechnicalProductionCostsLabel.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICALPRODUCTION_COSTS), locale);
+                productionBalance.getField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COSTS), locale);
         addCurrencyNumericWithLabel(
                 content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.registeredTotalTechnicalProductionCostPerUnitLabel.label",

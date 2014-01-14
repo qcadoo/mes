@@ -297,18 +297,12 @@
 			</model:decimal>
 		</model:model-field>
 		
-		<model:model-field plugin="costNormsForOperation" model="calculationOperationComponent">
-			<model:belongsTo name="productionBalance" model="productionBalance" plugin="productionCounting" />
-		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:tree name="calculationOperationComponents" joinField="productionBalance"
-				model="calculationOperationComponent" plugin="costNormsForOperation"
-				cascade="delete" />
-		</model:model-field>
-		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:belongsTo name="technology" model="technology" plugin="technologies" />
+		</model:model-field>
+		
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:belongsTo name="productionLine" model="productionLine" plugin="productionLines" />
 		</model:model-field>
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
@@ -316,7 +310,13 @@
 		</model:model-field>
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:belongsTo name="productionLine" model="productionLine" plugin="productionLines" />
+			<model:tree name="calculationOperationComponents" joinField="productionBalance"
+				model="calculationOperationComponent" plugin="costNormsForOperation"
+				cascade="delete" />
+		</model:model-field>
+		 
+		<model:model-field plugin="costNormsForOperation" model="calculationOperationComponent">
+			<model:belongsTo name="productionBalance" model="productionBalance" plugin="productionCounting" />
 		</model:model-field>
 		
 		<model:model-hook model="productionBalance" plugin="productionCounting">
