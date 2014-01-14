@@ -193,17 +193,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public String getDeliveryAddressDefaultValue() {
-        Entity parameter = parameterService.getParameter();
-
-        if (DefaultAddressType.OTHER.getStringValue().equals(parameter.getStringField(ParameterFieldsD.DEFAULT_ADDRESS))) {
-            return parameter.getStringField(ParameterFieldsD.OTHER_ADDRESS);
-        } else {
-            return generateAddressFromCompany();
-        }
-    }
-
-    @Override
     public Entity getProduct(final DeliveryProduct deliveryProduct) {
         if (deliveryProduct.getOrderedProductId() == null) {
             return getDeliveredProduct(deliveryProduct.getDeliveredProductId()).getBelongsToField(DeliveredProductFields.PRODUCT);
@@ -219,10 +208,20 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return parameter.getStringField(ParameterFieldsD.DEFAULT_DESCRIPTION);
     }
 
-    private String generateAddressFromCompany() {
-        StringBuffer address = new StringBuffer();
+    @Override
+    public String getDeliveryAddressDefaultValue() {
+        Entity parameter = parameterService.getParameter();
 
-        Entity company = companyService.getCompany();
+        if (DefaultAddressType.OTHER.getStringValue().equals(parameter.getStringField(ParameterFieldsD.DEFAULT_ADDRESS))) {
+            return parameter.getStringField(ParameterFieldsD.OTHER_ADDRESS);
+        } else {
+            return generateAddressFromCompany(companyService.getCompany());
+        }
+    }
+
+    @Override
+    public String generateAddressFromCompany(final Entity company) {
+        StringBuffer address = new StringBuffer();
 
         if (company != null) {
             String street = company.getStringField(CompanyFields.STREET);

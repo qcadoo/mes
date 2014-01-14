@@ -151,20 +151,28 @@ public interface DeliveriesService {
     Entity getProduct(final DeliveryProduct deliveryProduct);
 
     /**
+     * Gets description default value
+     * 
+     * @return description
+     */
+    String getDescriptionDefaultValue();
+
+    /**
      * Gets delivery address default value
      * 
      * @return delivery adresss
-     * 
      */
     String getDeliveryAddressDefaultValue();
 
     /**
-     * Gets description default value
+     * Gets address from company
      * 
-     * @return description
+     * @param company
+     *            company
      * 
+     * @return adresss
      */
-    String getDescriptionDefaultValue();
+    String generateAddressFromCompany(final Entity company);
 
     /**
      * Fills unit fields
