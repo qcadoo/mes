@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.constants;
 
-public final class TechnologyOperCompTNFOFields {
+public final class TechnologyOperCompFieldsTNFO {
 
-    private TechnologyOperCompTNFOFields() {
+    private TechnologyOperCompFieldsTNFO() {
 
     }
 

@@ -37,7 +37,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -80,7 +80,7 @@ public class TechnologyValidatorsTest {
     public final void shouldCheckUnitsForTocReturnFalseOnCreateIfUnitIsEmpty() {
         // given
         given(techOpComponent.getId()).willReturn(null);
-        given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
+        given(techOpComponent.getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
 
         // when
         final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
@@ -93,7 +93,7 @@ public class TechnologyValidatorsTest {
     public final void shouldCheckUnitsForTocReturnTrueOnCreateIfUnitIsNotEmpty() {
         // given
         given(techOpComponent.getId()).willReturn(null);
-        given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
+        given(techOpComponent.getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
 
         // when
         final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
@@ -106,7 +106,7 @@ public class TechnologyValidatorsTest {
     public final void shouldCheckUnitsForTocReturnFalseOnUpdateIfUnitIsEmpty() {
         // given
         given(techOpComponent.getId()).willReturn(1L);
-        given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
+        given(techOpComponent.getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
 
         // when
         final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
@@ -119,7 +119,7 @@ public class TechnologyValidatorsTest {
     public final void shouldCheckUnitsForTocReturnFalseOnUpdateIfUnitIsNotEmptyButDoNotMatchProduct() {
         // given
         given(techOpComponent.getId()).willReturn(1L);
-        given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
+        given(techOpComponent.getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
         given(productQuantitiesService.getOutputProductsFromOperationComponent(techOpComponent)).willReturn(outputProduct);
         given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
         given(product.getStringField(ProductFields.UNIT)).willReturn("someAnoherUnit");
@@ -135,7 +135,7 @@ public class TechnologyValidatorsTest {
     public final void shouldCheckUnitsForTocReturnTrueOnUpdateIfUnitIsNotEmptyAndMatchProduct() {
         // given
         given(techOpComponent.getId()).willReturn(1L);
-        given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
+        given(techOpComponent.getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
         given(productQuantitiesService.getOutputProductsFromOperationComponent(techOpComponent)).willReturn(outputProduct);
         given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
         given(product.getStringField(ProductFields.UNIT)).willReturn(SOME_UNIT);
@@ -154,7 +154,7 @@ public class TechnologyValidatorsTest {
                 .willReturn(techOpComponent);
 
         given(techInstanceOpComponent.getId()).willReturn(null);
-        given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
+        given(techInstanceOpComponent.getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
 
         // when
         final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
@@ -171,7 +171,7 @@ public class TechnologyValidatorsTest {
                 .willReturn(techOpComponent);
 
         given(techInstanceOpComponent.getId()).willReturn(null);
-        given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
+        given(techInstanceOpComponent.getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
                 SOME_UNIT);
 
         // when
@@ -189,7 +189,7 @@ public class TechnologyValidatorsTest {
                 .willReturn(techOpComponent);
 
         given(techInstanceOpComponent.getId()).willReturn(1L);
-        given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
+        given(techInstanceOpComponent.getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
 
         // when
         final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
@@ -206,7 +206,7 @@ public class TechnologyValidatorsTest {
                 .willReturn(techOpComponent);
 
         given(techInstanceOpComponent.getId()).willReturn(1L);
-        given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
+        given(techInstanceOpComponent.getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
                 SOME_UNIT);
         given(productQuantitiesService.getOutputProductsFromOperationComponent(techOpComponent)).willReturn(outputProduct);
         given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
@@ -227,7 +227,7 @@ public class TechnologyValidatorsTest {
                 .willReturn(techOpComponent);
 
         given(techInstanceOpComponent.getId()).willReturn(1L);
-        given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
+        given(techInstanceOpComponent.getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
                 SOME_UNIT);
         given(productQuantitiesService.getOutputProductsFromOperationComponent(techOpComponent)).willReturn(outputProduct);
         given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);

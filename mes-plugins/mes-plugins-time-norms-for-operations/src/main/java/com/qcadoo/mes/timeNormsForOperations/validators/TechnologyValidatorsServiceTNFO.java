@@ -25,14 +25,14 @@ package com.qcadoo.mes.timeNormsForOperations.validators;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -51,7 +51,7 @@ public class TechnologyValidatorsServiceTNFO {
         String nextOperationAfterProducedQuantityUnit = technologyOperationComponent
                 .getStringField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
         String nextOperationAfterProducedType = (String) technologyOperationComponent
-                .getField(TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_TYPE);
+                .getField(TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE);
 
         if (productionInOneCycleUnit == null) {
             return true;

@@ -23,12 +23,12 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.TIME_NEXT_OPERATION;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.TJ;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.TPZ;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.TIME_NEXT_OPERATION;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.TJ;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.TPZ;
 
 import java.util.Arrays;
 

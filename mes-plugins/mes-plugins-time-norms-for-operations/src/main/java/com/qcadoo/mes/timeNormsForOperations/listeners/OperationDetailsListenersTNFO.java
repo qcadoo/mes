@@ -25,7 +25,7 @@ package com.qcadoo.mes.timeNormsForOperations.listeners;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -36,11 +36,11 @@ public class OperationDetailsListenersTNFO {
     public void changeNextOperationAfterProducedTypeOperation(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
         FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_TYPE);
+                .getComponentByReference(TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE);
         FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
+                .getComponentByReference(TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
         FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
+                .getComponentByReference(TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
 
         if (nextOperationAfterProducedType.getFieldValue().equals("02specified")) {
             nextOperationAfterProducedQuantity.setVisible(true);
