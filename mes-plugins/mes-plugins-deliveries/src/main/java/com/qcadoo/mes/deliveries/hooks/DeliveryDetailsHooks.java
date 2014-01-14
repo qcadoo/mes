@@ -106,11 +106,11 @@ public class DeliveryDetailsHooks {
         if (deliveryForm.getEntityId() == null) {
             changeFieldsEnabled(view, true, false, false);
         } else {
-            if (DeliveryState.PREPARED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state)
-                    || DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
+            if (DeliveryState.PREPARED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, true);
             } else if (DeliveryState.DECLINED.getStringValue().equals(state)
-                    || DeliveryState.RECEIVED.getStringValue().equals(state)) {
+                    || DeliveryState.RECEIVED.getStringValue().equals(state)
+                    || DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, false);
             } else {
                 changeFieldsEnabled(view, true, true, true);
