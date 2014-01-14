@@ -131,6 +131,10 @@
 		<model:model-field plugin="basic" model="company">
 			<model:dictionary name="paymentForm" dictionary="paymentForm" />
 		</model:model-field>
+		<model:model-field plugin="basic" model="company">
+			<model:hasMany name="deliveries" joinField="supplier"
+				plugin="deliveries" model="delivery" cascade="nullify" />
+		</model:model-field>
 	
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="productCompanies" joinField="product"
@@ -140,6 +144,11 @@
 			<model:hasMany name="productsFamilyCompanies" joinField="product"
 				plugin="deliveries" model="companyProductsFamily" cascade="delete" />
 		</model:model-field>
+		
+		<model:model-hook plugin="basic" model="company">
+			<model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD" 
+				method="onDelete" />
+		</model:model-hook>
 		
 		<menu:menu-category name="requirements" />
 
