@@ -23,15 +23,13 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.RECEIVED;
-import static com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveryFieldsDTMF.LOCATION;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
+import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveryFieldsDTMF;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -53,11 +51,11 @@ public class DeliveryDetailsHooksDTMF {
             return;
         }
 
-        LookupComponent locationField = (LookupComponent) view.getComponentByReference(LOCATION);
+        LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFieldsDTMF.LOCATION);
         Entity location = locationField.getEntity();
 
         if (location == null) {
-            Entity defaultLocation = parameterService.getParameter().getBelongsToField(LOCATION);
+            Entity defaultLocation = parameterService.getParameter().getBelongsToField(DeliveryFieldsDTMF.LOCATION);
 
             if (defaultLocation == null) {
                 locationField.setFieldValue(null);
@@ -71,14 +69,15 @@ public class DeliveryDetailsHooksDTMF {
     public void changeLocationEnabledDependOnState(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        LookupComponent locationField = (LookupComponent) view.getComponentByReference(LOCATION);
+        LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFieldsDTMF.LOCATION);
 
         if (deliveryForm.getEntityId() == null) {
             locationField.setEnabled(true);
         } else {
-            FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE);
+            FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
             String state = stateField.getFieldValue().toString();
-            if (DECLINED.getStringValue().equals(state) || RECEIVED.getStringValue().equals(state)) {
+            if (DeliveryState.DECLINED.getStringValue().equals(state) || DeliveryState.RECEIVED.getStringValue().equals(state)
+                    || DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
                 locationField.setEnabled(false);
             } else {
                 locationField.setEnabled(true);
