@@ -34,9 +34,11 @@ public final class DeliveryStateChangePhase {
     public static final int LAST = EXT_SYNC + 1;
 
     private DeliveryStateChangePhase() {
+
     }
 
     public static int getNumOfPhases() {
         return LAST;
     }
+
 }
