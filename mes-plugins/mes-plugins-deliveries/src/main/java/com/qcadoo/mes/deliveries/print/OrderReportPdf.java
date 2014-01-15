@@ -24,15 +24,6 @@
 package com.qcadoo.mes.deliveries.print;
 
 import static com.google.common.base.Preconditions.checkState;
-import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.ALIGNMENT;
-import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.IDENTIFIER;
-import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.NAME;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -62,11 +53,15 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeFields;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -100,10 +95,10 @@ public class OrderReportPdf extends ReportPdfView {
     private PdfHelper pdfHelper;
 
     @Autowired
-    private CompanyService companyService;
+    private ParameterService parameterService;
 
     @Autowired
-    private ParameterService parameterService;
+    private CompanyService companyService;
 
     @Autowired
     private NumberService numberService;
@@ -128,8 +123,8 @@ public class OrderReportPdf extends ReportPdfView {
         createHeaderTable(document, delivery, locale);
         createProductsTable(document, delivery, locale);
 
-        return translationService.translate("deliveries.order.report.fileName", locale, delivery.getStringField(NUMBER),
-                getStringFromDate((Date) delivery.getField("updateDate")));
+        return translationService.translate("deliveries.order.report.fileName", locale,
+                delivery.getStringField(DeliveryFields.NUMBER), getStringFromDate(delivery.getDateField("updateDate")));
     }
 
     private void createHeaderTable(final Document document, final Entity delivery, final Locale locale) throws DocumentException {
@@ -175,47 +170,73 @@ public class OrderReportPdf extends ReportPdfView {
 
     private Map<String, Object> createFirstColumn(final Entity delivery) {
         Map<String, Object> column = new LinkedHashMap<String, Object>();
-        if (delivery.getStringField(NUMBER) != null) {
-            column.put("deliveries.delivery.report.columnHeader.number", delivery.getStringField(NUMBER));
+
+        String number = delivery.getStringField(DeliveryFields.NUMBER);
+        String name = delivery.getStringField(DeliveryFields.NAME);
+        String description = delivery.getStringField(DeliveryFields.DESCRIPTION);
+
+        if (number != null) {
+            column.put("deliveries.delivery.report.columnHeader.number", number);
         }
-        if (delivery.getStringField(NAME) != null) {
-            column.put("deliveries.delivery.report.columnHeader.name", delivery.getStringField(NAME));
+        if (name != null) {
+            column.put("deliveries.delivery.report.columnHeader.name", name);
         }
-        if (delivery.getStringField(DESCRIPTION) != null) {
-            column.put("deliveries.delivery.report.columnHeader.description", delivery.getStringField(DESCRIPTION));
+        if (description != null) {
+            column.put("deliveries.delivery.report.columnHeader.description", description);
         }
+
         return column;
     }
 
     private Map<String, Object> createSecondColumn(final Entity delivery) {
         Map<String, Object> column = new LinkedHashMap<String, Object>();
+
         Entity company = companyService.getCompany();
+        String deliveryAddress = delivery.getStringField(DeliveryFields.DELIVERY_ADDRESS);
+        Date deliveryDate = delivery.getDateField(DeliveryFields.DELIVERY_DATE);
+
         if (company != null) {
-            column.put("deliveries.order.report.columnHeader.contracting", company.getStringField(NAME));
+            String name = company.getStringField(CompanyFields.NAME);
+
+            column.put("deliveries.order.report.columnHeader.contracting", name);
         }
-        if (delivery.getStringField(DELIVERY_ADDRESS) != null) {
-            column.put("deliveries.order.report.columnHeader.deliveryAddress", delivery.getStringField(DELIVERY_ADDRESS));
+        if (deliveryAddress != null) {
+            column.put("deliveries.order.report.columnHeader.deliveryAddress", deliveryAddress);
         }
+        if (deliveryDate != null) {
+            column.put("deliveries.order.report.columnHeader.deliveryDate", getStringFromDate(deliveryDate));
+        }
+
         return column;
     }
 
     private Map<String, Object> createThirdColumn(final Entity delivery) {
         Map<String, Object> column = new LinkedHashMap<String, Object>();
-        if (delivery.getBelongsToField(SUPPLIER) != null) {
-            column.put("deliveries.order.report.columnHeader.supplier", delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
+
+        Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
+        String supplierAddress = deliveriesService.generateAddressFromCompany(supplier);
+        Entity prepareOrderDate = getPrepareOrderDate(delivery);
+
+        if (supplier != null) {
+            String name = supplier.getStringField(CompanyFields.NAME);
+
+            column.put("deliveries.order.report.columnHeader.supplier", name);
         }
-        if (delivery.getField(DELIVERY_DATE) != null) {
-            column.put("deliveries.order.report.columnHeader.deliveryDate",
-                    getStringFromDate((Date) delivery.getField(DELIVERY_DATE)));
+        if (StringUtils.isNotEmpty(supplierAddress)) {
+            column.put("deliveries.order.report.columnHeader.supplierAddress", supplierAddress);
         }
-        if (getPrepareOrderDate(delivery) != null) {
+        if (prepareOrderDate != null) {
             column.put("deliveries.delivery.report.columnHeader.createOrderDate",
-                    getStringFromDate((Date) getPrepareOrderDate(delivery).getField("dateAndTime")));
+                    getStringFromDate(prepareOrderDate.getDateField(DeliveryStateChangeFields.DATE_AND_TIME)));
         }
-        if (StringUtils.isNotEmpty(delivery.getBelongsToField(SUPPLIER).getStringField(CompanyFieldsD.PAYMENT_FORM))) {
-            column.put("deliveries.delivery.report.columnHeader.paymentForm", delivery.getBelongsToField(SUPPLIER)
-                    .getStringField(CompanyFieldsD.PAYMENT_FORM));
+        if (supplier != null) {
+            String paymentForm = supplier.getStringField(CompanyFieldsD.PAYMENT_FORM);
+
+            if (StringUtils.isNotEmpty(paymentForm)) {
+                column.put("deliveries.delivery.report.columnHeader.paymentForm", paymentForm);
+            }
         }
+
         return column;
     }
 
@@ -224,7 +245,7 @@ public class OrderReportPdf extends ReportPdfView {
         List<Entity> columnsForOrders = deliveriesService.getColumnsForOrders();
 
         if (!columnsForOrders.isEmpty()) {
-            List<Entity> orderedProducts = delivery.getHasManyField(ORDERED_PRODUCTS);
+            List<Entity> orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
 
             Map<Entity, Map<String, String>> orderedProductsColumnValues = orderColumnFetcher
                     .getOrderedProductsColumnValues(orderedProducts);
@@ -236,7 +257,7 @@ public class OrderReportPdf extends ReportPdfView {
                 List<String> columnsName = Lists.newArrayList();
 
                 for (Entity entity : filteredColumnsForOrders) {
-                    columnsName.add(entity.getStringField(IDENTIFIER));
+                    columnsName.add(entity.getStringField(ColumnForOrdersFields.IDENTIFIER));
                 }
 
                 PdfPTable productsTable = pdfHelper.createTableWithHeader(filteredColumnsForOrders.size(),
@@ -246,8 +267,8 @@ public class OrderReportPdf extends ReportPdfView {
 
                 for (Entity orderedProduct : orderedProducts) {
                     for (Entity columnForOrders : filteredColumnsForOrders) {
-                        String identifier = columnForOrders.getStringField(IDENTIFIER);
-                        String alignment = columnForOrders.getStringField(ALIGNMENT);
+                        String identifier = columnForOrders.getStringField(ColumnForOrdersFields.IDENTIFIER);
+                        String alignment = columnForOrders.getStringField(ColumnForOrdersFields.ALIGNMENT);
 
                         String value = orderedProductsColumnValues.get(orderedProduct).get(identifier);
 
@@ -272,7 +293,7 @@ public class OrderReportPdf extends ReportPdfView {
     }
 
     private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName, Entity delivery) {
-        DeliveryPricesAndQuantities pricesAndQntts = new DeliveryPricesAndQuantities(delivery, numberService);
+        DeliveryPricesAndQuantities deliveryPricesAndQuantities = new DeliveryPricesAndQuantities(delivery, numberService);
 
         PdfPCell total = new PdfPCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
                 FontUtils.getDejavuRegular7Dark()));
@@ -290,13 +311,13 @@ public class OrderReportPdf extends ReportPdfView {
             if (columnsName.contains(OrderedProductFields.ORDERED_QUANTITY)
                     && columnsName.indexOf(OrderedProductFields.ORDERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getOrderedCumulatedQuantity()), FontUtils
-                        .getDejavuRegular7Dark()));
+                productsTable.addCell(new Phrase(numberService.format(deliveryPricesAndQuantities.getOrderedCumulatedQuantity()),
+                        FontUtils.getDejavuRegular7Dark()));
             } else if (columnsName.contains(OrderedProductFields.TOTAL_PRICE)
                     && columnsName.indexOf(OrderedProductFields.TOTAL_PRICE) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getOrderedTotalPrice()), FontUtils
-                        .getDejavuRegular7Dark()));
+                productsTable.addCell(new Phrase(numberService.format(deliveryPricesAndQuantities.getOrderedTotalPrice()),
+                        FontUtils.getDejavuRegular7Dark()));
             } else if (columnsName.contains(L_CURRENCY) && columnsName.indexOf(L_CURRENCY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                 productsTable.addCell(new Phrase(deliveriesService.getCurrency(delivery), FontUtils.getDejavuRegular7Dark()));
@@ -314,7 +335,7 @@ public class OrderReportPdf extends ReportPdfView {
         List<String> productsHeader = Lists.newArrayList();
 
         for (Entity columnForOrders : columnsForOrders) {
-            String name = columnForOrders.getStringField(NAME);
+            String name = columnForOrders.getStringField(ColumnForOrdersFields.NAME);
 
             productsHeader.add(translationService.translate(name, locale));
         }
@@ -330,18 +351,19 @@ public class OrderReportPdf extends ReportPdfView {
         }
     }
 
-    private String getStringFromDate(final Date date) {
-        return simpleDateFormat.format(date);
-    }
-
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
         document.addTitle(translationService.translate("deliveries.order.report.title", locale));
     }
 
     private Entity getPrepareOrderDate(final Entity delivery) {
-        return delivery.getHasManyField("stateChanges").find().add(SearchRestrictions.eq("targetState", "02prepared"))
-                .add(SearchRestrictions.eq("status", "03successful")).uniqueResult();
+        return delivery.getHasManyField(DeliveryFields.STATE_CHANGES).find()
+                .add(SearchRestrictions.eq(DeliveryStateChangeFields.TARGET_STATE, "02prepared"))
+                .add(SearchRestrictions.eq(DeliveryStateChangeFields.STATUS, "03successful")).setMaxResults(1).uniqueResult();
+    }
+
+    private String getStringFromDate(final Date date) {
+        return simpleDateFormat.format(date);
     }
 
 }
