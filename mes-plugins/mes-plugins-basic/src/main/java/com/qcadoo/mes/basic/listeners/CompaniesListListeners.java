@@ -25,57 +25,55 @@ package com.qcadoo.mes.basic.listeners;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.mes.basic.CompanyService;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class CompaniesListListeners {
 
-    @Autowired
-    private ParameterService parameterService;
+    private static final String L_GRID = "grid";
+
+    private static final String L_ACTIONS = "actions";
+
+    private static final String L_DELETE = "delete";
 
     @Autowired
-    private TranslationService translationService;
+    private CompanyService companyService;
 
-    public void checkIfIsOwner(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Entity parameter = parameterService.getParameter();
-        Entity owner = parameter.getBelongsToField(ParameterFields.COMPANY);
-        if (owner == null) {
-            disabledButton(view, true);
-            return;
-        }
-        boolean enabled = true;
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+    public void disabledRibbonForOwnerOrExternal(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+
         List<Entity> companies = grid.getSelectedEntities();
+
+        boolean isEnabled = true;
+
+        String buttonMessage = "basic.company.isOwner";
+
         for (Entity company : companies) {
-            if (company.getId().equals(owner.getId())) {
-                enabled = false;
+            Entity companyFromDB = companyService.getCompany(company.getId());
+
+            isEnabled = !companyService.isCompanyOwner(companyFromDB);
+
+            if ((companyFromDB != null) && !StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {
+                buttonMessage = "basic.company.isExternalNumber";
+
+                isEnabled = false;
+            }
+
+            if (!isEnabled) {
+                break;
             }
         }
-        disabledButton(view, enabled);
+
+        companyService.disableButton(view, L_ACTIONS, L_DELETE, isEnabled, buttonMessage);
     }
 
-    private void disabledButton(final ViewDefinitionState view, final boolean enabled) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonGroup actions = (RibbonGroup) window.getRibbon().getGroupByName("actions");
-        RibbonActionItem delete = actions.getItemByName("delete");
-        delete.setEnabled(enabled);
-        if (enabled) {
-            delete.setMessage(null);
-        } else {
-            delete.setMessage(translationService.translate("basic.company.isOwner", view.getLocale()));
-        }
-        delete.requestUpdate(true);
-    }
 }

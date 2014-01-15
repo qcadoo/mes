@@ -29,17 +29,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class CompanyService {
 
     private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -74,13 +80,31 @@ public class CompanyService {
         return parameter.getBelongsToField(ParameterFields.COMPANY);
     }
 
+    /**
+     * Returns company entity
+     * 
+     * @param companyId
+     *            companyId
+     * 
+     * @return company
+     */
+    @Transactional
+    public Entity getCompany(final Long companyId) {
+        return getCompanyDD().get(companyId);
+    }
+
+    private DataDefinition getCompanyDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
+    }
+
     public final Boolean isCompanyOwner(final Entity company) {
-        if (company.getId() == null) {
+        Long companyId = company.getId();
+
+        if (companyId == null) {
             return Boolean.FALSE;
         }
 
-        Entity companyFromDB = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).get(
-                company.getId());
+        Entity companyFromDB = getCompanyDD().get(companyId);
 
         if (companyFromDB == null) {
             return Boolean.FALSE;
@@ -98,18 +122,39 @@ public class CompanyService {
 
     public void disabledGridWhenCompanyIsOwner(final ViewDefinitionState view, final String... references) {
         FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Boolean isOwner = isCompanyOwner(companyForm.getEntity());
+        Entity company = companyForm.getEntity();
+
+        Boolean isOwner = isCompanyOwner(company);
 
         disableGridComponents(view, !isOwner, references);
     }
 
     private void disableGridComponents(final ViewDefinitionState view, final Boolean enable, final String... references) {
         for (String reference : references) {
-            ComponentState component = view.getComponentByReference(reference);
-            if (component instanceof GridComponent) {
-                ((GridComponent) component).setEditable(enable);
+            ComponentState componentState = view.getComponentByReference(reference);
+
+            if (componentState instanceof GridComponent) {
+                ((GridComponent) componentState).setEditable(enable);
             }
         }
+    }
+
+    public void disableButton(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonActionItemName,
+            final boolean isEnabled, final String message) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+
+        RibbonGroup ribbonGroup = (RibbonGroup) window.getRibbon().getGroupByName(ribbonGroupName);
+        RibbonActionItem ribbonActionItem = (RibbonActionItem) ribbonGroup.getItemByName(ribbonActionItemName);
+
+        ribbonActionItem.setEnabled(isEnabled);
+
+        if (isEnabled) {
+            ribbonActionItem.setMessage(null);
+        } else {
+            ribbonActionItem.setMessage(message);
+        }
+
+        ribbonActionItem.requestUpdate(true);
     }
 
 }
