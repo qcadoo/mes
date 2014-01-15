@@ -63,7 +63,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Iterator;
 
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,6 +73,7 @@ import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -146,8 +146,16 @@ public class OrderServiceTest {
 
         Entity defaultProductionLine = mock(Entity.class);
 
+        Entity parameter = mock(Entity.class);
+
         given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
         given(orderForm.getEntityId()).willReturn(L_ID);
+
+        given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLineLookup);
+
+        given(parameterService.getParameter()).willReturn(parameter);
+
+        given(parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE)).willReturn(defaultProductionLine);
 
         given(defaultProductionLine.getId()).willReturn(L_ID);
 
