@@ -26,6 +26,7 @@ package com.qcadoo.mes.deliveries.states.constants;
 public final class DeliveryStateChangeFields {
 
     private DeliveryStateChangeFields() {
+        
     }
 
     public static final String DATE_AND_TIME = "dateAndTime";
