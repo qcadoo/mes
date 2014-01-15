@@ -98,7 +98,7 @@ public class CompanyService {
     }
 
     public final Boolean isCompanyOwner(final Entity company) {
-        Long compantId = company.getId();
+        Long companyId = company.getId();
         
         if (companyId == null) {
             return Boolean.FALSE;
