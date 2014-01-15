@@ -27,7 +27,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -179,6 +178,7 @@ public class DeliveryReportPdf extends ReportPdfView {
         if (description != null) {
             column.put("deliveries.delivery.report.columnHeader.description", description);
         }
+        
         return column;
     }
 
@@ -190,7 +190,9 @@ public class DeliveryReportPdf extends ReportPdfView {
         String deliveryAddress = delivery.getStringField(DeliveryFields.DELIVERY_ADDRESS);
 
         if (supplier != null) {
-            column.put("deliveries.delivery.report.columnHeader.supplier", supplier.getStringField(CompanyFields.NAME));
+            String name = supplier.getStringField(CompanyFields.NAME);
+            
+            column.put("deliveries.delivery.report.columnHeader.supplier", name);
         }
         if (deliveryDate != null) {
             column.put("deliveries.delivery.report.columnHeader.deliveryDate", getStringFromDate(deliveryDate));
@@ -205,11 +207,11 @@ public class DeliveryReportPdf extends ReportPdfView {
     private Map<String, Object> createThirdColumn(final Entity delivery, final Locale locale) {
         Map<String, Object> column = new LinkedHashMap<String, Object>();
 
-        Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
         String state = delivery.getStringField(DeliveryFields.STATE);
         Date createDate = delivery.getDateField("createDate");
         Entity prepareOrderDate = getPrepareOrderDate(delivery);
         Entity receivedOrderDate = getReceivedOrderDate(delivery);
+        Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
 
         if (StringUtils.isNotEmpty(state)) {
             column.put("deliveries.delivery.report.columnHeader.state",
@@ -364,7 +366,7 @@ public class DeliveryReportPdf extends ReportPdfView {
         document.add(new Paragraph(translationService.translate("deliveries.delivery.report.deliveryProducts.title", locale),
                 FontUtils.getDejavuBold11Dark()));
 
-        List<String> productsHeader = new ArrayList<String>();
+        List<String> productsHeader = Lists.newArrayList();
 
         for (Entity columnForDeliveries : columnsForDeliveries) {
             String name = columnForDeliveries.getStringField(ColumnForDeliveriesFields.NAME);
