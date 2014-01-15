@@ -61,8 +61,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private static final String L_ORDER = "order";
 
-    private Map<Entity, BigDecimal> operationRunsField = Maps.newHashMap();
-
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
@@ -90,17 +88,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
 
-        // TODO LUPO fix problem with operationRuns
         Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
 
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
 
-        operationRunsField = productQuantitiesService
-                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
-
-        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField, productionLine,
-                false, productComponentQuantities);
+        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime,
+                operationRunsFromProductionQuantities, productionLine, false, productComponentQuantities);
     }
 
     @Override
@@ -110,17 +104,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
 
-        // TODO LUPO fix problem with operationRuns
         Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
 
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
 
-        operationRunsField = productQuantitiesService
-                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
-
-        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField, productionLine,
-                true, productComponentQuantities);
+        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime,
+                operationRunsFromProductionQuantities, productionLine, true, productComponentQuantities);
     }
 
     @Override
@@ -158,18 +148,14 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             throw new IllegalStateException("Entity has to be either order or technology");
         }
 
-        // TODO LUPO fix problem with operationRuns
         Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
 
         productQuantitiesService
                 .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
 
-        operationRunsField = productQuantitiesService
-                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
-
         for (Entity operationComponent : operationComponents) {
             evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operationComponent, includeTpz,
-                    includeAdditionalTime, operationRunsField, productionLine, maxForWorkstation);
+                    includeAdditionalTime, operationRunsFromProductionQuantities, productionLine, maxForWorkstation);
         }
 
         return operationDurations;
@@ -177,7 +163,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private void evaluateTimesConsideringOperationCanBeReferencedTechnology(final Map<Entity, Integer> operationDurations,
             final Entity operationComponent, final boolean includeTpz, final boolean includeAdditionalTime,
-            final Map<Entity, BigDecimal> operationRuns, final Entity productionLine, final boolean maxForWorkstation) {
+            final Map<Long, BigDecimal> operationRuns, final Entity productionLine, final boolean maxForWorkstation) {
         String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
 
         if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(entityType)) {
@@ -187,7 +173,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                         includeAdditionalTime, operationRuns, productionLine, maxForWorkstation);
             }
         } else {
-            int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField,
+            int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation);
 
             operationDurations.put(operationComponent, duration);
@@ -196,7 +182,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private int evaluateOperationTime(final Entity operationComponent, final boolean includeTpz,
-            final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns, final Entity productionLine,
+            final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
             final boolean maxForWorkstation, final OperationProductComponentWithQuantityContainer productComponentQuantities) {
         String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
 
@@ -258,19 +244,17 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
-            final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns, final Entity productionLine,
+            final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
             final boolean maxForWorkstation) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
 
-        Entity technologyOperationComponent = operationComponent;
-
-        BigDecimal cycles = operationRuns.get(technologyOperationComponent);
+        BigDecimal cycles = operationRuns.get(operationComponent.getId());
         return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
     }
 
     private int evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(Entity operationComponent,
-            final boolean includeTpz, final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns,
+            final boolean includeTpz, final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns,
             final Entity productionLine, final boolean maxForWorkstation,
             final OperationProductComponentWithQuantityContainer productComponentQuantities) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
@@ -303,16 +287,12 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         MathContext mc = numberService.getMathContext();
         Entity technology = operationComponent.getBelongsToField("technology");
 
-        // TODO LUPO fix problem with operationRuns
         Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
 
         OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
                 .getProductComponentQuantities(technology, BigDecimal.ONE, operationRunsFromProductionQuantities);
 
-        Map<Entity, BigDecimal> operationsRunsForOrderForOneProduct = productQuantitiesService
-                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
-
-        BigDecimal operationsRunsForOneMainProduct = operationsRunsForOrderForOneProduct.get(operationComponent);
+        BigDecimal operationsRunsForOneMainProduct = operationRunsFromProductionQuantities.get(operationComponent.getId());
         BigDecimal quantityOutputProductProduced = productQuantities.get(getOutputProduct(operationComponent));
         BigDecimal cycles = operationsRunsForOneMainProduct.multiply(nextOperationAfterProducedQuantity, mc).divide(
                 quantityOutputProductProduced, mc);
