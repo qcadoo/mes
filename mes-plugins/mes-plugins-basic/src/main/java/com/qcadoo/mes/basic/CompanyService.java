@@ -98,11 +98,13 @@ public class CompanyService {
     }
 
     public final Boolean isCompanyOwner(final Entity company) {
-        if (company.getId() == null) {
+        Long compantId = company.getId();
+        
+        if (companyId == null) {
             return Boolean.FALSE;
         }
 
-        Entity companyFromDB = getCompanyDD().get(company.getId());
+        Entity companyFromDB = getCompanyDD().get(companyId);
 
         if (companyFromDB == null) {
             return Boolean.FALSE;
@@ -129,9 +131,10 @@ public class CompanyService {
 
     private void disableGridComponents(final ViewDefinitionState view, final Boolean isEditable, final String... references) {
         for (String reference : references) {
-            ComponentState component = view.getComponentByReference(reference);
-            if (component instanceof GridComponent) {
-                ((GridComponent) component).setEditable(isEditable);
+            ComponentState componentState = view.getComponentByReference(reference);
+            
+            if (componentState instanceof GridComponent) {
+                ((GridComponent) componentState).setEditable(isEditable);
             }
         }
     }
