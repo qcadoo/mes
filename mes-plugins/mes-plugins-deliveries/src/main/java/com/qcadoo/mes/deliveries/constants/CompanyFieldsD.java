@@ -37,4 +37,6 @@ public final class CompanyFieldsD {
 
     public static final String PAYMENT_FORM = "paymentForm";
 
+    public static final String DELIVERIES = "deliveries";
+
 }
