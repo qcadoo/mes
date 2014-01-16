@@ -78,13 +78,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Override
     @Transactional
     public int estimateOperationTimeConsumption(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
-            final Entity productionLine) {
-        return estimateOperationTimeConsumption(operationComponent, plannedQuantity, true, true, productionLine);
-    }
-
-    @Override
-    @Transactional
-    public int estimateOperationTimeConsumption(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
 
@@ -268,7 +261,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             cycles = getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(technologyOperationComponent,
                     nextOperationAfterProducedQuantity);
         } else {
-            cycles = operationRuns.get(technologyOperationComponent);
+            cycles = operationRuns.get(technologyOperationComponent.getId());
         }
         return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
@@ -345,5 +338,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private Integer getIntegerValue(final Object value) {
         return value == null ? Integer.valueOf(0) : (Integer) value;
+    }
+
+    @Override
+    public int estimateOperationTimeConsumption(EntityTreeNode operationComponent, BigDecimal plannedQuantity,
+            Entity productionLine) {
+        return estimateOperationTimeConsumption(operationComponent, plannedQuantity, true, true, productionLine);
     }
 }
