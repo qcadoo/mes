@@ -30,9 +30,20 @@ import com.qcadoo.model.api.Entity;
 @Service
 public interface ChangeoverNormsSearchService {
 
+    Entity findBestMatching(final Long fromTechnologyId, final Long fromTechnologyGroupId, final Long toTechnologyId,
+            final Long toTechnologyGroupId, final Long productionLineId);
+
+    @Deprecated
+    /**
+     * @deprecated use ChangeoverNormsSearchService#findBestMatching
+     */
     Entity searchMatchingChangeroverNormsForTechnologyWithLine(final Entity fromTechnology, final Entity toTechnology,
             final Entity productionLine);
 
+    @Deprecated
+    /**
+     * @deprecated use ChangeoverNormsSearchService#findBestMatching
+     */
     Entity searchMatchingChangeroverNormsForTechnologyGroupWithLine(final Entity fromTechnologyGroup,
             final Entity toTechnologyGroup, final Entity productionLine);
 

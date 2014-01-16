@@ -55,6 +55,6 @@ public interface ShiftsService {
     @Deprecated
     boolean checkIfShiftWorkAtDate(final Date date, final Entity shift);
 
-    String getWeekDayName(DateTime dateTime);
+    String getWeekDayName(final DateTime dateTime);
 
 }

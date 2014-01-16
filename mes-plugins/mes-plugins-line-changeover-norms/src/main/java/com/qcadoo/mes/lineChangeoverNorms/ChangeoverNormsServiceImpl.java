@@ -26,7 +26,7 @@ package com.qcadoo.mes.lineChangeoverNorms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.google.common.base.Preconditions;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -42,34 +42,21 @@ public class ChangeoverNormsServiceImpl implements ChangeoverNormsService {
 
     @Override
     public Entity getMatchingChangeoverNorms(final Entity fromTechnology, final Entity toTechnology, final Entity productionLine) {
-        Entity matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology,
-                toTechnology, productionLine);
-        if (matchingNorm == null) {
-            matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology,
-                    toTechnology, null);
-        }
-        if (matchingNorm == null) {
-            Entity fromTechnologyGroup = getTechnologyGroupForTechnology(fromTechnology);
-            Entity toTechnologyGroup = getTechnologyGroupForTechnology(toTechnology);
-            if (fromTechnologyGroup == null || toTechnologyGroup == null) {
-                return matchingNorm;
-            }
-            matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(
-                    fromTechnologyGroup, toTechnologyGroup, productionLine);
-            if (matchingNorm == null) {
-                matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(
-                        fromTechnologyGroup, toTechnologyGroup, null);
-            }
-        }
-        return matchingNorm;
+        Preconditions.checkArgument(fromTechnology != null, "fromTechnology must be not null.");
+        Preconditions.checkArgument(toTechnology != null, "toTechnology must be not null.");
+        return changeoverNormsSearchService.findBestMatching(fromTechnology.getId(), extractTechnologyGroupId(fromTechnology),
+                toTechnology.getId(), extractTechnologyGroupId(toTechnology), getIdOrNull(productionLine));
     }
 
-    private Entity getTechnologyGroupForTechnology(final Entity technology) {
+    private Long extractTechnologyGroupId(final Entity technology) {
         Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
-        if (technologyGroup != null) {
-            return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_GROUP).get(technologyGroup.getId());
+        return getIdOrNull(technologyGroup);
+    }
+
+    private Long getIdOrNull(final Entity entity) {
+        if (entity == null) {
+            return null;
         }
-        return null;
+        return entity.getId();
     }
 }
