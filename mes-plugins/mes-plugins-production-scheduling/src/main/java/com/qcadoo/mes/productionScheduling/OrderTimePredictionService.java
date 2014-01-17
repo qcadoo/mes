@@ -407,7 +407,7 @@ public class OrderTimePredictionService {
         machineWorkTime.setFieldValue(workTime.getMachineWorkTime());
 
         maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(technology.getTreeField("operationComponents")
-                .getRoot(), quantity, productionLine);
+                .getRoot(), quantity, includeTpz, includeAdditionalTime, productionLine);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
