@@ -129,9 +129,10 @@ public class ProductionTrackingValidators {
             final Entity order) {
         boolean isStarted = true;
 
-        String state = order.getStringField(OrderFields.STATE);
+        String state = productionTracking.getStringField(ProductionTrackingFields.STATE);
+        String orderState = order.getStringField(OrderFields.STATE);
 
-        if (!isOrderStarted(state)) {
+        if (isProductionTrackingDraft(state) && !isOrderStateStarted(orderState)) {
             productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.ORDER),
                     "productionCounting.productionTracking.messages.error.orderIsNotStarted");
 
@@ -141,8 +142,12 @@ public class ProductionTrackingValidators {
         return isStarted;
     }
 
-    private boolean isOrderStarted(final String state) {
-        return L_ORDER_STARTED_STATES_SET.contains(state);
+    private boolean isProductionTrackingDraft(final String state) {
+        return ProductionTrackingStateStringValues.DRAFT.equals(state);
+    }
+
+    private boolean isOrderStateStarted(final String orderState) {
+        return L_ORDER_STARTED_STATES_SET.contains(orderState);
     }
 
 }

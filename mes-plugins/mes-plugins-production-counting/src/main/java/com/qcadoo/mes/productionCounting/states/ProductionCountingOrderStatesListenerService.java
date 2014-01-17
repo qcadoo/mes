@@ -33,9 +33,11 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
@@ -51,6 +53,7 @@ public class ProductionCountingOrderStatesListenerService {
     public void validationOnComplete(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+
         if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
             checkFinalProductionCountingForOrderCumulated(stateChangeContext);
         } else if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
@@ -69,11 +72,8 @@ public class ProductionCountingOrderStatesListenerService {
 
     private void checkFinalProductionCountingForOrderCumulated(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
-        final SearchResult result = productionCountingService.getProductionTrackingDD().find()
-                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
-                .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, true)).list();
 
-        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && result.getTotalNumberOfEntities() == 0) {
+        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && !checkIfOrderHasFinalProductionTrackings(order)) {
             stateChangeContext.addValidationError("orders.order.state.allowToClose.failureCumulated");
         }
     }
@@ -83,23 +83,60 @@ public class ProductionCountingOrderStatesListenerService {
         final Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         final List<Entity> technologyOperationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
-        int trackingsNumber = 0;
+        int productionTrackingsNumber = 0;
         for (Entity technologyOperationComponent : technologyOperationComponents) {
-            final SearchResult result = productionCountingService
-                    .getProductionTrackingDD()
-                    .find()
-                    .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
-                    .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
-                            technologyOperationComponent))
-                    .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, true)).list();
-            if (result.getTotalNumberOfEntities() > 0) {
-                trackingsNumber++;
+
+            if (checkIfOrderHasFinalProductionTrackings(order, technologyOperationComponent)) {
+                productionTrackingsNumber++;
             }
         }
 
-        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && technologyOperationComponents.size() != trackingsNumber) {
+        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE)
+                && (technologyOperationComponents.size() != productionTrackingsNumber)) {
             stateChangeContext.addValidationError("orders.order.state.allowToClose.failureForEach");
         }
+    }
+
+    private boolean checkIfOrderHasFinalProductionTrackings(final Entity order) {
+        return checkIfOrderHasFinalProductionTrackings(order, null);
+    }
+
+    private boolean checkIfOrderHasFinalProductionTrackings(final Entity order, final Entity technologyOperationComponent) {
+        final SearchCriteriaBuilder searchCriteriaBuilder = productionCountingService.getProductionTrackingDD().find()
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, true));
+
+        if (technologyOperationComponent != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
+                    technologyOperationComponent));
+        }
+
+        SearchResult searchResult = searchCriteriaBuilder.list();
+
+        return (searchResult.getTotalNumberOfEntities() > 0);
+    }
+
+    public void validationOnAbandone(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
+
+        if (checkIfOrderHasProductionTrackings(order)) {
+            stateChangeContext.addValidationError("orders.order.state.error.draftProductionTrackingsExists");
+        }
+    }
+
+    public void validationOnDecline(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
+
+        if (checkIfOrderHasProductionTrackings(order)) {
+            stateChangeContext.addValidationError("orders.order.state.error.draftProductionTrackingsExists");
+        }
+    }
+
+    private boolean checkIfOrderHasProductionTrackings(final Entity order) {
+        SearchResult searchResult = order.getHasManyField(OrderFieldsPC.PRODUCTION_TRACKINGS).find()
+                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.DRAFT)).list();
+
+        return (searchResult.getTotalNumberOfEntities() > 0);
     }
 
 }

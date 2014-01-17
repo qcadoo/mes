@@ -66,4 +66,18 @@ public class ProductionCountingOrderStatesListenerAspect extends AbstractStateLi
         productionCountingOrderStatesListenerService.onComplete(stateChangeContext);
     }
 
+    @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = OrderStateStringValues.WILDCARD_STATE, targetState = OrderStateStringValues.ABANDONED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnAbandone(final StateChangeContext stateChangeContext, final int phase) {
+        productionCountingOrderStatesListenerService.validationOnAbandone(stateChangeContext);
+    }
+
+    @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = OrderStateStringValues.WILDCARD_STATE, targetState = OrderStateStringValues.DECLINED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnRefuse(final StateChangeContext stateChangeContext, final int phase) {
+        productionCountingOrderStatesListenerService.validationOnDecline(stateChangeContext);
+    }
+
 }
