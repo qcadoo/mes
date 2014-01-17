@@ -39,7 +39,6 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
-import com.qcadoo.mes.states.service.client.StateChangeSamplesClient;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
@@ -58,9 +57,6 @@ public class OrderStateValidationService {
 
     @Autowired
     private TechnologyTreeValidators technologyTreeValidators;
-
-    @Autowired
-    private StateChangeSamplesClient stateChangeSamplesClient;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
