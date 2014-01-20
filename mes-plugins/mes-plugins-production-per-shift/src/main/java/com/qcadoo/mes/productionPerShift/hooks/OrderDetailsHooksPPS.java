@@ -71,14 +71,23 @@ public class OrderDetailsHooksPPS {
 
     private boolean checkIfOrderIsSavedAndTechnologyPrototypeStateIsNotDraftOrNotAccepted(final Long orderId,
             final Entity technology, final Entity technologyPrototype) {
-        return ((orderId != null) && (technology != null) && (technologyPrototype != null)
-                && !TechnologyState.DRAFT.getStringValue().equals(technologyPrototype.getStringField(TechnologyFields.STATE)) || !TechnologyState.ACCEPTED
-                .getStringValue().equals(technologyPrototype.getStringField(TechnologyFields.STATE)));
+        return ((orderId != null) && (technology != null) && (technologyPrototype != null) && checkIfTechnologyPrototypeStateIsNotDraftOrNotAccepted(technologyPrototype));
+    }
+
+    private boolean checkIfTechnologyPrototypeStateIsNotDraftOrNotAccepted(final Entity technologyPrototype) {
+        return (!checkIfTechnologyStateIsDraft(technologyPrototype) || !checkIfTechnologyStateIsAccepted(technologyPrototype));
+    }
+
+    private boolean checkIfTechnologyStateIsDraft(final Entity technology) {
+        return (TechnologyState.DRAFT.getStringValue().equals(technology.getStringField(TechnologyFields.STATE)));
+    }
+
+    private boolean checkIfTechnologyStateIsAccepted(final Entity technology) {
+        return (TechnologyState.ACCEPTED.getStringValue().equals(technology.getStringField(TechnologyFields.STATE)));
     }
 
     private boolean checkIfOrderIsSavedAndTechnologyStateIsNotDraft(final Long orderId, final Entity technology) {
-        return ((orderId != null) && !TechnologyState.DRAFT.getStringValue().equals(
-                technology.getStringField(TechnologyFields.STATE)));
+        return ((orderId != null) && !checkIfTechnologyStateIsDraft(technology));
     }
 
     private void updatePPSButtonState(final RibbonActionItem productionPerShift, final boolean isEnabled) {
