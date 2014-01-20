@@ -51,6 +51,13 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
     protected void targetServicePointcut() {
     }
 
+    @RunInPhase(ProductionTrackingStateChangePhase.DEFAULT)
+    @RunForStateTransition(sourceState = ProductionTrackingStateStringValues.DRAFT)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onChangeFromDraftToAny(final StateChangeContext stateChangeContext, final int phase) {
+        productionTrackingListenerService.onChangeFromDraftToAny(stateChangeContext);
+    }
+
     @RunInPhase(ProductionTrackingStateChangePhase.PRE_VALIDATION)
     @RunForStateTransition(targetState = ProductionTrackingStateStringValues.ACCEPTED)
     @Before(PHASE_EXECUTION_POINTCUT)
@@ -70,13 +77,6 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onChangeFromAcceptedToDecline(final StateChangeContext stateChangeContext, final int phase) {
         productionTrackingListenerService.onChangeFromAcceptedToDeclined(stateChangeContext);
-    }
-
-    @RunInPhase(ProductionTrackingStateChangePhase.DEFAULT)
-    @RunForStateTransition(sourceState = ProductionTrackingStateStringValues.DRAFT)
-    @Before(PHASE_EXECUTION_POINTCUT)
-    public void onChangeFromDraftToAny(final StateChangeContext stateChangeContext, final int phase) {
-        productionTrackingListenerService.onLeavingDraft(stateChangeContext);
     }
 
 }

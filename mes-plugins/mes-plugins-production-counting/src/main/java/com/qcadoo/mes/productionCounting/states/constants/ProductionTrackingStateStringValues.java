@@ -23,11 +23,15 @@
  */
 package com.qcadoo.mes.productionCounting.states.constants;
 
+import com.qcadoo.mes.states.aop.RunForStateTransitionAspect;
+
 public final class ProductionTrackingStateStringValues {
 
     private ProductionTrackingStateStringValues() {
 
     }
+
+    public static final String WILDCARD_STATE = RunForStateTransitionAspect.WILDCARD_STATE;
 
     public static final String DRAFT = "01draft";
 

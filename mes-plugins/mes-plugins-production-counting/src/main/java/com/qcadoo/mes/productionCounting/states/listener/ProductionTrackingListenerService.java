@@ -87,7 +87,7 @@ public final class ProductionTrackingListenerService {
     @Autowired
     private OrderClosingHelper orderClosingHelper;
 
-    public void onLeavingDraft(final StateChangeContext stateChangeContext) {
+    public void onChangeFromDraftToAny(final StateChangeContext stateChangeContext) {
         Entity productionTracking = stateChangeContext.getOwner();
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS, false);
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAIL_CAUSE, null);
