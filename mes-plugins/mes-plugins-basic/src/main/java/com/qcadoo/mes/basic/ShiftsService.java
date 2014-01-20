@@ -33,10 +33,12 @@ import com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.model.api.Entity;
 
+//FIXME maku: replace bounded time/date ranges with JodaTime's intervals.
 public interface ShiftsService {
 
     LocalTime[][] convertDayHoursToInt(final String string);
 
+    // FIXME maku: ugly coupling - interface uses type defined within one of concrete implementations
     List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo);
 
     Date findDateFromForOrder(final Date dateTo, final long seconds);
