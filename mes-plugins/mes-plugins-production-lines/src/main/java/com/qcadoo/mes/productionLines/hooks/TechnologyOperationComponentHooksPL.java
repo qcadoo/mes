@@ -45,65 +45,93 @@ public class TechnologyOperationComponentHooksPL {
 
     private static final String L_FORM = "form";
 
-    private static final String L_QUANTITY_OF_WORKSTATION_TYPES_TECH = "quantityOfWorkstationTypesTech";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public final void setQuantityOfWorkstationTypes(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Long id = form.getEntityId();
-
-        DataDefinition tocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-        Entity toc = tocDD.get(id);
-
+        FormComponent technologyOperationComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent quantityOfWorkstationTypesComponent = (FieldComponent) view
                 .getComponentByReference(TechnologyOperationComponentFieldsPL.QUANTITY_OF_WORKSTATION_TYPES);
 
-        if (StringUtils.isEmpty(toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY).getStringField(
-                TechnologyFields.TECHNOLOGY_TYPE))) {
-            quantityOfWorkstationTypesComponent.setVisible(false);
-            quantityOfWorkstationTypesComponent.requestComponentUpdateState();
+        Long techologyOperationComponentId = technologyOperationComponentForm.getEntityId();
+
+        if (techologyOperationComponentId == null) {
             return;
         }
-        int quantityOfWorkstationTypesDB = toc.getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION)
+
+        Entity technologyOperationComponent = getTechnologyOperationComponentDD().get(techologyOperationComponentId);
+
+        Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+
+        if (checkIfTechnologyIsNotNullAndTechnologyTypeIsEmpty(technology)) {
+            quantityOfWorkstationTypesComponent.setVisible(false);
+
+            return;
+        }
+
+        Entity techOperCompWorkstation = technologyOperationComponent
+                .getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION);
+
+        if (techOperCompWorkstation == null) {
+            quantityOfWorkstationTypesComponent.setVisible(false);
+
+            return;
+        }
+
+        int quantityOfWorkstationTypesDB = techOperCompWorkstation
                 .getIntegerField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATIONTYPES);
+
+        quantityOfWorkstationTypesComponent.setVisible(true);
+
         quantityOfWorkstationTypesComponent.setFieldValue(quantityOfWorkstationTypesDB);
         quantityOfWorkstationTypesComponent.requestComponentUpdateState();
-        Object quantityOfWorkstationTypes = quantityOfWorkstationTypesComponent.getFieldValue();
-        quantityOfWorkstationTypes.toString();
     }
 
-    public void save(final DataDefinition dataDefinition, final Entity toc) {
-        toc.getDataDefinition();
+    public void save(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
 
-        if (StringUtils.isEmpty(toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY).getStringField(
-                TechnologyFields.TECHNOLOGY_TYPE))) {
+        if (checkIfTechnologyIsNotNullAndTechnologyTypeIsEmpty(technology)) {
             return;
         }
-        Integer quantityOfWorkstationTypes = toc
+
+        Integer quantityOfWorkstationTypes = technologyOperationComponent
                 .getIntegerField(TechnologyOperationComponentFieldsPL.QUANTITY_OF_WORKSTATION_TYPES);
 
         if (quantityOfWorkstationTypes == null) {
             return;
         }
-        Entity techOperCompWorkstation = toc.getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION);
-        DataDefinition techOperCompWorkstationDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                ProductionLinesConstants.MODEL_TECH_OPER_COMP_WORKSTATION);
+
+        Entity techOperCompWorkstation = technologyOperationComponent
+                .getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION);
 
         if (techOperCompWorkstation == null) {
-            techOperCompWorkstation = techOperCompWorkstationDD.create();
+            techOperCompWorkstation = getTechOperCompWorkstationDD().create();
+
             techOperCompWorkstation.setField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATIONTYPES,
                     quantityOfWorkstationTypes);
-            techOperCompWorkstation = techOperCompWorkstation.getDataDefinition().save(techOperCompWorkstation);
         } else {
             techOperCompWorkstation.setField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATIONTYPES,
                     quantityOfWorkstationTypes);
-            techOperCompWorkstation = techOperCompWorkstation.getDataDefinition().save(techOperCompWorkstation);
         }
 
-        toc.setField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION, techOperCompWorkstation);
+        techOperCompWorkstation = techOperCompWorkstation.getDataDefinition().save(techOperCompWorkstation);
+
+        technologyOperationComponent.setField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION,
+                techOperCompWorkstation);
+    }
+
+    private boolean checkIfTechnologyIsNotNullAndTechnologyTypeIsEmpty(Entity technology) {
+        return (technology != null) && StringUtils.isEmpty(technology.getStringField(TechnologyFields.TECHNOLOGY_TYPE));
+    }
+
+    private DataDefinition getTechnologyOperationComponentDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+    }
+
+    private DataDefinition getTechOperCompWorkstationDD() {
+        return dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
+                ProductionLinesConstants.MODEL_TECH_OPER_COMP_WORKSTATION);
     }
 
 }
