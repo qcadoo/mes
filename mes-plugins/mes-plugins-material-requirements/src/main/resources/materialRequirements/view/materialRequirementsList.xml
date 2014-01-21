@@ -101,10 +101,4 @@
 		<option type="header" value="false" />
 	</component>
 	
-	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.materialRequirements.hooks.MaterialRequirementsListHooks"
-			method="setGenerateButtonState" />
-	</hooks>
-	
 </view>
