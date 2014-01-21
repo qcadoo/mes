@@ -601,7 +601,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.machineHourlyCost.label", locale) + ":",
-                    calculationOperationComponent.getField("machineHourlyCost"));
+                    numberService.format(calculationOperationComponent.getField("machineHourlyCost")));
 
             addTableCellAsTwoColumnsTable(panelTableContent, null, null);
 
@@ -609,7 +609,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.laborHourlyCost.label", locale) + ":",
-                    calculationOperationComponent.getField("laborHourlyCost"));
+                    numberService.format(calculationOperationComponent.getField("laborHourlyCost")));
 
             document.add(panelTableHeader);
             document.add(panelTableContent);
