@@ -31,11 +31,14 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductionCountingQuantityHooksPC {
@@ -66,9 +69,11 @@ public class ProductionCountingQuantityHooksPC {
         BigDecimal usedQuantity = BigDecimal.ZERO;
 
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+        Entity technologyOperationComponent = productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
         Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
-        List<Entity> productionTrackings = getProductionTrackings(order);
+        List<Entity> productionTrackings = getProductionTrackings(order, technologyOperationComponent);
 
         for (Entity productionTracking : productionTrackings) {
             BigDecimal quantity = getTrackingOperationProductInComponentQuantity(productionTracking, product);
@@ -104,9 +109,11 @@ public class ProductionCountingQuantityHooksPC {
         BigDecimal producedQuantity = BigDecimal.ZERO;
 
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+        Entity technologyOperationComponent = productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
         Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
-        List<Entity> productionTrackings = getProductionTrackings(order);
+        List<Entity> productionTrackings = getProductionTrackings(order, technologyOperationComponent);
 
         for (Entity productionTracking : productionTrackings) {
             BigDecimal quantity = getTrackingOperationProductOutComponentQuantity(productionTracking, product);
@@ -138,8 +145,15 @@ public class ProductionCountingQuantityHooksPC {
         return trackingOperationProductOutComponentQuantityQuery;
     }
 
-    private List<Entity> getProductionTrackings(final Entity order) {
-        return order.getHasManyField(OrderFieldsPC.PRODUCTION_TRACKINGS).find().list().getEntities();
+    private List<Entity> getProductionTrackings(final Entity order, final Entity technologyOperationComponent) {
+        SearchCriteriaBuilder searchCriteriaBuilder = order.getHasManyField(OrderFieldsPC.PRODUCTION_TRACKINGS).find();
+
+        if (technologyOperationComponent != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
+                    technologyOperationComponent));
+        }
+
+        return searchCriteriaBuilder.list().getEntities();
     }
 
 }
