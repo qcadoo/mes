@@ -532,7 +532,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         return DAY_OF_WEEK.get(day);
     }
 
-    // TODO replace this class with DateRange/TimeRange
+    // TODO replace this class with Interval or our DateRange/TimeRange
     public static class ShiftHour {
 
         private final Date dateTo;

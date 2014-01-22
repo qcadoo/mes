@@ -108,6 +108,12 @@
 			<artifactId>qcadoo-commons</artifactId>
 			<version>${qcadoo.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.qcadoo</groupId>
+            <artifactId>qcadoo-testing</artifactId>
+            <version>${qcadoo.version}</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 	
 	<build>
