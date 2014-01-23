@@ -113,7 +113,7 @@
 								saveNewButton.disable();
 								cancelButton.disable();
 								generateButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.noOrders)}");
-								printWorkPlan.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordNotGenerated)}");
+								printWorkPlanButton.disable("#{translate(workPlans.workPlanDetails.ribbon.message.recordNotGenerated)}");
 							}
 						} else {
 							saveButton.enable();
