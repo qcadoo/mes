@@ -49,7 +49,9 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
@@ -81,6 +83,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     @Autowired
     private PdfHelper pdfHelper;
+
+    @Autowired
+    private ParameterService parameterService;
 
     enum ProductDirection {
         IN, OUT;
@@ -124,6 +129,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
             document.add(orderTable);
             document.add(Chunk.NEWLINE);
+
         }
     }
 
@@ -153,9 +159,13 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private void addOperationsForSpecifiedOrder(final Document document,
             final Map<PrioritizedString, List<Entity>> orderOpComponentsMap, final Map<Entity, Map<String, String>> columnValues,
             final Entity order, final boolean haveManyOrders, final Locale locale) throws DocumentException {
-        for (Entry<PrioritizedString, List<Entity>> entry : orderOpComponentsMap.entrySet()) {
-            document.newPage();
+        Entity parameter = parameterService.getParameter();
 
+        for (Entry<PrioritizedString, List<Entity>> entry : orderOpComponentsMap.entrySet()) {
+            if (!parameter.getBooleanField(ParameterFieldsWP.PRINT_OPERATION_AT_FIRST_PAGE_IN_WORK_PLANS)) {
+
+                document.newPage();
+            }
             document.add(new Paragraph(entry.getKey().getString(), FontUtils.getDejavuBold11Dark()));
             int count = 0;
             for (Entity operationComponent : entry.getValue()) {
@@ -188,7 +198,11 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
                 addAdditionalFields(document, operationComponent, locale);
                 if (count != entry.getValue().size()) {
-                    document.add(Chunk.NEXTPAGE);
+
+                    if (!parameter.getBooleanField(ParameterFieldsWP.PRINT_OPERATION_AT_FIRST_PAGE_IN_WORK_PLANS)) {
+
+                        document.add(Chunk.NEXTPAGE);
+                    }
                 }
             }
         }

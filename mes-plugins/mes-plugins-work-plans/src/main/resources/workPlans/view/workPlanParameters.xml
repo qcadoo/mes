@@ -38,7 +38,7 @@
 		<windowTab name="workPlansOrdersTab" reference="workPlansOrdersTab">
 			<component type="form" name="workPlanParameters" reference="form">
 				<component type="gridLayout" name="workPlansOrdersGridLayout"
-					columns="2" rows="2">
+					columns="2" rows="3">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="dontPrintOrdersInWorkPlans"
 							field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
@@ -47,6 +47,13 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
+						<component type="checkbox" name="printOperationAtFirstPageInWorkPlans"
+							field="#{form}.printOperationAtFirstPageInWorkPlans" reference="printOperationAtFirstPageInWorkPlans">
+							<option type="labelWidth" value="50" />
+							<option type="align" value="left" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
 						<component type="grid" name="columnsForOrders"
 							source="#{form}.parameterOrderColumns" reference="columnsForOrders">
 							<option type="column" name="name" fields="columnForOrders"

@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.2.0
  *
  * This file is part of Qcadoo.
@@ -21,30 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.internal.constants;
+package com.qcadoo.mes.workPlans.constants;
 
-public final class ParameterFieldsPC {
+public final class ParameterFieldsWP {
 
-    private ParameterFieldsPC() {
+    private ParameterFieldsWP() {
 
     }
 
-    public static final String TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
-
-    public static final String REGISTER_PRODUCTION_TIME = "registerProductionTime";
-
-    public static final String REGISTER_PIECEWORK = "registerPiecework";
-
-    public static final String REGISTER_QUANTITY_OUT_PRODUCT = "registerQuantityOutProduct";
-
-    public static final String REGISTER_QUANTITY_IN_PRODUCT = "registerQuantityInProduct";
-
-    public static final String JUST_ONE = "justOne";
-
-    public static final String ALLOW_TO_CLOSE = "allowToClose";
-
-    public static final String AUTO_CLOSE_ORDER = "autoCloseOrder";
-
-    public static final String GENERATE_PRODUCTION_RECORD_NUMBER_FROM_ORDER_NUMBER = "generateProductionRecordNumberFromOrderNumber";
+    public static final String PRINT_OPERATION_AT_FIRST_PAGE_IN_WORK_PLANS = "printOperationAtFirstPageInWorkPlans";
 
 }

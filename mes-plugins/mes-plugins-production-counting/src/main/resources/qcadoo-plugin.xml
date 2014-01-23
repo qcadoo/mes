@@ -162,6 +162,9 @@
 		<model:model-field model="order" plugin="orders">
 			<model:boolean name="autoCloseOrder" />
 		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="generateProductionRecordNumberFromOrderNumber" />
+		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionRecords" model="productionRecord"
 				joinField="order" plugin="productionCounting" cascade="delete" />

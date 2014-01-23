@@ -104,6 +104,10 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="dontPrintOrdersInWorkPlans" />
 		</model:model-field>
+
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="printOperationAtFirstPageInWorkPlans" />
+		</model:model-field>
 		
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="hideDescriptionInWorkPlans" />
