@@ -66,6 +66,7 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
@@ -88,15 +89,13 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class OrderDetailsHooks {
 
-    private static final String L_FORM = "form";
+    public static final String L_FORM = "form";
 
     private static final String L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START = "commentReasonTypeDeviationsOfEffectiveStart";
 
     private static final String L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END = "commentReasonTypeDeviationsOfEffectiveEnd";
 
-    public static final String LOCK_TECHNOLOGY_TREE = "lockTechnologyTree";
-
-    private static final List<String> PREDEFINED_TECHNOLOGY_FIELDS = Arrays.asList("defaultTechnology", "technologyPrototype",
+    private static final List<String> L_PREDEFINED_TECHNOLOGY_FIELDS = Arrays.asList("defaultTechnology", "technologyPrototype",
             "predefinedTechnology");
 
     @Autowired
@@ -107,9 +106,6 @@ public class OrderDetailsHooks {
 
     @Autowired
     private StateChangeHistoryService stateChangeHistoryService;
-
-    @Autowired
-    private OrderHooks orderHooks;
 
     @Autowired
     private OrderProductQuantityHooks orderProductQuantityHooks;
@@ -142,14 +138,14 @@ public class OrderDetailsHooks {
         compareDeadlineAndStartDate(view);
         orderProductQuantityHooks.changedEnabledFieldForSpecificOrderState(view);
         orderProductQuantityHooks.fillProductUnit(view);
-        orderHooks.changedEnabledDescriptionFieldForSpecificOrderState(view);
+        changedEnabledDescriptionFieldForSpecificOrderState(view);
         setFieldsVisibility(view);
         checkILlockTechnologyTree(view);
     }
 
     private void checkILlockTechnologyTree(final ViewDefinitionState view) {
 
-        if (parameterService.getParameter().getBooleanField(LOCK_TECHNOLOGY_TREE)) {
+        if (parameterService.getParameter().getBooleanField(ParameterFieldsO.LOCK_TECHNOLOGY_TREE)) {
             FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
             orderType.setEnabled(false);
             orderType.requestComponentUpdateState();
@@ -329,12 +325,34 @@ public class OrderDetailsHooks {
         }
     }
 
+    public void changedEnabledDescriptionFieldForSpecificOrderState(final ViewDefinitionState view) {
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
+            return;
+        }
+
+        final Entity order = orderService.getOrder(orderId);
+
+        String state = order.getStringField(OrderFields.STATE);
+
+        if (OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state)
+                || OrderState.INTERRUPTED.getStringValue().equals(state) || OrderState.PENDING.getStringValue().equals(state)) {
+            FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
+
+            descriptionField.setEnabled(true);
+            descriptionField.requestComponentUpdateState();
+        }
+    }
+
     public void setFieldsVisibility(final ViewDefinitionState view) {
         FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
 
         boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType.getFieldValue());
 
-        changeFieldsVisibility(view, PREDEFINED_TECHNOLOGY_FIELDS, selectForPatternTechnology);
+        changeFieldsVisibility(view, L_PREDEFINED_TECHNOLOGY_FIELDS, selectForPatternTechnology);
     }
 
     public void setFieldsVisibilityAndFill(final ViewDefinitionState view) {
@@ -342,7 +360,7 @@ public class OrderDetailsHooks {
 
         boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType.getFieldValue());
 
-        changeFieldsVisibility(view, PREDEFINED_TECHNOLOGY_FIELDS, selectForPatternTechnology);
+        changeFieldsVisibility(view, L_PREDEFINED_TECHNOLOGY_FIELDS, selectForPatternTechnology);
         if (selectForPatternTechnology) {
             LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
             FieldComponent technology = (FieldComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
@@ -368,4 +386,5 @@ public class OrderDetailsHooks {
             componnet.setVisible(selectForPatternTechnology);
         }
     }
+
 }
