@@ -78,9 +78,9 @@ public class DeliveredProductHooks {
 
         if ((damagedQuantity != null) && (deliveredQuantity != null) && (damagedQuantity.compareTo(deliveredQuantity) == 1)) {
             deliveredProduct.addError(deliveredProductDD.getField(DAMAGED_QUANTITY),
-                    "deliveries.delivedProduct.error.damagedQuantity.deliveredQuantityIsTooMuch");
+                    "deliveries.deliveredProduct.error.damagedQuantity.deliveredQuantityIsTooMuch");
             deliveredProduct.addError(deliveredProductDD.getField(DELIVERED_QUANTITY),
-                    "deliveries.delivedProduct.error.damagedQuantity.deliveredQuantityIsTooMuch");
+                    "deliveries.deliveredProduct.error.damagedQuantity.deliveredQuantityIsTooMuch");
 
             return false;
         }
