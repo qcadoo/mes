@@ -16,3 +16,13 @@ CREATE TABLE productioncounting_staffworktime
 
 -- end
 
+-- Table: basic_parameter
+-- changed: 24.01.2014
+
+ALTER TABLE basic_parameter ADD COLUMN generateproductionrecordnumberfromordernumber boolean;
+ALTER TABLE basic_parameter ALTER COLUMN generateproductionrecordnumberfromordernumber SET DEFAULT false;
+
+ALTER TABLE basic_parameter ADD COLUMN printoperationatfirstpageinworkplans boolean;
+ALTER TABLE basic_parameter ALTER COLUMN printoperationatfirstpageinworkplans SET DEFAULT false;
+
+-- end
