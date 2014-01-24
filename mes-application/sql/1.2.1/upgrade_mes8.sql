@@ -12,7 +12,7 @@ CREATE TABLE productioncounting_staffworktime
       REFERENCES basic_staff (id) DEFERRABLE,
   CONSTRAINT pc_swt_pc_productionrecord_fkey FOREIGN KEY (productionrecord_id)
       REFERENCES productioncounting_productionrecord (id) DEFERRABLE
-)
+);
 
 -- end
 
