@@ -53,15 +53,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinition;
@@ -88,10 +92,26 @@ public class ProductionRecordService {
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void generateData(final DataDefinition productionRecordDD, final Entity productionRecord) {
         if (productionRecord.getField(NUMBER) == null) {
-            productionRecord.setField(NUMBER, numberGeneratorService.generateNumber(
-                    ProductionCountingConstants.PLUGIN_IDENTIFIER, productionRecord.getDataDefinition().getName()));
+            Entity parameter = parameterService.getParameter();
+            if (parameter.getBooleanField(ParameterFieldsPC.GENERATE_PRODUCTION_RECORD_NUMBER_FROM_ORDER_NUMBER)) {
+                String[] orderNumberSplited = productionRecord.getBelongsToField(ProductionCountingFields.ORDER)
+                        .getStringField(OrderFields.NUMBER).split("-");
+                if (orderNumberSplited.length == 2) {
+                    String productionRecordNumber = StringUtils.strip(orderNumberSplited[1]);
+                    productionRecord.setField(NUMBER, productionRecordNumber);
+                } else {
+                    productionRecord.setField(NUMBER, numberGeneratorService.generateNumber(
+                            ProductionCountingConstants.PLUGIN_IDENTIFIER, productionRecord.getDataDefinition().getName()));
+                }
+            } else {
+                productionRecord.setField(NUMBER, numberGeneratorService.generateNumber(
+                        ProductionCountingConstants.PLUGIN_IDENTIFIER, productionRecord.getDataDefinition().getName()));
+            }
         }
     }
 

@@ -211,7 +211,9 @@ public class AssignmentToShiftXlsHelper {
 
     public List<Entity> getStaffsList(final Entity assignmentToShift, final String occupationType, final Entity productionLine) {
         List<Entity> staffs = new ArrayList<Entity>();
-
+        if (assignmentToShift == null) {
+            return staffs;
+        }
         SearchCriterion criterion = SearchRestrictions.eq(OCCUPATION_TYPE, occupationType);
         SearchCriteriaBuilder builder = assignmentToShift.getHasManyField(STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
                 .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine));
