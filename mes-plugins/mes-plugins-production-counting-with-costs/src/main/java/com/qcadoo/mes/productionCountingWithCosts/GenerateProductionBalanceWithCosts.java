@@ -25,7 +25,6 @@ package com.qcadoo.mes.productionCountingWithCosts;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -244,6 +243,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                                     productionBalance.getStringField(ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS)),
                             registeredQuantity);
                 }
+
                 componentsCosts = componentsCosts.add(productRegisteredCost, numberService.getMathContext());
             }
         }
@@ -354,10 +354,11 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
     private Map<String, BigDecimal> costValueForTypeOfProductionRecordingForEach(final Entity productionBalance,
             final Map<Long, Entity> productionTrackingsWithRegisteredTimes) {
-        Map<String, BigDecimal> costsValues = new HashMap<String, BigDecimal>();
-        BigDecimal machineCosts = BigDecimal.ZERO;
+        Map<String, BigDecimal> costsValues = Maps.newHashMap();
 
+        BigDecimal machineCosts = BigDecimal.ZERO;
         BigDecimal laborCosts = BigDecimal.ZERO;
+
         for (Map.Entry<Long, Entity> productionTrackingsWithRegisteredTimesEntry : productionTrackingsWithRegisteredTimes
                 .entrySet()) {
             Entity productionTracking = productionTrackingsWithRegisteredTimesEntry.getValue();
@@ -399,10 +400,11 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
     private Map<String, BigDecimal> costValueForTypeOfProductionRecordingCumulated(final Entity productionBalance,
             final Map<Long, Entity> productionTrackingsWithRegisteredTimes) {
-        Map<String, BigDecimal> costsValues = new HashMap<String, BigDecimal>();
-        BigDecimal machineCosts = BigDecimal.ZERO;
+        Map<String, BigDecimal> costsValues = Maps.newHashMap();
 
+        BigDecimal machineCosts = BigDecimal.ZERO;
         BigDecimal laborCosts = BigDecimal.ZERO;
+
         for (Map.Entry<Long, Entity> productionTrackingWithRegisteredTimes : productionTrackingsWithRegisteredTimes.entrySet()) {
             Entity productionTracking = productionTrackingWithRegisteredTimes.getValue();
 

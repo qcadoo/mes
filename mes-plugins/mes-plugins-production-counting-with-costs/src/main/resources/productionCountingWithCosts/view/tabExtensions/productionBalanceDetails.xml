@@ -156,6 +156,7 @@
 			</layoutElement>
 		</component>
 	</windowTab>
+	
 	<windowTab name="materialCostsTab">
 		<component type="gridLayout" name="materialCostsGridLayout"
 			reference="materialCostsGridLayout" columns="1" rows="1">
@@ -231,6 +232,7 @@
 			<option type="order" column="productNumber" direction="asc" />
 		</component>
 	</windowTab>
+	
 	<windowTab name="workCostsTab">
 		<component type="gridLayout" name="workCostsGridLayout"
 			reference="workCostsGridLayout" columns="1" rows="2">
@@ -445,6 +447,7 @@
 			<option type="order" column="operationNumber" direction="asc" />
 		</component>
 	</windowTab>
+	
 	<windowTab name="costsSummaryTab">
 		<component type="gridLayout" name="costsSummaryGridLayout"
 			reference="costsSummaryGridLayout" columns="3" rows="6">  
@@ -696,4 +699,5 @@
 			</layoutElement>
 		</component>
 	</windowTab>
+	
 </windowTabExtension>

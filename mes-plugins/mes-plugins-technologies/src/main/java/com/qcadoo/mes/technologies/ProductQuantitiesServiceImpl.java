@@ -62,8 +62,6 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
     private static final String L_PLANNED_QUANTITY = "plannedQuantity";
 
-    private static final String L_PRODUCT = "product";
-
     private static final String L_QUANTITY = "quantity";
 
     @Autowired
