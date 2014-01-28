@@ -29,6 +29,6 @@ public final class TechOperCompWorkstationFields {
 
     }
 
-    public static final String QUANTITY_OF_WORKSTATIONTYPES = "quantityOfWorkstationTypes";
+    public static final String QUANTITY_OF_WORKSTATION_TYPES = "quantityOfWorkstationTypes";
 
 }

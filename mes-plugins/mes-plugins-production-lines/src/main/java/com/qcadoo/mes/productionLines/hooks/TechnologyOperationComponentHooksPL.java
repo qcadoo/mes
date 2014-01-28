@@ -79,7 +79,7 @@ public class TechnologyOperationComponentHooksPL {
         }
 
         int quantityOfWorkstationTypesDB = techOperCompWorkstation
-                .getIntegerField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATIONTYPES);
+                .getIntegerField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATION_TYPES);
 
         quantityOfWorkstationTypesComponent.setVisible(true);
 
@@ -107,10 +107,10 @@ public class TechnologyOperationComponentHooksPL {
         if (techOperCompWorkstation == null) {
             techOperCompWorkstation = getTechOperCompWorkstationDD().create();
 
-            techOperCompWorkstation.setField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATIONTYPES,
+            techOperCompWorkstation.setField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATION_TYPES,
                     quantityOfWorkstationTypes);
         } else {
-            techOperCompWorkstation.setField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATIONTYPES,
+            techOperCompWorkstation.setField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATION_TYPES,
                     quantityOfWorkstationTypes);
         }
 

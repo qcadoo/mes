@@ -1,5 +1,6 @@
 /**
  * ***************************************************************************
+
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.2.0
@@ -24,13 +25,9 @@
 package com.qcadoo.mes.operationCostCalculations;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields.LABOR_HOURLY_COST;
-import static com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields.MACHINE_HOURLY_COST;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,13 +37,18 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
+import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
+import com.qcadoo.mes.costNormsForOperation.constants.TechnologyOperationComponentFieldsCNFO;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimes;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
+import com.qcadoo.mes.productionLines.constants.TechOperCompWorkstationFields;
+import com.qcadoo.mes.productionLines.constants.TechnologyOperationComponentFieldsPL;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -54,76 +56,114 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.NumberService;
 
 @Service
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
 
+    private static final String L_PRODUCTION_BALANCE = "productionBalance";
+
+    private static final String L_COST_CALCULATION = "costCalculation";
+
+    private static final String L_CALCULATION_OPERATION_COMPONENTS = "calculationOperationComponents";
+
+    private static final String L_ORDER = "order";
+
+    private static final String L_TECHNOLOGY = "technology";
+
+    private static final String L_QUANTITY = "quantity";
+
+    private static final String L_PRODUCTION_COST_MARGIN = "productionCostMargin";
+
+    private static final String L_CALCULATE_OPERATION_COSTS_MODE = "calculateOperationCostsMode";
+
+    private static final String L_PRODUCTION_LINE = "productionLine";
+
+    private static final String L_INCLUDE_ADDITIONAL_TIME = "includeAdditionalTime";
+
+    private static final String L_INCLUDE_TPZ = "includeTPZ";
+
+    private static final String L_TOTAL_LABOR_HOURLY_COSTS = "totalLaborHourlyCosts";
+
+    private static final String L_TOTAL_MACHINE_HOURLY_COSTS = "totalMachineHourlyCosts";
+
+    private static final String L_TOTAL_PIECEWORK_COSTS = "totalPieceworkCosts";
+
+    private static final String L_MACHINE_HOURLY_COST = "machineHourlyCost";
+
+    private static final String L_LABOR_HOURLY_COST = "laborHourlyCost";
+
+    private static final String L_OPERATION_MACHINE_COST = "operationMachineCost";
+
+    private static final String L_OPERATION_LABOR_COST = "operationLaborCost";
+
+    private static final String L_OPERATION_COST = "operationCost";
+
+    private static final String L_OPERATION_MARGIN_COST = "operationMarginCost";
+
     private static final String L_TOTAL_OPERATION_COST = "totalOperationCost";
 
     private static final String L_PIECES = "pieces";
 
-    private static final String L_OPERATION_MARGIN_COST = "operationMarginCost";
+    private static final String L_TOTAL_LABOR_OPERATION_COST_WITH_MARGIN = "totalLaborOperationCostWithMargin";
 
-    private static final String L_OPERATION_COST = "operationCost";
+    private static final String L_TOTAL_MACHINE_OPERATION_COST_WITH_MARGIN = "totalMachineOperationCostWithMargin";
 
-    private static final String L_PRODUCTION_LINE = "productionLine";
-
-    private static final String L_QUANTITY = "quantity";
-
-    private static final String L_TECHNOLOGY = "technology";
-
-    private static final String L_ORDER = "order";
-
-    private static final String L_CALCULATION_OPERATION_COMPONENTS = "calculationOperationComponents";
-
-    private static final String L_COST_CALCULATION = "costCalculation";
+    private static final Set<String> L_COST_KEYS = Sets.newHashSet(CalculationOperationComponentFields.LABOR_HOURLY_COST,
+            CalculationOperationComponentFields.MACHINE_HOURLY_COST);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private OperationWorkTimeService operationWorkTimeService;
-
-    @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private ProductionLinesService productionLinesService;
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
+    private ProductionLinesService productionLinesService;
+
+    @Autowired
+    private OperationWorkTimeService operationWorkTimeService;
+
+    @Autowired
     private OperationCostCalculationTreeBuilder operationCostCalculationTreeBuilder;
 
-    private static final Set<String> PATH_COST_KEYS = Sets.newHashSet(LABOR_HOURLY_COST, MACHINE_HOURLY_COST);
-
     @Override
-    public void calculateOperationsCost(final Entity entity) {
-        checkArgument(entity != null, "entity is null");
-        String modelName = entity.getDataDefinition().getName();
-        checkArgument(L_COST_CALCULATION.equals(modelName) || "productionBalance".equals(modelName), "unsupported entity type");
+    public void calculateOperationsCost(final Entity costCalculationOrProductionBalance) {
+        checkArgument(costCalculationOrProductionBalance != null, "entity is null");
+        String modelName = costCalculationOrProductionBalance.getDataDefinition().getName();
+        checkArgument(L_COST_CALCULATION.equals(modelName) || L_PRODUCTION_BALANCE.equals(modelName), "unsupported entity type");
 
-        DataDefinition costCalculationDD = entity.getDataDefinition();
+        DataDefinition costCalculationOrProductionBalanceDD = costCalculationOrProductionBalance.getDataDefinition();
 
-        CalculateOperationCostMode mode = CalculateOperationCostMode.parseString(entity
-                .getStringField("calculateOperationCostsMode"));
-        BigDecimal quantity = BigDecimalUtils.convertNullToZero(entity.getField(L_QUANTITY));
-        BigDecimal margin = BigDecimalUtils.convertNullToZero(entity.getField("productionCostMargin"));
+        Entity copyCostCalculationOrProductionBalance = operationCostCalculationTreeBuilder
+                .copyTechnologyTree(costCalculationOrProductionBalance);
 
-        Entity costCalculation = operationCostCalculationTreeBuilder.copyTechnologyTree(entity);
+        Entity yetAnotherCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
+                .save(copyCostCalculationOrProductionBalance);
+        Entity newCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
+                .get(yetAnotherCostCalculationOrProductionBalance.getId());
 
-        Entity yetAnotherCostCalculation = costCalculationDD.save(costCalculation);
-        Entity newCostCalculation = costCalculationDD.get(yetAnotherCostCalculation.getId());
-        EntityTree calculationOperationComponents = newCostCalculation.getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
+        EntityTree calculationOperationComponents = newCostCalculationOrProductionBalance
+                .getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
 
         checkArgument(calculationOperationComponents != null, "given operation components is null");
 
-        Entity technology = entity.getBelongsToField(L_TECHNOLOGY);
-        Entity order = entity.getBelongsToField(L_ORDER);
+        Entity order = costCalculationOrProductionBalance.getBelongsToField(L_ORDER);
+        Entity technology = costCalculationOrProductionBalance.getBelongsToField(L_TECHNOLOGY);
+        BigDecimal quantity = BigDecimalUtils.convertNullToZero(costCalculationOrProductionBalance.getDecimalField(L_QUANTITY));
+        BigDecimal productionCostMargin = BigDecimalUtils.convertNullToZero(costCalculationOrProductionBalance
+                .getDecimalField(L_PRODUCTION_COST_MARGIN));
+
+        CalculateOperationCostMode calculateOperationCostMode = CalculateOperationCostMode
+                .parseString(costCalculationOrProductionBalance.getStringField(L_CALCULATE_OPERATION_COSTS_MODE));
+
         if (order != null) {
             Entity technologyFromOrder = order.getBelongsToField(L_TECHNOLOGY);
+
             technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyFromOrder.getId());
         }
@@ -131,202 +171,257 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         ProductQuantitiesHolder productQuantitiesAndOperationRuns = productQuantitiesService.getProductComponentQuantities(
                 technology, quantity);
 
-        if (CalculateOperationCostMode.PIECEWORK.equals(mode)) {
+        if (CalculateOperationCostMode.PIECEWORK.equals(calculateOperationCostMode)) {
             if (calculationOperationComponents.isEmpty()) {
-                entity.addError(entity.getDataDefinition().getField(L_ORDER), "costCalculation.lackOfTreeComponents");
-                entity.addError(entity.getDataDefinition().getField(L_TECHNOLOGY), "costCalculation.lackOfTreeComponents");
+                costCalculationOrProductionBalance.addError(costCalculationOrProductionBalanceDD.getField(L_ORDER),
+                        "costCalculation.lackOfTreeComponents");
+                costCalculationOrProductionBalance.addError(costCalculationOrProductionBalanceDD.getField(L_TECHNOLOGY),
+                        "costCalculation.lackOfTreeComponents");
                 return;
             }
+
             BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(calculationOperationComponents.getRoot(),
-                    productQuantitiesAndOperationRuns.getOperationRuns(), margin, quantity);
-            entity.setField("totalPieceworkCosts", numberService.setScale(totalPieceworkCost));
-        } else if (CalculateOperationCostMode.HOURLY.equals(mode)) {
-            Entity productionLine = entity.getBelongsToField(L_PRODUCTION_LINE);
-            Boolean includeTPZ = entity.getBooleanField("includeTPZ");
-            Boolean includeAdditionalTime = entity.getBooleanField("includeAdditionalTime");
-            Map<Long, Integer> workstations = getWorkstationsMapsForOperationsComponent(costCalculation, productionLine);
+                    productionCostMargin, quantity, productQuantitiesAndOperationRuns.getOperationRuns());
+
+            costCalculationOrProductionBalance.setField(L_TOTAL_PIECEWORK_COSTS, numberService.setScale(totalPieceworkCost));
+        } else if (CalculateOperationCostMode.HOURLY.equals(calculateOperationCostMode)) {
+            Entity productionLine = costCalculationOrProductionBalance.getBelongsToField(L_PRODUCTION_LINE);
+
+            Boolean includeTPZ = costCalculationOrProductionBalance.getBooleanField(L_INCLUDE_TPZ);
+            Boolean includeAdditionalTime = costCalculationOrProductionBalance.getBooleanField(L_INCLUDE_ADDITIONAL_TIME);
+
+            Map<Long, Integer> workstations = getWorkstationsMapsForOperationsComponent(copyCostCalculationOrProductionBalance,
+                    productionLine);
 
             OperationTimesContainer operationTimes = new OperationTimesContainer();
+
             operationTimes = operationWorkTimeService.estimateOperationsWorkTimes(calculationOperationComponents,
                     productQuantitiesAndOperationRuns.getOperationRuns(), includeTPZ, includeAdditionalTime, workstations, true);
 
-            Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
-                    margin, quantity, operationTimes);
-            entity.setField("totalMachineHourlyCosts", numberService.setScale(hourlyResultsMap.get(MACHINE_HOURLY_COST)));
-            entity.setField("totalLaborHourlyCosts", numberService.setScale(hourlyResultsMap.get(LABOR_HOURLY_COST)));
+            Map<String, BigDecimal> resultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
+                    productionCostMargin, quantity, operationTimes);
+
+            costCalculationOrProductionBalance.setField(L_TOTAL_MACHINE_HOURLY_COSTS,
+                    numberService.setScale(resultsMap.get(CalculationOperationComponentFields.MACHINE_HOURLY_COST)));
+            costCalculationOrProductionBalance.setField(L_TOTAL_LABOR_HOURLY_COSTS,
+                    numberService.setScale(resultsMap.get(CalculationOperationComponentFields.LABOR_HOURLY_COST)));
         } else {
             throw new IllegalStateException("Unsupported calculateOperationCostMode");
         }
 
-        entity.setField(L_CALCULATION_OPERATION_COMPONENTS, calculationOperationComponents);
+        costCalculationOrProductionBalance.setField(L_CALCULATION_OPERATION_COMPONENTS, calculationOperationComponents);
     }
 
     @Override
-    public Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode calcOperComp, final BigDecimal margin,
-            final BigDecimal plannedQuantity, final OperationTimesContainer realizationTimes) {
-        checkArgument(calcOperComp != null, "given operationComponent is empty");
-        Map<String, BigDecimal> resultsMap = Maps.newHashMapWithExpectedSize(PATH_COST_KEYS.size());
-        MathContext mc = numberService.getMathContext();
+    public Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode calculationOperationComponent,
+            final BigDecimal productionCostMargin, final BigDecimal plannedQuantity,
+            final OperationTimesContainer realizationTimes) {
+        checkArgument(calculationOperationComponent != null, "given operationComponent is empty");
 
-        for (String key : PATH_COST_KEYS) {
-            resultsMap.put(key, BigDecimal.ZERO);
+        Map<String, BigDecimal> costs = Maps.newHashMapWithExpectedSize(L_COST_KEYS.size());
+
+        MathContext mathContext = numberService.getMathContext();
+
+        for (String costKey : L_COST_KEYS) {
+            costs.put(costKey, BigDecimal.ZERO);
         }
 
-        for (EntityTreeNode child : calcOperComp.getChildren()) {
-            Map<String, BigDecimal> unitResultsMap = estimateCostCalculationForHourly(child, margin, plannedQuantity,
+        for (EntityTreeNode child : calculationOperationComponent.getChildren()) {
+            Map<String, BigDecimal> unitCosts = estimateCostCalculationForHourly(child, productionCostMargin, plannedQuantity,
                     realizationTimes);
-            for (String key : PATH_COST_KEYS) {
-                BigDecimal unitOperationCost = resultsMap.get(key).add(unitResultsMap.get(key), numberService.getMathContext());
-                resultsMap.put(key, unitOperationCost);
+
+            for (String costKey : L_COST_KEYS) {
+                BigDecimal unitCost = costs.get(costKey).add(unitCosts.get(costKey), mathContext);
+
+                costs.put(costKey, numberService.setScale(unitCost));
             }
         }
 
-        OperationTimes operationTimes = realizationTimes.get(calcOperComp.getId());
-        Map<String, BigDecimal> costs = estimateHourlyCostCalculationSingleOperations(operationTimes, margin);
-        savedGeneratedValues(costs, calcOperComp, true, operationTimes.getTimes(), null);
+        OperationTimes operationTimes = realizationTimes.get(calculationOperationComponent.getId());
+        Map<String, BigDecimal> costsForSingleOperation = estimateHourlyCostCalculationForSingleOperation(operationTimes,
+                productionCostMargin);
+        saveGeneratedValues(costsForSingleOperation, calculationOperationComponent, true, operationTimes.getTimes(), null);
 
-        resultsMap.put(MACHINE_HOURLY_COST, resultsMap.get(MACHINE_HOURLY_COST).add(costs.get("operationMachineCost"), mc));
-        resultsMap.put(LABOR_HOURLY_COST, resultsMap.get(LABOR_HOURLY_COST).add(costs.get("operationLaborCost"), mc));
-        return resultsMap;
+        costs.put(L_MACHINE_HOURLY_COST,
+                costs.get(L_MACHINE_HOURLY_COST).add(costsForSingleOperation.get(L_OPERATION_MACHINE_COST), mathContext));
+        costs.put(L_LABOR_HOURLY_COST,
+                costs.get(L_LABOR_HOURLY_COST).add(costsForSingleOperation.get(L_OPERATION_LABOR_COST), mathContext));
+
+        return costs;
     }
 
-    private Map<String, BigDecimal> estimateHourlyCostCalculationSingleOperations(final OperationTimes operationTimes,
-            final BigDecimal margin) {
+    private Map<String, BigDecimal> estimateHourlyCostCalculationForSingleOperation(final OperationTimes operationTimes,
+            final BigDecimal productionCostMargin) {
+        Map<String, BigDecimal> costs = Maps.newHashMap();
 
-        MathContext mc = numberService.getMathContext();
+        MathContext mathContext = numberService.getMathContext();
 
-        Entity calcOperComp = operationTimes.getOperation();
-        Entity operationComponent = calcOperComp.getBelongsToField("technologyOperationComponent");
-        OperationWorkTime times = operationTimes.getTimes();
+        Entity calculationOperationComponent = operationTimes.getOperation();
+        Entity technologyOperationComponent = calculationOperationComponent
+                .getBelongsToField(CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-        Map<String, BigDecimal> results = new HashMap<String, BigDecimal>();
-        BigDecimal hourlyMachineCost = BigDecimalUtils.convertNullToZero(operationComponent.getField(MACHINE_HOURLY_COST));
-        BigDecimal hourlyLaborCost = BigDecimalUtils.convertNullToZero(operationComponent.getField(LABOR_HOURLY_COST));
+        OperationWorkTime operationWorkTimes = operationTimes.getTimes();
 
-        BigDecimal durationMachine = BigDecimal.valueOf(times.getMachineWorkTime());
-        BigDecimal durationLabor = BigDecimal.valueOf(times.getLaborWorkTime());
+        BigDecimal machineHourlyCost = BigDecimalUtils.convertNullToZero(technologyOperationComponent
+                .getField(TechnologyOperationComponentFieldsCNFO.MACHINE_HOURLY_COST));
+        BigDecimal laborHourlyCost = BigDecimalUtils.convertNullToZero(technologyOperationComponent
+                .getField(TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST));
 
-        BigDecimal durationMachineInHours = durationMachine.divide(BigDecimal.valueOf(3600), mc);
-        BigDecimal durationLaborInHours = durationLabor.divide(BigDecimal.valueOf(3600), mc);
+        BigDecimal durationMachine = BigDecimal.valueOf(operationWorkTimes.getMachineWorkTime());
+        BigDecimal durationLabor = BigDecimal.valueOf(operationWorkTimes.getLaborWorkTime());
 
-        BigDecimal operationMachineCost = durationMachineInHours.multiply(hourlyMachineCost, mc);
-        BigDecimal operationLaborCost = durationLaborInHours.multiply(hourlyLaborCost, mc);
+        BigDecimal durationMachineInHours = durationMachine.divide(BigDecimal.valueOf(3600), mathContext);
+        BigDecimal durationLaborInHours = durationLabor.divide(BigDecimal.valueOf(3600), mathContext);
 
-        BigDecimal operationMachineCostIncludeMargin = operationMachineCost.add(operationMachineCost.multiply(
-                margin.divide(BigDecimal.valueOf(100), numberService.getMathContext()), numberService.getMathContext()), mc);
+        BigDecimal operationMachineCost = durationMachineInHours.multiply(machineHourlyCost, mathContext);
+        BigDecimal operationLaborCost = durationLaborInHours.multiply(laborHourlyCost, mathContext);
 
-        BigDecimal operationLaborCostIncludeMargin = operationLaborCost.add(
-                operationLaborCost.multiply(margin.divide(BigDecimal.valueOf(100), numberService.getMathContext()), mc), mc);
+        BigDecimal totalMachineOperationCostWithMargin = operationMachineCost.add(
+                operationMachineCost.multiply(productionCostMargin.divide(BigDecimal.valueOf(100), mathContext), mathContext),
+                mathContext);
 
-        BigDecimal operationCost = operationMachineCost.add(operationLaborCost, mc);
+        BigDecimal totalLaborOperationCostWithMargin = operationLaborCost.add(
+                operationLaborCost.multiply(productionCostMargin.divide(BigDecimal.valueOf(100), mathContext), mathContext),
+                mathContext);
+
+        BigDecimal operationCost = operationMachineCost.add(operationLaborCost, mathContext);
         BigDecimal operationMarginCost = operationCost.multiply(
-                margin.divide(BigDecimal.valueOf(100), numberService.getMathContext()), mc);
+                productionCostMargin.divide(BigDecimal.valueOf(100), mathContext), mathContext);
 
-        results.put(L_OPERATION_COST, numberService.setScale(operationCost));
-        results.put(L_OPERATION_MARGIN_COST, numberService.setScale(operationMarginCost));
-        results.put("operationMachineCost", numberService.setScale(operationMachineCost));
-        results.put("operationLaborCost", numberService.setScale(operationLaborCost));
-        results.put("operationMachineCostIncludeMargin", numberService.setScale(operationMachineCostIncludeMargin));
-        results.put("operationLaborCostIncludeMargin", numberService.setScale(operationLaborCostIncludeMargin));
-        return results;
+        costs.put(L_MACHINE_HOURLY_COST, numberService.setScale(machineHourlyCost));
+        costs.put(L_LABOR_HOURLY_COST, numberService.setScale(laborHourlyCost));
+        costs.put(L_OPERATION_MACHINE_COST, numberService.setScale(operationMachineCost));
+        costs.put(L_OPERATION_LABOR_COST, numberService.setScale(operationLaborCost));
+        costs.put(L_OPERATION_COST, numberService.setScale(operationCost));
+        costs.put(L_OPERATION_MARGIN_COST, numberService.setScale(operationMarginCost));
+        costs.put(L_TOTAL_MACHINE_OPERATION_COST_WITH_MARGIN, numberService.setScale(totalMachineOperationCostWithMargin));
+        costs.put(L_TOTAL_LABOR_OPERATION_COST_WITH_MARGIN, numberService.setScale(totalLaborOperationCostWithMargin));
 
-    }
-
-    private void savedGeneratedValues(final Map<String, BigDecimal> costs, final Entity calcOperComp, boolean hourlyCosts,
-            final OperationWorkTime times, final BigDecimal operationRuns) {
-        if (hourlyCosts) {
-            calcOperComp.setField("duration", new BigDecimal(times.getDuration(), numberService.getMathContext()));
-            calcOperComp.setField("totalMachineOperationCost", costs.get("operationMachineCost"));
-            calcOperComp.setField("totalLaborOperationCost", costs.get("operationLaborCost"));
-            calcOperComp.setField("totalLaborOperationCostWithMargin", costs.get("operationLaborCostIncludeMargin"));
-            calcOperComp.setField("totalMachineOperationCostWithMargin", costs.get("operationMachineCostIncludeMargin"));
-        } else {
-            calcOperComp.setField(L_PIECES, numberService.setScale(operationRuns));
-        }
-        BigDecimal operationCost = costs.get(L_OPERATION_COST);
-        BigDecimal operationMarginCost = costs.get(L_OPERATION_MARGIN_COST);
-        calcOperComp.setField(L_OPERATION_COST, numberService.setScale(operationCost));
-        calcOperComp.setField(L_OPERATION_MARGIN_COST, numberService.setScale(operationMarginCost));
-        calcOperComp.setField(L_TOTAL_OPERATION_COST,
-                numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
-
-        calcOperComp.getDataDefinition().save(calcOperComp);
+        return costs;
     }
 
     @Override
-    public BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
-            final Map<Long, BigDecimal> operationRunsMap, final BigDecimal margin, final BigDecimal plannedQuantity) {
+    public BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode calculationOperationComponent,
+            final BigDecimal productionCostMargin, final BigDecimal plannedQuantity, final Map<Long, BigDecimal> operationRuns) {
 
-        BigDecimal totalPieceworkCost = BigDecimal.ZERO;
+        BigDecimal cost = BigDecimal.ZERO;
 
-        for (EntityTreeNode child : operationComponent.getChildren()) {
-            totalPieceworkCost = totalPieceworkCost.add(
-                    estimateCostCalculationForPieceWork(child, operationRunsMap, margin, plannedQuantity),
+        for (EntityTreeNode child : calculationOperationComponent.getChildren()) {
+            cost = cost.add(
+                    estimateCostCalculationForPieceWork(child, productionCostMargin, plannedQuantity, operationRuns),
                     numberService.getMathContext());
         }
+
         // FIXME MAKU unnecessary mapping of whole entity - we need only their id! We can increase performance by replacing line
         // below by a query projection
-        Entity techOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
+        Entity technologyOperationComponent = calculationOperationComponent
+                .getBelongsToField(CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-        BigDecimal operationRuns = operationRunsMap.get(techOperComp.getId());
-        Map<String, BigDecimal> costs = estimatePieceworkCostCalculationSingleOperations(operationComponent, operationRuns,
-                margin);
-        totalPieceworkCost = totalPieceworkCost.add(costs.get(L_OPERATION_COST));
-        savedGeneratedValues(costs, operationComponent, false, null, operationRuns);
-        return totalPieceworkCost;
+        BigDecimal operationRunsForOperation = operationRuns.get(technologyOperationComponent.getId());
+
+        Map<String, BigDecimal> costsForSingleOperation = estimatePieceworkCostCalculationForSingleOperation(
+                calculationOperationComponent, productionCostMargin, operationRunsForOperation);
+
+        cost = cost.add(costsForSingleOperation.get(L_OPERATION_COST));
+        saveGeneratedValues(costsForSingleOperation, calculationOperationComponent, false, null, operationRunsForOperation);
+
+        return cost;
     }
 
-    private Map<String, BigDecimal> estimatePieceworkCostCalculationSingleOperations(final EntityTreeNode calcOperComp,
-            final BigDecimal operationRuns, final BigDecimal margin) {
-        Map<String, BigDecimal> results = new HashMap<String, BigDecimal>();
+    private Map<String, BigDecimal> estimatePieceworkCostCalculationForSingleOperation(
+            final EntityTreeNode calculationOperationComponent, final BigDecimal productionCostMargin,
+            final BigDecimal operationRuns) {
+        Map<String, BigDecimal> costs = Maps.newHashMap();
 
-        BigDecimal pieceworkCost = BigDecimalUtils.convertNullToZero(calcOperComp.getField("pieceworkCost"));
-        BigDecimal numberOfOperations = BigDecimalUtils.convertNullToOne(calcOperComp.getField("numberOfOperations"));
+        BigDecimal pieceworkCost = BigDecimalUtils.convertNullToZero(calculationOperationComponent
+                .getDecimalField(CalculationOperationComponentFields.PIECEWORK_COST));
+        BigDecimal numberOfOperations = BigDecimalUtils.convertNullToOne(calculationOperationComponent
+                .getField(CalculationOperationComponentFields.NUMBER_OF_OPERATIONS));
 
         BigDecimal pieceworkCostPerOperation = pieceworkCost.divide(numberOfOperations, numberService.getMathContext());
+
         BigDecimal operationCost = operationRuns.multiply(pieceworkCostPerOperation, numberService.getMathContext());
-        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100),
+        BigDecimal operationMarginCost = operationCost.multiply(productionCostMargin.divide(BigDecimal.valueOf(100),
                 numberService.getMathContext()));
         BigDecimal totalOperationCost = numberService.setScale(operationCost.add(operationMarginCost,
                 numberService.getMathContext()));
 
-        results.put(L_OPERATION_COST, numberService.setScale(operationCost));
-        results.put(L_OPERATION_MARGIN_COST, numberService.setScale(operationMarginCost));
-        results.put(L_PIECES, numberService.setScale(operationRuns));
-        results.put(L_TOTAL_OPERATION_COST, totalOperationCost);
+        costs.put(L_OPERATION_COST, numberService.setScale(operationCost));
+        costs.put(L_OPERATION_MARGIN_COST, numberService.setScale(operationMarginCost));
+        costs.put(L_PIECES, numberService.setScale(operationRuns));
+        costs.put(L_TOTAL_OPERATION_COST, totalOperationCost);
 
-        return results;
+        return costs;
     }
 
-    private Map<Long, Integer> getWorkstationsMapsForOperationsComponent(final Entity costCalculation, final Entity productionLine) {
-        Entity order = costCalculation.getBelongsToField(L_ORDER);
+    private void saveGeneratedValues(final Map<String, BigDecimal> costs, final Entity calculationOperationComponent,
+            boolean areHourly, final OperationWorkTime operationWorkTimes, final BigDecimal operationRuns) {
+        if (areHourly) {
+            calculationOperationComponent.setField(CalculationOperationComponentFields.DURATION, new BigDecimal(
+                    operationWorkTimes.getDuration(), numberService.getMathContext()));
+            calculationOperationComponent.setField(CalculationOperationComponentFields.MACHINE_HOURLY_COST,
+                    costs.get(L_MACHINE_HOURLY_COST));
+            calculationOperationComponent.setField(CalculationOperationComponentFields.LABOR_HOURLY_COST,
+                    costs.get(L_LABOR_HOURLY_COST));
+            calculationOperationComponent.setField(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST,
+                    costs.get(L_OPERATION_MACHINE_COST));
+            calculationOperationComponent.setField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST,
+                    costs.get(L_OPERATION_LABOR_COST));
+            calculationOperationComponent.setField(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST_WITH_MARGIN,
+                    costs.get(L_TOTAL_MACHINE_OPERATION_COST_WITH_MARGIN));
+            calculationOperationComponent.setField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST_WITH_MARGIN,
+                    costs.get(L_TOTAL_LABOR_OPERATION_COST_WITH_MARGIN));
+        } else {
+            calculationOperationComponent.setField(CalculationOperationComponentFields.PIECES,
+                    numberService.setScale(operationRuns));
+        }
+
+        BigDecimal operationCost = costs.get(L_OPERATION_COST);
+        BigDecimal operationMarginCost = costs.get(L_OPERATION_MARGIN_COST);
+
+        calculationOperationComponent.setField(CalculationOperationComponentFields.OPERATION_COST,
+                numberService.setScale(operationCost));
+        calculationOperationComponent.setField(CalculationOperationComponentFields.OPERATION_MARGIN_COST,
+                numberService.setScale(operationMarginCost));
+        calculationOperationComponent.setField(CalculationOperationComponentFields.TOTAL_OPERATION_COST,
+                numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
+
+        calculationOperationComponent.getDataDefinition().save(calculationOperationComponent);
+    }
+
+    private Map<Long, Integer> getWorkstationsMapsForOperationsComponent(final Entity costCalculationOrProductionBalance,
+            final Entity productionLine) {
+        Entity order = costCalculationOrProductionBalance.getBelongsToField(L_ORDER);
         if (order == null) {
-            return getWorkstationsFromTechnology(costCalculation.getBelongsToField("technology"), productionLine);
+            return getWorkstationsFromTechnology(costCalculationOrProductionBalance.getBelongsToField(L_TECHNOLOGY),
+                    productionLine);
         } else {
             return getWorkstationsFromOrder(order);
         }
     }
 
     private Map<Long, Integer> getWorkstationsFromTechnology(final Entity technology, final Entity productionLine) {
-        Map<Long, Integer> workstations = new HashMap<Long, Integer>();
-        for (Entity operComp : technology.getHasManyField(OPERATION_COMPONENTS)) {
+        Map<Long, Integer> workstations = Maps.newHashMap();
+
+        for (Entity operComp : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
             workstations.put(operComp.getId(), productionLinesService.getWorkstationTypesCount(operComp, productionLine));
         }
         return workstations;
     }
 
     private Map<Long, Integer> getWorkstationsFromOrder(final Entity order) {
-        Map<Long, Integer> workstations = new HashMap<Long, Integer>();
-        for (Entity operComp : order.getBelongsToField("technology").getHasManyField("operationComponents")) {
-            workstations
-                    .put(operComp.getId(),
-                            getIntegerValue(operComp.getBelongsToField("techOperCompWorkstation").getField(
-                                    "quantityOfWorkstationTypes")));
+        Map<Long, Integer> workstations = Maps.newHashMap();
+
+        for (Entity technologyOperationComponent : order.getBelongsToField(L_TECHNOLOGY).getHasManyField(
+                TechnologyFields.OPERATION_COMPONENTS)) {
+            Entity techOperCompWorkstation = technologyOperationComponent
+                    .getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION);
+
+            workstations.put(technologyOperationComponent.getId(), IntegerUtils.convertNullToZero(techOperCompWorkstation
+                    .getIntegerField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATION_TYPES)));
         }
+
         return workstations;
     }
 
-    private Integer getIntegerValue(final Object value) {
-        return value == null ? Integer.valueOf(0) : (Integer) value;
-    }
 }

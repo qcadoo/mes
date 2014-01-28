@@ -23,21 +23,26 @@
  */
 package com.qcadoo.mes.costCalculation.constants;
 
-public interface CostCalculationConstants {
+public final class CostCalculationConstants {
 
-    String PLUGIN_IDENTIFIER = "costCalculation";
+    private CostCalculationConstants() {
 
-    String MODEL_COST_CALCULATION = "costCalculation";
+    }
 
-    String ORDER = "order";
+    public static final String PLUGIN_IDENTIFIER = "costCalculation";
 
-    String TECHNOLOGY = "technology";
+    public static final String MODEL_COST_CALCULATION = "costCalculation";
 
-    String DEFAULT_TECHNOLOGY = "defaultTechnology";
+    public static final String ORDER = "order";
 
-    String PRODUCT = "product";
+    public static final String TECHNOLOGY = "technology";
 
-    String QUANTITY = "quantity";
+    public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
 
-    String FORM = "form";
+    public static final String PRODUCT = "product";
+
+    public static final String QUANTITY = "quantity";
+
+    public static final String FORM = "form";
+
 }

@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.costNormsForOperation.constants;
 
-public final class TechnologyInstanceOperCompFieldsCNFO {
+public final class TechnologyOperationComponentFieldsCNFO {
 
-    private TechnologyInstanceOperCompFieldsCNFO() {
+    private TechnologyOperationComponentFieldsCNFO() {
 
     }
 

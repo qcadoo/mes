@@ -29,7 +29,7 @@ import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalc
 import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.ORDER;
 import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.START_DATE;
-import static com.qcadoo.mes.costNormsForOperation.constants.TechnologyInstanceOperCompFieldsCNFO.LABOR_HOURLY_COST;
+import static com.qcadoo.mes.costNormsForOperation.constants.TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST;
 
 import java.util.Date;
 import java.util.List;
