@@ -52,13 +52,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.productionCounting.internal.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCountingWithCosts.constants.ParameterFieldsPCWC;
+import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -113,6 +118,12 @@ public class ProductionBalanceDetailsViewHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private NumberService numberService;
 
     public void changeFieldsAndGridsVisibility(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
@@ -290,4 +301,71 @@ public class ProductionBalanceDetailsViewHooks {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
     }
 
+    public void setTheFieldBasedOnParameters(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            Entity parameter = parameterService.getParameter();
+
+            FieldComponent printOperationNorms = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFields.PRINT_OPERATION_NORMS);
+            printOperationNorms.setFieldValue(parameter.getBooleanField(ParameterFieldsPCWC.PRINT_OPERATION_NORMS_PB));
+            printOperationNorms.requestComponentUpdateState();
+
+            FieldComponent calculateOperationsCostsMode = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
+            calculateOperationsCostsMode.setFieldValue(parameter.getField(ParameterFieldsPCWC.CALCULATE_OPERATION_COST_MODE_PB));
+            calculateOperationsCostsMode.requestComponentUpdateState();
+
+            FieldComponent includeTPZ = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.INCLUDE_TPZ);
+            includeTPZ.setFieldValue(parameter.getBooleanField(ParameterFieldsPCWC.INCLUDE_TPZ_PB));
+            includeTPZ.requestComponentUpdateState();
+
+            FieldComponent includeAdditionalTime = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
+            includeAdditionalTime.setFieldValue(parameter.getBooleanField(ParameterFieldsPCWC.INCLUDE_ADDITIONAL_TIME_PB));
+            includeAdditionalTime.requestComponentUpdateState();
+
+            FieldComponent printCostNormsOfMaterials = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFieldsPCWC.PRINT_COST_NORMS_OF_MATERIALS);
+            printCostNormsOfMaterials.setFieldValue(parameter
+                    .getBooleanField(ParameterFieldsPCWC.PRINT_COST_NORMS_OF_MATERIALS_PB));
+            printCostNormsOfMaterials.requestComponentUpdateState();
+
+            FieldComponent sourceOfMaterialCosts = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS);
+            sourceOfMaterialCosts.setFieldValue(parameter.getField(ParameterFieldsPCWC.SOURCE_OF_MATERIAL_COSTS_PB));
+            sourceOfMaterialCosts.requestComponentUpdateState();
+
+            FieldComponent averageMachineHourlyCost = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST);
+            averageMachineHourlyCost.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST_PB))));
+            averageMachineHourlyCost.requestComponentUpdateState();
+
+            FieldComponent averageLaborHourlyCost = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST);
+            averageLaborHourlyCost.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.AVERAGE_LABOR_HOURLY_COST_PB))));
+            averageLaborHourlyCost.requestComponentUpdateState();
+
+            FieldComponent productionCostMargin = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFieldsPCWC.PRODUCTION_COST_MARGIN);
+            productionCostMargin.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.PRODUCTION_COST_MARGIN_PB))));
+            productionCostMargin.requestComponentUpdateState();
+
+            FieldComponent materialCostMargin = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFieldsPCWC.MATERIAL_COST_MARGIN);
+            materialCostMargin.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.MATERIAL_COST_MARGIN_PB))));
+            materialCostMargin.requestComponentUpdateState();
+
+            FieldComponent additionalOverhead = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFieldsPCWC.ADDITIONAL_OVERHEAD);
+            additionalOverhead.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.ADDITIONAL_OVERHEAD_PB))));
+            additionalOverhead.requestComponentUpdateState();
+
+        }
+    }
 }

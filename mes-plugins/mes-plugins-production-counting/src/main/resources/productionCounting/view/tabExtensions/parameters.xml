@@ -58,11 +58,11 @@
 				<component type="checkbox" name="justOne" reference="justOne"
 					field="#{form}.justOne" />
 			</layoutElement>
-			<layoutElement column="2" row="2">
+			<layoutElement column="2" row="3">
 				<component type="checkbox" name="allowToClose" reference="allowToClose"
 					field="#{form}.allowToClose" hasDescription="true" />
 			</layoutElement>
-			<layoutElement column="2" row="3">
+			<layoutElement column="2" row="5">
 				<component type="checkbox" name="autoCloseOrder"
 					reference="autoCloseOrder" field="#{form}.autoCloseOrder"
 					hasDescription="true" />

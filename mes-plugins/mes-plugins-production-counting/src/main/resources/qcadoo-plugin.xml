@@ -189,7 +189,7 @@
 			<model:hasMany name="productionRecords" model="productionRecord"
 				joinField="division" plugin="productionCounting" />
 		</model:model-field>
-
+	
 		<model:model-hook model="parameter" plugin="basic">
 			<model:onCreate
 				class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
