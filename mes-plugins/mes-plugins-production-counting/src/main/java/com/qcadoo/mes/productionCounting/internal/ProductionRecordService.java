@@ -101,7 +101,7 @@ public class ProductionRecordService {
             if (parameter.getBooleanField(ParameterFieldsPC.GENERATE_PRODUCTION_RECORD_NUMBER_FROM_ORDER_NUMBER)) {
                 String[] orderNumberSplited = productionRecord.getBelongsToField(ProductionCountingFields.ORDER)
                         .getStringField(OrderFields.NUMBER).split("-");
-                if (orderNumberSplited.length == 2) {
+                if (orderNumberSplited.length > 2) {
                     String productionRecordNumber = StringUtils.strip(orderNumberSplited[1]);
                     productionRecord.setField(NUMBER, productionRecordNumber);
                 } else {
