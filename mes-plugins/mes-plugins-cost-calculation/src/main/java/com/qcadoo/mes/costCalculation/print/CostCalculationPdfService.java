@@ -603,7 +603,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                             "costCalculation.costCalculationDetails.report.columnHeader.machineHourlyCost.label", locale) + ":",
                     numberService.format(calculationOperationComponent.getField("machineHourlyCost")));
 
-            addTableCellAsTwoColumnsTable(panelTableContent, null, null);
+            addTableCellAsTwoColumnsTable(panelTableContent, "", "");
 
             addTableCellAsTwoColumnsTable(
                     panelTableContent,
