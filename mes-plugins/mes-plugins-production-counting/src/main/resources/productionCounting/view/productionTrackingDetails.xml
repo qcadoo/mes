@@ -341,8 +341,10 @@
 
 						<option type="creatable" value="false" />
 						<option type="deletable" value="false" />
+						
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="false" />
+						<option type="fixedHeight" value="true" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
@@ -370,8 +372,10 @@
 
 						<option type="creatable" value="false" />
 						<option type="deletable" value="false" />
+						
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="false" />
+						<option type="fixedHeight" value="true" />
 					</component>
 				</layoutElement>
 			</component>
