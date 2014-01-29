@@ -27,7 +27,7 @@
 <view name="orderedProductDetails" modelName="orderedProduct"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	windowWidth="640" windowHeight="430">
+	windowWidth="640" windowHeight="440">
 
 	<component type="window" name="window">
 
@@ -72,7 +72,8 @@
 								<component type="input" name="orderedQuantity"
 									reference="orderedQuantity" field="orderedQuantity">
 									<option type="alignment" value="right" />
-									<option type="labelWidth" value="40" />
+									<option type="labelWidth" value="45" />
+									
 									<listener event="onInputChange" method="calculatePrice"
 										class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners" />
 								</component>
@@ -97,7 +98,8 @@
 											<component type="input" name="totalPrice"
 												field="#{form}.totalPrice" reference="totalPrice">
 												<option type="alignment" value="right" />
-												<option type="labelWidth" value="40" />
+												<option type="labelWidth" value="45" />
+												
 												<listener event="onInputChange" method="calculatePriceFromTotalPrice"
 													class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners" />
 											</component>
@@ -118,7 +120,8 @@
 											<component type="input" name="pricePerUnit"
 												field="#{form}.pricePerUnit" reference="pricePerUnit" >
 												<option type="alignment" value="right" />
-												<option type="labelWidth" value="40" />
+												<option type="labelWidth" value="45" />
+												
 												<listener event="onInputChange" method="calculatePriceFromPricePerUnit"
 													class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners" />
 											</component>
@@ -141,6 +144,7 @@
 						</component>
 					</layoutElement>
 				</component>
+				
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 			</component>
