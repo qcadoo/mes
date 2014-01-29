@@ -53,7 +53,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -102,7 +101,7 @@ public class ProductionRecordService {
                 String[] orderNumberSplited = productionRecord.getBelongsToField(ProductionCountingFields.ORDER)
                         .getStringField(OrderFields.NUMBER).split("-");
                 if (orderNumberSplited.length > 2) {
-                    String productionRecordNumber = StringUtils.strip(orderNumberSplited[1]);
+                    String productionRecordNumber = getProductionRecordNumber(orderNumberSplited);
                     productionRecord.setField(NUMBER, productionRecordNumber);
                 } else {
                     productionRecord.setField(NUMBER, numberGeneratorService.generateNumber(
@@ -113,6 +112,19 @@ public class ProductionRecordService {
                         ProductionCountingConstants.PLUGIN_IDENTIFIER, productionRecord.getDataDefinition().getName()));
             }
         }
+    }
+
+    private String getProductionRecordNumber(final String[] orderNumberSplited) {
+        StringBuffer number = new StringBuffer();
+        for (int i = 0; i < orderNumberSplited.length; i++) {
+            if (i > 0) {
+                number.append(orderNumberSplited[i]);
+                if (i != orderNumberSplited.length - 1) {
+                    number.append("-");
+                }
+            }
+        }
+        return number.toString();
     }
 
     public boolean checkTypeOfProductionRecording(final DataDefinition productionRecordDD, final Entity productionRecord) {
