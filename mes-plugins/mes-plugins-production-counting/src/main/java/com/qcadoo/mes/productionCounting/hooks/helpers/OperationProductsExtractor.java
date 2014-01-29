@@ -96,6 +96,8 @@ public class OperationProductsExtractor {
                         } else {
                             Set<Entity> alreadAddedProducts = entityTypeWithAlreadyAddedProducts.get(entityType);
 
+                            alreadAddedProducts.add(product);
+
                             entityTypeWithAlreadyAddedProducts.put(entityType, alreadAddedProducts);
                         }
                     } else {
