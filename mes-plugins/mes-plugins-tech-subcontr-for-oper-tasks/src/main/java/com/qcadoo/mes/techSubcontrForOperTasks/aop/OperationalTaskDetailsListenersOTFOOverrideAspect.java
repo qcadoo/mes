@@ -30,18 +30,19 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Aspect
 @Configurable
-public class OperationalTasksDetailsListenersOTFOOverrideAspect {
+public class OperationalTaskDetailsListenersOTFOOverrideAspect {
 
     @Autowired
-    private OperationalTasksDetailsListenersOTFOOverrideUtil tasksDetailsListenersOTFOOverrideUtil;
+    private OperationalTaskDetailsListenersOTFOOverrideUtil tasksDetailsListenersOTFOOverrideUtil;
 
-    @Pointcut("execution(public void com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO.setProductionLineFromOrderAndClearOperation(..)) "
+    @Pointcut("execution(public void com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO.setProductionLineFromOrderAndClearOperation(..)) "
             + "&& args(viewDefinitionState, state, args)")
     public void setProductionLineFromOrderListenerExecution(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
@@ -50,14 +51,14 @@ public class OperationalTasksDetailsListenersOTFOOverrideAspect {
     @Around("setProductionLineFromOrderListenerExecution(viewDefinitionState, state, args)")
     public void aroundSetProductionLineFromOrderListenerExecution(final ProceedingJoinPoint pjp,
             final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) throws Throwable {
-        if (PluginUtils.isEnabled("techSubcontracting")) {
+        if (PluginUtils.isEnabled(TechSubcontractingConstants.PLUGIN_IDENTIFIER)) {
             tasksDetailsListenersOTFOOverrideUtil.checkIfOperationIsSubcontracted(viewDefinitionState);
         } else {
             pjp.proceed();
         }
     }
 
-    @Pointcut("execution(public void com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO.setOperationalNameAndDescription(..)) "
+    @Pointcut("execution(public void com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO.setOperationalNameAndDescription(..)) "
             + "&& args(viewDefinitionState, state, args)")
     public void setOperationalNameAndDescriptionListenerExecution(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
@@ -66,7 +67,7 @@ public class OperationalTasksDetailsListenersOTFOOverrideAspect {
     @Around("setOperationalNameAndDescriptionListenerExecution(viewDefinitionState, state, args)")
     public void aroundSetOperationalNameAndDescriptionListenerExecution(final ProceedingJoinPoint pjp,
             final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) throws Throwable {
-        if (PluginUtils.isEnabled("techSubcontracting")) {
+        if (PluginUtils.isEnabled(TechSubcontractingConstants.PLUGIN_IDENTIFIER)) {
             tasksDetailsListenersOTFOOverrideUtil.setOperationalNameAndDescriptionForSubcontractedOperation(viewDefinitionState);
         } else {
             pjp.proceed();

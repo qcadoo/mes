@@ -27,6 +27,6 @@
         "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
 	<aspects>
-		<aspect name="com.qcadoo.mes.techSubcontrForOperTasks.aop.OperationalTasksDetailsListenersOTFOOverrideAspect" />
+		<aspect name="com.qcadoo.mes.techSubcontrForOperTasks.aop.OperationalTaskDetailsListenersOTFOOverrideAspect" />
 	</aspects>
 </aspectj>

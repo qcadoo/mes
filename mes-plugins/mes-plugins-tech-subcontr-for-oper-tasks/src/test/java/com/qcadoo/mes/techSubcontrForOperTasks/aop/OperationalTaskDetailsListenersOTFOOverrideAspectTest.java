@@ -32,16 +32,16 @@ import java.lang.reflect.Modifier;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO;
+import com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
-public class OperationalTasksDetailsListenersOTFOOverrideAspectTest {
+public class OperationalTaskDetailsListenersOTFOOverrideAspectTest {
 
     @Test
     public final void checkSetProductionLineFromOrderPointcutDefinition() throws NoSuchMethodException {
-        Class<?> clazz = OperationalTasksDetailsListenersOTFO.class;
-        assertEquals("com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO",
+        Class<?> clazz = OperationalTaskDetailsListenersOTFO.class;
+        assertEquals("com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO",
                 clazz.getCanonicalName());
         final Method method = clazz.getDeclaredMethod("setProductionLineFromOrderAndClearOperation", ViewDefinitionState.class,
                 ComponentState.class, String[].class);
@@ -51,8 +51,8 @@ public class OperationalTasksDetailsListenersOTFOOverrideAspectTest {
 
     @Test
     public final void checkSetOperationalNameAndDescriptionPointcutDefinition() throws NoSuchMethodException {
-        Class<?> clazz = OperationalTasksDetailsListenersOTFO.class;
-        assertEquals("com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO",
+        Class<?> clazz = OperationalTaskDetailsListenersOTFO.class;
+        assertEquals("com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO",
                 clazz.getCanonicalName());
         final Method method = clazz.getDeclaredMethod("setOperationalNameAndDescription", ViewDefinitionState.class,
                 ComponentState.class, String[].class);
