@@ -58,6 +58,7 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
@@ -110,7 +111,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         if (!columns.isEmpty()) {
             PdfPTable orderTable = pdfHelper.createTableWithHeader(columns.size(),
-                    prepareOrdersTableHeader(document, columns, locale), false);
+                    prepareOrdersTableHeader(document, columns, locale), false, prepareHeaderAlignment(columns, locale));
 
             List<Entity> orders = workPlan.getManyToManyField("orders");
 
@@ -131,6 +132,26 @@ public class WorkPlanPdfService extends PdfDocumentService {
             document.add(Chunk.NEWLINE);
 
         }
+    }
+
+    private Map<String, HeaderAlignment> prepareHeaderAlignment(List<Entity> columns, Locale locale) {
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        for (Entity column : columns) {
+            String alignment = column.getStringField("alignment");
+            HeaderAlignment headerAlignment = HeaderAlignment.RIGHT;
+            if (ColumnAlignment.LEFT.equals(ColumnAlignment.parseString(alignment))) {
+                headerAlignment = HeaderAlignment.LEFT;
+            } else if (ColumnAlignment.RIGHT.equals(ColumnAlignment.parseString(alignment))) {
+                headerAlignment = HeaderAlignment.RIGHT;
+            }
+            alignments.put(prepareHeaderTranslation(column.getStringField(L_NAME), locale), headerAlignment);
+        }
+        return alignments;
+    }
+
+    private String prepareHeaderTranslation(final String name, final Locale locale) {
+        String translatedName = translationService.translate(name, locale);
+        return translatedName;
     }
 
     private Map<Long, Entity> buildEntityId2EntityMap(final Iterable<Entity> entities) {
@@ -400,7 +421,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         }
 
         PdfPTable table = pdfHelper.createTableWithHeader(columns.size(),
-                prepareProductsTableHeader(document, columns, direction, locale), false);
+                prepareProductsTableHeader(document, columns, direction, locale), false, prepareHeaderAlignment(columns, locale));
 
         for (Entity productComponent : productComponents) {
             for (Entity column : columns) {

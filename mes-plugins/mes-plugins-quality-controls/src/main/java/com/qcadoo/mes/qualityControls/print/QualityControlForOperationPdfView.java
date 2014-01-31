@@ -36,6 +36,7 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -49,6 +50,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 
@@ -107,7 +109,19 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
         qualityHeader.add(translationService.translate("qualityControls.qualityControl.report.correct.quantity", locale));
         qualityHeader.add(translationService.translate("qualityControls.qualityControl.report.incorrect.quantity", locale));
         qualityHeader.add(translationService.translate("qualityControls.qualityControl.report.objective.quantity", locale));
-        PdfPTable table = pdfHelper.createTableWithHeader(5, qualityHeader, false);
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        alignments.put(translationService.translate("qualityControls.qualityControl.report.operation.number", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("qualityControls.qualityControl.report.controlled.quantity", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("qualityControls.qualityControl.report.correct.quantity", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("qualityControls.qualityControl.report.incorrect.quantity", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("qualityControls.qualityControl.report.objective.quantity", locale),
+                HeaderAlignment.RIGHT);
+
+        PdfPTable table = pdfHelper.createTableWithHeader(5, qualityHeader, false, alignments);
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
             table.addCell(new Phrase(entry.getKey() == null ? "" : entry.getKey().getStringField("nodeNumber"), FontUtils
                     .getDejavuRegular7Dark()));

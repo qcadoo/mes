@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -53,6 +54,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
@@ -104,7 +106,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         orderHeader.add(translationService.translate("materialRequirements.materialRequirement.report.order.plannedQuantity",
                 locale));
         orderHeader.add(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale));
-        addOrderSeries(document, entity, orderHeader);
+        addOrderSeries(document, entity, orderHeader, locale);
         document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah2",
                 locale), FontUtils.getDejavuBold11Dark()));
         List<String> productHeader = new ArrayList<String>();
@@ -112,7 +114,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         productHeader.add(translationService.translate("basic.product.name.label", locale));
         productHeader.add(translationService.translate("technologies.technologyOperationComponent.quantity.label", locale));
         productHeader.add(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale));
-        addTechnologySeries(document, entity, productHeader);
+        addTechnologySeries(document, entity, productHeader, locale);
     }
 
     private void addPanel(final Document document, final Entity materialRequirement, final Locale locale)
@@ -137,15 +139,24 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         document.add(panelTable);
     }
 
-    private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader)
-            throws DocumentException {
+    private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader,
+            final Locale locale) throws DocumentException {
         List<Entity> orders = entity.getManyToManyField(ORDERS_FIELD);
         MrpAlgorithm algorithm = MrpAlgorithm.parseString(entity.getStringField(MRP_ALGORITHM));
 
         Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, algorithm);
 
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
-        PdfPTable table = pdfHelper.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
+
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        alignments.put(translationService.translate("basic.product.number.label", locale), HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("basic.product.name.label", locale), HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("technologies.technologyOperationComponent.quantity.label", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale),
+                HeaderAlignment.LEFT);
+
+        PdfPTable table = pdfHelper.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth, alignments);
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
@@ -163,11 +174,22 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         document.add(table);
     }
 
-    private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
+    private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader, final Locale locale)
             throws DocumentException {
         List<Entity> orders = entity.getManyToManyField(ORDERS_FIELD);
         Collections.sort(orders, new EntityOrderNumberComparator());
-        PdfPTable table = pdfHelper.createTableWithHeader(5, orderHeader, true, defaultMatReqHeaderColumnWidth);
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+
+        alignments.put(translationService.translate("orders.order.number.label", locale), HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("orders.order.name.label", locale), HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("orders.order.product.label", locale), HeaderAlignment.LEFT);
+        alignments.put(
+                translationService.translate("materialRequirements.materialRequirement.report.order.plannedQuantity", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale),
+                HeaderAlignment.LEFT);
+
+        PdfPTable table = pdfHelper.createTableWithHeader(5, orderHeader, true, defaultMatReqHeaderColumnWidth, alignments);
 
         for (Entity order : orders) {
             table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));

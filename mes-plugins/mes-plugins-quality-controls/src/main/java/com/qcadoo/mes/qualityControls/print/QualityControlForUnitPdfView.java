@@ -36,6 +36,7 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -49,6 +50,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 
@@ -112,7 +114,22 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
                         .translate(
                                 "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.acceptedDefectsQuantity.label",
                                 locale));
-        PdfPTable table = pdfHelper.createTableWithHeader(4, qualityHeader, false);
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        alignments.put(translationService.translate("qualityControls.qualityControl.report.product.number", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(translationService.translate(
+                "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.controlledQuantity.label",
+                locale), HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate(
+                "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.rejectedQuantity.label",
+                locale), HeaderAlignment.RIGHT);
+        alignments
+                .put(translationService
+                        .translate(
+                                "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.acceptedDefectsQuantity.label",
+                                locale), HeaderAlignment.RIGHT);
+
+        PdfPTable table = pdfHelper.createTableWithHeader(4, qualityHeader, false, alignments);
 
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
             table.addCell(new Phrase(entry.getKey() == null ? "" : entry.getKey().getStringField("number"), FontUtils
@@ -137,7 +154,16 @@ public class QualityControlForUnitPdfView extends ReportPdfView {
         productHeader.add(translationService.translate("qualityControls.qualityControl.report.rejected.quantity", locale));
         productHeader
                 .add(translationService.translate("qualityControls.qualityControl.report.accepted.defects.quantity", locale));
-        PdfPTable table = pdfHelper.createTableWithHeader(4, productHeader, false);
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        alignments.put(translationService.translate("qualityControls.qualityControl.report.control.number", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("qualityControls.qualityControl.report.controlled.quantity", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("qualityControls.qualityControl.report.rejected.quantity", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("qualityControls.qualityControl.report.accepted.defects.quantity", locale),
+                HeaderAlignment.RIGHT);
+        PdfPTable table = pdfHelper.createTableWithHeader(4, productHeader, false, alignments);
 
         List<Entity> sortedOrders = entry.getValue();
 

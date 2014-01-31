@@ -32,14 +32,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
@@ -57,6 +60,7 @@ import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFie
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
@@ -205,6 +209,30 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                         .translate(
                                 "productionCounting.productionBalanceDetails.window.materialCostsTab.technologyInstOperProductInComps.column.balance",
                                 locale));
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+
+        alignments
+                .put(translationService
+                        .translate(
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.technologyInstOperProductInComps.column.productNumber",
+                                locale), HeaderAlignment.LEFT);
+        alignments
+                .put(translationService
+                        .translate(
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.technologyInstOperProductInComps.column.plannedCost",
+                                locale), HeaderAlignment.RIGHT);
+
+        alignments
+                .put(translationService
+                        .translate(
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.technologyInstOperProductInComps.column.registeredCost",
+                                locale), HeaderAlignment.RIGHT);
+
+        alignments
+                .put(translationService
+                        .translate(
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.technologyInstOperProductInComps.column.balance",
+                                locale), HeaderAlignment.RIGHT);
 
         @SuppressWarnings("unchecked")
         List<Entity> products = (List<Entity>) productionBalance.getField("technologyInstOperProductInComps");
@@ -219,13 +247,14 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             products = Lists.newLinkedList(products);
             Collections.sort(products, new EntityProductInOutComparator());
 
-            PdfPTable productsTable = pdfHelper.createTableWithHeader(4, materialCostTableHeader, false);
+            PdfPTable productsTable = pdfHelper.createTableWithHeader(4, materialCostTableHeader, false, alignments);
 
             String currency = " " + currencyService.getCurrencyAlphabeticCode();
 
             for (Entity product : products) {
                 productsTable.addCell(new Phrase(product.getBelongsToField(PRODUCT).getStringField("number"), FontUtils
                         .getDejavuRegular7Dark()));
+                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
                 String plannedCost = numberService.format(product.getField("plannedCost"));
                 productsTable.addCell(new Phrase((plannedCost == null) ? NULL_OBJECT : (plannedCost + currency), FontUtils
@@ -236,12 +265,15 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 String balance = numberService.format(product.getField("balance"));
                 productsTable.addCell(new Phrase((balance == null) ? NULL_OBJECT : (balance + currency), FontUtils
                         .getDejavuRegular7Dark()));
+                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+
             }
 
             productsTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
                     locale), FontUtils.getDejavuRegular7Dark()));
             String plannedComponentsCosts = numberService.format((BigDecimal) productionBalance
                     .getField(ProductionBalanceFieldsPCWC.PLANNED_COMPONENTS_COSTS));
+            productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             productsTable.addCell(new Phrase(
                     (plannedComponentsCosts == null) ? NULL_OBJECT : (plannedComponentsCosts + currency), FontUtils
                             .getDejavuRegular7Dark()));
@@ -254,6 +286,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             productsTable.addCell(new Phrase(
                     (componentsCostsBalance == null) ? NULL_OBJECT : (componentsCostsBalance + currency), FontUtils
                             .getDejavuRegular7Dark()));
+            productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 
             document.add(productsTable);
         }
@@ -276,6 +309,22 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         tableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column." + type + "CostsBalance",
                 locale));
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        alignments.put(translationService.translate(
+                "productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column.operationLevel", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(translationService.translate(
+                "productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column.operationName", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(translationService.translate(
+                "productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column.planned"
+                        + upperCaseFirstLetter(type, locale) + L_COSTS, locale), HeaderAlignment.RIGHT);
+        alignments.put(translationService
+                .translate("productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column." + type
+                        + L_COSTS, locale), HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate(
+                "productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column." + type + "CostsBalance",
+                locale), HeaderAlignment.RIGHT);
 
         boolean isPiecework = "cycles".equals(type);
 
@@ -295,7 +344,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             operationComponents = Lists.newLinkedList(operationComponents);
             Collections.sort(operationComponents, new EntityProductionRecordOperationComparator());
 
-            PdfPTable costsTable = pdfHelper.createTableWithHeader(5, tableHeader, false);
+            PdfPTable costsTable = pdfHelper.createTableWithHeader(5, tableHeader, false, alignments);
 
             String currency = " " + currencyService.getCurrencyAlphabeticCode();
 
@@ -304,6 +353,8 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                         .getStringField("nodeNumber"), FontUtils.getDejavuRegular7Dark()));
                 costsTable.addCell(new Phrase(operationComponent.getBelongsToField("technologyInstanceOperationComponent")
                         .getBelongsToField("operation").getStringField("name"), FontUtils.getDejavuRegular7Dark()));
+
+                costsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
                 String plannedCost = numberService.format(operationComponent.getField("planned"
                         + upperCaseFirstLetter(type, locale) + L_COSTS));
@@ -315,11 +366,14 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 String balance = numberService.format(operationComponent.getField(type + "CostsBalance"));
                 costsTable.addCell(new Phrase((balance == null) ? NULL_OBJECT : (balance + currency), FontUtils
                         .getDejavuRegular7Dark()));
+                costsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+
             }
 
             costsTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
                     locale), FontUtils.getDejavuRegular7Dark()));
             costsTable.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
+            costsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
             String plannedCosts = numberService.format((BigDecimal) productionBalance.getField("planned"
                     + upperCaseFirstLetter(type, locale) + L_COSTS));
@@ -331,6 +385,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             String costsBalance = numberService.format((BigDecimal) productionBalance.getField(type + "CostsBalance"));
             costsTable.addCell(new Phrase((costsBalance == null) ? NULL_OBJECT : (costsBalance + currency), FontUtils
                     .getDejavuRegular7Dark()));
+            costsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 
             document.add(costsTable);
         }

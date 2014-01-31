@@ -39,6 +39,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -178,7 +179,7 @@ public class DeliveryReportPdf extends ReportPdfView {
         if (description != null) {
             column.put("deliveries.delivery.report.columnHeader.description", description);
         }
-        
+
         return column;
     }
 
@@ -191,7 +192,7 @@ public class DeliveryReportPdf extends ReportPdfView {
 
         if (supplier != null) {
             String name = supplier.getStringField(CompanyFields.NAME);
-            
+
             column.put("deliveries.delivery.report.columnHeader.supplier", name);
         }
         if (deliveryDate != null) {
@@ -259,10 +260,11 @@ public class DeliveryReportPdf extends ReportPdfView {
                     columnsName.add(entity.getStringField(ColumnForDeliveriesFields.IDENTIFIER));
                 }
 
+                Map<String, HeaderAlignment> alignments = prepareHeaderAlignment(filteredColumnsForDeliveries, locale);
                 PdfPTable productsTable = pdfHelper.createTableWithHeader(filteredColumnsForDeliveries.size(),
                         prepareProductsTableHeader(document, filteredColumnsForDeliveries, locale), false,
                         pdfHelper.getReportColumnWidths(REPORT_WIDTH, parameterService.getReportColumnWidths(), columnsName),
-                        HeaderAlignment.CENTER);
+                        alignments);
 
                 for (DeliveryProduct deliveryProduct : deliveryProducts) {
                     for (Entity columnForDeliveries : filteredColumnsForDeliveries) {
@@ -285,6 +287,22 @@ public class DeliveryReportPdf extends ReportPdfView {
         }
     }
 
+    private Map<String, HeaderAlignment> prepareHeaderAlignment(List<Entity> filteredColumnsForDeliveries, Locale locale) {
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        for (Entity column : filteredColumnsForDeliveries) {
+            String alignment = column.getStringField(ColumnForDeliveriesFields.ALIGNMENT);
+            HeaderAlignment headerAlignment = HeaderAlignment.RIGHT;
+            if (ColumnAlignment.LEFT.equals(ColumnAlignment.parseString(alignment))) {
+                headerAlignment = HeaderAlignment.LEFT;
+            } else if (ColumnAlignment.RIGHT.equals(ColumnAlignment.parseString(alignment))) {
+                headerAlignment = HeaderAlignment.RIGHT;
+            }
+            alignments.put(prepareHeaderTranslation(column.getStringField(ColumnForDeliveriesFields.NAME), locale),
+                    headerAlignment);
+        }
+        return alignments;
+    }
+
     private List<Entity> getDeliveryReportColumns(final List<Entity> columnsForDeliveries,
             final List<DeliveryProduct> deliveryProducts,
             final Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues) {
@@ -300,6 +318,7 @@ public class DeliveryReportPdf extends ReportPdfView {
 
         total.setColspan(2);
         total.setHorizontalAlignment(Element.ALIGN_LEFT);
+        total.setVerticalAlignment(Element.ALIGN_MIDDLE);
         total.setBackgroundColor(null);
         total.disableBorderSide(Rectangle.RIGHT);
         total.disableBorderSide(Rectangle.LEFT);
@@ -375,6 +394,11 @@ public class DeliveryReportPdf extends ReportPdfView {
         }
 
         return productsHeader;
+    }
+
+    private String prepareHeaderTranslation(final String name, final Locale locale) {
+        String translatedName = translationService.translate(name, locale);
+        return translatedName;
     }
 
     private void prepareProductColumnAlignment(final PdfPCell cell, final ColumnAlignment columnAlignment) {
