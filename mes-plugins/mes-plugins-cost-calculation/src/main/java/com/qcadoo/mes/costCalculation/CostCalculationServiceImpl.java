@@ -67,7 +67,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
     @Override
     public void calculateOperationsAndProductsCosts(final Entity entity) {
         operationsCostCalculationService.calculateOperationsCost(entity);
+
         final String sourceOfMaterialCosts = entity.getStringField(CostCalculationFields.SOURCE_OF_MATERIAL_COSTS);
+
         productsCostCalculationService.calculateTotalProductsCost(entity, sourceOfMaterialCosts);
     }
 
@@ -86,6 +88,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
         if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(quantity)) != 0) {
             final BigDecimal totalCostsPerUnit = totalCosts.divide(quantity, numberService.getMathContext());
+
             entity.setField(CostCalculationFields.TOTAL_COST_PER_UNIT, numberService.setScale(totalCostsPerUnit));
         }
     }
@@ -105,6 +108,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
         entity.setField(CostCalculationFields.PRODUCTION_COST_MARGIN_VALUE, numberService.setScale(productionCostMarginValue));
         entity.setField(CostCalculationFields.MATERIAL_COST_MARGIN_VALUE, numberService.setScale(materialCostMarginValue));
+
         calculateTotalOverhead(entity);
     }
 
@@ -126,9 +130,11 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
     @Override
     public BigDecimal calculateProductionCost(final Entity entity) {
+        BigDecimal productionCosts = null;
+
         final CalculateOperationCostMode operationMode = CalculateOperationCostMode.parseString(entity
                 .getStringField(CostCalculationFields.CALCULATE_OPERATION_COSTS_MODE));
-        BigDecimal productionCosts = null;
+
         if (HOURLY.equals(operationMode)) {
             BigDecimal totalMachine = BigDecimalUtils.convertNullToZero(entity
                     .getDecimalField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS));
@@ -141,6 +147,8 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         } else {
             throw new IllegalStateException("Unsupported calculateOperationCostsMode");
         }
+
         return productionCosts;
     }
+
 }

@@ -32,22 +32,29 @@ public class EntityOperationComponentComparator implements Comparator<Entity>, S
 
     private static final long serialVersionUID = 2360961924344935922L;
 
-    private static final String OPERATION = "operation";
+    private static final String L_OPERATION = "operation";
+
+    private static final String L_NAME = "name";
+
+    private static final String L_NUMBER = "number";
 
     @Override
     public final int compare(final Entity o1, final Entity o2) {
-        int result = o1.getBelongsToField(OPERATION).getStringField("number")
-                .compareTo(o2.getBelongsToField(OPERATION).getStringField("number"));
+        int result = o1.getBelongsToField(L_OPERATION).getStringField(L_NUMBER)
+                .compareTo(o2.getBelongsToField(L_OPERATION).getStringField(L_NUMBER));
+
         if (result == 0) {
-            result = o1.getBelongsToField(OPERATION).getStringField("name")
-                    .compareTo(o2.getBelongsToField(OPERATION).getStringField("name"));
+            result = o1.getBelongsToField(L_OPERATION).getStringField(L_NAME)
+                    .compareTo(o2.getBelongsToField(L_OPERATION).getStringField(L_NAME));
+
             if (result == 0) {
-                return o1.getBelongsToField(OPERATION).getId().toString()
-                        .compareTo(o2.getBelongsToField(OPERATION).getId().toString());
+                return o1.getBelongsToField(L_OPERATION).getId().toString()
+                        .compareTo(o2.getBelongsToField(L_OPERATION).getId().toString());
             } else {
                 return result;
             }
         }
+
         return result;
     }
 

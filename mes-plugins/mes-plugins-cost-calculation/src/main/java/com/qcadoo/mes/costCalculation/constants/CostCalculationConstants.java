@@ -33,16 +33,4 @@ public final class CostCalculationConstants {
 
     public static final String MODEL_COST_CALCULATION = "costCalculation";
 
-    public static final String ORDER = "order";
-
-    public static final String TECHNOLOGY = "technology";
-
-    public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
-
-    public static final String PRODUCT = "product";
-
-    public static final String QUANTITY = "quantity";
-
-    public static final String FORM = "form";
-
 }

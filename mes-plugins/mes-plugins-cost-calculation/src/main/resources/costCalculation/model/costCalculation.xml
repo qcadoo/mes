@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="costCalculation" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+<model name="costCalculation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
@@ -37,10 +37,11 @@
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<belongsTo name="defaultTechnology" model="technology"
-			plugin="technologies" /> 
+			plugin="technologies" />
 		<belongsTo name="technology" model="technology" plugin="technologies"
 			required="true" />
-		<belongsTo name="productionLine" model="productionLine" plugin="productionLines" required="true" />
+		<belongsTo name="productionLine" model="productionLine"
+			plugin="productionLines" required="true" />
 		<decimal name="quantity" required="true" />
 		<belongsTo name="order" model="order" plugin="orders" />
 		<decimal name="totalMaterialCosts">
@@ -99,33 +100,42 @@
 		<string name="description">
 			<validatesLength max="2024" />
 		</string>
+		
 		<boolean name="includeTPZ" default="true" />
-		<boolean name="includeAdditionalTime" default="true"/>
-		<boolean name="printCostNormsOfMaterials" default="true"/>
-		<boolean name="printOperationNorms" default="true"/>
-		
-		<enum name="sourceOfMaterialCosts" values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
-			required="true" default="01currentGlobalDefinitionsInProduct"/>
-		
-		<enum name="calculateMaterialCostsMode" values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
+		<boolean name="includeAdditionalTime" default="true" />
+		<boolean name="printCostNormsOfMaterials" default="true" />
+		<boolean name="printOperationNorms" default="true" />
+
+		<enum name="sourceOfMaterialCosts"
+			values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
+			required="true" default="01currentGlobalDefinitionsInProduct" />
+
+		<enum name="calculateMaterialCostsMode"
+			values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
 			required="true" default="01nominal" />
-		
+
 		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"
 			required="true" default="01hourly" />
-			
+
 		<datetime name="date" />
 		<boolean name="generated" />
 		<string name="fileName" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.costCalculation.hooks.CostCalculationModelValidators" method="ifSourceOfMaterialIsFromOrderThenOrderIsNeeded" />
-		<validatesWith class="com.qcadoo.mes.costCalculation.hooks.CostCalculationModelValidators" method="checkIfCurrentGlobalIsSelected"/>
-		<validatesWith class="com.qcadoo.mes.costCalculation.hooks.CostCalculationModelValidators" method="checkIfTheTechnologyHasCorrectState" />
+		<validatesWith
+			class="com.qcadoo.mes.costCalculation.validators.CostCalculationValidators"
+			method="ifSourceOfMaterialIsFromOrderThenOrderIsNeeded" />
+		<validatesWith
+			class="com.qcadoo.mes.costCalculation.validators.CostCalculationValidators"
+			method="checkIfCurrentGlobalIsSelected" />
+		<validatesWith
+			class="com.qcadoo.mes.costCalculation.validators.CostCalculationValidators"
+			method="checkIfTheTechnologyHasCorrectState" />
 		<onCopy
-			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationModelHooks"
+			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationHooks"
 			method="clearGeneratedOnCopy" />
 		<onCopy
-			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationModelHooks"
+			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationHooks"
 			method="clearGeneratedCosts" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />

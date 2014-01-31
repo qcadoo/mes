@@ -29,13 +29,52 @@ import com.qcadoo.model.api.Entity;
 
 public interface CostCalculationService {
 
-    Entity calculateTotalCost(final Entity costCalculation);
+    /**
+     * Calculates total cost
+     * 
+     * @param entity
+     *            entity
+     * 
+     * @return entity
+     */
+    Entity calculateTotalCost(final Entity entity);
 
+    /**
+     * Calculates operations and products costs
+     * 
+     * @param entity
+     *            entity
+     */
     void calculateOperationsAndProductsCosts(final Entity entity);
 
+    /**
+     * Calculates total costs
+     * 
+     * @param entity
+     *            entity
+     * @param productionCosts
+     *            production costs
+     * @param quantity
+     *            quantity
+     */
     void calculateTotalCosts(final Entity entity, final BigDecimal productionCosts, final BigDecimal quantity);
 
+    /**
+     * Calculates producton cost
+     * 
+     * @param entity
+     *            entity
+     * 
+     * @return productionCost
+     */
     BigDecimal calculateProductionCost(final Entity entity);
 
+    /**
+     * Calculated total overhead
+     * 
+     * @param entity
+     *            entity
+     */
     void calculateTotalOverhead(final Entity entity);
+
 }

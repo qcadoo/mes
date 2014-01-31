@@ -21,30 +21,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costCalculation.constants;
+package com.qcadoo.mes.costCalculation.listeners;
 
-public enum SourceOfMaterialCosts {
-    CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT("01currentGlobalDefinitionsInProduct"), FROM_ORDERS_MATERIAL_COSTS(
-            "02fromOrdersMaterialCosts");
+import org.springframework.stereotype.Service;
 
-    private String sourceOfMaterialCosts;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
-    private SourceOfMaterialCosts(final String sourceOfMaterialCosts) {
-        this.sourceOfMaterialCosts = sourceOfMaterialCosts;
-    }
+@Service
+public class TechnologyDetailsListenersCC {
 
-    public String getStringValue() {
-        return sourceOfMaterialCosts;
-    }
+    public void showCostCalculateFromTechnology(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        Long technologyId = (Long) state.getFieldValue();
 
-    public static SourceOfMaterialCosts parseString(final String string) {
-        if ("01currentGlobalDefinitionsInProduct".equals(string)) {
-            return CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT;
-        } else if ("02fromOrdersMaterialCosts".equals(string)) {
-            return FROM_ORDERS_MATERIAL_COSTS;
+        if (technologyId != null) {
+            String url = "../page/costCalculation/costCalculationDetails.html?context={\"technologyId\":\"" + technologyId
+                    + "\"}";
+            view.redirectTo(url, false, true);
         }
-
-        throw new IllegalStateException("Unsupported sourceOfMaterialCosts: " + string);
     }
 
 }
