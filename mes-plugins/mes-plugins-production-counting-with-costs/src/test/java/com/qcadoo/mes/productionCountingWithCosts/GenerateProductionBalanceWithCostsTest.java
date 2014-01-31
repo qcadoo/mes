@@ -111,10 +111,12 @@ public class GenerateProductionBalanceWithCostsTest {
     public void shouldSetQuantityTechnologyProductionLineAndTechnicalProductionCostPerUnitFieldsAndSaveEntity() {
         // given
         BigDecimal quantity = BigDecimal.TEN;
+        BigDecimal doneQuantity = BigDecimal.TEN;
 
         given(productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS)).willReturn(
                 BigDecimal.valueOf(100));
         given(order.getDecimalField(OrderFields.PLANNED_QUANTITY)).willReturn(quantity);
+        given(order.getDecimalField(OrderFields.DONE_QUANTITY)).willReturn(doneQuantity);
         given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
 
         // when
