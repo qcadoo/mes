@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -26,10 +27,13 @@
 <view name="operationalTaskDetails" modelName="operationalTask"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
 	<component type="window" name="window">
+
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
+
 		<windowTab name="mainTab">
 			<component type="form" name="operationalTasksDetails"
 				reference="form">
@@ -58,32 +62,39 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1" height="2">
-						<component type="textarea" name="name" field="name" reference="name" />
+						<component type="textarea" name="name" field="name"
+							reference="name" />
 					</layoutElement>
-					<layoutElement column="2" row="3" >
+					<layoutElement column="2" row="3">
 						<component type="lookup" name="productionLine"
 							reference="productionLine" field="productionLine">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
+
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							</component>
+						</component>
 					</layoutElement>
 					<layoutElement column="2" row="4" height="2">
 						<component type="textarea" name="description" field="description"
 							reference="description" />
 					</layoutElement>
 				</component>
+
 				<option type="header" value="true" />
 				<option type="expression" value="#number" />
-				
 			</component>
 		</windowTab>
+
 	</component>
+
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.operationalTasks.hooks.OperationalTasksDetailsHooks" method="generateOperationalTasksNumber"/>
+		<beforeRender
+			class="com.qcadoo.mes.operationalTasks.hooks.OperationalTasksDetailsHooks"
+			method="generateOperationalTasksNumber" />
 	</hooks>
+
 </view>

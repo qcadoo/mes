@@ -23,48 +23,52 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
-import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksFieldsOTFOF.ORDER;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class OrderHooksOTFO {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
-    public void changedProductionLine(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getId() == null) {
+    public void changedProductionLine(final DataDefinition orderDD, final Entity order) {
+        Long orderId = order.getId();
+
+        if (orderId == null) {
             return;
         }
-        Entity order = dataDefinition.get(entity.getId());
-        Entity productionLine = entity.getBelongsToField(PRODUCTION_LINE);
-        Entity orderProductionLine = order.getBelongsToField(PRODUCTION_LINE);
-        if (orderProductionLine.equals(productionLine)) {
+
+        Entity orderFromDB = orderDD.get(orderId);
+
+        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        Entity orderProductionLine = orderFromDB.getBelongsToField(OrderFields.PRODUCTION_LINE);
+
+        if ((productionLine == null) || (orderProductionLine == null)) {
             return;
         } else {
-            changedProductionLineInOperationalTasks(order, productionLine);
+            if (!orderProductionLine.getId().equals(productionLine.getId())) {
+                changedProductionLineInOperationalTasks(orderFromDB, productionLine);
+            }
         }
     }
 
     private void changedProductionLineInOperationalTasks(final Entity order, final Entity productionLine) {
-        DataDefinition operationalTasksDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
-                OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
-        List<Entity> operationalTasksList = operationalTasksDD.find().add(SearchRestrictions.belongsTo(ORDER, order)).list()
-                .getEntities();
-        for (Entity operationalTask : operationalTasksList) {
-            operationalTask.setField(PRODUCTION_LINE, productionLine);
-            operationalTasksDD.save(operationalTask);
+        List<Entity> operationalTasks = operationalTasksForOrdersService.getOperationalTasksForOrder(order);
+
+        for (Entity operationalTask : operationalTasks) {
+            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, productionLine);
+
+            operationalTask.getDataDefinition().save(operationalTask);
         }
     }
+
 }

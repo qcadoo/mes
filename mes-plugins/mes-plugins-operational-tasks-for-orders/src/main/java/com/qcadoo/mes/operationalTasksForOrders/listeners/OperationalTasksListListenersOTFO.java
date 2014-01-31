@@ -21,18 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.operationalTasksForOrders.constants;
+package com.qcadoo.mes.operationalTasksForOrders.listeners;
 
-public final class OperationalTasksFieldsOTFOF {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-    private OperationalTasksFieldsOTFOF() {
+import com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListHooksOTFO;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
+@Service
+public class OperationalTasksListListenersOTFO {
+
+    @Autowired
+    private OperationalTasksListHooksOTFO operationalTasksListHooksOTFO;
+
+    public void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        operationalTasksListHooksOTFO.addDiscriminatorRestrictionToGrid(view);
     }
-
-    public static final String ORDER = "order";
-
-    public static final String TECHNOLOGY = "technology";
-
-    public static final String TECH_OPER_COMP_OPERATIONAL_TASKS = "techOperCompOperationalTasks";
 
 }

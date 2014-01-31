@@ -21,34 +21,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.operationalTasksForOrders.hooks;
+package com.qcadoo.mes.operationalTasks.constants;
 
-import org.springframework.stereotype.Service;
+public enum OperationalTaskTypeTask {
+    OTHER_CASE("01otherCase");
 
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+    private final String operationalTaskTypeTask;
 
-@Service
-public class OperationalTaskHooksOTFO {
+    private OperationalTaskTypeTask(final String operationalTaskTypeTask) {
+        this.operationalTaskTypeTask = operationalTaskTypeTask;
+    }
 
-    public boolean checkIfOrderHasTechnology(final DataDefinition operationalTaskDD, final Entity operationalTask) {
-        Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
+    public String getStringValue() {
+        return operationalTaskTypeTask;
+    }
 
-        if (order == null) {
-            return true;
+    public static OperationalTaskTypeTask parseString(final String string) {
+        for (OperationalTaskTypeTask typeTask : values()) {
+            if (typeTask.getStringValue().equals(string)) {
+                return typeTask;
+            }
         }
-
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-
-        if (technology == null) {
-            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFieldsOTFO.ORDER),
-                    "operationalTasks.operationalTask.order.error.technologyIsNull");
-            return false;
-        }
-
-        return true;
+        throw new IllegalStateException("Unsupported OperationalTaskTypeTask: " + string);
     }
 
 }

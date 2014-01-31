@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksFieldsOTFOF.ORDER;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
@@ -33,32 +33,36 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 public class OperationalTaskHooksOTFOTest {
 
-    private OperationalTaskHooksOTFO hooksOTFO;
+    private OperationalTaskHooksOTFO operationalTaskHooksOTFO;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private DataDefinition operationalTaskDD;
 
     @Mock
-    private Entity entity, order, technology;
+    private Entity operationalTask, order, technology;
 
     @Before
     public void init() {
-        hooksOTFO = new OperationalTaskHooksOTFO();
         MockitoAnnotations.initMocks(this);
+
+        operationalTaskHooksOTFO = new OperationalTaskHooksOTFO();
     }
 
     @Test
     public void shouldReturnTrueWhenOrderIsNotSave() throws Exception {
         // given
-        when(entity.getBelongsToField(ORDER)).thenReturn(null);
+        given(operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER)).willReturn(null);
 
         // when
-        boolean result = hooksOTFO.checkIfOrderHasTechnology(dataDefinition, entity);
+        boolean result = operationalTaskHooksOTFO.checkIfOrderHasTechnology(operationalTaskDD, operationalTask);
+
         // then
         Assert.assertTrue(result);
     }
@@ -66,25 +70,28 @@ public class OperationalTaskHooksOTFOTest {
     @Test
     public void shouldReturnFalseWhenOrderDoesNotHaveTechnology() throws Exception {
         // given
-        when(entity.getBelongsToField(ORDER)).thenReturn(order);
-        when(order.getBelongsToField("technology")).thenReturn(null);
+        given(operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER)).willReturn(order);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(null);
+
         // when
-        boolean result = hooksOTFO.checkIfOrderHasTechnology(dataDefinition, entity);
+        boolean result = operationalTaskHooksOTFO.checkIfOrderHasTechnology(operationalTaskDD, operationalTask);
+
         // then
         Assert.assertFalse(result);
-        Mockito.verify(entity).addError(dataDefinition.getField(ORDER),
+        Mockito.verify(operationalTask).addError(operationalTaskDD.getField(OperationalTaskFieldsOTFO.ORDER),
                 "operationalTasks.operationalTask.order.error.technologyIsNull");
     }
 
     @Test
     public void shouldReturnTrueWhenOrderHaveTechnology() throws Exception {
         // given
-        when(entity.getBelongsToField(ORDER)).thenReturn(order);
-        when(order.getBelongsToField("technology")).thenReturn(technology);
+        when(operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER)).thenReturn(order);
+        when(order.getBelongsToField(OrderFields.TECHNOLOGY)).thenReturn(technology);
         // when
-        boolean result = hooksOTFO.checkIfOrderHasTechnology(dataDefinition, entity);
+        boolean result = operationalTaskHooksOTFO.checkIfOrderHasTechnology(operationalTaskDD, operationalTask);
 
         // then
         Assert.assertTrue(result);
     }
+
 }

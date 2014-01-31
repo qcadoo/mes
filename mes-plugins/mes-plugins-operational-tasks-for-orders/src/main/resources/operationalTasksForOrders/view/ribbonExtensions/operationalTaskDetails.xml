@@ -59,7 +59,7 @@
 			</script>
 		</bigButton>
 	</group>
-	<group name="operationalTasksList">
+	<group name="operationalTasks">
 		<bigButton name="showOperationalTasksWithOrder" icon="genealogyIcon24.png">
 			<script>
 				<![CDATA[

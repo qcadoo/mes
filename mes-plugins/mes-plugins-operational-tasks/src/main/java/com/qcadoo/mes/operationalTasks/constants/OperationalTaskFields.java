@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.operationalTasks.constants;
 
-public final class OperationalTasksFields {
+public final class OperationalTaskFields {
 
-    private OperationalTasksFields() {
+    private OperationalTaskFields() {
 
     }
 

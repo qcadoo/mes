@@ -31,13 +31,15 @@
 
 	<windowTab name="orderTab" reference="orderTab">
 		<component type="lookup" name="technology" field="technology"
-					reference="technology" hasLabel="false" defaultVisible="false">
+			reference="technology" hasLabel="false" defaultVisible="false">
 			<option type="column" name="name" fields="name" link="true" />
+			
+			<option type="order" column="number" direction="desc" />
+			
 			<option type="searchable" value="name,number" />
 			<option type="orderable" value="name,number" />
-			<option type="order" column="number" direction="desc" />
-			<option type="expression"
-					value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+			
+			<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 			<option type="fieldCode" value="number" />
 		</component>
 		<component type="gridLayout" name="gridLayout" reference="gridLayout"
@@ -46,32 +48,39 @@
 				<component type="lookup" name="order" reference="order"
 					field="#{form}.order">
 					<option type="column" name="name" fields="name" link="true" />
+					
+					<option type="order" column="number" direction="desc" />
+					
 					<option type="searchable" value="name,number" />
 					<option type="orderable" value="name,number" />
-					<option type="order" column="number" direction="desc" />
+					
 					<option type="expression"
 						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 					<option type="fieldCode" value="number" />
+					
 					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
+						class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
 						method="setProductionLineFromOrderAndClearOperation" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">
 				<component type="lookup" name="technologyOperationComponent"
-					reference="technologyOperationComponent"
-					source="#{technology}.operationComponents">
+					reference="technologyOperationComponent" source="#{technology}.operationComponents">
 					<option type="column" name="name" fields="operation"
 						expression="#operation['name']" link="true" />
+						
 					<option type="searchable" value="name,nodeNumber" />
 					<option type="orderable" value="name,nodeNumber" />
+					
 					<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
 					<option type="fieldCode" value="nodeNumber" />
+					
 					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
+						class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
 						method="setOperationalNameAndDescription" />
 				</component>
 			</layoutElement>
 		</component>
 	</windowTab>
+	
 </windowTabExtension>

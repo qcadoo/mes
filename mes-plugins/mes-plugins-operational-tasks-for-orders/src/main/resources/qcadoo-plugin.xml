@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -71,9 +70,10 @@
 
 	<modules>
 		<localization:translation path="locales" />
-	
-		<model:model model="techOperCompOperationalTasks" resource="model/techOperCompOperationalTasks.xml" />
-	
+
+		<model:model model="techOperCompOperationalTasks"
+			resource="model/techOperCompOperationalTasks.xml" />
+
 		<model:model-field model="operationalTask" plugin="operationalTasks">
 			<model:belongsTo name="order" model="order" plugin="orders" />
 		</model:model-field>
@@ -81,7 +81,6 @@
 			<model:belongsTo name="technology" model="technology"
 				plugin="technologies" persistent="false" />
 		</model:model-field>
-	
 		<model:model-field model="operationalTask" plugin="operationalTasks">
 			<model:belongsTo name="techOperCompOperationalTasks"
 				model="techOperCompOperationalTasks" plugin="operationalTasksForOrders" />
@@ -92,132 +91,134 @@
 			<model:hasMany name="operationalTasks" joinField="order"
 				model="operationalTask" cascade="delete" plugin="operationalTasks" />
 		</model:model-field>
-	
+
 		<model:model-enum-value plugin="basic" model="parameter"
 			value="02startOperationalTask" enum="inputProductsRequiredForType" />
-	
+
 		<model:model-enum-value plugin="orders" model="order"
 			value="02startOperationalTask" enum="inputProductsRequiredForType" />
-	
+
 		<model:model-hook model="operationalTask" plugin="operationalTasks">
 			<model:onSave
 				class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskHooksOTFO"
 				method="checkIfOrderHasTechnology" />
 		</model:model-hook>
-	
+
 		<model:model-hook model="operation" plugin="technologies">
 			<model:onSave
 				class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationHooksOTFO"
 				method="changedNameOperationTasksWhenEntityNameChanged" />
 		</model:model-hook>
+
 		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:onSave
-				class="com.qcadoo.mes.operationalTasksForOrders.hooks.TechOperCompHooksOTFO"
+				class="com.qcadoo.mes.operationalTasksForOrders.hooks.TechnologyOperationComponentHooksOTFO"
 				method="changedDescriptionOperationTasksWhenCommentEntityChanged" />
 		</model:model-hook>
+
 		<model:model-hook model="order" plugin="orders">
 			<model:onSave
 				class="com.qcadoo.mes.operationalTasksForOrders.hooks.OrderHooksOTFO"
 				method="changedProductionLine" />
 		</model:model-hook>
-	
+
 		<view:view-tab resource="view/tabExtensions/operationalTaskDetails.xml" />
-	
+
 		<view:view-ribbon-group
 			resource="view/ribbonExtensions/operationalTaskDetails.xml" />
 		<view:view-ribbon-group
 			resource="view/ribbonExtensions/operationDurationDetailsInOrder.xml" />
-	
+
 		<view:view-grid-column plugin="operationalTasks"
 			view="operationalTasksList" component="grid">
-			<view:column name="orderNumber" fields="order" orderable="true"
-				searchable="true" expression="#order['number']" />
-			<view:column name="technology" fields="order" orderable="true"
-				expression="#order['technology'].get('number')" />
+			<view:column name="orderNumber" fields="order"
+				expression="#order['number']" orderable="true" searchable="true" />
+			<view:column name="technology" fields="order"
+				expression="#order['technology'].get('number')" orderable="true"
+				searchable="true" />
 			<view:column name="techOperCompNodeNumber" fields="techOperCompOperationalTasks"
-				orderable="true" searchable="true"
-				expression="#techOperCompOperationalTasks['technologyOperationComponent'].get('nodeNumber')" />
+				expression="#techOperCompOperationalTasks?.get('technologyOperationComponent')?.get('nodeNumber')"
+				orderable="true" searchable="true" />
 			<view:column name="techOperCompNumber" fields="techOperCompOperationalTasks"
-				orderable="true"
-				expression="#techOperCompOperationalTasks.get('technologyOperationComponent').get('operation').get('number')" />
+				expression="#techOperCompOperationalTasks?.get('technologyOperationComponent')?.get('operation')?.getStringField('number')"
+				orderable="true" searchable="true" />
 		</view:view-grid-column>
-	
-		<view:view-hook view="operationalTasksList" type="beforeRender"
-			plugin="operationalTasks"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListOTFOHooks"
-			method="addDiscriminatorRestrictionToGrid" />
-	
-		<view:view-hook view="operationalTaskDetails" type="beforeRender"
-			plugin="operationalTasks"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
+
+		<view:view-hook view="operationalTaskDetails" plugin="operationalTasks"
+			type="beforeRender"
+			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
 			method="disabledFieldWhenOrderTypeIsSelected" />
-	
-		<view:view-hook view="operationalTaskDetails" type="beforeRender"
-			plugin="operationalTasks"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
+
+		<view:view-hook view="operationalTaskDetails" plugin="operationalTasks"
+			type="beforeRender"
+			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
 			method="disabledButtons" />
-	
-		<view:view-hook view="operationalTaskDetails" type="beforeRender"
-			plugin="operationalTasks"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
+
+		<view:view-hook view="operationalTaskDetails" plugin="operationalTasks"
+			type="beforeRender"
+			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
 			method="setTechnology" />
-	
-		<view:view-hook view="operationalTaskDetails" type="beforeRender"
-			plugin="operationalTasks"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
+
+		<view:view-hook view="operationalTaskDetails" plugin="operationalTasks"
+			type="beforeRender"
+			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
 			method="setTechnologyOperationComponent" />
-	
+
+		<view:view-hook view="operationalTasksList" plugin="operationalTasks"
+			type="beforeRender"
+			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListHooksOTFO"
+			method="addDiscriminatorRestrictionToGrid" />
+
 		<view:view-hook view="operationDurationDetailsInOrder"
-			type="beforeRender" plugin="productionScheduling"
+			plugin="productionScheduling" type="beforeRender"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationDurationDetailsInOrderDetailsHooksOTFO"
 			method="disabledCreateButton" />
-	
+
 		<view:view-listener view="operationalTaskDetails"
-			component="form" plugin="operationalTasks" event="save"
-			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
-			method="setTOCOperationalTasks" />
-	
-	
+			plugin="operationalTasks" component="form" event="save"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
+			method="setTechOperCompOperationalTasks" />
+
 		<view:view-listener view="operationalTaskDetails"
-			component="typeTask" plugin="operationalTasks" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
+			plugin="operationalTasks" component="typeTask" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
 			method="disabledFieldWhenOrderTypeIsSelected" />
-	
+
 		<view:view-listener view="operationalTaskDetails"
-			component="typeTask" plugin="operationalTasks" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
+			plugin="operationalTasks" component="typeTask" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
 			method="disabledButtons" />
-	
+
 		<view:view-listener view="operationalTaskDetails"
-			component="form" plugin="operationalTasks" event="showOrder"
-			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
+			plugin="operationalTasks" component="form" event="showOrder"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
 			method="showOrder" />
-	
+
 		<view:view-listener view="operationalTaskDetails"
-			component="form" plugin="operationalTasks" event="showOperationParameter"
-			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
+			plugin="operationalTasks" component="form" event="showOperationParameter"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
 			method="showOperationParameter" />
-	
+
 		<view:view-listener view="operationalTaskDetails"
-			component="form" plugin="operationalTasks" event="showOperationalTasksWithOrder"
-			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
+			plugin="operationalTasks" component="form" event="showOperationalTasksWithOrder"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
 			method="showOperationalTasksWithOrder" />
-	
+
+		<view:view-listener view="operationalTasksList"
+			plugin="operationalTasks" component="productIn" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksListListenersOTFO"
+			method="addDiscriminatorRestrictionToGrid" />
+
+		<view:view-listener view="operationalTasksList"
+			plugin="operationalTasks" component="productOut" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksListListenersOTFO"
+			method="addDiscriminatorRestrictionToGrid" />
+
 		<view:view-listener view="operationDurationDetailsInOrder"
-			component="form" plugin="productionScheduling" event="createOperationalTasks"
+			plugin="productionScheduling" component="form" event="createOperationalTasks"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationDurationDetailsInOrderDetailsListenersOTFO"
 			method="createOperationalTasks" />
-	
-		<view:view-listener view="operationalTasksList"
-			component="productIn" plugin="operationalTasks" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListOTFOHooks"
-			method="addDiscriminatorRestrictionToGrid" />
-	
-		<view:view-listener view="operationalTasksList"
-			component="productOut" plugin="operationalTasks" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListOTFOHooks"
-			method="addDiscriminatorRestrictionToGrid" />
 	</modules>
 	
 	<features>

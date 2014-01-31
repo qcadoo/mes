@@ -21,34 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.operationalTasksForOrders.hooks;
+package com.qcadoo.mes.operationalTasksForOrders.constants;
 
-import org.springframework.stereotype.Service;
+public final class OperationalTaskFieldsOTFO {
 
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+    private OperationalTaskFieldsOTFO() {
 
-@Service
-public class OperationalTaskHooksOTFO {
-
-    public boolean checkIfOrderHasTechnology(final DataDefinition operationalTaskDD, final Entity operationalTask) {
-        Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
-
-        if (order == null) {
-            return true;
-        }
-
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-
-        if (technology == null) {
-            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFieldsOTFO.ORDER),
-                    "operationalTasks.operationalTask.order.error.technologyIsNull");
-            return false;
-        }
-
-        return true;
     }
+
+    public static final String ORDER = "order";
+
+    public static final String TECHNOLOGY = "technology";
+
+    public static final String TECH_OPER_COMP_OPERATIONAL_TASKS = "techOperCompOperationalTasks";
 
 }
