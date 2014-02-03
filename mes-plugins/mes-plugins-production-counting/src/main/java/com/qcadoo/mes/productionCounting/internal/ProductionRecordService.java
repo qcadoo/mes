@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -100,7 +101,7 @@ public class ProductionRecordService {
             if (parameter.getBooleanField(ParameterFieldsPC.GENERATE_PRODUCTION_RECORD_NUMBER_FROM_ORDER_NUMBER)) {
                 String[] orderNumberSplited = productionRecord.getBelongsToField(ProductionCountingFields.ORDER)
                         .getStringField(OrderFields.NUMBER).split("-");
-                if (orderNumberSplited.length > 2) {
+                if (orderNumberSplited.length > 1) {
                     String productionRecordNumber = getProductionRecordNumber(orderNumberSplited);
                     productionRecord.setField(NUMBER, productionRecordNumber);
                 } else {
@@ -124,7 +125,7 @@ public class ProductionRecordService {
                 }
             }
         }
-        return number.toString();
+        return StringUtils.strip(number.toString());
     }
 
     public boolean checkTypeOfProductionRecording(final DataDefinition productionRecordDD, final Entity productionRecord) {
