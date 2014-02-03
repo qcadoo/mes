@@ -82,8 +82,6 @@ public class TechnologyService {
 
     private static final String L_PRODUCT = "product";
 
-    private static final String L_NAME = "name";
-
     private static final String L_PARENT = "parent";
 
     private static final String L_NUMBER = "number";

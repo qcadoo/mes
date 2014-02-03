@@ -224,14 +224,15 @@ public class OperationalTaskDetailsListenersOTFO {
 
                     operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS,
                             techOperCompOperationalTask);
-                    operationalTask = operationalTask.getDataDefinition().save(operationalTask);
+
+                    operationalTask.getDataDefinition().save(operationalTask);
                 } else {
                     Entity techOperCompOperationalTask = techOperCompOperationalTaskDD.get(techOperCompOperationalTasks.getId());
 
                     techOperCompOperationalTask.setField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
                             technologyOperationComponent);
-                    techOperCompOperationalTask = techOperCompOperationalTask.getDataDefinition().save(
-                            techOperCompOperationalTask);
+
+                    techOperCompOperationalTask.getDataDefinition().save(techOperCompOperationalTask);
                 }
             }
         }

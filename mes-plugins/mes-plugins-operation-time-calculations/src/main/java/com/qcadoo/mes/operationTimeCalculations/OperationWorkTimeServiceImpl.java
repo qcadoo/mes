@@ -217,8 +217,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             techOperCompTimeCalculations.setField("machineWorkTime", machineWorkTime);
             techOperCompTimeCalculations.setField("laborWorkTime", laborWorkTime);
             techOperCompTimeCalculations.setField("duration", duration);
-            techOperCompTimeCalculations = techOperCompTimeCalculationsDD.save(techOperCompTimeCalculations);
-
+            techOperCompTimeCalculationsDD.save(techOperCompTimeCalculations);
         } else {
             entity.setField("machineWorkTime", machineWorkTime);
             entity.setField("laborWorkTime", laborWorkTime);

@@ -73,7 +73,7 @@ public class OrderRealizationDaysResolver {
                 .getEntities();
     }
 
-    public static class OrderRealizationDayWithShifts {
+    public static final class OrderRealizationDayWithShifts {
 
         private final List<Shift> workingShifts;
 
@@ -123,10 +123,13 @@ public class OrderRealizationDaysResolver {
             if (this == obj) {
                 return true;
             }
-            if (obj == null || !(obj instanceof OrderRealizationDayWithShifts)) {
+
+            if (!(obj instanceof OrderRealizationDayWithShifts)) {
                 return false;
             }
+
             OrderRealizationDayWithShifts other = (OrderRealizationDayWithShifts) obj;
+
             return new EqualsBuilder().append(daysAfterStartDate, other.daysAfterStartDate)
                     .append(orderStartDate, other.orderStartDate).append(workingShifts, other.workingShifts).isEquals();
         }

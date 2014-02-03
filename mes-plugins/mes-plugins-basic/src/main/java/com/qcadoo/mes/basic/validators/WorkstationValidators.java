@@ -15,7 +15,7 @@ public class WorkstationValidators {
         Entity divisionOld = (Entity) divisionOldValue;
         Entity divisionNew = (Entity) divisionNewValue;
 
-        if ((divisionOld != null) && (divisionNew != null) && (divisionOld.getId() != divisionNew.getId())) {
+        if ((divisionOld != null) && (divisionNew != null) && !(divisionOld.getId().equals(divisionNew.getId()))) {
             workstation.addError(workstationDD.getField(WorkstationFields.DIVISION), "basic.workstation.error.divisionIsUsed");
 
             return false;

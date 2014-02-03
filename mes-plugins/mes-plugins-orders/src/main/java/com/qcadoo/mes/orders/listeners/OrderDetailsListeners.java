@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.AMOUNT_OF_PRODUCT_PRODUCED;
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE;
-import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -130,21 +120,21 @@ public class OrderDetailsListeners {
 
     public void copyStartDate(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
         if (triggerState.getName().equals(L_PLANNED_DATE_FROM)) {
-            copyDate(view, L_PLANNED_DATE_FROM, DATE_FROM);
+            copyDate(view, L_PLANNED_DATE_FROM, OrderFields.DATE_FROM);
         } else if (triggerState.getName().equals(L_EFFECTIVE_DATE_FROM)) {
-            copyDate(view, OrderFields.EFFECTIVE_DATE_FROM, DATE_FROM);
+            copyDate(view, OrderFields.EFFECTIVE_DATE_FROM, OrderFields.DATE_FROM);
         } else {
-            copyDate(view, CORRECTED_DATE_FROM, DATE_FROM);
+            copyDate(view, OrderFields.CORRECTED_DATE_FROM, OrderFields.DATE_FROM);
         }
     }
 
     public void copyEndDate(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
         if (triggerState.getName().equals(L_PLANNED_DATE_TO)) {
-            copyDate(view, L_PLANNED_DATE_TO, DATE_TO);
+            copyDate(view, L_PLANNED_DATE_TO, OrderFields.DATE_TO);
         } else if (triggerState.getName().equals(L_EFFECTIVE_DATE_TO)) {
-            copyDate(view, OrderFields.EFFECTIVE_DATE_TO, DATE_TO);
+            copyDate(view, OrderFields.EFFECTIVE_DATE_TO, OrderFields.DATE_TO);
         } else {
-            copyDate(view, CORRECTED_DATE_TO, DATE_TO);
+            copyDate(view, OrderFields.CORRECTED_DATE_TO, OrderFields.DATE_TO);
         }
 
     }
@@ -153,7 +143,7 @@ public class OrderDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
         if (form.getEntityId() == null) {
-            copyDate(view, DATE_FROM, L_PLANNED_DATE_FROM);
+            copyDate(view, OrderFields.DATE_FROM, L_PLANNED_DATE_FROM);
             return;
         }
 
@@ -161,14 +151,14 @@ public class OrderDetailsListeners {
 
         String state = order.getStringField(OrderFields.STATE);
         if (OrderState.PENDING.getStringValue().equals(state)) {
-            copyDate(view, DATE_FROM, L_PLANNED_DATE_FROM);
+            copyDate(view, OrderFields.DATE_FROM, L_PLANNED_DATE_FROM);
         }
-        if (OrderState.IN_PROGRESS.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state)
+        if (OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.ABANDONED.getStringValue().equals(state)
                 || OrderState.COMPLETED.getStringValue().equals(state)) {
-            copyDate(view, DATE_FROM, L_EFFECTIVE_DATE_FROM);
+            copyDate(view, OrderFields.DATE_FROM, L_EFFECTIVE_DATE_FROM);
         }
         if ((OrderState.ACCEPTED.getStringValue().equals(state))) {
-            copyDate(view, DATE_FROM, CORRECTED_DATE_FROM);
+            copyDate(view, OrderFields.DATE_FROM, OrderFields.CORRECTED_DATE_FROM);
         }
 
     }
@@ -176,7 +166,7 @@ public class OrderDetailsListeners {
     public void copyFinishDateToDetails(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
-            copyDate(view, DATE_TO, L_PLANNED_DATE_TO);
+            copyDate(view, OrderFields.DATE_TO, L_PLANNED_DATE_TO);
             return;
         }
 
@@ -185,13 +175,13 @@ public class OrderDetailsListeners {
         String state = order.getStringField(OrderFields.STATE);
 
         if (OrderState.PENDING.getStringValue().equals(state)) {
-            copyDate(view, DATE_TO, L_PLANNED_DATE_TO);
+            copyDate(view, OrderFields.DATE_TO, L_PLANNED_DATE_TO);
         }
         if (OrderState.COMPLETED.getStringValue().equals(state) || OrderState.ABANDONED.getStringValue().equals(state)) {
-            copyDate(view, DATE_TO, L_EFFECTIVE_DATE_TO);
+            copyDate(view, OrderFields.DATE_TO, L_EFFECTIVE_DATE_TO);
         }
         if (OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state)) {
-            copyDate(view, DATE_TO, CORRECTED_DATE_TO);
+            copyDate(view, OrderFields.DATE_TO, OrderFields.CORRECTED_DATE_TO);
         }
     }
 
@@ -238,25 +228,27 @@ public class OrderDetailsListeners {
     }
 
     public void setProductQuantities(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        if (!isValidDecimalField(view, Arrays.asList(DONE_QUANTITY))) {
+        if (!isValidDecimalField(view, Arrays.asList(OrderFields.DONE_QUANTITY))) {
             return;
         }
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
             return;
         }
 
         Entity order = form.getEntity();
 
-        FieldComponent amountOfPPComponent = (FieldComponent) view.getComponentByReference(AMOUNT_OF_PRODUCT_PRODUCED);
+        FieldComponent amountOfPPComponent = (FieldComponent) view
+                .getComponentByReference(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED);
         FieldComponent remainingAmountOfPTPComponent = (FieldComponent) view
-                .getComponentByReference(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
+                .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
 
-        amountOfPPComponent.setFieldValue(numberService.format(order.getField(DONE_QUANTITY)));
+        amountOfPPComponent.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
         amountOfPPComponent.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(DONE_QUANTITY)), numberService.getMathContext());
+        BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
+                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
+                        numberService.getMathContext());
         if (remainingAmountOfPTP.compareTo(BigDecimal.ZERO) == -1) {
             remainingAmountOfPTPComponent.setFieldValue(numberService.format(BigDecimal.ZERO));
 
@@ -271,23 +263,23 @@ public class OrderDetailsListeners {
         if (!isValidDecimalField(view, Arrays.asList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED))) {
             return;
         }
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
             return;
         }
 
         Entity order = form.getEntity();
 
-        FieldComponent doneQuantityComponent = (FieldComponent) view.getComponentByReference(DONE_QUANTITY);
+        FieldComponent doneQuantityComponent = (FieldComponent) view.getComponentByReference(OrderFields.DONE_QUANTITY);
         FieldComponent remainingAmountOfPTPComponent = (FieldComponent) view
-                .getComponentByReference(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
+                .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
 
         doneQuantityComponent.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
         doneQuantityComponent.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
-                numberService.getMathContext());
+        BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
+                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                        numberService.getMathContext());
         if (remainingAmountOfPTP.compareTo(BigDecimal.ZERO) == -1) {
             remainingAmountOfPTPComponent.setFieldValue(numberService.format(BigDecimal.ZERO));
 
@@ -300,7 +292,7 @@ public class OrderDetailsListeners {
 
     private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
         boolean isValid = true;
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity entity = formComponent.getEntity();
         for (String field : fileds) {
             try {
@@ -314,4 +306,5 @@ public class OrderDetailsListeners {
 
         return isValid;
     }
+
 }

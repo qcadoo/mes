@@ -55,8 +55,6 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public class OrderHooks {
 
-    private static final String L_FORM = "form";
-
     public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     public static final long SECOND_MILLIS = 1000;

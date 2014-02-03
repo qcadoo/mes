@@ -147,7 +147,7 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         techOperCompOperationalTasks.setField(TechOperCompOperationalTasksFields.OPERATIONAL_TASKS,
                 Lists.newArrayList(operationalTask));
 
-        techOperCompOperationalTasks = techOperCompOperationalTasks.getDataDefinition().save(techOperCompOperationalTasks);
+        techOperCompOperationalTasks.getDataDefinition().save(techOperCompOperationalTasks);
     }
 
 }

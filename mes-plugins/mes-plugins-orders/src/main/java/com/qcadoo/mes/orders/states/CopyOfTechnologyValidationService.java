@@ -82,7 +82,6 @@ public class CopyOfTechnologyValidationService {
     }
 
     public void checkConsumingManyProductsFromOneSubOp(final StateChangeContext stateContext, Entity technology2) {
-        final Entity order = stateContext.getOwner();
         final Entity technology = stateContext.getOwner();
         final Map<String, Set<String>> parentChildNodeNums = technologyTreeValidationService
                 .checkConsumingManyProductsFromOneSubOp(technology.getTreeField(OPERATION_COMPONENTS));

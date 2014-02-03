@@ -14,6 +14,8 @@ import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
+import com.qcadoo.mes.productionLines.constants.TechOperCompWorkstationFields;
+import com.qcadoo.mes.productionLines.constants.TechnologyOperationComponentFieldsPL;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
@@ -209,7 +211,7 @@ public class TechnologyServiceO {
         }
         EntityTree techOperComponentTree = technologyDB.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         DataDefinition quantityOfWorkstationTypesDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                "techOperCompWorkstation");
+                ProductionLinesConstants.MODEL_TECH_OPER_COMP_WORKSTATION);
 
         if (techOperComponentTree == null) {
             return;
@@ -218,10 +220,10 @@ public class TechnologyServiceO {
         Entity techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
         for (Entity child : technologyDB.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
             techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
-            techOperCompWorkstation.setField("quantityOfWorkstationTypes",
-                    productionLinesService.getWorkstationTypesCount(child, order.getBelongsToField("productionLine")));
+            techOperCompWorkstation.setField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATION_TYPES,
+                    productionLinesService.getWorkstationTypesCount(child, order.getBelongsToField(OrderFields.PRODUCTION_LINE)));
             techOperCompWorkstation = quantityOfWorkstationTypesDD.save(techOperCompWorkstation);
-            child.setField("techOperCompWorkstation", techOperCompWorkstation);
+            child.setField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION, techOperCompWorkstation);
 
             child = child.getDataDefinition().save(child);
         }
@@ -240,16 +242,18 @@ public class TechnologyServiceO {
                 .find(sql).list().getEntities();
 
         DataDefinition quantityOfWorkstationTypesDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                "techOperCompWorkstation");
+                ProductionLinesConstants.MODEL_TECH_OPER_COMP_WORKSTATION);
 
         Entity techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
         for (Entity child : tocs) {
-            if (child.getField("techOperCompWorkstation") == null) {
+            if (child.getField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION) == null) {
                 techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
-                techOperCompWorkstation.setField("quantityOfWorkstationTypes",
-                        productionLinesService.getWorkstationTypesCount(child, order.getBelongsToField("productionLine")));
+                techOperCompWorkstation.setField(
+                        TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATION_TYPES,
+                        productionLinesService.getWorkstationTypesCount(child,
+                                order.getBelongsToField(OrderFields.PRODUCTION_LINE)));
                 techOperCompWorkstation = quantityOfWorkstationTypesDD.save(techOperCompWorkstation);
-                child.setField("techOperCompWorkstation", techOperCompWorkstation);
+                child.setField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION, techOperCompWorkstation);
 
                 child = child.getDataDefinition().save(child);
             }

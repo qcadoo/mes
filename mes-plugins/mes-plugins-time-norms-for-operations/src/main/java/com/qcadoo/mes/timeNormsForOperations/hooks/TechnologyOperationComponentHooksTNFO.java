@@ -47,15 +47,16 @@ public class TechnologyOperationComponentHooksTNFO {
     @Autowired
     private UnitService unitService;
 
-    public void onCreate(final DataDefinition dd, final Entity technologyOperationComponent) {
-        setDefaultUnitOnCreate(dd, technologyOperationComponent);
+    public void onCreate(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        setDefaultUnitOnCreate(technologyOperationComponent);
     }
 
-    private void setDefaultUnitOnCreate(final DataDefinition dd, final Entity technologyOperationComponent) {
+    private void setDefaultUnitOnCreate(final Entity technologyOperationComponent) {
         if (StringUtils.isEmpty(technologyOperationComponent
                 .getStringField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT))) {
             String defaultUnit = unitService.getDefaultUnitFromSystemParameters();
-            technologyOperationComponent.setField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT, defaultUnit);
+            technologyOperationComponent.setField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT,
+                    defaultUnit);
         }
     }
 

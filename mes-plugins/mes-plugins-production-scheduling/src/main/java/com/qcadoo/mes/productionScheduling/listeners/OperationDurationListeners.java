@@ -21,29 +21,26 @@ public class OperationDurationListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        Long orderId = (Long) componentState.getFieldValue();
+    public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long orderId = (Long) state.getFieldValue();
 
         if (orderId != null) {
-
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
-            if (order.getField(OrderFields.ORDER_TYPE).equals(OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue())) {
+            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getField(OrderFields.ORDER_TYPE))
+                    && (order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE) == null)) {
+                state.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
 
-                if (order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE) == null) {
-
-                    componentState.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
-                    return;
-                }
-
+                return;
             }
+
             Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.id", technologyId);
 
             String url = "../page/orders/copyOfTechnologyDetails.html";
             view.redirectTo(url, false, true, parameters);
-
         }
     }
+
 }

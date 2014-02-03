@@ -224,7 +224,7 @@ public class ProductionPerShiftListeners {
                 if (!root.getId().equals(toc.getId())) {
                     return;
                 }
-                BigDecimal productionQuantity = new BigDecimal(0);
+                BigDecimal productionQuantity = BigDecimal.ZERO;
                 List<Entity> plannedPrograssForDay = root.getHasManyField(PROGRESS_FOR_DAYS);
                 for (Entity progressForDay : plannedPrograssForDay) {
                     List<Entity> dailyProgreses = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
@@ -260,14 +260,6 @@ public class ProductionPerShiftListeners {
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(toc.getId());
         List<Entity> plannedPrograssForDay = techOperComp.getHasManyField(PROGRESS_FOR_DAYS).find()
                 .add(SearchRestrictions.eq(CORRECTED, !hasCorrections)).list().getEntities();
-        plannedPrograssForDay.addAll(progressForDays);
-        return plannedPrograssForDay;
-    }
-
-    private List<Entity> addCorrectedToPlannedProgressForDay(final Entity toc, final List<Entity> progressForDays) {
-        Entity techOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(toc.getId());
-        List<Entity> plannedPrograssForDay = techOperComp.getHasManyField(PROGRESS_FOR_DAYS).find().list().getEntities();
         plannedPrograssForDay.addAll(progressForDays);
         return plannedPrograssForDay;
     }

@@ -193,10 +193,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             Map<Long, Integer> workstations = getWorkstationsMapsForOperationsComponent(copyCostCalculationOrProductionBalance,
                     productionLine);
 
-            OperationTimesContainer operationTimes = new OperationTimesContainer();
-
-            operationTimes = operationWorkTimeService.estimateOperationsWorkTimes(calculationOperationComponents,
-                    productQuantitiesAndOperationRuns.getOperationRuns(), includeTPZ, includeAdditionalTime, workstations, true);
+            OperationTimesContainer operationTimes = operationWorkTimeService.estimateOperationsWorkTimes(
+                    calculationOperationComponents, productQuantitiesAndOperationRuns.getOperationRuns(), includeTPZ,
+                    includeAdditionalTime, workstations, true);
 
             Map<String, BigDecimal> resultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
                     productionCostMargin, quantity, operationTimes);
@@ -307,8 +306,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal cost = BigDecimal.ZERO;
 
         for (EntityTreeNode child : calculationOperationComponent.getChildren()) {
-            cost = cost.add(
-                    estimateCostCalculationForPieceWork(child, productionCostMargin, plannedQuantity, operationRuns),
+            cost = cost.add(estimateCostCalculationForPieceWork(child, productionCostMargin, plannedQuantity, operationRuns),
                     numberService.getMathContext());
         }
 
