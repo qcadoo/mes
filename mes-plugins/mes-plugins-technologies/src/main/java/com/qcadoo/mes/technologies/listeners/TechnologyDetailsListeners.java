@@ -23,17 +23,29 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 
 @Service
 public class TechnologyDetailsListeners {
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ProductStructureTreeService productStructureTreeService;
 
     private static final String OUT_PRODUCTS_REFERENCE = "outProducts";
 
@@ -73,5 +85,18 @@ public class TechnologyDetailsListeners {
             redirectUrl.append(confectionProtocolId);
         }
         view.redirectTo(redirectUrl.toString(), true, false);
+    }
+
+    public void generateProductStructure(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
+        Entity technology = form.getEntity();
+
+        EntityTree generatedTree = productStructureTreeService.generateProductStructureTree(view, technology);
+
+        technology.setField("productStructureTree", generatedTree);
+        productStructureForm.setEntity(technology);
+
     }
 }

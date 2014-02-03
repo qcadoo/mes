@@ -62,6 +62,10 @@
 					</script>
 				</bigButton>
 			</group>
+			<group name="productStructure">
+				<bigButton name="generateProductStructure" icon="generateIcon24.png"
+						action="#{productStructureForm}.fireEvent(generateProductStructure);" state="enabled" />
+			</group>
 		</ribbon>
 
 		<windowTab name="mainTab">
@@ -457,6 +461,31 @@
 						<option type="fullscreen" value="true" />
 					</component>
 				</layoutElement>
+			</component>
+		</windowTab>
+		<windowTab name="productStructure">
+			<component type="form" name="productStructureForm" reference="productStructureForm">
+				<component type="gridLayout" name="gridsLayout" rows="1" columns="1">
+					<layoutElement row="1" column="1">
+						<component type="tree" name="productStructureTree" reference="productStructureTree"
+							field="productStructureTree">
+							<dataType name="productStructureTreeNode">
+								<option type="nodeLabelExpression"
+									value="#product.get('number') + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') + ' - ' + #operation.get('operation').get('name')" />
+								<option type="nodeIcon" value="/technologies/public/css/icons/operationIcon16.png" />
+								<option type="newIcon" value="/technologies/public/css/icons/newOperationIcon16.png" />
+							
+							</dataType>
+							<option type="hasNewButtons" value="false" />
+							<option type="hasDeleteButton" value="false" />
+							<option type="hasEditButton" value="false" />
+							<option type="hasMoveButton" value="false" />
+						</component>
+					</layoutElement>
+				</component>
+				<listener event="generateProductStructure"
+					class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+						method="generateProductStructure" />
 			</component>
 
 		</windowTab>
