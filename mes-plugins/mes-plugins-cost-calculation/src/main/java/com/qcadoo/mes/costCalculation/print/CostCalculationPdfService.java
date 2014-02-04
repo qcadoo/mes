@@ -680,8 +680,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
             BigDecimal quantity = product.getDecimalField(ProductFieldsCNFP.COST_FOR_NUMBER);
             String unit = product.getStringField(ProductFields.UNIT);
 
-            printCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " " + " / " + quantity + " " + unit, FontUtils
-                    .getDejavuRegular7Dark()));
+            printCostNormsOfMaterialTable.addCell(new Phrase(numberService.format(toDisplay) + " " + " / "
+                    + numberService.format(quantity) + " " + unit, FontUtils.getDejavuRegular7Dark()));
         }
 
         return printCostNormsOfMaterialTable;
