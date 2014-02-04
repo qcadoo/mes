@@ -95,7 +95,6 @@
 		    <model:belongsTo name="techOperCompWorkstation" plugin="productionLines" model="techOperCompWorkstation" />
 		</model:model-field>
 		
-		
 		<model:model-hook model="parameter" plugin="basic">
 		    <model:onCreate class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter"/>
 		</model:model-hook>
@@ -118,7 +117,6 @@
 		<view:view-hook plugin="technologies" view="technologyOperationComponentDetails"
 			type="beforeRender" class="com.qcadoo.mes.productionLines.hooks.TechnologyOperationComponentHooksPL"
 			method="setQuantityOfWorkstationTypes" />	
-			
 	</modules>
 	
 	<features>

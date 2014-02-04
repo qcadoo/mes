@@ -32,6 +32,7 @@ public final class TechnologiesConstants {
     public static final String PLUGIN_IDENTIFIER = "technologies";
 
     // MODEL
+
     public static final String MODEL_OPERATION = "operation";
 
     public static final String MODEL_OPERATION_PRODUCT_IN_COMPONENT = "operationProductInComponent";
@@ -48,13 +49,8 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_TECHNOLOGY_GROUP = "technologyGroup";
 
-    public static final String OPERATION_COMPONENTS = "operationComponents";
-
-    public static final String FIELD_ENTITY_TYPE = "entityType";
-
-    public static final String FIELD_NAME = "name";
-
     // VIEW
+
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";
 
     public static final String VIEW_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "operationProductInComponentDetails";
@@ -70,15 +66,5 @@ public final class TechnologiesConstants {
     public static final String VIEW_TECHNOLOGY_OPERATION_COMPONENT_DETAILS = "technologyOperationComponentDetails";
 
     public static final String VIEW_TECHNOLOGY_REFERENCE_TECHNOLOGY_COMPONENT_DETAILS = "technologyReferenceTechnologyComponentDetails";
-
-    public static final String MODEL_BASIC_PRODUCT = "product";
-
-    public static final String MODEL_BASIC_MACHINE = "machine";
-
-    public static final String REFERENCE_TECHNOLOGY = "referenceTechnology";
-
-    public static final String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
-
-    public static final String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
 
 }
