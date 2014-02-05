@@ -284,7 +284,7 @@ public class OrderReportPdf extends ReportPdfView {
                 addTotalRow(productsTable, locale, columnsName, delivery);
 
                 document.add(productsTable);
-                document.add(Chunk.NEWLINE);
+                // document.add(Chunk.NEWLINE);
             }
         }
     }

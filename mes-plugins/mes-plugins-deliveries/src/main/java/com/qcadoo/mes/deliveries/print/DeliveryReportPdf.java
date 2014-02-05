@@ -154,7 +154,6 @@ public class DeliveryReportPdf extends ReportPdfView {
         dynaminHeaderTable.addCell(thirdColumnHeaderTable);
 
         document.add(dynaminHeaderTable);
-        document.add(Chunk.NEWLINE);
     }
 
     private void setSimpleFormat(final PdfPTable headerTable) {
