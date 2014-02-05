@@ -41,7 +41,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -190,9 +189,6 @@ public class CopyOfTechnologyHooks {
         if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
             technologyPrototypeLookup.setEnabled(true);
         }
-
-        FieldComponent technologyTypeField = (FieldComponent) view.getComponentByReference(TechnologyFields.TECHNOLOGY_TYPE);
-        technologyTypeField.setEnabled(false);
     }
 
     private void setVisibleFileds(final ViewDefinitionState view, final String orderType) {

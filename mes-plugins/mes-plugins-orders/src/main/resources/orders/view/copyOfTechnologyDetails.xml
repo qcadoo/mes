@@ -138,7 +138,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="select" name="technologyType" field="technologyType"
-							reference="technologyType" defaultEnabled="false">
+							reference="technologyType" defaultEnabled="never">
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
