@@ -179,12 +179,12 @@ public class OperationalTaskDetailsHooksOTFO {
 
             if ((technologyOperationComponentLookup.getEntity() == null) && (orderLookup.getEntity() != null)) {
                 technologyOperationComponentLookup.setFieldValue(technologyOperationComponent.getId());
+                technologyOperationComponentLookup.requestComponentUpdateState();
             }
         } else {
             technologyOperationComponentLookup.setFieldValue(null);
+            technologyOperationComponentLookup.requestComponentUpdateState();
         }
-
-        technologyOperationComponentLookup.requestComponentUpdateState();
     }
 
 }

@@ -234,6 +234,8 @@ public class OperationalTaskDetailsListenersOTFO {
 
                     techOperCompOperationalTask.getDataDefinition().save(techOperCompOperationalTask);
                 }
+
+                technologyOperationComponentLookup.requestComponentUpdateState();
             }
         }
     }
