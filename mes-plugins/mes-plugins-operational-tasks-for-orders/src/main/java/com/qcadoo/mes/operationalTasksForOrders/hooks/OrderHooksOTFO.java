@@ -40,7 +40,7 @@ public class OrderHooksOTFO {
     @Autowired
     private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
-    public void changedProductionLine(final DataDefinition orderDD, final Entity order) {
+    public void changedProductionLineInOperationalTasksWhenChanged(final DataDefinition orderDD, final Entity order) {
         Long orderId = order.getId();
 
         if (orderId == null) {

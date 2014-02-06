@@ -30,17 +30,11 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
-import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksForOrdersConstants;
-import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -59,67 +53,38 @@ public class OperationalTaskDetailsListenersOTFO {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
-    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private OperationalTasksForOrdersService operationalTasksForOrdersService;
-
     @Autowired
     private OperationalTaskDetailsHooksOTFO operationalTaskDetailsHooksOTFO;
 
-    public void disabledFieldWhenOrderTypeIsSelected(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        operationalTaskDetailsHooksOTFO.disabledFieldWhenOrderTypeIsSelected(view);
-    }
-
-    public void setProductionLineFromOrderAndClearOperation(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public final void showOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
-        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
-        LookupComponent productionLineLookup = (LookupComponent) view
-                .getComponentByReference(OperationalTaskFields.PRODUCTION_LINE);
-
         Entity order = orderLookup.getEntity();
 
-        technologyOperationComponentLookup.setFieldValue(null);
-        technologyOperationComponentLookup.requestComponentUpdateState();
-
         if (order == null) {
-            productionLineLookup.setFieldValue(null);
-        } else {
-            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-
-            productionLineLookup.setFieldValue(productionLine.getId());
+            return;
         }
 
-        productionLineLookup.requestComponentUpdateState();
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", order.getId());
+
+        String url = "../page/orders/orderDetails.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
-    public void setOperationalNameAndDescription(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void showOperationParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
-        FieldComponent nameField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.NAME);
-        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.DESCRIPTION);
-
+                .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
         Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
 
         if (technologyOperationComponent == null) {
-            descriptionField.setFieldValue(null);
-            nameField.setFieldValue(null);
-        } else {
-            Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-
-            descriptionField.setFieldValue(technologyOperationComponent
-                    .getStringField(TechnologyOperationComponentFields.COMMENT));
-            nameField.setFieldValue(operation.getStringField(OperationFields.NAME));
+            return;
         }
 
-        descriptionField.requestComponentUpdateState();
-        nameField.requestComponentUpdateState();
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", technologyOperationComponent.getId());
+
+        String url = "../page/technologies/technologyOperationComponentDetails.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
     public final void showOperationalTasksWithOrder(final ViewDefinitionState view, final ComponentState state,
@@ -154,90 +119,61 @@ public class OperationalTaskDetailsListenersOTFO {
         view.redirectTo(url, false, true, parameters);
     }
 
-    public final void showOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
-        Entity order = orderLookup.getEntity();
-
-        if (order == null) {
-            return;
-        }
-
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", order.getId());
-
-        String url = "../page/orders/orderDetails.html";
-        view.redirectTo(url, false, true, parameters);
+    public void disableFieldsWhenOrderTypeIsSelected(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        operationalTaskDetailsHooksOTFO.disableFieldsWhenOrderTypeIsSelected(view);
     }
 
-    public final void showOperationParameter(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void setOperationalTaskProductionLineAndClearOperation(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
+                .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
+        LookupComponent productionLineLookup = (LookupComponent) view
+                .getComponentByReference(OperationalTaskFields.PRODUCTION_LINE);
+
+        Entity order = orderLookup.getEntity();
+
+        technologyOperationComponentLookup.setFieldValue(null);
+        technologyOperationComponentLookup.requestComponentUpdateState();
+
+        if (order == null) {
+            productionLineLookup.setFieldValue(null);
+        } else {
+            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+
+            productionLineLookup.setFieldValue(productionLine.getId());
+        }
+
+        productionLineLookup.requestComponentUpdateState();
+    }
+
+    public void setOperationalTaskNameAndDescription(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
+        FieldComponent nameField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.NAME);
+        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.DESCRIPTION);
+
         Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
 
         if (technologyOperationComponent == null) {
-            return;
+            nameField.setFieldValue(null);
+            descriptionField.setFieldValue(null);
+        } else {
+            Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+            nameField.setFieldValue(operation.getStringField(OperationFields.NAME));
+            descriptionField.setFieldValue(technologyOperationComponent
+                    .getStringField(TechnologyOperationComponentFields.COMMENT));
         }
 
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", technologyOperationComponent.getId());
-
-        String url = "../page/technologies/technologyOperationComponentDetails.html";
-        view.redirectTo(url, false, true, parameters);
+        nameField.requestComponentUpdateState();
+        descriptionField.requestComponentUpdateState();
     }
 
-    public void disabledButtons(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        operationalTaskDetailsHooksOTFO.disabledButtons(view);
-    }
-
-    public void setTechOperCompOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(L_FORM);
-        FieldComponent typeTaskField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE_TASK);
-        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
-
-        Long operationalTaskId = operationalTaskForm.getEntityId();
-
-        if (operationalTaskId != null) {
-            String typeTask = (String) typeTaskField.getFieldValue();
-
-            if (operationalTasksForOrdersService.isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask)) {
-                Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
-
-                Entity operationalTask = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
-                        OperationalTasksConstants.MODEL_OPERATIONAL_TASK).get(operationalTaskId);
-
-                Entity techOperCompOperationalTasks = operationalTask
-                        .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS);
-
-                DataDefinition techOperCompOperationalTaskDD = dataDefinitionService.get(
-                        OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
-                        OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASKS);
-
-                if (techOperCompOperationalTasks == null) {
-                    Entity techOperCompOperationalTask = techOperCompOperationalTaskDD.create();
-
-                    techOperCompOperationalTask.setField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
-                            technologyOperationComponent);
-
-                    techOperCompOperationalTask = techOperCompOperationalTask.getDataDefinition().save(
-                            techOperCompOperationalTask);
-
-                    operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS,
-                            techOperCompOperationalTask);
-
-                    operationalTask.getDataDefinition().save(operationalTask);
-                } else {
-                    Entity techOperCompOperationalTask = techOperCompOperationalTaskDD.get(techOperCompOperationalTasks.getId());
-
-                    techOperCompOperationalTask.setField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
-                            technologyOperationComponent);
-
-                    techOperCompOperationalTask.getDataDefinition().save(techOperCompOperationalTask);
-                }
-
-                technologyOperationComponentLookup.requestComponentUpdateState();
-            }
-        }
+    public void disableButtons(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        operationalTaskDetailsHooksOTFO.disableButtons(view);
     }
 
 }

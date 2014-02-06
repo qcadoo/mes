@@ -116,7 +116,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFOTest {
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.ACCEPTED);
 
         // when
-        operationDurationDetailsInOrderDetailsHooksOTFO.disabledCreateButton(view);
+        operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
 
         // then
         Mockito.verify(createOperationalTasks).setEnabled(true);
@@ -131,7 +131,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFOTest {
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.IN_PROGRESS);
 
         // when
-        operationDurationDetailsInOrderDetailsHooksOTFO.disabledCreateButton(view);
+        operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
 
         // then
         Mockito.verify(createOperationalTasks).setEnabled(false);
@@ -146,7 +146,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFOTest {
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.ABANDONED);
 
         // when
-        operationDurationDetailsInOrderDetailsHooksOTFO.disabledCreateButton(view);
+        operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
 
         // then
         Mockito.verify(createOperationalTasks).setEnabled(false);
@@ -161,7 +161,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFOTest {
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.DECLINED);
 
         // when
-        operationDurationDetailsInOrderDetailsHooksOTFO.disabledCreateButton(view);
+        operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
 
         // then
         Mockito.verify(createOperationalTasks).setEnabled(false);

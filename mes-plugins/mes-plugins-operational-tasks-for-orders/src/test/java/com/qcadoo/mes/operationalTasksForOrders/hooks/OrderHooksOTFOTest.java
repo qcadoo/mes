@@ -83,7 +83,7 @@ public class OrderHooksOTFOTest {
         given(order.getId()).willReturn(orderId);
 
         // when
-        orderHooksOTFO.changedProductionLine(orderDD, order);
+        orderHooksOTFO.changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
 
         // then
     }
@@ -103,7 +103,7 @@ public class OrderHooksOTFOTest {
         given(productionLine.getId()).willReturn(productionLineId);
 
         // when
-        orderHooksOTFO.changedProductionLine(orderDD, order);
+        orderHooksOTFO.changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
 
         // then
         Mockito.verify(operationalTask, Mockito.never()).setField(OrderFields.PRODUCTION_LINE, null);
@@ -125,7 +125,7 @@ public class OrderHooksOTFOTest {
         given(productionLine.getId()).willReturn(productionLineId);
 
         // when
-        orderHooksOTFO.changedProductionLine(orderDD, order);
+        orderHooksOTFO.changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
 
         // then
         Mockito.verify(operationalTask, Mockito.never()).setField(OrderFields.PRODUCTION_LINE, productionLine);
@@ -154,7 +154,7 @@ public class OrderHooksOTFOTest {
         given(operationalTasksForOrdersService.getOperationalTasksForOrder(order)).willReturn(operationalTasks);
 
         // when
-        orderHooksOTFO.changedProductionLine(orderDD, order);
+        orderHooksOTFO.changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
 
         // then
         Mockito.verify(operationalTask).setField(OrderFields.PRODUCTION_LINE, productionLine);

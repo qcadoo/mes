@@ -76,14 +76,14 @@ public class OperationalTasksListHooksOTFO {
 
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
 
-        List<Entity> tasks = getTasks(operations);
+        List<Entity> tasks = getOperationalTasks(operations);
 
         grid.setEntities(tasks);
         grid.performEvent(view, "refresh");
     }
 
-    private List<Entity> getTasks(final List<Entity> technologyOperationComponents) {
-        List<Entity> tasks = Lists.newArrayList();
+    private List<Entity> getOperationalTasks(final List<Entity> technologyOperationComponents) {
+        List<Entity> operationalTasks = Lists.newArrayList();
 
         for (Entity technologyOperationComponent : technologyOperationComponents) {
             Entity techOperCompOperationalTasks = dataDefinitionService
@@ -100,13 +100,13 @@ public class OperationalTasksListHooksOTFO {
                             techOperCompOperationalTasks)).list().getEntities();
 
             for (Entity taskForTOCOT : tasksForTOCOT) {
-                if (!tasks.contains(taskForTOCOT)) {
-                    tasks.add(taskForTOCOT);
+                if (!operationalTasks.contains(taskForTOCOT)) {
+                    operationalTasks.add(taskForTOCOT);
                 }
             }
         }
 
-        return tasks;
+        return operationalTasks;
     }
 
     private List<Entity> getTechnologyOperationComponents(final List<Entity> operationProductComponents) {

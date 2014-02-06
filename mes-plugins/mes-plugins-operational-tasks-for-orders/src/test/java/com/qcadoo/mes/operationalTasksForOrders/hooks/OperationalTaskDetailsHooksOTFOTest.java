@@ -86,7 +86,7 @@ public class OperationalTaskDetailsHooksOTFOTest {
         given(operationalTasksForOrdersService.isOperationalTaskTypeTaskOtherCase(typeTask)).willReturn(false);
 
         // when
-        operationalTaskDetailsHooksOTFO.disabledFieldWhenOrderTypeIsSelected(view);
+        operationalTaskDetailsHooksOTFO.disableFieldsWhenOrderTypeIsSelected(view);
 
         // then
         Mockito.verify(nameField).setEnabled(false);
@@ -106,7 +106,7 @@ public class OperationalTaskDetailsHooksOTFOTest {
         given(operationalTasksForOrdersService.isOperationalTaskTypeTaskOtherCase(typeTask)).willReturn(true);
 
         // when
-        operationalTaskDetailsHooksOTFO.disabledFieldWhenOrderTypeIsSelected(view);
+        operationalTaskDetailsHooksOTFO.disableFieldsWhenOrderTypeIsSelected(view);
 
         // then
         Mockito.verify(nameField).setEnabled(true);

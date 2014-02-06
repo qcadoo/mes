@@ -31,28 +31,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 
 @Aspect
 @Configurable
 @RunIfEnabled(TechSubcontractingConstants.PLUGIN_IDENTIFIER)
-public class OperationalTaskDetailsListenersOTFOOverrideAspect {
+public class OperationalTaskHooksOTFOOverrideAspect {
 
     @Autowired
-    private OperationalTaskDetailsListenersOTFOOverrideUtil operationalTaskDetailsListenersOTFOOverrideUtil;
+    private OperationalTaskHooksOTFOOverrideUtil operationalTaskHooksOTFOOverrideUtil;
 
-    @Pointcut("execution(public void com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO.setOperationalTaskNameAndDescription(..)) "
-            + "&& args(view, state, args)")
-    public void setOperationalTaskNameAndDescriptionExecution(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    @Pointcut("execution(public void com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskHooksOTFO.onSave(..)) "
+            + "&& args(operationalTaskDD, operationalTask)")
+    public void onSaveExecution(final DataDefinition operationalTaskDD, final Entity operationalTask) {
     }
 
-    @After("setOperationalTaskNameAndDescriptionExecution(view, state, args)")
-    public void afterSetOperationalTaskNameAndDescriptionExecution(final ProceedingJoinPoint pjp, final ViewDefinitionState view,
-            final ComponentState state, final String[] args) throws Throwable {
-        operationalTaskDetailsListenersOTFOOverrideUtil.setOperationalTaskNameDescriptionAndProductionLineForSubcontracted(view);
+    @After("onSaveExecution(operationalTaskDD, operationalTask)")
+    public void afterOnSaveExecution(final ProceedingJoinPoint pjp, final DataDefinition operationalTaskDD,
+            final Entity operationalTask) throws Throwable {
+        operationalTaskHooksOTFOOverrideUtil.onSaveForSubcontracted(operationalTaskDD, operationalTask);
     }
 
 }

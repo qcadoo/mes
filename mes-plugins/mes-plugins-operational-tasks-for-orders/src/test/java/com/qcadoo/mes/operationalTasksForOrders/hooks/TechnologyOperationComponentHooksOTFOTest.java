@@ -97,8 +97,8 @@ public class TechnologyOperationComponentHooksOTFOTest {
         given(technologyOperationComponent.getId()).willReturn(technologyOperationComponentId);
 
         // when
-        technologyOperationComponentHooksOTFO.changedDescriptionOperationTasksWhenCommentEntityChanged(
-                technologyOperationComponentDD, technologyOperationComponent);
+        technologyOperationComponentHooksOTFO.changeDescriptionInOperationalTasksWhenChanged(technologyOperationComponentDD,
+                technologyOperationComponent);
 
         // then
         Mockito.verify(operationalTask, Mockito.never()).setField(OperationalTaskFields.DESCRIPTION, comment);
@@ -120,8 +120,8 @@ public class TechnologyOperationComponentHooksOTFOTest {
                 technologyOperationComponentComment);
 
         // when
-        technologyOperationComponentHooksOTFO.changedDescriptionOperationTasksWhenCommentEntityChanged(
-                technologyOperationComponentDD, technologyOperationComponent);
+        technologyOperationComponentHooksOTFO.changeDescriptionInOperationalTasksWhenChanged(technologyOperationComponentDD,
+                technologyOperationComponent);
 
         // then
         Mockito.verify(operationalTask, Mockito.never()).setField(OperationalTaskFields.DESCRIPTION, comment);
@@ -151,8 +151,8 @@ public class TechnologyOperationComponentHooksOTFOTest {
                 .willReturn(techOperCompOperationalTasks);
 
         // when
-        technologyOperationComponentHooksOTFO.changedDescriptionOperationTasksWhenCommentEntityChanged(
-                technologyOperationComponentDD, technologyOperationComponent);
+        technologyOperationComponentHooksOTFO.changeDescriptionInOperationalTasksWhenChanged(technologyOperationComponentDD,
+                technologyOperationComponent);
         // then
         Mockito.verify(operationalTask).setField(OperationalTaskFields.DESCRIPTION, comment);
         Mockito.verify(operationalTaskDD).save(operationalTask);

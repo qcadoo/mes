@@ -54,17 +54,15 @@ public class OperationalTaskDetailsHooksOTFO {
 
     private static final String L_ORDER = "order";
 
-    private static final String L_TECH_INST_OPER_COMP = "techInstOperComp";
+    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     private static final String L_OPERATIONAL_TASKS = "operationalTasks";
 
     private static final String L_SHOW_ORDER = "showOrder";
 
-    private static final String L_SHOW_OPERATION_PARAMETER = "showOperationParameter";
+    private static final String L_SHOW_OPERATION_PARAMETERS = "showOperationParameters";
 
     private static final String L_SHOW_OPERATIONAL_TASKS_WITH_ORDER = "showOperationalTasksWithOrder";
-
-    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -72,14 +70,15 @@ public class OperationalTaskDetailsHooksOTFO {
     @Autowired
     private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
-    public void disabledFieldWhenOrderTypeIsSelected(final ViewDefinitionState view) {
+    public void disableFieldsWhenOrderTypeIsSelected(final ViewDefinitionState view) {
         FieldComponent typeTaskField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE_TASK);
 
         String typeTask = (String) typeTaskField.getFieldValue();
 
         List<String> referenceBasicFields = Lists.newArrayList(OperationalTaskFields.NAME, OperationalTaskFields.PRODUCTION_LINE,
                 OperationalTaskFields.DESCRIPTION);
-        List<String> extendFields = Lists.newArrayList(OperationalTaskFieldsOTFO.ORDER, L_TECHNOLOGY_OPERATION_COMPONENT);
+        List<String> extendFields = Lists.newArrayList(OperationalTaskFieldsOTFO.ORDER,
+                OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
 
         if (operationalTasksForOrdersService.isOperationalTaskTypeTaskOtherCase(typeTask)) {
             changedStateField(view, referenceBasicFields, true);
@@ -106,30 +105,36 @@ public class OperationalTaskDetailsHooksOTFO {
         }
     }
 
-    public void disabledButtons(final ViewDefinitionState view) {
+    public void disableButtons(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         FieldComponent typeTaskField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE_TASK);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
 
         String typeTask = (String) typeTaskField.getFieldValue();
 
         boolean isOperationalTaskTypeTaskExecutionOperationInOrder = operationalTasksForOrdersService
                 .isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask);
+        boolean isOrderSelected = (orderLookup.getEntity() != null);
+        boolean isTechnologyOperationComponentSelected = (technologyOperationComponentLookup.getEntity() != null);
 
         RibbonGroup order = window.getRibbon().getGroupByName(L_ORDER);
-        RibbonGroup techInstOperComp = window.getRibbon().getGroupByName(L_TECH_INST_OPER_COMP);
+        RibbonGroup technologyOperationComponent = window.getRibbon().getGroupByName(L_TECHNOLOGY_OPERATION_COMPONENT);
         RibbonGroup operationalTasks = window.getRibbon().getGroupByName(L_OPERATIONAL_TASKS);
 
         RibbonActionItem showOrder = order.getItemByName(L_SHOW_ORDER);
-        RibbonActionItem showOperationParameter = techInstOperComp.getItemByName(L_SHOW_OPERATION_PARAMETER);
+        RibbonActionItem showOperationParameters = technologyOperationComponent.getItemByName(L_SHOW_OPERATION_PARAMETERS);
         RibbonActionItem showOperationalTasksWithOrder = operationalTasks.getItemByName(L_SHOW_OPERATIONAL_TASKS_WITH_ORDER);
 
-        showOrder.setEnabled(isOperationalTaskTypeTaskExecutionOperationInOrder);
+        showOrder.setEnabled(isOperationalTaskTypeTaskExecutionOperationInOrder && isOrderSelected);
         showOrder.requestUpdate(true);
 
-        showOperationParameter.setEnabled(isOperationalTaskTypeTaskExecutionOperationInOrder);
-        showOperationParameter.requestUpdate(true);
+        showOperationParameters.setEnabled(isOperationalTaskTypeTaskExecutionOperationInOrder && isOrderSelected
+                && isTechnologyOperationComponentSelected);
+        showOperationParameters.requestUpdate(true);
 
-        showOperationalTasksWithOrder.setEnabled(isOperationalTaskTypeTaskExecutionOperationInOrder);
+        showOperationalTasksWithOrder.setEnabled(isOperationalTaskTypeTaskExecutionOperationInOrder && isOrderSelected);
         showOperationalTasksWithOrder.requestUpdate(true);
     }
 
@@ -157,7 +162,7 @@ public class OperationalTaskDetailsHooksOTFO {
         FieldComponent typeTaskField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE_TASK);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
+                .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
 
         Long operationalTaskId = operationalTaskForm.getEntityId();
 

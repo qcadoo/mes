@@ -39,22 +39,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 public class OperationalTaskDetailsListenersOTFOOverrideAspectTest {
 
     @Test
-    public final void checkSetProductionLineFromOrderPointcutDefinition() throws NoSuchMethodException {
+    public final void checkSetOperationalTaskNameAndDescriptionPointcutDefinition() throws NoSuchMethodException {
         Class<?> clazz = OperationalTaskDetailsListenersOTFO.class;
         assertEquals("com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO",
                 clazz.getCanonicalName());
-        final Method method = clazz.getDeclaredMethod("setProductionLineFromOrderAndClearOperation", ViewDefinitionState.class,
-                ComponentState.class, String[].class);
-        assertNotNull(method);
-        assertTrue(Modifier.isPublic(method.getModifiers()));
-    }
-
-    @Test
-    public final void checkSetOperationalNameAndDescriptionPointcutDefinition() throws NoSuchMethodException {
-        Class<?> clazz = OperationalTaskDetailsListenersOTFO.class;
-        assertEquals("com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO",
-                clazz.getCanonicalName());
-        final Method method = clazz.getDeclaredMethod("setOperationalNameAndDescription", ViewDefinitionState.class,
+        final Method method = clazz.getDeclaredMethod("setOperationalTaskNameAndDescription", ViewDefinitionState.class,
                 ComponentState.class, String[].class);
         assertNotNull(method);
         assertTrue(Modifier.isPublic(method.getModifiers()));

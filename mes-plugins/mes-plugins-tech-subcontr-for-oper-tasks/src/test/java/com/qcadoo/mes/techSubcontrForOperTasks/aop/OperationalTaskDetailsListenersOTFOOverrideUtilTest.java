@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.techSubcontrForOperTasks.aop;
 
-import static com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING;
-import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
-import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
 import static org.mockito.BDDMockito.given;
 
 import org.junit.Before;
@@ -36,8 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -59,7 +55,7 @@ public class OperationalTaskDetailsListenersOTFOOverrideUtilTest {
     private FieldComponent nameField, descriptionField;
 
     @Mock
-    private Entity order, technologyOperationComponent, productionLine, operation;
+    private Entity order, technologyOperationComponent;
 
     @Before
     public void init() {
@@ -75,114 +71,38 @@ public class OperationalTaskDetailsListenersOTFOOverrideUtilTest {
     }
 
     @Test
-    public void shouldClearOperationFieldWhenOrderIsChanged() throws Exception {
-        // when
-        operationalTaskDetailsListenersOTFOOverrideUtil.checkIfOperationIsSubcontracted(view);
-
-        // then
-        Mockito.verify(technologyOperationComponentLookup).setFieldValue(null);
-    }
-
-    @Test
-    public void shouldClearFieldWhenOrderIsNull() throws Exception {
+    public void shouldntOperationalTaskNameDescriptionAndProductionLineForSubcontractedWhenIsSubcontracting() throws Exception {
         // given
-        given(orderLookup.getEntity()).willReturn(null);
-
-        // when
-        operationalTaskDetailsListenersOTFOOverrideUtil.checkIfOperationIsSubcontracted(view);
-
-        // then
-        Mockito.verify(technologyOperationComponentLookup).setFieldValue(null);
-    }
-
-    @Test
-    public void shouldReturnWhenTechInstOperCompIsNull() throws Exception {
-        // given
-        Long productionLineId = 1L;
-
         given(orderLookup.getEntity()).willReturn(order);
-        given(technologyOperationComponentLookup.getEntity()).willReturn(null);
-        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
-        given(productionLine.getId()).willReturn(productionLineId);
-
-        // when
-        operationalTaskDetailsListenersOTFOOverrideUtil.checkIfOperationIsSubcontracted(view);
-
-        // then
-        Mockito.verify(technologyOperationComponentLookup).setFieldValue(null);
-    }
-
-    @Test
-    public void shouldSetNullInProductionLineLookupWhenOperationIsNotSubcontrAndOrderProductionLineIsNull() throws Exception {
-        // given
-        String name = "name";
-
-        given(orderLookup.getEntity()).willReturn(order);
-        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(null);
         given(technologyOperationComponentLookup.getEntity()).willReturn(technologyOperationComponent);
-        given(technologyOperationComponent.getBooleanField(IS_SUBCONTRACTING)).willReturn(true);
-        given(technologyOperationComponent.getBelongsToField(OPERATION)).willReturn(operation);
-        given(operation.getStringField(OperationFields.NAME)).willReturn(name);
+        given(technologyOperationComponent.getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING))
+                .willReturn(true);
 
         // when
-        operationalTaskDetailsListenersOTFOOverrideUtil.checkIfOperationIsSubcontracted(view);
+        operationalTaskDetailsListenersOTFOOverrideUtil.setOperationalTaskNameDescriptionAndProductionLineForSubcontracted(view);
 
         // then
-        Mockito.verify(technologyOperationComponentLookup).setFieldValue(null);
+        Mockito.verify(nameField).setFieldValue(null);
+        Mockito.verify(descriptionField).setFieldValue(null);
         Mockito.verify(productionLineLookup).setFieldValue(null);
     }
 
     @Test
-    public void shouldSetProductionLineInLookupWhenOperationIsNotSubcontr() throws Exception {
+    public void shouldntOperationalTaskNameDescriptionAndProductionLineForSubcontractedWhenTechnologyOperationComponentIsNull()
+            throws Exception {
         // given
-        Long productionLineId = 1L;
-
         given(orderLookup.getEntity()).willReturn(order);
-        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
-        given(technologyOperationComponentLookup.getEntity()).willReturn(technologyOperationComponent);
-        given(technologyOperationComponent.getBooleanField(IS_SUBCONTRACTING)).willReturn(false);
-        given(productionLine.getId()).willReturn(productionLineId);
-
-        // when
-        operationalTaskDetailsListenersOTFOOverrideUtil.checkIfOperationIsSubcontracted(view);
-
-        // then
-        Mockito.verify(technologyOperationComponentLookup).setFieldValue(null);
-        Mockito.verify(productionLineLookup).setFieldValue(productionLineId);
-    }
-
-    @Test
-    public void shouldSetOperationCommentAndName() throws Exception {
-        // given
-        String comment = "Comment";
-        String name = "name";
-
-        given(technologyOperationComponentLookup.getEntity()).willReturn(technologyOperationComponent);
-        given(technologyOperationComponent.getBooleanField(IS_SUBCONTRACTING)).willReturn(true);
-        given(orderLookup.getEntity()).willReturn(order);
-        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(null);
-        given(technologyOperationComponent.getStringField(COMMENT)).willReturn(comment);
-        given(technologyOperationComponent.getBelongsToField(OPERATION)).willReturn(operation);
-        given(operation.getStringField(OperationFields.NAME)).willReturn(name);
-
-        // when
-        operationalTaskDetailsListenersOTFOOverrideUtil.setOperationalNameAndDescriptionForSubcontractedOperation(view);
-
-        // then
-        Mockito.verify(descriptionField).setFieldValue(comment);
-        Mockito.verify(nameField).setFieldValue(name);
-    }
-
-    @Test
-    public void shouldSetNullToFieldWhenTechInstOpCompIsNull() throws Exception {
-        // given
         given(technologyOperationComponentLookup.getEntity()).willReturn(null);
+        given(technologyOperationComponent.getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING)).willReturn(
+                false);
+
         // when
-        operationalTaskDetailsListenersOTFOOverrideUtil.setOperationalNameAndDescriptionForSubcontractedOperation(view);
+        operationalTaskDetailsListenersOTFOOverrideUtil.setOperationalTaskNameDescriptionAndProductionLineForSubcontracted(view);
 
         // then
         Mockito.verify(descriptionField).setFieldValue(null);
         Mockito.verify(nameField).setFieldValue(null);
+        Mockito.verify(productionLineLookup).setFieldValue(null);
     }
 
 }

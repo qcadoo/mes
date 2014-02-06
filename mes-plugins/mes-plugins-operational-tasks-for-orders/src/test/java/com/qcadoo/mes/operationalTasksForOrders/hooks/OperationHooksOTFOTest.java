@@ -85,7 +85,7 @@ public class OperationHooksOTFOTest {
         given(operation.getId()).willReturn(operationId);
 
         // when
-        operationHooksOTFO.changedNameOperationTasksWhenEntityNameChanged(operationDD, operation);
+        operationHooksOTFO.changedNameInOperationalTasksWhenChanged(operationDD, operation);
 
         // then
         Mockito.verify(operationalTask, Mockito.never()).setField(OperationalTaskFields.NAME, name);
@@ -106,7 +106,7 @@ public class OperationHooksOTFOTest {
         given(operationFromDB.getStringField(OperationFields.NAME)).willReturn(operationName);
 
         // when
-        operationHooksOTFO.changedNameOperationTasksWhenEntityNameChanged(operationDD, operation);
+        operationHooksOTFO.changedNameInOperationalTasksWhenChanged(operationDD, operation);
 
         // then
         Mockito.verify(operationalTask, Mockito.never()).setField(OperationalTaskFields.NAME, name);
@@ -133,7 +133,7 @@ public class OperationHooksOTFOTest {
                 technologyOperationComponents);
 
         // when
-        operationHooksOTFO.changedNameOperationTasksWhenEntityNameChanged(operationDD, operation);
+        operationHooksOTFO.changedNameInOperationalTasksWhenChanged(operationDD, operation);
 
         // then
         Mockito.verify(operationalTask).setField(OperationalTaskFields.NAME, name);

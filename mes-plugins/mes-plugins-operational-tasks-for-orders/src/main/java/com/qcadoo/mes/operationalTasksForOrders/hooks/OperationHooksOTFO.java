@@ -40,7 +40,7 @@ public class OperationHooksOTFO {
     @Autowired
     private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
-    public void changedNameOperationTasksWhenEntityNameChanged(final DataDefinition operationDD, final Entity operation) {
+    public void changedNameInOperationalTasksWhenChanged(final DataDefinition operationDD, final Entity operation) {
         Long operationId = operation.getId();
 
         if (operationId == null) {
@@ -53,11 +53,11 @@ public class OperationHooksOTFO {
         String operationName = operationFromDB.getStringField(OperationFields.NAME);
 
         if (!name.equals(operationName)) {
-            changedNameInOperationTasks(operation);
+            changedNameInOperationalTasks(operation);
         }
     }
 
-    private void changedNameInOperationTasks(final Entity operation) {
+    private void changedNameInOperationalTasks(final Entity operation) {
         List<Entity> technologyOperationComponents = operationalTasksForOrdersService
                 .getTechnologyOperationComponentsForOperation(operation);
 

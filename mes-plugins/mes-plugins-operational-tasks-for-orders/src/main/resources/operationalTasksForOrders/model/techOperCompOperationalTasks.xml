@@ -31,7 +31,7 @@
 		<hasMany name="operationalTasks" joinField="techOperCompOperationalTasks"
 			model="operationalTask" cascade="delete" plugin="operationalTasks" />
 		<belongsTo name="technologyOperationComponent" plugin="technologies"
-			model="technologyOperationComponent" lazy="false" required="true" />
+			model="technologyOperationComponent" required="true" />
 	</fields>
 	<hooks>
 	</hooks>

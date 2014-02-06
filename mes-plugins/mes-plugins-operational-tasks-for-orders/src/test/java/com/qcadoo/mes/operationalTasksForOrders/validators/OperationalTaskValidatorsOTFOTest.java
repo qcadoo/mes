@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.operationalTasksForOrders.hooks;
+package com.qcadoo.mes.operationalTasksForOrders.validators;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -38,9 +38,9 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
-public class OperationalTaskHooksOTFOTest {
+public class OperationalTaskValidatorsOTFOTest {
 
-    private OperationalTaskHooksOTFO operationalTaskHooksOTFO;
+    private OperationalTaskValidatorsOTFO operationalTaskValidatorsOTFO;
 
     @Mock
     private DataDefinition operationalTaskDD;
@@ -52,7 +52,7 @@ public class OperationalTaskHooksOTFOTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        operationalTaskHooksOTFO = new OperationalTaskHooksOTFO();
+        operationalTaskValidatorsOTFO = new OperationalTaskValidatorsOTFO();
     }
 
     @Test
@@ -61,7 +61,7 @@ public class OperationalTaskHooksOTFOTest {
         given(operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER)).willReturn(null);
 
         // when
-        boolean result = operationalTaskHooksOTFO.checkIfOrderHasTechnology(operationalTaskDD, operationalTask);
+        boolean result = operationalTaskValidatorsOTFO.validatesWith(operationalTaskDD, operationalTask);
 
         // then
         Assert.assertTrue(result);
@@ -74,7 +74,7 @@ public class OperationalTaskHooksOTFOTest {
         given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(null);
 
         // when
-        boolean result = operationalTaskHooksOTFO.checkIfOrderHasTechnology(operationalTaskDD, operationalTask);
+        boolean result = operationalTaskValidatorsOTFO.validatesWith(operationalTaskDD, operationalTask);
 
         // then
         Assert.assertFalse(result);
@@ -88,7 +88,7 @@ public class OperationalTaskHooksOTFOTest {
         when(operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER)).thenReturn(order);
         when(order.getBelongsToField(OrderFields.TECHNOLOGY)).thenReturn(technology);
         // when
-        boolean result = operationalTaskHooksOTFO.checkIfOrderHasTechnology(operationalTaskDD, operationalTask);
+        boolean result = operationalTaskValidatorsOTFO.validatesWith(operationalTaskDD, operationalTask);
 
         // then
         Assert.assertTrue(result);

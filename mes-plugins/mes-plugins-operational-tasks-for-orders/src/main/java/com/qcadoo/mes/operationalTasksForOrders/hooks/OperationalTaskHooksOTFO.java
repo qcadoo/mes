@@ -23,32 +23,93 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksForOrdersConstants;
+import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class OperationalTaskHooksOTFO {
 
-    public boolean checkIfOrderHasTechnology(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    public void onSave(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+        fillTechOperCompOperationalTasks(operationalTask);
+        fillNameAndDescription(operationalTask);
+        fillProductionLine(operationalTask);
+    }
+
+    public void fillTechOperCompOperationalTasks(final Entity operationalTask) {
+        Entity technologyOperationComponent = operationalTask
+                .getBelongsToField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
+
+        Entity techOperCompOperationalTasks = operationalTask
+                .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS);
+
+        if (technologyOperationComponent == null) {
+            if (techOperCompOperationalTasks != null) {
+                techOperCompOperationalTasks.getDataDefinition().delete(techOperCompOperationalTasks.getId());
+            }
+
+            operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS, null);
+        } else {
+            if (techOperCompOperationalTasks == null) {
+                techOperCompOperationalTasks = getTechOperCompOperationalTasksDD().create();
+            }
+
+            techOperCompOperationalTasks.setField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
+                    technologyOperationComponent);
+
+            techOperCompOperationalTasks = techOperCompOperationalTasks.getDataDefinition().save(techOperCompOperationalTasks);
+
+            operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS, techOperCompOperationalTasks);
+        }
+    }
+
+    private DataDefinition getTechOperCompOperationalTasksDD() {
+        return dataDefinitionService.get(OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
+                OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASKS);
+    }
+
+    private void fillNameAndDescription(final Entity operationalTask) {
+        Entity techOperCompOperationalTasks = operationalTask
+                .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS);
+
+        if (techOperCompOperationalTasks == null) {
+            operationalTask.setField(OperationalTaskFields.NAME, null);
+            operationalTask.setField(OperationalTaskFields.DESCRIPTION, null);
+        } else {
+            Entity technologyOperationComponent = techOperCompOperationalTasks
+                    .getBelongsToField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+            Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+            operationalTask.setField(OperationalTaskFields.NAME, operation.getStringField(OperationFields.NAME));
+            operationalTask.setField(OperationalTaskFields.DESCRIPTION,
+                    technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
+        }
+    }
+
+    private void fillProductionLine(final Entity operationalTask) {
         Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
 
         if (order == null) {
-            return true;
+            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, null);
+        } else {
+            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+
+            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, productionLine);
         }
-
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-
-        if (technology == null) {
-            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFieldsOTFO.ORDER),
-                    "operationalTasks.operationalTask.order.error.technologyIsNull");
-            return false;
-        }
-
-        return true;
     }
 
 }

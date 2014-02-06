@@ -28,5 +28,7 @@
 <aspectj>
 	<aspects>
 		<aspect name="com.qcadoo.mes.techSubcontrForOperTasks.aop.OperationalTaskDetailsListenersOTFOOverrideAspect" />
+		
+		<aspect name="com.qcadoo.mes.techSubcontrForOperTasks.aop.OperationalTaskHooksOTFOOverrideAspect" />
 	</aspects>
 </aspectj>

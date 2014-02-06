@@ -40,7 +40,7 @@ public class TechnologyOperationComponentHooksOTFO {
     @Autowired
     private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
-    public void changedDescriptionOperationTasksWhenCommentEntityChanged(final DataDefinition technologyOperationComponentDD,
+    public void changeDescriptionInOperationalTasksWhenChanged(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
         Long technologyOperationComponentId = technologyOperationComponent.getId();
 
@@ -57,11 +57,11 @@ public class TechnologyOperationComponentHooksOTFO {
                 .getStringField(TechnologyOperationComponentFields.COMMENT);
 
         if (!comment.equals(technologyOperationComponentComment)) {
-            changedDescriptionInOperationTasks(technologyOperationComponent);
+            changedDescriptionInOperationalTasks(technologyOperationComponent);
         }
     }
 
-    private void changedDescriptionInOperationTasks(final Entity technologyOperationComponent) {
+    private void changedDescriptionInOperationalTasks(final Entity technologyOperationComponent) {
         List<Entity> techOperCompOperationalTasks = operationalTasksForOrdersService
                 .getTechOperCompOperationalTasksForTechnologyOperationComponent(technologyOperationComponent);
 

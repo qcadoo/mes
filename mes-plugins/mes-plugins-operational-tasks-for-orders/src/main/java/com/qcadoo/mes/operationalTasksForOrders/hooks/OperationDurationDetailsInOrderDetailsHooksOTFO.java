@@ -49,7 +49,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFO {
 
     private static final String L_GENERATED_END_DATE = "generatedEndDate";
 
-    public void disabledCreateButton(final ViewDefinitionState view) {
+    public void disableCreateButton(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
 
         RibbonGroup operationalTasks = window.getRibbon().getGroupByName(L_OPERATIONAL_TASKS);

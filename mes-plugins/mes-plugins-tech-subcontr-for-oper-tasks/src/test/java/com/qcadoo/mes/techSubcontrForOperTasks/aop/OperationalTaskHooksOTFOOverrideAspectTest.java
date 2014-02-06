@@ -21,20 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.operationalTasksForOrders.constants;
+package com.qcadoo.mes.techSubcontrForOperTasks.aop;
 
-public final class OperationalTaskFieldsOTFO {
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-    private OperationalTaskFieldsOTFO() {
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
+import org.junit.Test;
+
+import com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskHooksOTFO;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+
+public class OperationalTaskHooksOTFOOverrideAspectTest {
+
+    @Test
+    public final void checkOnSavePointcutDefinition() throws NoSuchMethodException {
+        Class<?> clazz = OperationalTaskHooksOTFO.class;
+        assertEquals("com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskHooksOTFO", clazz.getCanonicalName());
+        final Method method = clazz.getDeclaredMethod("onSave", DataDefinition.class, Entity.class);
+        assertNotNull(method);
+        assertTrue(Modifier.isPublic(method.getModifiers()));
     }
-
-    public static final String ORDER = "order";
-
-    public static final String TECHNOLOGY = "technology";
-
-    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
-    public static final String TECH_OPER_COMP_OPERATIONAL_TASKS = "techOperCompOperationalTasks";
 
 }

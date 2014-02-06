@@ -28,36 +28,22 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
 import com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
-public class OperationalTaskDetailsListenersOTFOOverrideUtil {
+public class OperationalTaskHooksOTFOOverrideUtil {
 
-    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    public void onSaveForSubcontracted(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+        Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
 
-    public void setOperationalTaskNameDescriptionAndProductionLineForSubcontracted(final ViewDefinitionState view) {
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
-        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
-        FieldComponent nameField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.NAME);
-        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.DESCRIPTION);
-        LookupComponent productionLineLookup = (LookupComponent) view
-                .getComponentByReference(OperationalTaskFields.PRODUCTION_LINE);
-
-        Entity order = orderLookup.getEntity();
-        Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
+        Entity technologyOperationComponent = operationalTask
+                .getBelongsToField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
 
         if ((order == null) || (technologyOperationComponent == null) || isSubcontracting(technologyOperationComponent)) {
-            nameField.setFieldValue(null);
-            descriptionField.setFieldValue(null);
-            productionLineLookup.setFieldValue(null);
-
-            nameField.requestComponentUpdateState();
-            descriptionField.requestComponentUpdateState();
-            productionLineLookup.requestComponentUpdateState();
+            operationalTask.setField(OperationalTaskFields.NAME, null);
+            operationalTask.setField(OperationalTaskFields.DESCRIPTION, null);
+            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, null);
         }
     }
 
