@@ -165,11 +165,13 @@
 				<layoutElement column="2" row="1" width="2" height="6">
 					<component type="lookup" name="order" reference="orderLookup" field="orders" defaultVisible="false" persistent="false" hasLabel="false">
 						<option type="column" name="name" fields="name" link="true"
-							width="200" />
+							width="100" />
 						<option type="column" name="dateFrom" fields="dateFrom"
 							link="false" width="100" />
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
+                        <option type="column" name="dateTo" fields="dateTo"
+                                link="false" width="100" />
+						<option type="searchable" value="number,name,dateFrom,dateTo" />
+						<option type="orderable" value="number,name,dateFrom,dateTo" />
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
