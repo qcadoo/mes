@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.states.aop;
 
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.plugin.api.RunIfEnabled;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
