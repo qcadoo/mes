@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.techSubcontracting.aop;
 
+import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
+import com.qcadoo.plugin.api.RunIfEnabled;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -32,6 +34,7 @@ import com.qcadoo.mes.technologies.MrpAlgorithmStrategy;
 
 @Aspect
 @Configurable
+@RunIfEnabled(TechSubcontractingConstants.PLUGIN_IDENTIFIER)
 public final class MrpAlgorithmStrategyTSResolverAspect extends MrpAlgorithmStrategyResolverAspect {
 
     @Autowired

@@ -37,8 +37,10 @@ import com.qcadoo.mes.technologies.MrpAlgorithmStrategy;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
+import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
+@RunIfEnabled(TechSubcontractingConstants.PLUGIN_IDENTIFIER)
 public abstract class MrpAlgorithmStrategyResolverAspect {
 
     protected abstract MrpAlgorithmStrategy getAlgorithmService();
