@@ -42,11 +42,17 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.TreeComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class TechnologyDetailsViewHooks {
 
     private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
+
+    private static final String L_TREE_TAB = "treeTab";
 
     private static final String OUT_PRODUCTS_REFERENCE = "outProducts";
 
@@ -117,4 +123,13 @@ public class TechnologyDetailsViewHooks {
         master.requestComponentUpdateState();
     }
 
+    // TODO hotfix for issue-1901 with restoring previous active tab state after back operation, requires fixes in framework
+    public void navigateToActiveTab(final ViewDefinitionState view) {
+        TreeComponent technologyTree = (TreeComponent) view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE);
+        Long selectedEntity = technologyTree.getSelectedEntityId();
+
+        if (selectedEntity != null) {
+            ((WindowComponent) view.getComponentByReference(L_WINDOW)).setActiveTab(L_TREE_TAB);
+        }
+    }
 }
