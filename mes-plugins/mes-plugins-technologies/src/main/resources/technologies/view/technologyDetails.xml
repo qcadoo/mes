@@ -64,7 +64,7 @@
 			</group>
 			<group name="productStructure">
 				<bigButton name="generateProductStructure" icon="generateIcon24.png"
-						action="#{productStructureForm}.fireEvent(generateProductStructure);" state="enabled" />
+						action="#{productStructureForm}.fireEvent(generateProductStructure);" state="disabled" />
 			</group>
 		</ribbon>
 
@@ -181,6 +181,8 @@
 							var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 							var checkState = #{window}.getRibbonItem("status.checkTechnology");
 
+							var generateProductStructure = #{window}.getRibbonItem("productStructure.generateProductStructure");
+
 							acceptState.forState="02accepted";
 							acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 
@@ -196,11 +198,13 @@
 								acceptState.enable();
 								cancelState.enable();
 								checkState.enable();
+								generateProductStructure.disable();
 								toggleEditable(true, "");
 							} else if (state == "02accepted") {
 								acceptState.disable();
 								checkState.disable();
 								cancelState.enable();
+								generateProductStructure.enable();
 								cancelState.forState="04outdated";
 								cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
 								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
@@ -209,10 +213,12 @@
 								acceptState.disable();
 								checkState.disable();
 								cancelState.disable();
+								generateProductStructure.disable();
 								toggleEditable(false);
 							} else if ( state == "05checked"){
 								cancelState.enable();
 								checkState.enable();
+								generateProductStructure.enable();
 								checkState.forState="01draft"
 								checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
 								checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
@@ -224,7 +230,9 @@
 								acceptState.disable();
 								cancelState.disable();
 								checkState.disable();
-							}
+
+								generateProductStructure.enable();
+							}					
 						}
 
 					]]>
@@ -471,7 +479,11 @@
 							field="productStructureTree">
 							<dataType name="productStructureTreeNode">
 								<option type="nodeLabelExpression"
-									value="#product.get('number') + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') + ' - ' + #operation.get('operation').get('name')" />
+										value="#parent != null ? 
+											(#operation.get('operation').get('id') ==  #parent['operation'].get('operation').id ? 
+												'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') 
+												: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + #operation.get('operation').get('name') + '&lt;/b&gt;' ) 
+											: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + #operation.get('operation').get('name') + '&lt;/b&gt;' " /> 
 								<option type="nodeIcon" value="/technologies/public/css/icons/operationIcon16.png" />
 								<option type="newIcon" value="/technologies/public/css/icons/newOperationIcon16.png" />
 							

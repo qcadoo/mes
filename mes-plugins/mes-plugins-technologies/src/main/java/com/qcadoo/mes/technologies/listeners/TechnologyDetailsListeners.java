@@ -37,6 +37,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.TreeComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class TechnologyDetailsListeners {
@@ -92,11 +93,12 @@ public class TechnologyDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
         Entity technology = form.getEntity();
-
+        Entity productTechnology = technology.copy();
         EntityTree generatedTree = productStructureTreeService.generateProductStructureTree(view, technology);
 
-        technology.setField("productStructureTree", generatedTree);
-        productStructureForm.setEntity(technology);
-
+        productTechnology.setField("productStructureTree", generatedTree);
+        productStructureForm.setEntity(productTechnology);
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        window.setActiveTab("productStructure");
     }
 }
