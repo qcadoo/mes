@@ -23,16 +23,26 @@
  */
 package com.qcadoo.mes.productionScheduling.constants;
 
-public final class ProductionSchedulingConstants {
+public final class OrderFieldsPS {
 
-    private ProductionSchedulingConstants() {
+    private OrderFieldsPS() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "productionScheduling";
+    public static final String REALIZATION_TIME = "realizationTime";
 
-    public static final String VIEW_RIBBON_ACTION_ITEM_GROUP = "orderGantt";
+    public static final String CALCULATE = "calculate";
 
-    public static final String VIEW_RIBBON_ACTION_ITEM_NAME = "operationsGantt";
+    public static final String INCLUDE_TPZ = "includeTpz";
+
+    public static final String INCLUDE_ADDITIONAL_TIME = "includeAdditionalTime";
+
+    public static final String MACHINE_WORK_TIME = "machineWorkTime";
+
+    public static final String LABOR_WORK_TIME = "laborWorkTime";
+
+    public static final String OPERATION_DURATION_QUANTITY_UNIT = "operationDurationQuantityUNIT";
+
+    public static final String GENERATED_END_DATE = "generatedEndDate";
 
 }

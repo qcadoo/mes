@@ -30,12 +30,14 @@
 	modelName="order">
 
 	<component type="window" name="window" reference="window">
+	
 		<ribbon>
 			<group name="timeOfTechnology">
 				<bigButton name="countTimeOfTechnology" icon="generateIcon24.png"
-					action="#{window}.fireEvent(changeRealizationTime);" state="enabled" />
+					action="#{form}.fireEvent(changeRealizationTime);" state="enabled" />
 			</group>
 		</ribbon>
+		
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="8">
@@ -50,9 +52,14 @@
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
+						
 						<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers" method="showPatternTechnology" />
+						
 						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
+							class="com.qcadoo.mes.productionScheduling.listeners.OrderTimePredictionListeners"
+							method="clearValueOnTechnologyChange" />
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.productionScheduling.listeners.OrderTimePredictionListeners"
 							method="fillUnitField" />
 					</component>
 				</layoutElement>
@@ -145,25 +152,25 @@
 						<layoutElement column="1" row="1">
 							<component type="grid" name="technologyOperationComponents"
                                     source="#{technology}.operationComponents">
-								<option type="column" name="nodeNumber" fields="nodeNumber" 
-								     />
+								<option type="column" name="nodeNumber" fields="nodeNumber" />
 								<option type="column" name="number" fields="operation"
 									expression="#operation['number']"  />
 								<option type="column" name="name" fields="operation"
 									expression="#operation['name']"  />
-							
 								<option type="column" name="dateFrom" fields="operation" 
-									expression="#techOperCompTimeCalculations['effectiveDateFrom']" />     
+									expression="#techOperCompTimeCalculation['effectiveDateFrom']" />     
                                 <option type="column" name="dateTo" fields="operation" 
-									expression="#techOperCompTimeCalculations['effectiveDateTo']" /> 
-
+									expression="#techOperCompTimeCalculation['effectiveDateTo']" /> 
  								<option type="column" name="laborWorkTime"
-									fields="laborWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculations['laborWorkTime'])"/>
+									fields="laborWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculation['laborWorkTime'])"/>
  								<option type="column" name="machineWorkTime"
-									fields="machineWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculations['machineWorkTime'])"/>
+									fields="machineWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculation['machineWorkTime'])"/>
+								
 								<option type="order" column="number" direction="asc" />
+								
 								<option type="searchable" value="number, name" />
 								<option type="orderable" value="number, name,dateFrom,dateTo" />
+								
 								<option type="fullscreen" value="true" />
 								<option type="multiselect" value="true" />
 							</component>
@@ -171,9 +178,16 @@
 					</component>
 				</layoutElement>
 			</component>
+			
 			<option type="header" value="true" />
 			<option type="expression" value="" />
+			
+			<listener event="changeRealizationTime"
+				class="com.qcadoo.mes.productionScheduling.listeners.OrderTimePredictionListeners"
+				method="changeRealizationTime" />
 		</component>
+		
 		<option type="header" value="true" />
 	</component>
+	
 </view>
