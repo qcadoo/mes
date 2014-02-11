@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.RELATED_DELIVERY;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.ORDERED_QUANTITY;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.RECEIVED;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +39,7 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
+import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -64,10 +55,6 @@ public class DeliveryDetailsListeners {
     private static final String L_FORM = "form";
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
-
-    private static final String L_ORDERED_PRODUCTS = "orderedProducts";
-
-    private static final String L_DELIVERED_PRODUCTS = "deliveredProducts";
 
     private static final String L_PRODUCT = "product";
 
@@ -182,7 +169,8 @@ public class DeliveryDetailsListeners {
 
         Entity delivery = deliveriesService.getDelivery(deliveryId);
 
-        if (RECEIVED.equals(delivery.getStringField(STATE))) {
+        if (DeliveryStateStringValues.RECEIVED.equals(delivery.getStringField(DeliveryFields.STATE))
+                || DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING.equals(delivery.getStringField(DeliveryFields.STATE))) {
             Entity relatedDelivery = createRelatedDelivery(delivery);
 
             if (relatedDelivery == null) {
@@ -213,11 +201,11 @@ public class DeliveryDetailsListeners {
 
             relatedDelivery.setField(DeliveryFields.NUMBER, numberGeneratorService.generateNumber(
                     DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY));
-            relatedDelivery.setField(SUPPLIER, delivery.getBelongsToField(SUPPLIER));
-            relatedDelivery.setField(DELIVERY_DATE, new Date());
-            relatedDelivery.setField(RELATED_DELIVERY, delivery);
-            relatedDelivery.setField(L_ORDERED_PRODUCTS, orderedProducts);
-            relatedDelivery.setField(EXTERNAL_SYNCHRONIZED, true);
+            relatedDelivery.setField(DeliveryFields.SUPPLIER, delivery.getBelongsToField(DeliveryFields.SUPPLIER));
+            relatedDelivery.setField(DeliveryFields.DELIVERY_DATE, new Date());
+            relatedDelivery.setField(DeliveryFields.RELATED_DELIVERY, delivery);
+            relatedDelivery.setField(DeliveryFields.ORDERED_PRODUCTS, orderedProducts);
+            relatedDelivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
 
             relatedDelivery = relatedDelivery.getDataDefinition().save(relatedDelivery);
         }
@@ -228,14 +216,14 @@ public class DeliveryDetailsListeners {
     private List<Entity> createOrderedProducts(final Entity delivery) {
         List<Entity> newOrderedProducts = Lists.newArrayList();
 
-        List<Entity> orderedProducts = delivery.getHasManyField(L_ORDERED_PRODUCTS);
-        List<Entity> deliveredProducts = delivery.getHasManyField(L_DELIVERED_PRODUCTS);
+        List<Entity> orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
+        List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 
         for (Entity orderedProduct : orderedProducts) {
             Entity deliveredProduct = getDeliveredProduct(deliveredProducts, orderedProduct);
 
             if (deliveredProduct == null) {
-                BigDecimal orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
+                BigDecimal orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
 
                 newOrderedProducts.add(createOrderedProduct(orderedProduct, orderedQuantity));
             } else {
@@ -269,7 +257,7 @@ public class DeliveryDetailsListeners {
         Entity newOrderedProduct = deliveriesService.getOrderedProductDD().create();
 
         newOrderedProduct.setField(OrderedProductFields.PRODUCT, orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
-        newOrderedProduct.setField(ORDERED_QUANTITY, numberService.setScale(orderedQuantity));
+        newOrderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, numberService.setScale(orderedQuantity));
         newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
                 orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));
         newOrderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
@@ -278,9 +266,9 @@ public class DeliveryDetailsListeners {
     }
 
     private BigDecimal getLackQuantity(final Entity orderedProduct, final Entity deliveredProduct) {
-        BigDecimal orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
-        BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DELIVERED_QUANTITY);
-        BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DAMAGED_QUANTITY);
+        BigDecimal orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+        BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
+        BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY);
 
         if (damagedQuantity == null) {
             return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext());
@@ -308,8 +296,8 @@ public class DeliveryDetailsListeners {
     }
 
     public final void showProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent orderedProductGrid = (GridComponent) view.getComponentByReference(L_ORDERED_PRODUCTS);
-        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(L_DELIVERED_PRODUCTS);
+        GridComponent orderedProductGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
 
         List<Entity> selectedEntities = orderedProductGrid.getSelectedEntities();
         if (selectedEntities.isEmpty()) {
