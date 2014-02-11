@@ -80,7 +80,7 @@
 							width="100" />
 						<option type="column" name="workstationType" fields="workstationType" 
 							expression="#workstationType['name']" link="true" 
-							width="50" />
+							width="100" />
 
 						<option type="searchable" value="number,name,workstationType" />
 						<option type="orderable" value="number,name,workstationType" />
