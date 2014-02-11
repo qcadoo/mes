@@ -81,10 +81,10 @@ ALTER TABLE productioncounting_productionbalance RENAME COLUMN recordsnumber TO 
 -- end
 
 
--- Table: timenormsforoperations_techopercomptimecalculations
--- changed: 22.06.2013
+-- Table: timenormsforoperations_techopercomptimecalculation
+-- changed: 06.02.2014
 
-CREATE TABLE timenormsforoperations_techopercomptimecalculations
+CREATE TABLE timenormsforoperations_techopercomptimecalculation
 (
   id bigint NOT NULL,
   operationoffset integer,
@@ -94,7 +94,7 @@ CREATE TABLE timenormsforoperations_techopercomptimecalculations
   duration integer DEFAULT 0,
   machineworktime integer DEFAULT 0,
   laborworktime integer DEFAULT 0,
-  CONSTRAINT timenormsforoperations_techopercomptimecalculations_pkey PRIMARY KEY (id)
+  CONSTRAINT timenormsforoperations_techopercomptimecalculation_pkey PRIMARY KEY (id)
 );
 
 -- end
@@ -137,23 +137,23 @@ ALTER TABLE productioncounting_productionrecordstatechange RENAME COLUMN product
 -- end
 
 
--- Table: operationaltasksfororders_techopercompoperationaltasks
--- changed: 22.06.2013
+-- Table: operationaltasksfororders_techopercompoperationaltask
+-- changed: 06.02.2014
 
-CREATE TABLE operationaltasksfororders_techopercompoperationaltasks
+CREATE TABLE operationaltasksfororders_techopercompoperationaltask
 (
   id bigint NOT NULL,
   technologyoperationcomponent_id bigint,
-  CONSTRAINT operationaltasksfororders_techopercompoperationaltasks_pkey PRIMARY KEY (id),
-  CONSTRAINT techopercompoperationaltasks_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
+  CONSTRAINT operationaltasksfororders_techopercompoperationaltask_pkey PRIMARY KEY (id),
+  CONSTRAINT techopercompoperationaltask_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
       REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE
 );
 
-ALTER TABLE operationaltasks_operationaltask ADD COLUMN techopercompoperationaltasks_id bigint;      
+ALTER TABLE operationaltasks_operationaltask ADD COLUMN techopercompoperationaltask_id bigint;      
 
 ALTER TABLE operationaltasks_operationaltask
-  ADD CONSTRAINT operationaltask_techopercompoperationaltasks_fkey FOREIGN KEY (techopercompoperationaltasks_id)
-      REFERENCES operationaltasksfororders_techopercompoperationaltasks (id) DEFERRABLE;
+  ADD CONSTRAINT operationaltask_techopercompoperationaltask_fkey FOREIGN KEY (techopercompoperationaltask_id)
+      REFERENCES operationaltasksfororders_techopercompoperationaltask (id) DEFERRABLE;
 
 -- end
 
@@ -167,13 +167,13 @@ ALTER TABLE productioncounting_productioncounting RENAME TO productioncounting_p
 
 
 -- Table: technologies_technologyoperationcomponent
--- changed: 22.06.2013
+-- changed: 06.02.2014
 
-ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN techopercomptimecalculations_id bigint;      
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN techopercomptimecalculation_id bigint;      
 
 ALTER TABLE technologies_technologyoperationcomponent
-  ADD CONSTRAINT technologyoperationcomponent_techopercomptimecalculations_fkey FOREIGN KEY (techopercomptimecalculations_id)
-      REFERENCES timenormsforoperations_techopercomptimecalculations (id) DEFERRABLE;
+  ADD CONSTRAINT technologyoperationcomponent_techopercomptimecalculation_fkey FOREIGN KEY (techopercomptimecalculation_id)
+      REFERENCES timenormsforoperations_techopercomptimecalculation (id) DEFERRABLE;
 
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN techopercompworkstation_id bigint;      
 
