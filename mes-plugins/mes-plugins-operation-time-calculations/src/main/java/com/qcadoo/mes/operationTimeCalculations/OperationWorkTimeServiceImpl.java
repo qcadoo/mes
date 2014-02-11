@@ -36,6 +36,8 @@ import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompTimeCalculationsFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -206,22 +208,23 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     private void savedWorkTime(final Entity entity, final Integer machineWorkTime, final Integer laborWorkTime,
             final Integer duration) {
-
         String entityType = entity.getDataDefinition().getName();
+
         if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(entityType)) {
+            DataDefinition techOperCompTimeCalculationDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
+                    TimeNormsConstants.MODEL_TECH_OPER_COMP_TIME_CALCULATION);
+            Entity techOperCompTimeCalculation = entity
+                    .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
 
-            DataDefinition techOperCompTimeCalculationsDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
-                    TimeNormsConstants.MODEL_TECH_OPER_COMP_TIME_CALCULATIONS);
-            Entity techOperCompTimeCalculations = entity.getBelongsToField("techOperCompTimeCalculations");
-
-            techOperCompTimeCalculations.setField("machineWorkTime", machineWorkTime);
-            techOperCompTimeCalculations.setField("laborWorkTime", laborWorkTime);
-            techOperCompTimeCalculations.setField("duration", duration);
-            techOperCompTimeCalculationsDD.save(techOperCompTimeCalculations);
+            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.MACHINE_WORK_TIME, machineWorkTime);
+            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.LABOR_WORK_TIME, laborWorkTime);
+            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.DURATION, duration);
+            techOperCompTimeCalculationDD.save(techOperCompTimeCalculation);
         } else {
             entity.setField("machineWorkTime", machineWorkTime);
             entity.setField("laborWorkTime", laborWorkTime);
             entity.setField("duration", duration);
+
             entity.getDataDefinition().save(entity);
         }
     }

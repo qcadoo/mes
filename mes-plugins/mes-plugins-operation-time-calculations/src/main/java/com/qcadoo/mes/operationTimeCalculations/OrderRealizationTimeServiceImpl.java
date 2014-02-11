@@ -51,6 +51,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
@@ -213,10 +214,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
             if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition()
                     .getName())) {
-                Entity techOperCompTimeCalculations = operationComponent.getBelongsToField("techOperCompTimeCalculations");
-                techOperCompTimeCalculations.setField("operationOffSet", offset);
-                techOperCompTimeCalculations.setField("effectiveOperationRealizationTime", operationTime);
-                techOperCompTimeCalculations.getDataDefinition().save(techOperCompTimeCalculations);
+                Entity techOperCompTimeCalculation = operationComponent
+                        .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
+                techOperCompTimeCalculation.setField("operationOffSet", offset);
+                techOperCompTimeCalculation.setField("effectiveOperationRealizationTime", operationTime);
+                techOperCompTimeCalculation.getDataDefinition().save(techOperCompTimeCalculation);
             }
 
             return offset + operationTime;

@@ -24,11 +24,10 @@
     ***************************************************************************
 
 -->
-<model name="techOperCompTimeCalculations" 
+<model name="techOperCompTimeCalculation" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-	
 		<integer name="operationOffSet" />
 		<integer name="effectiveOperationRealizationTime" />
 		<datetime name="effectiveDateFrom" />
@@ -36,7 +35,6 @@
 		<integer name="duration" default="0" />
 		<integer name="machineWorkTime" default="0" />
 		<integer name="laborWorkTime" default="0" />
-
 	</fields>
 	<hooks />
 </model>

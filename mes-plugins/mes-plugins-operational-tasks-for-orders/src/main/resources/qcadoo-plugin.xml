@@ -71,8 +71,8 @@
 	<modules>
 		<localization:translation path="locales" />
 
-		<model:model model="techOperCompOperationalTasks"
-			resource="model/techOperCompOperationalTasks.xml" />
+		<model:model model="techOperCompOperationalTask"
+			resource="model/techOperCompOperationalTask.xml" />
 
 		<model:model-field model="operationalTask" plugin="operationalTasks">
 			<model:belongsTo name="order" model="order" plugin="orders" />
@@ -82,8 +82,8 @@
 				plugin="technologies" persistent="false" />
 		</model:model-field>
 		<model:model-field model="operationalTask" plugin="operationalTasks">
-			<model:belongsTo name="techOperCompOperationalTasks"
-				model="techOperCompOperationalTasks" plugin="operationalTasksForOrders" />
+			<model:belongsTo name="techOperCompOperationalTask"
+				model="techOperCompOperationalTask" plugin="operationalTasksForOrders" />
 		</model:model-field>
 		<model:model-field model="operationalTask" plugin="operationalTasks">
 			<model:belongsTo name="technologyOperationComponent" plugin="technologies"
@@ -147,11 +147,11 @@
 			<view:column name="technology" fields="order"
 				expression="#order['technology'].get('number')" orderable="true"
 				searchable="true" />
-			<view:column name="techOperCompNodeNumber" fields="techOperCompOperationalTasks"
-				expression="#techOperCompOperationalTasks?.get('technologyOperationComponent')?.get('nodeNumber')"
+			<view:column name="techOperCompNodeNumber" fields="techOperCompOperationalTask"
+				expression="#techOperCompOperationalTask?.get('technologyOperationComponent')?.get('nodeNumber')"
 				orderable="true" searchable="true" />
-			<view:column name="techOperCompNumber" fields="techOperCompOperationalTasks"
-				expression="#techOperCompOperationalTasks?.get('technologyOperationComponent')?.get('operation')?.getStringField('number')"
+			<view:column name="techOperCompNumber" fields="techOperCompOperationalTask"
+				expression="#techOperCompOperationalTask?.get('technologyOperationComponent')?.get('operation')?.getStringField('number')"
 				orderable="true" searchable="true" />
 		</view:view-grid-column>
 

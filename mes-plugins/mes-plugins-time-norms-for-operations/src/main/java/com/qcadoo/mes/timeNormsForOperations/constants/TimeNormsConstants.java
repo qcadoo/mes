@@ -36,7 +36,7 @@ public final class TimeNormsConstants {
     public static final String PLUGIN_IDENTIFIER = "timeNormsForOperations";
 
     // MODEL
-    public static final String MODEL_TECH_OPER_COMP_TIME_CALCULATIONS = "techOperCompTimeCalculations";
+    public static final String MODEL_TECH_OPER_COMP_TIME_CALCULATION = "techOperCompTimeCalculation";
 
     public static final Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle",
             "nextOperationAfterProducedType", "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT",

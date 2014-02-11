@@ -31,6 +31,6 @@ public final class OperationalTasksForOrdersConstants {
 
     public static final String PLUGIN_IDENTIFIER = "operationalTasksForOrders";
 
-    public static final String MODEL_TECH_OPER_COMP_OPERATIONAL_TASKS = "techOperCompOperationalTasks";
+    public static final String MODEL_TECH_OPER_COMP_OPERATIONAL_TASK = "techOperCompOperationalTask";
 
 }

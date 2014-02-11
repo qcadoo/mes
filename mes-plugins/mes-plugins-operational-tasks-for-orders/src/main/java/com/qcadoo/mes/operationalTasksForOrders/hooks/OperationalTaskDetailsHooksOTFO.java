@@ -176,10 +176,10 @@ public class OperationalTaskDetailsHooksOTFO {
             Entity operationalTask = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                     OperationalTasksConstants.MODEL_OPERATIONAL_TASK).get(operationalTaskId);
 
-            Entity techOperCompOperationalTasks = operationalTask
-                    .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS);
+            Entity techOperCompOperationalTask = operationalTask
+                    .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
 
-            Entity technologyOperationComponent = techOperCompOperationalTasks
+            Entity technologyOperationComponent = techOperCompOperationalTask
                     .getBelongsToField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT);
 
             if ((technologyOperationComponentLookup.getEntity() == null) && (orderLookup.getEntity() != null)) {

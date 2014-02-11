@@ -52,12 +52,12 @@ public interface OperationalTasksForOrdersService {
     /**
      * Gets operational tasks for tech oper comp operational tasks
      * 
-     * @param techOperCompOperationalTasks
-     *            tech oper comp operational tasks
+     * @param techOperCompOperationalTask
+     *            tech oper comp operational task
      * 
      * @return operationalTasks
      */
-    List<Entity> getOperationalTasksForTechOperCompOperationalTasks(final Entity techOperCompOperationalTasks);
+    List<Entity> getOperationalTasksForTechOperCompOperationalTasks(final Entity techOperCompOperationalTas);
 
     /**
      * Gets operational tasks for order

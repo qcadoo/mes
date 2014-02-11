@@ -28,6 +28,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
+		<hasMany name="technologyOperationComponents" joinField="techOperCompWorkstation"
+			model="technologyOperationComponent" cascade="nullify" plugin="technologies" />
 		<integer name="quantityOfWorkstationTypes" default="1">
 			<validatesRange from="0" exclusively="true" />
 		</integer>

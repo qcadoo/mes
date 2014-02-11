@@ -64,8 +64,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 	<modules>
 		<localization:translation path="locales" />
 
-		<model:model model="techOperCompTimeCalculations"
-			resource="model/techOperCompTimeCalculations.xml" />
+		<model:model model="techOperCompTimeCalculation"
+			resource="model/techOperCompTimeCalculation.xml" />
 
 		<model:model-field plugin="technologies" model="operation">
 			<model:integer name="tpz" required="true" default="0" />
@@ -197,8 +197,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:belongsTo name="techOperCompTimeCalculations"
-				plugin="timeNormsForOperations" model="techOperCompTimeCalculations"
+			<model:belongsTo name="techOperCompTimeCalculation"
+				plugin="timeNormsForOperations" model="techOperCompTimeCalculation"
 				copyable="false" />
 		</model:model-field>
 

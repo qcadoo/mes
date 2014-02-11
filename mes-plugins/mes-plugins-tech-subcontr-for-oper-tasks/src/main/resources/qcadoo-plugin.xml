@@ -70,8 +70,8 @@
 
 		<view:view-grid-column plugin="operationalTasks"
 			view="operationalTasksList" component="grid">
-			<view:column name="techOperCompIsSubcontracting" fields="techOperCompOperationalTasks"
-				expression="(#techOperCompOperationalTasks?.get('technologyOperationComponent')?.get('isSubcontracting') == true) ? '@qcadooView.true' : '@qcadooView.false'" />
+			<view:column name="techOperCompIsSubcontracting" fields="techOperCompOperationalTask"
+				expression="(#techOperCompOperationalTask?.get('technologyOperationComponent')?.get('isSubcontracting') == true) ? '@qcadooView.true' : '@qcadooView.false'" />
 		</view:view-grid-column>
 	</modules>
 	

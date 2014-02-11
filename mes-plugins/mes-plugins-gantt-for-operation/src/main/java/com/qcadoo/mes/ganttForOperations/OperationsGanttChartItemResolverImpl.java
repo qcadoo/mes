@@ -42,6 +42,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionScheduling.OrderTimePredictionService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -118,9 +119,12 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
 
             for (Entity operationFromTree : sortedOperationFromTree) {
                 Entity operation = operations.get(operations.indexOf(operationFromTree));
-                Date dateFrom = operation.getBelongsToField("techOperCompTimeCalculations").getDateField(
+                Date dateFrom = operation.getBelongsToField(
+                        TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION).getDateField(
                         EFFECTIVE_DATE_FROM_FIELD);
-                Date dateTo = operation.getBelongsToField("techOperCompTimeCalculations").getDateField(EFFECTIVE_DATE_TO_FIELD);
+                Date dateTo = operation
+                        .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION).getDateField(
+                                EFFECTIVE_DATE_TO_FIELD);
 
                 if (dateFrom == null || dateTo == null || dateTo.before(scale.getDateFrom())) {
                     continue;

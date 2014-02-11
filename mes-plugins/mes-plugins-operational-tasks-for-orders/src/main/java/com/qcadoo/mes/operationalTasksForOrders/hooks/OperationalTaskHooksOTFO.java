@@ -53,43 +53,43 @@ public class OperationalTaskHooksOTFO {
         Entity technologyOperationComponent = operationalTask
                 .getBelongsToField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
 
-        Entity techOperCompOperationalTasks = operationalTask
-                .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS);
+        Entity techOperCompOperationalTask = operationalTask
+                .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
 
         if (technologyOperationComponent == null) {
-            if (techOperCompOperationalTasks != null) {
-                techOperCompOperationalTasks.getDataDefinition().delete(techOperCompOperationalTasks.getId());
+            if (techOperCompOperationalTask != null) {
+                techOperCompOperationalTask.getDataDefinition().delete(techOperCompOperationalTask.getId());
             }
 
-            operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS, null);
+            operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK, null);
         } else {
-            if (techOperCompOperationalTasks == null) {
-                techOperCompOperationalTasks = getTechOperCompOperationalTasksDD().create();
+            if (techOperCompOperationalTask == null) {
+                techOperCompOperationalTask = getTechOperCompOperationalTasksDD().create();
             }
 
-            techOperCompOperationalTasks.setField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
+            techOperCompOperationalTask.setField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
                     technologyOperationComponent);
 
-            techOperCompOperationalTasks = techOperCompOperationalTasks.getDataDefinition().save(techOperCompOperationalTasks);
+            techOperCompOperationalTask = techOperCompOperationalTask.getDataDefinition().save(techOperCompOperationalTask);
 
-            operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS, techOperCompOperationalTasks);
+            operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK, techOperCompOperationalTask);
         }
     }
 
     private DataDefinition getTechOperCompOperationalTasksDD() {
         return dataDefinitionService.get(OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
-                OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASKS);
+                OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASK);
     }
 
     private void fillNameAndDescription(final Entity operationalTask) {
-        Entity techOperCompOperationalTasks = operationalTask
-                .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS);
+        Entity techOperCompOperationalTask = operationalTask
+                .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
 
-        if (techOperCompOperationalTasks == null) {
+        if (techOperCompOperationalTask == null) {
             operationalTask.setField(OperationalTaskFields.NAME, null);
             operationalTask.setField(OperationalTaskFields.DESCRIPTION, null);
         } else {
-            Entity technologyOperationComponent = techOperCompOperationalTasks
+            Entity technologyOperationComponent = techOperCompOperationalTask
                     .getBelongsToField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT);
 
             Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);

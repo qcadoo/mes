@@ -35,6 +35,6 @@ public final class OperationalTaskFieldsOTFO {
 
     public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    public static final String TECH_OPER_COMP_OPERATIONAL_TASKS = "techOperCompOperationalTasks";
+    public static final String TECH_OPER_COMP_OPERATIONAL_TASK = "techOperCompOperationalTask";
 
 }

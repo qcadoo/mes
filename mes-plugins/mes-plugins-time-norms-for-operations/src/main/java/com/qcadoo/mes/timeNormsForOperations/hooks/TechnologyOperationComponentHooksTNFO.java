@@ -61,11 +61,12 @@ public class TechnologyOperationComponentHooksTNFO {
     }
 
     public void createTechOperCompTimeCalculations(final DataDefinition dd, final Entity technologyOperationComponent) {
-        DataDefinition techOperCompTimeCalculationsDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
-                TimeNormsConstants.MODEL_TECH_OPER_COMP_TIME_CALCULATIONS);
-        Entity techOperCompTimeCalculations = techOperCompTimeCalculationsDD.create();
-        techOperCompTimeCalculations = techOperCompTimeCalculationsDD.save(techOperCompTimeCalculations);
-        technologyOperationComponent.setField("techOperCompTimeCalculations", techOperCompTimeCalculations);
+        DataDefinition techOperCompTimeCalculationDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
+                TimeNormsConstants.MODEL_TECH_OPER_COMP_TIME_CALCULATION);
+        Entity techOperCompTimeCalculation = techOperCompTimeCalculationDD.create();
+        techOperCompTimeCalculation = techOperCompTimeCalculationDD.save(techOperCompTimeCalculation);
+        technologyOperationComponent.setField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION,
+                techOperCompTimeCalculation);
         // technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
     }
 

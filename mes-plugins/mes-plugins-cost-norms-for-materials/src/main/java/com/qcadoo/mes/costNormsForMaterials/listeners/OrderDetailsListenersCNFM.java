@@ -48,4 +48,5 @@ public class OrderDetailsListenersCNFM {
         String url = "../page/costNormsForMaterials/costNormsForMaterialsInOrderList.html";
         viewState.redirectTo(url, false, true, parameters);
     }
+
 }

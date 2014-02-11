@@ -86,9 +86,9 @@ public class OperationalTasksListHooksOTFO {
         List<Entity> operationalTasks = Lists.newArrayList();
 
         for (Entity technologyOperationComponent : technologyOperationComponents) {
-            Entity techOperCompOperationalTasks = dataDefinitionService
+            Entity techOperCompOperationalTask = dataDefinitionService
                     .get(OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
-                            OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASKS)
+                            OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASK)
                     .find()
                     .add(SearchRestrictions.belongsTo(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
                             technologyOperationComponent)).setMaxResults(1).uniqueResult();
@@ -96,8 +96,8 @@ public class OperationalTasksListHooksOTFO {
             List<Entity> tasksForTOCOT = dataDefinitionService
                     .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK)
                     .find()
-                    .add(SearchRestrictions.belongsTo(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS,
-                            techOperCompOperationalTasks)).list().getEntities();
+                    .add(SearchRestrictions.belongsTo(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
+                            techOperCompOperationalTask)).list().getEntities();
 
             for (Entity taskForTOCOT : tasksForTOCOT) {
                 if (!operationalTasks.contains(taskForTOCOT)) {

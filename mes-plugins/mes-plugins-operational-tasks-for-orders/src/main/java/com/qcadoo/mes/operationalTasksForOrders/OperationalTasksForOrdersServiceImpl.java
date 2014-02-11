@@ -59,19 +59,19 @@ public class OperationalTasksForOrdersServiceImpl implements OperationalTasksFor
     public List<Entity> getTechOperCompOperationalTasksForTechnologyOperationComponent(final Entity technologyOperationComponent) {
         return dataDefinitionService
                 .get(OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
-                        OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASKS)
+                        OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASK)
                 .find()
                 .add(SearchRestrictions.belongsTo(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
                         technologyOperationComponent)).list().getEntities();
     }
 
     @Override
-    public List<Entity> getOperationalTasksForTechOperCompOperationalTasks(final Entity techOperCompOperationalTasks) {
+    public List<Entity> getOperationalTasksForTechOperCompOperationalTasks(final Entity techOperCompOperationalTask) {
         return dataDefinitionService
                 .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK)
                 .find()
-                .add(SearchRestrictions.belongsTo(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASKS,
-                        techOperCompOperationalTasks)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
+                        techOperCompOperationalTask)).list().getEntities();
     }
 
     @Override
