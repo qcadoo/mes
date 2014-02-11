@@ -480,9 +480,13 @@
 							<dataType name="productStructureTreeNode">
 								<option type="nodeLabelExpression"
 										value="#parent != null ? 
-											(#operation.get('operation').get('id') ==  #parent['operation'].get('operation').id ? 
-												'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') 
-												: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + #operation.get('operation').get('name') + '&lt;/b&gt;' ) 
+											(#operation.get('operation').get('id') !=  #parent['operation'].get('operation').id ? 
+												(#technology.get('id') == #parent['technology'].get('id') ?
+													'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + #operation.get('operation').get('name') + '&lt;/b&gt;'
+													: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;span style=&quot;color: #008A00&quot;&gt;&lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + #operation.get('operation').get('name') + '&lt;/b&gt;&lt;/span&gt;' 
+												)
+												: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') 
+											) 
 											: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + #operation.get('operation').get('name') + '&lt;/b&gt;' " /> 
 								<option type="nodeIcon" value="/technologies/public/css/icons/operationIcon16.png" />
 								<option type="newIcon" value="/technologies/public/css/icons/newOperationIcon16.png" />
