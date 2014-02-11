@@ -25,19 +25,19 @@ package com.qcadoo.mes.productionPerShift.hooks;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS;
+import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class TechInstOpCompHooksPPS {
+public class TechnologyOperationComponentHooksPPS {
 
-    public void onCopy(final DataDefinition dataDefinition, final Entity toc) {
-        clearPPS(toc);
+    public void onCopy(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        clearPPS(technologyOperationComponent);
     }
 
-    private void clearPPS(final Entity toc) {
-        toc.setField(TechInstOperCompFieldsPPS.HAS_CORRECTIONS, null);
+    private void clearPPS(final Entity technologyOperationComponent) {
+        technologyOperationComponent.setField(TechnologyOperationComponentFieldsPPS.HAS_CORRECTIONS, null);
     }
 
 }

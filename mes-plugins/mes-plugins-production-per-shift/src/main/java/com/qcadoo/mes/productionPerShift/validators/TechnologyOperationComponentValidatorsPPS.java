@@ -23,65 +23,77 @@
  */
 package com.qcadoo.mes.productionPerShift.validators;
 
-import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
-import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAY;
-import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.HAS_CORRECTIONS;
-import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.PROGRESS_FOR_DAYS;
-
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
+import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class TechInstOperCompHooksPPS {
+public class TechnologyOperationComponentValidatorsPPS {
 
     public boolean checkGrowingNumberOfDays(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
-        List<Entity> progressForDays = technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS);
+        List<Entity> progressForDays = technologyOperationComponent
+                .getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
+
         if (progressForDays.isEmpty()) {
             return true;
         }
+
         Integer dayNumber = Integer.valueOf(0);
+
         for (Entity progressForDay : progressForDays) {
-            if (progressForDay.getBooleanField(CORRECTED) != technologyOperationComponent.getBooleanField(HAS_CORRECTIONS)
-                    || progressForDay.getField(DAY) == null) {
+            if (progressForDay.getBooleanField(ProgressForDayFields.CORRECTED) != technologyOperationComponent
+                    .getBooleanField(TechnologyOperationComponentFieldsPPS.HAS_CORRECTIONS)
+                    || progressForDay.getField(ProgressForDayFields.DAY) == null) {
                 continue;
             }
-            Object dayObject = progressForDay.getField(DAY);
+
+            Object dayObject = progressForDay.getField(ProgressForDayFields.DAY);
             if (!(dayObject instanceof Long) && !(dayObject instanceof Integer)) {
-                progressForDay.addError(progressForDay.getDataDefinition().getField(DAY),
+                progressForDay.addError(progressForDay.getDataDefinition().getField(ProgressForDayFields.DAY),
                         "productionPerShift.progressForDay.haveToBeInteger");
+
                 return false;
             }
+
             Integer day = Integer.valueOf(0);
             if (dayObject instanceof Integer) {
-                day = progressForDay.getIntegerField(DAY);
+                day = progressForDay.getIntegerField(ProgressForDayFields.DAY);
             } else {
-                day = ((Long) progressForDay.getField(DAY)).intValue();
+                day = ((Long) progressForDay.getField(ProgressForDayFields.DAY)).intValue();
             }
+
             if (day != null && dayNumber.compareTo(day) <= 0) {
                 dayNumber = day;
             } else {
                 technologyOperationComponent.addGlobalError("productionPerShift.progressForDay.daysAreNotInAscendingOrder",
-                        progressForDay.getField(DAY).toString());
+                        progressForDay.getField(ProgressForDayFields.DAY).toString());
+
                 return false;
             }
         }
+
         return true;
     }
 
     public boolean checkShiftsIfWorks(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
-        List<Entity> progressForDays = technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS);
+        List<Entity> progressForDays = technologyOperationComponent
+                .getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
+
         for (Entity progressForDay : progressForDays) {
-            if (progressForDay.getField(DAY) == null) {
+            if (progressForDay.getField(ProgressForDayFields.DAY) == null) {
                 technologyOperationComponent.addGlobalError("productionPerShift.progressForDay.dayIsNull");
+
                 return false;
             }
         }
+
         return true;
     }
 

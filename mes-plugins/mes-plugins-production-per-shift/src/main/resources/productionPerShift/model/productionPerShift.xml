@@ -34,12 +34,12 @@
 		<text name="plannedProgressCorrectionComment" />
 		<!-- Not persistent fields below -->
 
-		<belongsTo persistent="false" name="technologyOperationComponent"
-			model="technologyOperationComponent" plugin="technologies" />
-		<belongsTo persistent="false" name="technology"
-			model="technology" plugin="technologies" />
-		<enum persistent="false" name="plannedProgressType" values="01planned,02corrected"
-			default="01planned" />
+		<enum name="plannedProgressType" values="01planned,02corrected"
+			default="01planned" required="true" persistent="false" />
+		<belongsTo name="technologyOperationComponent" model="technologyOperationComponent"
+			plugin="technologies" persistent="false" />
+		<belongsTo name="technology" model="technology" plugin="technologies"
+			persistent="false" />
 	</fields>
 	<hooks />
 </model>

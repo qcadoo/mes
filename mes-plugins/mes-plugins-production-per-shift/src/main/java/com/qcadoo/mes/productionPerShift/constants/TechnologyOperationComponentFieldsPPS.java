@@ -23,13 +23,14 @@
  */
 package com.qcadoo.mes.productionPerShift.constants;
 
-public final class TechInstOperCompFieldsPPS {
+public final class TechnologyOperationComponentFieldsPPS {
 
-    private TechInstOperCompFieldsPPS() {
+    private TechnologyOperationComponentFieldsPPS() {
 
     }
 
     public static final String PROGRESS_FOR_DAYS = "progressForDays";
 
     public static final String HAS_CORRECTIONS = "hasCorrections";
+
 }

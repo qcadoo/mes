@@ -39,4 +39,6 @@ public final class ProductionPerShiftFields {
 
     public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
+    public static final String TECHNOLOGY = "technology";
+
 }

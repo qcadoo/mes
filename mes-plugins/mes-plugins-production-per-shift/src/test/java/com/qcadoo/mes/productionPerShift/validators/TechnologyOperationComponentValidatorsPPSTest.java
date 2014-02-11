@@ -23,14 +23,8 @@
  */
 package com.qcadoo.mes.productionPerShift.validators;
 
-import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
-import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAY;
-import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.HAS_CORRECTIONS;
-import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.PROGRESS_FOR_DAYS;
-import static java.util.Arrays.asList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -46,13 +40,16 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
+import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 
-public class TechInstOperCompHooksPPSTest {
+public class TechnologyOperationComponentValidatorsPPSTest {
 
-    private TechInstOperCompHooksPPS techInstOperCompHooksPPS;
+    private TechnologyOperationComponentValidatorsPPS technologyOperationComponentValidatorsPPS;
 
     @Mock
     private DataDefinition technologyOperationComponentDD;
@@ -67,7 +64,7 @@ public class TechInstOperCompHooksPPSTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        techInstOperCompHooksPPS = new TechInstOperCompHooksPPS();
+        technologyOperationComponentValidatorsPPS = new TechnologyOperationComponentValidatorsPPS();
     }
 
     public EntityList mockEntityList(final List<Entity> entities) {
@@ -87,11 +84,12 @@ public class TechInstOperCompHooksPPSTest {
     @Test
     public void shouldReturnTrueWhenProgressForDayHMIsEmpty() {
         // given
-        when(technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
-        when(progressForDays.isEmpty()).thenReturn(true);
+        given(technologyOperationComponent.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(
+                progressForDays);
+        given(progressForDays.isEmpty()).willReturn(true);
 
         // when
-        boolean result = techInstOperCompHooksPPS.checkGrowingNumberOfDays(technologyOperationComponentDD,
+        boolean result = technologyOperationComponentValidatorsPPS.checkGrowingNumberOfDays(technologyOperationComponentDD,
                 technologyOperationComponent);
 
         // then
@@ -104,19 +102,19 @@ public class TechInstOperCompHooksPPSTest {
         Long day1 = 11L;
         Long day2 = 10L;
 
-        Entity pfd1 = mock(Entity.class);
-        Entity pfd2 = mock(Entity.class);
-        List<Entity> pfds = asList(pfd1, pfd2);
-        EntityList progressForDays = mockEntityList(pfds);
+        Entity progressForDay1 = mock(Entity.class);
+        Entity progressForDay2 = mock(Entity.class);
+        EntityList progressForDays = mockEntityList(Lists.newArrayList(progressForDay1, progressForDay2));
 
-        when(technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
-        when(progressForDays.get(0)).thenReturn(pfd1);
-        when(progressForDays.get(1)).thenReturn(pfd2);
-        when(pfd1.getField(DAY)).thenReturn(day1);
-        when(pfd2.getField(DAY)).thenReturn(day2);
+        given(technologyOperationComponent.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(
+                progressForDays);
+        given(progressForDays.get(0)).willReturn(progressForDay1);
+        given(progressForDays.get(1)).willReturn(progressForDay2);
+        given(progressForDay1.getField(ProgressForDayFields.DAY)).willReturn(day1);
+        given(progressForDay2.getField(ProgressForDayFields.DAY)).willReturn(day2);
 
         // when
-        boolean result = techInstOperCompHooksPPS.checkGrowingNumberOfDays(technologyOperationComponentDD,
+        boolean result = technologyOperationComponentValidatorsPPS.checkGrowingNumberOfDays(technologyOperationComponentDD,
                 technologyOperationComponent);
 
         // then
@@ -131,19 +129,19 @@ public class TechInstOperCompHooksPPSTest {
         Long day1 = 10L;
         Long day2 = 11L;
 
-        Entity pfd1 = mock(Entity.class);
-        Entity pfd2 = mock(Entity.class);
-        List<Entity> pfds = asList(pfd1, pfd2);
-        EntityList progressForDays = mockEntityList(pfds);
+        Entity progressForDay1 = mock(Entity.class);
+        Entity progressForDay2 = mock(Entity.class);
+        EntityList progressForDays = mockEntityList(Lists.newArrayList(progressForDay1, progressForDay2));
 
-        when(technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
-        when(progressForDays.get(0)).thenReturn(pfd1);
-        when(progressForDays.get(1)).thenReturn(pfd2);
-        when(pfd1.getField(DAY)).thenReturn(day1);
-        when(pfd2.getField(DAY)).thenReturn(day2);
+        given(technologyOperationComponent.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(
+                progressForDays);
+        given(progressForDays.get(0)).willReturn(progressForDay1);
+        given(progressForDays.get(1)).willReturn(progressForDay2);
+        given(progressForDay1.getField(ProgressForDayFields.DAY)).willReturn(day1);
+        given(progressForDay2.getField(ProgressForDayFields.DAY)).willReturn(day2);
 
         // when
-        boolean result = techInstOperCompHooksPPS.checkGrowingNumberOfDays(technologyOperationComponentDD,
+        boolean result = technologyOperationComponentValidatorsPPS.checkGrowingNumberOfDays(technologyOperationComponentDD,
                 technologyOperationComponent);
 
         // then
@@ -154,12 +152,13 @@ public class TechInstOperCompHooksPPSTest {
     public void shouldReturnTrueWhenPFDIsEmpty() {
         // given
         progressForDays = mockEntityList(Collections.<Entity> emptyList());
-        when(technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
-        when(progressForDays.isEmpty()).thenReturn(true);
+        given(technologyOperationComponent.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(
+                progressForDays);
+        given(progressForDays.isEmpty()).willReturn(true);
 
         // when
-        boolean result = techInstOperCompHooksPPS
-                .checkShiftsIfWorks(technologyOperationComponentDD, technologyOperationComponent);
+        boolean result = technologyOperationComponentValidatorsPPS.checkShiftsIfWorks(technologyOperationComponentDD,
+                technologyOperationComponent);
 
         // then
         Assert.assertTrue(result);
@@ -170,19 +169,20 @@ public class TechInstOperCompHooksPPSTest {
         // given
         String day = "1";
 
-        Entity pfd1 = mock(Entity.class);
-        List<Entity> pfds = asList(pfd1);
+        Entity progressForDay = mock(Entity.class);
+        EntityList progressForDays = mockEntityList(Lists.newArrayList(progressForDay));
 
-        EntityList progressForDays = mockEntityList(pfds);
-        when(technologyOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
-        when(progressForDays.get(0)).thenReturn(pfd1);
-        when(pfd1.getField(DAY)).thenReturn(day);
-        when(pfd1.getBooleanField(CORRECTED)).thenReturn(true);
-        when(technologyOperationComponent.getBooleanField(HAS_CORRECTIONS)).thenReturn(false);
+        given(technologyOperationComponent.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(
+                progressForDays);
+        given(progressForDays.get(0)).willReturn(progressForDay);
+        given(progressForDay.getField(ProgressForDayFields.DAY)).willReturn(day);
+        given(progressForDay.getBooleanField(ProgressForDayFields.CORRECTED)).willReturn(true);
+        given(technologyOperationComponent.getBooleanField(TechnologyOperationComponentFieldsPPS.HAS_CORRECTIONS)).willReturn(
+                false);
 
         // when
-        boolean result = techInstOperCompHooksPPS
-                .checkShiftsIfWorks(technologyOperationComponentDD, technologyOperationComponent);
+        boolean result = technologyOperationComponentValidatorsPPS.checkShiftsIfWorks(technologyOperationComponentDD,
+                technologyOperationComponent);
 
         // then
         Assert.assertTrue(result);

@@ -10,7 +10,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class DailyProgressValidators {
 
-    public void checkUniqueShift(final DataDefinition dailyProgressDD, final Entity dailyProgress) {
+    public boolean checkUniqueShift(final DataDefinition dailyProgressDD, final Entity dailyProgress) {
         Entity secondDailyProgress = dailyProgressDD
                 .find()
                 .add(SearchRestrictions.belongsTo(DailyProgressFields.SHIFT,
@@ -20,6 +20,11 @@ public class DailyProgressValidators {
         if (secondDailyProgress != null && dailyProgress.getId() == null) {
             dailyProgress.addError(dailyProgressDD.getField(DailyProgressFields.SHIFT),
                     "productionPerShift.dailyProgress.shiftAndProgressForDay.mustBeUnique");
+
+            return false;
         }
+
+        return true;
     }
+
 }

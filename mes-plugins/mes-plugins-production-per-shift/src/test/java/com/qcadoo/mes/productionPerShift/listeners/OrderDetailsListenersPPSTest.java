@@ -37,34 +37,29 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
-public class ProductionPerShiftListenersTest {
+public class OrderDetailsListenersPPSTest {
 
-    private ProductionPerShiftListeners productionPerShiftListeners;
-
-    @Mock
-    private ViewDefinitionState viewState;
-
-    @Mock
-    private ComponentState componentState;
-
-    @Mock
-    private DataDefinitionService dataDefinitionService;
+    private OrderDetailsListenersPPS orderDetailsListenersPPS;
 
     @Mock
     private PPSHelper ppsHelper;
+
+    @Mock
+    private ViewDefinitionState view;
+
+    @Mock
+    private ComponentState state;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        productionPerShiftListeners = new ProductionPerShiftListeners();
+        orderDetailsListenersPPS = new OrderDetailsListenersPPS();
 
-        ReflectionTestUtils.setField(productionPerShiftListeners, "ppsHelper", ppsHelper);
-        ReflectionTestUtils.setField(productionPerShiftListeners, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(orderDetailsListenersPPS, "ppsHelper", ppsHelper);
     }
 
     @Test
@@ -73,11 +68,11 @@ public class ProductionPerShiftListenersTest {
         Long givenOrderId = 1L;
         Long expectedPpsId = 50L;
 
-        given(componentState.getFieldValue()).willReturn(givenOrderId);
+        given(state.getFieldValue()).willReturn(givenOrderId);
         given(ppsHelper.getPpsIdForOrder(givenOrderId)).willReturn(expectedPpsId);
 
         // when
-        productionPerShiftListeners.redirectToProductionPerShift(viewState, componentState, new String[] {});
+        orderDetailsListenersPPS.redirectToProductionPerShift(view, state, new String[] {});
 
         // then
         verifyRedirectToPpsDetails(expectedPpsId);
@@ -89,12 +84,12 @@ public class ProductionPerShiftListenersTest {
         Long givenOrderId = 1L;
         Long expectedPpsId = 50L;
 
-        given(componentState.getFieldValue()).willReturn(givenOrderId);
+        given(state.getFieldValue()).willReturn(givenOrderId);
         given(ppsHelper.getPpsIdForOrder(givenOrderId)).willReturn(null);
         given(ppsHelper.createPpsForOrderAndReturnId(givenOrderId)).willReturn(expectedPpsId);
 
         // when
-        productionPerShiftListeners.redirectToProductionPerShift(viewState, componentState, new String[] {});
+        orderDetailsListenersPPS.redirectToProductionPerShift(view, state, new String[] {});
 
         // then
         verifyRedirectToPpsDetails(expectedPpsId);
@@ -104,7 +99,7 @@ public class ProductionPerShiftListenersTest {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", expectedPpsId);
 
-        verify(viewState).redirectTo("../page/productionPerShift/productionPerShiftDetails.html", false, true, parameters);
+        verify(view).redirectTo("../page/productionPerShift/productionPerShiftDetails.html", false, true, parameters);
     }
 
     @Test
@@ -112,17 +107,17 @@ public class ProductionPerShiftListenersTest {
         // given
         Long givenOrderId = 1L;
 
-        given(componentState.getFieldValue()).willReturn(givenOrderId);
+        given(state.getFieldValue()).willReturn(givenOrderId);
         given(ppsHelper.getPpsIdForOrder(givenOrderId)).willReturn(null);
         given(ppsHelper.createPpsForOrderAndReturnId(givenOrderId)).willReturn(null);
 
         // when & then
         try {
-            productionPerShiftListeners.redirectToProductionPerShift(viewState, componentState, new String[] {});
+            orderDetailsListenersPPS.redirectToProductionPerShift(view, state, new String[] {});
             Assert.fail();
         } catch (NullPointerException ex) {
             // test passed
         }
-
     }
+
 }

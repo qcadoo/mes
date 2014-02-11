@@ -58,8 +58,8 @@
 
 					<option type="required" value="true" />
 
-					<option type="searchable" value="name,number" />
-					<option type="orderable" value="name,number" />
+					<option type="searchable" value="name,number,typeOfProductionRecording" />
+					<option type="orderable" value="name,number,typeOfProductionRecording" />
 
 					<option type="order" column="number" direction="desc" />
 
@@ -70,7 +70,7 @@
 				<component type="lookup" name="technology" field="technology"
 					reference="technology" hasLabel="false" defaultVisible="false">
 					<option type="column" name="name" fields="name" link="true" />
-					
+
 					<option type="searchable" value="name,number" />
 					<option type="orderable" value="name,number" />
 
@@ -80,7 +80,7 @@
 						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 					<option type="fieldCode" value="number" />
 				</component>
-				
+
 				<component type="checkbox" name="setRoot" reference="setRoot"
 					hasLabel="false" defaultVisible="false" />
 				<component type="gridLayout" name="mainGridLayout"
@@ -94,8 +94,8 @@
 										field="#{form}.plannedProgressType" reference="plannedProgressType"
 										defaultValue="01planned">
 
-										<listener event="onSelectedEntityChange" 
-											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" 
+										<listener event="onSelectedEntityChange"
+											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 											method="changeView" />
 									</component>
 								</layoutElement>
@@ -122,7 +122,7 @@
 												</component>
 											</layoutElement>
 										</component>
-										
+
 										<option type="label" value="orderStartDateLabel" />
 									</component>
 								</layoutElement>
@@ -133,7 +133,7 @@
 									</component>
 								</layoutElement>
 							</component>
-							
+
 							<option type="label" value="plannedProgressLabel" />
 						</component>
 						<component type="borderLayout" name="reasonOfCorrection"
@@ -177,7 +177,7 @@
 									</component>
 								</layoutElement>
 							</component>
-							
+
 							<option type="label" value="reasonOfCorrectionLabel" />
 						</component>
 					</layoutElement>
@@ -186,15 +186,15 @@
 							<component type="gridLayout" name="plannedProgressGridLayout"
 								columns="2" rows="2">
 								<layoutElement column="1" row="1">
-									<component type="lookup" name="productionPerShiftOperation" reference="productionPerShiftOperation"
-										source="#{technology}.operationComponents" field="#{form}.technologyOperationComponent"
-										>
+									<component type="lookup" name="productionPerShiftOperation"
+										reference="productionPerShiftOperation" source="#{technology}.operationComponents"
+										field="#{form}.technologyOperationComponent">
 										<option type="column" name="name" fields="operation"
 											expression="#operation['name']" link="true" />
 										<option type="column" name="hasCorrections" fields="hasCorrections" />
 
-										<option type="searchable" value="name,nodeNumber" />
-										<option type="orderable" value="name,nodeNumber" />
+										<option type="searchable" value="name,nodeNumber,hasCorrections" />
+										<option type="orderable" value="name,nodeNumber,hasCorrections" />
 
 										<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
 										<option type="fieldCode" value="nodeNumber" />
@@ -205,8 +205,19 @@
 									</component>
 								</layoutElement>
 								<layoutElement column="2" row="1">
-									<component type="input" name="produces" reference="produces"
-										defaultEnabled="never" />
+									<component type="lookup" name="produces" reference="produces"
+										model="product" plugin="basic" defaultEnabled="never">
+										<option type="column" name="name" fields="name" link="true"
+											width="200" />
+										<option type="column" name="ean" fields="ean" />
+			
+										<option type="searchable" value="name,ean" />
+										<option type="orderable" value="name,ean" />
+			
+										<option type="expression"
+											value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+										<option type="fieldCode" value="number" />
+									</component>
 								</layoutElement>
 								<layoutElement column="1" width="2" row="2">
 									<component type="awesomeDynamicList" name="progressForDay"
@@ -226,24 +237,26 @@
 																reference="day" hasDescription="true" />
 														</layoutElement>
 														<layoutElement column="1" row="2">
-															<component type="calendar" name="date" reference="date" 
-																hasLabel="false" defaultEnabled="false" field="dateOfDay"/>
+															<component type="calendar" name="date"
+																reference="date" hasLabel="false" defaultEnabled="false"
+																field="dateOfDay" />
 														</layoutElement>
 													</component>
 												</layoutElement>
-												
+
 												<layoutElement column="2" row="1" width="3">
 													<component type="awesomeDynamicList" name="dailyProgress"
 														source="dailyProgress" reference="dailyProgress">
 														<option type="hasBorder" value="true" />
 														<option type="hasButtons" value="true" />
-														
+
 														<components>
 															<component type="gridLayout" name="dailyProgressGridLayout"
 																columns="5" rows="1">
 																<layoutElement column="1" row="1" width="2">
 																	<component type="lookup" name="shift" field="shift"
 																		reference="shift">
+																		
 																		<option type="expression" value="#name" />
 																		<option type="fieldCode" value="name" />
 																	</component>
@@ -265,7 +278,7 @@
 												</layoutElement>
 											</component>
 										</components>
-										
+
 										<listener event="onAddRow"
 											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 											method="updateProgressForDays" />
@@ -278,16 +291,16 @@
 									</component>
 								</layoutElement>
 							</component>
-							
+
 							<option type="label" value="operationProgressLabel" />
 						</component>
 					</layoutElement>
 				</component>
-				
+
 				<option type="header" value="true" />
 				<option type="expression"
 					value="#order.get('name') + ' - ' + #order.get('number') + ' - ' + '@orders.order.state.value.' + #order.get('state')" />
-				
+
 				<listener event="deleteProgressForDays"
 					class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 					method="deleteProgressForDays" />
@@ -296,47 +309,47 @@
 					method="copyFromPlanned" />
 			</component>
 		</windowTab>
-		
+
 		<option type="header" value="true" />
 	</component>
-	
+
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="setTechnologyField" />
 		<beforeRender
-            class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-            method="fillSetRoot" />
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="fillSetRoot" />
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="addRootForOperation" />
-<beforeRender
-class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-method="disablePlannedProgressTypeForPendingOrder" />
-<beforeRender
-class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-method="fillProducedField" />
-<beforeRender
-class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-                       method="refreshProgressForDaysADL" />
-               <beforeRender
-                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-                       method="setOrderStartDate" />
-               <beforeRender
-                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"                       
-                       method="disableReasonOfCorrection" />
-               <beforeRender
-                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-                       method="changeButtonState" />
-               <beforeRender
-                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-                       method="checkIfWasItCorrected" />
-               <beforeRender
-                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-                       method="checkShiftsIfWorks" />
-               <beforeRender
-                       class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-                       method="updateProgressForDaysDates" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="disablePlannedProgressTypeForPendingOrder" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="fillProducedField" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="refreshProgressForDaysADL" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="setOrderStartDate" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="disableReasonOfCorrection" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="changeButtonState" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="checkIfWasItCorrected" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="checkShiftsIfWorks" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="updateProgressForDaysDates" />
 	</hooks>
-	
+
 </view>

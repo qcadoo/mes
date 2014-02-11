@@ -32,4 +32,5 @@ public final class ReasonTypeOfCorrectionPlanFields {
     public static final String PRODUCTION_PER_SHIFT = "productionPerShift";
 
     public static final String REASON_TYPE_OF_CORRECTION_PLAN = "reasonTypeOfCorrectionPlan";
+
 }

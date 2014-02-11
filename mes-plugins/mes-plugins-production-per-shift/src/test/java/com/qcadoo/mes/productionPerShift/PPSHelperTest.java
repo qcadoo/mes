@@ -25,7 +25,6 @@ package com.qcadoo.mes.productionPerShift;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,7 +34,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -45,37 +46,41 @@ import com.qcadoo.view.api.components.FieldComponent;
 
 public class PPSHelperTest {
 
-    private PPSHelper helper;
-
-    @Mock
-    private ViewDefinitionState viewState;
+    private PPSHelper ppsHelper;
 
     @Mock
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private Entity entity;
+    private ViewDefinitionState view;
+
+    @Mock
+    private FieldComponent fieldComponent;
 
     @Mock
     private DataDefinition dataDefinition;
 
     @Mock
-    private FieldComponent field;
+    private Entity entity;
 
     @Before
     public void init() {
-        helper = new PPSHelper();
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(helper, "dataDefinitionService", dataDefinitionService);
+
+        ppsHelper = new PPSHelper();
+
+        ReflectionTestUtils.setField(ppsHelper, "dataDefinitionService", dataDefinitionService);
     }
 
     @Test
     public void shouldReturnFalseWhenProgressTypeIsPlanned() throws Exception {
         // given
-        when(viewState.getComponentByReference("plannedProgressType")).thenReturn(field);
-        when(field.getFieldValue()).thenReturn("01planned");
+        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(fieldComponent);
+        given(fieldComponent.getFieldValue()).willReturn(PlannedProgressType.PLANNED.getStringValue());
+
         // when
-        boolean result = helper.shouldHasCorrections(viewState);
+        boolean result = ppsHelper.shouldHasCorrections(view);
+
         // then
         Assert.assertFalse(result);
     }
@@ -83,10 +88,12 @@ public class PPSHelperTest {
     @Test
     public void shouldReturnTrueWhenProgressTypeIsPlanned() throws Exception {
         // given
-        when(viewState.getComponentByReference("plannedProgressType")).thenReturn(field);
-        when(field.getFieldValue()).thenReturn("02corrected");
+        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(fieldComponent);
+        given(fieldComponent.getFieldValue()).willReturn(PlannedProgressType.CORRECTED.getStringValue());
+
         // when
-        boolean result = helper.shouldHasCorrections(viewState);
+        boolean result = ppsHelper.shouldHasCorrections(view);
+
         // then
         Assert.assertTrue(result);
     }
@@ -96,19 +103,20 @@ public class PPSHelperTest {
         // given
         Long givenOrderId = 1L;
         Long expectedPpsId = 50L;
+
         given(
                 dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                         ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)).willReturn(dataDefinition);
-        SearchQueryBuilder sqb = mock(SearchQueryBuilder.class);
+        SearchQueryBuilder searchCriteriaBuilder = mock(SearchQueryBuilder.class);
         given(dataDefinition.find("select id as ppsId from #productionPerShift_productionPerShift where order.id = :orderId"))
-                .willReturn(sqb);
-        given(sqb.setMaxResults(Mockito.anyInt())).willReturn(sqb);
-        given(sqb.setLong(Mockito.anyString(), Mockito.eq(givenOrderId))).willReturn(sqb);
-        given(sqb.uniqueResult()).willReturn(entity);
+                .willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.setMaxResults(Mockito.anyInt())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.setLong(Mockito.anyString(), Mockito.eq(givenOrderId))).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.uniqueResult()).willReturn(entity);
         given(entity.getField("ppsId")).willReturn(expectedPpsId);
 
         // when
-        final Long resultPpsId = helper.getPpsIdForOrder(givenOrderId);
+        final Long resultPpsId = ppsHelper.getPpsIdForOrder(givenOrderId);
 
         // then
         Assert.assertEquals(expectedPpsId, resultPpsId);
@@ -118,20 +126,22 @@ public class PPSHelperTest {
     public final void shouldGetPpsForOrderReturnNullIfPpsDoesNotExists() {
         // given
         Long givenOrderId = 1L;
+
         given(
                 dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                         ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)).willReturn(dataDefinition);
-        SearchQueryBuilder sqb = mock(SearchQueryBuilder.class);
+        SearchQueryBuilder searchCriteriaBuilder = mock(SearchQueryBuilder.class);
         given(dataDefinition.find("select id as ppsId from #productionPerShift_productionPerShift where order.id = :orderId"))
-                .willReturn(sqb);
-        given(sqb.setMaxResults(Mockito.anyInt())).willReturn(sqb);
-        given(sqb.setLong(Mockito.anyString(), Mockito.eq(givenOrderId))).willReturn(sqb);
-        given(sqb.uniqueResult()).willReturn(null);
+                .willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.setMaxResults(Mockito.anyInt())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.setLong(Mockito.anyString(), Mockito.eq(givenOrderId))).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.uniqueResult()).willReturn(null);
 
         // when
-        final Long resultPpsId = helper.getPpsIdForOrder(givenOrderId);
+        final Long resultPpsId = ppsHelper.getPpsIdForOrder(givenOrderId);
 
         // then
         Assert.assertNull(resultPpsId);
     }
+
 }

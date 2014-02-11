@@ -83,27 +83,29 @@
 			plugin="technologies">
 			<model:boolean name="hasCorrections" />
 		</model:model-field>
+		
 		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:validatesWith
-				class="com.qcadoo.mes.productionPerShift.validators.TechInstOperCompHooksPPS"
+				class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
 				method="checkGrowingNumberOfDays" />
 		</model:model-hook>
 		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:validatesWith
-				class="com.qcadoo.mes.productionPerShift.validators.TechInstOperCompHooksPPS"
+				class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
 				method="checkShiftsIfWorks" />
 		</model:model-hook>
 		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:onCopy
-				class="com.qcadoo.mes.productionPerShift.hooks.TechInstOpCompHooksPPS"
+				class="com.qcadoo.mes.productionPerShift.hooks.TechnologyOperationComponentHooksPPS"
 				method="onCopy" />
 		</model:model-hook>
+		
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="redirectToProductionPerShift"
-			class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+			class="com.qcadoo.mes.productionPerShift.listeners.OrderDetailsListenersPPS"
 			method="redirectToProductionPerShift" />
 			
 		<view:view-hook plugin="orders" view="orderDetails"

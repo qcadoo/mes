@@ -1,7 +1,5 @@
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +57,7 @@ public class OrderDetailsHooksPPS {
                 order = orderService.getOrder(orderId);
 
                 if (order != null) {
-                    technology = order.getBelongsToField(TECHNOLOGY);
+                    technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
                     isEnabled = (technology != null);
                 }
