@@ -429,4 +429,26 @@ public class DeliveryReportPdf extends ReportPdfView {
         return simpleDateFormat.format(date);
     }
 
+    public List<String> getUsedColumnsInDeliveryReport(final Entity delivery) {
+        List<Entity> columnsForDeliveries = deliveriesService.getColumnsForDeliveries();
+        List<String> columnsName = Lists.newArrayList();
+        if (!columnsForDeliveries.isEmpty()) {
+            List<DeliveryProduct> deliveryProducts = deliveryColumnFetcher.getDeliveryProducts(delivery);
+
+            Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues = deliveryColumnFetcher
+                    .getDeliveryProductsColumnValues(deliveryProducts);
+
+            List<Entity> filteredColumnsForDeliveries = getDeliveryReportColumns(columnsForDeliveries, deliveryProducts,
+                    deliveryProductsColumnValues);
+
+            if (!filteredColumnsForDeliveries.isEmpty()) {
+
+                for (Entity entity : filteredColumnsForDeliveries) {
+                    columnsName.add(entity.getStringField(ColumnForDeliveriesFields.IDENTIFIER));
+                }
+
+            }
+        }
+        return columnsName;
+    }
 }
