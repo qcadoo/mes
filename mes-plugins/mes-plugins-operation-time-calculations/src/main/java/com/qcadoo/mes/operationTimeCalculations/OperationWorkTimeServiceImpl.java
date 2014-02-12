@@ -216,10 +216,13 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             Entity techOperCompTimeCalculation = entity
                     .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
 
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.MACHINE_WORK_TIME, machineWorkTime);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.LABOR_WORK_TIME, laborWorkTime);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.DURATION, duration);
-            techOperCompTimeCalculationDD.save(techOperCompTimeCalculation);
+            if (techOperCompTimeCalculation != null) {
+                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.MACHINE_WORK_TIME, machineWorkTime);
+                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.LABOR_WORK_TIME, laborWorkTime);
+                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.DURATION, duration);
+
+                techOperCompTimeCalculationDD.save(techOperCompTimeCalculation);
+            }
         } else {
             entity.setField("machineWorkTime", machineWorkTime);
             entity.setField("laborWorkTime", laborWorkTime);
