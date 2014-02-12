@@ -104,15 +104,18 @@ public class OrderTimePredictionListeners {
             Entity techOperCompTimeCalculation = technologyOperationComponent
                     .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
 
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.DURATION, null);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME, null);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.LABOR_WORK_TIME, null);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.MACHINE_WORK_TIME, null);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.OPERATION_OFF_SET, null);
+            if (techOperCompTimeCalculation != null) {
+                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.DURATION, null);
+                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
+                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
+                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME,
+                        null);
+                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.LABOR_WORK_TIME, null);
+                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.MACHINE_WORK_TIME, null);
+                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.OPERATION_OFF_SET, null);
 
-            techOperCompTimeCalculation = techOperCompTimeCalculation.getDataDefinition().save(techOperCompTimeCalculation);
+                techOperCompTimeCalculation = techOperCompTimeCalculation.getDataDefinition().save(techOperCompTimeCalculation);
+            }
         }
     }
 
