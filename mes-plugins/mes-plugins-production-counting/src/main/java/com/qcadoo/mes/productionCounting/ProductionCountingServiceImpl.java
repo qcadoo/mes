@@ -49,6 +49,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -219,18 +220,14 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     public void setComponentsState(final ViewDefinitionState view, final List<String> componentReferenceNames,
             final boolean isEnabled, final boolean requestComponentUpdateState) {
         for (String componentReferenceName : componentReferenceNames) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(componentReferenceName);
+            ComponentState componentState = view.getComponentByReference(componentReferenceName);
 
-            if (fieldComponent == null) {
+            if (componentState == null) {
                 if (LOGGER.isWarnEnabled()) {
                     LOGGER.warn(String.format("Cannot find component with reference='%s'", componentReferenceName));
                 }
             } else {
-                fieldComponent.setEnabled(isEnabled);
-
-                if (requestComponentUpdateState) {
-                    fieldComponent.requestComponentUpdateState();
-                }
+                componentState.setEnabled(isEnabled);
             }
         }
     }
@@ -239,18 +236,14 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     public void setComponentsVisibility(final ViewDefinitionState view, final List<String> componentReferenceNames,
             final boolean isVisible, final boolean requestComponentUpdateState) {
         for (String componentReferenceName : componentReferenceNames) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(componentReferenceName);
+            ComponentState componnetState = view.getComponentByReference(componentReferenceName);
 
-            if (fieldComponent == null) {
+            if (componnetState == null) {
                 if (LOGGER.isWarnEnabled()) {
                     LOGGER.warn(String.format("Cannot find component with reference='%s'", componentReferenceName));
                 }
             } else {
-                fieldComponent.setVisible(isVisible);
-
-                if (requestComponentUpdateState) {
-                    fieldComponent.requestComponentUpdateState();
-                }
+                componnetState.setVisible(isVisible);
             }
         }
     }
