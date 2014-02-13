@@ -31,18 +31,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
-                http://schema.qcadoo.org/plugin
-                http://schema.qcadoo.org/plugin.xsd
-                http://schema.qcadoo.org/modules/model
-                http://schema.qcadoo.org/modules/model.xsd
-                http://schema.qcadoo.org/modules/view
-                http://schema.qcadoo.org/modules/view.xsd
-                http://schema.qcadoo.org/modules/localization
-                http://schema.qcadoo.org/modules/localization.xsd
-                http://schema.qcadoo.org/modules/report
-                http://schema.qcadoo.org/modules/report.xsd
-                http://schema.qcadoo.org/modules/menu
-                http://schema.qcadoo.org/modules/menu.xsd">
+		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/report 
+		http://schema.qcadoo.org/modules/report.xsd 
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>MES - Time norms for operations</name>
@@ -64,8 +64,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 	<modules>
 		<localization:translation path="locales" />
 
-		<model:model model="techOperCompTimeCalculation"
-			resource="model/techOperCompTimeCalculation.xml" />
+		<model:model model="techOperCompTimeCalculation" resource="model/techOperCompTimeCalculation.xml" />
 
 		<model:model-field plugin="technologies" model="operation">
 			<model:integer name="tpz" required="true" default="0" />
