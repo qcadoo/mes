@@ -157,7 +157,7 @@
 				</layoutElement>
 				<layoutElement column="2" row="1" height="9" width="2">
 					<component type="grid" name="productionTrackings"
-						reference="productionTrackingss" model="productionTracking">
+						reference="productionTrackings" model="productionTracking">
 						<option type="column" name="number" fields="number" />
 						<option type="column" name="operation" fields="technologyOperationComponent"
 							expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent['nodeNumber'] + ' ' + #technologyOperationComponent['operation']['name']" />
