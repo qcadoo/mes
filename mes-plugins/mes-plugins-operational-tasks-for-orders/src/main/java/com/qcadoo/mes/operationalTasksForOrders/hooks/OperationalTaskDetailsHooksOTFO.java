@@ -172,19 +172,22 @@ public class OperationalTaskDetailsHooksOTFO {
 
         String typeTask = (String) typeTaskField.getFieldValue();
 
-        if (operationalTasksForOrdersService.isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask)) {
+        if (operationalTasksForOrdersService.isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask)
+                && (orderLookup.getEntity() != null) && (technologyOperationComponentLookup.getEntity() == null)) {
             Entity operationalTask = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                     OperationalTasksConstants.MODEL_OPERATIONAL_TASK).get(operationalTaskId);
 
-            Entity techOperCompOperationalTask = operationalTask
-                    .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
+            if (operationalTask != null) {
+                Entity techOperCompOperationalTask = operationalTask
+                        .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
 
-            Entity technologyOperationComponent = techOperCompOperationalTask
-                    .getBelongsToField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT);
+                if (techOperCompOperationalTask != null) {
+                    Entity technologyOperationComponent = techOperCompOperationalTask
+                            .getBelongsToField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-            if ((technologyOperationComponentLookup.getEntity() == null) && (orderLookup.getEntity() != null)) {
-                technologyOperationComponentLookup.setFieldValue(technologyOperationComponent.getId());
-                technologyOperationComponentLookup.requestComponentUpdateState();
+                    technologyOperationComponentLookup.setFieldValue(technologyOperationComponent.getId());
+                    technologyOperationComponentLookup.requestComponentUpdateState();
+                }
             }
         } else {
             technologyOperationComponentLookup.setFieldValue(null);
