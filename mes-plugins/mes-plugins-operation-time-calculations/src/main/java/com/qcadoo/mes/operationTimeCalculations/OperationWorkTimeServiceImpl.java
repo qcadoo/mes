@@ -117,9 +117,11 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         operationWorkTime.setDuration(duration);
         operationWorkTime.setLaborWorkTime(laborWorkTime);
         operationWorkTime.setMachineWorkTime(machineWorkTime);
+
         if (saved) {
             savedWorkTime(operationComponent, machineWorkTime, laborWorkTime, duration);
         }
+
         return operationWorkTime;
     }
 
@@ -190,6 +192,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         Integer totalLaborWorkTime = Integer.valueOf(0);
         Integer totalMachineWorkTime = Integer.valueOf(0);
         Integer duration = Integer.valueOf(0);
+
         for (Entity operationComponent : operationComponents) {
             Entity operComp = operationComponent;
             OperationWorkTime abstractOperationWorkTime = estimateOperationWorkTime(operComp,
@@ -199,6 +202,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             totalMachineWorkTime += abstractOperationWorkTime.getMachineWorkTime();
             duration += abstractOperationWorkTime.getDuration();
         }
+
         totalWorkTime.setLaborWorkTime(totalLaborWorkTime);
         totalWorkTime.setMachineWorkTime(totalMachineWorkTime);
         totalWorkTime.setDuration(duration);
