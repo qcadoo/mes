@@ -71,4 +71,6 @@ public final class DeliveryFields {
 
     public static final String CURRENCY = "currency";
 
+    public static final String ACTIVE = "active";
+
 }
