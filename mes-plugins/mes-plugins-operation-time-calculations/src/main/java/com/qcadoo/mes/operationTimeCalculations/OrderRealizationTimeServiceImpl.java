@@ -216,9 +216,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                     .getName())) {
                 Entity techOperCompTimeCalculation = operationComponent
                         .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
-                techOperCompTimeCalculation.setField("operationOffSet", offset);
-                techOperCompTimeCalculation.setField("effectiveOperationRealizationTime", operationTime);
-                techOperCompTimeCalculation.getDataDefinition().save(techOperCompTimeCalculation);
+
+                if (techOperCompTimeCalculation != null) {
+                    techOperCompTimeCalculation.setField("operationOffSet", offset);
+                    techOperCompTimeCalculation.setField("effectiveOperationRealizationTime", operationTime);
+
+                    techOperCompTimeCalculation.getDataDefinition().save(techOperCompTimeCalculation);
+                }
             }
 
             return offset + operationTime;
