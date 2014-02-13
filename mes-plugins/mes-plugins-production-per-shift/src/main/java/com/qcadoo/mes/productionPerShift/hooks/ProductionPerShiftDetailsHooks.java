@@ -343,9 +343,14 @@ public class ProductionPerShiftDetailsHooks {
                 .getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
 
         Entity productionPerShiftOperation = productionPerShiftOperationLookup.getEntity();
+        Entity progressForDay = progressForDays.get(0);
 
-        Entity technologyOperationComponentFromProgressForDays = progressForDays.get(0).getDataDefinition()
-                .get(progressForDays.get(0).getId()).getBelongsToField(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT);
+        if (progressForDay.getId() == null) {
+            return true;
+        }
+
+        Entity technologyOperationComponentFromProgressForDays = progressForDay.getDataDefinition().get(progressForDay.getId())
+                .getBelongsToField(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT);
 
         if (!productionPerShiftOperation.getId().equals(technologyOperationComponentFromProgressForDays.getId())) {
             return true;
@@ -569,11 +574,9 @@ public class ProductionPerShiftDetailsHooks {
             FieldComponent dayField = progressForDayForm.findFieldComponentByName(ProgressForDayFields.DAY);
             FieldComponent dateField = progressForDayForm.findFieldComponentByName(L_DATE);
 
-            Entity progressForDayEntity = progressForDayForm.getEntity();
+            Entity progressForDay = progressForDayForm.getEntity();
 
-            progressForDayEntity = progressForDayEntity.getDataDefinition().get(progressForDayEntity.getId());
-
-            if (progressForDayEntity.getDateField(ProgressForDayFields.DATE_OF_DAY) == null) {
+            if (StringUtils.isEmpty(progressForDay.getStringField(ProgressForDayFields.DATE_OF_DAY))) {
                 String day = (String) dayField.getFieldValue();
 
                 if (!StringUtils.isEmpty(day)) {
