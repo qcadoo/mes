@@ -42,6 +42,10 @@
 
 		<manyToMany name="orders" joinField="workPlans" model="order"
 			plugin="orders" copyable="true" />
+			
+		<belongsTo name="inputProductColumnToSortBy" model="columnForInputProducts" />
+		<enum name="orderSorting" values="01asc,02desc"/>
+		
 	</fields>
 	<hooks>
 		<onCopy class="com.qcadoo.mes.workPlans.hooks.WorkPlanModelHooks"

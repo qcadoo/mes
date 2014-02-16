@@ -556,7 +556,8 @@ public class WorkPlanPdfServiceTest {
 
         // when
         try {
-            workPlanPdfService.addProductsSeries(components, document, columnValues, operationComponent, direction, locale);
+            workPlanPdfService.addProductsSeries(components, document, workPlan, columnValues, operationComponent, direction,
+                    locale, false);
         } catch (DocumentException e) {
         }
 

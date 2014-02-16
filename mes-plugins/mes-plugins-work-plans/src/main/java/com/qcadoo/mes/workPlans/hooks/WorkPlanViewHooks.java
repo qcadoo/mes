@@ -81,6 +81,11 @@ public class WorkPlanViewHooks {
     @Autowired
     private ParameterService parameterService;
 
+    public final void onBeforeRender(final ViewDefinitionState view) {
+        setFieldsState(view);
+        disableFormForGeneratedWorkPlan(view);
+    }
+
     public final void addSelectedOrdersToWorkPlan(final ViewDefinitionState view, final ComponentState component,
             final String[] args) {
         GridComponent grid = (GridComponent) component;
@@ -113,13 +118,28 @@ public class WorkPlanViewHooks {
                 view.getComponentByReference("workPlanComponents").setEnabled(false);
                 view.getComponentByReference(DONT_PRINT_ORDERS_IN_WORK_PLANS).setEnabled(false);
                 view.getComponentByReference("columnsForOrders").setEnabled(false);
+                view.getComponentByReference("inputProductColumnToSortBy").setEnabled(false);
+                view.getComponentByReference("orderSorting").setEnabled(false);
+
             } else {
                 view.getComponentByReference(NAME).setEnabled(true);
                 view.getComponentByReference(TYPE).setEnabled(true);
                 view.getComponentByReference("workPlanComponents").setEnabled(true);
                 view.getComponentByReference(DONT_PRINT_ORDERS_IN_WORK_PLANS).setEnabled(true);
                 view.getComponentByReference("columnsForOrders").setEnabled(true);
+                view.getComponentByReference("inputProductColumnToSortBy").setEnabled(true);
+                view.getComponentByReference("orderSorting").setEnabled(true);
             }
+        }
+    }
+
+    public final void setFieldsState(final ViewDefinitionState view) {
+        if (view.getComponentByReference("inputProductColumnToSortBy").getFieldValue() == null) {
+            view.getComponentByReference("orderSorting").setEnabled(false);
+
+        } else {
+            view.getComponentByReference("orderSorting").setEnabled(true);
+
         }
     }
 

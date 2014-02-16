@@ -38,7 +38,7 @@
 		<windowTab name="workPlansOrdersTab" reference="workPlansOrdersTab">
 			<component type="form" name="workPlanParameters" reference="form">
 				<component type="gridLayout" name="workPlansOrdersGridLayout"
-					columns="2" rows="3">
+					columns="2" rows="7">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="dontPrintOrdersInWorkPlans"
 							field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
@@ -53,7 +53,7 @@
 							<option type="align" value="left" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="3">
+					<layoutElement column="1" row="3" height="4">
 						<component type="grid" name="columnsForOrders"
 							source="#{form}.parameterOrderColumns" reference="columnsForOrders">
 							<option type="column" name="name" fields="columnForOrders"
@@ -66,7 +66,6 @@
 							<option type="correspondingViewInModal" value="true" />
 							<option type="creatable" value="true" />
 							<option type="deletable" value="true" />
-							<option type="fullscreen" value="true" />
 							<option type="multiselect" value="true" />
 						</component>
 					</layoutElement>
@@ -115,7 +114,7 @@
 		</windowTab>
 		<windowTab name="workPlansProductsTab" reference="workPlansProductsTab">
 			<component type="gridLayout" name="workPlansProductsGridLayout"
-				columns="2" rows="3">
+				columns="2" rows="7">
 				<layoutElement column="1" row="1" width="2">
 					<component type="label" name="workPlansProductsTabWelcome">
 						<option type="labelStyle" value="text" />
@@ -128,7 +127,7 @@
 						<option type="align" value="left" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="3">
+				<layoutElement column="1" row="3"  height="4">
 					<component type="grid" name="columnsForInputProducts"
 						source="#{form}.parameterInputColumns" reference="columnsForInputProducts">
 						<option type="column" name="name" fields="columnForInputProducts"
@@ -141,7 +140,6 @@
 						<option type="correspondingViewInModal" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 					</component>
 				</layoutElement>
@@ -152,7 +150,7 @@
 						<option type="align" value="left" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="3">
+				<layoutElement column="2" row="3"  height="4">
 					<component type="grid" name="columnsForOutputProducts"
 						source="#{form}.parameterOutputColumns" reference="columnsForOutputProducts">
 						<option type="column" name="name" fields="columnForOutputProducts"
@@ -165,7 +163,6 @@
 						<option type="correspondingViewInModal" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 					</component>
 				</layoutElement>

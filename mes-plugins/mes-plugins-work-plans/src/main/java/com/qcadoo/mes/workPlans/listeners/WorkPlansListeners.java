@@ -21,30 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.constants;
+package com.qcadoo.mes.workPlans.listeners;
 
-public final class WorkPlanFields {
+import org.springframework.stereotype.Service;
 
-    private WorkPlanFields() {
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
+@Service
+public class WorkPlansListeners {
+
+    public void setOrderSortingEnable(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        if (view.getComponentByReference("inputProductColumnToSortBy").getFieldValue() == null) {
+            view.getComponentByReference("orderSorting").setEnabled(false);
+
+        } else {
+            view.getComponentByReference("orderSorting").setEnabled(true);
+
+        }
     }
-
-    public static final String NAME = "name";
-
-    public static final String TYPE = "type";
-
-    public static final String DATE = "date";
-
-    public static final String WORKER = "worker";
-
-    public static final String GENERATED = "generated";
-
-    public static final String DONT_PRINT_ORDERS_IN_WORK_PLANS = "dontPrintOrdersInWorkPlans";
-
-    public static final String ORDERS = "orders";
-
-    public static final String INPUT_PRODUCT_COLUMN_TO_SORT_BY = "inputProductColumnToSortBy";
-
-    public static final String ORDER_SORTING = "orderSorting";
-
 }
