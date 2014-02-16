@@ -34,9 +34,41 @@
 			<template name="standardFormTemplate" />
 			<group name="generate">
 				<bigButton name="generateOrder" icon="pdfIcon24.png"
-					state="enabled" action="#{form}.fireEvent(printOrderReport,pdf);" />
+					state="enabled">
+					<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										#{form}.performEvent({
+											name : 'validateColumnsWidthForOrder'
+										});
+										#{form}.performEvent({
+											name : 'printOrderReport',
+											args : ['pdf']
+										});
+									}
+								});
+							]]>
+					</script>
+				</bigButton>
 				<bigButton name="generateDelivery" icon="pdfIcon24.png"
-					state="enabled" action="#{form}.fireEvent(printDeliveryReport,pdf);" />
+					state="enabled">
+					<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										#{form}.performEvent({
+											name : 'validateColumnsWidthForDelivery'
+										});
+										#{form}.performEvent({
+											name : 'printDeliveryReport',
+											args : ['pdf']
+										});
+									}
+								});
+							]]>
+					</script>
+				</bigButton>
 			</group>
 			<group name="status">
 				<smallButton name="accept" icon="startIcon16.png" state="disabled">
@@ -96,8 +128,9 @@
 				</smallButton>
 			</group>
 			<group name="copyOrderedProductsToDelivered">
-				<bigButton name="copyProductsWithoutQuantityAndPrice" icon="copyIcon24.png"
-					state="disabled" action="#{form}.fireEvent(copyProductsWithoutQuantityAndPrice);" />
+				<bigButton name="copyProductsWithoutQuantityAndPrice"
+					icon="copyIcon24.png" state="disabled"
+					action="#{form}.fireEvent(copyProductsWithoutQuantityAndPrice);" />
 				<bigButton name="copyProductsWithQuantityAndPrice" icon="copyIcon24.png"
 					state="disabled" action="#{form}.fireEvent(copyProductsWithQuantityAndPrice);" />
 			</group>
@@ -334,8 +367,9 @@
 						<component type="gridLayout" name="gridLayoutDeliveryDateBuffer"
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="deliveryDateBuffer" field="deliveryDateBuffer"
-									reference="deliveryDateBuffer" defaultEnabled="never">
+								<component type="input" name="deliveryDateBuffer"
+									field="deliveryDateBuffer" reference="deliveryDateBuffer"
+									defaultEnabled="never">
 									<option type="labelWidth" value="40" />
 								</component>
 							</layoutElement>
@@ -402,6 +436,13 @@
 				<listener event="showProduct"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 					method="showProduct" />
+
+				<listener event="validateColumnsWidthForOrder"
+					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+					method="validateColumnsWidthForOrder" />
+				<listener event="validateColumnsWidthForDelivery"
+					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+					method="validateColumnsWidthForDelivery" />
 			</component>
 		</windowTab>
 
@@ -449,7 +490,7 @@
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="fixedHeight" value="true" />
-						
+
 						<listener event="select" method="disableShowProductButton"
 							class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners" />
 					</component>
@@ -523,7 +564,7 @@
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="fixedHeight" value="true" />
-						
+
 						<listener event="select" method="disableShowProductButton"
 							class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners" />
 					</component>

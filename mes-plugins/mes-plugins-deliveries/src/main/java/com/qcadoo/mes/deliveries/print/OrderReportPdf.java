@@ -391,4 +391,27 @@ public class OrderReportPdf extends ReportPdfView {
         return simpleDateFormat.format(date);
     }
 
+    public List<String> getUsedColumnsInOrderReport(final Entity delivery) {
+        List<Entity> columnsForOrders = deliveriesService.getColumnsForOrders();
+        List<String> columnNames = Lists.newArrayList();
+        if (!columnsForOrders.isEmpty()) {
+            List<Entity> orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
+
+            Map<Entity, Map<String, String>> orderedProductsColumnValues = orderColumnFetcher
+                    .getOrderedProductsColumnValues(orderedProducts);
+
+            List<Entity> filteredColumnsForOrders = getOrderReportColumns(columnsForOrders, orderedProducts,
+                    orderedProductsColumnValues);
+            if (!filteredColumnsForOrders.isEmpty()) {
+
+                for (Entity entity : filteredColumnsForOrders) {
+                    columnNames.add(entity.getStringField(ColumnForOrdersFields.IDENTIFIER));
+                }
+
+            }
+        }
+        return columnNames;
+
+    }
+
 }

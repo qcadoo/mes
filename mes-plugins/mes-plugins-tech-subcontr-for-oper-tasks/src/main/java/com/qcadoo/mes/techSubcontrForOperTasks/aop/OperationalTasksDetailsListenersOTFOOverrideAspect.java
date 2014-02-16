@@ -30,12 +30,15 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.qcadoo.mes.techSubcontrForOperTasks.constants.TechSubcontrForOperTasksConstants;
 import com.qcadoo.plugin.api.PluginUtils;
+import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Aspect
 @Configurable
+@RunIfEnabled(TechSubcontrForOperTasksConstants.PLUGIN_IDENTIFIER)
 public class OperationalTasksDetailsListenersOTFOOverrideAspect {
 
     @Autowired

@@ -219,7 +219,7 @@
 					method="printTechnologyDetailsReport" />
 			</component>
 		</windowTab>
-		
+
 		<windowTab name="treeTab">
 			<component type="gridLayout" name="gridsLayout" columns="2"
 				rows="8" hasBorders="false">
@@ -321,7 +321,7 @@
 				</layoutElement>
 			</component>
 		</windowTab>
-		
+
 		<windowTab name="history">
 			<component type="grid" name="loggings" reference="grid"
 				source="#{form}.stateChanges">
@@ -336,9 +336,9 @@
 				<option type="orderable" value="dateAndTime,sourceState,targetState" />
 			</component>
 		</windowTab>
-		
+
 	</component>
-	
+
 	<hooks>
 		<!-- <beforeRender class="com.qcadoo.mes.technologies.TechnologyTreeNumberingHooks" -->
 		<!-- method="rebuildTreeNumbering" /> -->
@@ -351,9 +351,16 @@
 		<beforeRender
 			class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
 			method="setTreeTabEditable" />
+
+		<!-- TODO hotfix for issue-1901 with restoring previous active tab state, 
+			requires fixes in framework -->
+		<beforeRender
+			class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+			method="navigateToActiveTab" />
+
 		<beforeRender
 			class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
 			method="setGridEditable" />
 	</hooks>
-	
+
 </view>
