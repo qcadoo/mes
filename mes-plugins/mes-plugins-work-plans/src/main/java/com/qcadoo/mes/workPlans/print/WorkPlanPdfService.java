@@ -77,6 +77,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     private static final String PRODUCT_LITERAL = "product";
 
+    private static final String PLANED_QUANTITY = "plannedQuantity";
+
     @Autowired
     private EntityTreeUtilsService entityTreeUtilsService;
 
@@ -627,7 +629,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 || !columns.contains(columnIdentifier)) {
             return productComponents;
         }
-        String identifier = columnIdentifier.getStringField(ColumnForProductsFields.IDENTIFIER);
+        final String identifier = columnIdentifier.getStringField(ColumnForProductsFields.IDENTIFIER);
 
         Map<Entity, String> tempMap = Maps.newHashMap();
         for (Entity productComponent : productComponents) {
@@ -647,7 +649,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 if (o1.getValue() == null) {
                     return -1;
                 }
-
+                if (PLANED_QUANTITY.equals(identifier)) {
+                    return o1.getKey().getDecimalField("quantity").compareTo(o2.getKey().getDecimalField("quantity"));
+                }
                 return o1.getValue().compareTo(o2.getValue());
             }
         });
