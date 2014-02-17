@@ -58,47 +58,47 @@
 									}
 								}
 							});
-							]]>
+						]]>
 					</script>
 				</smallButton>
 				<smallButton name="declineOrder" icon="deleteIcon16.png"
 					state="disabled">
 					<script>
-					<![CDATA[
-						this.addOnChangeListener({
-							onClick: function() {
-								if (this.state == "decline") {
-									if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.declineOrder.confirm)}")) {
-										#{form}.performEvent('changeState', ['05declined']);
-									};
-								} else if (this.state == "abandon") {
-									if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.abandonOrder.confirm)}")) {
-										#{form}.performEvent('changeState', ['07abandoned']);
-									};
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (this.state == "decline") {
+										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.declineOrder.confirm)}")) {
+											#{form}.performEvent('changeState', ['05declined']);
+										};
+									} else if (this.state == "abandon") {
+										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.abandonOrder.confirm)}")) {
+											#{form}.performEvent('changeState', ['07abandoned']);
+										};
+									}
 								}
-							}
-						});
-							]]>
+							});
+						]]>
 					</script>
 				</smallButton>
 				<smallButton name="interruptOrder" icon="pauseIcon16.png"
 					state="disabled">
 					<script>
 						<![CDATA[
-						this.addOnChangeListener({
-							onClick: function() {
-								if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.interruptOrder.confirm)}")) {
-									#{form}.performEvent('changeState', ['06interrupted']);
-								};
-							}
-						});
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.interruptOrder.confirm)}")) {
+										#{form}.performEvent('changeState', ['06interrupted']);
+									};
+								}
+							});
 						]]>
 					</script>
 				</smallButton>
 			</group>
 			<group name="export">
 				<bigButton name="print" icon="pdfIcon24.png"
-					action="#{form}.generateReportForEntity('orders','order','pdf')" >
+					action="#{form}.generateReportForEntity('orders','order','pdf')">
 					<script>
 						<![CDATA[
 							#{form}.addOnChangeListener({
@@ -124,9 +124,9 @@
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-										if(window.canClose()) {
-											#{form}.performEvent('showCopyOfTechnology', []);
-										}
+									if (window.canClose()) {
+										#{form}.performEvent('showCopyOfTechnology', []);
+									}
 								}
 							});		
 							#{form}.addOnChangeListener({
@@ -160,111 +160,109 @@
 					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
 					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
 					this.addOnChangeListener({
-					onSetValue: function(value) {
-						if (! value || ! value.content) {
-						return;
-						}
-						save.enable();
-						saveBack.enable();
-						saveNew.enable();
-						if (! value.content.entityId) {
-							cancel.disable();
-							del.disable();
-							acceptOrder.disable();
-							declineOrder.disable();
-							interruptOrder.disable();
-							return;
-						}
-						cancel.enable();
-						del.enable();
-						var state = #{state}.getValue().content.value;
-						var externalSynchronized = #{externalSynchronized}.getValue().content.value;
-						if (!state) {
-							return;
-						}
-						if (state == "01pending") {
-							acceptOrder.enable();
-							acceptOrder.state = "accept";
-							acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.acceptOrder)}");
-							acceptOrder.setIcon('startIcon16.png');
-							declineOrder.enable();
-							declineOrder.state = "decline";
-							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-							declineOrder.setIcon('deleteIcon16.png');
-							interruptOrder.disable();
-						} else if (state == "02accepted") {
-							acceptOrder.enable();
-							acceptOrder.state = "begin";
-							acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.activateOrder)}");
-							acceptOrder.setIcon('startIcon16.png');
-							declineOrder.enable();
-							declineOrder.state = "decline";
-							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-							declineOrder.setIcon('deleteIcon16.png');
-							interruptOrder.disable();
-							del.disable();
-						} else if (state == "03inProgress") {
-							acceptOrder.enable();
-							acceptOrder.state = "finish";
-							acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.finishOrder)}");
-							acceptOrder.setIcon('acceptIcon16.png');
-							declineOrder.enable();
-							declineOrder.state = "abandon";
-							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-							declineOrder.setIcon('deleteIcon16.png');
-							interruptOrder.enable();
-							del.disable();
-						}  else if (state == "04completed"){ 
-							cancel.disable();
-							del.disable();
-							acceptOrder.disable();
-							declineOrder.disable();
-							interruptOrder.disable()
-						} else if (state == "05declined"){
-							cancel.disable();
-							acceptOrder.disable();
-							declineOrder.disable();
-							interruptOrder.disable();
-						} else if (state == "06interrupted"){
-							acceptOrder.enable();
-							acceptOrder.state = "restart";
-							acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.restartOrder)}");
-							acceptOrder.setIcon('acceptIcon16.png');
-							declineOrder.enable();
-							declineOrder.state = "abandon";
-							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-							declineOrder.setIcon('deleteIcon16.png');
-							interruptOrder.disable();
-							del.disable();
-						} else if (state == "07abandoned"){ 
-							cancel.disable();
-							del.disable();
-							acceptOrder.disable();
-							declineOrder.disable();
-							interruptOrder.disable()
-						}
-						else {
-							save.disable();
-							saveBack.disable();
-							saveNew.disable();
-							cancel.disable();
-							del.disable();
-							acceptOrder.disable();
-							declineOrder.disable();
-							interruptOrder.disable();
-						}
-						
-						if(externalSynchronized == '0') {
-							save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-							saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-							saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-							cancel.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-							del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-							acceptOrder.disable();
-							declineOrder.disable();
-							interruptOrder.disable();
-						}
-						
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							save.enable();
+							saveBack.enable();
+							saveNew.enable();
+							if (! value.content.entityId) {
+								cancel.disable();
+								del.disable();
+								acceptOrder.disable();
+								declineOrder.disable();
+								interruptOrder.disable();
+								return;
+							}
+							cancel.enable();
+							del.enable();
+							var state = #{state}.getValue().content.value;
+							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
+							if (!state) {
+								return;
+							}
+							if (state == "01pending") {
+								acceptOrder.enable();
+								acceptOrder.state = "accept";
+								acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.acceptOrder)}");
+								acceptOrder.setIcon('startIcon16.png');
+								declineOrder.enable();
+								declineOrder.state = "decline";
+								declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
+								declineOrder.setIcon('deleteIcon16.png');
+								interruptOrder.disable();
+							} else if (state == "02accepted") {
+								acceptOrder.enable();
+								acceptOrder.state = "begin";
+								acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.activateOrder)}");
+								acceptOrder.setIcon('startIcon16.png');
+								declineOrder.enable();
+								declineOrder.state = "decline";
+								declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
+								declineOrder.setIcon('deleteIcon16.png');
+								interruptOrder.disable();
+								del.disable();
+							} else if (state == "03inProgress") {
+								acceptOrder.enable();
+								acceptOrder.state = "finish";
+								acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.finishOrder)}");
+								acceptOrder.setIcon('acceptIcon16.png');
+								declineOrder.enable();
+								declineOrder.state = "abandon";
+								declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
+								declineOrder.setIcon('deleteIcon16.png');
+								interruptOrder.enable();
+								del.disable();
+							} else if (state == "04completed") { 
+								cancel.disable();
+								del.disable();
+								acceptOrder.disable();
+								declineOrder.disable();
+								interruptOrder.disable()
+							} else if (state == "05declined") {
+								cancel.disable();
+								acceptOrder.disable();
+								declineOrder.disable();
+								interruptOrder.disable();
+							} else if (state == "06interrupted") {
+								acceptOrder.enable();
+								acceptOrder.state = "restart";
+								acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.restartOrder)}");
+								acceptOrder.setIcon('acceptIcon16.png');
+								declineOrder.enable();
+								declineOrder.state = "abandon";
+								declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
+								declineOrder.setIcon('deleteIcon16.png');
+								interruptOrder.disable();
+								del.disable();
+							} else if (state == "07abandoned") { 
+								cancel.disable();
+								del.disable();
+								acceptOrder.disable();
+								declineOrder.disable();
+								interruptOrder.disable()
+							} else {
+								save.disable();
+								saveBack.disable();
+								saveNew.disable();
+								cancel.disable();
+								del.disable();
+								acceptOrder.disable();
+								declineOrder.disable();
+								interruptOrder.disable();
+							}
+							
+							if (externalSynchronized == '0') {
+								save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								cancel.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								acceptOrder.disable();
+								declineOrder.disable();
+								interruptOrder.disable();
+							}
 						}
 					});
 					]]>
@@ -273,8 +271,9 @@
 					rows="10">
 					<layoutElement column="1" row="1">
 						<component type="select" name="orderType" field="orderType"
-							reference="orderType" hasDescription="true" >
-						<listener event="onSelectedEntityChange"
+							reference="orderType" hasDescription="true">
+
+							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 								method="onOrderTypeChange" />
 						</component>
@@ -313,6 +312,7 @@
 							reference="dateFrom" hasDescription="true">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
+
 							<listener event="onChange"
 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 								method="copyStartDateToDetails" />
@@ -323,6 +323,7 @@
 							reference="dateTo" hasDescription="true">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
+
 							<listener event="onChange"
 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 								method="copyFinishDateToDetails" />
@@ -359,39 +360,43 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2" height="2">
-						<component type="borderLayout" name="predefinedTechnology" reference="predefinedTechnology">
+						<component type="borderLayout" name="predefinedTechnology"
+							reference="predefinedTechnology">
 							<component type="gridLayout" name="predefinedTechnologyGridLayout"
-									columns="1" rows="2" reference="predefinedTechnologyGridLayout"
-									hasBorders="false">
-							
-							<layoutElement column="1" row="1">
-								<component type="input" name="defaultTechnology"
-									reference="defaultTechnology" field="defaultTechnology"
-									defaultEnabled="false" />
-							</layoutElement>
-							<layoutElement column="1" row="2">
-								<component type="lookup" name="technology" reference="technologyPrototype"
-									field="technologyPrototype" source="#{product}.technologies">
-									<option type="column" name="name" fields="name" link="true"
-									width="300" />
-									<option type="column" name="state" fields="state" />
-									<option type="searchable" value="name,number" />
-									<option type="orderable" value="name,number" />
+								columns="1" rows="2" reference="predefinedTechnologyGridLayout"
+								hasBorders="false">
+								<layoutElement column="1" row="1">
+									<component type="input" name="defaultTechnology"
+										reference="defaultTechnology" field="defaultTechnology"
+										defaultEnabled="false" />
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="lookup" name="technology" reference="technologyPrototype"
+										field="technologyPrototype" source="#{product}.technologies">
+										<option type="column" name="name" fields="name" link="true"
+											width="300" />
+										<option type="column" name="state" fields="state" />
+										<option type="searchable" value="name,number" />
+										<option type="orderable" value="name,number" />
 
-									<option type="expression"
-										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-									<option type="fieldCode" value="number" />
-									<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers" method="showPatternTechnology" />
-									<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
-										method="setDefaultNameUsingTechnology" />
-								</component>
-							</layoutElement>	
-							
+										<option type="expression"
+											value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+										<option type="fieldCode" value="number" />
+
+										<criteriaModifier
+											class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+											method="showPatternTechnology" />
+
+										<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
+											method="setDefaultNameUsingTechnology" />
+									</component>
+								</layoutElement>
+
 							</component>
 							<option type="label" value="predefinedTechnologyLabel" />
 						</component>
 					</layoutElement>
-					
+
 					<layoutElement column="2" row="4">
 						<component type="lookup" name="productionLine"
 							reference="productionLine" field="productionLine">
@@ -422,6 +427,7 @@
 							reference="doneQuantity" hasDescription="true">
 							<option type="labelWidth" value="55" />
 							<option type="alignment" value="right" />
+							
 							<listener event="onInputChange" method="setProductQuantities"
 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 						</component>
@@ -444,7 +450,6 @@
 					method="changeState" />
 				<listener event="showCopyOfTechnology" method="showCopyOfTechnology"
 					class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
-					
 			</component>
 		</windowTab>
 
@@ -768,6 +773,7 @@
 										reference="amountOfProductProduced" field="#{form}.amountOfProductProduced">
 										<option type="labelWidth" value="55" />
 										<option type="alignment" value="right" />
+										
 										<listener event="onInputChange" method="setDoneQuantity"
 											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 									</component>

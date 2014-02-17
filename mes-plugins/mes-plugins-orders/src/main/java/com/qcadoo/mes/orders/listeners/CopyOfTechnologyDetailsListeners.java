@@ -45,7 +45,7 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
-public class CopyOfTechnDetailsListeners {
+public class CopyOfTechnologyDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

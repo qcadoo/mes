@@ -23,19 +23,7 @@
  */
 package com.qcadoo.mes.orders;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.DEFAULT_TECHNOLOGY;
-import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_BATCH_REQUIRED;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
-import static com.qcadoo.mes.orders.states.constants.OrderState.DECLINED;
-
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -52,6 +40,7 @@ import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -59,6 +48,7 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -122,9 +112,9 @@ public class OrderService {
     }
 
     public final void fillProductionLine(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(FIELD_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
 
-        FieldComponent productionLine = (FieldComponent) view.getComponentByReference(PRODUCTION_LINE);
+        FieldComponent productionLine = (FieldComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
 
         Entity defaultProductionLine = getDefaultProductionLine();
 
@@ -139,14 +129,14 @@ public class OrderService {
             return;
         }
 
-        if (order.getBelongsToField(PRODUCTION_LINE) != null) {
+        if (order.getBelongsToField(OrderFields.PRODUCTION_LINE) != null) {
             return;
         }
 
         Entity defaultProductionLine = getDefaultProductionLine();
 
         if (defaultProductionLine != null) {
-            order.setField(PRODUCTION_LINE, defaultProductionLine);
+            order.setField(OrderFields.PRODUCTION_LINE, defaultProductionLine);
         }
     }
 
@@ -159,9 +149,9 @@ public class OrderService {
             return;
         }
 
-        FieldComponent productField = (FieldComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
+        FieldComponent productField = (FieldComponent) view.getComponentByReference(OrderFields.PRODUCT);
         FieldComponent technologyField = (FieldComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
-        FieldComponent name = (FieldComponent) view.getComponentByReference(NAME);
+        FieldComponent name = (FieldComponent) view.getComponentByReference(OrderFields.NAME);
 
         if (technologyField.getFieldValue() == null || productField.getFieldValue() == null
                 || StringUtils.hasText((String) name.getFieldValue())) {
@@ -179,22 +169,22 @@ public class OrderService {
         name.setFieldValue(makeDefaultName(productEntity, technologyEntity, locale));
     }
 
-    public String makeDefaultName(final Entity productEntity, Entity technologyEntity, final Locale locale) {
+    public String makeDefaultName(final Entity product, Entity technology, final Locale locale) {
 
-        if (technologyEntity == null) {
-            technologyEntity = technologyServiceO.getDefaultTechnology(productEntity);
+        if (technology == null) {
+            technology = technologyServiceO.getDefaultTechnology(product);
         }
 
         String technologyNumber = L_EMPTY_NUMBER;
-        if (technologyEntity != null) {
-            technologyNumber = "tech. " + technologyEntity.getStringField(FIELD_NUMBER);
+        if (technology != null) {
+            technologyNumber = "tech. " + technology.getStringField(TechnologyFields.NUMBER);
         }
 
         Calendar cal = Calendar.getInstance(locale);
         cal.setTime(new Date());
 
-        return translationService.translate("orders.order.name.default", locale, productEntity.getStringField(NAME),
-                productEntity.getStringField(FIELD_NUMBER), technologyNumber,
+        return translationService.translate("orders.order.name.default", locale, product.getStringField(OrderFields.NAME),
+                product.getStringField(ProductFields.NUMBER), technologyNumber,
                 cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
     }
 
@@ -207,8 +197,8 @@ public class OrderService {
     }
 
     public void setAndDisableState(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference(FIELD_FORM);
-        FieldComponent orderState = (FieldComponent) state.getComponentByReference(STATE);
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
+        FieldComponent orderState = (FieldComponent) state.getComponentByReference(OrderFields.STATE);
 
         orderState.setEnabled(false);
 
@@ -221,12 +211,12 @@ public class OrderService {
 
     public void generateOrderNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
-                FIELD_FORM, FIELD_NUMBER);
+                "form", OrderFields.NUMBER);
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState state) {
-        LookupComponent productField = (LookupComponent) state.getComponentByReference(BASIC_MODEL_PRODUCT);
-        FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference("defaultTechnology");
+        LookupComponent productField = (LookupComponent) state.getComponentByReference(OrderFields.PRODUCT);
+        FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
 
         Entity product = productField.getEntity();
         if (product != null) {
@@ -239,11 +229,11 @@ public class OrderService {
         }
     }
 
-    public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state) {
-        FieldComponent product = (FieldComponent) state.getComponentByReference(BASIC_MODEL_PRODUCT);
-        FieldComponent technology = (FieldComponent) state.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
-        FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference(DEFAULT_TECHNOLOGY);
-        FieldComponent plannedQuantity = (FieldComponent) state.getComponentByReference(PLANNED_QUANTITY);
+    public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState view) {
+        FieldComponent product = (FieldComponent) view.getComponentByReference(OrderFields.PRODUCT);
+        FieldComponent technology = (FieldComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
+        FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
 
         defaultTechnology.setEnabled(false);
 
@@ -257,23 +247,23 @@ public class OrderService {
     }
 
     public void disableFieldOrderForm(final ViewDefinitionState view) {
-        FormComponent order = (FormComponent) view.getComponentByReference(FIELD_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
 
         boolean disabled = false;
 
-        if (order.getEntityId() != null) {
-            Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                    order.getEntityId());
-            if (entity == null) {
+        if (orderForm.getEntityId() != null) {
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    orderForm.getEntityId());
+            if (order == null) {
                 return;
             }
-            String state = entity.getStringField(STATE);
+            String state = order.getStringField(OrderFields.STATE);
             if (!OrderState.PENDING.getStringValue().equals(state)) {
                 disabled = true;
             }
         }
 
-        order.setFormEnabled(!disabled);
+        orderForm.setFormEnabled(!disabled);
 
     }
 
@@ -303,27 +293,28 @@ public class OrderService {
 
     }
 
-    public boolean checkOrderPlannedQuantity(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField(BASIC_MODEL_PRODUCT);
+    public boolean checkOrderPlannedQuantity(final DataDefinition orderDD, final Entity order) {
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
         if (product == null) {
             return true;
         }
-        Object o = entity.getField(PLANNED_QUANTITY);
-        if (o == null) {
-            entity.addError(dataDefinition.getField(PLANNED_QUANTITY), "orders.validate.global.error.plannedQuantityError");
+        BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+        if (plannedQuantity == null) {
+            order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY), "orders.validate.global.error.plannedQuantityError");
             return false;
         } else {
             return true;
         }
     }
 
-    public boolean checkOrderTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField(BASIC_MODEL_PRODUCT);
+    public boolean checkOrderTechnology(final DataDefinition orderDD, final Entity order) {
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+
         if (product == null) {
             return true;
         }
-        if (entity.getField(TECHNOLOGY) == null && hasAnyTechnologies(product.getId())) {
-            entity.addError(dataDefinition.getField(TECHNOLOGY), "orders.validate.global.error.technologyError");
+        if (order.getField(OrderFields.TECHNOLOGY) == null && hasAnyTechnologies(product.getId())) {
+            order.addError(orderDD.getField(OrderFields.TECHNOLOGY), "orders.validate.global.error.technologyError");
             return false;
         }
         return true;
@@ -331,18 +322,19 @@ public class OrderService {
 
     public boolean checkComponentOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
         Entity order = null;
-        if (MODEL_ORDER.equals(entity.getDataDefinition().getName())) {
+        if (OrdersConstants.MODEL_ORDER.equals(entity.getDataDefinition().getName())) {
             order = entity;
         } else {
-            order = entity.getBelongsToField(MODEL_ORDER);
+            order = entity.getBelongsToField(OrdersConstants.MODEL_ORDER);
         }
 
         if (order == null) {
             return true;
         }
 
-        if (order.getField(TECHNOLOGY) == null) {
-            entity.addError(dataDefinition.getField(MODEL_ORDER), "orders.validate.global.error.orderMustHaveTechnology");
+        if (order.getField(OrderFields.TECHNOLOGY) == null) {
+            entity.addError(dataDefinition.getField(OrdersConstants.MODEL_ORDER),
+                    "orders.validate.global.error.orderMustHaveTechnology");
             return false;
         } else {
             return true;
@@ -350,14 +342,15 @@ public class OrderService {
     }
 
     public boolean checkIfOrderTechnologyHasOperations(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField(MODEL_ORDER);
+        Entity order = entity.getBelongsToField(OrdersConstants.MODEL_ORDER);
 
-        if (order == null || order.getField(TECHNOLOGY) == null) {
+        if (order == null || order.getField(OrderFields.TECHNOLOGY) == null) {
             return true;
         }
 
-        if (order.getBelongsToField(TECHNOLOGY).getTreeField("operationComponents").isEmpty()) {
-            entity.addError(dataDefinition.getField(MODEL_ORDER), "orders.validate.global.error.orderTechnologyMustHaveOperation");
+        if (order.getBelongsToField(OrderFields.TECHNOLOGY).getTreeField("operationComponents").isEmpty()) {
+            entity.addError(dataDefinition.getField(OrdersConstants.MODEL_ORDER),
+                    "orders.validate.global.error.orderTechnologyMustHaveOperation");
             return false;
         } else {
             return true;
@@ -370,7 +363,7 @@ public class OrderService {
 
         // TODO DEV_TEAM change this criteria to projection using count(*). This will enable us to avoid unnecessary mapping.
         SearchCriteriaBuilder searchCriteria = technologyDD.find().setMaxResults(1)
-                .belongsTo(BASIC_MODEL_PRODUCT, selectedProductId);
+                .belongsTo(TechnologyFields.PRODUCT, selectedProductId);
 
         SearchResult searchResult = searchCriteria.list();
 
@@ -387,53 +380,53 @@ public class OrderService {
     }
 
     public boolean checkRequiredBatch(final Entity order) {
-        Entity technology = (Entity) order.getField(TECHNOLOGY);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         if (technology != null) {
             if (order.getHasManyField("genealogies").isEmpty()) {
-                if ((Boolean) technology.getField(FIELD_BATCH_REQUIRED)) {
+                if (technology.getBooleanField("batchRequired")) {
                     return false;
                 }
-                if ((Boolean) technology.getField("shiftFeatureRequired")) {
+                if (technology.getBooleanField("shiftFeatureRequired")) {
                     return false;
                 }
-                if ((Boolean) technology.getField("postFeatureRequired")) {
+                if (technology.getBooleanField("postFeatureRequired")) {
                     return false;
                 }
-                if ((Boolean) technology.getField("otherFeatureRequired")) {
+                if (technology.getBooleanField("otherFeatureRequired")) {
                     return false;
                 }
                 for (Entity operationComponent : technology.getTreeField("operationComponents")) {
                     for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                        if ((Boolean) operationProductComponent.getField(FIELD_BATCH_REQUIRED)) {
+                        if (operationProductComponent.getBooleanField("batchRequired")) {
                             return false;
                         }
                     }
                 }
             }
             for (Entity genealogy : order.getHasManyField("genealogies")) {
-                if ((Boolean) technology.getField(FIELD_BATCH_REQUIRED) && genealogy.getField("batch") == null) {
+                if (technology.getBooleanField("batchRequired") && genealogy.getField("batch") == null) {
                     return false;
                 }
-                if ((Boolean) technology.getField("shiftFeatureRequired")) {
+                if (technology.getBooleanField("shiftFeatureRequired")) {
                     List<Entity> entityList = genealogy.getHasManyField("shiftFeatures");
                     if (entityList.isEmpty()) {
                         return false;
                     }
                 }
-                if ((Boolean) technology.getField("postFeatureRequired")) {
+                if (technology.getBooleanField("postFeatureRequired")) {
                     List<Entity> entityList = genealogy.getHasManyField("postFeatures");
                     if (entityList.isEmpty()) {
                         return false;
                     }
                 }
-                if ((Boolean) technology.getField("otherFeatureRequired")) {
+                if (technology.getBooleanField("otherFeatureRequired")) {
                     List<Entity> entityList = genealogy.getHasManyField("otherFeatures");
                     if (entityList.isEmpty()) {
                         return false;
                     }
                 }
                 for (Entity genealogyProductIn : genealogy.getHasManyField("productInComponents")) {
-                    if ((Boolean) (genealogyProductIn.getBelongsToField("productInComponent").getField(FIELD_BATCH_REQUIRED))) {
+                    if (genealogyProductIn.getBelongsToField("productInComponent").getBooleanField("batchRequired")) {
                         List<Entity> entityList = genealogyProductIn.getHasManyField("batch");
                         if (entityList.isEmpty()) {
                             return false;
@@ -442,6 +435,7 @@ public class OrderService {
                 }
             }
         }
+
         return true;
     }
 
@@ -465,7 +459,8 @@ public class OrderService {
     }
 
     public boolean checkChosenTechnologyState(final DataDefinition orderDD, final Entity order) {
-        if (DECLINED.getStringValue().equals(order.getStringField(STATE))) {
+        if (OrderState.DECLINED.getStringValue().equals(order.getStringField(OrderFields.STATE))
+                || OrderState.ABANDONED.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
             return true;
         }
         if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))
@@ -474,7 +469,7 @@ public class OrderService {
             if (technology == null) {
                 return true;
             }
-            TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(STATE));
+            TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(TechnologyFields.STATE));
 
             if (TechnologyState.CHECKED != technologyState && TechnologyState.ACCEPTED != technologyState) {
                 order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE),

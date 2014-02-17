@@ -40,9 +40,9 @@
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-										if(window.canClose()) {
-											#{form}.performEvent('clearTechnology', []);
-										}
+									if(window.canClose()) {
+										#{form}.performEvent('clearTechnology', []);
+									}
 								}
 							});		
 							#{form}.addOnChangeListener({
@@ -66,9 +66,9 @@
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-										if (window.canClose()) {
-											#{form}.performEvent('clearAndLoadPatternTechnology', []);
-										}
+									if (window.canClose()) {
+										#{form}.performEvent('clearAndLoadPatternTechnology', []);
+									}
 								}
 							});		
 							#{form}.addOnChangeListener({
@@ -92,6 +92,7 @@
 					state="disabled" action="#{form}.changeState(checkTechnology);">
 					<script>
 						<![CDATA[
+							#{form}.addOnChangeListener({
 								onSetValue: function(value) {
 									if (! value || ! value.content) {
 										return;
@@ -236,11 +237,11 @@
 					method="changeState" />
 
 				<listener event="clearTechnology" method="clearTechnology"
-					class="com.qcadoo.mes.orders.listeners.CopyOfTechnDetailsListeners" />
+					class="com.qcadoo.mes.orders.listeners.CopyOfTechnologyDetailsListeners" />
 				<listener event="clearAndLoadPatternTechnology" method="clearAndLoadPatternTechnology"
-					class="com.qcadoo.mes.orders.listeners.CopyOfTechnDetailsListeners" />
+					class="com.qcadoo.mes.orders.listeners.CopyOfTechnologyDetailsListeners" />
 				<listener event="save" method="changePatternTechnology"
-					class="com.qcadoo.mes.orders.listeners.CopyOfTechnDetailsListeners" />
+					class="com.qcadoo.mes.orders.listeners.CopyOfTechnologyDetailsListeners" />
 			</component>
 		</windowTab>
 

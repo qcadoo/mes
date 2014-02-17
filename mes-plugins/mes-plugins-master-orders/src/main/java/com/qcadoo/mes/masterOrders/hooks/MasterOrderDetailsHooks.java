@@ -7,7 +7,6 @@ import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORD
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -102,7 +101,7 @@ public class MasterOrderDetailsHooks {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view) {
-        LookupComponent productField = (LookupComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
+        LookupComponent productField = (LookupComponent) view.getComponentByReference("product");
         FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
 
         Entity product = productField.getEntity();

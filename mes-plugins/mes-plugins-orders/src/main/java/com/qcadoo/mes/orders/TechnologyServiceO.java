@@ -1,7 +1,5 @@
 package com.qcadoo.mes.orders;
 
-import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +42,7 @@ public class TechnologyServiceO {
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
         SearchResult searchResult = technologyDD.find().setMaxResults(1).add(SearchRestrictions.eq("master", true))
-                .add(SearchRestrictions.eq("active", true)).add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, product))
+                .add(SearchRestrictions.eq("active", true)).add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
                 .list();
 
         if (searchResult.getTotalNumberOfEntities() == 1) {

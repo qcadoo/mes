@@ -41,11 +41,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTIO
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
@@ -140,10 +137,10 @@ public class OrderDetailsHooks {
         orderProductQuantityHooks.fillProductUnit(view);
         changedEnabledDescriptionFieldForSpecificOrderState(view);
         setFieldsVisibility(view);
-        checkILlockTechnologyTree(view);
+        checkIfLlockTechnologyTree(view);
     }
 
-    private void checkILlockTechnologyTree(final ViewDefinitionState view) {
+    private void checkIfLlockTechnologyTree(final ViewDefinitionState view) {
 
         if (parameterService.getParameter().getBooleanField(ParameterFieldsO.LOCK_TECHNOLOGY_TREE)) {
             FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
@@ -251,12 +248,12 @@ public class OrderDetailsHooks {
         boolean externalSynchronized = (Boolean) entity.getField(EXTERNAL_SYNCHRONIZED);
 
         if (StringUtils.hasText(externalNumber) || !externalSynchronized) {
-            state.getComponentByReference(FIELD_NUMBER).setEnabled(false);
+            state.getComponentByReference(OrderFields.NUMBER).setEnabled(false);
             state.getComponentByReference(NAME).setEnabled(false);
             state.getComponentByReference(COMPANY).setEnabled(false);
             state.getComponentByReference(DEADLINE).setEnabled(false);
-            state.getComponentByReference(BASIC_MODEL_PRODUCT).setEnabled(false);
-            state.getComponentByReference(PLANNED_QUANTITY).setEnabled(false);
+            state.getComponentByReference(OrderFields.PRODUCT).setEnabled(false);
+            state.getComponentByReference(OrderFields.PLANNED_QUANTITY).setEnabled(false);
         }
     }
 

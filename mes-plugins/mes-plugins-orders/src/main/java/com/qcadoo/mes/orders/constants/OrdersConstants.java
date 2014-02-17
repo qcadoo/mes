@@ -32,6 +32,7 @@ public final class OrdersConstants {
     public static final String PLUGIN_IDENTIFIER = "orders";
 
     // MODEL
+
     public static final String MODEL_ORDER = "order";
 
     public static final String MODEL_ORDER_STATE_CHANGE = "orderStateChange";
@@ -49,24 +50,13 @@ public final class OrdersConstants {
     public static final String MODEL_TYPE_OF_CORRECTION_CAUSES = "typeOfCorrectionCauses";
 
     // VIEW
+
     public static final String VIEW_ORDER_DETAILS = "orderDetails";
 
     public static final String VIEW_ORDERS_LIST = "ordersList";
 
-    public static final String BASIC_MODEL_PRODUCT = "product";
-
-    public static final String TECHNOLOGIES_MODEL_TECHNOLOGY = "technology";
-
-    public static final String FIELD_STATE = "state";
-
-    public static final String FIELD_NUMBER = "number";
-
     public static final String FIELD_FORM = "form";
 
     public static final String FIELD_GRID = "grid";
-
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
-
-    public static final String FIELD_BATCH_REQUIRED = "batchRequired";
 
 }
