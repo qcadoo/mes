@@ -93,6 +93,7 @@ public class OperationDurationDetailsInOrderListeners {
 
         if (!StringUtils.hasText((String) startTimeField.getFieldValue())) {
             startTimeField.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
+
             return;
         }
 
@@ -105,6 +106,8 @@ public class OperationDurationDetailsInOrderListeners {
         FieldComponent includeTpzField = (FieldComponent) viewDefinitionState.getComponentByReference(OrderFieldsPS.INCLUDE_TPZ);
         FieldComponent includeAdditionalTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OrderFieldsPS.INCLUDE_ADDITIONAL_TIME);
+
+        boolean isGenerated = false;
 
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
@@ -139,26 +142,42 @@ public class OperationDurationDetailsInOrderListeners {
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
+
             generatedEndDateField.setFieldValue(null);
-            generatedEndDateField.requestComponentUpdateState();
         } else {
             order.setField(OrderFieldsPS.REALIZATION_TIME, maxPathTime);
+
             Date startTime = order.getDateField(OrderFields.DATE_FROM);
+
             if (startTime == null) {
                 startTimeField.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
-                Date generatedStopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-                if (generatedStopTime == null) {
+                Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
+
+                if (stopTime == null) {
                     orderForm.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
+
+                    generatedEndDateField.setFieldValue(null);
                 } else {
-                    generatedEndDateField.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
-                    order.setField(OrderFieldsPS.GENERATED_END_DATE,
-                            orderRealizationTimeService.setDateToField(generatedStopTime));
+                    generatedEndDateField.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
+
+                    order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService.setDateToField(stopTime));
+
                     scheduleOrder(order.getId());
+
+                    isGenerated = true;
                 }
-                generatedEndDateField.requestComponentUpdateState();
+
+                orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", MessageType.INFO, false);
             }
+
             order.getDataDefinition().save(order);
+        }
+
+        generatedEndDateField.requestComponentUpdateState();
+
+        if (isGenerated) {
+            orderForm.addMessage("productionScheduling.info.calculationGenerated", MessageType.SUCCESS);
         }
     }
 

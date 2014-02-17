@@ -69,8 +69,6 @@ public class OrderTimePredictionListeners {
 
     private static final String L_FORM = "form";
 
-    private static final String L_QUANTITY = "quantity";
-
     private static final String L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
 
     private static final Integer MAX = 7;
@@ -130,6 +128,7 @@ public class OrderTimePredictionListeners {
 
             if (product != null) {
                 unitField.setFieldValue(product.getField(ProductFields.UNIT));
+                unitField.requestComponentUpdateState();
             }
         }
     }
@@ -139,10 +138,12 @@ public class OrderTimePredictionListeners {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         FieldComponent technologyLookup = (FieldComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
-        FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(L_QUANTITY);
+        FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
         FieldComponent dateFromField = (FieldComponent) view.getComponentByReference(OrderFields.DATE_FROM);
         FieldComponent dateToField = (FieldComponent) view.getComponentByReference(OrderFields.DATE_TO);
         FieldComponent productionLineLookup = (FieldComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+
+        boolean isGenerated = false;
 
         if (technologyLookup.getFieldValue() == null) {
             technologyLookup.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
@@ -237,9 +238,8 @@ public class OrderTimePredictionListeners {
 
         productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
 
-        boolean saved = true;
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForTechnology(technology, operationRuns,
-                includeTpz, includeAdditionalTime, productionLine, saved);
+                includeTpz, includeAdditionalTime, productionLine, true);
 
         laborWorkTimeField.setFieldValue(workTime.getLaborWorkTime());
         machineWorkTimeField.setFieldValue(workTime.getMachineWorkTime());
@@ -250,34 +250,48 @@ public class OrderTimePredictionListeners {
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
+
             dateToField.setFieldValue(null);
         } else {
             Date startTime = DateUtils.parseDate(dateFromField.getFieldValue());
-            Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-
-            if (stopTime != null) {
-                startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
-            }
 
             if (startTime == null) {
-                dateFromField.setFieldValue(null);
+                dateFromField.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
-                orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", MessageType.INFO, false);
-            }
+                Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
 
-            if (stopTime == null) {
-                dateToField.setFieldValue(null);
-            } else {
-                dateToField.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
-            }
+                if (stopTime == null) {
+                    orderForm.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
 
-            scheduleOperationComponents(technology.getId(), startTime);
+                    dateToField.setFieldValue(null);
+                } else {
+                    dateToField.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
+
+                    startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
+
+                    scheduleOperationComponents(technology.getId(), startTime);
+
+                    isGenerated = true;
+                }
+
+                if (startTime != null) {
+                    orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", MessageType.INFO, false);
+                }
+            }
         }
 
         laborWorkTimeField.requestComponentUpdateState();
         machineWorkTimeField.requestComponentUpdateState();
         dateFromField.requestComponentUpdateState();
         dateToField.requestComponentUpdateState();
+
+        orderForm.setEntity(orderForm.getEntity());
+
+        state.performEvent(view, "refresh", new String[0]);
+
+        if (isGenerated) {
+            orderForm.addMessage("productionScheduling.info.calculationGenerated", MessageType.SUCCESS);
+        }
     }
 
     private void scheduleOperationComponents(final Long technologyId, final Date startDate) {
