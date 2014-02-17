@@ -83,7 +83,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFOTest {
     private DataDefinition orderDD;
 
     @Mock
-    private Entity order;
+    private Entity order, technology;
 
     @Before
     public void init() {
@@ -114,6 +114,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFOTest {
 
         given(generatedEndDateField.getFieldValue()).willReturn(generatedEndDate);
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.ACCEPTED);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
 
         // when
         operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
@@ -129,6 +130,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFOTest {
 
         given(generatedEndDateField.getFieldValue()).willReturn(generatedEndDate);
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.IN_PROGRESS);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
 
         // when
         operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
@@ -144,6 +146,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFOTest {
 
         given(generatedEndDateField.getFieldValue()).willReturn(generatedEndDate);
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.ABANDONED);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
 
         // when
         operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
@@ -159,6 +162,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFOTest {
 
         given(generatedEndDateField.getFieldValue()).willReturn(generatedEndDate);
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.DECLINED);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
 
         // when
         operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);

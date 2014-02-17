@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeTaskOTFO;
 import com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -35,15 +36,19 @@ import com.qcadoo.model.api.Entity;
 public class OperationalTaskHooksOTFOOverrideUtil {
 
     public void onSaveForSubcontracted(final DataDefinition operationalTaskDD, final Entity operationalTask) {
-        Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
+        String typeTask = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
 
-        Entity technologyOperationComponent = operationalTask
-                .getBelongsToField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
+        if (OperationalTaskTypeTaskOTFO.EXECUTION_OPERATION_IN_ORDER.getStringValue().equals(typeTask)) {
+            Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
 
-        if ((order == null) || (technologyOperationComponent == null) || isSubcontracting(technologyOperationComponent)) {
-            operationalTask.setField(OperationalTaskFields.NAME, null);
-            operationalTask.setField(OperationalTaskFields.DESCRIPTION, null);
-            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, null);
+            Entity technologyOperationComponent = operationalTask
+                    .getBelongsToField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
+
+            if ((order == null) || (technologyOperationComponent == null) || isSubcontracting(technologyOperationComponent)) {
+                operationalTask.setField(OperationalTaskFields.NAME, null);
+                operationalTask.setField(OperationalTaskFields.DESCRIPTION, null);
+                operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, null);
+            }
         }
     }
 

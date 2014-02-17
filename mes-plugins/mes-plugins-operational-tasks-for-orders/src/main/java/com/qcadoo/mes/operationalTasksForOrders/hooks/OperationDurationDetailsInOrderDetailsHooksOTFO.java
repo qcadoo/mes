@@ -55,7 +55,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFO {
         RibbonGroup operationalTasks = window.getRibbon().getGroupByName(L_OPERATIONAL_TASKS);
         RibbonActionItem createOperationalTasks = operationalTasks.getItemByName(L_CREATE_OPERATIONAL_TASKS);
 
-        if (isGenerated(view) && orderHasCorrectState(view)) {
+        if (isGenerated(view) && orderHasTechnologyAndCorrectState(view)) {
             createOperationalTasks.setEnabled(true);
         } else {
             createOperationalTasks.setEnabled(false);
@@ -70,8 +70,8 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFO {
         return !StringUtils.isEmpty((String) generatedEndDateField.getFieldValue());
     }
 
-    private boolean orderHasCorrectState(final ViewDefinitionState viewDefinitionState) {
-        FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+    private boolean orderHasTechnologyAndCorrectState(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Long orderId = orderForm.getEntityId();
 
@@ -81,8 +81,13 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFO {
 
         Entity order = orderForm.getEntity().getDataDefinition().get(orderId);
 
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         String state = order.getStringField(OrderFields.STATE);
 
+        return ((technology != null) && checkIfOrderStateIsCorrect(state));
+    }
+
+    private boolean checkIfOrderStateIsCorrect(final String state) {
         return (OrderStateStringValues.PENDING.equals(state) || OrderStateStringValues.ACCEPTED.equals(state)
                 || OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED.equals(state));
     }

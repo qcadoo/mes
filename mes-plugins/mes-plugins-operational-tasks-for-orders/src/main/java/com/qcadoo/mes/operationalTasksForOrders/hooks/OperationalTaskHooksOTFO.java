@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeTaskOTFO;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksForOrdersConstants;
 import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -82,33 +83,40 @@ public class OperationalTaskHooksOTFO {
     }
 
     private void fillNameAndDescription(final Entity operationalTask) {
-        Entity techOperCompOperationalTask = operationalTask
-                .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
+        String typeTask = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
 
-        if (techOperCompOperationalTask == null) {
-            operationalTask.setField(OperationalTaskFields.NAME, null);
-            operationalTask.setField(OperationalTaskFields.DESCRIPTION, null);
-        } else {
-            Entity technologyOperationComponent = techOperCompOperationalTask
-                    .getBelongsToField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT);
+        if (OperationalTaskTypeTaskOTFO.EXECUTION_OPERATION_IN_ORDER.getStringValue().equals(typeTask)) {
+            Entity techOperCompOperationalTask = operationalTask
+                    .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
+            if (techOperCompOperationalTask == null) {
+                operationalTask.setField(OperationalTaskFields.NAME, null);
+                operationalTask.setField(OperationalTaskFields.DESCRIPTION, null);
+            } else {
+                Entity technologyOperationComponent = techOperCompOperationalTask
+                        .getBelongsToField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-            Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+                Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
 
-            operationalTask.setField(OperationalTaskFields.NAME, operation.getStringField(OperationFields.NAME));
-            operationalTask.setField(OperationalTaskFields.DESCRIPTION,
-                    technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
+                operationalTask.setField(OperationalTaskFields.NAME, operation.getStringField(OperationFields.NAME));
+                operationalTask.setField(OperationalTaskFields.DESCRIPTION,
+                        technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
+            }
         }
     }
 
     private void fillProductionLine(final Entity operationalTask) {
-        Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
+        String typeTask = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
 
-        if (order == null) {
-            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, null);
-        } else {
-            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        if (OperationalTaskTypeTaskOTFO.EXECUTION_OPERATION_IN_ORDER.getStringValue().equals(typeTask)) {
+            Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
 
-            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, productionLine);
+            if (order == null) {
+                operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, null);
+            } else {
+                Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+
+                operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, productionLine);
+            }
         }
     }
 
