@@ -82,6 +82,11 @@
 		    <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange" />
 		</model:model-field>
 		
+		<model:model-field plugin="basic" model="shift">
+			<model:hasMany name="technologyStateChanges" plugin="technologies"
+				model="technologyStateChange" joinField="shift" cascade="nullify" />
+		</model:model-field>
+		
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="operationProductInComponents"
 				plugin="technologies" model="operationProductInComponent" joinField="product"

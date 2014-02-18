@@ -87,7 +87,12 @@
 			<model:belongsTo name="deliveryStateChange" plugin="deliveries"
 				model="deliveryStateChange" />
 		</model:model-field>
-	
+		
+		<model:model-field plugin="basic" model="shift">
+			<model:hasMany name="deliveryStateChanges" plugin="deliveries"
+				model="deliveryStateChange" joinField="shift" cascade="nullify" />
+		</model:model-field>
+		
 		<model:model-field plugin="basic" model="parameter">
 			<model:string name="defaultDescription">
 				<model:validatesLength max="2048" />

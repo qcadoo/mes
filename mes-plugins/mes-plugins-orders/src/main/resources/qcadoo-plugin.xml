@@ -79,6 +79,11 @@
 		<model:model-field plugin="states" model="message">
 		    <model:belongsTo name="orderStateChange" plugin="orders" model="orderStateChange" />
 		</model:model-field>
+	
+		<model:model-field plugin="basic" model="shift">
+			<model:hasMany name="orderStateChanges" plugin="orders"
+				model="orderStateChange" joinField="shift" cascade="nullify" />
+		</model:model-field>
 		
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="orders" plugin="orders" model="order"

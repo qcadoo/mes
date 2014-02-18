@@ -91,22 +91,6 @@
 		<model:model model="operationTimeComponent" resource="model/operationTimeComponent.xml" />
 		<model:model model="operationPieceworkComponent" resource="model/operationPieceworkComponent.xml" />
 
-		<menu:menu-item name="productionTracking" category="ordersTracking"
-			view="productionTrackingsList" />
-		<menu:menu-item name="productionBalance" category="ordersTracking"
-			view="productionBalancesList" />
-		<menu:menu-item name="productionTrackingReports"
-			category="ordersTracking" view="productionTrackingReportsList" />
-
-		<view:view resource="view/productionTrackingsList.xml" />
-		<view:view resource="view/productionTrackingDetails.xml" />
-		<view:view resource="view/productionBalancesList.xml" />
-		<view:view resource="view/productionBalanceDetails.xml" />
-		<view:view resource="view/productionTrackingReportsList.xml" />
-		<view:view resource="view/productionTrackingReportDetails.xml" />
-		<view:view resource="view/trackingOperationProductInComponentDetails.xml" />
-		<view:view resource="view/trackingOperationProductOutComponentDetails.xml" />
-
 		<model:model-field model="parameter" plugin="basic">
 			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
 				default="02cumulated" />
@@ -151,6 +135,12 @@
 		<model:model-field model="message" plugin="states">
 			<model:belongsTo name="productionTrackingStateChange"
 				plugin="productionCounting" model="productionTrackingStateChange" />
+		</model:model-field>
+		
+		<model:model-field plugin="basic" model="shift">
+			<model:hasMany name="productionTrackingStateChanges"
+				plugin="productionCounting" model="productionTrackingStateChange"
+				joinField="shift" cascade="nullify" />
 		</model:model-field>
 		
 		<model:model-field model="order" plugin="orders">
@@ -208,6 +198,21 @@
 				method="onView" />
 		</model:model-hook>
 
+		<menu:menu-item name="productionTracking" category="ordersTracking"
+			view="productionTrackingsList" />
+		<menu:menu-item name="productionBalance" category="ordersTracking"
+			view="productionBalancesList" />
+		<menu:menu-item name="productionTrackingReports"
+			category="ordersTracking" view="productionTrackingReportsList" />
+
+		<view:view resource="view/productionTrackingsList.xml" />
+		<view:view resource="view/productionTrackingDetails.xml" />
+		<view:view resource="view/productionBalancesList.xml" />
+		<view:view resource="view/productionBalanceDetails.xml" />
+		<view:view resource="view/productionTrackingReportsList.xml" />
+		<view:view resource="view/productionTrackingReportDetails.xml" />
+		<view:view resource="view/trackingOperationProductInComponentDetails.xml" />
+		<view:view resource="view/trackingOperationProductOutComponentDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 		<view:resource uri="public/**/*" />
