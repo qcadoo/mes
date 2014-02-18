@@ -28,16 +28,32 @@ import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.WORK
 import static com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields.QUANTITY;
 import static com.qcadoo.mes.technologies.constants.OperationFields.WORKSTATION_TYPE;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+import static com.qcadoo.model.api.search.SearchProjections.*;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
+import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
+import com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.IntegerUtils;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 
 @Service
 public class ProductionLinesServiceImpl implements ProductionLinesService {
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Override
     public Integer getWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
         List<Entity> workstationTypeComponents = productionLine.getHasManyField(WORKSTATION_TYPE_COMPONENTS);
 
@@ -55,6 +71,27 @@ public class ProductionLinesServiceImpl implements ProductionLinesService {
         }
 
         return productionLine.getIntegerField(QUANTITY_FOR_OTHER_WORKSTATION_TYPES);
+    }
+
+    @Override
+    public Integer getWorkstationTypesCount(final Long productionLineId, final String workstationTypeNumber) {
+        Entity projection = getWorkstationTypesSumProjection(productionLineId, workstationTypeNumber);
+        return IntegerUtils.convertNullToZero(projection.getField("sum"));
+    }
+
+    private Entity getWorkstationTypesSumProjection(final Long productionLineId, final String workstationTypeNumber) {
+        SearchCriteriaBuilder scb = getWorkstationTypeComponentDD().find();
+        scb.createCriteria(WorkstationTypeComponentFields.PRODUCTIONLINE, "pl").add(idEq(productionLineId));
+        scb.createCriteria(WorkstationTypeComponentFields.WORKSTATIONTYPE, "wt").add(
+                eq(WorkstationTypeFields.NUMBER, workstationTypeNumber));
+        scb.setProjection(list().add(alias(sum(WorkstationTypeComponentFields.QUANTITY), "sum")).add(rowCount()));
+        scb.addOrder(asc("sum"));
+        return scb.setMaxResults(1).uniqueResult();
+    }
+
+    private DataDefinition getWorkstationTypeComponentDD() {
+        return dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
+                ProductionLinesConstants.MODEL_WORKSTATION_TYPE_COMPONENT);
     }
 
 }

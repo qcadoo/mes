@@ -29,4 +29,6 @@ public interface ProductionLinesService {
 
     Integer getWorkstationTypesCount(final Entity operationComponent, final Entity productionLine);
 
+    Integer getWorkstationTypesCount(final Long productionLineId, final String workstationName);
+
 }
