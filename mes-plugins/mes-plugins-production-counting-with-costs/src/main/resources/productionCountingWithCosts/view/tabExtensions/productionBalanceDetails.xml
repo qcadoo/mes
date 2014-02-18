@@ -76,6 +76,7 @@
 							<component type="input" name="averageMachineHourlyCost"
 								field="#{form}.averageMachineHourlyCost" reference="averageMachineHourlyCost"
 								hasDescription="true">
+								<option type="labelWidth" value="60" />
 								<option type="alignment" value="right" />
 							</component>
 						</layoutElement>
@@ -90,6 +91,7 @@
 							<component type="input" name="averageLaborHourlyCost"
 								field="#{form}.averageLaborHourlyCost" reference="averageLaborHourlyCost" 
 								hasDescription="true">
+								<option type="labelWidth" value="60" />
 								<option type="alignment" value="right" />
 							</component>
 						</layoutElement>
@@ -113,6 +115,7 @@
 						<layoutElement column="1" row="1" width="3">
 							<component type="input" name="productionCostMargin"
 								field="#{form}.productionCostMargin" reference="productionCostMargin">
+								<option type="labelWidth" value="60" />
 								<option type="alignment" value="right" />
 							</component>
 						</layoutElement>
@@ -126,6 +129,7 @@
 						<layoutElement column="1" row="2" width="3">
 							<component type="input" name="materialCostMargin"
 								field="#{form}.materialCostMargin" reference="materialCostMargin">
+								<option type="labelWidth" value="60" />
 								<option type="alignment" value="right" />
 							</component>
 						</layoutElement>
@@ -139,6 +143,7 @@
 						<layoutElement column="1" row="3" width="3">
 							<component type="input" name="additionalOverhead"
 								field="#{form}.additionalOverhead" reference="additionalOverhead">
+								<option type="labelWidth" value="60" />
 								<option type="alignment" value="right" />
 							</component>
 						</layoutElement>

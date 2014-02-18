@@ -35,9 +35,12 @@ import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ProductionBalanceDetailsHooks {
@@ -83,16 +86,16 @@ public class ProductionBalanceDetailsHooks {
     public void changeFieldsAndGridsVisibility(final ViewDefinitionState view) {
         FormComponent productionBalanceForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        FieldComponent generatedField = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.GENERATED);
-        FieldComponent orderLookup = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.ORDER);
+        CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(ProductionBalanceFields.GENERATED);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionBalanceFields.ORDER);
         FieldComponent calculateOperationCostModeField = (FieldComponent) view
                 .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
 
-        String generated = (String) generatedField.getFieldValue();
-
-        if ((productionBalanceForm.getEntityId() == null) || "0".equals(generated)) {
+        if ((productionBalanceForm.getEntityId() == null) || !generatedCheckBox.isChecked()) {
             productionCountingService.setComponentsVisibility(view, L_GRIDS_AND_LAYOUTS, false, false);
         }
+
+        String calculateOperationCostMode = (String) calculateOperationCostModeField.getFieldValue();
 
         Long orderId = (Long) orderLookup.getFieldValue();
 
@@ -104,43 +107,52 @@ public class ProductionBalanceDetailsHooks {
 
         Entity order = orderService.getOrder(orderId);
 
-        if ("1".equals(generated) && (calculateOperationCostModeField != null) && (order != null)) {
+        if (generatedCheckBox.isChecked() && (calculateOperationCostModeField != null) && (order != null)) {
+            ComponentState inputProductsGridComponent = view.getComponentByReference(L_INPUT_PRODUCTS_GRID);
+            ComponentState outputProductsGridComponent = view.getComponentByReference(L_OUTPUT_PRODUCTS_GRID);
+
             if (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT)) {
-                view.getComponentByReference(L_INPUT_PRODUCTS_GRID).setVisible(true);
+                inputProductsGridComponent.setVisible(true);
             }
 
             if (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT)) {
-                view.getComponentByReference(L_OUTPUT_PRODUCTS_GRID).setVisible(true);
+                outputProductsGridComponent.setVisible(true);
             }
 
-            String calculateOperationCostMode = (String) calculateOperationCostModeField.getFieldValue();
+            ComponentState timeGridLayoutComponent = view.getComponentByReference(L_TIME_GRID_LAYOUT);
+
+            ComponentState machineTimeBorderLayoutComponent = view.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT);
+            ComponentState laborTimeBorderLayoutComponent = view.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT);
+            ComponentState operationsTimeGridComponent = view.getComponentByReference(L_OPERATIONS_TIME_GRID);
+
+            ComponentState operationsPieceworkGridComponent = view.getComponentByReference(L_OPERATIONS_PIECEWORK_GRID);
 
             if (productionCountingService.isCalculateOperationCostModeHourly(calculateOperationCostMode)
                     && order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
-                view.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(true);
+                timeGridLayoutComponent.setVisible(true);
 
                 if (productionCountingService.isTypeOfProductionRecordingForEach(order
                         .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
-                    view.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(true);
-                    view.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(true);
-                    view.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(true);
+                    machineTimeBorderLayoutComponent.setVisible(true);
+                    laborTimeBorderLayoutComponent.setVisible(true);
+                    operationsTimeGridComponent.setVisible(true);
                 } else if (productionCountingService.isTypeOfProductionRecordingCumulated(order
                         .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
-                    view.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(true);
-                    view.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(true);
-                    view.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(false);
+                    machineTimeBorderLayoutComponent.setVisible(true);
+                    laborTimeBorderLayoutComponent.setVisible(true);
+                    operationsTimeGridComponent.setVisible(false);
                 }
 
-                view.getComponentByReference(L_OPERATIONS_PIECEWORK_GRID).setVisible(false);
+                operationsPieceworkGridComponent.setVisible(false);
             } else if (productionCountingService.isCalculateOperationCostModePiecework(calculateOperationCostMode)
                     && order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)) {
-                view.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(false);
+                timeGridLayoutComponent.setVisible(false);
 
-                view.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(false);
-                view.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(false);
-                view.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(false);
+                machineTimeBorderLayoutComponent.setVisible(false);
+                laborTimeBorderLayoutComponent.setVisible(false);
+                operationsTimeGridComponent.setVisible(false);
 
-                view.getComponentByReference(L_OPERATIONS_PIECEWORK_GRID).setVisible(true);
+                operationsPieceworkGridComponent.setVisible(true);
             }
         }
     }
@@ -150,11 +162,9 @@ public class ProductionBalanceDetailsHooks {
     }
 
     public void disableFieldsAndGridsWhenGenerated(final ViewDefinitionState view) {
-        FieldComponent generatedField = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.GENERATED);
+        CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(ProductionBalanceFields.GENERATED);
 
-        String generated = (String) generatedField.getFieldValue();
-
-        if ((generated != null) && "1".equals(generated)) {
+        if (generatedCheckBox.isChecked()) {
             productionCountingService.setComponentsState(view, L_FIELDS_AND_CHECKBOXES, false, true);
             productionCountingService.setComponentsState(view, L_GRIDS, false, false);
         } else {

@@ -47,11 +47,14 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class ProductionBalanceDetailsHooksPCWC {
+
+    private static final String L_FORM = "form";
 
     private static final String L_ASSUMPTIONS_BORDER_LAYOUT = "assumptionsBorderLayout";
 
@@ -101,86 +104,105 @@ public class ProductionBalanceDetailsHooksPCWC {
     @Autowired
     private OrderService orderService;
 
-    public void changeFieldsAndGridsVisibility(final ViewDefinitionState viewDefinitionState) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+    public void changeFieldsAndGridsVisibility(final ViewDefinitionState view) {
+        FormComponent productionBalanceForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        FieldComponent generated = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.GENERATED);
+        FieldComponent orderLookup = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.ORDER);
+        FieldComponent calculateOperationCostModeField = (FieldComponent) view
+                .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
+        CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(ProductionBalanceFields.GENERATED);
 
-        if ((form == null) || (form.getEntityId() == null) || (generated == null) || "0".equals(generated.getFieldValue())) {
-            productionCountingService.setComponentsVisibility(viewDefinitionState, L_COST_GRIDS_AND_LAYOUTS, false, false);
+        if ((productionBalanceForm.getEntityId() == null) || !generatedCheckBox.isChecked()) {
+            productionCountingService.setComponentsVisibility(view, L_COST_GRIDS_AND_LAYOUTS, false, false);
 
             return;
         }
-
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ProductionBalanceFields.ORDER);
-        FieldComponent calculateOperationCostModeField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
 
         String calculateOperationCostMode = (String) calculateOperationCostModeField.getFieldValue();
 
         Long orderId = (Long) orderLookup.getFieldValue();
 
         if (orderId == null) {
-            productionCountingService.setComponentsVisibility(viewDefinitionState, L_COST_GRIDS_AND_LAYOUTS, false, false);
+            productionCountingService.setComponentsVisibility(view, L_COST_GRIDS_AND_LAYOUTS, false, false);
 
             return;
         }
 
         Entity order = orderService.getOrder(orderId);
 
-        if ("1".equals(generated.getFieldValue()) && (calculateOperationCostModeField != null) && (order != null)) {
-            viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(true);
+        if (generatedCheckBox.isChecked() && (calculateOperationCostModeField != null) && (order != null)) {
+            ComponentState materialCostsGridLayoutComponent = view.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT);
 
-            viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(true);
-            viewDefinitionState.getComponentByReference(L_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS_GRID).setVisible(true);
+            ComponentState componentsCostSummaryBorderLayoutComponent = view
+                    .getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT);
+            ComponentState technologyOperationProductInComponentsGridComponent = view
+                    .getComponentByReference(L_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS_GRID);
+
+            ComponentState workCostsGridLayoutComponent = view.getComponentByReference(L_WORK_COSTS_GRID_LAYOUT);
+
+            ComponentState machineCostsBorderLayoutComponent = view.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT);
+            ComponentState laborCostsBorderLayoutComponent = view.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT);
+            ComponentState operationsCostsGridComponent = view.getComponentByReference(L_OPERATIONS_COST_GRID);
+
+            ComponentState pieceworkCostsGridLayoutComponent = view.getComponentByReference(L_PIECEWORK_COSTS_GRID_LAYOUT);
+            ComponentState pieceworkCostsBorderLayoutComponent = view.getComponentByReference(L_PIECEWORK_COSTS_BORDER_LAYOUT);
+            ComponentState operationsPieceworkCostGridComponent = view.getComponentByReference(L_OPERATIONS_PIECEWORK_COST_GRID);
+
+            materialCostsGridLayoutComponent.setVisible(true);
+
+            componentsCostSummaryBorderLayoutComponent.setVisible(true);
+            technologyOperationProductInComponentsGridComponent.setVisible(true);
 
             if (productionCountingService.isCalculateOperationCostModeHourly(calculateOperationCostMode)
                     && order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
-                viewDefinitionState.getComponentByReference(L_WORK_COSTS_GRID_LAYOUT).setVisible(true);
+                workCostsGridLayoutComponent.setVisible(true);
 
                 if (productionCountingService.isTypeOfProductionRecordingForEach(order
                         .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
-                    viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(true);
-                    viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(true);
-                    viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(true);
+                    machineCostsBorderLayoutComponent.setVisible(true);
+                    laborCostsBorderLayoutComponent.setVisible(true);
+                    operationsCostsGridComponent.setVisible(true);
                 } else if (productionCountingService.isTypeOfProductionRecordingCumulated(order
                         .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
-                    viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(true);
-                    viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(true);
-                    viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(false);
+                    machineCostsBorderLayoutComponent.setVisible(true);
+                    laborCostsBorderLayoutComponent.setVisible(true);
+                    operationsCostsGridComponent.setVisible(false);
                 }
 
-                viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_GRID_LAYOUT).setVisible(false);
+                pieceworkCostsGridLayoutComponent.setVisible(false);
 
-                viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_BORDER_LAYOUT).setVisible(false);
-                viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_COST_GRID).setVisible(false);
+                pieceworkCostsBorderLayoutComponent.setVisible(false);
+                operationsPieceworkCostGridComponent.setVisible(false);
             } else if (productionCountingService.isCalculateOperationCostModePiecework(calculateOperationCostMode)
                     && order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)) {
-                viewDefinitionState.getComponentByReference(L_WORK_COSTS_GRID_LAYOUT).setVisible(false);
+                workCostsGridLayoutComponent.setVisible(false);
 
-                viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(false);
-                viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(false);
-                viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(false);
+                machineCostsBorderLayoutComponent.setVisible(false);
+                laborCostsBorderLayoutComponent.setVisible(false);
+                operationsCostsGridComponent.setVisible(false);
 
-                viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_GRID_LAYOUT).setVisible(true);
+                pieceworkCostsGridLayoutComponent.setVisible(true);
 
-                viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_BORDER_LAYOUT).setVisible(true);
-                viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_COST_GRID).setVisible(true);
+                pieceworkCostsBorderLayoutComponent.setVisible(true);
+                operationsPieceworkCostGridComponent.setVisible(true);
             }
         }
     }
 
-    public void changeAssumptionsVisibility(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        changeAssumptionsVisibility(viewDefinitionState);
+    public void changeAssumptionsVisibility(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        changeAssumptionsVisibility(view);
     }
 
-    public void changeAssumptionsVisibility(final ViewDefinitionState viewDefinitionState) {
-        ComponentState assumptionsBorderLayout = viewDefinitionState.getComponentByReference(L_ASSUMPTIONS_BORDER_LAYOUT);
+    public void changeAssumptionsVisibility(final ViewDefinitionState view) {
+        ComponentState assumptionsBorderLayout = view.getComponentByReference(L_ASSUMPTIONS_BORDER_LAYOUT);
 
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ProductionBalanceFields.ORDER);
-        FieldComponent calculateOperationCostModeField = (FieldComponent) viewDefinitionState
+        FieldComponent averageMachineHourlyCostsField = (FieldComponent) view
+                .getComponentByReference(ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST);
+        FieldComponent averageLaborHourlyCostField = (FieldComponent) view
+                .getComponentByReference(ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST);
+
+        FieldComponent orderLookup = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.ORDER);
+        FieldComponent calculateOperationCostModeField = (FieldComponent) view
                 .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
 
         String calculateOperationCostMode = (String) calculateOperationCostModeField.getFieldValue();
@@ -189,6 +211,9 @@ public class ProductionBalanceDetailsHooksPCWC {
 
         if (orderId == null) {
             assumptionsBorderLayout.setVisible(false);
+
+            averageMachineHourlyCostsField.setRequired(false);
+            averageLaborHourlyCostField.setRequired(false);
 
             return;
         }
@@ -200,12 +225,18 @@ public class ProductionBalanceDetailsHooksPCWC {
                 && productionCountingService.isTypeOfProductionRecordingCumulated(order
                         .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             assumptionsBorderLayout.setVisible(true);
+
+            averageMachineHourlyCostsField.setRequired(true);
+            averageLaborHourlyCostField.setRequired(true);
         } else {
             assumptionsBorderLayout.setVisible(false);
+
+            averageMachineHourlyCostsField.setRequired(false);
+            averageLaborHourlyCostField.setRequired(false);
         }
     }
 
-    public void fillCurrencyAndUnitFields(final ViewDefinitionState viewDefinitionState) {
+    public void fillCurrencyAndUnitFields(final ViewDefinitionState view) {
         String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
 
         List<String> currencyFieldNames = Lists.newArrayList("averageMachineHourlyCostCurrency",
@@ -219,25 +250,23 @@ public class ProductionBalanceDetailsHooksPCWC {
                 "totalCostsCurrency");
 
         for (String currencyFieldName : currencyFieldNames) {
-            FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(currencyFieldName);
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(currencyFieldName);
             fieldComponent.setFieldValue(currencyAlphabeticCode);
             fieldComponent.requestComponentUpdateState();
         }
 
-        FieldComponent productionCostMarginProc = (FieldComponent) viewDefinitionState
-                .getComponentByReference("productionCostMarginProc");
+        FieldComponent productionCostMarginProc = (FieldComponent) view.getComponentByReference("productionCostMarginProc");
         productionCostMarginProc.setFieldValue("%");
         productionCostMarginProc.requestComponentUpdateState();
 
-        FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
-                .getComponentByReference("materialCostMarginProc");
+        FieldComponent materialCostMarginProc = (FieldComponent) view.getComponentByReference("materialCostMarginProc");
         materialCostMarginProc.setFieldValue("%");
         materialCostMarginProc.requestComponentUpdateState();
 
         Set<String> unitFieldNames = Sets.newHashSet("registeredTotalTechnicalProductionCostPerUnitUnit",
                 "totalTechnicalProductionCostPerUnitUnit", "balanceTechnicalProductionCostPerUnitUnit", "totalCostPerUnitUnit");
 
-        Long productId = (Long) viewDefinitionState.getComponentByReference(ProductionBalanceFields.PRODUCT).getFieldValue();
+        Long productId = (Long) view.getComponentByReference(ProductionBalanceFields.PRODUCT).getFieldValue();
 
         if (productId == null) {
             return;
@@ -248,31 +277,28 @@ public class ProductionBalanceDetailsHooksPCWC {
         String unit = product.getStringField(ProductFields.UNIT);
 
         for (String unitFieldName : unitFieldNames) {
-            FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(unitFieldName);
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(unitFieldName);
             fieldComponent.setFieldValue(currencyAlphabeticCode + "/" + unit);
             fieldComponent.requestComponentUpdateState();
         }
-
     }
 
-    public void disableFieldsAndGridsWhenGenerated(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent generated = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.GENERATED);
+    public void disableFieldsAndGridsWhenGenerated(final ViewDefinitionState view) {
+        CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(ProductionBalanceFields.GENERATED);
 
-        if ((generated != null) && (generated.getFieldValue() != null) && "1".equals(generated.getFieldValue())) {
-            productionCountingService.setComponentsState(viewDefinitionState, L_COST_FIELDS, false, true);
-            productionCountingService.setComponentsState(viewDefinitionState, L_COST_GRIDS, false, false);
+        if (generatedCheckBox.isChecked()) {
+            productionCountingService.setComponentsState(view, L_COST_FIELDS, false, true);
+            productionCountingService.setComponentsState(view, L_COST_GRIDS, false, false);
         } else {
-            productionCountingService.setComponentsState(viewDefinitionState, L_COST_FIELDS, true, true);
-            productionCountingService.setComponentsState(viewDefinitionState, L_COST_GRIDS, true, false);
+            productionCountingService.setComponentsState(view, L_COST_FIELDS, true, true);
+            productionCountingService.setComponentsState(view, L_COST_GRIDS, true, false);
         }
     }
 
-    public void checkIfOptionsAreAvailable(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        FieldComponent sourceOfMaterialCosts = (FieldComponent) viewDefinitionState
+    public void checkIfOptionsAreAvailable(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FieldComponent sourceOfMaterialCosts = (FieldComponent) view
                 .getComponentByReference(ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS);
-        FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
+        FieldComponent calculateMaterialCostsMode = (FieldComponent) view
                 .getComponentByReference(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE);
 
         if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
