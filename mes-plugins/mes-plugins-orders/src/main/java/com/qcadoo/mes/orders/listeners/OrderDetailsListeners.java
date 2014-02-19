@@ -26,12 +26,14 @@ package com.qcadoo.mes.orders.listeners;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
@@ -68,13 +70,40 @@ public class OrderDetailsListeners {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private NumberService numberService;
+
+    @Autowired
     private TechnologyServiceO technologyServiceO;
+
+    @Autowired
+    private OrderService orderService;
 
     @Autowired
     private OrderDetailsHooks orderDetailsHooks;
 
-    @Autowired
-    private NumberService numberService;
+    public void setDefaultNameUsingTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        if (!(state instanceof FieldComponent)) {
+            return;
+        }
+
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        FieldComponent nameField = (FieldComponent) view.getComponentByReference(OrderFields.NAME);
+
+        Entity product = productLookup.getEntity();
+        Entity technology = technologyLookup.getEntity();
+
+        if ((technology == null) || (product == null)) {
+            return;
+        }
+
+        Locale locale = state.getLocale();
+        nameField.setFieldValue(orderService.makeDefaultName(product, technology, locale));
+    }
+
+    public final void fillProductionLine(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        orderDetailsHooks.fillProductionLine(view);
+    }
 
     public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Long orderId = (Long) componentState.getFieldValue();

@@ -355,7 +355,7 @@
 								method="changeOrderProduct" />
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.util.UnitService"
 								method="fillProductUnit" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 								method="setDefaultNameUsingTechnology" />
 						</component>
 					</layoutElement>
@@ -387,7 +387,7 @@
 											class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
 											method="showPatternTechnology" />
 
-										<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
+										<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 											method="setDefaultNameUsingTechnology" />
 									</component>
 								</layoutElement>

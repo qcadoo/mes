@@ -37,6 +37,7 @@ import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
@@ -44,6 +45,7 @@ import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -69,10 +71,13 @@ public class OrderHooks {
     private NumberService numberService;
 
     @Autowired
-    private StateChangeEntityBuilder stateChangeEntityBuilder;
+    private ParameterService parameterService;
 
     @Autowired
-    private OrderStateChangeDescriber describer;
+    private ProductService productService;
+
+    @Autowired
+    private TechnologyServiceO technologyServiceO;
 
     @Autowired
     private OrderService orderService;
@@ -81,24 +86,21 @@ public class OrderHooks {
     private OrderDatesService orderDatesService;
 
     @Autowired
+    private StateChangeEntityBuilder stateChangeEntityBuilder;
+
+    @Autowired
+    private OrderStateChangeDescriber orderStateChangeDescriber;
+
+    @Autowired
     private OrderStateChangeReasonService orderStateChangeReasonService;
-
-    @Autowired
-    private TechnologyServiceO technologyServiceO;
-
-    @Autowired
-    private ProductService productService;
-
-    @Autowired
-    private ParameterService parameterService;
 
     public boolean onValidate(final DataDefinition orderDD, final Entity order) {
         Entity parameter = parameterService.getParameter();
 
-        return orderService.checkOrderDates(orderDD, order) && orderService.checkOrderPlannedQuantity(orderDD, order)
-                && productService.checkIfProductIsNotRemoved(orderDD, order)
-                && orderService.checkChosenTechnologyState(orderDD, order) && checkReasonOfStartDateCorrection(parameter, order)
-                && checkReasonOfEndDateCorrection(parameter, order) && checkEffectiveDeviation(parameter, order);
+        return checkOrderDates(orderDD, order) && checkOrderPlannedQuantity(orderDD, order)
+                && productService.checkIfProductIsNotRemoved(orderDD, order) && checkChosenTechnologyState(orderDD, order)
+                && checkReasonOfStartDateCorrection(parameter, order) && checkReasonOfEndDateCorrection(parameter, order)
+                && checkEffectiveDeviation(parameter, order);
     }
 
     public void onCreate(final DataDefinition orderDD, final Entity order) {
@@ -107,7 +109,7 @@ public class OrderHooks {
     }
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
-        orderService.fillProductionLine(orderDD, order);
+        fillProductionLine(orderDD, order);
         copyStartDate(orderDD, order);
         copyEndDate(orderDD, order);
         copyProductQuantity(orderDD, order);
@@ -124,7 +126,82 @@ public class OrderHooks {
     }
 
     public void setInitialState(final DataDefinition orderDD, final Entity order) {
-        stateChangeEntityBuilder.buildInitial(describer, order, OrderState.PENDING);
+        stateChangeEntityBuilder.buildInitial(orderStateChangeDescriber, order, OrderState.PENDING);
+    }
+
+    public boolean checkOrderDates(final DataDefinition orderDD, final Entity order) {
+        DateRange orderDateRange = orderDatesService.getCalculatedDates(order);
+        Date dateFrom = orderDateRange.getFrom();
+        Date dateTo = orderDateRange.getTo();
+
+        if (dateFrom == null || dateTo == null || dateTo.after(dateFrom)) {
+            return true;
+        }
+
+        order.addError(orderDD.getField(OrderFields.FINISH_DATE), "orders.validate.global.error.datesOrder");
+
+        return false;
+    }
+
+    public boolean checkOrderPlannedQuantity(final DataDefinition orderDD, final Entity order) {
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+
+        if (product == null) {
+            return true;
+        }
+
+        BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+
+        if (plannedQuantity == null) {
+            order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY), "orders.validate.global.error.plannedQuantityError");
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkChosenTechnologyState(final DataDefinition orderDD, final Entity order) {
+        if (OrderState.DECLINED.getStringValue().equals(order.getStringField(OrderFields.STATE))
+                || OrderState.ABANDONED.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
+            return true;
+        }
+
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))
+                && order.isActive()) {
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+
+            if (technology == null) {
+                return true;
+            }
+
+            TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(TechnologyFields.STATE));
+
+            if (TechnologyState.CHECKED != technologyState && TechnologyState.ACCEPTED != technologyState) {
+                order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE),
+                        "orders.validate.technology.error.wrongState.checked");
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void fillProductionLine(final DataDefinition orderDD, final Entity order) {
+        if (order.getId() != null) {
+            return;
+        }
+
+        if (order.getBelongsToField(OrderFields.PRODUCTION_LINE) != null) {
+            return;
+        }
+
+        Entity defaultProductionLine = orderService.getDefaultProductionLine();
+
+        if (defaultProductionLine != null) {
+            order.setField(OrderFields.PRODUCTION_LINE, defaultProductionLine);
+        }
     }
 
     public void copyStartDate(final DataDefinition orderDD, final Entity order) {
@@ -408,7 +485,7 @@ public class OrderHooks {
                 numberService.setScale(order.getDecimalField(OrderFields.PLANNED_QUANTITY)));
     }
 
-    public void setProductQuantity(final DataDefinition dataDefinition, final Entity order) {
+    public void setProductQuantity(final DataDefinition orderDD, final Entity order) {
         if (order == null) {
             return;
         }

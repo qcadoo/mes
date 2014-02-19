@@ -67,9 +67,16 @@ import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -82,6 +89,7 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class OrderDetailsHooks {
@@ -99,6 +107,24 @@ public class OrderDetailsHooks {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private ExpressionService expressionService;
+
+    @Autowired
+    private UnitService unitService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private TechnologyServiceO technologyServiceO;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
     private OrderStateService orderStateService;
 
     @Autowired
@@ -107,25 +133,13 @@ public class OrderDetailsHooks {
     @Autowired
     private OrderProductQuantityHooks orderProductQuantityHooks;
 
-    @Autowired
-    private UnitService unitService;
-
-    @Autowired
-    private OrderService orderService;
-
-    @Autowired
-    private TechnologyServiceO technologyServiceO;
-
-    @Autowired
-    private ParameterService parameterService;
-
     public final void onBeforeRender(final ViewDefinitionState view) {
-        orderService.fillProductionLine(view);
-        orderService.generateOrderNumber(view);
-        orderService.fillDefaultTechnology(view);
-        orderService.disableFieldOrderForm(view);
-        orderService.disableTechnologiesIfProductDoesNotAny(view);
-        orderService.setAndDisableState(view);
+        fillProductionLine(view);
+        generateOrderNumber(view);
+        fillDefaultTechnology(view);
+        disableFieldOrderForm(view);
+        disableTechnologiesIfProductDoesNotAny(view);
+        setAndDisableState(view);
         unitService.fillProductUnitBeforeRender(view);
         disableOrderFormForExternalItems(view);
         changedEnabledFieldForSpecificOrderState(view);
@@ -137,11 +151,115 @@ public class OrderDetailsHooks {
         orderProductQuantityHooks.fillProductUnit(view);
         changedEnabledDescriptionFieldForSpecificOrderState(view);
         setFieldsVisibility(view);
-        checkIfLlockTechnologyTree(view);
+        checkIfLockTechnologyTree(view);
     }
 
-    private void checkIfLlockTechnologyTree(final ViewDefinitionState view) {
+    public final void fillProductionLine(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
 
+        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+
+        Entity defaultProductionLine = orderService.getDefaultProductionLine();
+
+        if ((orderForm.getEntityId() == null) && (productionLineLookup.getFieldValue() == null)
+                && (defaultProductionLine != null)) {
+            productionLineLookup.setFieldValue(defaultProductionLine.getId());
+            productionLineLookup.requestComponentUpdateState();
+        }
+    }
+
+    public void generateOrderNumber(final ViewDefinitionState view) {
+        numberGeneratorService.generateAndInsertNumber(view, OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
+                L_FORM, OrderFields.NUMBER);
+    }
+
+    public void fillDefaultTechnology(final ViewDefinitionState view) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
+        FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
+
+        Entity product = productLookup.getEntity();
+
+        if (product != null) {
+            Entity defaultTechnology = technologyServiceO.getDefaultTechnology(product);
+
+            if (defaultTechnology != null) {
+                String defaultTechnologyValue = expressionService.getValue(defaultTechnology, "#number + ' - ' + #name",
+                        view.getLocale());
+
+                defaultTechnologyField.setFieldValue(defaultTechnologyValue);
+            }
+        }
+    }
+
+    public void disableFieldOrderForm(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        boolean disabled = false;
+
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId != null) {
+            Entity order = orderService.getOrder(orderId);
+
+            if (order == null) {
+                return;
+            }
+
+            String state = order.getStringField(OrderFields.STATE);
+
+            if (!OrderState.PENDING.getStringValue().equals(state)) {
+                disabled = true;
+            }
+        }
+
+        orderForm.setFormEnabled(!disabled);
+    }
+
+    public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState view) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
+        FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
+
+        defaultTechnologyField.setEnabled(false);
+
+        Entity product = productLookup.getEntity();
+
+        if ((product == null) || !hasAnyTechnologies(product)) {
+            technologyLookup.setRequired(false);
+            plannedQuantityField.setRequired(false);
+        } else {
+            technologyLookup.setRequired(true);
+            plannedQuantityField.setRequired(true);
+        }
+    }
+
+    private boolean hasAnyTechnologies(final Entity product) {
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+
+        SearchCriteriaBuilder searchCriteria = technologyDD.find()
+                .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product)).setMaxResults(1);
+
+        SearchResult searchResult = searchCriteria.list();
+
+        return (searchResult.getTotalNumberOfEntities() > 0);
+    }
+
+    public void setAndDisableState(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent stateField = (FieldComponent) view.getComponentByReference(OrderFields.STATE);
+
+        stateField.setEnabled(false);
+
+        if (orderForm.getEntityId() != null) {
+            return;
+        }
+
+        stateField.setFieldValue(OrderState.PENDING.getStringValue());
+    }
+
+    private void checkIfLockTechnologyTree(final ViewDefinitionState view) {
         if (parameterService.getParameter().getBooleanField(ParameterFieldsO.LOCK_TECHNOLOGY_TREE)) {
             FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
             orderType.setEnabled(false);
