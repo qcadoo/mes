@@ -63,7 +63,7 @@ public class DeliveriesServiceImplTest {
             columnForDeliveriesDD, columnForOrdersDD;
 
     @Mock
-    private Entity delivery, orderedProduct, deliveredProduct, companyProduct, companyProductsFamily, product;
+    private Entity delivery, orderedProduct, deliveredProduct, companyProduct, companyProductsFamily;
 
     @Mock
     private SearchCriteriaBuilder searchCriteriaBuilder;
@@ -72,16 +72,7 @@ public class DeliveriesServiceImplTest {
     private SearchResult searchResult;
 
     @Mock
-    private List<Entity> companyProducts;
-
-    @Mock
-    private List<Entity> companyProductsFamilies;
-
-    @Mock
     private List<Entity> columnsForDeliveries;
-
-    @Mock
-    private List<Entity> columnsForOrders;
 
     @Before
     public void init() {

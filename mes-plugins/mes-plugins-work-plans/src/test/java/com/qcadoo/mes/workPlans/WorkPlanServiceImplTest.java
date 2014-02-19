@@ -56,7 +56,7 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchResult;
 
-public class WorkPlanServiceTest {
+public class WorkPlanServiceImplTest {
 
     private static final String L_TRANSLATED_STRING = "translated string";
 
