@@ -28,11 +28,13 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<hasMany name="technologyOperationComponents" joinField="techOperCompWorkstation"
-			model="technologyOperationComponent" cascade="nullify" plugin="technologies" />
 		<integer name="quantityOfWorkstationTypes" default="1">
 			<validatesRange from="0" exclusively="true" />
 		</integer>
+
+		<hasMany name="technologyOperationComponents" plugin="technologies"
+			model="technologyOperationComponent" joinField="techOperCompWorkstation"
+			cascade="nullify" />
 	</fields>
 	<hooks />
 </model>

@@ -81,13 +81,13 @@
 				model="technology" persistent="false" />
 		</model:model-field>
 		<model:model-field plugin="operationalTasks" model="operationalTask">
-			<model:belongsTo name="techOperCompOperationalTask"
-				plugin="operationalTasksForOrders" model="techOperCompOperationalTask" />
-		</model:model-field>
-		<model:model-field plugin="operationalTasks" model="operationalTask">
 			<model:belongsTo name="technologyOperationComponent"
 				plugin="technologies" model="technologyOperationComponent"
 				persistent="false" />
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTask">
+			<model:belongsTo name="techOperCompOperationalTask"
+				plugin="operationalTasksForOrders" model="techOperCompOperationalTask" />
 		</model:model-field>
 		<model:model-enum-value plugin="operationalTasks"
 			model="operationalTask" value="02executionOperationInOrder" enum="typeTask" />

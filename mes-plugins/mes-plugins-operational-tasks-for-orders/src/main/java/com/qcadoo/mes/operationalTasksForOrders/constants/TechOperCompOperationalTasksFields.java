@@ -6,8 +6,8 @@ public final class TechOperCompOperationalTasksFields {
 
     }
 
-    public static final String OPERATIONAL_TASKS = "operationalTasks";
-
     public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
+    public static final String OPERATIONAL_TASKS = "operationalTasks";
 
 }

@@ -28,10 +28,12 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<hasMany name="operationalTasks" joinField="techOperCompOperationalTask"
-			model="operationalTask" cascade="nullify" plugin="operationalTasks" />
 		<belongsTo name="technologyOperationComponent" plugin="technologies"
 			model="technologyOperationComponent" required="true" />
+
+		<hasMany name="operationalTasks" plugin="operationalTasks"
+			model="operationalTask" joinField="techOperCompOperationalTask"
+			cascade="nullify" />
 	</fields>
 	<hooks />
 </model>

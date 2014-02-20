@@ -35,6 +35,10 @@
 		<integer name="duration" default="0" />
 		<integer name="machineWorkTime" default="0" />
 		<integer name="laborWorkTime" default="0" />
+
+		<hasMany name="technologyOperationComponents" plugin="technologies"
+			model="technologyOperationComponent" joinField="techOperCompTimeCalculation"
+			cascade="nullify" />
 	</fields>
 	<hooks />
 </model>
