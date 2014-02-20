@@ -31,8 +31,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksForOrdersConstants;
 import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
@@ -53,6 +53,9 @@ public class OperationalTasksListHooksOTFO {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
     public void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view) {
         LookupComponent productInLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.PRODUCT_IN);
@@ -86,22 +89,21 @@ public class OperationalTasksListHooksOTFO {
         List<Entity> operationalTasks = Lists.newArrayList();
 
         for (Entity technologyOperationComponent : technologyOperationComponents) {
-            Entity techOperCompOperationalTask = dataDefinitionService
-                    .get(OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
-                            OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASK)
+            Entity techOperCompOperationalTask = operationalTasksForOrdersService
+                    .getTechOperCompOperationalTaskDD()
                     .find()
                     .add(SearchRestrictions.belongsTo(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
                             technologyOperationComponent)).setMaxResults(1).uniqueResult();
 
-            List<Entity> tasksForTOCOT = dataDefinitionService
+            List<Entity> techOperCompOperationalTaskOperationalTasks = dataDefinitionService
                     .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK)
                     .find()
                     .add(SearchRestrictions.belongsTo(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
                             techOperCompOperationalTask)).list().getEntities();
 
-            for (Entity taskForTOCOT : tasksForTOCOT) {
-                if (!operationalTasks.contains(taskForTOCOT)) {
-                    operationalTasks.add(taskForTOCOT);
+            for (Entity operationalTask : techOperCompOperationalTaskOperationalTasks) {
+                if (!operationalTasks.contains(operationalTask)) {
+                    operationalTasks.add(operationalTask);
                 }
             }
         }

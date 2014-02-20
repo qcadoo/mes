@@ -121,6 +121,11 @@
 				method="onSave" />
 		</model:model-hook>
 		<model:model-hook plugin="operationalTasks" model="operationalTask">
+			<model:onCopy
+				class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskHooksOTFO"
+				method="onCopy" />
+		</model:model-hook>
+		<model:model-hook plugin="operationalTasks" model="operationalTask">
 			<model:onDelete
 				class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskHooksOTFO"
 				method="onDelete" />
@@ -177,11 +182,6 @@
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
 			method="setTechnologyOperationComponent" />
 	
-		<view:view-hook plugin="operationalTasks" view="operationalTasksList"
-			type="beforeRender"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListHooksOTFO"
-			method="addDiscriminatorRestrictionToGrid" />
-	
 		<view:view-hook plugin="operationalTasks" view="operationalTaskDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
@@ -191,6 +191,11 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
 			method="disableButtons" />
+			
+		<view:view-hook plugin="operationalTasks" view="operationalTasksList"
+			type="beforeRender"
+			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListHooksOTFO"
+			method="addDiscriminatorRestrictionToGrid" />
 	
 		<view:view-hook plugin="productionScheduling" view="operationDurationDetailsInOrder"
 			type="beforeRender"

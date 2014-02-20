@@ -30,9 +30,9 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeTaskOTFO;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksForOrdersConstants;
 import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.OperationFields;
@@ -60,6 +60,9 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
     public void createOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -90,17 +93,14 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
     }
 
     private void deleteTechOperCompOperationalTasks(final Entity technologyOperationComponent) {
-        DataDefinition techOperCompOperationalTaskDD = dataDefinitionService.get(
-                OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
-                OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASK);
-
-        Entity techOperCompOperationalTask = techOperCompOperationalTaskDD
+        Entity techOperCompOperationalTask = operationalTasksForOrdersService
+                .getTechOperCompOperationalTaskDD()
                 .find()
                 .add(SearchRestrictions.belongsTo(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
                         technologyOperationComponent)).setMaxResults(1).uniqueResult();
 
         if (techOperCompOperationalTask != null) {
-            techOperCompOperationalTaskDD.delete(techOperCompOperationalTask.getId());
+            techOperCompOperationalTask.getDataDefinition().delete(techOperCompOperationalTask.getId());
         }
     }
 
@@ -141,24 +141,9 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         operationalTask.setField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 
         operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
-                createTechOperCompOperationalTasks(technologyOperationComponent, operationalTask));
+                operationalTasksForOrdersService.createTechOperCompOperationalTask(technologyOperationComponent));
 
         operationalTask = operationalTask.getDataDefinition().save(operationalTask);
-    }
-
-    private Entity createTechOperCompOperationalTasks(final Entity technologyOperationComponent, final Entity operationalTask) {
-        DataDefinition techOperCompOperationalTaskDD = dataDefinitionService.get(
-                OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
-                OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASK);
-
-        Entity techOperCompOperationalTask = techOperCompOperationalTaskDD.create();
-
-        techOperCompOperationalTask.setField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
-                technologyOperationComponent);
-
-        techOperCompOperationalTask = techOperCompOperationalTask.getDataDefinition().save(techOperCompOperationalTask);
-
-        return techOperCompOperationalTask;
     }
 
 }

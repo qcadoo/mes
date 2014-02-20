@@ -25,9 +25,37 @@ package com.qcadoo.mes.operationalTasksForOrders;
 
 import java.util.List;
 
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 public interface OperationalTasksForOrdersService {
+
+    /**
+     * Gets tech oper comp operational task
+     * 
+     * @param techOperCompOperationalTaskId
+     *            tech oper comp operational task id
+     * 
+     * @return tech oper comp operational task
+     */
+    Entity getTechOperCompOperationalTask(final Long techOperCompOperationalTaskId);
+
+    /**
+     * Gets tech oper comp operational task data definition
+     * 
+     * @return tech oper comp operational task data definition
+     */
+    DataDefinition getTechOperCompOperationalTaskDD();
+
+    /**
+     * Creates tech oper comp operational task
+     * 
+     * @param technologyOperationComponent
+     *            technology operation component
+     * 
+     * @return tech oper comp operational task
+     */
+    Entity createTechOperCompOperationalTask(final Entity technologyOperationComponent);
 
     /**
      * Gets technology operation components for operation

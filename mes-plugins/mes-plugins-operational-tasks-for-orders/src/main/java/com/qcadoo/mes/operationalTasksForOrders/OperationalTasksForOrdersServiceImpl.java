@@ -38,6 +38,7 @@ import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksForOrd
 import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -49,6 +50,29 @@ public class OperationalTasksForOrdersServiceImpl implements OperationalTasksFor
     private DataDefinitionService dataDefinitionService;
 
     @Override
+    public Entity getTechOperCompOperationalTask(final Long techOperCompOperationalTaskId) {
+        return getTechOperCompOperationalTaskDD().get(techOperCompOperationalTaskId);
+    }
+
+    @Override
+    public DataDefinition getTechOperCompOperationalTaskDD() {
+        return dataDefinitionService.get(OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
+                OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASK);
+    }
+
+    @Override
+    public Entity createTechOperCompOperationalTask(final Entity technologyOperationComponent) {
+        Entity techOperCompOperationalTask = getTechOperCompOperationalTaskDD().create();
+
+        techOperCompOperationalTask.setField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
+                technologyOperationComponent);
+
+        techOperCompOperationalTask = techOperCompOperationalTask.getDataDefinition().save(techOperCompOperationalTask);
+
+        return techOperCompOperationalTask;
+    }
+
+    @Override
     public List<Entity> getTechnologyOperationComponentsForOperation(final Entity operation) {
         return dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
@@ -57,9 +81,7 @@ public class OperationalTasksForOrdersServiceImpl implements OperationalTasksFor
 
     @Override
     public List<Entity> getTechOperCompOperationalTasksForTechnologyOperationComponent(final Entity technologyOperationComponent) {
-        return dataDefinitionService
-                .get(OperationalTasksForOrdersConstants.PLUGIN_IDENTIFIER,
-                        OperationalTasksForOrdersConstants.MODEL_TECH_OPER_COMP_OPERATIONAL_TASK)
+        return getTechOperCompOperationalTaskDD()
                 .find()
                 .add(SearchRestrictions.belongsTo(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
                         technologyOperationComponent)).list().getEntities();
