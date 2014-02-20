@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="techOperCompWorkstation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+<model name="techOperCompWorkstation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<hasMany name="technologyOperationComponents" joinField="techOperCompWorkstation"
@@ -34,6 +34,5 @@
 			<validatesRange from="0" exclusively="true" />
 		</integer>
 	</fields>
-	<hooks>
-	</hooks>
+	<hooks />
 </model>

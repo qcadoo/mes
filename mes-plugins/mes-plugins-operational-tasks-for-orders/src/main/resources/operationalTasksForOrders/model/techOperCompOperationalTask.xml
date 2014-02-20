@@ -33,6 +33,5 @@
 		<belongsTo name="technologyOperationComponent" plugin="technologies"
 			model="technologyOperationComponent" required="true" />
 	</fields>
-	<hooks>
-	</hooks>
+	<hooks />
 </model>

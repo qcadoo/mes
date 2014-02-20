@@ -104,4 +104,19 @@ public class TechnologyOperationComponentHooksTNFO {
         }
         return true;
     }
+
+    public boolean onDelete(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        boolean isDeleted = true;
+
+        Entity techOperCompTimeCalculation = technologyOperationComponent
+                .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
+
+        if (techOperCompTimeCalculation != null) {
+            isDeleted = techOperCompTimeCalculation.getDataDefinition().delete(techOperCompTimeCalculation.getId())
+                    .isSuccessfull();
+        }
+
+        return isDeleted;
+    }
+
 }

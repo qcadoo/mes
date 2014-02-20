@@ -87,7 +87,7 @@ public class TechnologyOperationComponentHooksPL {
         quantityOfWorkstationTypesComponent.requestComponentUpdateState();
     }
 
-    public void save(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+    public void onSave(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
 
         if (checkIfTechnologyIsNotNullAndTechnologyTypeIsEmpty(technology)) {
@@ -132,6 +132,19 @@ public class TechnologyOperationComponentHooksPL {
     private DataDefinition getTechOperCompWorkstationDD() {
         return dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_TECH_OPER_COMP_WORKSTATION);
+    }
+
+    public boolean onDelete(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        boolean isDeleted = true;
+
+        Entity techOperCompWorkstation = technologyOperationComponent
+                .getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION);
+
+        if (techOperCompWorkstation != null) {
+            isDeleted = techOperCompWorkstation.getDataDefinition().delete(techOperCompWorkstation.getId()).isSuccessfull();
+        }
+
+        return isDeleted;
     }
 
 }

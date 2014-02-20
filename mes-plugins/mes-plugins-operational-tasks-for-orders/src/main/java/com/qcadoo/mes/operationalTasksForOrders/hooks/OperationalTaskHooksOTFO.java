@@ -120,4 +120,18 @@ public class OperationalTaskHooksOTFO {
         }
     }
 
+    public boolean onDelete(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+        boolean isDeleted = true;
+
+        Entity techOperCompOperationalTask = operationalTask
+                .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
+
+        if (techOperCompOperationalTask != null) {
+            isDeleted = techOperCompOperationalTask.getDataDefinition().delete(techOperCompOperationalTask.getId())
+                    .isSuccessfull();
+        }
+
+        return isDeleted;
+    }
+
 }
