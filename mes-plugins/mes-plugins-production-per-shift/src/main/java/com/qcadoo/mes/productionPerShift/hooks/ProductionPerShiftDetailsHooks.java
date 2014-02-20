@@ -346,7 +346,7 @@ public class ProductionPerShiftDetailsHooks {
         Entity progressForDay = progressForDays.get(0);
 
         if (progressForDay.getId() == null) {
-            return true;
+            return false;
         }
 
         Entity technologyOperationComponentFromProgressForDays = progressForDay.getDataDefinition().get(progressForDay.getId())
