@@ -26,7 +26,23 @@
 				<bigButton name="printWorkPlan" icon="pdfIcon24.png"
 					action="#{form}.fireEvent(printWorkPlan,pdf);" state="enabled" />
 			</group>
+			<group name="atachments">
+				<bigButton name="printAtachment" icon="pdfIcon24.png"
+					state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('printAtachment', []);
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
+				<windowTab name="mainTab">
+		
 		<component type="form" name="workPlan" reference="form">
 			<script>
 				<![CDATA[
@@ -240,8 +256,37 @@
 				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" method="printWorkPlan" />
 			<listener event="generateWorkPlan"
 				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" method="generateWorkPlan" />
+			<listener event="printAtachment" method="printAtachment"
+				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" />
 		</component>
+		</windowTab>
+		<windowTab name="attachmentsTab">
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="6">
+				<layoutElement column="1" row="1" width="2" height="6">
+					<component type="grid" name="technologyAttachments"
+						reference="technologyAttachments" model="technologyAttachment" 
+						plugin="technologies">
+						<option type="column" name="attachment" fields="name" />
+						<option type="column" name="size" fields="size" />
+						<option type="column" name="technology" fields="technology"
+								expression="#technology.get('number')" />
+						<option type="order" column="attachment" direction="desc" />
+						<option type="correspondingView" value="technologies/multiUpload" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="fullscreen" value="true" />
+						
+						<criteriaModifier
+							class="com.qcadoo.mes.workPlans.criteriaModifiers.WorkPlansCriteriaModifiers"
+							method="showAtachmentsForTechnologies" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>		  
 	</component>
+	  
+	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
 			method="onBeforeRender" />
