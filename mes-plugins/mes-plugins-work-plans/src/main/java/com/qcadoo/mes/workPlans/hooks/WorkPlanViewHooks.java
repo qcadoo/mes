@@ -41,15 +41,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.util.OrderHelperService;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
+import com.qcadoo.mes.workPlans.criteriaModifiers.WorkPlansCriteriaModifiers;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
@@ -59,9 +62,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class WorkPlanViewHooks {
+
+    private static final String L_FORM = "form";
+
+    private static final String L_ATTCHMENT_GRID = "technologyAttachments";
 
     @Autowired
     private WorkPlansService workPlanService;
@@ -84,6 +92,33 @@ public class WorkPlanViewHooks {
     public final void onBeforeRender(final ViewDefinitionState view) {
         setFieldsState(view);
         disableFormForGeneratedWorkPlan(view);
+        setCriteriaModifierParameters(view);
+
+    }
+
+    private void setCriteriaModifierParameters(final ViewDefinitionState view) {
+        // set technologies id
+        FormComponent workPlanForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (workPlanForm.getEntityId() == null) {
+            return;
+        }
+
+        List<Long> technologyIDs = Lists.newArrayList();
+
+        List<Entity> orders = workPlanForm.getPersistedEntityWithIncludedFormValues().getManyToManyField(WorkPlanFields.ORDERS);
+
+        if (orders.isEmpty()) {
+            return;
+        }
+        for (Entity order : orders) {
+            technologyIDs.add(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
+        }
+        GridComponent atachmentsGrid = (GridComponent) view.getComponentByReference(L_ATTCHMENT_GRID);
+        FilterValueHolder atachmentsGridHolder = atachmentsGrid.getFilterValue();
+        atachmentsGridHolder.put(WorkPlansCriteriaModifiers.TECHNOLOGY_IDS, technologyIDs);
+        atachmentsGrid.setFilterValue(atachmentsGridHolder);
+
     }
 
     public final void addSelectedOrdersToWorkPlan(final ViewDefinitionState view, final ComponentState component,
@@ -232,4 +267,25 @@ public class WorkPlanViewHooks {
         return (FieldComponent) view.getComponentByReference(name);
     }
 
+    public void printAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference("technologyAttachments");
+        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
+            state.addMessage("technologies.technologyDetails.window.ribbon.atachments.nonSelectedAtachment", MessageType.INFO);
+            return;
+        }
+        StringBuffer redirectUrl = new StringBuffer();
+        redirectUrl.append("/rest/workplans/printAtachment.html");
+        boolean isFirstParam = true;
+        for (Long confectionProtocolId : grid.getSelectedEntitiesIds()) {
+            if (isFirstParam) {
+                redirectUrl.append("?");
+                isFirstParam = false;
+            } else {
+                redirectUrl.append("&");
+            }
+            redirectUrl.append("id=");
+            redirectUrl.append(confectionProtocolId);
+        }
+        view.redirectTo(redirectUrl.toString(), true, false);
+    }
 }

@@ -1016,7 +1016,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity recordOperationProductInComponent = recordOperationProductInComponentDD.find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
                 .setMaxResults(1).uniqueResult();
-                
+
         if (recordOperationProductInComponent != null) {
             recordOperationProductInComponent.setField("usedQuantity", values.get("usedquantity"));
             recordOperationProductInComponent.setField(L_BALANCE, values.get(L_BALANCE));
@@ -1029,11 +1029,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         DataDefinition recordOperationProductOutComponentDD = dataDefinitionService.get(
                 SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT);
-                
+
         Entity recordOperationProductOutComponent = recordOperationProductOutComponentDD.find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
                 .setMaxResults(1).uniqueResult();
-                
+
         if (recordOperationProductOutComponent != null) {
             recordOperationProductOutComponent.setField("usedQuantity", values.get("usedquantity"));
             recordOperationProductOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
@@ -1131,7 +1131,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void addMaterialRequirements(final Map<String, String> values) {
         Entity materialRequirement = dataDefinitionService.get(SamplesConstants.MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
                 SamplesConstants.MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS).create();
-                
+
         materialRequirement.setField(L_NAME, values.get(L_NAME));
         materialRequirement.setField(L_NUMBER, values.get(L_NUMBER));
         materialRequirement.setField(L_DATE, values.get(L_DATE));
@@ -1145,8 +1145,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test material requirement {name=" + materialRequirement.getField(L_NAME) + ", date="
-                    + materialRequirement.getField(L_DATE) + ", worker=" + materialRequirement.getField(L_WORKER) + ", onlyComponents="
-                    + materialRequirement.getField("mrpAlgorithm") + ", generated=" + materialRequirement.getField(L_GENERATED) + "}");
+                    + materialRequirement.getField(L_DATE) + ", worker=" + materialRequirement.getField(L_WORKER)
+                    + ", onlyComponents=" + materialRequirement.getField("mrpAlgorithm") + ", generated="
+                    + materialRequirement.getField(L_GENERATED) + "}");
         }
 
         materialRequirement.getDataDefinition().save(materialRequirement);
@@ -1155,7 +1156,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void addWorkPlan(final Map<String, String> values) {
         Entity workPlan = dataDefinitionService.get(SamplesConstants.WORK_PLANS_PLUGIN_IDENTIFIER,
                 SamplesConstants.WORK_PLANS_MODEL_WORK_PLAN).create();
-                
+
         workPlan.setField(L_NAME, values.get(L_NAME));
         workPlan.setField(L_GENERATED, values.get(L_GENERATED));
         workPlan.setField(L_DATE, values.get(L_DATE));
@@ -1238,7 +1239,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void addProductionBalance(final Map<String, String> values) {
         Entity productionBalance = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTIONBALANCE_MODEL_PRODUCTIONBALANCE).create();
-                
+
         productionBalance.setField(L_GENERATED, values.get(L_GENERATED));
         productionBalance.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
         productionBalance.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
@@ -1308,7 +1309,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void addWageGroups(final Map<String, String> values) {
         Entity wageGroups = dataDefinitionService.get(WAGE_GROUPS_PLUGIN_IDENTIFIER, WAGE_GROUPS_MODEL_IDENTIFIER).create();
-        
+
         wageGroups.setField(L_NUMBER, values.get(L_NUMBER));
         wageGroups.setField(L_NAME, values.get(L_NAME));
         wageGroups.setField("superiorWageGroup", values.get("superior_wage_group"));
@@ -1317,9 +1318,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity currency = dataDefinitionService
                 .get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_CURRENCY).find()
                 .add(SearchRestrictions.eq("alphabeticCode", values.get("code"))).setMaxResults(1).uniqueResult();
-                
+
         wageGroups.setField("laborHourlyCostCURRENCY", currency);
-        
+
         wageGroups.getDataDefinition().save(wageGroups);
     }
 

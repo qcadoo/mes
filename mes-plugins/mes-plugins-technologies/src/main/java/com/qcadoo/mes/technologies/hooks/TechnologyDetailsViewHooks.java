@@ -26,6 +26,7 @@ package com.qcadoo.mes.technologies.hooks;
 import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields.STATUS;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -131,5 +132,22 @@ public class TechnologyDetailsViewHooks {
         if (selectedEntity != null) {
             ((WindowComponent) view.getComponentByReference(L_WINDOW)).setActiveTab(L_TREE_TAB);
         }
+    }
+
+    public void setTechnologyIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent technologyIdForMultiUpload = (FieldComponent) view.getComponentByReference("technologyIdForMultiUpload");
+        FieldComponent technologyMultiUploadLocale = (FieldComponent) view.getComponentByReference("technologyMultiUploadLocale");
+
+        if (technology.getEntityId() != null) {
+            technologyIdForMultiUpload.setFieldValue(technology.getEntityId());
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        } else {
+            technologyIdForMultiUpload.setFieldValue("");
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        }
+        technologyMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
+        technologyMultiUploadLocale.requestComponentUpdateState();
+
     }
 }
