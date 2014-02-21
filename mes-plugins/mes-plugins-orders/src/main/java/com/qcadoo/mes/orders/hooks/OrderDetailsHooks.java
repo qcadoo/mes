@@ -219,7 +219,6 @@ public class OrderDetailsHooks {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
-        FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
 
         defaultTechnologyField.setEnabled(false);
 
@@ -227,10 +226,8 @@ public class OrderDetailsHooks {
 
         if ((product == null) || !hasAnyTechnologies(product)) {
             technologyLookup.setRequired(false);
-            plannedQuantityField.setRequired(false);
         } else {
             technologyLookup.setRequired(true);
-            plannedQuantityField.setRequired(true);
         }
     }
 
