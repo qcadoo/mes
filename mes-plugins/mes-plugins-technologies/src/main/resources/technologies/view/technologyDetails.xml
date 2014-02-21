@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="technologyDetails" modelName="technology">
@@ -47,6 +34,20 @@
 				<smallButton name="xls" icon="xlsIcon16.png"
 					action="#{form}.fireEvent(printTechnologyDetailsReport,xls);"
 					state="enabled" />
+			</group>
+			<group name="atachments">
+				<bigButton name="downloadAtachment" icon="generateIcon24.png"
+					state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAtachment', []);
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
 			</group>
 		</ribbon>
 
@@ -77,7 +78,7 @@
 								if (! value || ! value.content) {
 									return;
 								}
-								updateRibbon(state);
+								updateRibbon(state);								
 							}
 						});
 						
@@ -217,6 +218,8 @@
 				<listener event="printTechnologyDetailsReport"
 					class="com.qcadoo.mes.technologies.print.TechnologiesReportService"
 					method="printTechnologyDetailsReport" />
+				<listener event="downloadAtachment" method="downloadAtachment"
+					class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners" />
 			</component>
 		</windowTab>
 
@@ -337,11 +340,44 @@
 			</component>
 		</windowTab>
 
+		<windowTab name="atachments">
+			<component type="gridLayout" name="gridsLayout" columns="3"
+				rows="6" hasBorders="false">
+				<layoutElement column="1" row="1" height="6">
+
+					<component type="staticPage" name="multiUpload">
+						<option type="page" value="technologies/multiUpload.jsp" />
+					</component>
+					<component type="input" name="technologyIdForMultiUpload"
+						reference="technologyIdForMultiUpload" defaultVisible="false">
+						<option type="alignment" value="right" />
+					</component>
+					<component type="input" name="technologyMultiUploadLocale"
+						reference="technologyMultiUploadLocale" defaultVisible="false">
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1" width="2" height="6">
+					<component type="grid" name="technologyAttachments"
+						reference="technologyAttachments" source="#{form}.technologyAttachments">
+						<option type="column" name="attachment" fields="name" />
+						<option type="column" name="size" fields="size" />
+						<option type="order" column="attachment" direction="desc" />
+
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+					</component>
+				</layoutElement>
+			</component>
+
+		</windowTab>
 	</component>
 
 	<hooks>
 		<!-- <beforeRender class="com.qcadoo.mes.technologies.TechnologyTreeNumberingHooks" -->
 		<!-- method="rebuildTreeNumbering" /> -->
+		<beforeRender
+			class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+			method="setTechnologyIdForMultiUploadField" />
 		<beforeRender
 			class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
 			method="disableFieldTechnologyFormAndEnabledMaster" />

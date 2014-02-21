@@ -27,7 +27,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 
 @Service
@@ -51,4 +53,25 @@ public class TechnologyDetailsListeners {
         }
     }
 
+    public void downloadAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference("technologyAttachments");
+        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
+            state.addMessage("technologies.technologyDetails.window.ribbon.atachments.nonSelectedAtachment", MessageType.INFO);
+            return;
+        }
+        StringBuffer redirectUrl = new StringBuffer();
+        redirectUrl.append("/rest/techologies/getAttachment.html");
+        boolean isFirstParam = true;
+        for (Long confectionProtocolId : grid.getSelectedEntitiesIds()) {
+            if (isFirstParam) {
+                redirectUrl.append("?");
+                isFirstParam = false;
+            } else {
+                redirectUrl.append("&");
+            }
+            redirectUrl.append("id=");
+            redirectUrl.append(confectionProtocolId);
+        }
+        view.redirectTo(redirectUrl.toString(), true, false);
+    }
 }
