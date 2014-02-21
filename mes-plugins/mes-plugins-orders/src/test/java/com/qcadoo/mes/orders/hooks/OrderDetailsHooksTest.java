@@ -286,7 +286,6 @@ public class OrderDetailsHooksTest {
         given(view.getComponentByReference(OrderFields.PRODUCT)).willReturn(productLookup);
         given(view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
         given(view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE)).willReturn(technologyLookup);
-        given(view.getComponentByReference(OrderFields.PLANNED_QUANTITY)).willReturn(plannedQuantityField);
 
         given(productLookup.getEntity()).willReturn(null);
 
@@ -296,7 +295,6 @@ public class OrderDetailsHooksTest {
         // then
         verify(defaultTechnologyField).setEnabled(false);
         verify(technologyLookup).setRequired(false);
-        verify(plannedQuantityField).setRequired(false);
     }
 
     @Test
@@ -305,7 +303,6 @@ public class OrderDetailsHooksTest {
         given(view.getComponentByReference(OrderFields.PRODUCT)).willReturn(productLookup);
         given(view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
         given(view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE)).willReturn(technologyLookup);
-        given(view.getComponentByReference(OrderFields.PLANNED_QUANTITY)).willReturn(plannedQuantityField);
 
         given(productLookup.getEntity()).willReturn(product);
 
@@ -324,7 +321,6 @@ public class OrderDetailsHooksTest {
         // then
         verify(defaultTechnologyField).setEnabled(false);
         verify(technologyLookup).setRequired(false);
-        verify(plannedQuantityField).setRequired(false);
     }
 
     @Test
@@ -333,7 +329,6 @@ public class OrderDetailsHooksTest {
         given(view.getComponentByReference(OrderFields.PRODUCT)).willReturn(productLookup);
         given(view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
         given(view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE)).willReturn(technologyLookup);
-        given(view.getComponentByReference(OrderFields.PLANNED_QUANTITY)).willReturn(plannedQuantityField);
 
         given(productLookup.getEntity()).willReturn(product);
 
@@ -352,7 +347,6 @@ public class OrderDetailsHooksTest {
         // then
         verify(defaultTechnologyField).setEnabled(false);
         verify(technologyLookup).setRequired(true);
-        verify(plannedQuantityField).setRequired(true);
     }
 
     @Test
