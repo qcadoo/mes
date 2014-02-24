@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.google.common.io.Files;
 import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.pdf.PdfWriter;
@@ -46,6 +47,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
+import com.qcadoo.report.api.ReportService;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
@@ -66,12 +68,14 @@ public class WorkPlansController {
     @Autowired
     private PdfHelper pdfHelper;
 
-    @RequestMapping(value = "/printAtachment.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/printAtachment.pdf", method = RequestMethod.GET)
     public final void printAtachment(@RequestParam("id") final Long[] ids, HttpServletResponse response) {
         DataDefinition atachmentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);
         Entity attachment = atachmentDD.get(ids[0]);
-
+        response.setHeader("Content-disposition",
+                "inline; filename=" + Files.getNameWithoutExtension(attachment.getStringField(TechnologyAttachmentFields.NAME))
+                        + "." + ReportService.ReportType.PDF.getExtension());
         if (PDF_EXT.equalsIgnoreCase(attachment.getStringField(TechnologyAttachmentFields.EXT))) {
             printPdfFile(attachment, response);
         } else {
@@ -85,6 +89,7 @@ public class WorkPlansController {
         try {
             PdfWriter.getInstance(document, response.getOutputStream());
             document.open();
+
             document.setPageSize(PageSize.A4);
             pdfHelper.addMetaData(document);
             pdfHelper.addImage(document, attachment.getStringField(TechnologyAttachmentFields.ATTACHMENT));

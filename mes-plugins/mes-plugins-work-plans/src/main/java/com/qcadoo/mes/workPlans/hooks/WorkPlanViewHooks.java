@@ -274,7 +274,7 @@ public class WorkPlanViewHooks {
             return;
         }
         StringBuffer redirectUrl = new StringBuffer();
-        redirectUrl.append("/rest/workplans/printAtachment.html");
+        redirectUrl.append("/rest/workplans/printAtachment.pdf");
         boolean isFirstParam = true;
         for (Long confectionProtocolId : grid.getSelectedEntitiesIds()) {
             if (isFirstParam) {
