@@ -28,15 +28,11 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,9 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.qcadoo.localization.api.TranslationService;
@@ -84,7 +78,7 @@ public class TechnologyMultiUploadController {
 
     @ResponseBody
     @RequestMapping(value = "/multiUploadFiles", method = RequestMethod.POST)
-    public ModelAndView upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+    public void upload(MultipartHttpServletRequest request, HttpServletResponse response) {
         Long technologyId = Long.parseLong(request.getParameter("techId"));
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
@@ -117,12 +111,6 @@ public class TechnologyMultiUploadController {
                 atachmentDD.save(atchment);
             }
         }
-        Locale locale = LocaleContextHolder.getLocale();
-        JSONObject json = new JSONObject(ImmutableMap.of("form.id", technologyId));
-        Map<String, String> arguments = ImmutableMap.of("context", json.toString());
-        ModelAndView mav = crudController.prepareView(TechnologiesConstants.PLUGIN_IDENTIFIER, "technologyDetails", arguments,
-                locale);
-        return mav;
     }
 
     @RequestMapping(value = "/getAttachment.html", method = RequestMethod.GET)
@@ -130,6 +118,8 @@ public class TechnologyMultiUploadController {
         DataDefinition atachmentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);
         Entity attachment = atachmentDD.get(ids[0]);
+        response.setHeader("Content-disposition",
+                "inline; filename=" + attachment.getStringField(TechnologyAttachmentFields.NAME));
         InputStream is = fileService.getInputStream(attachment.getStringField(TechnologyAttachmentFields.ATTACHMENT));
         try {
             IOUtils.copy(is, response.getOutputStream());
