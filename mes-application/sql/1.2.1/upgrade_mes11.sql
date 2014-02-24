@@ -1,3 +1,6 @@
+ALTER TABLE qcadooview_category ADD COLUMN authrole character varying(255);
+ALTER TABLE qcadooview_item ADD COLUMN authrole character varying(255);
+
 -- Table: technologies_technologyattachment
 -- changed: 20.02.2014
 CREATE TABLE technologies_technologyattachment

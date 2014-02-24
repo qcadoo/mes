@@ -459,11 +459,6 @@
 		</profile>
 		<profile>
 			<id>extra</id>
-            <activation>
-                <property>
-                    <name>full</name>
-                </property>
-            </activation>
 			<dependencies>
     			<dependency>
 					<groupId>com.qcadoo.mes</groupId>
