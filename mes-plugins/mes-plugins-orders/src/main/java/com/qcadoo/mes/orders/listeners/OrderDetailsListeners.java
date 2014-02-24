@@ -37,11 +37,9 @@ import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.hooks.OrderDetailsHooks;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -65,9 +63,6 @@ public class OrderDetailsListeners {
     private static final String L_EFFECTIVE_DATE_TO = "effectiveDateTo";
 
     public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NumberService numberService;
@@ -105,230 +100,253 @@ public class OrderDetailsListeners {
         orderDetailsHooks.fillProductionLine(view);
     }
 
-    public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        Long orderId = (Long) componentState.getFieldValue();
+    public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long orderId = (Long) state.getFieldValue();
 
         if (orderId != null) {
+            Entity order = orderService.getOrder(orderId);
 
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-            if (order.getField(OrderFields.ORDER_TYPE).equals(OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue())) {
+            String orderType = order.getStringField(OrderFields.ORDER_TYPE);
+
+            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
                 LookupComponent patternTechnologyLookup = (LookupComponent) view
                         .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
-                if (patternTechnologyLookup.getEntity() == null) {
 
-                    componentState.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
+                if (patternTechnologyLookup.getEntity() == null) {
+                    state.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
+
                     return;
                 }
-
             }
+
             Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.id", technologyId);
 
             String url = "../page/orders/copyOfTechnologyDetails.html";
             view.redirectTo(url, false, true, parameters);
-
         }
     }
 
-    private void copyDate(final ViewDefinitionState viewDefinitionState, final String fromNameField, final String toNameField) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
-        FieldComponent fromField = (FieldComponent) viewDefinitionState.getComponentByReference(fromNameField);
-        FieldComponent toField = (FieldComponent) viewDefinitionState.getComponentByReference(toNameField);
-        if (form.getEntityId() == null) {
+    private void copyDate(final ViewDefinitionState view, final String fromNameField, final String toNameField) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent fromField = (FieldComponent) view.getComponentByReference(fromNameField);
+        FieldComponent toField = (FieldComponent) view.getComponentByReference(toNameField);
+
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
             toField.setFieldValue(fromField.getFieldValue());
+
             return;
         }
-        Entity order = getOrderFromForm(form.getEntityId());
+
+        Entity order = orderService.getOrder(orderId);
 
         if (!fromField.getFieldValue().equals(order.getField(fromNameField))) {
             toField.setFieldValue(fromField.getFieldValue());
         }
+
         toField.requestComponentUpdateState();
     }
 
-    public void copyStartDate(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        if (triggerState.getName().equals(L_PLANNED_DATE_FROM)) {
+    public void copyStartDate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        if (state.getName().equals(L_PLANNED_DATE_FROM)) {
             copyDate(view, L_PLANNED_DATE_FROM, OrderFields.DATE_FROM);
-        } else if (triggerState.getName().equals(L_EFFECTIVE_DATE_FROM)) {
+        } else if (state.getName().equals(L_EFFECTIVE_DATE_FROM)) {
             copyDate(view, OrderFields.EFFECTIVE_DATE_FROM, OrderFields.DATE_FROM);
         } else {
             copyDate(view, OrderFields.CORRECTED_DATE_FROM, OrderFields.DATE_FROM);
         }
     }
 
-    public void copyEndDate(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        if (triggerState.getName().equals(L_PLANNED_DATE_TO)) {
+    public void copyEndDate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        if (state.getName().equals(L_PLANNED_DATE_TO)) {
             copyDate(view, L_PLANNED_DATE_TO, OrderFields.DATE_TO);
-        } else if (triggerState.getName().equals(L_EFFECTIVE_DATE_TO)) {
+        } else if (state.getName().equals(L_EFFECTIVE_DATE_TO)) {
             copyDate(view, OrderFields.EFFECTIVE_DATE_TO, OrderFields.DATE_TO);
         } else {
             copyDate(view, OrderFields.CORRECTED_DATE_TO, OrderFields.DATE_TO);
         }
-
     }
 
-    public void copyStartDateToDetails(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+    public void copyStartDateToDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        if (form.getEntityId() == null) {
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
             copyDate(view, OrderFields.DATE_FROM, L_PLANNED_DATE_FROM);
             return;
         }
 
-        Entity order = getOrderFromForm(form.getEntityId());
+        Entity order = orderService.getOrder(orderId);
 
-        String state = order.getStringField(OrderFields.STATE);
-        if (OrderState.PENDING.getStringValue().equals(state)) {
+        String orderState = order.getStringField(OrderFields.STATE);
+
+        if (OrderState.PENDING.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_FROM, L_PLANNED_DATE_FROM);
         }
-        if (OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.ABANDONED.getStringValue().equals(state)
-                || OrderState.COMPLETED.getStringValue().equals(state)) {
+        if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)
+                || OrderState.ABANDONED.getStringValue().equals(orderState)
+                || OrderState.COMPLETED.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_FROM, L_EFFECTIVE_DATE_FROM);
         }
-        if ((OrderState.ACCEPTED.getStringValue().equals(state))) {
+        if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
             copyDate(view, OrderFields.DATE_FROM, OrderFields.CORRECTED_DATE_FROM);
         }
-
     }
 
-    public void copyFinishDateToDetails(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() == null) {
+    public void copyFinishDateToDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
             copyDate(view, OrderFields.DATE_TO, L_PLANNED_DATE_TO);
             return;
         }
 
-        Entity order = getOrderFromForm(form.getEntityId());
+        Entity order = orderService.getOrder(orderId);
 
-        String state = order.getStringField(OrderFields.STATE);
+        String orderState = order.getStringField(OrderFields.STATE);
 
-        if (OrderState.PENDING.getStringValue().equals(state)) {
+        if (OrderState.PENDING.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, L_PLANNED_DATE_TO);
         }
-        if (OrderState.COMPLETED.getStringValue().equals(state) || OrderState.ABANDONED.getStringValue().equals(state)) {
+        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, L_EFFECTIVE_DATE_TO);
         }
-        if (OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state)) {
+        if (OrderState.ACCEPTED.getStringValue().equals(orderState) || OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, OrderFields.CORRECTED_DATE_TO);
         }
     }
 
-    public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        FieldComponent orderType = (FieldComponent) viewDefinitionState.getComponentByReference("orderType");
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType.getFieldValue())) {
-            LookupComponent productLookup = (LookupComponent) viewDefinitionState.getComponentByReference(OrderFields.PRODUCT);
-            FieldComponent technology = (FieldComponent) viewDefinitionState
-                    .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
-            FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
+    public void changeOrderProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FieldComponent orderTypeField = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
+
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderTypeField.getFieldValue())) {
+            LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
+            LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+            FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
 
             Entity product = productLookup.getEntity();
-            defaultTechnology.setFieldValue("");
-            technology.setFieldValue(null);
+
+            defaultTechnologyField.setFieldValue(null);
+            technologyLookup.setFieldValue(null);
+
             if (product != null) {
                 Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
+
                 if (defaultTechnologyEntity != null) {
-                    technology.setFieldValue(defaultTechnologyEntity.getId());
+                    technologyLookup.setFieldValue(defaultTechnologyEntity.getId());
                 }
             }
         }
     }
 
-    private Entity getOrderFromForm(final Long id) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-    }
-
-    public void onOrderTypeChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
+    public void onOrderTypeChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         orderDetailsHooks.setFieldsVisibilityAndFill(view);
 
         final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         Long orderId = orderForm.getEntityId();
+
         if (orderId != null) {
-            FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
+            FieldComponent orderTypeField = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
 
             boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(
-                    orderType.getFieldValue());
+                    orderTypeField.getFieldValue());
+
             if (selectForPatternTechnology) {
                 orderForm.addMessage("order.orderType.changeOrderType", MessageType.INFO, false);
-
             }
         }
     }
 
-    public void setProductQuantities(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
+    public void setProductQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (!isValidDecimalField(view, Arrays.asList(OrderFields.DONE_QUANTITY))) {
             return;
         }
-        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() == null) {
+
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (orderForm.getEntityId() == null) {
             return;
         }
 
-        Entity order = form.getEntity();
+        Entity order = orderForm.getEntity();
 
-        FieldComponent amountOfPPComponent = (FieldComponent) view
+        FieldComponent amountOfProductProducedField = (FieldComponent) view
                 .getComponentByReference(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED);
-        FieldComponent remainingAmountOfPTPComponent = (FieldComponent) view
+        FieldComponent remainingAmountOfProductToProduceField = (FieldComponent) view
                 .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
 
-        amountOfPPComponent.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
-        amountOfPPComponent.requestComponentUpdateState();
+        amountOfProductProducedField.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
+        amountOfProductProducedField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
-                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
-                        numberService.getMathContext());
-        if (remainingAmountOfPTP.compareTo(BigDecimal.ZERO) == -1) {
-            remainingAmountOfPTPComponent.setFieldValue(numberService.format(BigDecimal.ZERO));
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
+                numberService.getMathContext());
 
+        if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
+            remainingAmountOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
         } else {
-            remainingAmountOfPTPComponent.setFieldValue(numberService.format(remainingAmountOfPTP));
-
+            remainingAmountOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
         }
-        remainingAmountOfPTPComponent.requestComponentUpdateState();
+
+        remainingAmountOfProductToProduceField.requestComponentUpdateState();
     }
 
-    public void setDoneQuantity(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
+    public void setDoneQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (!isValidDecimalField(view, Arrays.asList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED))) {
             return;
         }
-        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() == null) {
+
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (orderForm.getEntityId() == null) {
             return;
         }
 
-        Entity order = form.getEntity();
+        Entity order = orderForm.getEntity();
 
-        FieldComponent doneQuantityComponent = (FieldComponent) view.getComponentByReference(OrderFields.DONE_QUANTITY);
-        FieldComponent remainingAmountOfPTPComponent = (FieldComponent) view
+        FieldComponent doneQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.DONE_QUANTITY);
+        FieldComponent remaingingAmoutOfProductToProduceField = (FieldComponent) view
                 .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
 
-        doneQuantityComponent.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
-        doneQuantityComponent.requestComponentUpdateState();
+        doneQuantityField.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
+        doneQuantityField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
-                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
-                        numberService.getMathContext());
-        if (remainingAmountOfPTP.compareTo(BigDecimal.ZERO) == -1) {
-            remainingAmountOfPTPComponent.setFieldValue(numberService.format(BigDecimal.ZERO));
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                numberService.getMathContext());
 
+        if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
+            remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
         } else {
-            remainingAmountOfPTPComponent.setFieldValue(numberService.format(remainingAmountOfPTP));
-
+            remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
         }
-        remainingAmountOfPTPComponent.requestComponentUpdateState();
+
+        remaingingAmoutOfProductToProduceField.requestComponentUpdateState();
     }
 
     private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
         boolean isValid = true;
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity entity = formComponent.getEntity();
+
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity entity = orderForm.getEntity();
+
         for (String field : fileds) {
             try {
                 BigDecimal decimalField = entity.getDecimalField(field);
             } catch (IllegalArgumentException e) {
-                FieldComponent component = (FieldComponent) view.getComponentByReference(field);
-                component.addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
+                FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(field);
+                fieldComponent.addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
+
                 isValid = false;
             }
         }
