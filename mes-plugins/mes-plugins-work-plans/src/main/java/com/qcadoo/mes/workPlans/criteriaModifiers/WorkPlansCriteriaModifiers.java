@@ -41,10 +41,11 @@ public class WorkPlansCriteriaModifiers {
     public void showAtachmentsForTechnologies(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         List<Long> technologyIDs = Lists.newArrayList();
         if (!filterValue.has(TECHNOLOGY_IDS)) {
+            scb.createAlias(TechnologyAttachmentFields.TECHNOLOGY, "t").add(SearchRestrictions.eq("t.id", 0l));
         } else {
             technologyIDs = filterValue.getListOfLongs(TECHNOLOGY_IDS);
             technologyIDs.isEmpty();
+            scb.createAlias(TechnologyAttachmentFields.TECHNOLOGY, "t").add(SearchRestrictions.in("t.id", technologyIDs));
         }
-        scb.createAlias(TechnologyAttachmentFields.TECHNOLOGY, "t").add(SearchRestrictions.in("t.id", technologyIDs));
     }
 }
