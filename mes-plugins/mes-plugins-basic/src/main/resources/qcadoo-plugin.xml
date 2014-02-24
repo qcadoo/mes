@@ -30,10 +30,8 @@
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
         xmlns:menu="http://schema.qcadoo.org/modules/menu"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
-        xmlns:security="http://schema.qcadoo.org/modules/security"
         xmlns:custom="http://schema.qcadoo.org/modules/custom"
-        xsi:schemaLocation="
-		http://schema.qcadoo.org/plugin 
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
 		http://schema.qcadoo.org/plugin.xsd 
 		http://schema.qcadoo.org/modules/model 
 		http://schema.qcadoo.org/modules/model.xsd 
@@ -43,12 +41,10 @@
 		http://schema.qcadoo.org/modules/localization.xsd 
 		http://schema.qcadoo.org/modules/menu 
 		http://schema.qcadoo.org/modules/menu.xsd
-		http://schema.qcadoo.org/modules/security
-		http://schema.qcadoo.org/modules/security.xsd
-		http://schema.qcadoo.org/modules/custom 
+		http://schema.qcadoo.org/modules/custom
 		http://schema.qcadoo.org/modules/custom.xsd">
 
-	<information>
+    <information>
 		<name>MES - Basic</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
@@ -75,8 +71,6 @@
 
 		<localization:translation path="locales"
 			basename="basic" />
-
-        <security:user-group name="02supervisors" role="ROLE_SUPERVISOR" />
 
 		<model:model model="company" resource="model/company.xml" />
 		<model:model model="staff" resource="model/staff.xml" />
