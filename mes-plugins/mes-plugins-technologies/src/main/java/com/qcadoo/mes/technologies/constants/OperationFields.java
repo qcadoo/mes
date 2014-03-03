@@ -35,7 +35,7 @@ public final class OperationFields {
 
     public static final String COMMENT = "comment";
 
-    public static final String WORKSTATION_TYPE = "workstationType";
+    // public static final String WORKSTATION_TYPE = "workstationType";
 
     public static final String OPERATION_COMPONENTS = "operationComponents";
 
@@ -53,6 +53,10 @@ public final class OperationFields {
 
     public static final String WORKSTATIONS = "workstations";
 
-    public static final String WORKSTATION_TYPES = "workstationTypes";
+    public static final String WORKSTATION_TYPE = "workstationType";
+
+    public static final String ASSIGNED_TO_OPERATION = "assignedToOperation";
+
+    public static final String QUANTITY_OF_WORKSTATIONS = "quantityOfWorkstations";
 
 }

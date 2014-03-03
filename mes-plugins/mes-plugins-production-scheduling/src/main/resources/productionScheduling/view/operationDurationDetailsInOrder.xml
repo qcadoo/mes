@@ -248,8 +248,7 @@
 									link="true" />
 								<option type="column" name="dateTo" fields="operation"
 									expression="#techOperCompTimeCalculation['effectiveDateTo']" />
-								<option type="column" name="techOperCompWorkstationT"
-									fields="techOperCompWorkstation" expression="#techOperCompWorkstation['quantityOfWorkstationTypes']" />
+								<option type="column" name="quantityOfWorkstations" fields="quantityOfWorkstations" />
 								<option type="column" name="laborWorkTime" fields="laborWorkTime"
 									expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculation['laborWorkTime'])" />
 								<option type="column" name="machineWorkTime" fields="machineWorkTime"

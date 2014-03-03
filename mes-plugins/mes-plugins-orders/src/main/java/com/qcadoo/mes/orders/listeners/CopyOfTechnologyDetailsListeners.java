@@ -91,12 +91,12 @@ public class CopyOfTechnologyDetailsListeners {
 
                 technologyForm.setEntity(copyOfTechnology);
             }
-
-            if (copyOfTechnology.getId() == null) {
-                technologyServiceO.setQuantityOfWorkstationTypes(order, technology);
-            } else {
-                technologyServiceO.setQuantityOfWorkstationTypes(order, copyOfTechnology);
-            }
+            // TODO sprawdzić
+            // if (copyOfTechnology.getId() == null) {
+            // technologyServiceO.setQuantityOfWorkstationTypes(order, technology);
+            // } else {
+            // technologyServiceO.setQuantityOfWorkstationTypes(order, copyOfTechnology);
+            // }
         }
     }
 
@@ -123,7 +123,8 @@ public class CopyOfTechnologyDetailsListeners {
 
             order.getDataDefinition().save(order);
 
-            technologyServiceO.setQuantityOfWorkstationTypes(order, newTechnology);
+            // TODO sprawdzić
+            // technologyServiceO.setQuantityOfWorkstationTypes(order, newTechnology);
 
             state.setFieldValue(newTechnology.getId());
             technologyForm.setEntity(newTechnology);
@@ -154,7 +155,8 @@ public class CopyOfTechnologyDetailsListeners {
 
             order.getDataDefinition().save(order);
 
-            technologyServiceO.setQuantityOfWorkstationTypes(order, copyOfTechnology);
+            // TODO sprawdzić
+            // technologyServiceO.setQuantityOfWorkstationTypes(order, copyOfTechnology);
 
             state.setFieldValue(copyOfTechnology.getId());
             technologyForm.setEntity(copyOfTechnology);

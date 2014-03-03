@@ -550,6 +550,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             operation.setField(L_LABOR_HOURLY_COST, values.get("laborhourlycost"));
             operation.setField("numberOfOperations", values.get("numberofoperations"));
         }
+        operation.setField("assignedToOperation", values.get("assignedtooperation"));
+        operation.setField("quantityOfWorkstations", values.get("quantityofworkstations"));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test operation item {name=" + operation.getField(L_NAME) + ", " + L_NUMBER + "="
@@ -1075,6 +1077,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         // if (isEnabledOrEnabling(L_TECH_SUBCONTRACTING) && !values.get("issubcontracting").isEmpty()) {
         // component.setField("isSubcontracting", true);
         // }
+        component.setField("assignedToOperation", values.get("assignedtooperation"));
+        component.setField("quantityOfWorkstations", values.get("quantityofworkstations"));
 
         component = techOperCompDD.save(component);
         if (LOG.isDebugEnabled()) {

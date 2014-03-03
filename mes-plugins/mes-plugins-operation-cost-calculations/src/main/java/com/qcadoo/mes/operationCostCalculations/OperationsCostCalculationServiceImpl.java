@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
 import com.qcadoo.mes.costNormsForOperation.constants.TechnologyOperationComponentFieldsCNFO;
@@ -44,11 +45,10 @@ import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimes;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
-import com.qcadoo.mes.productionLines.constants.TechOperCompWorkstationFields;
-import com.qcadoo.mes.productionLines.constants.TechnologyOperationComponentFieldsPL;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -130,6 +130,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     @Autowired
     private OperationCostCalculationTreeBuilder operationCostCalculationTreeBuilder;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     public void calculateOperationsCost(final Entity costCalculationOrProductionBalance) {
@@ -400,9 +403,15 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     private Map<Long, Integer> getWorkstationsFromTechnology(final Entity technology, final Entity productionLine) {
         Map<Long, Integer> workstations = Maps.newHashMap();
-
-        for (Entity operComp : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
-            workstations.put(operComp.getId(), productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+        if (parameterService.getParameter().getBooleanField("workstationsQuantityFromProductionLine")) {
+            for (Entity operComp : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
+                workstations.put(operComp.getId(), productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+            }
+        } else {
+            for (Entity operComp : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
+                workstations.put(operComp.getId(), IntegerUtils.convertNullToZero(operComp
+                        .getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS)));
+            }
         }
         return workstations;
     }
@@ -412,11 +421,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         for (Entity technologyOperationComponent : order.getBelongsToField(L_TECHNOLOGY).getHasManyField(
                 TechnologyFields.OPERATION_COMPONENTS)) {
-            Entity techOperCompWorkstation = technologyOperationComponent
-                    .getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION);
-
-            workstations.put(technologyOperationComponent.getId(), IntegerUtils.convertNullToZero(techOperCompWorkstation
-                    .getIntegerField(TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATION_TYPES)));
+            workstations.put(technologyOperationComponent.getId(), IntegerUtils.convertNullToZero(technologyOperationComponent
+                    .getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS)));
         }
 
         return workstations;

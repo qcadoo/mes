@@ -115,7 +115,6 @@ public class OrderHooks {
         copyProductQuantity(orderDD, order);
         onCorrectingTheRequestedVolume(orderDD, order);
         technologyServiceO.createOrUpdateTechnology(orderDD, order);
-        technologyServiceO.setQuantityOfWorkstationTypes(order);
     }
 
     public void onCopy(final DataDefinition orderDD, final Entity order) {

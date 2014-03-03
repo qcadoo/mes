@@ -32,10 +32,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompTimeCalculationsFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
@@ -60,6 +62,9 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     public BigDecimal estimateAbstractOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
@@ -272,7 +277,13 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
                 operComp = operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getDataDefinition()
                         .get(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
             }
-            workstations.put(operComp.getId(), productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+            if (parameterService.getParameter().getBooleanField("workstationsQuantityFromProductionLine")) {
+                workstations.put(operComp.getId(), productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+            } else {
+                workstations.put(operComp.getId(),
+                        operComp.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
+
+            }
         }
         return workstations;
     }
@@ -286,7 +297,12 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
                 operComp = operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getDataDefinition()
                         .get(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
             }
-            workstations.put(operComp, productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+            if (parameterService.getParameter().getBooleanField("workstationsQuantityFromProductionLine")) {
+                workstations.put(operComp, productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+            } else {
+                workstations.put(operComp, operComp.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
+
+            }
         }
         return workstations;
     }
@@ -342,7 +358,12 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     private Map<Entity, Integer> getWorkstationsFromTechnology(final Entity technology, final Entity productionLine) {
         Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
         for (Entity operComp : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
-            workstations.put(operComp, productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+            if (parameterService.getParameter().getBooleanField("workstationsQuantityFromProductionLine")) {
+                workstations.put(operComp, productionLinesService.getWorkstationTypesCount(operComp, productionLine));
+            } else {
+                workstations.put(operComp, operComp.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
+
+            }
         }
         return workstations;
     }
@@ -350,10 +371,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     private Map<Long, Integer> getWorkstationsMapFromOrder(final Entity order) {
         Map<Long, Integer> workstations = new HashMap<Long, Integer>();
         for (Entity operComp : order.getBelongsToField(L_TECHNOLOGY).getHasManyField("operationComponents")) {
-            workstations
-                    .put(operComp.getId(),
-                            getIntegerValue(operComp.getBelongsToField("techOperCompWorkstation").getField(
-                                    "quantityOfWorkstationTypes")));
+            workstations.put(operComp.getId(),
+                    operComp.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
         }
         return workstations;
     }
@@ -361,10 +380,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     private Map<Entity, Integer> getWorkstationsFromOrder(final Entity order) {
         Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
         for (Entity operComp : order.getBelongsToField(L_TECHNOLOGY).getHasManyField("operationComponents")) {
-            workstations
-                    .put(operComp,
-                            getIntegerValue(operComp.getBelongsToField("techOperCompWorkstation").getField(
-                                    "quantityOfWorkstationTypes")));
+            workstations.put(operComp, operComp.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
         }
         return workstations;
     }

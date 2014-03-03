@@ -25,22 +25,19 @@
 
 -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="technologies" 
-	view="technologyOperationComponentDetails">
-
-	<windowTab name="workstationTypesTab" reference="workstationTypesTab">
-		<component type="gridLayout" name="workstationTypesGridLayout"
-			columns="3" rows="1">
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
+	plugin="basic"
+	view="parameters">
+	
+	<windowTab name="timeConsumptionForTechnologyTab" reference="timeConsumptionForTechnologyTab">
+		<component type="gridLayout" name="timeConsumptionForTechnologyLayout" columns="3" rows="2">
 			<layoutElement column="1" row="1">
-				<component type="input" name="quantityOfWorkstationTypes"
-					field="#{form}.quantityOfWorkstationTypes" reference="quantityOfWorkstationTypes"
-					hasDescription="true">
-					<option type="labelWidth" value="60" />
-					<option type="alignment" value="right" />
+				<component type="checkbox" name="workstationsQuantityFromProductionLine" 
+							field="#{form}.workstationsQuantityFromProductionLine" hasDescription="true">
+					<option type="labelWidth" value="80" />
+					<option type="align" value="right" />
 				</component>
 			</layoutElement>
 		</component>
 	</windowTab>
-	
 </windowTabExtension>

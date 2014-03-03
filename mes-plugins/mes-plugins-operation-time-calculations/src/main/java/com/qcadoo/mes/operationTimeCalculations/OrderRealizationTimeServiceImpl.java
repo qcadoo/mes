@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -70,6 +71,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private ProductionLinesService productionLinesService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     public Object setDateToField(final Date date) {
@@ -234,10 +238,16 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private Integer retrieveWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
         if (StringUtils.isEmpty(operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY)
                 .getStringField(TechnologyFields.TECHNOLOGY_TYPE))) {
-            return productionLinesService.getWorkstationTypesCount(operationComponent, productionLine);
+            if (parameterService.getParameter().getBooleanField("workstationsQuantityFromProductionLine")) {
+                return productionLinesService.getWorkstationTypesCount(operationComponent, productionLine);
+            } else {
+                return getIntegerValue(operationComponent
+                        .getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
+
+            }
         } else {
-            return getIntegerValue(operationComponent.getBelongsToField("techOperCompWorkstation").getIntegerField(
-                    "quantityOfWorkstationTypes"));
+            return getIntegerValue(operationComponent
+                    .getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
         }
 
     }

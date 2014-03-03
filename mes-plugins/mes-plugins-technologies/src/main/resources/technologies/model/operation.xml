@@ -55,12 +55,25 @@
 		<manyToMany name="workstations" plugin="basic" model="workstation"
 			joinField="operations" cascade="delete" copyable="true" />
 			
-		<manyToMany name="workstationTypes" plugin="basic" model="workstationType"
-			joinField="operations" />
+		<!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
+			joinField="operations" />-->
+			
+		<enum name="assignedToOperation" values="01workstations,02workstationTypes" default="02workstationTypes" required="true"/>
+		
+		<belongsTo name="workstationType" plugin="basic" model="workstationType"/>
+		<!-- dodać relację z drugiej strony -->
+		<integer name="quantityOfWorkstations" default="1">
+			<validatesRange from="1" exclusively="false" />
+		</integer>
+		
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.hooks.OperationModelValidators"
 			method="checkIfProductsInProductComponentsAreDistinct" />
+			
+		<onView class="com.qcadoo.mes.technologies.hooks.OperationModelHooks" method="onView"/>
+		
+		<onSave class="com.qcadoo.mes.technologies.hooks.OperationModelHooks" method="onSave"/>
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

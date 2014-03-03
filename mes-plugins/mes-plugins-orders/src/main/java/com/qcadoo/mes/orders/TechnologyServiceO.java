@@ -1,7 +1,5 @@
 package com.qcadoo.mes.orders;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +9,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
-import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
-import com.qcadoo.mes.productionLines.constants.TechOperCompWorkstationFields;
-import com.qcadoo.mes.productionLines.constants.TechnologyOperationComponentFieldsPL;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
@@ -245,83 +240,6 @@ public class TechnologyServiceO {
 
     public String makeTechnologyName(final String technologyNumber, final Entity product) {
         return technologyNumber + " - " + product.getStringField(ProductFields.NUMBER);
-    }
-
-    public void setQuantityOfWorkstationTypes(final Entity order, final Entity technology) {
-        if ((technology == null) || (technology.getId() == null)) {
-            return;
-        }
-
-        Entity technologyFromDB = technology.getDataDefinition().get(technology.getId());
-
-        if (technologyFromDB == null) {
-            return;
-        }
-
-        List<Entity> technologyOperationComponents = technologyFromDB.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
-
-        if ((technologyOperationComponents == null) || technologyOperationComponents.isEmpty()) {
-            return;
-        }
-
-        DataDefinition quantityOfWorkstationTypesDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                ProductionLinesConstants.MODEL_TECH_OPER_COMP_WORKSTATION);
-
-        Entity techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
-
-        for (Entity technologyOperationComponent : technologyOperationComponents) {
-            techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
-
-            techOperCompWorkstation.setField(
-                    TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATION_TYPES,
-                    productionLinesService.getWorkstationTypesCount(technologyOperationComponent,
-                            order.getBelongsToField(OrderFields.PRODUCTION_LINE)));
-
-            techOperCompWorkstation = quantityOfWorkstationTypesDD.save(techOperCompWorkstation);
-
-            technologyOperationComponent.setField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION,
-                    techOperCompWorkstation);
-
-            technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
-        }
-    }
-
-    public void setQuantityOfWorkstationTypes(final Entity order) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-
-        if ((technology == null) || (technology.getId() == null)) {
-            return;
-        }
-
-        String sql = "select toc from #technologies_technologyOperationComponent as toc where technology.id = "
-                + technology.getId();
-
-        List<Entity> technologyOperationComponents = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
-                .find(sql).list().getEntities();
-
-        DataDefinition quantityOfWorkstationTypesDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                ProductionLinesConstants.MODEL_TECH_OPER_COMP_WORKSTATION);
-
-        Entity techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
-
-        for (Entity technologyOperationComponent : technologyOperationComponents) {
-            if (technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION) == null) {
-                techOperCompWorkstation = quantityOfWorkstationTypesDD.create();
-
-                techOperCompWorkstation.setField(
-                        TechOperCompWorkstationFields.QUANTITY_OF_WORKSTATION_TYPES,
-                        productionLinesService.getWorkstationTypesCount(technologyOperationComponent,
-                                order.getBelongsToField(OrderFields.PRODUCTION_LINE)));
-
-                techOperCompWorkstation = quantityOfWorkstationTypesDD.save(techOperCompWorkstation);
-
-                technologyOperationComponent.setField(TechnologyOperationComponentFieldsPL.TECH_OPER_COMP_WORKSTATION,
-                        techOperCompWorkstation);
-
-                technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
-            }
-        }
     }
 
     public Entity getDefaultTechnology(final Entity product) {

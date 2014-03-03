@@ -111,13 +111,19 @@
 		
 		<model:model-field plugin="basic" model="workstation">
 			<model:manyToMany name="operations" plugin="technologies"
-				model="operation" joinField="workstations" copyable="true" />
+				model="operation" joinField="workstations" copyable="true" cascade="nullify" />
+		</model:model-field>
+	
+		<model:model-field plugin="basic" model="workstation">
+			<model:manyToMany name="operationComponents" plugin="technologies"
+				model="technologyOperationComponent" joinField="workstations" copyable="true" />
 		</model:model-field>
 		
+	<!--  	
 		<model:model-field plugin="basic" model="workstationType">
 			<model:manyToMany name="operations" plugin="technologies"
 				model="operation" joinField="workstationTypes" copyable="true" />
-		</model:model-field>
+		</model:model-field>-->
 	
 		<menu:menu-category name="technology" />
 

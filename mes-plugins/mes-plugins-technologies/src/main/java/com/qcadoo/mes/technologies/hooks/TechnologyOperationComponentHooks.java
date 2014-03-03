@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.AssignedToOperation;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentReferenceMode;
@@ -30,6 +32,22 @@ public class TechnologyOperationComponentHooks {
         copyCommentAndAttachmentFromOperation(technologyOperationComponent);
         setParentIfRootNodeAlreadyExists(technologyOperationComponent);
         copyReferencedTechnology(technologyOperationComponentDD, technologyOperationComponent);
+        copyWorkstationsSettingsFromOperation(technologyOperationComponent);
+    }
+
+    private void copyWorkstationsSettingsFromOperation(final Entity technologyOperationComponent) {
+        Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+        if (operation != null) {
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS,
+                    operation.getIntegerField(OperationFields.QUANTITY_OF_WORKSTATIONS));
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION,
+                    operation.getField(OperationFields.ASSIGNED_TO_OPERATION));
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATION_TYPE,
+                    operation.getBelongsToField(OperationFields.WORKSTATION_TYPE));
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS,
+                    operation.getManyToManyField(OperationFields.WORKSTATIONS));
+        }
     }
 
     private void copyCommentAndAttachmentFromOperation(final Entity technologyOperationComponent) {
@@ -162,4 +180,15 @@ public class TechnologyOperationComponentHooks {
         return false;
     }
 
+    public void onSave(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        clearField(technologyOperationComponent);
+
+    }
+
+    private void clearField(final Entity technologyOperationComponent) {
+        String assignedToOperation = technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION);
+        if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperation)) {
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
+        }
+    }
 }
