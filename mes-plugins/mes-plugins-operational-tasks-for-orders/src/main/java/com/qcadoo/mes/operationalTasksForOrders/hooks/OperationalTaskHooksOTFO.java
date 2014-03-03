@@ -34,14 +34,10 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class OperationalTaskHooksOTFO {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private OperationalTasksForOrdersService operationalTasksForOrdersService;
