@@ -34,8 +34,6 @@ public final class ProductionLinesConstants {
     // MODEL
     public static final String MODEL_PRODUCTION_LINE = "productionLine";
 
-    public static final String MODEL_TECH_OPER_COMP_WORKSTATION = "techOperCompWorkstation";
-
     public static final String MODEL_WORKSTATION_TYPE_COMPONENT = "workstationTypeComponent";
 
 }

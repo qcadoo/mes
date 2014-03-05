@@ -99,20 +99,6 @@ CREATE TABLE timenormsforoperations_techopercomptimecalculation
 
 -- end
 
-
--- Table: productionlines_techopercompworkstation
--- changed: 22.06.2013
-
-CREATE TABLE productionlines_techopercompworkstation
-(
-  id bigint NOT NULL,
-  quantityofworkstationtypes integer DEFAULT 1,
-  CONSTRAINT productionlines_techopercompworkstation_pkey PRIMARY KEY (id)
-);
-
--- end
-
-
 -- Table: productioncounting_productionrecord
 -- changed: 26.06.2013
 
@@ -174,12 +160,6 @@ ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN techopercomptim
 ALTER TABLE technologies_technologyoperationcomponent
   ADD CONSTRAINT technologyoperationcomponent_techopercomptimecalculation_fkey FOREIGN KEY (techopercomptimecalculation_id)
       REFERENCES timenormsforoperations_techopercomptimecalculation (id) DEFERRABLE;
-
-ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN techopercompworkstation_id bigint;      
-
-ALTER TABLE technologies_technologyoperationcomponent
-  ADD CONSTRAINT technologyoperationcomponent_techopercompworkstation_fkey FOREIGN KEY (techopercompworkstation_id)
-      REFERENCES productionlines_techopercompworkstation (id) DEFERRABLE;
 
 -- end
 

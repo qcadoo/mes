@@ -112,19 +112,42 @@ CREATE TABLE jointable_operation_workstation
 
 -- end
 
+-- Table: technologies_operation
+-- changed: 05.03.2013
 
--- Table: jointable_operation_workstationtype
--- changed: 27.11.2013
+ALTER TABLE technologies_operation ADD COLUMN assignedtooperation character varying(255);
+ALTER TABLE technologies_operation ALTER COLUMN assignedtooperation SET DEFAULT '02workstationTypes'::character varying;
 
-CREATE TABLE jointable_operation_workstationtype
+ALTER TABLE technologies_operation ADD COLUMN workstationtype_id bigint;
+
+ALTER TABLE technologies_operation ADD COLUMN quantityofworkstations integer;
+ALTER TABLE technologies_operation ALTER COLUMN quantityofworkstations SET DEFAULT 1;
+
+-- end
+
+-- Table: technologies_technologyoperationcomponent
+
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN assignedtooperation character varying(255);
+ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN assignedtooperation SET DEFAULT '02workstationTypes'::character varying;
+
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN workstationtype_id bigint;
+
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN quantityofworkstations integer;
+ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN quantityofworkstations SET DEFAULT 1;
+
+-- end
+
+-- Table: jointable_technologyoperationcomponent_workstation
+
+CREATE TABLE jointable_technologyoperationcomponent_workstation
 (
-  workstationtype_id bigint NOT NULL,
-  operation_id bigint NOT NULL,
-  CONSTRAINT jointable_operation_workstationtype_pkey PRIMARY KEY (operation_id, workstationtype_id),
-  CONSTRAINT operation_workstationtype_fkey FOREIGN KEY (workstationtype_id)
-      REFERENCES basic_workstationtype (id) DEFERRABLE,
-  CONSTRAINT workstationtype_operation_fkey FOREIGN KEY (operation_id)
-      REFERENCES technologies_operation (id) DEFERRABLE
+  technologyoperationcomponent_id bigint NOT NULL,
+  workstation_id bigint NOT NULL,
+  CONSTRAINT jointable_technologyoperationcomponent_workstation_pkey PRIMARY KEY (workstation_id, technologyoperationcomponent_id),
+  CONSTRAINT workstation_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE,
+  CONSTRAINT basic_workstation FOREIGN KEY (workstation_id)
+      REFERENCES basic_workstation (id) DEFERRABLE
 );
 
 -- end

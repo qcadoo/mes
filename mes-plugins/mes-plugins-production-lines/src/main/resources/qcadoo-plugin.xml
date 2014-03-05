@@ -67,10 +67,7 @@
 	
 		<model:model model="productionLine" resource="model/productionLine.xml" />
 		<model:model model="workstationTypeComponent" resource="model/workstationTypeComponent.xml" />
-	
-		<!-- 
-		<model:model model="techOperCompWorkstation" resource="model/techOperCompWorkstation.xml" />
-		-->
+
 		<model:model-field plugin="basic" model="parameter">
 			<model:belongsTo name="defaultProductionLine" plugin="productionLines"
 				model="productionLine" required="true" />
@@ -90,20 +87,7 @@
 			<model:onCreate
 				class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter" />
 		</model:model-hook>
-	<!-- 
-		<model:model-hook plugin="technologies"
-			model="technologyOperationComponent">
-			<model:onSave
-				class="com.qcadoo.mes.productionLines.hooks.TechnologyOperationComponentHooksPL"
-				method="onSave" />
-		</model:model-hook>
-		<model:model-hook plugin="technologies"
-			model="technologyOperationComponent">
-			<model:onDelete
-				class="com.qcadoo.mes.productionLines.hooks.TechnologyOperationComponentHooksPL"
-				method="onDelete" />
-		</model:model-hook>
-	 -->	
+
 		<menu:menu-item name="productionLines" category="technology"
 			view="productionLinesList" />
 	
@@ -111,16 +95,7 @@
 		<view:view resource="view/productionLineDetails.xml" />
 	
 		<view:view resource="view/workstationTypeComponentDetails.xml" />
-	
-	<!-- 
-		<view:view-tab
-			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
-	
-		<view:view-hook plugin="technologies"
-			view="technologyOperationComponentDetails" type="beforeRender"
-			class="com.qcadoo.mes.productionLines.hooks.TechnologyOperationComponentHooksPL"
-			method="setQuantityOfWorkstationTypes" />
-	-->
+
 	</modules>
 	
 	<features>
