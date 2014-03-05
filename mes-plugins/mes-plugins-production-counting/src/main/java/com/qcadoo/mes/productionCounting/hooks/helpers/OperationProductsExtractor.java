@@ -81,7 +81,7 @@ public class OperationProductsExtractor {
                         continue;
                     }
                 } else {
-                    if (!technologyOperationComponent.getId().equals(operationComponent.getId())) {
+                    if ((operationComponent == null) || !technologyOperationComponent.getId().equals(operationComponent.getId())) {
                         continue;
                     }
                 }
