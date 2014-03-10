@@ -53,6 +53,35 @@
 
 		<windowTab name="mainTab">
 			<component type="form" name="technology" reference="form">
+				<script>
+					<![CDATA[
+						var url = parent.document.URL;
+						var urlWithoutHostname = url.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
+					
+						if(parent.mixpanel){
+							#{window}.getRibbonItem("actions.save").addOnChangeListener({
+								onClick: function() {
+									
+									if ( #{form}.getComponentValue().entityId) {
+									
+										parent.mixpanel.track("modifyTechnology",
+											{'username' : parent.window.getCurrentUserLogin(),
+											 'url':       urlWithoutHostname}
+										);
+									
+									} else {
+									
+										parent.mixpanel.track("addTechnology",
+											{'username' : parent.window.getCurrentUserLogin(),
+											 'url':       urlWithoutHostname}
+										);
+										
+									}
+								}
+							});
+						}
+					]]>
+				</script>
 				<listener event="changeState"
 					class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient"
 					method="changeState" />
@@ -155,6 +184,7 @@
 								checkState.disable();
 							}					
 						}
+						
 					]]>
 				</script>
 				<component type="gridLayout" name="gridsLayout" columns="3"
