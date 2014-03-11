@@ -77,6 +77,32 @@
 								del.enable();
 							}
 						});
+						
+						var url = parent.document.URL;
+						var urlWithoutHostname = url.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
+					
+						if(parent.mixpanel){
+							save.addOnChangeListener({
+								onClick: function() {
+									
+									if ( #{form}.getComponentValue().entityId) {
+									
+										parent.mixpanel.track("modifyProduct",
+											{'username' : parent.window.getCurrentUserLogin(),
+											 'url':       urlWithoutHostname}
+										);
+									
+									} else {
+									
+										parent.mixpanel.track("addProduct",
+											{'username' : parent.window.getCurrentUserLogin(),
+											 'url':       urlWithoutHostname}
+										);
+										
+									}
+								}
+							});
+						}
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"

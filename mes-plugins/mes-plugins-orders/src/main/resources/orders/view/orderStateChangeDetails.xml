@@ -34,6 +34,26 @@
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="logging" reference="form">
+				<script>
+					<![CDATA[
+						var url = parent.document.URL;
+						var urlWithoutHostname = url.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
+					
+						if(parent.mixpanel){
+							#{window}.getRibbonItem("actions.saveBack").addOnChangeListener({
+								onClick: function() {
+
+										parent.mixpanel.track("modifyOrderState",
+											{'username' : parent.window.getCurrentUserLogin(),
+											 'url':       urlWithoutHostname}
+										);
+									
+								}
+							});
+						}
+					]]>
+				</script>
+			
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="6" hasBorders="false">
 					<layoutElement column="1" row="1">
