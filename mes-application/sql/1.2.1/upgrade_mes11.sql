@@ -16,3 +16,10 @@ CREATE TABLE technologies_technologyattachment
       REFERENCES technologies_technology (id) DEFERRABLE
 );
 -- end
+
+-- QCADOO-391 - mark first & last name as required
+BEGIN;
+  UPDATE qcadoosecurity_user SET firstname=username WHERE firstname is null or length(trim(both ' ' from firstname)) = 0;
+  UPDATE qcadoosecurity_user SET lastname=username WHERE lastname is null or length(trim(both ' ' from lastname)) = 0;
+END;
+-- end
