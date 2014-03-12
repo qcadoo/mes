@@ -65,19 +65,13 @@
 			<component type="form" name="form" reference="form">
 				<script>
 					<![CDATA[
-							var url = parent.document.URL;
-							var urlWithoutHostname = url.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
-						
-							if(parent.mixpanel){
-								#{window}.getRibbonItem("generate.generate").addOnChangeListener({
-									onClick: function() {
-											parent.mixpanel.track("generateCostCalculation",
-												{'username' : parent.window.getCurrentUserLogin(),
-												 'url':       urlWithoutHostname}
-											);	
-									}
-								});
-							}
+							var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+					
+							QCDTrack.track(
+									generatedRibbonItem,
+									"onClick",
+									 "generateCostCalculation" 
+							);
 	
 							jQuery(document).ready(function() {
 								var json = JSON.parse(context);
@@ -98,7 +92,7 @@
 							var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
 							var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
 							
-							var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+							
 							
 							var entityExists = false;
 							

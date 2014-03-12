@@ -37,24 +37,28 @@
 				reference="form">
 				<script>
                     <![CDATA[
-                    	var url = parent.document.URL;
-						var urlWithoutHostname = url.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
-				
-						if(parent.mixpanel){
-							#{window}.getRibbonItem("actions.save").addOnChangeListener({
-								onClick: function() {
-								
-									if ( !( #{form}.getComponentValue().entityId) ) {
-									
-										parent.mixpanel.track("addProductionRecord",
-											{'username' : parent.window.getCurrentUserLogin(),
-											 'url':       urlWithoutHostname}
-										);
-										
-									}	
-								}
-							});
-						}
+                    	var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						
+						QCDTrack.track(
+								save,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addProductionRecord" , "modifyProductionRecord") 
+						);
+						
+						QCDTrack.track(
+								saveBack,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addProductionRecord" , "modifyProductionRecord") 
+						);
+						
+						QCDTrack.track(
+								saveNew,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addProductionRecord" , "modifyProductionRecord") 
+						);
+                    
                     
 						this.changeRecordState = function(eventPerformer, ribbonItemName) {
 							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);

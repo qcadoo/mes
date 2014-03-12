@@ -54,31 +54,29 @@
 			<component type="form" name="company" reference="form">
 				<script>
 					<![CDATA[
-						var url = parent.document.URL;
-						var urlWithoutHostname = url.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
-					
-						if(parent.mixpanel){
-							#{window}.getRibbonItem("actions.save").addOnChangeListener({
-								onClick: function() {
-									
-									if ( #{form}.getComponentValue().entityId) {
-									
-										parent.mixpanel.track("modifyCompany",
-											{'username' : parent.window.getCurrentUserLogin(),
-											 'url':       urlWithoutHostname}
-										);
-									
-									} else {
-									
-										parent.mixpanel.track("addCompany",
-											{'username' : parent.window.getCurrentUserLogin(),
-											 'url':       urlWithoutHostname}
-										);
-										
-									}
-								}
-							});
-						}
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						
+						QCDTrack.track(
+								save,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addCompany" , "modifyCompany") 
+						);
+						
+						QCDTrack.track(
+								saveBack,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addCompany" , "modifyCompany") 
+						);
+						
+						QCDTrack.track(
+								saveNew,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addCompany" , "modifyCompany") 
+						);
+						
+						
 					]]>
 				</script>
 				<component type="gridLayout" name="mainTabGridLayout"

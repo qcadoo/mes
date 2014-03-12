@@ -47,21 +47,6 @@
 		<component type="form" name="workPlan" reference="form">
 			<script>
 				<![CDATA[
-					var url = parent.document.URL;
-					var urlWithoutHostname = url.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
-				
-					if(parent.mixpanel){
-						#{window}.getRibbonItem("generate.generate").addOnChangeListener({
-							onClick: function() {
-									parent.mixpanel.track("generateWorkPlan",
-										{'username' : parent.window.getCurrentUserLogin(),
-										 'url':       urlWithoutHostname}
-									);
-									
-							}
-						});
-					}
-				
 					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
 					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
 					var printWorkPlan = #{window}.getRibbonItem("exportWorkPlan.printWorkPlan");
@@ -72,6 +57,12 @@
 					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
+					
+					QCDTrack.track(
+							generate,
+							"onClick",
+							 "generateWorkPlan" 
+					);
 					
 					this.addOnChangeListener({
 						onSetValue: function(value) {

@@ -77,32 +77,26 @@
 								del.enable();
 							}
 						});
+
+						QCDTrack.track(
+							save,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addProduct" , "modifyProduct") 
+						);
 						
-						var url = parent.document.URL;
-						var urlWithoutHostname = url.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
-					
-						if(parent.mixpanel){
-							save.addOnChangeListener({
-								onClick: function() {
-									
-									if ( #{form}.getComponentValue().entityId) {
-									
-										parent.mixpanel.track("modifyProduct",
-											{'username' : parent.window.getCurrentUserLogin(),
-											 'url':       urlWithoutHostname}
-										);
-									
-									} else {
-									
-										parent.mixpanel.track("addProduct",
-											{'username' : parent.window.getCurrentUserLogin(),
-											 'url':       urlWithoutHostname}
-										);
-										
-									}
-								}
-							});
-						}
+						QCDTrack.track(
+							saveBack,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addProduct" , "modifyProduct") 
+						);
+						
+						QCDTrack.track(
+							saveNew,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addProduct" , "modifyProduct") 
+						);
+
+						
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
@@ -262,7 +256,7 @@
 						var del = #{window}.getRibbonItem("actions.delete");
 						var externalNumberListener = {
 							onSetValue: function(value) {
-								
+
 								var externalNumber = #{externalNumber}.getValue().content.value;
 								
 								if(externalNumber != undefined && externalNumber != '') {

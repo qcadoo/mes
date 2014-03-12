@@ -47,21 +47,6 @@
 			reference="form">
 			<script>
 				<![CDATA[
-					var url = parent.document.URL;
-					var urlWithoutHostname = url.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
-				
-					if(parent.mixpanel){
-						#{window}.getRibbonItem("generate.generate").addOnChangeListener({
-							onClick: function() {
-									parent.mixpanel.track("generateMaterialRequirements",
-										{'username' : parent.window.getCurrentUserLogin(),
-										 'url':       urlWithoutHostname}
-									);
-									
-							}
-						});
-					}
-				
 					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
 					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
 					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
@@ -73,6 +58,12 @@
 					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
+					
+					QCDTrack.track(
+							generateRibbonItem,
+							"onClick",
+							 "generateMaterialRequirements" 
+					);
 					
 					this.addOnChangeListener({
 						onSetValue: function(value) {

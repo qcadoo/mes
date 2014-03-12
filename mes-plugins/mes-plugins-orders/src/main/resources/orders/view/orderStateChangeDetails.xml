@@ -36,21 +36,29 @@
 			<component type="form" name="logging" reference="form">
 				<script>
 					<![CDATA[
-						var url = parent.document.URL;
-						var urlWithoutHostname = url.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
 					
-						if(parent.mixpanel){
-							#{window}.getRibbonItem("actions.saveBack").addOnChangeListener({
-								onClick: function() {
-
-										parent.mixpanel.track("modifyOrderState",
-											{'username' : parent.window.getCurrentUserLogin(),
-											 'url':       urlWithoutHostname}
-										);
-									
-								}
-							});
-						}
+						QCDTrack.track(
+								save,
+								"onClick",
+								 "modifyOrderState"
+						);
+						
+						QCDTrack.track(
+								saveNew,
+								"onClick",
+								 "modifyOrderState"
+						);
+						
+						QCDTrack.track(
+								saveBack,
+								"onClick",
+								 "modifyOrderState"
+						);
+					
+						
 					]]>
 				</script>
 			
