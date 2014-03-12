@@ -117,7 +117,7 @@ public class CopyOfTechnologyDetailsListeners {
 
             deleteTechnology(technology);
 
-            Entity newTechnology = createTechnology(technology, order);
+            Entity newTechnology = createTechnology(order);
 
             order.setField(OrderFields.TECHNOLOGY, newTechnology);
 
@@ -168,14 +168,15 @@ public class CopyOfTechnologyDetailsListeners {
                 .add(SearchRestrictions.belongsTo(OrderFields.TECHNOLOGY, technology)).setMaxResults(1).uniqueResult();
     }
 
-    private Entity createTechnology(final Entity technology, final Entity order) {
+    private Entity createTechnology(final Entity order) {
         Entity newTechnology = technologyServiceO.getTechnologyDD().create();
 
-        String number = technology.getStringField(TechnologyFields.NUMBER);
-        Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
+        String number = numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
 
-        newTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
-                TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
+        Entity product = order.getBelongsToField(TechnologyFields.PRODUCT);
+
+        newTechnology.setField(TechnologyFields.NUMBER, number);
         newTechnology.setField(TechnologyFields.NAME, technologyServiceO.makeTechnologyName(number, product));
         newTechnology.setField(TechnologyFields.PRODUCT, product);
         newTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, getTechnologyType(order));
@@ -188,10 +189,12 @@ public class CopyOfTechnologyDetailsListeners {
     private Entity copyTechnology(final Entity technologyPrototype, final Entity order) {
         Entity copyOfTechnology = technologyServiceO.getTechnologyDD().create();
 
+        String number = numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+
         copyOfTechnology = technologyServiceO.getTechnologyDD().copy(technologyPrototype.getId()).get(0);
 
-        copyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
-                TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
+        copyOfTechnology.setField(TechnologyFields.NUMBER, number);
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, getTechnologyType(order));
 

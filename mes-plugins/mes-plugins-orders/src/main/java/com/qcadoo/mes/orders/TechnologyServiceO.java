@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
-import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
@@ -29,9 +28,6 @@ public class TechnologyServiceO {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private ProductionLinesService productionLinesService;
 
     @Transactional
     public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
@@ -86,13 +82,13 @@ public class TechnologyServiceO {
             }
         } else {
             if (existingOrder == null) {
-                order.setField(OrderFields.TECHNOLOGY, createTechnology(technologyPrototype));
+                order.setField(OrderFields.TECHNOLOGY, createTechnology(order));
 
                 if (technologyPrototype != null) {
                     order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
                 }
             } else if (existingOrder.getBelongsToField(OrderFields.TECHNOLOGY) == null) {
-                order.setField(OrderFields.TECHNOLOGY, createTechnology(technologyPrototype));
+                order.setField(OrderFields.TECHNOLOGY, createTechnology(order));
 
                 if (technologyPrototype != null) {
                     order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
@@ -176,14 +172,16 @@ public class TechnologyServiceO {
         }
     }
 
-    private Entity createTechnology(final Entity technologyPrototype) {
+    private Entity createTechnology(final Entity order) {
         Entity newTechnology = getTechnologyDD().create();
 
-        String number = newTechnology.getStringField(TechnologyFields.NUMBER);
-        Entity product = technologyPrototype.getBelongsToField(TechnologyFields.PRODUCT);
+        String number = numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
 
-        newTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
-                TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
+        Entity product = order.getBelongsToField(TechnologyFields.PRODUCT);
+        Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+
+        newTechnology.setField(TechnologyFields.NUMBER, number);
         newTechnology.setField(TechnologyFields.NAME, makeTechnologyName(number, product));
         newTechnology.setField(TechnologyFields.PRODUCT, product);
         newTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
@@ -197,10 +195,12 @@ public class TechnologyServiceO {
     private Entity copyTechnology(final Entity technologyPrototype) {
         Entity copyOfTechnology = getTechnologyDD().create();
 
+        String number = numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+
         copyOfTechnology = copyOfTechnology.getDataDefinition().copy(technologyPrototype.getId()).get(0);
 
-        copyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
-                TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
+        copyOfTechnology.setField(TechnologyFields.NUMBER, number);
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
 
