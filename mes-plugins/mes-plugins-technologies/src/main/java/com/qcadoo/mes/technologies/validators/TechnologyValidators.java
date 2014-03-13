@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.technologies.validators;
 
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ProductService;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -40,28 +39,53 @@ public class TechnologyValidators {
     @Autowired
     private ProductService productService;
 
-    public boolean validate(final DataDefinition dataDefinition, final Entity technology) {
+    public boolean validatesWith(final DataDefinition technologyDD, final Entity technology) {
         boolean isValid = true;
-        isValid = isValid && checkTechnologyDefault(dataDefinition, technology);
-        isValid = isValid && productService.checkIfProductIsNotRemoved(dataDefinition, technology);
+
+        isValid = isValid && checkTechnologyDefault(technologyDD, technology);
+        isValid = isValid && checkTechnologyPrototypeState(technologyDD, technology);
+        isValid = isValid && productService.checkIfProductIsNotRemoved(technologyDD, technology);
+
         return isValid;
     }
 
-    public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity technology) {
-        if (!technology.getBooleanField(MASTER)) {
+    public boolean checkTechnologyDefault(final DataDefinition technologyDD, final Entity technology) {
+        if (!technology.getBooleanField(TechnologyFields.MASTER)) {
             return true;
         }
+
         if (!hasInCorrectStateTechnologyForMaster(technology)) {
-            technology.addError(dataDefinition.getField(MASTER),
+            technology.addError(technologyDD.getField(TechnologyFields.MASTER),
                     "technologies.technology.validate.global.error.default.incorrectState");
+
             return false;
         }
+
+        return true;
+    }
+
+    public boolean checkTechnologyPrototypeState(final DataDefinition technologyDD, final Entity technology) {
+        Entity technologyPrototype = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_PROTOTYPE);
+
+        if (technologyPrototype == null) {
+            return true;
+        }
+
+        String state = technologyPrototype.getStringField(TechnologyFields.STATE);
+
+        if (!TechnologyState.CHECKED.getStringValue().equals(state) && !TechnologyState.ACCEPTED.getStringValue().equals(state)) {
+            technology.addError(technologyDD.getField(TechnologyFields.TECHNOLOGY_PROTOTYPE),
+                    "technologies.technology.validate.global.error.technologyPrototype.incorrectState");
+
+            return false;
+        }
+
         return true;
     }
 
     private boolean hasInCorrectStateTechnologyForMaster(final Entity technology) {
-        return technology.getStringField(STATE).equals(TechnologyStateStringValues.ACCEPTED)
-                || technology.getStringField(STATE).equals(TechnologyStateStringValues.OUTDATED);
+        return technology.getStringField(TechnologyFields.STATE).equals(TechnologyStateStringValues.ACCEPTED)
+                || technology.getStringField(TechnologyFields.STATE).equals(TechnologyStateStringValues.OUTDATED);
     }
 
 }

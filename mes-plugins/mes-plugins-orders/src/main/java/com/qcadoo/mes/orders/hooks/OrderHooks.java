@@ -94,13 +94,20 @@ public class OrderHooks {
     @Autowired
     private OrderStateChangeReasonService orderStateChangeReasonService;
 
-    public boolean onValidate(final DataDefinition orderDD, final Entity order) {
+    public boolean validatesWith(final DataDefinition orderDD, final Entity order) {
+        boolean isValid = true;
+
         Entity parameter = parameterService.getParameter();
 
-        return checkOrderDates(orderDD, order) && checkOrderPlannedQuantity(orderDD, order)
-                && productService.checkIfProductIsNotRemoved(orderDD, order) && checkChosenTechnologyState(orderDD, order)
-                && checkReasonOfStartDateCorrection(parameter, order) && checkReasonOfEndDateCorrection(parameter, order)
-                && checkEffectiveDeviation(parameter, order);
+        isValid = isValid && checkOrderDates(orderDD, order);
+        isValid = isValid && checkOrderPlannedQuantity(orderDD, order);
+        isValid = isValid && productService.checkIfProductIsNotRemoved(orderDD, order);
+        isValid = isValid && checkChosenTechnologyState(orderDD, order);
+        isValid = isValid && checkReasonOfStartDateCorrection(parameter, order);
+        isValid = isValid && checkReasonOfEndDateCorrection(parameter, order);
+        isValid = isValid && checkEffectiveDeviation(parameter, order);
+
+        return isValid;
     }
 
     public void onCreate(final DataDefinition orderDD, final Entity order) {

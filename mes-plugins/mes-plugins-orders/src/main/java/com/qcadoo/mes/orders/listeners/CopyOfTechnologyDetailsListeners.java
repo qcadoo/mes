@@ -69,27 +69,29 @@ public class CopyOfTechnologyDetailsListeners {
 
             Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-            Entity technologyPrototype = technologyPrototypeLookup.getEntity();
-
             Entity copyOfTechnology = technologyServiceO.getTechnologyDD().create();
 
+            Entity technologyPrototype = technologyPrototypeLookup.getEntity();
+
             if ((technologyPrototype != null) && !technologyPrototype.getId().equals(orderTechnologyPrototype.getId())) {
-                order.setField(OrderFields.TECHNOLOGY, null);
-
-                order.getDataDefinition().save(order);
-
-                deleteTechnology(technology);
-
                 copyOfTechnology = copyTechnology(technologyPrototype, order);
 
-                order.setField(OrderFields.TECHNOLOGY, copyOfTechnology);
-                order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
+                if (copyOfTechnology.isValid()) {
+                    order.setField(OrderFields.TECHNOLOGY, null);
 
-                order.getDataDefinition().save(order);
+                    order.getDataDefinition().save(order);
 
-                state.setFieldValue(copyOfTechnology.getId());
+                    deleteTechnology(technology);
 
-                technologyForm.setEntity(copyOfTechnology);
+                    order.setField(OrderFields.TECHNOLOGY, copyOfTechnology);
+                    order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
+
+                    order.getDataDefinition().save(order);
+
+                    state.setFieldValue(copyOfTechnology.getId());
+
+                    technologyForm.setEntity(copyOfTechnology);
+                }
             }
             // TODO sprawdzić
             // if (copyOfTechnology.getId() == null) {
@@ -110,24 +112,26 @@ public class CopyOfTechnologyDetailsListeners {
             Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
             Entity order = getOrderWithTechnology(technology);
 
-            order.setField(OrderFields.TECHNOLOGY, null);
-            order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
-
-            order.getDataDefinition().save(order);
-
-            deleteTechnology(technology);
-
             Entity newTechnology = createTechnology(order);
 
-            order.setField(OrderFields.TECHNOLOGY, newTechnology);
+            if (newTechnology.isValid()) {
+                order.setField(OrderFields.TECHNOLOGY, null);
+                order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
 
-            order.getDataDefinition().save(order);
+                order.getDataDefinition().save(order);
 
-            // TODO sprawdzić
-            // technologyServiceO.setQuantityOfWorkstationTypes(order, newTechnology);
+                deleteTechnology(technology);
 
-            state.setFieldValue(newTechnology.getId());
-            technologyForm.setEntity(newTechnology);
+                order.setField(OrderFields.TECHNOLOGY, newTechnology);
+
+                order.getDataDefinition().save(order);
+
+                // TODO sprawdzić
+                // technologyServiceO.setQuantityOfWorkstationTypes(order, newTechnology);
+
+                state.setFieldValue(newTechnology.getId());
+                technologyForm.setEntity(newTechnology);
+            }
         }
     }
 
@@ -141,25 +145,27 @@ public class CopyOfTechnologyDetailsListeners {
             Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
             Entity order = getOrderWithTechnology(technology);
 
-            order.setField(OrderFields.TECHNOLOGY, null);
-
-            order.getDataDefinition().save(order);
-
-            deleteTechnology(technology);
-
             Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
             Entity copyOfTechnology = copyTechnology(orderTechnologyPrototype, order);
 
-            order.setField(OrderFields.TECHNOLOGY, copyOfTechnology);
+            if (copyOfTechnology.isValid()) {
+                order.setField(OrderFields.TECHNOLOGY, null);
 
-            order.getDataDefinition().save(order);
+                order.getDataDefinition().save(order);
 
-            // TODO sprawdzić
-            // technologyServiceO.setQuantityOfWorkstationTypes(order, copyOfTechnology);
+                deleteTechnology(technology);
 
-            state.setFieldValue(copyOfTechnology.getId());
-            technologyForm.setEntity(copyOfTechnology);
+                order.setField(OrderFields.TECHNOLOGY, copyOfTechnology);
+
+                order.getDataDefinition().save(order);
+
+                // TODO sprawdzić
+                // technologyServiceO.setQuantityOfWorkstationTypes(order, copyOfTechnology);
+
+                state.setFieldValue(copyOfTechnology.getId());
+                technologyForm.setEntity(copyOfTechnology);
+            }
         }
     }
 
