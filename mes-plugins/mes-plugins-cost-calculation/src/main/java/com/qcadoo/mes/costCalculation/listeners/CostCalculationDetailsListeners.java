@@ -41,6 +41,7 @@ import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.costCalculation.hooks.CostCalculationDetailsHooks;
 import com.qcadoo.mes.costCalculation.print.CostCalculationReportService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -171,7 +172,14 @@ public class CostCalculationDetailsListeners {
         }
         if (cameFromOrder) {
             order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(sourceId);
-            technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+            String orderType = order.getStringField(OrderFields.ORDER_TYPE);
+
+            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+                technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+            } else {
+                technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            }
 
             if (technology == null) {
                 return;
