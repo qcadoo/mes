@@ -23,21 +23,28 @@
  */
 package com.qcadoo.mes.costCalculation.listeners;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class OrderDetailsListenersCC {
 
-    public void showCostCalculateFromOrder(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    public void showCostCalculateFromOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Long orderId = (Long) state.getFieldValue();
 
         if (orderId != null) {
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put(L_WINDOW_ACTIVE_MENU, "calculations.costCalculation");
+
             String url = "../page/costCalculation/costCalculationDetails.html?context={\"orderId\":\"" + orderId + "\"}";
-            view.redirectTo(url, false, true);
+            view.redirectTo(url, false, true, parameters);
         }
     }
 
