@@ -275,36 +275,63 @@ public class CostCalculationDetailsListeners {
         }
 
         LookupComponent productLookup = (LookupComponent) state;
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.ORDER);
         LookupComponent defaultTechnologyLookup = (LookupComponent) view
                 .getComponentByReference(CostCalculationFields.DEFAULT_TECHNOLOGY);
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.TECHNOLOGY);
 
         Entity product = productLookup.getEntity();
+        Entity order = orderLookup.getEntity();
+        Entity technology = technologyLookup.getEntity();
 
         if (product != null) {
             fillCostPerUnitUnitField(view, state, args);
 
-            Entity defaultTechnologyEntity = getDefaultTechnology(product.getId());
+            if (order != null) {
+                Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
-            if (defaultTechnologyEntity != null) {
-                defaultTechnologyLookup.setFieldValue(defaultTechnologyEntity.getId());
-                technologyLookup.setFieldValue(defaultTechnologyEntity.getId());
+                if (!product.getId().equals(orderProduct.getId())) {
+                    orderLookup.setFieldValue(null);
+                }
+            }
+
+            Entity defaultTechnology = getDefaultTechnology(product);
+
+            if (defaultTechnology == null) {
+                defaultTechnologyLookup.setFieldValue(null);
+            } else {
+                defaultTechnologyLookup.setFieldValue(defaultTechnology.getId());
+            }
+
+            if (technology == null) {
+                if (defaultTechnology != null) {
+                    technologyLookup.setFieldValue(defaultTechnology.getId());
+                }
+            } else {
+                Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
+
+                if (!product.getId().equals(technologyProduct.getId())) {
+                    if (defaultTechnology == null) {
+                        technologyLookup.setFieldValue(null);
+                    } else {
+                        technologyLookup.setFieldValue(defaultTechnology.getId());
+                    }
+                }
             }
         }
 
-        defaultTechnologyLookup.setFieldValue(null);
-        technologyLookup.setFieldValue(null);
+        orderLookup.requestComponentUpdateState();
+        defaultTechnologyLookup.requestComponentUpdateState();
+        technologyLookup.requestComponentUpdateState();
     }
 
-    private Entity getDefaultTechnology(final Long productId) {
+    private Entity getDefaultTechnology(final Entity product) {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
-        SearchCriteriaBuilder searchCriteriaBuilder = technologyDD
-                .find()
+        SearchCriteriaBuilder searchCriteriaBuilder = technologyDD.find()
                 .add(SearchRestrictions.eq(TechnologyFields.MASTER, true))
-                .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, BasicConstants.PLUGIN_IDENTIFIER,
-                        BasicConstants.MODEL_PRODUCT, productId));
+                .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product));
 
         return searchCriteriaBuilder.setMaxResults(1).uniqueResult();
     }
