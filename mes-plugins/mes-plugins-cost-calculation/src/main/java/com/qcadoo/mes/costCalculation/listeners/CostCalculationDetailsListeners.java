@@ -164,8 +164,8 @@ public class CostCalculationDetailsListeners {
         Boolean cameFromOrder = L_ORDER.equals(sourceType);
         Boolean cameFromTechnology = L_TECHNOLOGY.equals(sourceType);
 
-        Entity technology;
-        Entity order;
+        Entity technology = null;
+        Entity order = null;
 
         if (!cameFromOrder && !cameFromTechnology) {
             return;
@@ -173,13 +173,7 @@ public class CostCalculationDetailsListeners {
         if (cameFromOrder) {
             order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(sourceId);
 
-            String orderType = order.getStringField(OrderFields.ORDER_TYPE);
-
-            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
-                technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-            } else {
-                technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            }
+            technology = getTechnologyFromOrder(order);
 
             if (technology == null) {
                 return;
@@ -272,7 +266,11 @@ public class CostCalculationDetailsListeners {
             return;
         }
 
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        Entity technology = getTechnologyFromOrder(order);
+
+        if (technology == null) {
+            return;
+        }
 
         applyValuesToFields(view, technology, order);
     }
@@ -331,6 +329,20 @@ public class CostCalculationDetailsListeners {
         orderLookup.requestComponentUpdateState();
         defaultTechnologyLookup.requestComponentUpdateState();
         technologyLookup.requestComponentUpdateState();
+    }
+
+    private Entity getTechnologyFromOrder(final Entity order) {
+        Entity technology = null;
+
+        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
+
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+            technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        } else {
+            technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        }
+
+        return technology;
     }
 
     private Entity getDefaultTechnology(final Entity product) {
