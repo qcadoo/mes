@@ -433,8 +433,10 @@ public class ProductionPerShiftDetailsHooks {
             FieldComponent dateField = progressForDay.findFieldComponentByName(L_DATE);
 
             Entity progressForDayEntity = progressForDay.getEntity();
-            progressForDayEntity = progressForDayEntity.getDataDefinition().get(progressForDayEntity.getId());
-            if (progressForDayEntity.getDateField(ProgressForDayFields.DATE_OF_DAY) == null) {
+            if (progressForDayEntity.getId() != null) {
+                progressForDayEntity = progressForDayEntity.getDataDefinition().get(progressForDayEntity.getId());
+            }
+            if (progressForDayEntity.getField(ProgressForDayFields.DATE_OF_DAY) == null) {
                 String day = (String) dayField.getFieldValue();
                 if (!StringUtils.isEmpty(day)) {
                     Date date = ppsHelper.getDateAfterStartOrderForProgress(order, Integer.parseInt(day));
