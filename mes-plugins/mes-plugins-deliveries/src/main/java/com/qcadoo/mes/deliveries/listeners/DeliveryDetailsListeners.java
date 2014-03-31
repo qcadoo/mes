@@ -184,7 +184,7 @@ public class DeliveryDetailsListeners {
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.id", relatedDeliveryId);
 
-            parameters.put(L_WINDOW_ACTIVE_MENU, "deliveries.deliveryDetails");
+            parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
             String url = "../page/deliveries/deliveryDetails.html";
             view.redirectTo(url, false, true, parameters);
@@ -289,7 +289,7 @@ public class DeliveryDetailsListeners {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("delivery.id", deliveryId);
 
-        parameters.put(L_WINDOW_ACTIVE_MENU, "deliveries.deliveriesList");
+        parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
         String url = "../page/deliveries/deliveriesList.html";
         view.redirectTo(url, false, true, parameters);
@@ -311,7 +311,7 @@ public class DeliveryDetailsListeners {
 
         parameters.put("form.id", product.getId());
 
-        parameters.put(L_WINDOW_ACTIVE_MENU, "basic.productDetails");
+        parameters.put(L_WINDOW_ACTIVE_MENU, "basic.products");
 
         String url = "../page/basic/productDetails.html";
         view.redirectTo(url, false, true, parameters);

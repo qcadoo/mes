@@ -25,6 +25,7 @@ package com.qcadoo.mes.technologies.criteriaModifiers;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
@@ -32,6 +33,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 public class TechnologyCriteriaModifiers {
 
     public void showPatternTechnology(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull("technologyType"));
+        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
     }
+
 }

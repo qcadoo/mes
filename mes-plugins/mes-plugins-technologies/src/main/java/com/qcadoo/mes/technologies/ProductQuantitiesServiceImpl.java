@@ -209,10 +209,12 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         Entity root = operationComponents.getRoot();
 
-        preloadProductQuantitiesAndOperationRuns(operationComponents, operationProductComponentWithQuantityContainer,
-                operationRuns);
-        traverseProductQuantitiesAndOperationRuns(technology, givenQuantity, root, null,
-                operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
+        if (root != null) {
+            preloadProductQuantitiesAndOperationRuns(operationComponents, operationProductComponentWithQuantityContainer,
+                    operationRuns);
+            traverseProductQuantitiesAndOperationRuns(technology, givenQuantity, root, null,
+                    operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
+        }
 
         return operationProductComponentWithQuantityContainer;
     }
@@ -406,7 +408,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
     }
 
-    private boolean isTechnologyOperationComponentEntityTypeReferenceTechnology(Entity operationComponent) {
+    private boolean isTechnologyOperationComponentEntityTypeReferenceTechnology(final Entity operationComponent) {
         return TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(
                 operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE));
     }

@@ -225,8 +225,8 @@
 							<option type="fieldCode" value="number" />
 
 							<criteriaModifier
-								class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-								method="showPatternTechnology" />
+								class="com.qcadoo.mes.costCalculation.criteriaModifiers.TechnologyCriteriaModifiersCC"
+								method="restrictTechnologyToOrderTechnologyOrProductTechnology" />
 
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
@@ -615,6 +615,9 @@
 	</component>
 
 	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationDetailsHooks"
+			method="setCriteriaModifierParameters" />
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationDetailsHooks"
 			method="setFieldsEnabled" />

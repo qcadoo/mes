@@ -37,11 +37,14 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -68,6 +71,45 @@ public class CostCalculationDetailsHooks {
 
     @Autowired
     private CurrencyService currencyService;
+
+    public void setCriteriaModifierParameters(final ViewDefinitionState view) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.ORDER);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.TECHNOLOGY);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.PRODUCT);
+
+        Entity order = orderLookup.getEntity();
+        Entity product = productLookup.getEntity();
+
+        FilterValueHolder filterValueHolder = technologyLookup.getFilterValue();
+
+        if (order == null) {
+            filterValueHolder.remove(CostCalculationFields.TECHNOLOGY);
+        } else {
+            String orderType = order.getStringField(OrderFields.ORDER_TYPE);
+
+            Entity technology = null;
+
+            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+                technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+            } else {
+                technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            }
+
+            if (technology == null) {
+                filterValueHolder.remove(CostCalculationFields.TECHNOLOGY);
+            } else {
+                filterValueHolder.put(CostCalculationFields.TECHNOLOGY, technology.getId());
+            }
+        }
+
+        if (product == null) {
+            filterValueHolder.remove(CostCalculationFields.PRODUCT);
+        } else {
+            filterValueHolder.put(CostCalculationFields.PRODUCT, product.getId());
+        }
+
+        technologyLookup.setFilterValue(filterValueHolder);
+    }
 
     public void setFieldsEnabled(final ViewDefinitionState view) {
         Set<String> referenceNames = Sets.newHashSet(CostCalculationFields.PRODUCT, CostCalculationFields.ORDER,
