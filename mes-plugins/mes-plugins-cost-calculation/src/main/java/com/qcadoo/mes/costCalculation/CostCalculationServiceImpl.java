@@ -27,6 +27,8 @@ import static com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationC
 import static com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode.PIECEWORK;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
@@ -113,7 +115,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
             if (opocs.size() == 1) {
                 Entity opoc = opocs.get(0);
                 BigDecimal quantityInSingleCycle = opoc.getDecimalField(OperationProductOutComponentFields.QUANTITY);
-                BigDecimal quantity = effectiveQuantity.divide(quantityInSingleCycle, BigDecimal.ROUND_UP);
+                BigDecimal quantity = effectiveQuantity.divide(quantityInSingleCycle, new MathContext(2, RoundingMode.UP));
                 effectiveQuantity = quantityInSingleCycle.multiply(quantity, numberService.getMathContext());
             }
         }
