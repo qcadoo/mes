@@ -28,6 +28,7 @@ import static com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationC
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,10 @@ import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.operationCostCalculations.OperationsCostCalculationService;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -59,7 +64,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         calculateOperationsAndProductsCosts(entity);
         final BigDecimal productionCosts = calculateProductionCost(entity);
         calculateMarginsAndOverheads(entity, productionCosts);
-        calculateTotalCosts(entity, productionCosts, entity.getDecimalField(CostCalculationFields.QUANTITY));
+        final BigDecimal effectiveQuantity = getEffectiveQuantity(entity);
+
+        calculateTotalCosts(entity, productionCosts, effectiveQuantity);
 
         return entity.getDataDefinition().save(entity);
     }
@@ -91,6 +98,26 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
             entity.setField(CostCalculationFields.TOTAL_COST_PER_UNIT, numberService.setScale(totalCostsPerUnit));
         }
+    }
+
+    private BigDecimal getEffectiveQuantity(final Entity entity) {
+        Entity technology = entity.getBelongsToField(CostCalculationFields.TECHNOLOGY);
+        Entity rootOperation = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+        BigDecimal effectiveQuantity = entity.getDecimalField(CostCalculationFields.QUANTITY);
+
+        boolean areProductQuantitiesDivisible = rootOperation
+                .getBooleanField(TechnologyOperationComponentFieldsTNFO.ARE_PRODUCT_QUANTITIES_DIVISIBLE);
+        if (!areProductQuantitiesDivisible) {
+            List<Entity> opocs = rootOperation
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+            if (opocs.size() == 1) {
+                Entity opoc = opocs.get(0);
+                BigDecimal quantityInSingleCycle = opoc.getDecimalField(OperationProductOutComponentFields.QUANTITY);
+                BigDecimal quantity = effectiveQuantity.divide(quantityInSingleCycle, BigDecimal.ROUND_UP);
+                effectiveQuantity = quantityInSingleCycle.multiply(quantity, numberService.getMathContext());
+            }
+        }
+        return effectiveQuantity;
     }
 
     private void calculateMarginsAndOverheads(final Entity entity, final BigDecimal productionCosts) {
