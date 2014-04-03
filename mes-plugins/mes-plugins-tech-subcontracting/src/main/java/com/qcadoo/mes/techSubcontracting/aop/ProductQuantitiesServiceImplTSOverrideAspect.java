@@ -32,11 +32,18 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+<<<<<<< HEAD
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+=======
+import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.RunIfEnabled;
+>>>>>>> master
 
 @Aspect
 @Configurable
+@RunIfEnabled(TechSubcontractingConstants.PLUGIN_IDENTIFIER)
 public class ProductQuantitiesServiceImplTSOverrideAspect {
 
     @Autowired

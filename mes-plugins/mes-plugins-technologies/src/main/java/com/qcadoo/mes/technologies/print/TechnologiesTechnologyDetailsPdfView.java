@@ -38,8 +38,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -57,6 +59,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.FontUtils;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 
@@ -139,7 +142,28 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 "technologies.technologiesTechnologyDetails.report.columnHeader.quantity", locale));
         technologyDetailsTableHeader.add(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.unit", locale));
-        PdfPTable table = pdfHelper.createTableWithHeader(7, technologyDetailsTableHeader, false);
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        alignments.put(
+                translationService.translate("technologies.technologiesTechnologyDetails.report.columnHeader.level", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(
+                translationService.translate("technologies.technologiesTechnologyDetails.report.columnHeader.name", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(
+                translationService.translate("technologies.technologiesTechnologyDetails.report.columnHeader.direction", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(translationService.translate(
+                "technologies.technologiesTechnologyDetails.report.columnHeader.productNumber", locale), HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("technologies.technologiesTechnologyDetails.report.columnHeader.productName",
+                locale), HeaderAlignment.LEFT);
+        alignments.put(
+                translationService.translate("technologies.technologiesTechnologyDetails.report.columnHeader.quantity", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(
+                translationService.translate("technologies.technologiesTechnologyDetails.report.columnHeader.unit", locale),
+                HeaderAlignment.LEFT);
+
+        PdfPTable table = pdfHelper.createTableWithHeader(7, technologyDetailsTableHeader, false, alignments);
 
         EntityTree technologyTree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         treeNumberingService.generateTreeNumbers(technologyTree);
@@ -170,9 +194,20 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 table.addCell(new Phrase(nodeNumber, FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(operationName, FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(translationService.translate(productType, locale), FontUtils.getDejavuRegular7Dark()));
+<<<<<<< HEAD
                 table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(numberService.format(operationProductComponent.getField(L_QUANTITY)), FontUtils
+=======
+                table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(ProductFields.NUMBER),
+                        FontUtils.getDejavuRegular7Dark()));
+                table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(FIELD_NAME), FontUtils
+                        .getDejavuRegular7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                table.addCell(new Phrase(numberService.format(product.getField("quantity")), FontUtils.getDejavuRegular7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+                table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField("unit"), FontUtils
+>>>>>>> master
                         .getDejavuRegular7Dark()));
                 table.addCell(new Phrase(product.getStringField(ProductFields.UNIT), FontUtils.getDejavuRegular7Dark()));
             }

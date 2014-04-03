@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="basic" view="parameters">
+
+	<windowTab name="productionBalance" reference="productionBalance">
+		<component type="gridLayout" name="gridLayoutBalance"
+			reference="gridLayoutBalance" columns="3" rows="3">
+			<layoutElement column="1" row="1">
+				<component type="gridLayout" name="productionBalanceGridLayout"
+					reference="productionBalanceGridLayout" columns="1" rows="5">
+					<layoutElement column="1" row="1">
+						<component type="checkbox" name="printOperationNormsPB"
+							field="#{form}.printOperationNormsPB" reference="printOperationNormsPB">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2" height="3">
+						<component type="borderLayout" name="parametersBorderLayout">
+							<component type="gridLayout" name="parametersGidLayout"
+								columns="1" rows="3">
+								<layoutElement column="1" row="1">
+									<component type="select" name="calculateOperationsCostsModePB"
+										field="#{form}.calculateOperationCostsModePB" reference="calculateOperationCostsModePB">
+										<listener event="onSelectedEntityChange"
+											class="com.qcadoo.mes.productionCountingWithCosts.hooks.ParameterPBDetailsViewHooks"
+											method="disableCheckboxes" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="checkbox" name="includeTPZPB"
+										field="#{form}.includeTPZPB" reference="includeTPZPB" />
+								</layoutElement>
+								<layoutElement column="1" row="3">
+									<component type="checkbox" name="includeAdditionalTimePB"
+										field="#{form}.includeAdditionalTimePB" reference="includeAdditionalTimePB" />
+								</layoutElement>
+							</component>
+
+							<option type="label" value="parameters" />
+						</component>
+					</layoutElement>
+				</component>
+			</layoutElement>
+
+			<layoutElement column="2" row="1">
+				<component type="gridLayout" name="inputDataForCostsGridLayout"
+					reference="inputDataForCostsGridLayout" columns="1" rows="5">
+					<layoutElement column="1" row="1">
+						<component type="checkbox" name="printCostNormsOfMaterialsPB"
+							field="#{form}.printCostNormsOfMaterialsPB" reference="printCostNormsOfMaterialsPB">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="borderLayout" name="parametersBorderLayout"
+							reference="parametersBorderLayout">
+							<component type="gridLayout" name="parametersGridLayout"
+								reference="parametersGridLayout" columns="1" rows="2">
+								<layoutElement column="1" row="1">
+									<component type="select" name="sourceOfMaterialCostsPB"
+										field="#{form}.sourceOfMaterialCostsPB" reference="sourceOfMaterialCostsPB">
+
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="select" name="calculateMaterialCostsModePB"
+										field="#{form}.calculateMaterialCostsModePB" reference="calculateMaterialCostsModePB">
+									</component>
+								</layoutElement>
+							</component>
+
+							<option type="label" value="parameters" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4" height="2">
+						<component type="borderLayout" name="assumptionsBorderLayout"
+							reference="assumptionsBorderLayout">
+							<component type="gridLayout" name="assumptionsGridLayout"
+								reference="assumptionsGridLayout" columns="6" rows="2"
+								hasBorders="false">
+								<layoutElement column="1" row="1" width="5">
+									<component type="input" name="averageMachineHourlyCostPB"
+										field="#{form}.averageMachineHourlyCostPB" reference="averageMachineHourlyCostPB">
+										<option type="alignment" value="right" />
+									</component>
+								</layoutElement>
+								<layoutElement column="6" row="1">
+									<component type="input" name="averageMachineHourlyCostPBCurrency"
+										reference="averageMachineHourlyCostPBCurrency" defaultEnabled="false"
+										hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2" width="5">
+									<component type="input" name="averageLaborHourlyCostPB"
+										field="#{form}.averageLaborHourlyCostPB" reference="averageLaborHourlyCostPB">
+										<option type="alignment" value="right" />
+									</component>
+								</layoutElement>
+								<layoutElement column="6" row="2">
+									<component type="input" name="averageLaborHourlyCostPBCurrency"
+										reference="averageLaborHourlyCostPBCurrency" defaultEnabled="false"
+										hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+							</component>
+
+							<option type="label" value="assumptions" />
+						</component>
+					</layoutElement>
+
+				</component>
+			</layoutElement>
+
+			<layoutElement column="3" row="1">
+				<component type="borderLayout" name="overheadsBorderLayout"
+					reference="overheadsBorderLayout">
+					<component type="gridLayout" name="overheadsGridLayout"
+						reference="overheadsGridLayout" columns="4" rows="3" hasBorders="false">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="productionCostMarginPB"
+								field="#{form}.productionCostMarginPB" reference="productionCostMarginPB">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="productionCostMarginPBProc"
+								reference="productionCostMarginPBProc" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2" width="3">
+							<component type="input" name="materialCostMarginPB"
+								field="#{form}.materialCostMarginPB" reference="materialCostMarginPB">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="2">
+							<component type="input" name="materialCostMarginPBProc"
+								reference="materialCostMarginPBProc" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3" width="3">
+							<component type="input" name="additionalOverheadPB"
+								field="#{form}.additionalOverheadPB" reference="additionalOverheadPB">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="3">
+							<component type="input" name="additionalOverheadPBCurrency"
+								reference="additionalOverheadPBCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+					</component>
+
+					<option type="label" value="overheads" />
+				</component>
+			</layoutElement>
+
+		</component>
+	</windowTab>
+</windowTabExtension>

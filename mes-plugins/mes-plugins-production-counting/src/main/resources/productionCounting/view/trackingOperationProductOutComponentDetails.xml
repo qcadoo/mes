@@ -37,7 +37,7 @@
 
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
-				columns="6" rows="6" hasBorders="false">
+				columns="6" rows="4" hasBorders="false">
 				<layoutElement column="1" row="1" width="5">
 					<component type="input" name="number" reference="number"
 						defaultEnabled="false">
@@ -59,7 +59,8 @@
 						reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
 				</layoutElement>
 				<layoutElement column="1" row="4" width="5">
-					<component type="input" name="usedQuantity" field="usedQuantity">
+					<component type="input" name="usedQuantity" field="usedQuantity"
+                               reference="usedQuantity">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
@@ -77,8 +78,13 @@
 
 	<hooks>
 		<beforeRender
+<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/resources/productionCounting/view/trackingOperationProductOutComponentDetails.xml
 			class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentDetailsHooks"
 			method="fillFieldsFromProduct" />
+=======
+			class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
+			method="onBeforeRender" />
+>>>>>>> master:mes-plugins/mes-plugins-production-counting/src/main/resources/productionCounting/view/recordOperationProductInComponentDetails.xml
 	</hooks>
 
 </view>

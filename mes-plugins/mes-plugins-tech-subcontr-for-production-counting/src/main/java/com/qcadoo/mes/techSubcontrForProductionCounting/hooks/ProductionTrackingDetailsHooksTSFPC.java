@@ -26,10 +26,16 @@ package com.qcadoo.mes.techSubcontrForProductionCounting.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+<<<<<<< HEAD:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionTrackingDetailsHooksTSFPC.java
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.techSubcontrForProductionCounting.constants.ProductionTrackingFieldTSFPC;
+=======
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordStateStringValues;
+>>>>>>> master:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionRecordDetailsHooksTSFPC.java
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -52,6 +58,13 @@ public class ProductionTrackingDetailsHooksTSFPC {
         if (productionTrackingForm.getEntityId() == null) {
             return;
         }
+<<<<<<< HEAD:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionTrackingDetailsHooksTSFPC.java
+=======
+        Entity productionRecord = getProductionRecord(form.getEntityId());
+        String stateFieldValue = productionRecord.getStringField(ProductionRecordFields.STATE);
+        boolean isDraft = ProductionRecordStateStringValues.DRAFT.equals(stateFieldValue);
+        boolean isExternalSynchronized = productionRecord.getBooleanField(ProductionRecordFields.IS_EXTERNAL_SYNCHRONIZED);
+>>>>>>> master:mes-plugins/mes-plugins-tech-subcontr-for-production-counting/src/main/java/com/qcadoo/mes/techSubcontrForProductionCounting/hooks/ProductionRecordDetailsHooksTSFPC.java
 
         Entity productionTracking = getProductionTrackingFromDB(productionTrackingForm.getEntityId());
         String state = productionTracking.getStringField(ProductionTrackingFields.STATE);

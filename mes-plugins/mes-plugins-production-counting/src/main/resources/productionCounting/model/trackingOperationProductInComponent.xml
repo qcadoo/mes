@@ -28,8 +28,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
+<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/resources/productionCounting/model/trackingOperationProductInComponent.xml
 		<belongsTo name="productionTracking" model="productionTracking" />
 		<belongsTo name="product" model="product" plugin="basic" />
+=======
+		<belongsTo name="productionRecord" model="productionRecord" required="true" />
+		<belongsTo name="product" model="product" plugin="basic" required="true" />
+>>>>>>> master:mes-plugins/mes-plugins-production-counting/src/main/resources/productionCounting/model/recordOperationProductOutComponent.xml
 		<decimal name="plannedQuantity" persistent="false">
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />

@@ -26,6 +26,7 @@ package com.qcadoo.mes.technologies.hooks;
 import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields.STATUS;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -42,11 +43,17 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.TreeComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class TechnologyDetailsViewHooks {
 
     private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
+
+    private static final String L_TREE_TAB = "treeTab";
 
     private static final String OUT_PRODUCTS_REFERENCE = "outProducts";
 
@@ -124,4 +131,30 @@ public class TechnologyDetailsViewHooks {
         master.requestComponentUpdateState();
     }
 
+    // TODO hotfix for issue-1901 with restoring previous active tab state after back operation, requires fixes in framework
+    public void navigateToActiveTab(final ViewDefinitionState view) {
+        TreeComponent technologyTree = (TreeComponent) view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE);
+        Long selectedEntity = technologyTree.getSelectedEntityId();
+
+        if (selectedEntity != null) {
+            ((WindowComponent) view.getComponentByReference(L_WINDOW)).setActiveTab(L_TREE_TAB);
+        }
+    }
+
+    public void setTechnologyIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent technologyIdForMultiUpload = (FieldComponent) view.getComponentByReference("technologyIdForMultiUpload");
+        FieldComponent technologyMultiUploadLocale = (FieldComponent) view.getComponentByReference("technologyMultiUploadLocale");
+
+        if (technology.getEntityId() != null) {
+            technologyIdForMultiUpload.setFieldValue(technology.getEntityId());
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        } else {
+            technologyIdForMultiUpload.setFieldValue("");
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        }
+        technologyMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
+        technologyMultiUploadLocale.requestComponentUpdateState();
+
+    }
 }

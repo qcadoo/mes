@@ -51,7 +51,11 @@ public final class ProductionBalanceFieldsPCWC {
 
     public static final String COMPONENTS_COSTS_BALANCE = "componentsCostsBalance";
 
+<<<<<<< HEAD
     public static final String TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS = "technologyOperationProductInComponents";
+=======
+    public static final String TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS = "technologyInstOperProductInComps";
+>>>>>>> master
 
     public static final String PLANNED_MACHINE_COSTS = "plannedMachineCosts";
 
@@ -104,9 +108,18 @@ public final class ProductionBalanceFieldsPCWC {
     public static final String TECHNOLOGY = "technology";
 
     public static final String PRODUCTION_LINE = "productionLine";
+<<<<<<< HEAD
 
     public static final String GENERATED_WITH_COSTS = "generatedWithCosts";
 
     public static final String CALCULATION_OPERATION_COMPONENTS = "calculationOperationComponents";
 
 }
+=======
+
+    public static final String GENERATED_WITH_COSTS = "generatedWithCosts";
+
+    public static final String CALCULATION_OPERATION_COMPONENTS = "calculationOperationComponents";
+
+}
+>>>>>>> master

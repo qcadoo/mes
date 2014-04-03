@@ -42,6 +42,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -52,6 +53,7 @@ import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
@@ -103,11 +105,23 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
         document.add(panelTable);
 
         List<String> tableHeader = new ArrayList<String>();
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+
         tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.number", locale));
         tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.name", locale));
         tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.quantity", locale));
         tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.unit", locale));
-        PdfPTable table = pdfHelper.createTableWithHeader(4, tableHeader, false);
+
+        alignments.put(translationService.translate("materialFlow.materialFlow.report.columnHeader.number", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("materialFlow.materialFlow.report.columnHeader.name", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("materialFlow.materialFlow.report.columnHeader.quantity", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("materialFlow.materialFlow.report.columnHeader.unit", locale),
+                HeaderAlignment.LEFT);
+
+        PdfPTable table = pdfHelper.createTableWithHeader(4, tableHeader, false, alignments);
 
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
             table.addCell(new Phrase(data.getKey().getStringField(NUMBER), FontUtils.getDejavuRegular7Dark()));

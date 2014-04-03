@@ -246,10 +246,15 @@
 
 			<option type="order" column="deadline" direction="desc" />
 
+<<<<<<< HEAD
 			<option type="searchable"
 				value="name,number,deadline,productNumber,productName,plannedQuantity,unit,companyName" />
 			<option type="orderable"
 				value="name,number,deadline,productNumber,productName,plannedQuantity,unit,companyName" />
+=======
+			<option type="searchable" value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName" />
+			<option type="orderable" value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName" />
+>>>>>>> master
 
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />

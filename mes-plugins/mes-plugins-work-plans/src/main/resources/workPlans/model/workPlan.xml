@@ -42,11 +42,20 @@
 			values="01noDistinction,02byEndProduct,03byWorkstationType,04byDivision"
 			default="01allOperations" required="true" />
 
+<<<<<<< HEAD
 		<hasMany name="workPlanOrderColumns" plugin="workPlans"
 			model="workPlanOrderColumn" joinField="workPlan" cascade="delete"
 			copyable="true" />
 		<manyToMany name="orders" plugin="orders" model="order"
 			joinField="workPlans" copyable="true" />
+=======
+		<manyToMany name="orders" joinField="workPlans" model="order"
+			plugin="orders" copyable="true" />
+			
+		<belongsTo name="inputProductColumnToSortBy" model="columnForInputProducts" />
+		<enum name="orderSorting" values="01asc,02desc"/>
+		
+>>>>>>> master
 	</fields>
 
 	<hooks>

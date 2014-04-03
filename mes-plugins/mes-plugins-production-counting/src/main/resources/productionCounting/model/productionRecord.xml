@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.2.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="productionRecord" activable="true" auditable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" unique="true">
+            <validatesLength max="255" />
+        </string>
+        <belongsTo name="order" model="order" plugin="orders"
+                   required="true" />
+        <belongsTo name="technologyInstanceOperationComponent" model="technologyInstanceOperationComponent"
+                   plugin="technologies" />
+
+        <belongsTo name="shift" model="shift" plugin="basic" />
+        <date name="shiftStartDay" />
+
+        <date name="timeRangeFrom" />
+        <date name="timeRangeTo" />
+
+        <boolean name="lastStateChangeFails" default="false" copyable="false" />
+        <string name="lastStateChangeFailCause" copyable="false" />
+        <boolean name="isExternalSynchronized" default="true" copyable="false" />
+        <enum name="state" values="01draft,02accepted,03declined"
+              default="01draft" required="true" />
+
+        <hasMany name="recordOperationProductInComponents" joinField="productionRecord"
+                 model="recordOperationProductInComponent" cascade="delete" />
+        <hasMany name="recordOperationProductOutComponents" joinField="productionRecord"
+                 model="recordOperationProductOutComponent" cascade="delete" />
+
+        <boolean name="lastRecord" />
+
+        <integer name="machineTime" copyable="false" />
+        <integer name="laborTime" copyable="false" />
+        <hasMany name="staffWorkTimes" model="staffWorkTime" joinField="productionRecord" copyable="false" />
+
+        <decimal name="executedOperationCycles" copyable="false">
+            <validatesUnscaledValue max="7" />
+            <validatesScale max="5" />
+        </decimal>
+
+        <belongsTo name="staff" model="staff" plugin="basic" />
+        <belongsTo name="workstationType" model="workstationType"
+                   plugin="basic" />
+        <belongsTo name="division" model="division" plugin="basic" />
+
+        <hasMany name="stateChanges" model="productionRecordStateChange"
+                 joinField="productionRecord" cascade="delete" />
+    </fields>
+    <hooks>
+        <onCreate
+                class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordModelHooks"
+                method="setInitialState" />
+        <onCopy
+                class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordModelHooks"
+                method="setInitialState" />
+        <onSave
+                class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+                method="generateData" />
+        <onSave
+                class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+                method="copyProductsFromOrderOperation" />
+        <validatesWith
+                class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+                method="checkTypeOfProductionRecording" />
+        <validatesWith
+                class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+                method="willOrderAcceptOneMore" />
+        <validatesWith
+                class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+                method="checkIfOrderIsStarted" />
+        <validatesWith
+                class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+                method="checkIfOperationIsSet" />
+    </hooks>
+    <identifier expression="#number" />
+</model>

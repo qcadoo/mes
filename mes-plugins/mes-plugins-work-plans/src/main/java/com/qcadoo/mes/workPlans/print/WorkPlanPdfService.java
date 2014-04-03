@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
+<<<<<<< HEAD
 import com.qcadoo.mes.basic.constants.DivisionFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.StaffFields;
@@ -48,11 +50,21 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityT
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.workPlans.constants.*;
 import com.qcadoo.mes.workPlans.util.OperationProductComponentComparator;
+=======
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
+import com.qcadoo.mes.workPlans.constants.ColumnForProductsFields;
+import com.qcadoo.mes.workPlans.constants.OrderSorting;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
+import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
+import com.qcadoo.mes.workPlans.constants.WorkPlanType;
+>>>>>>> master
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
@@ -65,6 +77,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     private static final String L_IDENTIFIER = "identifier";
 
+    private static final String PLANED_QUANTITY = "plannedQuantity";
+
     @Autowired
     private TranslationService translationService;
 
@@ -76,6 +90,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     @Autowired
     private PdfHelper pdfHelper;
+
+    @Autowired
+    private ParameterService parameterService;
 
     enum ProductDirection {
         IN,
@@ -109,10 +126,16 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private void addOrdersTable(final Document document, final Entity workPlan, final Locale locale) throws DocumentException {
         List<Entity> columnsForOrders = getOrderColumnDefinitions(workPlan);
 
+<<<<<<< HEAD
         if (!columnsForOrders.isEmpty()) {
             PdfPTable orderTable = pdfHelper
                     .createTableWithHeader(columnsForOrders.size(), prepareOrdersTableHeader(document, columnsForOrders, locale),
                             false);
+=======
+        if (!columns.isEmpty()) {
+            PdfPTable orderTable = pdfHelper.createTableWithHeader(columns.size(),
+                    prepareOrdersTableHeader(document, columns, locale), false, prepareHeaderAlignment(columns, locale));
+>>>>>>> master
 
             List<Entity> orders = workPlan.getManyToManyField(WorkPlanFields.ORDERS);
 
@@ -132,7 +155,28 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
             document.add(orderTable);
             document.add(Chunk.NEWLINE);
+
         }
+    }
+
+    private Map<String, HeaderAlignment> prepareHeaderAlignment(List<Entity> columns, Locale locale) {
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        for (Entity column : columns) {
+            String alignment = column.getStringField("alignment");
+            HeaderAlignment headerAlignment = HeaderAlignment.RIGHT;
+            if (ColumnAlignment.LEFT.equals(ColumnAlignment.parseString(alignment))) {
+                headerAlignment = HeaderAlignment.LEFT;
+            } else if (ColumnAlignment.RIGHT.equals(ColumnAlignment.parseString(alignment))) {
+                headerAlignment = HeaderAlignment.RIGHT;
+            }
+            alignments.put(prepareHeaderTranslation(column.getStringField(L_NAME), locale), headerAlignment);
+        }
+        return alignments;
+    }
+
+    private String prepareHeaderTranslation(final String name, final Locale locale) {
+        String translatedName = translationService.translate(name, locale);
+        return translatedName;
     }
 
     private List<Entity> getOrderColumnDefinitions(final Entity workPlan) {
@@ -169,6 +213,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         final List<Entity> orders = workPlan.getManyToManyField(WorkPlanFields.ORDERS);
 
         final boolean haveManyOrders = orders.size() > 1;
+<<<<<<< HEAD
 
         final Map<Long, Entity> orderIdWithOrderMap = getOrderIdWIthOrderMap(orders);
         final Map<Long, Map<PrioritizedString, List<Entity>>> orderIdWithTitleAndOperationComponentMap =
@@ -264,6 +309,17 @@ public class WorkPlanPdfService extends PdfDocumentService {
             return getOperationByWorkstationSectionTitle(operationComponent, locale);
         } else if (WorkPlanType.BY_DIVISION.getStringValue().equals(type)) {
             return getOperationByDivisionSectionTitle(operationComponent, locale);
+=======
+        final Map<Long, Entity> orderId2Order = buildEntityId2EntityMap(orders);
+        final Map<Long, Map<Entity, Map<String, String>>> orderId2columnValues = columnFetcher.getColumnValues(orders);
+
+        for (final Entry<Long, Map<PrioritizedString, List<Entity>>> orderId2OpComponentsMapEntry : getOrderIdToOperationComponentsMap(
+                workPlan, locale).entrySet()) {
+            final Long orderId = orderId2OpComponentsMapEntry.getKey();
+            final Entity order = orderId2Order.get(orderId);
+            addOperationsForSpecifiedOrder(document, workPlan, orderId2OpComponentsMapEntry.getValue(),
+                    orderId2columnValues.get(orderId), order, haveManyOrders, locale);
+>>>>>>> master
         }
         // [maku] I think that returning some 'error value' will be better than throwing an exception,
         // since section title resolving isn't a critical functionality and whole report can be successfully generated without
@@ -311,13 +367,25 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return new PrioritizedString(suffix + " " + workstationName);
     }
 
+<<<<<<< HEAD
     private void addOperationsForSpecifiedOrder(final Document document,
             final Map<PrioritizedString, List<Entity>> titleWithOperationComponentMap,
             final Map<Entity, Map<String, String>> columnValues, final Entity order, final boolean haveManyOrders,
             final Locale locale) throws DocumentException {
         for (Entry<PrioritizedString, List<Entity>> entry : titleWithOperationComponentMap.entrySet()) {
             document.newPage();
+=======
+    private void addOperationsForSpecifiedOrder(final Document document, final Entity workPlan,
+            final Map<PrioritizedString, List<Entity>> orderOpComponentsMap, final Map<Entity, Map<String, String>> columnValues,
+            final Entity order, final boolean haveManyOrders, final Locale locale) throws DocumentException {
+        Entity parameter = parameterService.getParameter();
 
+        for (Entry<PrioritizedString, List<Entity>> entry : orderOpComponentsMap.entrySet()) {
+            if (!parameter.getBooleanField(ParameterFieldsWP.PRINT_OPERATION_AT_FIRST_PAGE_IN_WORK_PLANS)) {
+>>>>>>> master
+
+                document.newPage();
+            }
             document.add(new Paragraph(entry.getKey().getString(), FontUtils.getDejavuBold11Dark()));
 
             for (Entity operationComponent : entry.getValue()) {
@@ -341,6 +409,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 }
 
                 if (isOutputProductTableEnabled(operationComponent)) {
+<<<<<<< HEAD
                     addOutputProductsSeries(document, columnValues, operationComponent, locale);
                 }
 
@@ -349,6 +418,23 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 }
 
                 addAdditionalFields(document, operationComponent, locale);
+=======
+                    addOutProductsSeries(document, workPlan, columnValues, operationComponent, locale);
+                }
+
+                if (isInputProductTableEnabled(operationComponent)) {
+                    addInProductsSeries(document, workPlan, columnValues, operationComponent, locale);
+                }
+
+                addAdditionalFields(document, operationComponent, locale);
+                if (count != entry.getValue().size()) {
+
+                    if (!parameter.getBooleanField(ParameterFieldsWP.PRINT_OPERATION_AT_FIRST_PAGE_IN_WORK_PLANS)) {
+
+                        document.add(Chunk.NEXTPAGE);
+                    }
+                }
+>>>>>>> master
             }
         }
     }
@@ -464,10 +550,17 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 locale);
     }
 
+<<<<<<< HEAD
     void addProductsSeries(final Document document, final Map<Entity, Map<String, String>> columnValues,
             final Entity operationComponent, final List<Entity> operationProductComponents, final ProductDirection direction,
             final Locale locale) throws DocumentException {
         if (operationProductComponents.isEmpty()) {
+=======
+    void addProductsSeries(final List<Entity> productComponentsArg, final Document document, final Entity workPlan,
+            final Map<Entity, Map<String, String>> columnValues, final Entity operationComponent,
+            final ProductDirection direction, final Locale locale, final boolean sortColumnValues) throws DocumentException {
+        if (productComponentsArg.isEmpty()) {
+>>>>>>> master
             return;
         }
 
@@ -480,9 +573,17 @@ public class WorkPlanPdfService extends PdfDocumentService {
             return;
         }
 
+<<<<<<< HEAD
         PdfPTable table = pdfHelper.createTableWithHeader(columnsForProducts.size(),
                 prepareProductsTableHeader(document, columnsForProducts, direction, locale), false);
 
+=======
+        PdfPTable table = pdfHelper.createTableWithHeader(columns.size(),
+                prepareProductsTableHeader(document, columns, direction, locale), false, prepareHeaderAlignment(columns, locale));
+        if (sortColumnValues) {
+            productComponents = getSortedProductByColumn(columns, columnValues, productComponents, workPlan);
+        }
+>>>>>>> master
         for (Entity productComponent : productComponents) {
             for (Entity column : columnsForProducts) {
                 String columnIdentifier = column.getStringField(L_IDENTIFIER);
@@ -500,7 +601,77 @@ public class WorkPlanPdfService extends PdfDocumentService {
         document.add(table);
     }
 
+<<<<<<< HEAD
     private List<Entity> getProductColumnDefinitions(final ProductDirection direction, final Entity operationComponent) {
+=======
+    private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
+        if (ColumnAlignment.LEFT.equals(columnAlignment)) {
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        } else if (ColumnAlignment.RIGHT.equals(columnAlignment)) {
+            cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        }
+    }
+
+    void addInProductsSeries(final Document document, final Entity workPlan, final Map<Entity, Map<String, String>> columnValues,
+            final Entity operationComponent, final Locale locale) throws DocumentException {
+
+        List<Entity> productComponents = operationComponent.getHasManyField("operationProductInComponents");
+
+        addProductsSeries(productComponents, document, workPlan, columnValues, operationComponent, ProductDirection.IN, locale,
+                true);
+    }
+
+    void addOutProductsSeries(final Document document, final Entity workPlan,
+            final Map<Entity, Map<String, String>> columnValues, final Entity operationComponent, final Locale locale)
+            throws DocumentException {
+
+        List<Entity> productComponents = operationComponent.getHasManyField("operationProductOutComponents");
+
+        addProductsSeries(productComponents, document, workPlan, columnValues, operationComponent, ProductDirection.OUT, locale,
+                false);
+    }
+
+    void addAdditionalFields(final Document document, final Entity operationComponent, final Locale locale)
+            throws DocumentException {
+        String imagePath;
+        try {
+            imagePath = getImagePathFromDD(operationComponent);
+        } catch (NoSuchElementException e) {
+            return;
+        }
+
+        String titleString = translationService.translate("workPlans.workPlan.report.additionalFields", locale);
+        document.add(new Paragraph(titleString, FontUtils.getDejavuBold10Dark()));
+
+        pdfHelper.addImage(document, imagePath);
+
+        document.add(Chunk.NEWLINE);
+    }
+
+    void addMainHeader(final Document document, final Entity entity, final Locale locale) throws DocumentException {
+        String documenTitle = translationService.translate("workPlans.workPlan.report.title", locale);
+        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
+        pdfHelper.addDocumentHeader(document, entity.getField(L_NAME).toString(), documenTitle, documentAuthor,
+                (Date) entity.getField("date"));
+    }
+
+    private List<Entity> fetchOrderColumnDefinitions(final Entity workPlan) {
+        List<Entity> columns = new LinkedList<Entity>();
+
+        List<Entity> columnComponents = workPlan.getHasManyField("workPlanOrderColumns").find()
+                .addOrder(SearchOrders.asc("succession")).list().getEntities();
+
+        for (Entity columnComponent : columnComponents) {
+            Entity columnDefinition = columnComponent.getBelongsToField("columnForOrders");
+
+            columns.add(columnDefinition);
+        }
+
+        return columns;
+    }
+
+    private List<Entity> fetchColumnDefinitions(final ProductDirection direction, final Entity operationComponent) {
+>>>>>>> master
         List<Entity> columns = new LinkedList<Entity>();
 
         String columnDefinitionModel = null;
@@ -611,4 +782,50 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 .getBooleanField(TechnologyOperationComponentFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS);
     }
 
+    private List<Entity> getSortedProductByColumn(final List<Entity> columns,
+            final Map<Entity, Map<String, String>> columnValues, final List<Entity> productComponents, final Entity workPlan) {
+        final Entity columnIdentifier = workPlan.getBelongsToField(WorkPlanFields.INPUT_PRODUCT_COLUMN_TO_SORT_BY);
+
+        if (columnIdentifier == null || StringUtils.isEmpty(workPlan.getStringField(WorkPlanFields.ORDER_SORTING))
+                || !columns.contains(columnIdentifier)) {
+            return productComponents;
+        }
+        final String identifier = columnIdentifier.getStringField(ColumnForProductsFields.IDENTIFIER);
+
+        Map<Entity, String> tempMap = Maps.newHashMap();
+        for (Entity productComponent : productComponents) {
+            tempMap.put(productComponent, columnValues.get(productComponent).get(identifier));
+        }
+
+        List<Entity> sortedProductComponents = Lists.newLinkedList();
+
+        List<Map.Entry<Entity, String>> entries = Lists.newLinkedList(tempMap.entrySet());
+        Collections.sort(entries, new Comparator<Map.Entry<Entity, String>>() {
+
+            @Override
+            public int compare(Entry<Entity, String> o1, Entry<Entity, String> o2) {
+                if (o1.getValue() == null && o2.getValue() == null) {
+                    return 0;
+                }
+                if (o1.getValue() == null) {
+                    return -1;
+                }
+                if (PLANED_QUANTITY.equals(identifier)) {
+                    return o1.getKey().getDecimalField("quantity").compareTo(o2.getKey().getDecimalField("quantity"));
+                }
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+
+        for (Entry<Entity, String> entry : entries) {
+            sortedProductComponents.add(entry.getKey());
+        }
+
+        if (OrderSorting.ASC.getStringValue().equals(workPlan.getStringField(WorkPlanFields.ORDER_SORTING))) {
+            return sortedProductComponents;
+        }
+        Collections.reverse(sortedProductComponents);
+
+        return sortedProductComponents;
+    }
 }

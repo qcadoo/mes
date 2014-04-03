@@ -23,8 +23,11 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+<<<<<<< HEAD
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
+=======
+>>>>>>> master
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +41,7 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeFields;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
@@ -165,7 +169,7 @@ public class DeliveryDetailsHooks {
     public void filterStateChangeHistory(final ViewDefinitionState view) {
         final GridComponent historyGrid = (GridComponent) view.getComponentByReference("loggingsGrid");
         final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(
-                DeliveryStateChangeFields.STATUS, Lists.newArrayList(SUCCESSFUL.getStringValue()));
+                DeliveryStateChangeFields.STATUS, Lists.newArrayList(StateChangeStatus.SUCCESSFUL.getStringValue()));
         historyGrid.setCustomRestriction(onlySuccessfulRestriction);
     }
 

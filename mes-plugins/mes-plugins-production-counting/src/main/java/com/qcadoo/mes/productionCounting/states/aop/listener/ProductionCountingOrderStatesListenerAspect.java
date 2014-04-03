@@ -53,10 +53,17 @@ public class ProductionCountingOrderStatesListenerAspect extends AbstractStateLi
     }
 
     @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
+<<<<<<< HEAD
     @RunForStateTransition(sourceState = OrderStateStringValues.WILDCARD_STATE, targetState = OrderStateStringValues.COMPLETED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void validationOnCompleted(final StateChangeContext stateChangeContext, final int phase) {
         productionCountingOrderStatesListenerService.validationOnComplete(stateChangeContext);
+=======
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnComplete(final StateChangeContext stateChangeContext, final int phase) {
+        listenerService.validationOnComplete(stateChangeContext);
+>>>>>>> master
     }
 
     @RunInPhase(OrderStateChangePhase.DEFAULT)
@@ -76,8 +83,13 @@ public class ProductionCountingOrderStatesListenerAspect extends AbstractStateLi
     @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
     @RunForStateTransition(sourceState = OrderStateStringValues.WILDCARD_STATE, targetState = OrderStateStringValues.DECLINED)
     @Before(PHASE_EXECUTION_POINTCUT)
+<<<<<<< HEAD
     public void validationOnRefuse(final StateChangeContext stateChangeContext, final int phase) {
         productionCountingOrderStatesListenerService.validationOnDecline(stateChangeContext);
+=======
+    public void onComplete(final StateChangeContext stateChangeContext, final int phase) {
+        listenerService.onComplete(stateChangeContext);
+>>>>>>> master
     }
 
 }

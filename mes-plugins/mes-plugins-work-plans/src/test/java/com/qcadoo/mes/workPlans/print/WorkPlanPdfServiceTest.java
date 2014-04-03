@@ -550,13 +550,19 @@ public class WorkPlanPdfServiceTest {
         PdfPCell cell = mock(PdfPCell.class);
         when(table.getDefaultCell()).thenReturn(cell);
 
-        when(pdfHelper.createTableWithHeader(Mockito.eq(2), Mockito.anyList(), Mockito.eq(false))).thenReturn(table);
+        when(pdfHelper.createTableWithHeader(Mockito.eq(2), Mockito.anyList(), Mockito.eq(false), Mockito.anyMap())).thenReturn(
+                table);
         when(translationService.translate("workPlans.workPlan.report.productsInTable", locale)).thenReturn("title");
 
         // when
         try {
+<<<<<<< HEAD
             workPlanPdfService.addProductsSeries(document, columnValues, operationComponent, operationProductInputComponents,
                     direction, locale);
+=======
+            workPlanPdfService.addProductsSeries(components, document, workPlan, columnValues, operationComponent, direction,
+                    locale, false);
+>>>>>>> master
         } catch (DocumentException e) {
         }
 

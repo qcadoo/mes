@@ -77,6 +77,26 @@
 								del.enable();
 							}
 						});
+
+						QCDTrack.track(
+							save,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addProduct" , "modifyProduct") 
+						);
+						
+						QCDTrack.track(
+							saveBack,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addProduct" , "modifyProduct") 
+						);
+						
+						QCDTrack.track(
+							saveNew,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addProduct" , "modifyProduct") 
+						);
+
+						
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
@@ -236,7 +256,7 @@
 						var del = #{window}.getRibbonItem("actions.delete");
 						var externalNumberListener = {
 							onSetValue: function(value) {
-								
+
 								var externalNumber = #{externalNumber}.getValue().content.value;
 								
 								if(externalNumber != undefined && externalNumber != '') {

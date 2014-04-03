@@ -45,4 +45,9 @@ public final class ParameterFieldsPC {
 
     public static final String AUTO_CLOSE_ORDER = "autoCloseOrder";
 
+<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/constants/ParameterFieldsPC.java
+=======
+    public static final String GENERATE_PRODUCTION_RECORD_NUMBER_FROM_ORDER_NUMBER = "generateProductionRecordNumberFromOrderNumber";
+
+>>>>>>> master:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/constants/ParameterFieldsPC.java
 }

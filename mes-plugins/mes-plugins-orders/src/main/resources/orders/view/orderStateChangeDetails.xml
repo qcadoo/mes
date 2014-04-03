@@ -34,6 +34,34 @@
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="logging" reference="form">
+				<script>
+					<![CDATA[
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+					
+						QCDTrack.track(
+								save,
+								"onClick",
+								 "modifyOrderState"
+						);
+						
+						QCDTrack.track(
+								saveNew,
+								"onClick",
+								 "modifyOrderState"
+						);
+						
+						QCDTrack.track(
+								saveBack,
+								"onClick",
+								 "modifyOrderState"
+						);
+					
+						
+					]]>
+				</script>
+			
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="6" hasBorders="false">
 					<layoutElement column="1" row="1">

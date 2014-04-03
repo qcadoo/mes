@@ -39,6 +39,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -57,6 +58,10 @@ import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+<<<<<<< HEAD
+=======
+import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
+>>>>>>> master
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
@@ -260,10 +265,11 @@ public class OrderReportPdf extends ReportPdfView {
                     columnsName.add(entity.getStringField(ColumnForOrdersFields.IDENTIFIER));
                 }
 
+                Map<String, HeaderAlignment> alignments = prepareHeaderAlignment(filteredColumnsForOrders, locale);
                 PdfPTable productsTable = pdfHelper.createTableWithHeader(filteredColumnsForOrders.size(),
                         prepareProductsTableHeader(document, filteredColumnsForOrders, locale), false,
                         pdfHelper.getReportColumnWidths(REPORT_WIDTH, parameterService.getReportColumnWidths(), columnsName),
-                        HeaderAlignment.CENTER);
+                        alignments);
 
                 for (Entity orderedProduct : orderedProducts) {
                     for (Entity columnForOrders : filteredColumnsForOrders) {
@@ -281,9 +287,30 @@ public class OrderReportPdf extends ReportPdfView {
                 addTotalRow(productsTable, locale, columnsName, delivery);
 
                 document.add(productsTable);
-                document.add(Chunk.NEWLINE);
+                // document.add(Chunk.NEWLINE);
             }
         }
+    }
+
+    private Map<String, HeaderAlignment> prepareHeaderAlignment(List<Entity> filteredColumnsForDeliveries, Locale locale) {
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        for (Entity column : filteredColumnsForDeliveries) {
+            String alignment = column.getStringField(ColumnForDeliveriesFields.ALIGNMENT);
+            HeaderAlignment headerAlignment = HeaderAlignment.RIGHT;
+            if (ColumnAlignment.LEFT.equals(ColumnAlignment.parseString(alignment))) {
+                headerAlignment = HeaderAlignment.LEFT;
+            } else if (ColumnAlignment.RIGHT.equals(ColumnAlignment.parseString(alignment))) {
+                headerAlignment = HeaderAlignment.RIGHT;
+            }
+            alignments.put(prepareHeaderTranslation(column.getStringField(ColumnForDeliveriesFields.NAME), locale),
+                    headerAlignment);
+        }
+        return alignments;
+    }
+
+    private String prepareHeaderTranslation(final String name, final Locale locale) {
+        String translatedName = translationService.translate(name, locale);
+        return translatedName;
     }
 
     private List<Entity> getOrderReportColumns(final List<Entity> columnsForOrders, final List<Entity> orderedProducts,
@@ -300,6 +327,7 @@ public class OrderReportPdf extends ReportPdfView {
 
         total.setColspan(2);
         total.setHorizontalAlignment(Element.ALIGN_LEFT);
+        total.setVerticalAlignment(Element.ALIGN_MIDDLE);
         total.setBackgroundColor(null);
         total.disableBorderSide(Rectangle.RIGHT);
         total.disableBorderSide(Rectangle.LEFT);
@@ -364,6 +392,32 @@ public class OrderReportPdf extends ReportPdfView {
 
     private String getStringFromDate(final Date date) {
         return simpleDateFormat.format(date);
+<<<<<<< HEAD
+=======
+    }
+
+    public List<String> getUsedColumnsInOrderReport(final Entity delivery) {
+        List<Entity> columnsForOrders = deliveriesService.getColumnsForOrders();
+        List<String> columnNames = Lists.newArrayList();
+        if (!columnsForOrders.isEmpty()) {
+            List<Entity> orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
+
+            Map<Entity, Map<String, String>> orderedProductsColumnValues = orderColumnFetcher
+                    .getOrderedProductsColumnValues(orderedProducts);
+
+            List<Entity> filteredColumnsForOrders = getOrderReportColumns(columnsForOrders, orderedProducts,
+                    orderedProductsColumnValues);
+            if (!filteredColumnsForOrders.isEmpty()) {
+
+                for (Entity entity : filteredColumnsForOrders) {
+                    columnNames.add(entity.getStringField(ColumnForOrdersFields.IDENTIFIER));
+                }
+
+            }
+        }
+        return columnNames;
+
+>>>>>>> master
     }
 
 }

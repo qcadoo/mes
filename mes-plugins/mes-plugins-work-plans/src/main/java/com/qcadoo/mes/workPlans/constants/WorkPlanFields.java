@@ -47,4 +47,8 @@ public final class WorkPlanFields {
 
     public static final String ORDERS = "orders";
 
+    public static final String INPUT_PRODUCT_COLUMN_TO_SORT_BY = "inputProductColumnToSortBy";
+
+    public static final String ORDER_SORTING = "orderSorting";
+
 }

@@ -27,11 +27,13 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -55,6 +57,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.utils.TimeConverterService;
@@ -282,6 +285,21 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         inputProductsTableHeader.add(translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_BALANCE, locale));
         inputProductsTableHeader.add(translationService.translate("basic.product.unit.label", locale));
 
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        alignments.put(translationService.translate("productionCounting.productionBalance.report.columnHeader.number", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(
+                translationService.translate("productionCounting.productionBalance.report.columnHeader.productionName", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(
+                translationService.translate("productionCounting.productionBalance.report.columnHeader.plannedQuantity", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(
+                translationService.translate("productionCounting.productionBalance.report.columnHeader.usedQuantity", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate(PCPBRCHB_LITERAL, locale), HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("basic.product.unit.label", locale), HeaderAlignment.LEFT);
+
         List<Entity> inputProductsList = productionBalance
                 .getHasManyField(ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_IN_COMPONENTS);
 
@@ -291,7 +309,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
             inputProductsList = Lists.newLinkedList(inputProductsList);
 
-            PdfPTable inputProductsTable = pdfHelper.createTableWithHeader(6, inputProductsTableHeader, false);
+            PdfPTable inputProductsTable = pdfHelper.createTableWithHeader(6, inputProductsTableHeader, false, alignments);
 
             for (Entity inputProduct : inputProductsList) {
                 inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(
@@ -343,6 +361,26 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         outputProductsTableHeader.add(translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_BALANCE, locale));
         outputProductsTableHeader.add(translationService.translate("basic.product.unit.label", locale));
 
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        alignments.put(translationService.translate("productionCounting.productionBalance.report.columnHeader.number", locale),
+                HeaderAlignment.LEFT);
+
+        alignments.put(
+                translationService.translate("productionCounting.productionBalance.report.columnHeader.productionName", locale),
+                HeaderAlignment.LEFT);
+
+        alignments.put(
+                translationService.translate("productionCounting.productionBalance.report.columnHeader.plannedQuantity", locale),
+                HeaderAlignment.RIGHT);
+
+        alignments
+                .put(translationService.translate("productionCounting.productionBalance.report.columnHeader.producedQuantity",
+                        locale), HeaderAlignment.RIGHT);
+
+        alignments.put(translationService.translate(PCPBRCHB_LITERAL, locale), HeaderAlignment.RIGHT);
+
+        alignments.put(translationService.translate("basic.product.unit.label", locale), HeaderAlignment.LEFT);
+
         List<Entity> outputProductsList = productionBalance
                 .getHasManyField(ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS);
 
@@ -353,7 +391,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
             outputProductsList = Lists.newLinkedList(outputProductsList);
 
-            PdfPTable outputProductsTable = pdfHelper.createTableWithHeader(6, outputProductsTableHeader, false);
+            PdfPTable outputProductsTable = pdfHelper.createTableWithHeader(6, outputProductsTableHeader, false, alignments);
 
             for (Entity outputProduct : outputProductsList) {
                 outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(

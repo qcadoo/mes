@@ -29,7 +29,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
-import com.qcadoo.model.api.Entity;
 
 /**
  * This aspect provides XPI for state change advices (listeners).
@@ -46,7 +45,7 @@ public abstract class AbstractStateListenerAspect {
     /**
      * Pointcut for execution state change phase
      * 
-     * @param stateChangeEntity
+     * @param stateChangeContext
      * @param phase
      */
     @Pointcut("execution(* *.changeStatePhase(..)) && args(stateChangeContext, phase, ..) && targetServicePointcut()")
@@ -54,12 +53,11 @@ public abstract class AbstractStateListenerAspect {
     }
 
     /**
-     * Pointcut for changing state join points ({@link StateChangeService#changeState(Entity)}) using additional restrictions from
-     * {@link AbstractStateListenerAspect#targetServicePointcut()} pointcut.
+     * Pointcut for changing state join points ({@link StateChangeService#changeState(com.qcadoo.mes.states.StateChangeContext)})
+     * using additional restrictions from {@link AbstractStateListenerAspect#targetServicePointcut()} pointcut.
      * 
-     * @param stateChangeEntity
+     * @param stateChangeContext
      *            entity which represent state change flow
-     * @param annotation
      */
     @Pointcut("execution(public void com.qcadoo.mes.states.service.StateChangeService+.changeState(..)) "
             + "&& args(stateChangeContext) && targetServicePointcut()")

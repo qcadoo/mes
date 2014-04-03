@@ -37,6 +37,7 @@
 					state="disabled">
 					<script>
 						<![CDATA[
+						
 							this.addOnChangeListener({
 								onClick: function() {
 									if (this.state == "accept") {
@@ -159,6 +160,25 @@
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
 					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
 					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
+					
+					QCDTrack.track(
+							save,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addOrder" , "modifyOrder") 
+					);
+					
+					QCDTrack.track(
+							saveBack,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addOrder" , "modifyOrder") 
+					);
+					
+					QCDTrack.track(
+							saveNew,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addOrder" , "modifyOrder") 
+					);
+					
 					this.addOnChangeListener({
 						onSetValue: function(value) {
 							if (! value || ! value.content) {

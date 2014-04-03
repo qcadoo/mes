@@ -39,6 +39,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -153,7 +154,6 @@ public class DeliveryReportPdf extends ReportPdfView {
         dynaminHeaderTable.addCell(thirdColumnHeaderTable);
 
         document.add(dynaminHeaderTable);
-        document.add(Chunk.NEWLINE);
     }
 
     private void setSimpleFormat(final PdfPTable headerTable) {
@@ -259,10 +259,11 @@ public class DeliveryReportPdf extends ReportPdfView {
                     columnsName.add(entity.getStringField(ColumnForDeliveriesFields.IDENTIFIER));
                 }
 
+                Map<String, HeaderAlignment> alignments = prepareHeaderAlignment(filteredColumnsForDeliveries, locale);
                 PdfPTable productsTable = pdfHelper.createTableWithHeader(filteredColumnsForDeliveries.size(),
                         prepareProductsTableHeader(document, filteredColumnsForDeliveries, locale), false,
                         pdfHelper.getReportColumnWidths(REPORT_WIDTH, parameterService.getReportColumnWidths(), columnsName),
-                        HeaderAlignment.CENTER);
+                        alignments);
 
                 for (DeliveryProduct deliveryProduct : deliveryProducts) {
                     for (Entity columnForDeliveries : filteredColumnsForDeliveries) {
@@ -285,6 +286,22 @@ public class DeliveryReportPdf extends ReportPdfView {
         }
     }
 
+    private Map<String, HeaderAlignment> prepareHeaderAlignment(List<Entity> filteredColumnsForDeliveries, Locale locale) {
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        for (Entity column : filteredColumnsForDeliveries) {
+            String alignment = column.getStringField(ColumnForDeliveriesFields.ALIGNMENT);
+            HeaderAlignment headerAlignment = HeaderAlignment.RIGHT;
+            if (ColumnAlignment.LEFT.equals(ColumnAlignment.parseString(alignment))) {
+                headerAlignment = HeaderAlignment.LEFT;
+            } else if (ColumnAlignment.RIGHT.equals(ColumnAlignment.parseString(alignment))) {
+                headerAlignment = HeaderAlignment.RIGHT;
+            }
+            alignments.put(prepareHeaderTranslation(column.getStringField(ColumnForDeliveriesFields.NAME), locale),
+                    headerAlignment);
+        }
+        return alignments;
+    }
+
     private List<Entity> getDeliveryReportColumns(final List<Entity> columnsForDeliveries,
             final List<DeliveryProduct> deliveryProducts,
             final Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues) {
@@ -300,6 +317,7 @@ public class DeliveryReportPdf extends ReportPdfView {
 
         total.setColspan(2);
         total.setHorizontalAlignment(Element.ALIGN_LEFT);
+        total.setVerticalAlignment(Element.ALIGN_MIDDLE);
         total.setBackgroundColor(null);
         total.disableBorderSide(Rectangle.RIGHT);
         total.disableBorderSide(Rectangle.LEFT);
@@ -377,6 +395,11 @@ public class DeliveryReportPdf extends ReportPdfView {
         return productsHeader;
     }
 
+    private String prepareHeaderTranslation(final String name, final Locale locale) {
+        String translatedName = translationService.translate(name, locale);
+        return translatedName;
+    }
+
     private void prepareProductColumnAlignment(final PdfPCell cell, final ColumnAlignment columnAlignment) {
         if (ColumnAlignment.LEFT.equals(columnAlignment)) {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -400,10 +423,39 @@ public class DeliveryReportPdf extends ReportPdfView {
         return delivery.getHasManyField(DeliveryFields.STATE_CHANGES).find()
                 .add(SearchRestrictions.eq(DeliveryStateChangeFields.TARGET_STATE, "06received"))
                 .add(SearchRestrictions.eq(DeliveryStateChangeFields.STATUS, "03successful")).setMaxResults(1).uniqueResult();
+<<<<<<< HEAD
+    }
+
+    private String getStringFromDate(final Date date) {
+        return simpleDateFormat.format(date);
+=======
+>>>>>>> master
     }
 
     private String getStringFromDate(final Date date) {
         return simpleDateFormat.format(date);
     }
 
+    public List<String> getUsedColumnsInDeliveryReport(final Entity delivery) {
+        List<Entity> columnsForDeliveries = deliveriesService.getColumnsForDeliveries();
+        List<String> columnsName = Lists.newArrayList();
+        if (!columnsForDeliveries.isEmpty()) {
+            List<DeliveryProduct> deliveryProducts = deliveryColumnFetcher.getDeliveryProducts(delivery);
+
+            Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues = deliveryColumnFetcher
+                    .getDeliveryProductsColumnValues(deliveryProducts);
+
+            List<Entity> filteredColumnsForDeliveries = getDeliveryReportColumns(columnsForDeliveries, deliveryProducts,
+                    deliveryProductsColumnValues);
+
+            if (!filteredColumnsForDeliveries.isEmpty()) {
+
+                for (Entity entity : filteredColumnsForDeliveries) {
+                    columnsName.add(entity.getStringField(ColumnForDeliveriesFields.IDENTIFIER));
+                }
+
+            }
+        }
+        return columnsName;
+    }
 }

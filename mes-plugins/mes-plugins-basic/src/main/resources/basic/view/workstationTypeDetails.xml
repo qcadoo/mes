@@ -28,13 +28,39 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="workstationTypeDetails" modelName="workstationType">
 
-	<component type="window" name="window">
+	<component type="window" name="window" reference="window">
 	
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
 		
 		<component type="form" name="workstationType" reference="form">
+			<script>
+				<![CDATA[
+					var save = #{window}.getRibbonItem("actions.save");
+					var saveBack = #{window}.getRibbonItem("actions.saveBack");
+					var saveNew = #{window}.getRibbonItem("actions.saveNew");
+					
+					QCDTrack.track(
+							save,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addWorkstationType" , "modifyWorkstationType") 
+					);
+					
+					QCDTrack.track(
+							saveBack,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addWorkstationType" , "modifyWorkstationType") 
+					);
+					
+					QCDTrack.track(
+							saveNew,
+							"onClick",
+							 QCDTrack.eventResolver.formStateDependent( "addWorkstationType" , "modifyWorkstationType") 
+					);
+					
+				]]>
+			</script>
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="6">
 				<layoutElement column="1" row="1">

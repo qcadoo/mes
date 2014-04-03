@@ -49,6 +49,17 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_TECHNOLOGY_GROUP = "technologyGroup";
 
+<<<<<<< HEAD
+=======
+    public static final String MODEL_TECHNOLOGY_ATTACHMENT = "technologyAttachment";
+
+    public static final String OPERATION_COMPONENTS = "operationComponents";
+
+    public static final String FIELD_ENTITY_TYPE = "entityType";
+
+    public static final String FIELD_NAME = "name";
+
+>>>>>>> master
     // VIEW
 
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";

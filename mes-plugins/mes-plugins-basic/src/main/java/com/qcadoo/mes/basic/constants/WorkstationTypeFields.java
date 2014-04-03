@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
@@ -21,11 +22,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
+=======
+>>>>>>> master
 package com.qcadoo.mes.basic.constants;
 
 public final class WorkstationTypeFields {
 
     private WorkstationTypeFields() {
+<<<<<<< HEAD
 
     }
 
@@ -36,5 +40,16 @@ public final class WorkstationTypeFields {
     public static final String DESCRIPTION = "description";
 
     public static final String DIVISIONS = "divisions";
+=======
+    }
+
+    public static final String NAME = "name";
+
+    public static final String NUMBER = "number";
+
+    public static final String DESCRIPTION = "description";
+
+    public static final String DIVISION = "division";
+>>>>>>> master
 
 }

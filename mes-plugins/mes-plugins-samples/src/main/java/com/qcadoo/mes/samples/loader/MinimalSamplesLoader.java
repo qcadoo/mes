@@ -23,7 +23,10 @@
  */
 package com.qcadoo.mes.samples.loader;
 
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DESCRIPTION;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EMAIL;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
@@ -182,7 +185,24 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
                 values.get("supportsothertechnologiesworkstationtypes"));
         productionLine.setField("quantityForOtherWorkstationTypes", values.get("quantityforotherworkstationtypes"));
 
-        productionLine.getDataDefinition().save(productionLine);
+        productionLine = productionLine.getDataDefinition().save(productionLine);
+        if (isEnabledOrEnabling("goodFood")) {
+            if (dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).find()
+                    .add(SearchRestrictions.eq(L_NUMBER, "GL.EKSTR")).uniqueResult() == null) {
+                Entity machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).create();
+                machine.setField(L_NUMBER, "GL.EKSTR");
+                machine.setField(L_NAME, "Głowica ekstruzyjna");
+                machine.setField(L_DESCRIPTION, "");
+                machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
+                Entity workstationTypeComponent = dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER,
+                        "workstationTypeComponent").create();
+                workstationTypeComponent.setField("quantity", 1);
+                workstationTypeComponent.setField("productionLine", productionLine);
+                workstationTypeComponent.setField("workstationType", machine);
+                workstationTypeComponent = workstationTypeComponent.getDataDefinition().save(workstationTypeComponent);
+            }
+        }
+
     }
 
     protected void addDefaultProductionLine(final Map<String, String> values) {

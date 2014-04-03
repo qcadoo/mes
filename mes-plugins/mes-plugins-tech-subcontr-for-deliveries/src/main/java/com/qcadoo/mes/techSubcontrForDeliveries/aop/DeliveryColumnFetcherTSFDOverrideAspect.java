@@ -31,10 +31,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
+import com.qcadoo.mes.techSubcontrForDeliveries.constants.TechSubcontrForDeliveriesConstants;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @Configurable
+@RunIfEnabled(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER)
 public class DeliveryColumnFetcherTSFDOverrideAspect {
 
     @Autowired

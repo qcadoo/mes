@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="technology" model="technology" required="true" />
-		<belongsTo name="operation" model="operation" />
+		<belongsTo name="operation" model="operation" required="true"/>
 		<belongsTo name="parent" model="technologyOperationComponent" />
 		<hasMany name="children" model="technologyOperationComponent"
 			joinField="parent" cascade="delete" copyable="true" />

@@ -37,6 +37,12 @@ public final class ProductionTrackingFields {
 
     public static final String SHIFT = "shift";
 
+    public static final String SHIFT_START_DAY = "shiftStartDay";
+
+    public static final String TIME_RANGE_FROM = "timeRangeFrom";
+
+    public static final String TIME_RANGE_TO = "timeRangeTo";
+
     public static final String LAST_STATE_CHANGE_FAILS = "lastStateChangeFails";
 
     public static final String LAST_STATE_CHANGE_FAIL_CAUSE = "lastStateChangeFailCause";
@@ -58,6 +64,8 @@ public final class ProductionTrackingFields {
     public static final String EXECUTED_OPERATION_CYCLES = "executedOperationCycles";
 
     public static final String STAFF = "staff";
+
+    public static final String STAFF_WORK_TIMES = "staffWorkTimes";
 
     public static final String WORKSTATION_TYPE = "workstationType";
 

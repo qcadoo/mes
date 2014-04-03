@@ -29,11 +29,14 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.mes.samples.util.SamplesValidationHelper;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @Configurable
+@RunIfEnabled(SamplesConstants.PLUGIN_IDENTIFIER)
 public class ValidationAfterSaveAspect {
 
     @Autowired

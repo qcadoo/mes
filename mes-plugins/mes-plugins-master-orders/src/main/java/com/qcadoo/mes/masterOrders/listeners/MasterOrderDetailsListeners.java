@@ -1,11 +1,17 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
+<<<<<<< HEAD
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+=======
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+>>>>>>> master
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -21,14 +27,20 @@ import com.qcadoo.view.api.components.LookupComponent;
 public class MasterOrderDetailsListeners {
 
     private static final String L_FORM = "form";
+<<<<<<< HEAD
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+=======
+>>>>>>> master
 
     @Autowired
     private ExpressionService expressionService;
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
+    
+    @Autowired
+    private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
@@ -60,10 +72,17 @@ public class MasterOrderDetailsListeners {
         Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
         String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                 view.getLocale());
+<<<<<<< HEAD
 
         defaultTechnology.setFieldValue(defaultTechnologyValue);
         technology.setFieldValue(defaultTechnologyEntity.getId());
 
+=======
+        
+        defaultTechnology.setFieldValue(defaultTechnologyValue);
+        technology.setFieldValue(defaultTechnologyEntity.getId());
+        
+>>>>>>> master
         defaultTechnology.requestComponentUpdateState();
         technology.requestComponentUpdateState();
     }
@@ -78,6 +97,7 @@ public class MasterOrderDetailsListeners {
         masterOrderDetailsHooks.setUneditableWhenEntityHasUnsaveChanges(view);
     }
 
+<<<<<<< HEAD
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity masterOrder = masterOrderForm.getEntity();
@@ -97,4 +117,6 @@ public class MasterOrderDetailsListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
+=======
+>>>>>>> master
 }

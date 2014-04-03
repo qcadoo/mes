@@ -76,4 +76,8 @@ public class CompaniesListListeners {
         companyService.disableButton(view, L_ACTIONS, L_DELETE, isEnabled, buttonMessage);
     }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

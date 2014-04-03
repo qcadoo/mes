@@ -47,4 +47,8 @@ public final class StaffFields {
 
     public static final String DIVISION = "division";
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

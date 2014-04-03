@@ -46,6 +46,7 @@ import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
@@ -144,6 +145,25 @@ public class AssignmentToShiftXlsHelper {
         return listOfWorkers.toString();
     }
 
+    public List<String> getListOfWorker(final List<Entity> staffAssignmentToShifts) {
+        List<String> listOfWorkers = Lists.newArrayList();
+        if (staffAssignmentToShifts == null) {
+            return listOfWorkers;
+        }
+
+        for (Entity staffAssignmentToShift : staffAssignmentToShifts) {
+            Entity workerEntity = staffAssignmentToShift.getBelongsToField(WORKER);
+            StringBuilder worker = new StringBuilder();
+            worker.append(workerEntity.getStringField("name"));
+            worker.append(" ");
+            worker.append(workerEntity.getStringField("surname"));
+            listOfWorkers.add(worker.toString());
+
+        }
+
+        return listOfWorkers;
+    }
+
     public String getListOfWorkersWithOtherCases(final List<Entity> staffAssignmentToShifts) {
         if (staffAssignmentToShifts == null) {
             return EMPTY;
@@ -167,9 +187,33 @@ public class AssignmentToShiftXlsHelper {
         return listOfWorkersWithOtherCases.toString();
     }
 
+    public List<String> getListOfWorkerWithOtherCases(final List<Entity> staffAssignmentToShifts) {
+        List<String> listOfWorkers = Lists.newArrayList();
+        if (staffAssignmentToShifts == null) {
+            return listOfWorkers;
+        }
+
+        for (Entity staffAssignmentToShift : staffAssignmentToShifts) {
+            StringBuilder listOfWorkersWithOtherCases = new StringBuilder();
+
+            Entity worker = staffAssignmentToShift.getBelongsToField(WORKER);
+            listOfWorkersWithOtherCases.append(worker.getStringField("name"));
+            listOfWorkersWithOtherCases.append(" ");
+            listOfWorkersWithOtherCases.append(worker.getStringField("surname"));
+            listOfWorkersWithOtherCases.append(" - ");
+            listOfWorkersWithOtherCases.append(staffAssignmentToShift.getStringField(OCCUPATION_TYPE_NAME));
+            listOfWorkers.add(listOfWorkersWithOtherCases.toString());
+
+        }
+
+        return listOfWorkers;
+    }
+
     public List<Entity> getStaffsList(final Entity assignmentToShift, final String occupationType, final Entity productionLine) {
         List<Entity> staffs = new ArrayList<Entity>();
-
+        if (assignmentToShift == null) {
+            return staffs;
+        }
         SearchCriterion criterion = SearchRestrictions.eq(OCCUPATION_TYPE, occupationType);
         SearchCriteriaBuilder builder = assignmentToShift.getHasManyField(STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
                 .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine));

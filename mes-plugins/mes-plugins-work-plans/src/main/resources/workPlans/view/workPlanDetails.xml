@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="workPlanDetails" modelName="workPlan">
@@ -33,13 +20,32 @@
 			<template name="standardFormTemplate" />
 			<group name="generate">
 				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{form}.fireEvent(generateWorkPlan);" state="enabled" />
+					action="#{form}.fireEvent(generateWorkPlan);" state="enabled" >
+					</bigButton>>
 			</group>
 			<group name="export">
 				<bigButton name="printWorkPlan" icon="pdfIcon24.png"
 					action="#{form}.fireEvent(printWorkPlan,pdf);" state="disabled" />
 			</group>
+			<group name="atachments">
+				<bigButton name="printAtachment" icon="pdfIcon24.png"
+					state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('printAtachment', []);
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
+<<<<<<< HEAD
+=======
+				<windowTab name="mainTab">
+>>>>>>> master
 		
 		<component type="form" name="workPlan" reference="form">
 			<script>
@@ -54,6 +60,12 @@
 					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
+					
+					QCDTrack.track(
+							generate,
+							"onClick",
+							 "generateWorkPlan" 
+					);
 					
 					this.addOnChangeListener({
 						onSetValue: function(value) {
@@ -155,6 +167,28 @@
 					<component type="select" name="type" reference="type"
 						field="type" />
 				</layoutElement>
+				<layoutElement column="1" row="7">
+
+					<component type="lookup" name="inputProductColumnToSortBy"
+						field="inputProductColumnToSortBy" reference="inputProductColumnToSortBy">
+							<option type="column" name="name" fields="name"
+								expression="'@' + #name" />
+							<option type="column" name="description" fields="description"
+								expression="'@' + #description" />
+
+							<option type="orderable" value="name,description" />
+
+							<option type="expression" value="'@' + #name" />
+							<option type="fieldCode" value="identifier" />
+							
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.workPlans.listeners.WorkPlansListeners"
+								method="setOrderSortingEnable" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="8">
+					<component type="select" name="orderSorting" reference="orderSorting"
+						field="orderSorting" />
+				</layoutElement>
 				<layoutElement column="2" row="1" height="5" width="2">
 					<component type="lookup" name="order" reference="orderLookup"
 						field="orders" defaultVisible="false" persistent="false" hasLabel="false">
@@ -231,6 +265,7 @@
 				class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners" 
 				method="printWorkPlan" />
 			<listener event="generateWorkPlan"
+<<<<<<< HEAD
 				class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners" 
 				method="generateWorkPlan" />
 		</component>
@@ -242,6 +277,43 @@
 			method="disableFormForGeneratedWorkPlan" />
 		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanDetailsHooks"
 			method="setWorkPlanDefaultValues" />
+=======
+				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" method="generateWorkPlan" />
+			<listener event="printAtachment" method="printAtachment"
+				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" />
+		</component>
+		</windowTab>
+		<windowTab name="attachmentsTab">
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="6">
+				<layoutElement column="1" row="1" width="2" height="6">
+					<component type="grid" name="technologyAttachments"
+						reference="technologyAttachments" model="technologyAttachment" 
+						plugin="technologies">
+						<option type="column" name="attachment" fields="name" />
+						<option type="column" name="size" fields="size" />
+						<option type="column" name="technology" fields="technology"
+								expression="#technology.get('number')" />
+						<option type="order" column="attachment" direction="desc" />
+						<option type="correspondingView" value="technologies/multiUpload" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="fullscreen" value="true" />
+						
+						<criteriaModifier
+							class="com.qcadoo.mes.workPlans.criteriaModifiers.WorkPlansCriteriaModifiers"
+							method="showAtachmentsForTechnologies" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>		  
+	</component>
+	  
+	
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
+			method="onBeforeRender" />
+>>>>>>> master
 	</hooks>
 	
 </view>

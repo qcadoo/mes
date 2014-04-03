@@ -43,7 +43,7 @@
 										#{form}.performEvent('redirectToFilteredOrderProductionList', []);
 									}
 								}
-							});		
+							});			
 						]]>
 					</script>
 				</bigButton>
@@ -52,6 +52,33 @@
 		
 		<windowTab name="mainTab">
 			<component type="form" name="company" reference="form">
+				<script>
+					<![CDATA[
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						
+						QCDTrack.track(
+								save,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addCompany" , "modifyCompany") 
+						);
+						
+						QCDTrack.track(
+								saveBack,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addCompany" , "modifyCompany") 
+						);
+						
+						QCDTrack.track(
+								saveNew,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addCompany" , "modifyCompany") 
+						);
+						
+						
+					]]>
+				</script>
 				<component type="gridLayout" name="mainTabGridLayout"
 					columns="3" rows="7">
 					<layoutElement column="1" row="1">

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0
+ * Version: 1.2.1
  *
  * This file is part of Qcadoo.
  *
@@ -21,25 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.technologies.constants;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+public final class TechnologyAttachmentFields {
 
-import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
+    private TechnologyAttachmentFields() {
 
-@Service
-public class CurrencyViewService {
-
-    @Autowired
-    private CurrencyService currencyService;
-
-    public void applyCurrentCurrency(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent lookup = (FieldComponent) viewDefinitionState.getComponentByReference("currency");
-        lookup.setFieldValue(currencyService.getCurrentCurrency().getId());
-        lookup.requestComponentUpdateState();
     }
+
+    public static final String NAME = "name";
+
+    public static final String TECHNOLOGY = "technology";
+
+    public static final String ATTACHMENT = "attachment";
+
+    public static final String SIZE = "size";
+
+    public static final String EXT = "ext";
 
 }

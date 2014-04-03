@@ -62,6 +62,7 @@
 
 		<hasMany name="stateChanges" joinField="technology" model="technologyStateChange"
 			cascade="delete" />
+		<hasMany name="technologyAttachments" joinField="technology" model="technologyAttachment" cascade="delete" />
 	</fields>
 	<hooks>
 		<validatesWith

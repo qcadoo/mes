@@ -33,15 +33,22 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
+<<<<<<< HEAD
+=======
+import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
+import com.qcadoo.mes.deliveries.print.OrderReportPdf;
+>>>>>>> master
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -51,6 +58,8 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Component
 public class DeliveryDetailsListeners {
+
+    private static final Integer REPORT_WIDTH_A4 = 515;
 
     private static final String L_FORM = "form";
 
@@ -69,6 +78,18 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private OrderReportPdf orderReportPdf;
+
+    @Autowired
+    private PdfHelper pdfHelper;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private DeliveryReportPdf deliveryReportPdf;
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
@@ -319,6 +340,24 @@ public class DeliveryDetailsListeners {
 
     public void disableShowProductButton(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveriesService.disableShowProductButton(view);
+    }
+
+    public void validateColumnsWidthForOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long deliveryId = ((FormComponent) view.getComponentByReference("form")).getEntity().getId();
+        Entity delivery = deliveriesService.getDelivery(deliveryId);
+        List<String> columnNames = orderReportPdf.getUsedColumnsInOrderReport(delivery);
+        if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
+            state.addMessage("deliveries.delivery.printOrderReport.columnsWidthIsGreaterThenMax", MessageType.INFO, false);
+        }
+    }
+
+    public void validateColumnsWidthForDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long deliveryId = ((FormComponent) view.getComponentByReference("form")).getEntity().getId();
+        Entity delivery = deliveriesService.getDelivery(deliveryId);
+        List<String> columnNames = deliveryReportPdf.getUsedColumnsInDeliveryReport(delivery);
+        if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
+            state.addMessage("deliveries.delivery.printOrderReport.columnsWidthIsGreaterThenMax", MessageType.INFO, false);
+        }
     }
 
 }

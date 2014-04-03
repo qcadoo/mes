@@ -1,7 +1,11 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
+<<<<<<< HEAD
  * Project: Qcadoo MES
+=======
+ * Project: Qcadoo Framework
+>>>>>>> master
  * Version: 1.2.0
  *
  * This file is part of Qcadoo.
@@ -29,6 +33,7 @@ public final class ParameterFieldsWP {
 
     }
 
+<<<<<<< HEAD
     public static final String DONT_PRINT_ORDERS_IN_WORK_PLANS = "dontPrintOrdersInWorkPlans";
 
     public static final String HIDE_DESCRIPTION_IN_WORK_PLANS = "hideDescriptionInWorkPlans";
@@ -48,5 +53,8 @@ public final class ParameterFieldsWP {
     public static final String PARAMETER_INPUT_COLUMNS = "parameterInputColumns";
 
     public static final String PARAMETER_OUTPUT_COLUMNS = "parameterOutputColumns";
+=======
+    public static final String PRINT_OPERATION_AT_FIRST_PAGE_IN_WORK_PLANS = "printOperationAtFirstPageInWorkPlans";
+>>>>>>> master
 
 }

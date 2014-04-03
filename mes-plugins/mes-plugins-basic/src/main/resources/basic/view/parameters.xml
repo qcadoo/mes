@@ -25,119 +25,117 @@
 
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="parameters" modelName="parameter" menuAccessible="true">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="parameters" modelName="parameter" menuAccessible="true">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<group name="actions" hasLabel="false">
-				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
-			</group>
-			<group name="company">
-				<bigButton name="redirectToCompany" icon="genealogyIcon24.png"
-					action="#{form}.fireEvent(redirectToCompany);" />
-			</group>
-		</ribbon>
+        <ribbon>
+            <group name="actions" hasLabel="false">
+                <bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
+            </group>
+            <group name="company">
+                <bigButton name="redirectToCompany" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(redirectToCompany);"/>
+            </group>
+        </ribbon>
 
-		<windowTab name="mainTab" reference="mainTab">
-			<component type="form" name="parameter" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="4">
-					<layoutElement column="1" row="1">
-						<component type="lookup" name="company" field="company"
-							reference="company">
-							<option type="column" name="name" fields="name" link="true" />
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="form" name="parameter" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="4">
+                    <layoutElement column="1" row="1">
+                        <component type="lookup" name="company" field="company"
+                                   reference="company">
+                            <option type="column" name="name" fields="name" link="true"/>
 
-							<option type="required" value="true" />
+                            <option type="required" value="true"/>
 
-							<option type="searchable" value="number,name" />
-							<option type="orderable" value="number,name" />
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
 
-							<option type="expression" value="#number + ' - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2">
-						<component type="lookup" name="country" field="country"
-							reference="country" hasDescription="true">
-							<option type="column" name="country" fields="country"
-								link="true" />
-							
-							<option type="order" column="code" direction="asc" />
-							
-							<option type="searchable" value="code,country" />
-							<option type="orderable" value="code,country" />
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="lookup" name="country" field="country"
+                                   reference="country" hasDescription="true">
+                            <option type="column" name="country" fields="country"
+                                    link="true"/>
 
-							<option type="expression" value="#code + ' - ' + #country" />
-							<option type="fieldCode" value="code" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="3">
-						<component type="lookup" name="currency" field="currency"
-							reference="currency" hasDescription="true">
-							<option type="column" name="currency" fields="currency"
-								link="true" />
+                            <option type="order" column="code" direction="asc"/>
 
-							<option type="required" value="true" />
+                            <option type="searchable" value="code,country"/>
+                            <option type="orderable" value="code,country"/>
 
-							<option type="searchable" value="currency,alphabeticCode" />
-							<option type="orderable" value="currency,alphabeticCode" />
+                            <option type="expression" value="#code + ' - ' + #country"/>
+                            <option type="fieldCode" value="code"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="lookup" name="currency" field="currency"
+                                   reference="currency" hasDescription="true">
+                            <option type="column" name="currency" fields="currency"
+                                    link="true"/>
 
-							<option type="expression" value="#alphabeticCode + ' - ' + #currency" />
-							<option type="fieldCode" value="alphabeticCode" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="select" name="unit" field="#{form}.unit"
-							reference="unit" hasDescription="true">
-						</component>
-					</layoutElement>
-				</component>
+                            <option type="required" value="true"/>
 
-				<option type="header" value="true" />
-				<option type="expression" value="' '" />
+                            <option type="searchable" value="currency,alphabeticCode"/>
+                            <option type="orderable" value="currency,alphabeticCode"/>
 
-				<listener event="redirectToCompany"
-					class="com.qcadoo.mes.basic.listeners.ParametersListeners" method="redirectToCompany" />
-			</component>
-		</windowTab>
+                            <option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
+                            <option type="fieldCode" value="alphabeticCode"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="select" name="unit" field="#{form}.unit"
+                                   reference="unit" hasDescription="true">
+                        </component>
+                    </layoutElement>
+                </component>
 
-		<windowTab name="reportTab" reference="reportTab">
-			<component type="gridLayout" name="reportGridLayout"
-				columns="3" rows="5">
-				<layoutElement column="1" row="1" height="5">
-					<component type="grid" name="reportColumnsWidths"
-						reference="reportColumnsWidths" defaultEnabled="false"
-						source="#{form}.reportColumnWidths">
-						<option type="column" name="name" fields="name" expression="'@' + #name"
-							link="true" width="100" />
-						<option type="column" name="width" fields="width" width="100" />
-						<option type="column" name="charType" fields="charType" />
+                <option type="header" value="true"/>
+                <option type="expression" value="' '"/>
 
-						<option type="order" column="identifier" direction="desc" />
+                <listener event="redirectToCompany"
+                          class="com.qcadoo.mes.basic.listeners.ParametersListeners" method="redirectToCompany"/>
+            </component>
+        </windowTab>
 
-						<option type="correspondingView" value="basic/reportColumnWidthDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
+        <windowTab name="reportTab" reference="reportTab">
+            <component type="gridLayout" name="reportGridLayout"
+                       columns="3" rows="5">
+                <layoutElement column="1" row="1" height="5">
+                    <component type="grid" name="reportColumnsWidths"
+                               reference="reportColumnsWidths" defaultEnabled="false"
+                               source="#{form}.reportColumnWidths">
+                        <option type="column" name="name" fields="name" expression="'@' + #name"
+                                link="true" width="100"/>
+                        <option type="column" name="width" fields="width" width="100"/>
+                        <option type="column" name="charType" fields="charType"/>
 
-						<option type="paginable" value="false" />
-						<option type="fullscreen" value="true" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1" height="3">
-					<component type="textarea" name="additionalTextInFooter"
-						field="#{form}.additionalTextInFooter" reference="additionalTextInFooter" />
-				</layoutElement>
-			</component>
-		</windowTab>
-		
-	</component>
+                        <option type="order" column="identifier" direction="desc"/>
 
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.basic.hooks.ParametersHooks"
-			method="onBeforeRender" />
-		<beforeRender class="com.qcadoo.mes.basic.CurrencyViewService"
-			method="applyCurrentCurrency" />
-	</hooks>
+                        <option type="correspondingView" value="basic/reportColumnWidthDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                        <option type="paginable" value="false"/>
+                        <option type="fullscreen" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" height="3">
+                    <component type="textarea" name="additionalTextInFooter"
+                               field="#{form}.additionalTextInFooter" reference="additionalTextInFooter"/>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ParametersHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 </view>

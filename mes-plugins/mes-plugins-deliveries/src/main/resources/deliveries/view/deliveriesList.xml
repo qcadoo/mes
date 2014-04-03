@@ -197,6 +197,7 @@
 						this.addOnChangeListener(listener);
 					]]>
 				</script>
+				
 				<option type="column" name="number" fields="number" link="true" width="50" />
 				<option type="column" name="name" fields="name" link="true" width="100" />
 				<option type="column" name="supplierName" fields="supplier"

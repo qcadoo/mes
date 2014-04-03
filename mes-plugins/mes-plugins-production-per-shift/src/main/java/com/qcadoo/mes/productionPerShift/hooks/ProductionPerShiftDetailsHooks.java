@@ -576,7 +576,15 @@ public class ProductionPerShiftDetailsHooks {
 
             Entity progressForDay = progressForDayForm.getEntity();
 
+<<<<<<< HEAD
             if (StringUtils.isEmpty(progressForDay.getStringField(ProgressForDayFields.DATE_OF_DAY))) {
+=======
+            Entity progressForDayEntity = progressForDay.getEntity();
+            if (progressForDayEntity.getId() != null) {
+                progressForDayEntity = progressForDayEntity.getDataDefinition().get(progressForDayEntity.getId());
+            }
+            if (progressForDayEntity.getField(ProgressForDayFields.DATE_OF_DAY) == null) {
+>>>>>>> master
                 String day = (String) dayField.getFieldValue();
 
                 if (!StringUtils.isEmpty(day)) {

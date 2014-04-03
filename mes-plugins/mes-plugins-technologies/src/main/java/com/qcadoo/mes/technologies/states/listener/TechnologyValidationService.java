@@ -28,12 +28,16 @@ import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_C
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
+<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+=======
+import java.util.*;
+>>>>>>> master
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,12 +54,16 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
+<<<<<<< HEAD
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.validators.ErrorMessage;
+=======
+import com.qcadoo.model.api.*;
+>>>>>>> master
 
 @Service
 public class TechnologyValidationService {
@@ -102,11 +110,13 @@ public class TechnologyValidationService {
         final Entity product = savedTechnology.getBelongsToField(TechnologyFields.PRODUCT);
         final EntityTree operations = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         final EntityTreeNode root = operations.getRoot();
-        final EntityList productOutComps = root
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-        for (Entity productOutComp : productOutComps) {
-            if (product.getId().equals(productOutComp.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId())) {
-                return true;
+        if (root != null) {
+            final EntityList productOutComps = root
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+            for (Entity productOutComp : productOutComps) {
+                if (product.getId().equals(productOutComp.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId())) {
+                    return true;
+                }
             }
         }
         stateContext.addValidationError("technologies.technology.validate.global.error.noFinalProductInTechnologyTree");
