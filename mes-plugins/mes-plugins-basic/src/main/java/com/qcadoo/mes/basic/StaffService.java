@@ -62,8 +62,6 @@ public class StaffService {
     public void generateStaffNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF,
                 L_FORM, StaffFields.NUMBER);
-<<<<<<< HEAD
-=======
     }
 
     public String extractFullName(final Entity staff) {
@@ -73,7 +71,6 @@ public class StaffService {
         String name = staff.getStringField(StaffFields.NAME);
         String surname = staff.getStringField(StaffFields.SURNAME);
         return String.format("%s %s", name, surname);
->>>>>>> master
     }
 
 }

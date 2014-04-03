@@ -99,11 +99,7 @@ public class CompanyService {
 
     public final Boolean isCompanyOwner(final Entity company) {
         Long companyId = company.getId();
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> master
         if (companyId == null) {
             return Boolean.FALSE;
         }
@@ -136,15 +132,8 @@ public class CompanyService {
     private void disableGridComponents(final ViewDefinitionState view, final Boolean isEditable, final String... references) {
         for (String reference : references) {
             ComponentState componentState = view.getComponentByReference(reference);
-<<<<<<< HEAD
-
-            if (componentState instanceof GridComponent) {
-                ((GridComponent) componentState).setEditable(enable);
-=======
-            
             if (componentState instanceof GridComponent) {
                 ((GridComponent) componentState).setEditable(isEditable);
->>>>>>> master
             }
         }
     }
@@ -153,8 +142,8 @@ public class CompanyService {
             final boolean isEnabled, final String message) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
 
-        RibbonGroup ribbonGroup = (RibbonGroup) window.getRibbon().getGroupByName(ribbonGroupName);
-        RibbonActionItem ribbonActionItem = (RibbonActionItem) ribbonGroup.getItemByName(ribbonActionItemName);
+        RibbonGroup ribbonGroup = window.getRibbon().getGroupByName(ribbonGroupName);
+        RibbonActionItem ribbonActionItem = ribbonGroup.getItemByName(ribbonActionItemName);
 
         ribbonActionItem.setEnabled(isEnabled);
 

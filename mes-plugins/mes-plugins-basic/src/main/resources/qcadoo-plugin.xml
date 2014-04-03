@@ -25,15 +25,6 @@
 
 -->
 <plugin plugin="basic" group="basic" system="false"
-<<<<<<< HEAD
-	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
-	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
-	xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:custom="http://schema.qcadoo.org/modules/custom"
-	xsi:schemaLocation="
-		http://schema.qcadoo.org/plugin 
-=======
         version="${qcadoo.plugin.version}"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
@@ -41,8 +32,7 @@
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xmlns:custom="http://schema.qcadoo.org/modules/custom"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
->>>>>>> master
-		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/plugin.xsd
 		http://schema.qcadoo.org/modules/model 
 		http://schema.qcadoo.org/modules/model.xsd 
 		http://schema.qcadoo.org/modules/view 
