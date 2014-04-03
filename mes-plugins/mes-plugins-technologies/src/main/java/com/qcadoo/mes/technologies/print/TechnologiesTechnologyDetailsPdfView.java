@@ -29,11 +29,7 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
 import static java.lang.Long.valueOf;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,11 +47,7 @@ import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.FontUtils;
@@ -194,21 +186,12 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 table.addCell(new Phrase(nodeNumber, FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(operationName, FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(translationService.translate(productType, locale), FontUtils.getDejavuRegular7Dark()));
-<<<<<<< HEAD
                 table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
                 table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
-                table.addCell(new Phrase(numberService.format(operationProductComponent.getField(L_QUANTITY)), FontUtils
-=======
-                table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(ProductFields.NUMBER),
-                        FontUtils.getDejavuRegular7Dark()));
-                table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(FIELD_NAME), FontUtils
-                        .getDejavuRegular7Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                table.addCell(new Phrase(numberService.format(product.getField("quantity")), FontUtils.getDejavuRegular7Dark()));
-                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField("unit"), FontUtils
->>>>>>> master
+                table.addCell(new Phrase(numberService.format(operationProductComponent.getField(L_QUANTITY)), FontUtils
                         .getDejavuRegular7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                 table.addCell(new Phrase(product.getStringField(ProductFields.UNIT), FontUtils.getDejavuRegular7Dark()));
             }
         }

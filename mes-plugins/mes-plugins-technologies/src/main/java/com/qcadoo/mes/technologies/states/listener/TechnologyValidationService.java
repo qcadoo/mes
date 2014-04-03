@@ -24,20 +24,9 @@
 package com.qcadoo.mes.technologies.states.listener;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.*;
 
-<<<<<<< HEAD
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-=======
 import java.util.*;
->>>>>>> master
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,16 +43,8 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
-<<<<<<< HEAD
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.validators.ErrorMessage;
-=======
 import com.qcadoo.model.api.*;
->>>>>>> master
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
 public class TechnologyValidationService {

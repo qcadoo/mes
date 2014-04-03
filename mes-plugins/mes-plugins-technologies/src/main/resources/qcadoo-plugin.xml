@@ -78,7 +78,6 @@
 		
 		<model:model model="technologyGroup" resource="model/technologyGroup.xml" />
 
-<<<<<<< HEAD
 		<model:model-field plugin="states" model="message">
 		    <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange" />
 		</model:model-field>
@@ -88,10 +87,8 @@
 				model="technologyStateChange" joinField="shift" cascade="nullify" />
 		</model:model-field>
 		
-=======
 		<model:model model="technologyAttachment" resource="model/technologyAttachment.xml" />
 
->>>>>>> master
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="operationProductInComponents"
 				plugin="technologies" model="operationProductInComponent" joinField="product"

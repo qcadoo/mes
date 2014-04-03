@@ -53,8 +53,6 @@
 
 		<windowTab name="mainTab">
 			<component type="form" name="technology" reference="form">
-<<<<<<< HEAD
-=======
 				<script>
 					<![CDATA[
 						var save = #{window}.getRibbonItem("actions.save");
@@ -85,7 +83,6 @@
 				<listener event="changeState"
 					class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient"
 					method="changeState" />
->>>>>>> master
 				<script>
 					<![CDATA[
 						this.changeState = function(eventPerformer, ribbonItemName) {
@@ -109,7 +106,7 @@
 								if (! value || ! value.content) {
 									return;
 								}
-<<<<<<< HEAD
+
 								if (! value.content.entityId) {
 									var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
 									var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
@@ -120,9 +117,6 @@
 									return;
 								}
 								updateRibbon(state);
-=======
-								updateRibbon(state);								
->>>>>>> master
 							}
 						});
 						
@@ -225,14 +219,14 @@
 							<option type="column" name="name" fields="name" link="true"
 								width="200" />
 							<option type="column" name="ean" fields="ean" />
-							
+
 							<option type="searchable" value="name,ean" />
 							<option type="orderable" value="name,ean" />
-							
+
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							
+
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyNumber" />
 							<listener event="onSelectedEntityChange"
@@ -247,10 +241,10 @@
 							reference="technologyGroup">
 							<option type="column" name="name" fields="name" link="true"
 								width="200" />
-								
+
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
-							
+
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
@@ -336,23 +330,23 @@
 							width="100" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" link="false" width="70" />
-							
+
 						<option type="order" column="number" direction="desc" />
-						
+
 						<option type="searchable" value="number,name,quantity,unit" />
 						<option type="orderable" value="number,name,quantity,unit" />
-						
+
 						<option type="correspondingView"
 							value="technologies/operationProductOutComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
-						
+
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
-						
+
 						<option type="filtersDefaultVisible" value="false" />
 					</component>
 				</layoutElement>
@@ -368,23 +362,23 @@
 							width="100" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" link="false" width="70" />
-							
+
 						<option type="order" column="number" direction="desc" />
-						
+
 						<option type="searchable" value="number,name,quantity,unit" />
 						<option type="orderable" value="number,name,quantity,unit" />
-						
+
 						<option type="correspondingView"
 							value="technologies/operationProductInComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
-						
+
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
-						
+
 						<option type="filtersDefaultVisible" value="false" />
 					</component>
 				</layoutElement>
@@ -400,16 +394,14 @@
 				<option type="column" name="shift" fields="shift"
 					expression="#shift != null ? #shift['name'] : ''" />
 				<option type="column" name="worker" fields="worker" />
-				
+
 				<option type="order" column="dateAndTime" direction="asc" />
-				
+
 				<option type="searchable" value="dateAndTime,sourceState,targetState" />
 				<option type="orderable" value="dateAndTime,sourceState,targetState" />
 			</component>
 		</windowTab>
 
-<<<<<<< HEAD
-=======
 		<windowTab name="atachments">
 			<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="6" hasBorders="false">
@@ -440,7 +432,6 @@
 			</component>
 
 		</windowTab>
->>>>>>> master
 	</component>
 
 	<hooks>
