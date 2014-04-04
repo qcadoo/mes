@@ -183,23 +183,16 @@
 							width="100" />
 						<option type="column" name="dateFrom" fields="dateFrom"
 							link="false" width="100" />
-<<<<<<< HEAD
-
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-
-=======
                         <option type="column" name="dateTo" fields="dateTo"
                                 link="false" width="100" />
 						<option type="searchable" value="number,name,dateFrom,dateTo" />
 						<option type="orderable" value="number,name,dateFrom,dateTo" />
->>>>>>> master
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
 						<option type="multiselect" value="true" />
 					</component>
-					
+
 					<component type="grid" name="orders"
 						reference="orders" source="#{form}.orders"
 						defaultEnabled="false">
@@ -232,7 +225,7 @@
 				class="com.qcadoo.mes.materialRequirements.listeners.MaterialRequirementDetailsListeners"
 				method="generateMaterialRequirement" />
 		</component>
-		
+
 	</component>
 
 	<hooks>
@@ -243,5 +236,5 @@
 			class="com.qcadoo.mes.materialRequirements.hooks.MaterialRequirementDetailsHooks"
 			method="disableFormForExistingMaterialRequirement" />
 	</hooks>
-	
+
 </view>

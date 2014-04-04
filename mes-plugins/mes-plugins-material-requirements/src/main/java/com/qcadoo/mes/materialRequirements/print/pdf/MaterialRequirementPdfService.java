@@ -34,14 +34,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
 import com.google.common.collect.Lists;
-=======
 import com.google.common.collect.Maps;
->>>>>>> master:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
@@ -55,11 +51,7 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
-=======
-import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
->>>>>>> master:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
@@ -96,37 +88,34 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah",
                 locale), FontUtils.getDejavuBold11Dark()));
 
-        List<String> orderHeader = Lists.newArrayList();
+        Map<String, HeaderAlignment> orderHeadersWithAlignments = Maps.newLinkedHashMap();
+        orderHeadersWithAlignments.put(translationService.translate("orders.order.number.label", locale), HeaderAlignment.LEFT);
+        orderHeadersWithAlignments.put(translationService.translate("orders.order.name.label", locale), HeaderAlignment.LEFT);
+        orderHeadersWithAlignments.put(translationService.translate("orders.order.product.label", locale), HeaderAlignment.LEFT);
+        orderHeadersWithAlignments.put(
+                translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale),
+                HeaderAlignment.LEFT);
+        orderHeadersWithAlignments.put(
+                translationService.translate("materialRequirements.materialRequirement.report.order.plannedQuantity", locale),
+                HeaderAlignment.RIGHT);
 
-        orderHeader.add(translationService.translate("orders.order.number.label", locale));
-        orderHeader.add(translationService.translate("orders.order.name.label", locale));
-        orderHeader.add(translationService.translate("orders.order.product.label", locale));
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
-        orderHeader.add(translationService.translate("basic.product.unit.label", locale));
-        orderHeader.add(translationService.translate("orders.order.plannedQuantity.label", locale));
-        addOrderSeries(document, materialRequirement, orderHeader);
+        addOrderSeries(document, materialRequirement, orderHeadersWithAlignments);
 
-=======
-        orderHeader.add(translationService.translate("materialRequirements.materialRequirement.report.order.plannedQuantity",
-                locale));
-        orderHeader.add(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale));
-        addOrderSeries(document, entity, orderHeader, locale);
->>>>>>> master:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
         document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah2",
                 locale), FontUtils.getDejavuBold11Dark()));
 
-        List<String> productHeader = Lists.newArrayList();
+        Map<String, HeaderAlignment> productHeadersWithAlignments = Maps.newLinkedHashMap();
+        productHeadersWithAlignments
+                .put(translationService.translate("basic.product.number.label", locale), HeaderAlignment.LEFT);
+        productHeadersWithAlignments.put(translationService.translate("basic.product.name.label", locale), HeaderAlignment.LEFT);
+        productHeadersWithAlignments.put(
+                translationService.translate("technologies.technologyOperationComponent.quantity.label", locale),
+                HeaderAlignment.RIGHT);
+        productHeadersWithAlignments.put(
+                translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale),
+                HeaderAlignment.LEFT);
 
-        productHeader.add(translationService.translate("basic.product.number.label", locale));
-        productHeader.add(translationService.translate("basic.product.name.label", locale));
-        productHeader.add(translationService.translate("basic.product.unit.label", locale));
-        productHeader.add(translationService.translate("technologies.technologyOperationComponent.quantity.label", locale));
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
-        addTechnologySeries(document, materialRequirement, productHeader);
-=======
-        productHeader.add(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale));
-        addTechnologySeries(document, entity, productHeader, locale);
->>>>>>> master:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
+        addTechnologySeries(document, materialRequirement, productHeadersWithAlignments);
     }
 
     private void addPanel(final Document document, final Entity materialRequirement, final Locale locale)
@@ -151,18 +140,11 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         document.add(panelTable);
     }
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
-    private void addTechnologySeries(final Document document, final Entity materialRequirement, final List<String> productHeader)
-            throws DocumentException {
+    private void addTechnologySeries(final Document document, final Entity materialRequirement,
+            final Map<String, HeaderAlignment> headersWithAlignments) throws DocumentException {
         List<Entity> orders = materialRequirement.getManyToManyField(MaterialRequirementFields.ORDERS);
         MrpAlgorithm algorithm = MrpAlgorithm.parseString(materialRequirement
                 .getStringField(MaterialRequirementFields.MRP_ALGORITHM));
-=======
-    private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader,
-            final Locale locale) throws DocumentException {
-        List<Entity> orders = entity.getManyToManyField(ORDERS_FIELD);
-        MrpAlgorithm algorithm = MrpAlgorithm.parseString(entity.getStringField(MRP_ALGORITHM));
->>>>>>> master:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
 
         Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(orders, algorithm,
                 true);
@@ -170,67 +152,33 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         // TODO LUPO fix comparator
         // neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
-        PdfPTable table = pdfHelper.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
+        List<String> headers = Lists.newLinkedList(headersWithAlignments.keySet());
+        PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
+                defaultOrderHeaderColumnWidth, headersWithAlignments);
 
         for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
-
             table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuBold7Dark()));
             String unit = product.getStringField(ProductFields.UNIT);
-=======
-        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
-
-        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
-        alignments.put(translationService.translate("basic.product.number.label", locale), HeaderAlignment.LEFT);
-        alignments.put(translationService.translate("basic.product.name.label", locale), HeaderAlignment.LEFT);
-        alignments.put(translationService.translate("technologies.technologyOperationComponent.quantity.label", locale),
-                HeaderAlignment.RIGHT);
-        alignments.put(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale),
-                HeaderAlignment.LEFT);
-
-        PdfPTable table = pdfHelper.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth, alignments);
-        for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
-            table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuBold7Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            Object unit = entry.getKey().getField(UNIT_FIELD);
->>>>>>> master:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
             if (unit == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
                 table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
             }
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuBold9Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
     }
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/print/pdf/MaterialRequirementPdfService.java
-    private void addOrderSeries(final Document document, final Entity materialRequirement, final List<String> orderHeader)
-=======
-    private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader, final Locale locale)
->>>>>>> master:mes-plugins/mes-plugins-material-requirements/src/main/java/com/qcadoo/mes/materialRequirements/internal/print/pdf/MaterialRequirementPdfService.java
-            throws DocumentException {
+    private void addOrderSeries(final Document document, final Entity materialRequirement,
+            final Map<String, HeaderAlignment> headersWithAlignments) throws DocumentException {
         List<Entity> orders = materialRequirement.getManyToManyField(MaterialRequirementFields.ORDERS);
         Collections.sort(orders, new EntityOrderNumberComparator());
-        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
 
-        alignments.put(translationService.translate("orders.order.number.label", locale), HeaderAlignment.LEFT);
-        alignments.put(translationService.translate("orders.order.name.label", locale), HeaderAlignment.LEFT);
-        alignments.put(translationService.translate("orders.order.product.label", locale), HeaderAlignment.LEFT);
-        alignments.put(
-                translationService.translate("materialRequirements.materialRequirement.report.order.plannedQuantity", locale),
-                HeaderAlignment.RIGHT);
-        alignments.put(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale),
-                HeaderAlignment.LEFT);
-
-        PdfPTable table = pdfHelper.createTableWithHeader(5, orderHeader, true, defaultMatReqHeaderColumnWidth, alignments);
+        List<String> headers = Lists.newLinkedList(headersWithAlignments.keySet());
+        PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
+                defaultMatReqHeaderColumnWidth, headersWithAlignments);
 
         for (Entity order : orders) {
             table.addCell(new Phrase(order.getStringField(OrderFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
@@ -238,12 +186,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             Entity product = (Entity) order.getField(OrderFields.PRODUCT);
             if (product == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
-            } else {
-                table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
-            }
-            if (product == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
+                table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
                 String unit = product.getStringField(ProductFields.UNIT);
                 if (unit == null) {
                     table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
@@ -251,11 +196,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                     table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
                 }
             }
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
             table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
     }
