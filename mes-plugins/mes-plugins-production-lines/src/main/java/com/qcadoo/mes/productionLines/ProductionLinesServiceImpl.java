@@ -63,10 +63,7 @@ public class ProductionLinesServiceImpl implements ProductionLinesService {
             for (Entity workstationTypeComponent : workstationTypeComponents) {
                 Entity workstation = workstationTypeComponent.getBelongsToField(WORKSTATION_TYPE);
 
-<<<<<<< HEAD
-=======
                 // FIXME dev_team, proxy entity equals thing
->>>>>>> master
                 if (desiredWorkstation.getId().equals(workstation.getId())) {
                     return (Integer) workstationTypeComponent.getField(QUANTITY);
                 }
