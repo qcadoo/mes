@@ -27,19 +27,10 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
 import junit.framework.Assert;
 
@@ -55,12 +46,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Image;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
@@ -68,16 +54,8 @@ import com.qcadoo.mes.basic.constants.DivisionFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.workPlans.constants.ColumnForInputProductsFields;
-import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
-import com.qcadoo.mes.workPlans.constants.TechnologyOperationInputColumnFields;
-import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
-import com.qcadoo.mes.workPlans.constants.WorkPlanType;
+import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.workPlans.constants.*;
 import com.qcadoo.mes.workPlans.print.WorkPlanPdfService.ProductDirection;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -556,13 +534,8 @@ public class WorkPlanPdfServiceTest {
 
         // when
         try {
-<<<<<<< HEAD
-            workPlanPdfService.addProductsSeries(document, columnValues, operationComponent, operationProductInputComponents,
-                    direction, locale);
-=======
-            workPlanPdfService.addProductsSeries(components, document, workPlan, columnValues, operationComponent, direction,
-                    locale, false);
->>>>>>> master
+            workPlanPdfService.addProductsSeries(operationProductInputComponents, document, workPlan, columnValues,
+                    operationComponent, direction, locale, false);
         } catch (DocumentException e) {
         }
 

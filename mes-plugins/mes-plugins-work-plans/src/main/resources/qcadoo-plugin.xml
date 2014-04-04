@@ -87,14 +87,11 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="dontPrintOrdersInWorkPlans" />
 		</model:model-field>
-<<<<<<< HEAD
-=======
 
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="printOperationAtFirstPageInWorkPlans" />
 		</model:model-field>
 		
->>>>>>> master
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="hideDescriptionInWorkPlans" />
 		</model:model-field>
@@ -215,8 +212,6 @@
 				model="workPlan" plugin="workPlans" />
 		</model:model-field>
 
-<<<<<<< HEAD
-=======
 		<model:model-field plugin="workPlans" model="columnForInputProducts">
 			<model:hasMany name="workPlan" plugin="workPlans" model="workPlan"
 				joinField="inputProductColumnToSortBy" cascade="nullify" />
@@ -227,7 +222,6 @@
 				method="copyColumnForOrders" />
 		</model:model-hook>
 		
->>>>>>> master
 		<model:model-hook plugin="technologies" model="operation">
 			<model:onCreate class="com.qcadoo.mes.workPlans.hooks.OperationHooksWP"
 				method="onCreate" />

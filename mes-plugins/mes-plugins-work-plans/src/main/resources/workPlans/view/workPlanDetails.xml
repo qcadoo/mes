@@ -1,35 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- *************************************************************************** 
-	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0 This 
-	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
-	and/or modify it under the terms of the GNU Affero General Public License 
-	as published by the Free Software Foundation; either version 3 of the License, 
-	or (at your option) any later version. This program is distributed in the 
-	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
-	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-	GNU Affero General Public License for more details. You should have received 
-	a copy of the GNU Affero General Public License along with this program; 
-	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
-	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="workPlanDetails" modelName="workPlan">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="workPlanDetails" modelName="workPlan">
 
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="generate">
 				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{form}.fireEvent(generateWorkPlan);" state="enabled" >
-					</bigButton>>
+				           action="#{form}.fireEvent(generateWorkPlan);" state="enabled">
+				</bigButton>>
 			</group>
 			<group name="export">
 				<bigButton name="printWorkPlan" icon="pdfIcon24.png"
-					action="#{form}.fireEvent(printWorkPlan,pdf);" state="disabled" />
+				           action="#{form}.fireEvent(printWorkPlan,pdf);" state="disabled" />
 			</group>
 			<group name="atachments">
 				<bigButton name="printAtachment" icon="pdfIcon24.png"
-					state="enabled">
+				           state="enabled">
 					<script>
 						<![CDATA[
 							this.addOnChangeListener({
@@ -42,14 +31,12 @@
 				</bigButton>
 			</group>
 		</ribbon>
-<<<<<<< HEAD
-=======
-				<windowTab name="mainTab">
->>>>>>> master
-		
-		<component type="form" name="workPlan" reference="form">
-			<script>
-				<![CDATA[
+
+		<windowTab name="mainTab">
+
+			<component type="form" name="workPlan" reference="form">
+				<script>
+					<![CDATA[
 					var saveButton = #{window}.getRibbonItem("actions.save");
 					var saveBackButton = #{window}.getRibbonItem("actions.saveBack");
 					var saveNewButton = #{window}.getRibbonItem("actions.saveNew");
@@ -138,182 +125,170 @@
 						}
 					}
 				]]>
-			</script>
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="10">
-				<layoutElement column="1" row="1">
-					<component type="checkbox" name="generated" reference="generated"
-						field="generated" defaultEnabled="false">
-						<option type="textRepresentationOnDisabled" value="false" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="input" name="date" field="date"
-						reference="date" defaultEnabled="false">
-						<option type="textRepresentationOnDisabled" value="false" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="3">
-					<component type="input" name="worker" field="worker"
-						reference="worker" defaultEnabled="false">
-						<option type="textRepresentationOnDisabled" value="false" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="4" height="2">
-					<component type="textarea" name="name" reference="name"
-						field="name" />
-				</layoutElement>
-				<layoutElement column="1" row="6">
-					<component type="select" name="type" reference="type"
-						field="type" />
-				</layoutElement>
-				<layoutElement column="1" row="7">
+				</script>
+				<component type="gridLayout" name="gridLayout" columns="3"
+				           rows="10">
+					<layoutElement column="1" row="1">
+						<component type="checkbox" name="generated" reference="generated"
+						           field="generated" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="date" field="date"
+						           reference="date" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="worker" field="worker"
+						           reference="worker" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4" height="2">
+						<component type="textarea" name="name" reference="name"
+						           field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="6">
+						<component type="select" name="type" reference="type"
+						           field="type" />
+					</layoutElement>
+					<layoutElement column="1" row="7">
 
-					<component type="lookup" name="inputProductColumnToSortBy"
-						field="inputProductColumnToSortBy" reference="inputProductColumnToSortBy">
+						<component type="lookup" name="inputProductColumnToSortBy"
+						           field="inputProductColumnToSortBy" reference="inputProductColumnToSortBy">
 							<option type="column" name="name" fields="name"
-								expression="'@' + #name" />
+							        expression="'@' + #name" />
 							<option type="column" name="description" fields="description"
-								expression="'@' + #description" />
+							        expression="'@' + #description" />
 
 							<option type="orderable" value="name,description" />
 
 							<option type="expression" value="'@' + #name" />
 							<option type="fieldCode" value="identifier" />
-							
+
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.workPlans.listeners.WorkPlansListeners"
-								method="setOrderSortingEnable" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="8">
-					<component type="select" name="orderSorting" reference="orderSorting"
-						field="orderSorting" />
-				</layoutElement>
-				<layoutElement column="2" row="1" height="5" width="2">
-					<component type="lookup" name="order" reference="orderLookup"
-						field="orders" defaultVisible="false" persistent="false" hasLabel="false">
-						<option type="column" name="name" fields="name" link="true"
-							width="200" />
-							
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-						
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
-						
-						<option type="multiselect" value="true" />
-					</component>
-					<component type="grid" name="orders"
-						reference="orders" source="#{form}.orders">
-						<option type="column" name="number" fields="number" width="50" />
-						<option type="column" name="name" fields="name" />
+							          method="setOrderSortingEnable" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="select" name="orderSorting" reference="orderSorting"
+						           field="orderSorting" />
+					</layoutElement>
+					<layoutElement column="2" row="1" height="5" width="2">
+						<component type="lookup" name="order" reference="orderLookup"
+						           field="orders" defaultVisible="false" persistent="false" hasLabel="false">
+							<option type="column" name="name" fields="name" link="true"
+							        width="200" />
 
-						<option type="order" column="number" direction="desc" />
-						
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
 
-						<option type="paginable" value="false" />
-						<option type="multiselect" value="true" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
+							<option type="expression"
+							        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
 
-						<option type="weakRelation" value="true" />
-						<option type="correspondingLookup" value="orderLookup" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="6" width="2">
-					<component type="gridLayout" name="doNotPrintOrdersWrapper"
-						columns="2" rows="1" hasBorders="false">
-						<layoutElement column="1" row="1" height="1" width="1">
-							<component type="checkbox" name="dontPrintOrdersInWorkPlans"
-								field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
-								<option type="labelWidth" value="50" />
-								<option type="align" value="left" />
-							</component>
-						</layoutElement>
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="7" height="4" width="2">
-					<component type="grid" name="workPlanOrderColumns"
-						source="#{form}.workPlanOrderColumns" reference="workPlanOrderColumns">
-						<option type="column" name="name" fields="columnForOrders"
-							expression="'@' + #columnForOrders.get('name')" link="true" />
+							<option type="multiselect" value="true" />
+						</component>
+						<component type="grid" name="orders"
+						           reference="orders" source="#{form}.orders">
+							<option type="column" name="number" fields="number" width="50" />
+							<option type="column" name="name" fields="name" />
 
-						<option type="order" column="succession" direction="desc" />
-						
-						<option type="searchable" value="name" />
-						<option type="orderable" value="name" />
+							<option type="order" column="number" direction="desc" />
 
-						<option type="correspondingView" value="workPlans/workPlanOrderColumnDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
 
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
+							<option type="paginable" value="false" />
+							<option type="multiselect" value="true" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+
+							<option type="weakRelation" value="true" />
+							<option type="correspondingLookup" value="orderLookup" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="6" width="2">
+						<component type="gridLayout" name="doNotPrintOrdersWrapper"
+						           columns="2" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1" height="1" width="1">
+								<component type="checkbox" name="dontPrintOrdersInWorkPlans"
+								           field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
+									<option type="labelWidth" value="50" />
+									<option type="align" value="left" />
+								</component>
+							</layoutElement>
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="7" height="4" width="2">
+						<component type="grid" name="workPlanOrderColumns"
+						           source="#{form}.workPlanOrderColumns" reference="workPlanOrderColumns">
+							<option type="column" name="name" fields="columnForOrders"
+							        expression="'@' + #columnForOrders.get('name')" link="true" />
+
+							<option type="order" column="succession" direction="desc" />
+
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+
+							<option type="correspondingView" value="workPlans/workPlanOrderColumnDetails" />
+							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
+
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+							<option type="fullscreen" value="true" />
+							<option type="multiselect" value="true" />
+						</component>
+					</layoutElement>
+				</component>
+
+				<option type="header" value="true" />
+				<option type="expression" value="#name" />
+
+				<listener event="printWorkPlan"
+				          class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners"
+				          method="printWorkPlan" />
+				<listener event="generateWorkPlan"
+				          class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners"
+				          method="generateWorkPlan" />
+				<listener event="printAtachment" method="printAtachment"
+				          class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners" />
 			</component>
 
-			<option type="header" value="true" />
-			<option type="expression" value="#name" />
-
-			<listener event="printWorkPlan"
-				class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners" 
-				method="printWorkPlan" />
-			<listener event="generateWorkPlan"
-<<<<<<< HEAD
-				class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners" 
-				method="generateWorkPlan" />
-		</component>
-		
-	</component>
-	
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanDetailsHooks"
-			method="disableFormForGeneratedWorkPlan" />
-		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanDetailsHooks"
-			method="setWorkPlanDefaultValues" />
-=======
-				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" method="generateWorkPlan" />
-			<listener event="printAtachment" method="printAtachment"
-				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" />
-		</component>
 		</windowTab>
 		<windowTab name="attachmentsTab">
 			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="6">
+			           rows="6">
 				<layoutElement column="1" row="1" width="2" height="6">
 					<component type="grid" name="technologyAttachments"
-						reference="technologyAttachments" model="technologyAttachment" 
-						plugin="technologies">
+					           reference="technologyAttachments" model="technologyAttachment"
+					           plugin="technologies">
 						<option type="column" name="attachment" fields="name" />
 						<option type="column" name="size" fields="size" />
 						<option type="column" name="technology" fields="technology"
-								expression="#technology.get('number')" />
+						        expression="#technology.get('number')" />
 						<option type="order" column="attachment" direction="desc" />
 						<option type="correspondingView" value="technologies/multiUpload" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="fullscreen" value="true" />
-						
+
 						<criteriaModifier
-							class="com.qcadoo.mes.workPlans.criteriaModifiers.WorkPlansCriteriaModifiers"
-							method="showAtachmentsForTechnologies" />
+								class="com.qcadoo.mes.workPlans.criteriaModifiers.WorkPlansCriteriaModifiers"
+								method="showAtachmentsForTechnologies" />
 					</component>
 				</layoutElement>
 			</component>
-		</windowTab>		  
+		</windowTab>
 	</component>
-	  
-	
+
+
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
-			method="onBeforeRender" />
->>>>>>> master
+		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanDetailsHooks"
+		              method="onBeforeRender" />
 	</hooks>
-	
+
 </view>

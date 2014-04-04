@@ -37,7 +37,7 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
-<<<<<<< HEAD
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.DivisionFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.StaffFields;
@@ -50,15 +50,6 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityT
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.workPlans.constants.*;
 import com.qcadoo.mes.workPlans.util.OperationProductComponentComparator;
-=======
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
-import com.qcadoo.mes.workPlans.constants.ColumnForProductsFields;
-import com.qcadoo.mes.workPlans.constants.OrderSorting;
-import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
-import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
-import com.qcadoo.mes.workPlans.constants.WorkPlanType;
->>>>>>> master
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
@@ -95,8 +86,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private ParameterService parameterService;
 
     enum ProductDirection {
-        IN,
-        OUT;
+        IN, OUT;
     }
 
     @Override
@@ -126,16 +116,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private void addOrdersTable(final Document document, final Entity workPlan, final Locale locale) throws DocumentException {
         List<Entity> columnsForOrders = getOrderColumnDefinitions(workPlan);
 
-<<<<<<< HEAD
         if (!columnsForOrders.isEmpty()) {
-            PdfPTable orderTable = pdfHelper
-                    .createTableWithHeader(columnsForOrders.size(), prepareOrdersTableHeader(document, columnsForOrders, locale),
-                            false);
-=======
-        if (!columns.isEmpty()) {
-            PdfPTable orderTable = pdfHelper.createTableWithHeader(columns.size(),
-                    prepareOrdersTableHeader(document, columns, locale), false, prepareHeaderAlignment(columns, locale));
->>>>>>> master
+            PdfPTable orderTable = pdfHelper.createTableWithHeader(columnsForOrders.size(),
+                    prepareOrdersTableHeader(document, columnsForOrders, locale), false,
+                    prepareHeaderAlignment(columnsForOrders, locale));
 
             List<Entity> orders = workPlan.getManyToManyField(WorkPlanFields.ORDERS);
 
@@ -196,8 +180,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     List<String> prepareOrdersTableHeader(final Document document, final List<Entity> columnsForOrders, final Locale locale)
             throws DocumentException {
-        document.add(new Paragraph(translationService.translate("workPlans.workPlan.report.ordersTable", locale),
-                FontUtils.getDejavuBold11Dark()));
+        document.add(new Paragraph(translationService.translate("workPlans.workPlan.report.ordersTable", locale), FontUtils
+                .getDejavuBold11Dark()));
 
         List<String> orderHeader = Lists.newArrayList();
 
@@ -213,21 +197,18 @@ public class WorkPlanPdfService extends PdfDocumentService {
         final List<Entity> orders = workPlan.getManyToManyField(WorkPlanFields.ORDERS);
 
         final boolean haveManyOrders = orders.size() > 1;
-<<<<<<< HEAD
 
         final Map<Long, Entity> orderIdWithOrderMap = getOrderIdWIthOrderMap(orders);
-        final Map<Long, Map<PrioritizedString, List<Entity>>> orderIdWithTitleAndOperationComponentMap =
-                getOrderIdWithTitleAndOperationComponentsMap(
+        final Map<Long, Map<PrioritizedString, List<Entity>>> orderIdWithTitleAndOperationComponentMap = getOrderIdWithTitleAndOperationComponentsMap(
                 workPlan, locale);
         final Map<Long, Map<Entity, Map<String, String>>> orderColumnValues = columnFetcher.getColumnValues(orders);
 
-        for (final Entry<Long, Map<PrioritizedString, List<Entity>>> orderIdWithTitleAndOperationComponent :
-                orderIdWithTitleAndOperationComponentMap
+        for (final Entry<Long, Map<PrioritizedString, List<Entity>>> orderIdWithTitleAndOperationComponent : orderIdWithTitleAndOperationComponentMap
                 .entrySet()) {
             final Long orderId = orderIdWithTitleAndOperationComponent.getKey();
             final Entity order = orderIdWithOrderMap.get(orderId);
 
-            addOperationsForSpecifiedOrder(document, orderIdWithTitleAndOperationComponent.getValue(),
+            addOperationsForSpecifiedOrder(document, workPlan, orderIdWithTitleAndOperationComponent.getValue(),
                     orderColumnValues.get(orderId), order, haveManyOrders, locale);
         }
     }
@@ -255,28 +236,28 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 continue;
             }
 
-            orderIdWithTitleAndOperationComponentMap
-                    .put(order.getId(), getTitleWithOperationComponentMap(technology, workPlan, order, locale));
+            orderIdWithTitleAndOperationComponentMap.put(order.getId(),
+                    getTitleWithOperationComponentMap(technology, workPlan, order, locale));
         }
 
         return orderIdWithTitleAndOperationComponentMap;
     }
 
-    private Map<PrioritizedString, List<Entity>> getTitleWithOperationComponentMap(final Entity technology, final Entity workPlan,
-            final Entity order, final Locale locale) {
-        List<Entity> operationComponents = entityTreeUtilsService
-                .getSortedEntities(technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS));
+    private Map<PrioritizedString, List<Entity>> getTitleWithOperationComponentMap(final Entity technology,
+            final Entity workPlan, final Entity order, final Locale locale) {
+        List<Entity> operationComponents = entityTreeUtilsService.getSortedEntities(technology
+                .getTreeField(TechnologyFields.OPERATION_COMPONENTS));
 
         final Map<PrioritizedString, List<Entity>> titleWithOperationComponentMap = Maps.newTreeMap();
 
         for (Entity operationComponent : operationComponents) {
-            if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue()
-                    .equals(operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+            if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(
+                    operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
                 Entity referenceTechnology = operationComponent
                         .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
 
-                titleWithOperationComponentMap
-                        .putAll(getTitleWithOperationComponentMap(referenceTechnology, workPlan, order, locale));
+                titleWithOperationComponentMap.putAll(getTitleWithOperationComponentMap(referenceTechnology, workPlan, order,
+                        locale));
 
                 continue;
             }
@@ -309,17 +290,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
             return getOperationByWorkstationSectionTitle(operationComponent, locale);
         } else if (WorkPlanType.BY_DIVISION.getStringValue().equals(type)) {
             return getOperationByDivisionSectionTitle(operationComponent, locale);
-=======
-        final Map<Long, Entity> orderId2Order = buildEntityId2EntityMap(orders);
-        final Map<Long, Map<Entity, Map<String, String>>> orderId2columnValues = columnFetcher.getColumnValues(orders);
-
-        for (final Entry<Long, Map<PrioritizedString, List<Entity>>> orderId2OpComponentsMapEntry : getOrderIdToOperationComponentsMap(
-                workPlan, locale).entrySet()) {
-            final Long orderId = orderId2OpComponentsMapEntry.getKey();
-            final Entity order = orderId2Order.get(orderId);
-            addOperationsForSpecifiedOrder(document, workPlan, orderId2OpComponentsMapEntry.getValue(),
-                    orderId2columnValues.get(orderId), order, haveManyOrders, locale);
->>>>>>> master
         }
         // [maku] I think that returning some 'error value' will be better than throwing an exception,
         // since section title resolving isn't a critical functionality and whole report can be successfully generated without
@@ -367,14 +337,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return new PrioritizedString(suffix + " " + workstationName);
     }
 
-<<<<<<< HEAD
-    private void addOperationsForSpecifiedOrder(final Document document,
-            final Map<PrioritizedString, List<Entity>> titleWithOperationComponentMap,
-            final Map<Entity, Map<String, String>> columnValues, final Entity order, final boolean haveManyOrders,
-            final Locale locale) throws DocumentException {
-        for (Entry<PrioritizedString, List<Entity>> entry : titleWithOperationComponentMap.entrySet()) {
-            document.newPage();
-=======
     private void addOperationsForSpecifiedOrder(final Document document, final Entity workPlan,
             final Map<PrioritizedString, List<Entity>> orderOpComponentsMap, final Map<Entity, Map<String, String>> columnValues,
             final Entity order, final boolean haveManyOrders, final Locale locale) throws DocumentException {
@@ -382,13 +344,13 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         for (Entry<PrioritizedString, List<Entity>> entry : orderOpComponentsMap.entrySet()) {
             if (!parameter.getBooleanField(ParameterFieldsWP.PRINT_OPERATION_AT_FIRST_PAGE_IN_WORK_PLANS)) {
->>>>>>> master
-
                 document.newPage();
             }
             document.add(new Paragraph(entry.getKey().getString(), FontUtils.getDejavuBold11Dark()));
-
+            int count = 0;
             for (Entity operationComponent : entry.getValue()) {
+                count++;
+
                 PdfPTable operationTable = pdfHelper.createPanelTable(3);
                 addOperationInfoToTheOperationHeader(operationTable, operationComponent, locale);
 
@@ -409,19 +371,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 }
 
                 if (isOutputProductTableEnabled(operationComponent)) {
-<<<<<<< HEAD
-                    addOutputProductsSeries(document, columnValues, operationComponent, locale);
-                }
-
-                if (isInputProductTableEnabled(operationComponent)) {
-                    addInputProductsSeries(document, columnValues, operationComponent, locale);
-                }
-
-                addAdditionalFields(document, operationComponent, locale);
-=======
                     addOutProductsSeries(document, workPlan, columnValues, operationComponent, locale);
                 }
-
                 if (isInputProductTableEnabled(operationComponent)) {
                     addInProductsSeries(document, workPlan, columnValues, operationComponent, locale);
                 }
@@ -434,7 +385,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
                         document.add(Chunk.NEXTPAGE);
                     }
                 }
->>>>>>> master
             }
         }
     }
@@ -445,8 +395,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
                 translationService.translate("workPlans.workPlan.report.operation.level", locale), operationLevel);
 
-        String operationName = operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
-                .getStringField(OperationFields.NAME);
+        String operationName = operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(
+                OperationFields.NAME);
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
                 translationService.translate("workPlans.workPlan.report.operation.name", locale), operationName);
 
@@ -476,8 +426,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 divisionLabel = translationService.translate("workPlans.workPlan.report.operation.division", locale);
                 Entity supervisor = division.getBelongsToField(DivisionFields.SUPERVISOR);
                 if (supervisor != null) {
-                    supervisorName =
-                            supervisor.getStringField(StaffFields.NAME) + " " + supervisor.getStringField(StaffFields.SURNAME);
+                    supervisorName = supervisor.getStringField(StaffFields.NAME) + " "
+                            + supervisor.getStringField(StaffFields.SURNAME);
                     supervisorLabel = translationService.translate("workPlans.workPlan.report.operation.supervisor", locale);
                 }
             }
@@ -531,40 +481,14 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 translationService.translate("workPlans.workPlan.report.operation.orderNumber", locale), orderNumber);
     }
 
-    private void addInputProductsSeries(final Document document, final Map<Entity, Map<String, String>> columnValues,
-            final Entity operationComponent, final Locale locale) throws DocumentException {
-
-        List<Entity> operationProductInComponents = operationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-
-        addProductsSeries(document, columnValues, operationComponent, operationProductInComponents, ProductDirection.IN, locale);
-    }
-
-    private void addOutputProductsSeries(final Document document, final Map<Entity, Map<String, String>> columnValues,
-            final Entity operationComponent, final Locale locale) throws DocumentException {
-
-        List<Entity> operationProductOutComponents = operationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-
-        addProductsSeries(document, columnValues, operationComponent, operationProductOutComponents, ProductDirection.OUT,
-                locale);
-    }
-
-<<<<<<< HEAD
-    void addProductsSeries(final Document document, final Map<Entity, Map<String, String>> columnValues,
-            final Entity operationComponent, final List<Entity> operationProductComponents, final ProductDirection direction,
-            final Locale locale) throws DocumentException {
-        if (operationProductComponents.isEmpty()) {
-=======
     void addProductsSeries(final List<Entity> productComponentsArg, final Document document, final Entity workPlan,
             final Map<Entity, Map<String, String>> columnValues, final Entity operationComponent,
             final ProductDirection direction, final Locale locale, final boolean sortColumnValues) throws DocumentException {
         if (productComponentsArg.isEmpty()) {
->>>>>>> master
             return;
         }
 
-        List<Entity> productComponents = Lists.newLinkedList(operationProductComponents);
+        List<Entity> productComponents = Lists.newLinkedList(productComponentsArg);
         Collections.sort(productComponents, new OperationProductComponentComparator());
 
         List<Entity> columnsForProducts = getProductColumnDefinitions(direction, operationComponent);
@@ -573,17 +497,14 @@ public class WorkPlanPdfService extends PdfDocumentService {
             return;
         }
 
-<<<<<<< HEAD
         PdfPTable table = pdfHelper.createTableWithHeader(columnsForProducts.size(),
-                prepareProductsTableHeader(document, columnsForProducts, direction, locale), false);
+                prepareProductsTableHeader(document, columnsForProducts, direction, locale), false,
+                prepareHeaderAlignment(columnsForProducts, locale));
 
-=======
-        PdfPTable table = pdfHelper.createTableWithHeader(columns.size(),
-                prepareProductsTableHeader(document, columns, direction, locale), false, prepareHeaderAlignment(columns, locale));
         if (sortColumnValues) {
-            productComponents = getSortedProductByColumn(columns, columnValues, productComponents, workPlan);
+            productComponents = getSortedProductByColumn(columnsForProducts, columnValues, productComponents, workPlan);
         }
->>>>>>> master
+
         for (Entity productComponent : productComponents) {
             for (Entity column : columnsForProducts) {
                 String columnIdentifier = column.getStringField(L_IDENTIFIER);
@@ -601,9 +522,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
         document.add(table);
     }
 
-<<<<<<< HEAD
-    private List<Entity> getProductColumnDefinitions(final ProductDirection direction, final Entity operationComponent) {
-=======
     private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
         if (ColumnAlignment.LEFT.equals(columnAlignment)) {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -615,7 +533,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
     void addInProductsSeries(final Document document, final Entity workPlan, final Map<Entity, Map<String, String>> columnValues,
             final Entity operationComponent, final Locale locale) throws DocumentException {
 
-        List<Entity> productComponents = operationComponent.getHasManyField("operationProductInComponents");
+        List<Entity> productComponents = operationComponent
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
 
         addProductsSeries(productComponents, document, workPlan, columnValues, operationComponent, ProductDirection.IN, locale,
                 true);
@@ -625,7 +544,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
             final Map<Entity, Map<String, String>> columnValues, final Entity operationComponent, final Locale locale)
             throws DocumentException {
 
-        List<Entity> productComponents = operationComponent.getHasManyField("operationProductOutComponents");
+        List<Entity> productComponents = operationComponent
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
 
         addProductsSeries(productComponents, document, workPlan, columnValues, operationComponent, ProductDirection.OUT, locale,
                 false);
@@ -635,7 +555,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
             throws DocumentException {
         String imagePath;
         try {
-            imagePath = getImagePathFromDD(operationComponent);
+            imagePath = getImageUrlInWorkPlan(operationComponent);
         } catch (NoSuchElementException e) {
             return;
         }
@@ -645,14 +565,11 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         pdfHelper.addImage(document, imagePath);
 
-        document.add(Chunk.NEWLINE);
+        document.add(Chunk.NEXTPAGE);
     }
 
-    void addMainHeader(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        String documenTitle = translationService.translate("workPlans.workPlan.report.title", locale);
-        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, entity.getField(L_NAME).toString(), documenTitle, documentAuthor,
-                (Date) entity.getField("date"));
+    private List<Entity> getProductColumnDefinitions(final ProductDirection direction, final Entity operationComponent) {
+        return fetchColumnDefinitions(direction, operationComponent);
     }
 
     private List<Entity> fetchOrderColumnDefinitions(final Entity workPlan) {
@@ -671,7 +588,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
     }
 
     private List<Entity> fetchColumnDefinitions(final ProductDirection direction, final Entity operationComponent) {
->>>>>>> master
         List<Entity> columns = new LinkedList<Entity>();
 
         String columnDefinitionModel = null;
@@ -723,31 +639,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return productsHeader;
     }
 
-    private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
-        if (ColumnAlignment.LEFT.equals(columnAlignment)) {
-            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-        } else if (ColumnAlignment.RIGHT.equals(columnAlignment)) {
-            cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        }
-    }
-
-    void addAdditionalFields(final Document document, final Entity operationComponent, final Locale locale)
-            throws DocumentException {
-        String imagePath;
-        try {
-            imagePath = getImageUrlInWorkPlan(operationComponent);
-        } catch (NoSuchElementException e) {
-            return;
-        }
-
-        String titleString = translationService.translate("workPlans.workPlan.report.additionalFields", locale);
-        document.add(new Paragraph(titleString, FontUtils.getDejavuBold10Dark()));
-
-        pdfHelper.addImage(document, imagePath);
-
-        document.add(Chunk.NEXTPAGE);
-    }
-
     String getImageUrlInWorkPlan(final Entity technologyOperationComponent) {
         String imagePath = technologyOperationComponent
                 .getStringField(TechnologyOperationComponentFieldsWP.IMAGE_URL_IN_WORK_PLAN);
@@ -790,7 +681,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 || !columns.contains(columnIdentifier)) {
             return productComponents;
         }
-        final String identifier = columnIdentifier.getStringField(ColumnForProductsFields.IDENTIFIER);
+        // TODO replace literal witch constant
+        final String identifier = columnIdentifier.getStringField("identifier");
 
         Map<Entity, String> tempMap = Maps.newHashMap();
         for (Entity productComponent : productComponents) {

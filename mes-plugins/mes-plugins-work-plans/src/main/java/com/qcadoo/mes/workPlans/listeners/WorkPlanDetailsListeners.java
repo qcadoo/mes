@@ -49,6 +49,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class WorkPlanDetailsListeners {
@@ -142,6 +143,28 @@ public class WorkPlanDetailsListeners {
     public void printWorkPlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(view, state, new String[] { args[0], WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_WORK_PLAN });
+    }
+
+    public void printAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference("technologyAttachments");
+        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
+            state.addMessage("technologies.technologyDetails.window.ribbon.atachments.nonSelectedAtachment", MessageType.INFO);
+            return;
+        }
+        StringBuffer redirectUrl = new StringBuffer();
+        redirectUrl.append("/rest/workplans/printAtachment.pdf");
+        boolean isFirstParam = true;
+        for (Long confectionProtocolId : grid.getSelectedEntitiesIds()) {
+            if (isFirstParam) {
+                redirectUrl.append("?");
+                isFirstParam = false;
+            } else {
+                redirectUrl.append("&");
+            }
+            redirectUrl.append("id=");
+            redirectUrl.append(confectionProtocolId);
+        }
+        view.redirectTo(redirectUrl.toString(), true, false);
     }
 
 }
