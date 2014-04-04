@@ -32,12 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.util.UnitService;
-<<<<<<< HEAD
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
-=======
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO;
->>>>>>> master
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -57,16 +53,10 @@ public class TechnologyOperationComponentHooksTNFO {
 
     private void setDefaultUnitOnCreate(final Entity technologyOperationComponent) {
         if (StringUtils.isEmpty(technologyOperationComponent
-<<<<<<< HEAD
                 .getStringField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT))) {
             String defaultUnit = unitService.getDefaultUnitFromSystemParameters();
             technologyOperationComponent.setField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT,
                     defaultUnit);
-=======
-                .getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT))) {
-            String defaultUnit = unitService.getDefaultUnitFromSystemParameters();
-            technologyOperationComponent.setField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT, defaultUnit);
->>>>>>> master
         }
     }
 

@@ -25,19 +25,7 @@ package com.qcadoo.mes.timeNormsForOperations.listeners;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
-<<<<<<< HEAD
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.ARE_PRODUCT_QUANTITIES_DIVISIBLE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.IS_TJ_DIVISIBLE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE;
-=======
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.ARE_PRODUCT_QUANTITIES_DIVISIBLE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.IS_TJ_DIVISIBLE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE;
->>>>>>> master
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.*;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
 
@@ -45,11 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-<<<<<<< HEAD
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-=======
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO;
->>>>>>> master
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -115,11 +99,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
         FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
         FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
-<<<<<<< HEAD
                 .getComponentByReference(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
-=======
-                .getComponentByReference(TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
->>>>>>> master
 
         Boolean visibilityValue = "02specified".equals(nextOperationAfterProducedType.getFieldValue());
         nextOperationAfterProducedQuantity.setVisible(visibilityValue);
@@ -135,11 +115,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
         FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
         FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
-<<<<<<< HEAD
                 .getComponentByReference(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
-=======
-                .getComponentByReference(TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
->>>>>>> master
 
         Boolean visibilityValue = "02specified".equals(nextOperationAfterProducedType.getFieldValue());
         nextOperationAfterProducedQuantity.setVisible(visibilityValue);

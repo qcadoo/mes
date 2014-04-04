@@ -25,11 +25,7 @@ package com.qcadoo.mes.timeNormsForOperations.listeners;
 
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-=======
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO;
->>>>>>> master
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -40,19 +36,11 @@ public class OperationDetailsListenersTNFO {
     public void changeNextOperationAfterProducedTypeOperation(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
         FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
-<<<<<<< HEAD
                 .getComponentByReference(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE);
         FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
         FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
-=======
-                .getComponentByReference(TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE);
-        FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
-        FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
->>>>>>> master
 
         if (nextOperationAfterProducedType.getFieldValue().equals("02specified")) {
             nextOperationAfterProducedQuantity.setVisible(true);
