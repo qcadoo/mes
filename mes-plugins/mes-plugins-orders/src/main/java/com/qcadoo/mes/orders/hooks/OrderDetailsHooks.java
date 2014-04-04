@@ -23,24 +23,7 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.COMPANY;
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
-import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
-import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.constants.OrderFields.*;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
@@ -80,12 +63,7 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -219,15 +197,16 @@ public class OrderDetailsHooks {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
+        FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference("plannedQuantity");
 
         defaultTechnologyField.setEnabled(false);
 
-        Entity product = productLookup.getEntity();
-
-        if ((product == null) || !hasAnyTechnologies(product)) {
+        if (productLookup.getFieldValue() == null || !hasAnyTechnologies(productLookup.getEntity())) {
             technologyLookup.setRequired(false);
+            plannedQuantity.setRequired(false);
         } else {
             technologyLookup.setRequired(true);
+            plannedQuantity.setRequired(true);
         }
     }
 
