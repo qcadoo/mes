@@ -423,13 +423,6 @@ public class DeliveryReportPdf extends ReportPdfView {
         return delivery.getHasManyField(DeliveryFields.STATE_CHANGES).find()
                 .add(SearchRestrictions.eq(DeliveryStateChangeFields.TARGET_STATE, "06received"))
                 .add(SearchRestrictions.eq(DeliveryStateChangeFields.STATUS, "03successful")).setMaxResults(1).uniqueResult();
-<<<<<<< HEAD
-    }
-
-    private String getStringFromDate(final Date date) {
-        return simpleDateFormat.format(date);
-=======
->>>>>>> master
     }
 
     private String getStringFromDate(final Date date) {

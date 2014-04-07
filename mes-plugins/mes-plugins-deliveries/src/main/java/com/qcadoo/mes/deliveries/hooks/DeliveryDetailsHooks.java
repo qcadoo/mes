@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-<<<<<<< HEAD
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-
-=======
->>>>>>> master
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;

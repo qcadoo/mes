@@ -58,10 +58,7 @@ import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-<<<<<<< HEAD
-=======
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
->>>>>>> master
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
@@ -392,8 +389,6 @@ public class OrderReportPdf extends ReportPdfView {
 
     private String getStringFromDate(final Date date) {
         return simpleDateFormat.format(date);
-<<<<<<< HEAD
-=======
     }
 
     public List<String> getUsedColumnsInOrderReport(final Entity delivery) {
@@ -416,8 +411,6 @@ public class OrderReportPdf extends ReportPdfView {
             }
         }
         return columnNames;
-
->>>>>>> master
     }
 
 }
