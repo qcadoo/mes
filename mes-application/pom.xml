@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -460,7 +460,7 @@
 		<profile>
 			<id>extra</id>
 			<dependencies>
-    			<dependency>
+				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-plugins-product-catalog-numbers</artifactId>
 					<version>${project.version}</version>
@@ -497,45 +497,6 @@
 				</dependency>
 			</dependencies>
 		</profile>
-<<<<<<< HEAD
-        <profile>
-            <id>muffinka</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${maven.antrun.plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>deploy-to-muffinka</id>
-                                <phase>deploy</phase>
-                                <configuration>
-                                    <target>
-                                    	<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/home/${shell.user}/deploy/${shell.user}.zip" />
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <distributionManagement>
-                <repository>
-                    <id>qcadoo-releases-repository</id>
-                    <url>file://target</url>
-                </repository>
-                <snapshotRepository>
-                    <id>qcadoo-snapshots-repository</id>
-                    <url>file://target</url>
-                    <uniqueVersion>false</uniqueVersion>
-                </snapshotRepository>
-            </distributionManagement>
-        </profile>
-=======
 		<profile>
 			<id>muffinka</id>
 			<build>
@@ -550,7 +511,8 @@
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/home/${shell.user}/deploy/${shell.user}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip"
+										      tofile="/home/${shell.user}/deploy/${shell.user}.zip" />
 									</target>
 								</configuration>
 								<goals>
@@ -573,7 +535,6 @@
 				</snapshotRepository>
 			</distributionManagement>
 		</profile>
->>>>>>> master
 		<profile>
 			<id>package</id>
 			<build>
@@ -588,7 +549,8 @@
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/home/packages/qcdmes_bin_daily_build/${package.filename}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip"
+										      tofile="/home/packages/qcdmes_bin_daily_build/${package.filename}.zip" />
 									</target>
 								</configuration>
 								<goals>
