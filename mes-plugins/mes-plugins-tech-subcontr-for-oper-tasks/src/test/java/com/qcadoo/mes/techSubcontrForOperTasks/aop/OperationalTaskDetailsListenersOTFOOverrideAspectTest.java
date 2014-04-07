@@ -30,13 +30,25 @@ import static org.junit.Assert.assertNotNull;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 import com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO;
+import com.qcadoo.mes.techSubcontrForOperTasks.constants.TechSubcontrForOperTasksConstants;
+import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 public class OperationalTaskDetailsListenersOTFOOverrideAspectTest {
+
+    @Test
+    public final void checkRunIfEnabledAnnotation() {
+        Class<?> aspectClass = OperationalTaskDetailsListenersOTFOOverrideAspect.class;
+        RunIfEnabled runIfEnabledAnnotation = aspectClass.getAnnotation(RunIfEnabled.class);
+        Assert.assertEquals(1, runIfEnabledAnnotation.value().length);
+        Assert.assertEquals(TechSubcontrForOperTasksConstants.PLUGIN_IDENTIFIER, runIfEnabledAnnotation.value()[0]);
+    }
 
     @Test
     public final void checkSetOperationalTaskNameAndDescriptionPointcutDefinition() throws NoSuchMethodException {
