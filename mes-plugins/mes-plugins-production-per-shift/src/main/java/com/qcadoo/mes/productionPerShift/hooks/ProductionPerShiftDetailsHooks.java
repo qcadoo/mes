@@ -39,11 +39,7 @@ import com.qcadoo.mes.basic.constants.ShiftFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
-import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
-import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
-import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
+import com.qcadoo.mes.productionPerShift.constants.*;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -55,12 +51,7 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 
@@ -574,17 +565,9 @@ public class ProductionPerShiftDetailsHooks {
             FieldComponent dayField = progressForDayForm.findFieldComponentByName(ProgressForDayFields.DAY);
             FieldComponent dateField = progressForDayForm.findFieldComponentByName(L_DATE);
 
-            Entity progressForDay = progressForDayForm.getEntity();
+            Entity progressForDay = progressForDayForm.getPersistedEntityWithIncludedFormValues();
 
-<<<<<<< HEAD
             if (StringUtils.isEmpty(progressForDay.getStringField(ProgressForDayFields.DATE_OF_DAY))) {
-=======
-            Entity progressForDayEntity = progressForDay.getEntity();
-            if (progressForDayEntity.getId() != null) {
-                progressForDayEntity = progressForDayEntity.getDataDefinition().get(progressForDayEntity.getId());
-            }
-            if (progressForDayEntity.getField(ProgressForDayFields.DATE_OF_DAY) == null) {
->>>>>>> master
                 String day = (String) dayField.getFieldValue();
 
                 if (!StringUtils.isEmpty(day)) {
