@@ -36,11 +36,8 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD
 import com.google.common.collect.Lists;
-=======
 import com.google.common.collect.Maps;
->>>>>>> master
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -73,11 +70,7 @@ import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
-<<<<<<< HEAD
-=======
-import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
->>>>>>> master
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.utils.TimeConverterService;
@@ -338,13 +331,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     public PdfPTable addMaterialsTable(final Entity costCalculation, final Locale locale) {
         List<String> materialsTableHeader = Lists.newArrayList();
-
-<<<<<<< HEAD
-=======
-        List<String> materialsTableHeader = new ArrayList<String>();
         Map<String, HeaderAlignment> alignments = Maps.newHashMap();
 
->>>>>>> master
         for (String translate : Arrays.asList(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
                 "costCalculation.costCalculationDetails.report.columnHeader.quantity",
                 "costCalculation.costCalculationDetails.report.columnHeader.unit",
@@ -353,10 +341,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
             materialsTableHeader.add(translationService.translate(translate, locale));
         }
-<<<<<<< HEAD
 
-        PdfPTable materialsTable = pdfHelper.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false);
-=======
         alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.number", locale),
                 HeaderAlignment.LEFT);
         alignments.put(
@@ -374,7 +359,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         PdfPTable materialsTable = pdfHelper.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false,
                 alignments);
->>>>>>> master
 
         try {
             float[] columnWidths = { 1f, 1f, 0.5f, 1f, 1f, 1.5f };
@@ -398,7 +382,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
         Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, quantity,
                 MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
 
-<<<<<<< HEAD
         // TODO LUPO fix comparator
         // neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
 
@@ -413,17 +396,10 @@ public class CostCalculationPdfService extends PdfDocumentService {
             BigDecimal productQuantity = neededProductQuantity.getValue();
 
             materialsTable.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
-            materialsTable.addCell(new Phrase(numberService.format(productQuantity), FontUtils.getDejavuRegular7Dark()));
-            materialsTable.addCell(new Phrase(product.getStringField(ProductFields.UNIT), FontUtils.getDejavuRegular7Dark()));
-=======
-            materialsTable.addCell(new Phrase(productWithNeededQuantity.getKey().getStringField(NUMBER), FontUtils
-                    .getDejavuRegular7Dark()));
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             materialsTable.addCell(new Phrase(numberService.format(productQuantity), FontUtils.getDejavuRegular7Dark()));
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            materialsTable.addCell(new Phrase(productWithNeededQuantity.getKey().getStringField(L_UNIT), FontUtils
-                    .getDejavuRegular7Dark()));
->>>>>>> master
+            materialsTable.addCell(new Phrase(product.getStringField(ProductFields.UNIT), FontUtils.getDejavuRegular7Dark()));
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
             BigDecimal costForGivenQuantity = productsCostCalculationService.calculateProductCostForGivenQuantity(productEntity,
@@ -486,11 +462,35 @@ public class CostCalculationPdfService extends PdfDocumentService {
             hourlyCostsTableHeader.add(translationService.translate(translate, locale));
         }
 
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.level", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(
+                translationService.translate(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER, locale),
+                HeaderAlignment.LEFT);
+        alignments.put(
+                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.machDuration", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(
+                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.machCosts", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(
+                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.labDuration", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(
+                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.labCosts", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.margin", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(
+                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.totalCosts", locale),
+                HeaderAlignment.RIGHT);
+
         List<Entity> calculationOperationComponents = costCalculation
                 .getHasManyField(CostCalculationFields.CALCULATION_OPERATION_COMPONENTS);
 
-        PdfPTable hourlyCostsTable = pdfHelper
-                .createTableWithHeader(hourlyCostsTableHeader.size(), hourlyCostsTableHeader, false);
+        PdfPTable hourlyCostsTable = pdfHelper.createTableWithHeader(hourlyCostsTableHeader.size(), hourlyCostsTableHeader,
+                false, alignments);
 
         try {
             float[] columnWidths = { 1f, 0.75f, 1f, 1f, 1f, 1f, 1f, 1.25f };
@@ -598,6 +598,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     private PdfPTable addTableAboutPieceworkCost(final Entity costCalculation, final Locale locale) {
         List<String> pieceworkCostsTableHeader = Lists.newArrayList();
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
 
         for (String translate : Arrays.asList("costCalculation.costCalculationDetails.report.columnHeader.level",
                 L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
@@ -607,12 +608,27 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
             pieceworkCostsTableHeader.add(translationService.translate(translate, locale));
         }
+        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.level", locale),
+                HeaderAlignment.LEFT);
+        alignments.put(
+                translationService.translate(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER, locale),
+                HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.pieces", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(
+                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.operationCost", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.margin", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(
+                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.totalCosts", locale),
+                HeaderAlignment.RIGHT);
 
         List<Entity> calculationOperationComponents = costCalculation
                 .getTreeField(CostCalculationFields.CALCULATION_OPERATION_COMPONENTS);
 
         PdfPTable pieceworkCostsTable = pdfHelper.createTableWithHeader(pieceworkCostsTableHeader.size(),
-                pieceworkCostsTableHeader, false);
+                pieceworkCostsTableHeader, false, alignments);
 
         try {
             float[] columnWidths = { 1f, 0.75f, 1f, 1f, 1f, 1.25f };
@@ -686,20 +702,11 @@ public class CostCalculationPdfService extends PdfDocumentService {
         List<String> optionTableHeader = Lists.newArrayList();
 
         Map<String, String> costModeName = getCostMode(costCalculation);
-        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
 
         for (String translate : Arrays.asList(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
                 L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME, costModeName.get(L_LOCALE_TYPE))) {
             optionTableHeader.add(translationService.translate(translate, locale));
         }
-
-        alignments.put(
-                translationService.translate(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER, locale),
-                HeaderAlignment.LEFT);
-        alignments.put(
-                translationService.translate(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME, locale),
-                HeaderAlignment.LEFT);
-        alignments.put(translationService.translate(costModeName.get("localeType"), locale), HeaderAlignment.RIGHT);
 
         Entity technology;
         Entity order = costCalculation.getBelongsToField(CostCalculationFields.ORDER);
@@ -719,28 +726,10 @@ public class CostCalculationPdfService extends PdfDocumentService {
         // neededProductQuantities = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
 
         PdfPTable printCostNormsOfMaterialTable = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
-<<<<<<< HEAD
                 false);
 
         for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
-=======
-                false, alignments);
-        for (Entry<Entity, BigDecimal> product : products.entrySet()) {
-            printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils
-                    .getDejavuRegular7Dark()));
-            printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NAME), FontUtils
-                    .getDejavuRegular7Dark()));
-            Entity entityProduct = productsCostCalculationService.getAppropriateCostNormForProduct(product.getKey(), order,
-                    costCalculation.getStringField("sourceOfMaterialCosts"));
-            BigDecimal toDisplay = (BigDecimal) entityProduct.getField(costModeName.get("costMode"));
-            BigDecimal quantity = (BigDecimal) product.getKey().getField(L_COST_FOR_NUMBER);
-            String unit = (String) product.getKey().getStringField(L_UNIT);
-            printCostNormsOfMaterialTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            printCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " " + " / " + quantity + " " + unit, FontUtils
-                    .getDejavuRegular7Dark()));
-            printCostNormsOfMaterialTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
->>>>>>> master
 
             printCostNormsOfMaterialTable.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils
                     .getDejavuRegular7Dark()));
@@ -860,12 +849,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.machineHourlyCost.label", locale) + ":",
-<<<<<<< HEAD
                     numberService.format(technologyOperationComponent
                             .getDecimalField(TechnologyOperationComponentFieldsCNFO.MACHINE_HOURLY_COST)));
-=======
-                    numberService.format(calculationOperationComponent.getField("machineHourlyCost")));
->>>>>>> master
 
             addTableCellAsTwoColumnsTable(panelTableContent, "", "");
 
@@ -873,12 +858,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.laborHourlyCost.label", locale) + ":",
-<<<<<<< HEAD
                     numberService.format(technologyOperationComponent
                             .getDecimalField(TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST)));
-=======
-                    numberService.format(calculationOperationComponent.getField("laborHourlyCost")));
->>>>>>> master
 
             document.add(panelTableHeader);
             document.add(panelTableContent);
@@ -886,12 +867,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
     }
 
     public PdfPTable addOptionTablePrintOperationNormsPiecework(final Entity costCalculation, final Locale locale) {
-<<<<<<< HEAD
         List<String> optionTableHeader = Lists.newArrayList();
-=======
-        List<String> optionTableHeader = new ArrayList<String>();
-        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
->>>>>>> master
 
         for (String translate : Arrays.asList(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
                 L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME,
@@ -899,36 +875,16 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.forNumberOfOperations")) {
             optionTableHeader.add(translationService.translate(translate, locale));
         }
-        alignments.put(
-                translationService.translate(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER, locale),
-                HeaderAlignment.LEFT);
-        alignments.put(
-                translationService.translate(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME, locale),
-                HeaderAlignment.LEFT);
-        alignments.put(
-                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.pieceworkCost", locale),
-                HeaderAlignment.RIGHT);
-        alignments
-                .put(translationService.translate(
-                        "costCalculation.costCalculationDetails.report.columnHeader.forNumberOfOperations", locale),
-                        HeaderAlignment.LEFT);
 
         List<Entity> calculationOperationComponents = entityTreeUtilsService.getSortedEntities(costCalculation
                 .getTreeField(CostCalculationFields.CALCULATION_OPERATION_COMPONENTS));
 
-<<<<<<< HEAD
         PdfPTable operationNormsTable = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader, false);
         operationNormsTable.setSpacingBefore(10);
-=======
-        PdfPTable printCostNormsOfMaterialTable2 = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
-                false, alignments);
-        printCostNormsOfMaterialTable2.setSpacingBefore(10);
->>>>>>> master
 
         for (Entity calculationOperationComponent : calculationOperationComponents) {
             Entity operation = calculationOperationComponent.getBelongsToField(CalculationOperationComponentFields.OPERATION);
 
-<<<<<<< HEAD
             operationNormsTable.addCell(new Phrase(operation.getStringField(OperationFields.NUMBER), FontUtils
                     .getDejavuRegular7Dark()));
 
@@ -940,70 +896,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
             operationNormsTable.addCell(new Phrase((pieceworkCost == null) ? "" : numberService.format(pieceworkCost), FontUtils
                     .getDejavuRegular7Dark()));
-=======
-            printCostNormsOfMaterialTable2.addCell(new Phrase(calculationOperationComponent.getBelongsToField(
-                    TechnologiesConstants.MODEL_OPERATION).getStringField(NUMBER), FontUtils.getDejavuRegular7Dark()));
-
-            printCostNormsOfMaterialTable2.addCell(new Phrase(calculationOperationComponent.getBelongsToField(
-                    TechnologiesConstants.MODEL_OPERATION).getStringField(NAME), FontUtils.getDejavuRegular7Dark()));
-            printCostNormsOfMaterialTable2.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-
-            printCostNormsOfMaterialTable2.addCell(new Phrase(
-                    (calculationOperationComponent.getField("pieceworkCost") == null) ? "" : calculationOperationComponent
-                            .getField("pieceworkCost").toString(), FontUtils.getDejavuRegular7Dark()));
-            printCostNormsOfMaterialTable2.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-
-            printCostNormsOfMaterialTable2.addCell(new Phrase(
-                    (calculationOperationComponent.getField("numberOfOperations") == null) ? "" : calculationOperationComponent
-                            .getField("numberOfOperations").toString(), FontUtils.getDejavuRegular7Dark()));
-        }
-
-        return printCostNormsOfMaterialTable2;
-
-    }
-
-    private PdfPTable addTableAboutHourlyCost(final Entity costCalculation, final Locale locale) {
-        List<String> operationsTableHeader = new ArrayList<String>();
-        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
-
-        for (String translate : Arrays.asList("costCalculation.costCalculationDetails.report.columnHeader.level",
-                L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
-                "costCalculation.costCalculationDetails.report.columnHeader.machDuration",
-                "costCalculation.costCalculationDetails.report.columnHeader.machCosts",
-                "costCalculation.costCalculationDetails.report.columnHeader.labDuration",
-                "costCalculation.costCalculationDetails.report.columnHeader.labCosts",
-                "costCalculation.costCalculationDetails.report.columnHeader.margin",
-                "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
-            operationsTableHeader.add(translationService.translate(translate, locale));
-
-        }
-        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.level", locale),
-                HeaderAlignment.LEFT);
-        alignments.put(
-                translationService.translate(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER, locale),
-                HeaderAlignment.LEFT);
-        alignments.put(
-                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.machDuration", locale),
-                HeaderAlignment.RIGHT);
-        alignments.put(
-                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.machCosts", locale),
-                HeaderAlignment.RIGHT);
-        alignments.put(
-                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.labDuration", locale),
-                HeaderAlignment.RIGHT);
-        alignments.put(
-                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.labCosts", locale),
-                HeaderAlignment.RIGHT);
-        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.margin", locale),
-                HeaderAlignment.RIGHT);
-        alignments.put(
-                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.totalCosts", locale),
-                HeaderAlignment.RIGHT);
-        List<Entity> calculationOperationComponents = costCalculation.getHasManyField(CALCULATION_OPERATION_COMPONENTS);
-
-        PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false,
-                alignments);
->>>>>>> master
 
             Integer numberOfOperations = calculationOperationComponent
                     .getIntegerField(CalculationOperationComponentFields.NUMBER_OF_OPERATIONS);
@@ -1020,7 +912,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
         return translationService.translate("costCalculation.costCalculationDetails.report.title", locale);
     }
 
-<<<<<<< HEAD
     private void addTableCellAsTwoColumnsTable(final PdfPTable table, final String label, final Object value) {
         pdfHelper.addTableCellAsTable(table, label, value, FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(),
                 2);
@@ -1032,41 +923,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
         String localeType = "";
         String costMode = "";
         String costCalculationMode = costCalculation.getStringField(CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE);
-=======
-    private PdfPTable addTableAboutPieceworkCost(final Entity costCalculation, final Locale locale) {
-        List<String> operationsTableHeader = new ArrayList<String>();
-        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
-
-        for (String translate : Arrays.asList("costCalculation.costCalculationDetails.report.columnHeader.level",
-                L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
-                "costCalculation.costCalculationDetails.report.columnHeader.pieces",
-                "costCalculation.costCalculationDetails.report.columnHeader.operationCost",
-                "costCalculation.costCalculationDetails.report.columnHeader.margin",
-                "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
-            operationsTableHeader.add(translationService.translate(translate, locale));
-        }
-
-        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.level", locale),
-                HeaderAlignment.LEFT);
-        alignments.put(
-                translationService.translate(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER, locale),
-                HeaderAlignment.LEFT);
-        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.pieces", locale),
-                HeaderAlignment.RIGHT);
-        alignments.put(
-                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.operationCost", locale),
-                HeaderAlignment.RIGHT);
-        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.margin", locale),
-                HeaderAlignment.RIGHT);
-        alignments.put(
-                translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.totalCosts", locale),
-                HeaderAlignment.RIGHT);
-
-        List<Entity> calculationOperationComponents = costCalculation.getTreeField(CALCULATION_OPERATION_COMPONENTS);
-
-        PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false,
-                alignments);
->>>>>>> master
 
         if ("01nominal".equals(costCalculationMode)) {
             localeType = "costCalculation.costCalculationDetails.report.columnHeader.nominalCost";

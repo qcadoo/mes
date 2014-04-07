@@ -40,11 +40,8 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
-<<<<<<< HEAD
-=======
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
->>>>>>> master
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;

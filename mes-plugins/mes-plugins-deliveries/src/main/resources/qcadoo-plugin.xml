@@ -151,17 +151,10 @@
 		</model:model-field>
 		
 		<model:model-hook plugin="basic" model="company">
-<<<<<<< HEAD
 			<model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
 				method="onDelete" />
 		</model:model-hook>
- 
-=======
-			<model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD" 
-				method="onDelete" />
-		</model:model-hook>
-		
->>>>>>> master
+
 		<menu:menu-category name="requirements" />
 
 		<menu:menu-item name="deliveries" category="requirements"
