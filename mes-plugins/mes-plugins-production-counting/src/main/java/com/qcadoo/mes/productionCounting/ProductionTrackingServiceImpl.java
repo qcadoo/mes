@@ -173,6 +173,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         view.getComponentByReference("pieceworkTab").setVisible(registerPiecework && recordingTypeEqualsForEach);
     }
 
+    @Override
     public ProductionTrackingState getTrackingState(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity productionRecordFormEntity = form.getEntity();
