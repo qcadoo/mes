@@ -1,5 +1,7 @@
 package com.qcadoo.mes.productionCounting.states;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,8 +10,10 @@ import com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChang
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeDescriber;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.messages.constants.MessageFields;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
@@ -20,6 +24,8 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductionTrackingStatesHelper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductionTrackingStatesHelper.class);
 
     @Autowired
     private StateChangeEntityBuilder stateChangeEntityBuilder;
@@ -70,6 +76,35 @@ public class ProductionTrackingStatesHelper {
         scb.add(SearchRestrictions.eq(ProductionTrackingStateChangeFields.STATUS, StateChangeStatus.PAUSED.getStringValue()));
 
         return scb.setMaxResults(1).uniqueResult();
+    }
+
+    public StateChangeStatus tryAccept(final Entity productionRecord) {
+        return tryAccept(productionRecord, false);
+    }
+
+    public StateChangeStatus tryAccept(final Entity productionRecord, final boolean logMessages) {
+        StateChangeContext context = stateChangeContextBuilder.build(stateChangeDescriber, productionRecord,
+                ProductionTrackingStateStringValues.ACCEPTED);
+        productionTrackingStateChangeAspect.changeState(context);
+        if (logMessages && context.getStatus() == StateChangeStatus.FAILURE) {
+            logMessages(context);
+        }
+        return context.getStatus();
+    }
+
+    private void logMessages(final StateChangeContext context) {
+        if (!LOGGER.isWarnEnabled()) {
+            return;
+        }
+        StringBuilder messages = new StringBuilder();
+        for (Entity message : context.getAllMessages()) {
+            messages.append('\t');
+            messages.append(message.getStringField(MessageFields.TYPE));
+            messages.append("");
+            messages.append(message.getStringField(MessageFields.TRANSLATION_KEY));
+            messages.append('\n');
+        }
+        LOGGER.warn(String.format("Production record acceptation failed. Messages: \n%s", messages.toString()));
     }
 
 }

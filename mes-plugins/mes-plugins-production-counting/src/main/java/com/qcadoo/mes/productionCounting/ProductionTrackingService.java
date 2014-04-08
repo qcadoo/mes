@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting;
 
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -55,6 +56,8 @@ public interface ProductionTrackingService {
     void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order);
 
     void setTimeAndPiecworkComponentsVisible(final String recordingType, final Entity order, final ViewDefinitionState view);
+
+    ProductionTrackingState getTrackingState(final ViewDefinitionState view);
 
     void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState);
 
