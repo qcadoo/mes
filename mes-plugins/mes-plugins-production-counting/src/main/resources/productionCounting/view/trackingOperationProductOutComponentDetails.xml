@@ -69,22 +69,14 @@
 						reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
 				</layoutElement>
 			</component>
-
 			<option type="header" value="true" />
 			<option type="expression" value="#product['name']" />
 		</component>
-
 	</component>
 
 	<hooks>
 		<beforeRender
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/resources/productionCounting/view/trackingOperationProductOutComponentDetails.xml
-			class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentDetailsHooks"
-			method="fillFieldsFromProduct" />
-=======
-			class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
-			method="onBeforeRender" />
->>>>>>> master:mes-plugins/mes-plugins-production-counting/src/main/resources/productionCounting/view/recordOperationProductInComponentDetails.xml
+                class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
+                method="onBeforeRender" />
 	</hooks>
-
 </view>

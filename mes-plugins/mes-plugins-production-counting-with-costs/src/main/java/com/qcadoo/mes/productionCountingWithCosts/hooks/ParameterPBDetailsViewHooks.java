@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
+import com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCountingWithCosts.constants.ParameterFieldsPCWC;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.view.api.ComponentState;

@@ -75,7 +75,10 @@ public class ProductionTrackingDetailsHooks {
             ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, ProductionTrackingFields.STAFF,
             ProductionTrackingFields.SHIFT, ProductionTrackingFields.WORKSTATION_TYPE, ProductionTrackingFields.DIVISION,
             ProductionTrackingFields.LABOR_TIME, ProductionTrackingFields.MACHINE_TIME,
-            ProductionTrackingFields.EXECUTED_OPERATION_CYCLES);
+            ProductionTrackingFields.EXECUTED_OPERATION_CYCLES, ProductionTrackingFields.TIME_RANGE_FROM,
+            ProductionTrackingFields.TIME_RANGE_TO, ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
+            ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, ProductionTrackingFields.SHIFT_START_DAY,
+            ProductionTrackingFields.STAFF_WORK_TIMES);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

@@ -65,6 +65,8 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public class ProductionBalancePdfService extends PdfDocumentService {
 
+    private static final String PCPBRCHB_LITERAL = "productionCounting.productionBalance.report.columnHeader.balance";
+
     private static final String L_N_A = "";
 
     private static final String L_TABS = "\t \t \t";

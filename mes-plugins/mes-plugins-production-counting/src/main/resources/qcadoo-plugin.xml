@@ -92,30 +92,6 @@
 		<model:model model="operationPieceworkComponent" resource="model/operationPieceworkComponent.xml" />
         <model:model model="staffWorkTime" resource="model/staffWorkTime.xml" />
 
-<<<<<<< HEAD
-=======
-		<menu:menu-item name="productionCounting" category="ordersTracking"
-			view="productionRecordsList" />
-		<menu:menu-item name="productionBalance" category="ordersTracking"
-			view="productionBalancesList" />
-		<menu:menu-item name="productionCountingsList"
-			category="ordersTracking" view="productionCountingsList" />
-
-		<view:view resource="view/productionRecordsList.xml" />
-		<view:view resource="view/productionRecordDetails.xml" />
-		<view:view resource="view/productionBalancesList.xml" />
-		<view:view resource="view/productionBalanceDetails.xml" />
-		<view:view resource="view/productionCountingsList.xml" />
-		<view:view resource="view/productionCountingDetails.xml" />
-		<view:view resource="view/recordOperationProductInComponentDetails.xml" />
-		<view:view resource="view/recordOperationProductOutComponentDetails.xml" />
-        <view:view resource="view/staffWorkTimeDetails.xml" />
-
-		<model:model-field plugin="states" model="message">
-			<model:belongsTo name="productionRecordStateChange"
-				plugin="productionCounting" model="productionRecordStateChange" />
-		</model:model-field>
->>>>>>> master
 		<model:model-field model="parameter" plugin="basic">
 			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
 				default="02cumulated" />
@@ -207,23 +183,7 @@
 			<model:hasMany name="productionTrackingReports" model="productionTrackingReport"
 				joinField="order" plugin="productionCounting" cascade="delete" />
 		</model:model-field>
-<<<<<<< HEAD
-		
-=======
-		<model:model-field model="staff" plugin="basic">
-			<model:hasMany name="productionRecords" model="productionRecord"
-				joinField="staff" plugin="productionCounting" />
-		</model:model-field>
-		<model:model-field model="workstationType" plugin="basic">
-			<model:hasMany name="productionRecords" model="productionRecord"
-				joinField="workstationType" plugin="productionCounting" />
-		</model:model-field>
-		<model:model-field model="division" plugin="basic">
-			<model:hasMany name="productionRecords" model="productionRecord"
-				joinField="division" plugin="productionCounting" />
-		</model:model-field>
-	
->>>>>>> master
+
 		<model:model-hook model="parameter" plugin="basic">
 			<model:onCreate
 				class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"

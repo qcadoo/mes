@@ -283,7 +283,6 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
             productsTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
                     locale), FontUtils.getDejavuRegular7Dark()));
-<<<<<<< HEAD
             String plannedComponentsCosts = numberService.format(productionBalance
                     .getDecimalField(ProductionBalanceFieldsPCWC.PLANNED_COMPONENTS_COSTS));
             productsTable.addCell(new Phrase((plannedComponentsCosts == null) ? L_NULL_OBJECT
@@ -296,24 +295,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                     .getDecimalField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS_BALANCE));
             productsTable.addCell(new Phrase((componentsCostsBalance == null) ? L_NULL_OBJECT
                     : (componentsCostsBalance + currency), FontUtils.getDejavuRegular7Dark()));
-=======
-            String plannedComponentsCosts = numberService.format((BigDecimal) productionBalance
-                    .getField(ProductionBalanceFieldsPCWC.PLANNED_COMPONENTS_COSTS));
-            productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            productsTable.addCell(new Phrase(
-                    (plannedComponentsCosts == null) ? NULL_OBJECT : (plannedComponentsCosts + currency), FontUtils
-                            .getDejavuRegular7Dark()));
-            String componentsCosts = numberService.format((BigDecimal) productionBalance
-                    .getField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS));
-            productsTable.addCell(new Phrase((componentsCosts == null) ? NULL_OBJECT : (componentsCosts + currency), FontUtils
-                    .getDejavuRegular7Dark()));
-            String componentsCostsBalance = numberService.format((BigDecimal) productionBalance
-                    .getField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS_BALANCE));
-            productsTable.addCell(new Phrase(
-                    (componentsCostsBalance == null) ? NULL_OBJECT : (componentsCostsBalance + currency), FontUtils
-                            .getDejavuRegular7Dark()));
             productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
->>>>>>> master
 
             document.add(productsTable);
         }
@@ -334,11 +316,6 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         tableHeader.add(translationService
                 .translate("productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column." + type
                         + L_COSTS, locale));
-<<<<<<< HEAD
-        tableHeader.add(translationService
-                .translate("productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column." + type
-                        + L_COSTS_BALANCE, locale));
-=======
         tableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column." + type + "CostsBalance",
                 locale));
@@ -358,7 +335,6 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         alignments.put(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.workCostsTab.operationsCost.column." + type + "CostsBalance",
                 locale), HeaderAlignment.RIGHT);
->>>>>>> master
 
         boolean isPiecework = "cycles".equals(type);
 
@@ -387,13 +363,9 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                         .getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NAME),
                         FontUtils.getDejavuRegular7Dark()));
 
-<<<<<<< HEAD
-                String plannedCost = numberService.format(operationComponent.getField(L_PLANNED
-=======
                 costsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
                 String plannedCost = numberService.format(operationComponent.getField("planned"
->>>>>>> master
                         + upperCaseFirstLetter(type, locale) + L_COSTS));
                 costsTable.addCell(new Phrase((plannedCost == null) ? L_NULL_OBJECT : (plannedCost + currency), FontUtils
                         .getDejavuRegular7Dark()));

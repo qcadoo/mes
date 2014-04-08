@@ -1,7 +1,5 @@
 package com.qcadoo.mes.productionCounting.listeners;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.NUMBER;
-
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -24,6 +22,8 @@ public class RecordOperationProductComponentListeners {
 
     private static final String L_NAME = "name";
 
+    private static final String L_NUMBER = "number";
+
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity componentEntity = form.getPersistedEntityWithIncludedFormValues();
@@ -45,7 +45,7 @@ public class RecordOperationProductComponentListeners {
     }
 
     public void fillFieldFromProduct(final ViewDefinitionState view, final Entity productEntity) {
-        view.getComponentByReference(NUMBER).setFieldValue(productEntity.getField(NUMBER));
+        view.getComponentByReference(L_NUMBER).setFieldValue(productEntity.getField(L_NUMBER));
         view.getComponentByReference(L_NAME).setFieldValue(productEntity.getField(L_NAME));
     }
 

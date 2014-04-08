@@ -24,21 +24,12 @@
     ***************************************************************************
 
 -->
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/resources/productionCounting/model/trackingOperationProductOutComponent.xml
 <model name="trackingOperationProductOutComponent" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="productionTracking" model="productionTracking" />
-		<belongsTo name="product" model="product" plugin="basic" />
-=======
-<model name="recordOperationProductInComponent"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="productionRecord" model="productionRecord" required="true" />
-		<belongsTo name="product" model="product" plugin="basic" required="true" />
->>>>>>> master:mes-plugins/mes-plugins-production-counting/src/main/resources/productionCounting/model/recordOperationProductInComponent.xml
+		<belongsTo name="productionTracking" model="productionTracking"  required="true"/>
+		<belongsTo name="product" model="product" plugin="basic"  required="true"/>
 		<decimal name="plannedQuantity" persistent="false">
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />

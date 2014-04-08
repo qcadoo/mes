@@ -25,12 +25,8 @@ package com.qcadoo.mes.productionCounting.constants;
 
 public final class TrackingOperationProductInComponentFields {
 
-<<<<<<< HEAD:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/constants/TrackingOperationProductInComponentFields.java
     private TrackingOperationProductInComponentFields() {
 
-=======
-    private RecordOperationProductInComponentFields() {
->>>>>>> master:mes-plugins/mes-plugins-production-counting/src/main/java/com/qcadoo/mes/productionCounting/internal/constants/RecordOperationProductInComponentFields.java
     }
 
     public static final String PRODUCTION_TRACKING = "productionTracking";

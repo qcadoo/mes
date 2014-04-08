@@ -54,4 +54,8 @@ public interface ProductionTrackingService {
      */
     void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order);
 
+    void setTimeAndPiecworkComponentsVisible(final String recordingType, final Entity order, final ViewDefinitionState view);
+
+    void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState);
+
 }

@@ -1,4 +1,4 @@
-package com.qcadoo.mes.productionCounting.internal.constants;
+package com.qcadoo.mes.productionCounting.constants;
 
 public final class StaffWorkTimeFields {
 
