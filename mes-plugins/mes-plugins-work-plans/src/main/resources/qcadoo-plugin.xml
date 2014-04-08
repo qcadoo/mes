@@ -218,8 +218,8 @@
 		</model:model-field>
 		
 		<model:model-hook plugin="workPlans" model="workPlan">
-			<model:onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanModelHooks"
-				method="copyColumnForOrders" />
+			<model:onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanHooks"
+				method="onCreate" />
 		</model:model-hook>
 		
 		<model:model-hook plugin="technologies" model="operation">
