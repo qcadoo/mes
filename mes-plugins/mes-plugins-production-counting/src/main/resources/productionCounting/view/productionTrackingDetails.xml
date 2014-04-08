@@ -297,7 +297,7 @@
 							<option type="fieldCode" value="number" />
 
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+								class="com.qcadoo.mes.productionCounting.ProductionTrackingServiceImpl"
 								method="fillShiftAndDivisionField" />
 						</component>
 						<component type="lookup" name="workstationType"
@@ -312,7 +312,7 @@
 							<option type="fieldCode" value="number" />
 
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+								class="com.qcadoo.mes.productionCounting.ProductionTrackingServiceImpl"
 								method="fillDivisionField" />
 						</component>
 						<component type="lookup" name="division" reference="division"
