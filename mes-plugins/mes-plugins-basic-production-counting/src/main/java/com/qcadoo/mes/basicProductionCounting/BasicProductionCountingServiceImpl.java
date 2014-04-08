@@ -36,14 +36,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
-import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
-<<<<<<< HEAD
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.basicProductionCounting.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
@@ -52,16 +45,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-=======
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.model.api.BigDecimalUtils;
->>>>>>> master
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -381,7 +365,6 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     @Override
-<<<<<<< HEAD
     public void associateProductionCountingQuantitiesWithBasicProductionCountings(final Entity order) {
         final List<Entity> basicProductionCountings = order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS).find()
                 .list().getEntities();
@@ -428,8 +411,6 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     @Override
-=======
->>>>>>> master
     public BigDecimal getProducedQuantityFromBasicProductionCountings(final Entity order) {
         BigDecimal doneQuantity = BigDecimal.ZERO;
 
@@ -451,7 +432,6 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         return numberService.setScale(doneQuantity);
     }
 
-<<<<<<< HEAD
     @Override
     public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(productName);
@@ -504,6 +484,4 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         return rowStyles;
     }
 
-=======
->>>>>>> master
 }

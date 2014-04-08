@@ -24,14 +24,10 @@
 package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
-<<<<<<< HEAD
 import java.util.List;
 import java.util.Set;
 
 import com.qcadoo.model.api.DataDefinition;
-=======
-
->>>>>>> master
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -98,7 +94,6 @@ public interface BasicProductionCountingService {
     void createBasicProductionCountings(final Entity order);
 
     /**
-<<<<<<< HEAD
      * Creates basic production counting
      * 
      * @param order
@@ -153,8 +148,6 @@ public interface BasicProductionCountingService {
     DataDefinition getProductionCountingQuantityDD();
 
     /**
-=======
->>>>>>> master
      * Gets produced quantity from basic production countings
      * 
      * @param order
@@ -164,7 +157,6 @@ public interface BasicProductionCountingService {
      */
     BigDecimal getProducedQuantityFromBasicProductionCountings(final Entity order);
 
-<<<<<<< HEAD
     /**
      * Fills unit fields
      * 
@@ -197,6 +189,4 @@ public interface BasicProductionCountingService {
      */
     Set<String> fillRowStylesDependsOfTypeOfMaterial(final Entity productionCountingQuantity);
 
-=======
->>>>>>> master
 }
