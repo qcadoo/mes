@@ -27,9 +27,11 @@ import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.QUAN
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.WORKSTATION_TYPE_COMPONENTS;
 import static com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields.QUANTITY;
 import static com.qcadoo.mes.technologies.constants.OperationFields.WORKSTATION_TYPE;
-import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
 import static com.qcadoo.model.api.search.SearchOrders.asc;
-import static com.qcadoo.model.api.search.SearchProjections.*;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import static com.qcadoo.model.api.search.SearchProjections.sum;
 import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 
@@ -41,6 +43,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -57,7 +60,8 @@ public class ProductionLinesServiceImpl implements ProductionLinesService {
     public Integer getWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
         List<Entity> workstationTypeComponents = productionLine.getHasManyField(WORKSTATION_TYPE_COMPONENTS);
 
-        Entity desiredWorkstation = operationComponent.getBelongsToField(OPERATION).getBelongsToField(WORKSTATION_TYPE);
+        Entity desiredWorkstation = operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
+                .getBelongsToField(WORKSTATION_TYPE);
 
         if (desiredWorkstation != null) {
             for (Entity workstationTypeComponent : workstationTypeComponents) {

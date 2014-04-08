@@ -45,7 +45,6 @@ import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -81,7 +80,8 @@ public class OperationalTasksListOTFOHooksTest {
     private DataDefinition technologyOperationComponentDD, operationProductInComponentDD, operationProductOutComponentDD;
 
     @Mock
-    private Entity productIn, productOut, operationProductInComponent, operationProductOutComponent, technologyOperationComponent, operationalTask;
+    private Entity productIn, productOut, operationProductInComponent, operationProductOutComponent,
+            technologyOperationComponent, operationalTask;
 
     @Mock
     private SearchCriteriaBuilder searchCriteriaBuilder;
@@ -108,10 +108,7 @@ public class OperationalTasksListOTFOHooksTest {
                 dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                         TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)).willReturn(technologyOperationComponentDD);
         given(technologyOperationComponentDD.find()).willReturn(searchCriteriaBuilder);
-        given(
-                searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                        TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent)))
-                .willReturn(searchCriteriaBuilder);
+
         given(searchCriteriaBuilder.list()).willReturn(technologyOperationComponentsResult);
 
         given(productInLookup.getEntity()).willReturn(productIn);
