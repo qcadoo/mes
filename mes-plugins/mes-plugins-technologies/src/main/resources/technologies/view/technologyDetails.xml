@@ -80,9 +80,6 @@
 						
 					]]>
 				</script>
-				<listener event="changeState"
-					class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient"
-					method="changeState" />
 				<script>
 					<![CDATA[
 						this.changeState = function(eventPerformer, ribbonItemName) {
@@ -260,11 +257,9 @@
 				<option type="header" value="true" />
 				<option type="expression"
 					value="#name + ' - ' + #number + ' - ' + '@technologies.technology.state.value.' + #state" />
-
 				<listener event="changeState"
 					class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient"
 					method="changeState" />
-
 				<listener event="printTechnologyDetailsReport"
 					class="com.qcadoo.mes.technologies.print.TechnologiesReportService"
 					method="printTechnologyDetailsReport" />
