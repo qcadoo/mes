@@ -49,7 +49,7 @@
 					var entityExists = false;
 					
 					QCDTrack.track(
-							generate,
+							generateButton,
 							"onClick",
 							 "generateWorkPlan" 
 					);
