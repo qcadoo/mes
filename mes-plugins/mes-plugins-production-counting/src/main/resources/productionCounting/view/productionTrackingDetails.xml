@@ -117,7 +117,7 @@
 								method="clearFields" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-								method="enableOrDisableFields" />
+								method="enabledOrDisableFields" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
 								method="checkJustOne" />
