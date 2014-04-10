@@ -23,7 +23,8 @@
  */
 package com.qcadoo.mes.basicProductionCounting.validators;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
@@ -58,7 +60,7 @@ public class ProductionCountingQuantityValidators {
             final Object newValue) {
         // I don't check if entity is updated or created (check null on id) because we should disallow also creating
         // of new ones if editing production progresses for accepted orders is locked.
-        if (ObjectUtils.equals(oldValue, newValue)) {
+        if (BigDecimalUtils.valueEquals((BigDecimal) oldValue, (BigDecimal) newValue)) {
             return true;
         }
         if (progressModifyLockHelper.isLocked(productionCountingQuantity

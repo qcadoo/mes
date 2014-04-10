@@ -33,6 +33,7 @@ import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -76,7 +77,7 @@ public class OrderHooksBPC {
             return true;
         }
 
-        return !existingOrderPlannedQuantity.equals(plannedQuantity);
+        return !BigDecimalUtils.valueEquals(existingOrderPlannedQuantity, plannedQuantity);
     }
 
     private Entity getExistingOrder(final Entity order) {
