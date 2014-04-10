@@ -171,4 +171,11 @@ public class ProductionTrackingDetailsListeners {
         productsIn.setEntities(new ArrayList<Entity>());
     }
 
+    public void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        productionTrackingService.fillShiftAndDivisionField(view);
+    }
+
+    public void fillDivisionField(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        productionTrackingService.fillDivisionField(view);
+    }
 }

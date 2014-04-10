@@ -10,7 +10,7 @@
 			<group name="generate">
 				<bigButton name="generate" icon="generateIcon24.png"
 				           action="#{form}.fireEvent(generateWorkPlan);" state="enabled">
-				</bigButton>>
+				</bigButton>
 			</group>
 			<group name="export">
 				<bigButton name="printWorkPlan" icon="pdfIcon24.png"
