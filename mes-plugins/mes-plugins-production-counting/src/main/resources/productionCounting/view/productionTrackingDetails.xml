@@ -12,8 +12,8 @@
 	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
 	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view name="productionTrackingDetails" modelName="productionTracking"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
 	<component type="window" name="window" reference="window">
 
@@ -22,23 +22,23 @@
 
 			<group name="status">
 				<smallButton name="acceptTracking" icon="startIcon16.png"
-					state="disabled" action="#{form}.changeTrackingState(acceptTracking)" />
+				             state="disabled" action="#{form}.changeTrackingState(acceptTracking)" />
 				<smallButton name="cancelTracking" icon="deleteIcon16.png"
-					state="disabled" action="#{form}.changeTrackingState(cancelTracking)" />
+				             state="disabled" action="#{form}.changeTrackingState(cancelTracking)" />
 			</group>
 			<group name="productsQuantities">
 				<bigButton name="copyPlannedQuantityToUsedQuantity" icon="copyIcon24.png"
-					state="disabled" action="#{form}.fireEvent(copyPlannedQuantityToUsedQuantity);" />
+				           state="disabled" action="#{form}.fireEvent(copyPlannedQuantityToUsedQuantity);" />
 			</group>
 			<group name="workTime">
 				<bigButton name="calcTotalLaborTime" icon="calculateTimeIcon24.png"
-					action="#{form}.fireEvent(calcTotalLaborTime);" />
+				           action="#{form}.fireEvent(calcTotalLaborTime);" />
 			</group>
 		</ribbon>
 
 		<windowTab name="mainTab">
 			<component type="form" name="productionTrackingDetails"
-				reference="form">
+			           reference="form">
 
 				<script>
 					<![CDATA[
@@ -84,20 +84,20 @@
 				</script>
 
 				<component type="gridLayout" name="mainGridLayout"
-					columns="3" rows="1">
+				           columns="3" rows="1">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="lastTracking" field="lastTracking"
-							reference="lastTracking" />
+						           reference="lastTracking" />
 						<component type="input" name="number" field="number"
-							reference="number" defaultEnabled="false">
+						           reference="number" defaultEnabled="false">
 							<option type="alignment" value="right" />
 						</component>
 						<component type="lookup" name="order" field="order"
-							reference="order">
+						           reference="order">
 							<option type="column" name="name" fields="name" link="true" />
 							<option type="column" name="state" fields="state" />
 							<option type="column" name="typeOfProductionRecording"
-								fields="typeOfProductionRecording" />
+							        fields="typeOfProductionRecording" />
 
 							<option type="required" value="true" />
 
@@ -107,39 +107,39 @@
 							<option type="order" column="number" direction="desc" />
 
 							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 							<!-- TODO replace these listeners with one general event-method (for 
 								example "onSelectedOrderChange"), like for hooks types -->
 
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-								method="clearFields" />
+							          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+							          method="clearFields" />
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-								method="enabledOrDisableFields" />
+							          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+							          method="enableOrDisableFields" />
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-								method="checkJustOne" />
+							          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+							          method="checkJustOne" />
 						</component>
 						<component type="lookup" name="productionLine" field="#{order}.productionLine"
-							reference="productionLine" defaultEnabled="never">
+						           reference="productionLine" defaultEnabled="never">
 
 							<option type="column" name="name" fields="name" link="true"
-								width="300" />
+							        width="300" />
 
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
 
 							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 						</component>
 						<component type="lookup" name="technologyOperationComponent"
-							field="technologyOperationComponent" reference="technologyOperationComponent"
-							defaultEnabled="false">
+						           field="technologyOperationComponent" reference="technologyOperationComponent"
+						           defaultEnabled="false">
 							<option type="column" name="name" fields="operation"
-								expression="#operation['name']" link="true" />
+							        expression="#operation['name']" link="true" />
 
 							<option type="searchable" value="name,nodeNumber" />
 							<option type="orderable" value="name,nodeNumber" />
@@ -148,18 +148,18 @@
 							<option type="fieldCode" value="nodeNumber" />
 
 							<criteriaModifier
-								class="com.qcadoo.mes.productionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersPC"
-								method="restrictTechnologyOperationComponentsToOrderTechnology" />
+									class="com.qcadoo.mes.productionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersPC"
+									method="restrictTechnologyOperationComponentsToOrderTechnology" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="borderLayout" name="shiftBox"
-							reference="shiftBox">
+						           reference="shiftBox">
 							<component type="gridLayout" name="shiftBoxGridLayout"
-								columns="1" rows="2" reference="shiftBoxGridLayout">
+							           columns="1" rows="2" reference="shiftBoxGridLayout">
 								<layoutElement column="1" row="1">
 									<component type="lookup" name="shift" reference="shift"
-										field="shift">
+									           field="shift">
 										<option type="searchable" value="name" />
 										<option type="orderable" value="name" />
 										<option type="expression" value="#name" />
@@ -168,8 +168,8 @@
 								</layoutElement>
 								<layoutElement column="1" row="2">
 									<component type="calendar" name="shiftStartDay"
-										field="#{form}.shiftStartDay" reference="shiftStartDay"
-										defaultEnabled="true">
+									           field="#{form}.shiftStartDay" reference="shiftStartDay"
+									           defaultEnabled="true">
 										<option type="withTimePicker" value="false" />
 									</component>
 								</layoutElement>
@@ -178,19 +178,19 @@
 							<option type="label" value="shiftBoxLabel" />
 						</component>
 						<component type="borderLayout" name="timeRangeBox"
-							reference="timeRangeBox">
+						           reference="timeRangeBox">
 							<component type="gridLayout" name="timeRangeBoxGridLayout"
-								columns="1" rows="2" reference="timeRangeBoxGridLayout">
+							           columns="1" rows="2" reference="timeRangeBoxGridLayout">
 								<layoutElement column="1" row="1">
 									<component type="calendar" name="timeRangeFrom"
-										field="timeRangeFrom" reference="timeRangeFrom"
-										defaultEnabled="true">
+									           field="timeRangeFrom" reference="timeRangeFrom"
+									           defaultEnabled="true">
 										<option type="withTimePicker" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
 									<component type="calendar" name="timeRangeTo" field="timeRangeTo"
-										reference="timeRangeTo" defaultEnabled="true">
+									           reference="timeRangeTo" defaultEnabled="true">
 										<option type="withTimePicker" value="true" />
 									</component>
 								</layoutElement>
@@ -201,9 +201,9 @@
 					</layoutElement>
 					<layoutElement column="3" row="1">
 						<component type="select" name="state" field="state"
-							reference="state" defaultEnabled="never">
+						           reference="state" defaultEnabled="never">
 							<script>
-                                     <![CDATA[
+								<![CDATA[
 									this.addOnChangeListener({
 										onSetValue: function(newValue) {
 											if (!newValue || !newValue.content) {
@@ -285,7 +285,7 @@
 							</script>
 						</component>
 						<component type="lookup" name="staff" reference="staff"
-							field="staff">
+						           field="staff">
 							<option type="column" name="name" fields="name" />
 							<option type="column" name="surname" fields="surname" />
 
@@ -293,44 +293,44 @@
 							<option type="orderable" value="name,number" />
 
 							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name + '&lt;/b&gt; - ' + #surname" />
+							        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name + '&lt;/b&gt; - ' + #surname" />
 							<option type="fieldCode" value="number" />
 
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-								method="fillShiftAndDivisionField" />
+							          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+							          method="fillShiftAndDivisionField" />
 						</component>
 						<component type="lookup" name="workstationType"
-							reference="workstationType" field="workstationType">
+						           reference="workstationType" field="workstationType">
 							<option type="column" name="name" fields="name" link="true" />
 
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
 
 							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-								method="fillDivisionField" />
+							          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+							          method="fillDivisionField" />
 						</component>
 						<component type="lookup" name="division" reference="division"
-							field="division">
+						           field="division">
 							<option type="column" name="name" fields="name" />
 
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
 
 							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 						</component>
 						<component type="checkbox" name="isDisabled" reference="isDisabled"
-							defaultVisible="false" hasLabel="false" />
+						           defaultVisible="false" hasLabel="false" />
 						<component type="hidden" name="isExternalSynchronized"
-							reference="isExternalSynchronized" defaultVisible="false"
-							field="isExternalSynchronized" />
+						           reference="isExternalSynchronized" defaultVisible="false"
+						           field="isExternalSynchronized" />
 					</layoutElement>
 
 				</component>
@@ -338,39 +338,40 @@
 				<option type="expression" value="#name" />
 
 				<listener event="changeTrackingState"
-					class="com.qcadoo.mes.productionCounting.states.client.ProductionTrackingStateChangeViewClient"
-					method="changeState" />
+				          class="com.qcadoo.mes.productionCounting.states.client.ProductionTrackingStateChangeViewClient"
+				          method="changeState" />
 
 				<listener event="copyPlannedQuantityToUsedQuantity"
-					class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-					method="copyPlannedQuantityToUsedQuantity" />
+				          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+				          method="copyPlannedQuantityToUsedQuantity" />
 
 
 				<listener event="calcTotalLaborTime"
-					class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-					method="calcTotalLaborTime" />
+				          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+				          method="calcTotalLaborTime" />
 
 			</component>
 		</windowTab>
 
 		<windowTab name="productsTab">
 			<component type="gridLayout" name="productsGridLayout"
-				columns="1" rows="2">
+			           columns="1" rows="2">
 				<layoutElement column="1" row="1">
 					<component type="grid" name="trackingOperationProductInComponents"
-						reference="trackingOperationProductInComponents" source="#{form}.trackingOperationProductInComponents"
-						defaultEnabled="false">
+					           reference="trackingOperationProductInComponents"
+					           source="#{form}.trackingOperationProductInComponents"
+					           defaultEnabled="false">
 						<option type="column" name="number" fields="product"
-							expression="#product['number']" link="true" width="100" />
+						        expression="#product['number']" link="true" width="100" />
 						<option type="column" name="name" fields="product"
-							expression="#product['name']" link="true" width="200" />
+						        expression="#product['name']" link="true" width="200" />
 						<option type="column" name="usedQuantity" fields="usedQuantity"
-							width="100" />
+						        width="100" />
 						<option type="column" name="unit" fields="product"
-							expression="#product['unit']" link="false" width="70" />
+						        expression="#product['unit']" link="false" width="70" />
 
 						<option type="correspondingView"
-							value="productionCounting/trackingOperationProductInComponentDetails" />
+						        value="productionCounting/trackingOperationProductInComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 
@@ -389,19 +390,20 @@
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="grid" name="trackingOperationProductOutComponents"
-						reference="trackingOperationProductOutComponents" source="#{form}.trackingOperationProductOutComponents"
-						defaultEnabled="false">
+					           reference="trackingOperationProductOutComponents"
+					           source="#{form}.trackingOperationProductOutComponents"
+					           defaultEnabled="false">
 						<option type="column" name="number" fields="product"
-							expression="#product['number']" link="true" width="100" />
+						        expression="#product['number']" link="true" width="100" />
 						<option type="column" name="name" fields="product"
-							expression="#product['name']" link="true" width="200" />
+						        expression="#product['name']" link="true" width="200" />
 						<option type="column" name="usedQuantity" fields="usedQuantity"
-							width="100" />
+						        width="100" />
 						<option type="column" name="unit" fields="product"
-							expression="#product['unit']" link="false" width="70" />
+						        expression="#product['unit']" link="false" width="70" />
 
 						<option type="correspondingView"
-							value="productionCounting/trackingOperationProductOutComponentDetails" />
+						        value="productionCounting/trackingOperationProductOutComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 
@@ -424,23 +426,23 @@
 
 		<windowTab name="timeTab" reference="timeTab">
 			<component type="gridLayout" name="timeGridLayout" columns="2"
-				rows="1">
+			           rows="1">
 				<layoutElement column="1" row="1">
 
 					<component type="time" name="laborTime" reference="laborTime"
-						field="#{form}.laborTime" hasDescription="true">
+					           field="#{form}.laborTime" hasDescription="true">
 						<option type="noHours" value="5" />
 					</component>
 					<component type="grid" name="staffWorkTimes" reference="staffWorkTimes"
-						source="#{form}.staffWorkTimes">
+					           source="#{form}.staffWorkTimes">
 						<option type="column" name="workerNumber" fields="worker"
-							expression="#worker['number']" link="true" />
+						        expression="#worker['number']" link="true" />
 						<option type="column" name="workerName" fields="worker"
-							expression="#worker['name']" link="true" />
+						        expression="#worker['name']" link="true" />
 						<option type="column" name="workerSurname" fields="worker"
-							expression="#worker['surname']" link="true" />
+						        expression="#worker['surname']" link="true" />
 						<option type="column" name="laborTime" fields="laborTime"
-							expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTime)" />
+						        expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTime)" />
 
 						<option type="order" column="workerNumber" direction="asc" />
 
@@ -456,7 +458,7 @@
 				</layoutElement>
 				<layoutElement column="2" row="1">
 					<component type="time" name="machineTime" reference="machineTime"
-						field="#{form}.machineTime" hasDescription="true">
+					           field="#{form}.machineTime" hasDescription="true">
 						<option type="noHours" value="5" />
 					</component>
 				</layoutElement>
@@ -464,10 +466,10 @@
 		</windowTab>
 		<windowTab name="pieceworkTab" reference="pieceworkTab">
 			<component type="gridLayout" name="pieceworkGridLayout"
-				columns="3" rows="1">
+			           columns="3" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="input" name="executedOperationCycles"
-						reference="executedOperationCycles" field="#{form}.executedOperationCycles">
+					           reference="executedOperationCycles" field="#{form}.executedOperationCycles">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
@@ -476,10 +478,10 @@
 
 		<windowTab name="historyTab">
 			<component type="gridLayout" name="loggingsGridLayout"
-				columns="2" rows="1">
+			           columns="2" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="grid" name="stateChanges" reference="stateChanges"
-						source="#{form}.stateChanges">
+					           source="#{form}.stateChanges">
 						<option type="column" name="dateAndTime" fields="dateAndTime" />
 						<option type="column" name="currentState" fields="targetState" />
 						<option type="column" name="worker" fields="worker" />
@@ -490,8 +492,8 @@
 						<option type="orderable" value="dateAndTime,targetState,worker" />
 
 						<criteriaModifier
-							class="com.qcadoo.mes.states.criteriaModifier.CommonCriteriaModifiers"
-							method="filterHistory" />
+								class="com.qcadoo.mes.states.criteriaModifier.CommonCriteriaModifiers"
+								method="filterHistory" />
 					</component>
 				</layoutElement>
 			</component>
@@ -501,8 +503,8 @@
 
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
-			method="onBeforeRender" />
+				class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingDetailsHooks"
+				method="onBeforeRender" />
 	</hooks>
 
 </view>

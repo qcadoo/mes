@@ -23,17 +23,20 @@
  */
 package com.qcadoo.mes.qualityControls;
 
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.idNe;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.qualityControls.constants.QualityControlFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
 @Service
@@ -42,31 +45,30 @@ public class QualityControlForNumberService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void checkUniqueNumber(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean checkUniqueNumber(final DataDefinition dataDefinition, final Entity entity) {
+        String qualityControlType = entity.getStringField(QualityControlFields.QUALITY_CONTROL_TYPE);
+        String number = entity.getStringField(QualityControlFields.NUMBER);
 
-        String qualityControlType = entity.getStringField("qualityControlType");
-        String number = entity.getStringField("number");
-        Long id = entity.getId();
+        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinition.find();
+        searchCriteriaBuilder.add(eq(QualityControlFields.NUMBER, number));
+        searchCriteriaBuilder.add(eq(QualityControlFields.QUALITY_CONTROL_TYPE, qualityControlType));
 
-        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinition.find().add(SearchRestrictions.eq("number", number))
-                .add(SearchRestrictions.eq("qualityControlType", qualityControlType));
-        if (id != null) {
-            searchCriteriaBuilder = searchCriteriaBuilder.add(SearchRestrictions.idNe(id));
+        if (entity.getId() != null) {
+            searchCriteriaBuilder.add(idNe(entity.getId()));
         }
 
-        if (searchCriteriaBuilder != null) {
-            SearchResult searchResult = searchCriteriaBuilder.list();
-            if (searchResult != null && searchResult.getTotalNumberOfEntities() > 0) {
-                entity.addError(dataDefinition.getField("number"), "qualityControls.quality.control.validate.global.error.number");
-            }
+        if (searchCriteriaBuilder.list().getTotalNumberOfEntities() > 0) {
+            entity.addError(dataDefinition.getField("number"), "qualityControls.quality.control.validate.global.error.number");
+            return false;
         }
+
+        return true;
     }
 
     public String generateNumber(final String plugin, final String model, final int digitsNumber, final String qualityControlType) {
         long longValue = 0;
         SearchResult searchResult = dataDefinitionService.get(plugin, model).find()
-                .add(SearchRestrictions.eq("qualityControlType", qualityControlType)).addOrder(SearchOrders.desc("id"))
-                .setMaxResults(1).list();
+                .add(eq("qualityControlType", qualityControlType)).addOrder(SearchOrders.desc("id")).setMaxResults(1).list();
         if (searchResult == null || searchResult.getEntities().isEmpty()) {
             longValue++;
         } else {

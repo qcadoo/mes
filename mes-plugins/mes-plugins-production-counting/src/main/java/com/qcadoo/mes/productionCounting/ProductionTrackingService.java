@@ -30,22 +30,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 public interface ProductionTrackingService {
 
     /**
-     * Fills shift and division field
-     * 
-     * @param view
-     *            view
-     */
-    void fillShiftAndDivisionField(final ViewDefinitionState view);
-
-    /**
-     * Fills division field
-     * 
-     * @param view
-     *            view
-     */
-    void fillDivisionField(final ViewDefinitionState view);
-
-    /**
      * Sets time and piecework components visible
      * 
      * @param view

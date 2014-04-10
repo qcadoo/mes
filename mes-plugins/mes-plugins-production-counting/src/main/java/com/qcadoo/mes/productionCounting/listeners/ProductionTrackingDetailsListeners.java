@@ -125,7 +125,7 @@ public class ProductionTrackingDetailsListeners {
         }
     }
 
-    public void enabledOrDisableFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void enableOrDisableFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity order = getOrderFromLookup(view);
         if (order == null) {
             if (LOGGER.isDebugEnabled()) {
@@ -171,11 +171,55 @@ public class ProductionTrackingDetailsListeners {
         productsIn.setEntities(new ArrayList<Entity>());
     }
 
-    public void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        productionTrackingService.fillShiftAndDivisionField(view);
+    public void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.STAFF);
+        LookupComponent shiftLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.SHIFT);
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.DIVISION);
+
+        Entity staff = staffLookup.getEntity();
+
+        if (staff == null) {
+            shiftLookup.setFieldValue(null);
+
+            return;
+        }
+
+        Entity shift = staff.getBelongsToField(ProductionTrackingFields.SHIFT);
+
+        if (shift == null) {
+            shiftLookup.setFieldValue(null);
+        } else {
+            shiftLookup.setFieldValue(shift.getId());
+        }
+
+        Entity division = staff.getBelongsToField(ProductionTrackingFields.DIVISION);
+
+        if (division == null) {
+            divisionLookup.setFieldValue(null);
+        } else {
+            divisionLookup.setFieldValue(division.getId());
+        }
     }
 
-    public void fillDivisionField(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        productionTrackingService.fillDivisionField(view);
+    public void fillDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        LookupComponent workstationTypeLookup = (LookupComponent) view
+                .getComponentByReference(ProductionTrackingFields.WORKSTATION_TYPE);
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.DIVISION);
+
+        Entity workstationType = workstationTypeLookup.getEntity();
+
+        if (workstationType == null) {
+            divisionLookup.setFieldValue(null);
+
+            return;
+        }
+
+        Entity division = workstationType.getBelongsToField(ProductionTrackingFields.DIVISION);
+
+        if (division == null) {
+            divisionLookup.setFieldValue(null);
+        } else {
+            divisionLookup.setFieldValue(division.getId());
+        }
     }
 }
