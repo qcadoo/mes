@@ -25,8 +25,8 @@
 
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="trackingOperationProductInComponentDetails" modelName="trackingOperationProductInComponent">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="trackingOperationProductInComponentDetails" modelName="trackingOperationProductInComponent">
 
 	<component type="window" name="window">
 
@@ -37,35 +37,35 @@
 
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
-				columns="6" rows="4" hasBorders="false">
+			           columns="6" rows="4" hasBorders="false">
 				<layoutElement column="1" row="1" width="5">
 					<component type="input" name="number" reference="number"
-						defaultEnabled="false">
+					           defaultEnabled="false">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="5">
 					<component type="input" name="name" reference="name"
-						defaultEnabled="false" />
+					           defaultEnabled="false" />
 				</layoutElement>
 				<layoutElement column="1" row="3" width="5">
 					<component type="input" name="plannedQuantity" field="plannedQuantity"
-						reference="plannedQuantity" defaultEnabled="false">
+					           reference="plannedQuantity" defaultEnabled="false">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
 				<layoutElement column="6" row="3">
 					<component type="input" name="plannedQuantityUNIT"
-						reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
+					           reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
 				</layoutElement>
 				<layoutElement column="1" row="4" width="5">
-					<component type="input" name="usedQuantity" field="usedQuantity">
+					<component type="input" name="usedQuantity" reference="usedQuantity" field="usedQuantity">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
 				<layoutElement column="6" row="4">
 					<component type="input" name="usedQuantityUNIT"
-						reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
+					           reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
 				</layoutElement>
 			</component>
 
@@ -76,9 +76,9 @@
 	</component>
 
 	<hooks>
-        <beforeRender
-                class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
-                method="onBeforeRender" />
+		<beforeRender
+				class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
+				method="onBeforeRender" />
 	</hooks>
 
 </view>

@@ -133,9 +133,7 @@ public class ProductionTrackingDetailsListeners {
             }
             return;
         }
-
-        String recordingType = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-        productionTrackingService.setTimeAndPiecworkComponentsVisible(recordingType, order, view);
+        productionTrackingService.setTimeAndPieceworkComponentsVisible(view, order);
     }
 
     private Entity getOrderFromLookup(final ViewDefinitionState view) {

@@ -47,13 +47,21 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class ProductionTrackingServiceImpl implements ProductionTrackingService {
 
-    private static final String L_BORDER_LAYOUT_TIME = "borderLayoutTime";
-
-    private static final String L_BORDER_LAYOUT_PIECEWORK = "borderLayoutPiecework";
-
     private static final String L_DONE_QUANTITY = "doneQuantity";
 
     private static final String L_AMOUNT_OF_PRODUCT_PRODUCED = "amountOfProductProduced";
+
+    private static final String L_TIME_TAB = "timeTab";
+
+    private static final String L_PIECEWORK_TAB = "pieceworkTab";
+
+    private static final String L_WORK_TIME_RIBBON_GROUP = "workTime";
+
+    private static final String L_CALC_LABOR_TOTAL_TIME_RIBBON_BUTTON = "calcTotalLaborTime";
+
+    private static final String L_WINDOW = "window";
+
+    private static final String L_FORM = "form";
 
     @Autowired
     private ProductionCountingService productionCountingService;
@@ -63,30 +71,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Override
     public void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order) {
-        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
-
-        ComponentState borderLayoutTime = view.getComponentByReference(L_BORDER_LAYOUT_TIME);
-        ComponentState borderLayoutPiecework = view.getComponentByReference(L_BORDER_LAYOUT_PIECEWORK);
-
-        String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-
-        boolean registerProductionTime = order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME);
-        boolean registerPiecework = order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK);
-
-        boolean isBasic = productionCountingService.isTypeOfProductionRecordingBasic(typeOfProductionRecording);
-        boolean isForEach = productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording);
-
-        technologyOperationComponentLookup.setEnabled(isForEach);
-        technologyOperationComponentLookup.setRequired(isForEach);
-        technologyOperationComponentLookup.setVisible(isForEach);
-
-        borderLayoutTime.setVisible(registerProductionTime && !isBasic);
-        borderLayoutPiecework.setVisible(registerPiecework && isForEach);
-    }
-
-    @Override
-    public void setTimeAndPiecworkComponentsVisible(final String recordingType, final Entity order, final ViewDefinitionState view) {
+        String recordingType = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         boolean recordingTypeEqualsForEach = TypeOfProductionRecording.FOR_EACH.getStringValue().equals(recordingType);
         boolean recordingTypeEqualsBasic = TypeOfProductionRecording.BASIC.getStringValue().equals(recordingType);
 
@@ -94,23 +79,23 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                 recordingTypeEqualsForEach);
 
         boolean registerProductionTime = order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME);
-        view.getComponentByReference("timeTab").setVisible(registerProductionTime && !recordingTypeEqualsBasic);
+        view.getComponentByReference(L_TIME_TAB).setVisible(registerProductionTime && !recordingTypeEqualsBasic);
 
         ProductionTrackingState recordState = getTrackingState(view);
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonActionItem calcTotalLaborTimeBtn = window.getRibbon().getGroupByName("workTime")
-                .getItemByName("calcTotalLaborTime");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonActionItem calcTotalLaborTimeBtn = window.getRibbon().getGroupByName(L_WORK_TIME_RIBBON_GROUP)
+                .getItemByName(L_CALC_LABOR_TOTAL_TIME_RIBBON_BUTTON);
         calcTotalLaborTimeBtn.setEnabled(registerProductionTime && !recordingTypeEqualsBasic
                 && ProductionTrackingState.DRAFT.equals(recordState));
         calcTotalLaborTimeBtn.requestUpdate(true);
 
         boolean registerPiecework = order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK);
-        view.getComponentByReference("pieceworkTab").setVisible(registerPiecework && recordingTypeEqualsForEach);
+        view.getComponentByReference(L_PIECEWORK_TAB).setVisible(registerPiecework && recordingTypeEqualsForEach);
     }
 
     @Override
     public ProductionTrackingState getTrackingState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity productionRecordFormEntity = form.getEntity();
         String stateStringValue = productionRecordFormEntity.getStringField(ProductionTrackingFields.STATE);
         if (StringUtils.isEmpty(stateStringValue)) {
@@ -121,7 +106,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Override
     public void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState) {
-        final FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        final FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
         Entity order = null;
         if (form.getEntityId() != null) {
             order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(

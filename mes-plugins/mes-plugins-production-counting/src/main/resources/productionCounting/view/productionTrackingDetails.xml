@@ -219,7 +219,7 @@
 										var toggleRibbonItems = [
 											"actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel", "actions.delete",
 											"status.cancelTracking", "status.acceptTracking",
-											"copy.copyPlannedQuantityToUsedQuantity",
+											"productsQuantities.copyPlannedQuantityToUsedQuantity",
                                                  "workTime.calcTotalLaborTime"
 										],
 										toggleRibbonItemsLen = toggleRibbonItems.length,

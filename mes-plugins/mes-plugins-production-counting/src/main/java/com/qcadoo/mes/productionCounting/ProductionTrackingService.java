@@ -29,17 +29,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 
 public interface ProductionTrackingService {
 
-    /**
-     * Sets time and piecework components visible
-     * 
-     * @param view
-     *            view
-     * @param order
-     *            order
-     */
     void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order);
-
-    void setTimeAndPiecworkComponentsVisible(final String recordingType, final Entity order, final ViewDefinitionState view);
 
     ProductionTrackingState getTrackingState(final ViewDefinitionState view);
 
