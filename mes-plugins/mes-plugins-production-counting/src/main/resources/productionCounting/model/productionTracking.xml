@@ -47,8 +47,8 @@
 
 		<date name="shiftStartDay" />
 
-		<date name="timeRangeFrom" />
-		<date name="timeRangeTo" />
+		<datetime name="timeRangeFrom" />
+		<datetime name="timeRangeTo" />
 
 
 		<hasMany name="trackingOperationProductInComponents"
