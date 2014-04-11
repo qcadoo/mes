@@ -217,6 +217,7 @@
 		<view:view resource="view/productionTrackingReportDetails.xml" />
 		<view:view resource="view/trackingOperationProductInComponentDetails.xml" />
 		<view:view resource="view/trackingOperationProductOutComponentDetails.xml" />
+		<view:view resource="view/staffWorkTimeDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 		<view:resource uri="public/**/*" />
