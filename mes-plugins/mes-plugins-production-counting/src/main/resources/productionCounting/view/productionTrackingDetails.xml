@@ -137,7 +137,7 @@
 						</component>
 						<component type="lookup" name="technologyOperationComponent"
 						           field="technologyOperationComponent" reference="technologyOperationComponent"
-						           defaultEnabled="false">
+						           defaultVisible="false" defaultEnabled="true">
 							<option type="column" name="name" fields="operation"
 							        expression="#operation['name']" link="true" />
 
