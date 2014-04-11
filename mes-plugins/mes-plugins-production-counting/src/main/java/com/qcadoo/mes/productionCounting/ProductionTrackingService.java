@@ -45,4 +45,6 @@ public interface ProductionTrackingService {
 
     void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState);
 
+    void fillProductionLineLookup(final ViewDefinitionState view);
+
 }

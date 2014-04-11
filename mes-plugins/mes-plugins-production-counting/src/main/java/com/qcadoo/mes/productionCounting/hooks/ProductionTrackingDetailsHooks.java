@@ -91,14 +91,12 @@ public class ProductionTrackingDetailsHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
-
         setCriteriaModifierParameters(view);
-
+        productionTrackingService.fillProductionLineLookup(view);
         if (productionTrackingForm.getEntityId() == null) {
             setStateFieldValueToDraft(view);
         } else {
             Entity productionTracking = getProductionTrackingFromDB(productionTrackingForm.getEntityId());
-
             initializeProductionTrackingDetailsView(view);
             showLastStateChangeFailNotification(productionTrackingForm, productionTracking);
             changeFieldComponentsEnabledAndGridsEditable(view);

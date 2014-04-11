@@ -147,4 +147,16 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         }
     }
 
+    @Override
+    public void fillProductionLineLookup(final ViewDefinitionState view) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference("order");
+        Entity order = orderLookup.getEntity();
+        Long productionLineId = null;
+        if (order != null) {
+            productionLineId = order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId();
+        }
+        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference("productionLine");
+        productionLineLookup.setFieldValue(productionLineId);
+    }
+
 }
