@@ -148,9 +148,11 @@ public class ProductionTrackingDetailsListeners {
         }
         FieldComponent lastRecord = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.LAST_TRACKING);
         boolean justOneRecord = order.getBooleanField(OrderFieldsPC.JUST_ONE);
-        lastRecord.setFieldValue(justOneRecord);
-        lastRecord.setEnabled(!justOneRecord);
-        lastRecord.requestComponentUpdateState();
+        if (justOneRecord) {
+            lastRecord.setFieldValue(justOneRecord);
+            lastRecord.setEnabled(!justOneRecord);
+            lastRecord.requestComponentUpdateState();
+        }
     }
 
     public void clearFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
