@@ -58,7 +58,7 @@
 			joinField="productionTracking" model="trackingOperationProductOutComponent"
 			cascade="delete" />
 		<hasMany name="staffWorkTimes" model="staffWorkTime"
-			joinField="productionRecord" copyable="false" />
+			joinField="productionRecord" copyable="false" cascade="delete"/>
 
 		<hasMany name="stateChanges" model="productionTrackingStateChange"
 			joinField="productionTracking" cascade="delete" />
