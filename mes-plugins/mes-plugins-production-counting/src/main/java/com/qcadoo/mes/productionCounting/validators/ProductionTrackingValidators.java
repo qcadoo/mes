@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.validators;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -57,8 +58,21 @@ public class ProductionTrackingValidators {
         isValid = isValid && checkTypeOfProductionRecording(productionTrackingDD, productionTracking, order);
         isValid = isValid && willOrderAcceptOneMore(productionTrackingDD, productionTracking, order);
         isValid = isValid && checkIfOrderIsStarted(productionTrackingDD, productionTracking, order);
+        isValid = isValid && checkTimeRange(productionTrackingDD, productionTracking, order);
 
         return isValid;
+    }
+
+    private boolean checkTimeRange(final DataDefinition productionTrackingDD, final Entity productionTracking, final Entity order) {
+        Date timeRangeFrom = productionTracking.getDateField(ProductionTrackingFields.TIME_RANGE_FROM);
+        Date timeRangeTo = productionTracking.getDateField(ProductionTrackingFields.TIME_RANGE_TO);
+
+        if (timeRangeFrom == null || timeRangeTo == null || timeRangeTo.after(timeRangeFrom)) {
+            return true;
+        }
+        productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.TIME_RANGE_TO),
+                "productionCounting.productionTracking.productionTrackingError.timeRangeToBeforetumeRangeFrom");
+        return false;
     }
 
     private boolean checkTypeOfProductionRecording(final DataDefinition productionTrackingDD, final Entity productionTracking,
