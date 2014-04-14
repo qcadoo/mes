@@ -152,6 +152,8 @@ public class ProductionTrackingDetailsListeners {
             lastRecord.setFieldValue(justOneRecord);
             lastRecord.setEnabled(!justOneRecord);
             lastRecord.requestComponentUpdateState();
+        } else {
+            lastRecord.setEnabled(true);
         }
     }
 
