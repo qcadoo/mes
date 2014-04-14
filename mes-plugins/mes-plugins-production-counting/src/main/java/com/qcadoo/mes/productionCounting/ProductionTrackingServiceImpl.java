@@ -75,8 +75,10 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         boolean recordingTypeEqualsForEach = TypeOfProductionRecording.FOR_EACH.getStringValue().equals(recordingType);
         boolean recordingTypeEqualsBasic = TypeOfProductionRecording.BASIC.getStringValue().equals(recordingType);
 
-        view.getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT).setVisible(
-                recordingTypeEqualsForEach);
+        LookupComponent tocComponent = (LookupComponent) view
+                .getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        tocComponent.setVisible(recordingTypeEqualsForEach);
+        tocComponent.setRequired(recordingTypeEqualsForEach);
 
         boolean registerProductionTime = order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME);
         view.getComponentByReference(L_TIME_TAB).setVisible(registerProductionTime && !recordingTypeEqualsBasic);
