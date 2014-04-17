@@ -84,13 +84,16 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         view.getComponentByReference(L_TIME_TAB).setVisible(registerProductionTime && !recordingTypeEqualsBasic);
 
         ProductionTrackingState recordState = getTrackingState(view);
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonActionItem calcTotalLaborTimeBtn = window.getRibbon().getGroupByName(L_WORK_TIME_RIBBON_GROUP)
-                .getItemByName(L_CALC_LABOR_TOTAL_TIME_RIBBON_BUTTON);
-        calcTotalLaborTimeBtn.setEnabled(registerProductionTime && !recordingTypeEqualsBasic
-                && ProductionTrackingState.DRAFT.equals(recordState));
-        calcTotalLaborTimeBtn.requestUpdate(true);
+        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if (form.getEntityId() != null) {
+            WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
 
+            RibbonActionItem calcTotalLaborTimeBtn = window.getRibbon().getGroupByName(L_WORK_TIME_RIBBON_GROUP)
+                    .getItemByName(L_CALC_LABOR_TOTAL_TIME_RIBBON_BUTTON);
+            calcTotalLaborTimeBtn.setEnabled(registerProductionTime && !recordingTypeEqualsBasic
+                    && ProductionTrackingState.DRAFT.equals(recordState));
+            calcTotalLaborTimeBtn.requestUpdate(true);
+        }
         boolean registerPiecework = order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK);
         view.getComponentByReference(L_PIECEWORK_TAB).setVisible(registerPiecework && recordingTypeEqualsForEach);
     }

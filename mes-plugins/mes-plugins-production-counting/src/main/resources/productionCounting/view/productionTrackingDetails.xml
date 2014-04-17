@@ -32,7 +32,7 @@
 			</group>
 			<group name="workTime">
 				<bigButton name="calcTotalLaborTime" icon="calculateTimeIcon24.png"
-				           action="#{form}.fireEvent(calcTotalLaborTime);" />
+				           state="disabled" action="#{form}.fireEvent(calcTotalLaborTime);" />
 			</group>
 		</ribbon>
 
@@ -209,9 +209,11 @@
 											if (!newValue || !newValue.content) {
 												return;
 											}
-											
+											var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 											var state = newValue.content.value;
-											updateRibbon(state);
+											if(isSaved){
+												updateRibbon(state);
+											}
 										}
 									});
 
