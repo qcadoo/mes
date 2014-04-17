@@ -178,19 +178,19 @@
 							rows="4">
 							<layoutElement column="1" row="1">
 								<component type="input" name="createDate" field="#{form}.createDate"
-									defaultEnabled="false" />
+									defaultEnabled="never" />
 							</layoutElement>
 							<layoutElement column="1" row="2">
 								<component type="input" name="createUser" field="#{form}.createUser"
-									defaultEnabled="false" />
+									defaultEnabled="never" />
 							</layoutElement>
 							<layoutElement column="1" row="3">
 								<component type="input" name="updateDate" field="#{form}.updateDate"
-									defaultEnabled="false" />
+									defaultEnabled="never" />
 							</layoutElement>
 							<layoutElement column="1" row="4">
 								<component type="input" name="updateUser" field="#{form}.updateUser"
-									defaultEnabled="false" />
+									defaultEnabled="never" />
 							</layoutElement>
 						</component>
 					</component>

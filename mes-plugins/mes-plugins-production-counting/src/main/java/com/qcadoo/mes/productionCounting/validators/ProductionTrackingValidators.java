@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.validators;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +36,7 @@ import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -57,8 +59,37 @@ public class ProductionTrackingValidators {
         isValid = isValid && checkTypeOfProductionRecording(productionTrackingDD, productionTracking, order);
         isValid = isValid && willOrderAcceptOneMore(productionTrackingDD, productionTracking, order);
         isValid = isValid && checkIfOrderIsStarted(productionTrackingDD, productionTracking, order);
+        isValid = isValid && checkTimeRange(productionTrackingDD, productionTracking, order);
+        isValid = isValid && checkIfOperationIsSet(productionTrackingDD, productionTracking, order);
 
         return isValid;
+    }
+
+    private boolean checkIfOperationIsSet(final DataDefinition productionTrackingDD, final Entity productionTracking,
+            final Entity order) {
+        String recordingMode = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER).getStringField(
+                OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        Object orderOperation = productionTracking.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(recordingMode) && orderOperation == null) {
+            productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT),
+                    "productionCounting.productionTracking.messages.error.operationIsNotSet");
+            return false;
+        }
+        return true;
+
+    }
+
+    private boolean checkTimeRange(final DataDefinition productionTrackingDD, final Entity productionTracking, final Entity order) {
+        Date timeRangeFrom = productionTracking.getDateField(ProductionTrackingFields.TIME_RANGE_FROM);
+        Date timeRangeTo = productionTracking.getDateField(ProductionTrackingFields.TIME_RANGE_TO);
+
+        if (timeRangeFrom == null || timeRangeTo == null || timeRangeTo.after(timeRangeFrom)) {
+            return true;
+        }
+        productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.TIME_RANGE_TO),
+                "productionCounting.productionTracking.productionTrackingError.timeRangeToBeforetumeRangeFrom");
+        return false;
     }
 
     private boolean checkTypeOfProductionRecording(final DataDefinition productionTrackingDD, final Entity productionTracking,

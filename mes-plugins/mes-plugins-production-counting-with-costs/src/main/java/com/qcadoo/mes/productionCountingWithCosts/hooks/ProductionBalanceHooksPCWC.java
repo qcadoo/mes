@@ -36,13 +36,13 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ProductionBalanceHooksPCWC {
 
-    private static final List<String> L_PRODUCTION_BALANCE_COST_FIELDS = Arrays.asList(ProductionBalanceFieldsPCWC.PLANNED_COMPONENTS_COSTS,
-            ProductionBalanceFieldsPCWC.COMPONENTS_COSTS, ProductionBalanceFieldsPCWC.COMPONENTS_COSTS_BALANCE,
-            ProductionBalanceFieldsPCWC.PLANNED_MACHINE_COSTS, ProductionBalanceFieldsPCWC.MACHINE_COSTS,
-            ProductionBalanceFieldsPCWC.MACHINE_COSTS_BALANCE, ProductionBalanceFieldsPCWC.PLANNED_LABOR_COSTS,
-            ProductionBalanceFieldsPCWC.LABOR_COSTS, ProductionBalanceFieldsPCWC.LABOR_COSTS_BALANCE,
-            ProductionBalanceFieldsPCWC.PLANNED_CYCLES_COSTS, ProductionBalanceFieldsPCWC.CYCLES_COSTS,
-            ProductionBalanceFieldsPCWC.CYCLES_COSTS_BALANCE,
+    private static final List<String> L_PRODUCTION_BALANCE_COST_FIELDS = Arrays.asList(
+            ProductionBalanceFieldsPCWC.PLANNED_COMPONENTS_COSTS, ProductionBalanceFieldsPCWC.COMPONENTS_COSTS,
+            ProductionBalanceFieldsPCWC.COMPONENTS_COSTS_BALANCE, ProductionBalanceFieldsPCWC.PLANNED_MACHINE_COSTS,
+            ProductionBalanceFieldsPCWC.MACHINE_COSTS, ProductionBalanceFieldsPCWC.MACHINE_COSTS_BALANCE,
+            ProductionBalanceFieldsPCWC.PLANNED_LABOR_COSTS, ProductionBalanceFieldsPCWC.LABOR_COSTS,
+            ProductionBalanceFieldsPCWC.LABOR_COSTS_BALANCE, ProductionBalanceFieldsPCWC.PLANNED_CYCLES_COSTS,
+            ProductionBalanceFieldsPCWC.CYCLES_COSTS, ProductionBalanceFieldsPCWC.CYCLES_COSTS_BALANCE,
             ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COSTS,
             ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
             ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS,

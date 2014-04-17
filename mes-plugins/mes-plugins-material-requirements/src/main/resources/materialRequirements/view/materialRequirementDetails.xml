@@ -61,7 +61,7 @@
 					var entityExists = false;
 					
 					QCDTrack.track(
-							generateRibbonItem,
+							generateButton,
 							"onClick",
 							 "generateMaterialRequirements" 
 					);
