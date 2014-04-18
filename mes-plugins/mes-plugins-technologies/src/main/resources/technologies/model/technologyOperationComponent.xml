@@ -62,8 +62,8 @@
 		<enum name="assignedToOperation" values="01workstations,02workstationTypes" default="02workstationTypes" required="true" copyable="true"/>
 		
 		<belongsTo name="workstationType" plugin="basic" model="workstationType"/>
-		<!-- dodać relację z drugiej strony -->
-		<integer name="quantityOfWorkstations" default="1">
+
+		<integer name="quantityOfWorkstations" default="1" required="true">
 			<validatesRange from="1" exclusively="false" />
 		</integer>
 	</fields>
