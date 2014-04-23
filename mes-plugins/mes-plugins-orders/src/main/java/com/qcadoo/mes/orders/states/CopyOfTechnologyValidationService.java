@@ -27,6 +27,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -43,10 +44,12 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
 import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -264,6 +267,56 @@ public class CopyOfTechnologyValidationService {
         return isValid;
     }
 
+    public boolean checkOperationOutputQuantities(final StateChangeContext stateChangeContext, final Entity technologyEntity) {
+        Entity technology = technologyEntity.getDataDefinition().get(technologyEntity.getId());
+
+        List<String> messages = Lists.newArrayList();
+
+        List<Entity> operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+        for (Entity operationComponent : operationComponents) {
+            BigDecimal timeNormsQuantity = getProductionInOneCycle(operationComponent);
+
+            BigDecimal currentQuantity;
+
+            try {
+                currentQuantity = technologyService.getProductCountForOperationComponent(operationComponent);
+            } catch (IllegalStateException e) {
+                continue;
+            }
+
+            if (timeNormsQuantity == null || timeNormsQuantity.compareTo(currentQuantity) != 0) {
+                String nodeNumber = operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER);
+
+                if (nodeNumber == null) {
+                    Entity operation = operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+                    if (operation != null) {
+                        String name = operation.getStringField(OperationFields.NAME);
+
+                        if (name != null) {
+                            messages.add(name);
+                        }
+                    }
+                } else {
+                    messages.add(nodeNumber);
+                }
+            }
+        }
+
+        if (!messages.isEmpty()) {
+            stateChangeContext.addValidationError("technologies.technology.validate.global.error.treeIsNotValid");
+            StringBuilder builder = new StringBuilder();
+            for (String message : messages) {
+                builder.append(message.toString());
+                builder.append(", ");
+            }
+            stateChangeContext.addMessage("technologies.technology.validate.error.invalidQuantity", StateMessageType.FAILURE,
+                    false, builder.toString());
+        }
+        return messages.isEmpty();
+    }
+
     private String createMessageForValidationErrors(final String message, final Entity entity) {
         List<ErrorMessage> errors = Lists.newArrayList();
         if (!entity.getErrors().isEmpty()) {
@@ -347,5 +400,19 @@ public class CopyOfTechnologyValidationService {
             return false;
         }
         return true;
+    }
+
+    private BigDecimal getProductionInOneCycle(final Entity operationComponent) {
+        String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
+        if (TechnologyOperationComponentType.OPERATION.getStringValue().equals(entityType)) {
+            return operationComponent.getDecimalField("productionInOneCycle");
+        } else if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(entityType)) {
+            Entity refOperationComp = operationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
+                    .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+            return refOperationComp.getDecimalField("productionInOneCycle");
+        } else {
+            throw new IllegalStateException("operationComponent has illegal type, id = " + operationComponent.getId());
+        }
     }
 }
