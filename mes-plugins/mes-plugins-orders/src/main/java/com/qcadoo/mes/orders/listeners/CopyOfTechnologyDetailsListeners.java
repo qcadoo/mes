@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +74,7 @@ public class CopyOfTechnologyDetailsListeners {
 
             Entity technologyPrototype = technologyPrototypeLookup.getEntity();
 
-            if ((technologyPrototype != null) && !technologyPrototype.getId().equals(orderTechnologyPrototype.getId())) {
+            if (technologyAndOrderPrototypesAreDifferent(orderTechnologyPrototype, technologyPrototype)) {
                 copyOfTechnology = copyTechnology(technologyPrototype, order);
 
                 if (copyOfTechnology.isValid()) {
@@ -100,6 +101,12 @@ public class CopyOfTechnologyDetailsListeners {
             // technologyServiceO.setQuantityOfWorkstationTypes(order, copyOfTechnology);
             // }
         }
+    }
+
+    private boolean technologyAndOrderPrototypesAreDifferent(final Entity orderTechnologyPrototypeOrNull,
+            final Entity technologyPrototypeOrNull) {
+        return technologyPrototypeOrNull != null && orderTechnologyPrototypeOrNull != null
+                && !ObjectUtils.equals(technologyPrototypeOrNull.getId(), orderTechnologyPrototypeOrNull.getId());
     }
 
     @Transactional
@@ -220,7 +227,7 @@ public class CopyOfTechnologyDetailsListeners {
             return TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue();
         } else {
             return TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue();
-        }
+      }
     }
 
 }
