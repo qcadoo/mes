@@ -119,7 +119,7 @@
 						hasBorders="false" columns="3" rows="1">
 						<layoutElement column="1" row="1" width="2">
 							<component type="input" name="plannedQuantity" reference="plannedQuantity"
-								field="plannedQuantity">
+								field="plannedQuantity" defaultEnabled="never">
 								<option type="alignment" value="right" />
 								<option type="labelWidth" value="45" />
 							</component>
@@ -287,6 +287,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionScheduling.hooks.OperationDurationDetailsInOrderHooks"
 			method="fillUnitField" />
+		<beforeRender
+			class="com.qcadoo.mes.productionScheduling.hooks.OperationDurationDetailsInOrderHooks"
+			method="disableCopyRealizationTimeButton" />
 	</hooks>
 	
 </view>

@@ -117,6 +117,7 @@ public class OrderStateValidationService {
         copyOfTechnologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext, technology);
         if (PluginUtils.isEnabled("timeNormsForOperations")) {
             copyOfTechnologyValidationService.checkIfTreeOperationIsValid(stateChangeContext, technology);
+            copyOfTechnologyValidationService.checkOperationOutputQuantities(stateChangeContext, technology);
         }
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
