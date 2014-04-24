@@ -39,8 +39,8 @@
 		</string>
 		<enum values="01otherCase" name="typeTask" required="true"
 			default="01otherCase" />
-		<datetime name="startDate" />
-		<datetime name="finishDate" />
+		<datetime name="startDate" required="true" />
+		<datetime name="finishDate" required="true" />
 		<belongsTo name="productionLine" model="productionLine"
 			plugin="productionLines" />
 		<belongsTo name="productIn" model="product" plugin="basic"
