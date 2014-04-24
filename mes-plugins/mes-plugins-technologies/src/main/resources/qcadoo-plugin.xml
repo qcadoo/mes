@@ -121,6 +121,12 @@
 				model="technologyOperationComponent" joinField="workstations" copyable="true" />
 		</model:model-field>
 		
+		<model:model-hook plugin="basic" model="workstation">
+			<model:onDelete
+				class="com.qcadoo.mes.technologies.hooks.WorkstationHooksT"
+				method="onDelete" />
+		</model:model-hook>
+		
 	<!--  	
 		<model:model-field plugin="basic" model="workstationType">
 			<model:manyToMany name="operations" plugin="technologies"
