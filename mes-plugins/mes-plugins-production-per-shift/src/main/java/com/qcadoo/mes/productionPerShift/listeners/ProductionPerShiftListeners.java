@@ -35,14 +35,11 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
-import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
-import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
-import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
+import com.qcadoo.mes.productionPerShift.constants.*;
 import com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks;
 import com.qcadoo.mes.productionPerShift.util.OrderRealizationDaysResolver;
 import com.qcadoo.mes.productionPerShift.util.OrderRealizationDaysResolver.OrderRealizationDayWithShifts;
+import com.qcadoo.mes.productionPerShift.util.ProductionPerShiftDataProvider;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -78,6 +75,9 @@ public class ProductionPerShiftListeners {
 
     @Autowired
     private ProductionPerShiftDetailsHooks detailsHooks;
+
+    @Autowired
+    private ProductionPerShiftDataProvider productionPerShiftDataProvider;
 
     public void fillProducedField(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
         detailsHooks.fillProducedField(viewState);
@@ -184,27 +184,18 @@ public class ProductionPerShiftListeners {
                     return;
                 }
 
-                Entity root = technologyOperationComponents.getRoot();
+                Entity technologyTreeRoot = technologyOperationComponents.getRoot();
 
-                if (!root.getId().equals(technologyOperationComponent.getId())) {
+                if (!technologyTreeRoot.getId().equals(technologyOperationComponent.getId())) {
                     return;
                 }
 
-                BigDecimal productionQuantity = BigDecimal.ZERO;
+                BigDecimal sumOfDailyPlannedQuantities = productionPerShiftDataProvider.getSumOfQuantities(technology.getId(),
+                        ProductionPerShiftDataProvider.ONLY_ROOT_OPERATIONS_CRITERIA);
 
-                List<Entity> plannedPrograssForDay = root
-                        .getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
-
-                for (Entity progressForDay : plannedPrograssForDay) {
-                    List<Entity> dailyProgreses = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
-                    for (Entity dailyProgress : dailyProgreses) {
-                        productionQuantity = productionQuantity.add(dailyProgress.getDecimalField(DailyProgressFields.QUANTITY),
-                                numberService.getMathContext());
-                    }
-                }
-
-                BigDecimal planedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-                BigDecimal difference = planedQuantity.subtract(productionQuantity, numberService.getMathContext());
+                BigDecimal planedQuantityFromOrder = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+                BigDecimal difference = planedQuantityFromOrder.subtract(sumOfDailyPlannedQuantities,
+                        numberService.getMathContext());
 
                 if (difference.compareTo(BigDecimal.ZERO) == 0) {
                     return;
