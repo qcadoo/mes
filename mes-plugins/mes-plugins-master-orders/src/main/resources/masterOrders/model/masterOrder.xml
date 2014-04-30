@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model name="masterOrder" activable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
@@ -15,69 +15,74 @@
 		<string name="externalNumber" unique="true" />
 		<string name="defaultTechnology" persistent="false" />
 
-		<datetime name="deadline" />
+		<datetime name="deadline">
+			<validatesWith
+					class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+					method="checkIfCanChangeDeadline" />
+		</datetime>
 
 		<boolean name="addMasterPrefixToNumber" />
 
 		<decimal name="masterOrderQuantity">
 			<validatesRange from="0" />
-	      	<validatesUnscaledValue max="9" />
-       		<validatesScale max="5" /> 
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
 		</decimal>
 		<decimal name="cumulatedOrderQuantity" persistent="false">
 			<validatesRange from="0" />
-	      	<validatesUnscaledValue max="9" />
-       		<validatesScale max="5" /> 
+			<validatesUnscaledValue max="9" />
+			<validatesScale max="5" />
 		</decimal>
 
 		<enum name="masterOrderType" values="01undefined,02oneProduct,03manyProducts"
-			default="01undefined" required="true" />
+		      default="01undefined" required="true">
+			<validatesWith
+					class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+					method="checkIfCanChangeType" />
+		</enum>
 		<dictionary name="masterOrderState" dictionary="masterOrderState" />
 
-		<belongsTo name="company" plugin="basic" model="company" />
-		<belongsTo name="product" plugin="basic" model="product" />
-		<belongsTo name="technology" plugin="technologies" model="technology" />
+		<belongsTo name="company" plugin="basic" model="company">
+			<validatesWith
+					class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+					method="checkIfCanChangeCompany" />
+		</belongsTo>
+		<belongsTo name="product" plugin="basic" model="product">
+			<validatesWith
+					class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+					method="checkIfCanChangeProduct" />
+		</belongsTo>
+		<belongsTo name="technology" plugin="technologies" model="technology">
+			<validatesWith
+					class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+					method="checkIfCanChangeTechnology" />
+		</belongsTo>
 
 		<boolean name="externalSynchronized" default="true" />
 
 		<hasMany name="orders" joinField="masterOrder" model="order"
-			plugin="orders" cascade="nullify" />
+		         plugin="orders" cascade="nullify" />
 
 		<hasMany name="masterOrderProducts" joinField="masterOrder"
-			model="masterOrderProduct" />
+		         model="masterOrderProduct" />
 
 	</fields>
 	<hooks>
 		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangeCompany" />
+				class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+				method="checkIfProductIsSelected" />
 		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangeMasterOrderPreffixField" />
-		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIsProductSelected" />
-		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangeProduct" />
-		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangeTechnology" />
-		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangeDeadline" />
-		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangeType" />
+				class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+				method="checkIfCanChangeMasterOrderPrefixField" />
 		<onCreate class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-			method="setExternalSynchronizedField" />
+		          method="setExternalSynchronizedField" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-			method="countCumulatedOrderQuantity" />
+		        method="countCumulatedOrderQuantity" />
 		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-			method="changedDeadlineAndInOrder" />
+		        method="changedDeadlineAndInOrder" />
 		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-			method="changedTypeFromOneToMany" />
+		        method="changedTypeFromOneToMany" />
 		<onCopy class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-			method="clearExternalFields" />
+		        method="clearExternalFields" />
 	</hooks>
 </model>

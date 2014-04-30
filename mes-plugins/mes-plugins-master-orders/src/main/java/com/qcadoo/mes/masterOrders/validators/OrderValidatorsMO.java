@@ -3,41 +3,35 @@ package com.qcadoo.mes.masterOrders.validators;
 import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields.MASTER_ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.COMPANY;
-import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCT;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
+import static com.qcadoo.mes.orders.constants.OrderFields.*;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 
 @Service
 public class OrderValidatorsMO {
 
-    private static final String L_MASTER_ORDERS_ORDER_MASTER_ORDER = "masterOrders.order.masterOrder.";
-
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public boolean checkOrderNumber(final DataDefinition orderDD, final Entity order) {
         Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
@@ -54,7 +48,7 @@ public class OrderValidatorsMO {
         String orderNumber = order.getStringField(OrderFields.NUMBER);
 
         if (!orderNumber.startsWith(masterOrderNumber)) {
-            order.addError(orderDD.getField(OrderFields.NUMBER), "masterOrders.order.number.numberHasNotPreffix",
+            order.addError(orderDD.getField(OrderFields.NUMBER), "masterOrders.order.number.numberHasNotPrefix",
                     masterOrderNumber);
 
             return false;
@@ -96,131 +90,113 @@ public class OrderValidatorsMO {
         return isValid;
     }
 
-    public boolean checkIfwithPatternTechnology(final DataDefinition orderDD, final Entity order) {
-        Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
-
-        boolean isValid = true;
-
-        if (masterOrder == null) {
-            return isValid;
-        }
-
-        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
-
-        if (!OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
-            isValid = false;
-            order.addError(orderDD.getField(OrderFields.ORDER_TYPE), "masterOrders.order.masterOrder.wrongOrderType");
-        }
-
-        return isValid;
-    }
-
     public boolean checkProductAndTechnology(final DataDefinition orderDD, final Entity order) {
         Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
 
-        boolean isValid = true;
-
         if (masterOrder == null) {
-            return isValid;
+            return true;
         }
 
-        String masterOrderType = masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE);
+        MasterOrderType masterOrderType = MasterOrderType.of(masterOrder);
 
-        if (masterOrderType == null || masterOrderType.equals(MasterOrderType.UNDEFINED.getStringValue())) {
-            return isValid;
-        }
-
-        if (!checkIfwithPatternTechnology(orderDD, order)) {
+        if (masterOrderType != MasterOrderType.UNDEFINED && !orderHasPatternTechnology(orderDD, order)) {
             return false;
         }
 
-        if (masterOrderType.equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
-            if (!checkIfBelongToFieldIsTheSame(order, masterOrder, PRODUCT)) {
-                isValid = false;
-                Entity product = masterOrder.getBelongsToField(PRODUCT);
-                order.addError(orderDD.getField(PRODUCT), L_MASTER_ORDERS_ORDER_MASTER_ORDER + PRODUCT + ""
-                        + ".fieldIsNotTheSame", createInfoAboutEntity(product, PRODUCT));
-            }
-            if (!checkIfTechnologyFieldIsTheSame(order, masterOrder)) {
-                isValid = false;
-                Entity technology = masterOrder.getBelongsToField(TECHNOLOGY);
-                order.addError(orderDD.getField(TECHNOLOGY), L_MASTER_ORDERS_ORDER_MASTER_ORDER + TECHNOLOGY + ""
-                        + ".fieldIsNotTheSame", createInfoAboutEntity(technology, TECHNOLOGY));
-            }
-        } else if (masterOrderType.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
-            if (!checkIfExistsMasterOrderWithTech(order, masterOrder)) {
-                isValid = false;
-                order.addError(orderDD.getField(TECHNOLOGY), L_MASTER_ORDERS_ORDER_MASTER_ORDER + TECHNOLOGY
-                        + ".masterOrderProductDoesnotExists");
-            }
-            if (!checkIfExistsMasterOrderWithProduct(order, masterOrder)) {
-                isValid = false;
-                order.addError(orderDD.getField(PRODUCT), L_MASTER_ORDERS_ORDER_MASTER_ORDER + PRODUCT
-                        + ".masterOrderProductDoesnotExists");
-            }
+        if (masterOrderType == MasterOrderType.ONE_PRODUCT) {
+            return checkIfOrderMatchesMasterOrderSingleProductAndTechnology(order, masterOrder);
+        }
+        if (masterOrderType == MasterOrderType.MANY_PRODUCTS) {
+            return checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(order, masterOrder);
         }
 
-        return isValid;
+        return true;
     }
 
-    private boolean checkIfExistsMasterOrderWithTech(final Entity order, final Entity masterOrder) {
-        List<Entity> masterOrderProductsWithProductAndTechnology = dataDefinitionService
-                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
-                .add(SearchRestrictions.belongsTo(PRODUCT, order.getBelongsToField(PRODUCT)))
-                .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrder))
-                .add(SearchRestrictions.belongsTo(TECHNOLOGY, order.getBelongsToField(TECHNOLOGY))).list().getEntities();
-
-        if (masterOrderProductsWithProductAndTechnology.isEmpty()) {
-            masterOrderProductsWithProductAndTechnology = dataDefinitionService
-                    .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
-                    .add(SearchRestrictions.belongsTo(PRODUCT, order.getBelongsToField(PRODUCT)))
-                    .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrder))
-                    .add(SearchRestrictions.not(SearchRestrictions.belongsTo(TECHNOLOGY, order.getBelongsToField(TECHNOLOGY))))
-                    .list().getEntities();
-            if (!masterOrderProductsWithProductAndTechnology.isEmpty()) {
-                return false;
-            }
+    /* Precondition - order is not null */
+    private boolean orderHasPatternTechnology(final DataDefinition orderDD, final Entity order) {
+        if (OrderType.of(order) != OrderType.WITH_PATTERN_TECHNOLOGY) {
+            order.addError(orderDD.getField(OrderFields.ORDER_TYPE), "masterOrders.order.masterOrder.wrongOrderType");
+            return false;
         }
         return true;
     }
 
-    private boolean checkIfExistsMasterOrderWithProduct(final Entity order, final Entity masterOrder) {
-        List<Entity> masterOrderProductsWithProduct = dataDefinitionService
-                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
-                .add(SearchRestrictions.belongsTo(PRODUCT, order.getBelongsToField(PRODUCT)))
-                .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrder)).list().getEntities();
+    private boolean checkIfOrderMatchesMasterOrderSingleProductAndTechnology(final Entity order, final Entity masterOrder) {
+        boolean orderMatchesCriteria = checkIfOrderMatchesMasterOrderSingleProduct(order, masterOrder);
+        orderMatchesCriteria = checkIfOrderMatchesMasterOrderSingleTechnology(order, masterOrder) && orderMatchesCriteria;
+        return orderMatchesCriteria;
+    }
 
-        if (masterOrderProductsWithProduct.isEmpty()) {
-            masterOrderProductsWithProduct = dataDefinitionService
-                    .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
-                    .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrder))
-                    .add(SearchRestrictions.not(SearchRestrictions.belongsTo(PRODUCT, order.getBelongsToField(PRODUCT)))).list()
-                    .getEntities();
-            if (!masterOrderProductsWithProduct.isEmpty()) {
-                return false;
-            }
+    private boolean checkIfOrderMatchesMasterOrderSingleProduct(final Entity order, final Entity masterOrder) {
+        Entity masterOrderProduct = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
+        if (masterOrderProduct == null) {
+            return true;
         }
-        return true;
+        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
+        if (ObjectUtils.equals(orderProduct.getId(), masterOrderProduct.getId())) {
+            return true;
+        }
+        addMatchValidationError(order, OrderFields.PRODUCT, createInfoAboutEntity(masterOrderProduct, OrderFields.PRODUCT));
+        return false;
+    }
+
+    private boolean checkIfOrderMatchesMasterOrderSingleTechnology(final Entity order, final Entity masterOrder) {
+        Entity masterOrderTechnology = masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
+        if (masterOrderTechnology == null) {
+            return true;
+        }
+        Entity orderTechnologyPrototype = order.getBelongsToField(TECHNOLOGY_PROTOTYPE);
+        if (orderTechnologyPrototype != null
+                && ObjectUtils.equals(masterOrderTechnology.getId(), orderTechnologyPrototype.getId())) {
+            return true;
+        }
+
+        addMatchValidationError(order, OrderFields.TECHNOLOGY_PROTOTYPE, createInfoAboutEntity(masterOrderTechnology, TECHNOLOGY));
+        return false;
+    }
+
+    private boolean checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(final Entity order, final Entity masterOrder) {
+        if (hasMatchingMasterOrderProducts(order, masterOrder)) {
+            return true;
+        }
+        addMatchValidationError(order, OrderFields.PRODUCT, null);
+        return false;
+    }
+
+    private boolean hasMatchingMasterOrderProducts(final Entity order, final Entity masterOrder) {
+        Entity orderTechnologyPrototype = order.getBelongsToField(TECHNOLOGY_PROTOTYPE);
+        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
+
+        SearchCriteriaBuilder masterCriteria = masterOrder.getDataDefinition().find();
+        masterCriteria.setProjection(alias(id(), "id"));
+        masterCriteria.add(idEq(masterOrder.getId()));
+
+        SearchCriteriaBuilder masterProductsCriteria = masterCriteria.createCriteria(MasterOrderFields.MASTER_ORDER_PRODUCTS,
+                "masterProducts", JoinType.INNER);
+        masterProductsCriteria.add(belongsTo(MasterOrderProductFields.PRODUCT, orderProduct));
+        if (orderTechnologyPrototype == null) {
+            masterProductsCriteria.add(isNull(MasterOrderProductFields.TECHNOLOGY));
+        } else {
+            masterProductsCriteria.add(or(isNull(MasterOrderProductFields.TECHNOLOGY),
+                    belongsTo(MasterOrderProductFields.TECHNOLOGY, orderTechnologyPrototype)));
+        }
+        return masterCriteria.setMaxResults(1).uniqueResult() != null;
+    }
+
+    private void addMatchValidationError(final Entity toOrder, final String fieldName, final String entityInfo) {
+        if (entityInfo == null) {
+            String errorMessage = String.format("masterOrders.order.masterOrder.%s.masterOrderProductDoesNotExist", fieldName);
+            toOrder.addError(toOrder.getDataDefinition().getField(fieldName), errorMessage);
+        } else {
+            String errorMessage = String.format("masterOrders.order.masterOrder.%s.fieldIsNotTheSame", fieldName);
+            toOrder.addError(toOrder.getDataDefinition().getField(fieldName), errorMessage, entityInfo);
+        }
     }
 
     private boolean checkIfBelongToFieldIsTheSame(final Entity order, final Entity masterOrder, final String reference) {
         Entity fieldFromMaster = masterOrder.getBelongsToField(reference);
         Entity fieldFromOrder = order.getBelongsToField(reference);
-
-        if ((fieldFromMaster == null && fieldFromOrder == null) || (fieldFromMaster == null && fieldFromOrder != null)) {
-            return true;
-        }
-
-        if (fieldFromMaster != null && fieldFromOrder != null && fieldFromOrder.getId().equals(fieldFromMaster.getId())) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean checkIfTechnologyFieldIsTheSame(final Entity order, final Entity masterOrder) {
-        Entity fieldFromMaster = masterOrder.getBelongsToField(OrderFields.TECHNOLOGY);
-        Entity fieldFromOrder = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
         if ((fieldFromMaster == null && fieldFromOrder == null) || (fieldFromMaster == null && fieldFromOrder != null)) {
             return true;

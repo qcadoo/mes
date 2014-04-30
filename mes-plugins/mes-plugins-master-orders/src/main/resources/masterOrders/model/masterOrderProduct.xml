@@ -1,40 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model name="masterOrderProduct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="product" plugin="basic" model="product"
-			required="true" />
-		<belongsTo name="technology" plugin="technologies" model="technology" />
+		           required="true">
+			<validatesWith
+					class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
+					method="checkIfCanChangeProduct" />
+		</belongsTo>
+		<belongsTo name="technology" plugin="technologies" model="technology">
+			<validatesWith
+					class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
+					method="checkIfCanChangeTechnology" />
+		</belongsTo>
 
 		<belongsTo name="masterOrder" model="masterOrder" />
 
 		<decimal name="masterOrderQuantity">
 			<validatesRange from="0" />
 			<validatesUnscaledValue max="9" />
-       		<validatesScale max="5" /> 
+			<validatesScale max="5" />
 		</decimal>
 		<decimal name="cumulatedOrderQuantity">
 			<validatesRange from="0" />
 			<validatesUnscaledValue max="9" />
-       		<validatesScale max="5" /> 
+			<validatesScale max="5" />
 		</decimal>
 
 		<string name="defaultTechnology" persistent="false" />
 	</fields>
 	<hooks>
 		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
-			method="checkIfEntityAlreadyExistsForProductAndMasterOrder" />
-		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
-			method="checkIfCanChangedProduct" />
-		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
-			method="checkIfCanChangedTechnology" />
+				class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
+				method="checkIfEntityAlreadyExistsForProductAndMasterOrder" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
-			method="countCumulatedOrderQuantity" />
+		        method="countCumulatedOrderQuantity" />
 		<onDelete class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
-			method="checkAssignedOrder" />
+		          method="checkAssignedOrder" />
 	</hooks>
 </model>
