@@ -91,7 +91,7 @@
 				dictionary="units" required="true" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
-			<model:datetime name="generatedEndDate" />
+			<model:datetime name="generatedEndDate" copyable="false"/>
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="workstationsQuantityFromProductionLine"/>
