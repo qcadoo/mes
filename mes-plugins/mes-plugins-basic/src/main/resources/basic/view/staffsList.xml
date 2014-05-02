@@ -42,12 +42,12 @@
 			<option type="column" name="post" fields="post" link="true" />
 			<option type="column" name="shift" fields="shift" expression="#shift['name']"
 				link="true" />
+			<option type="column" name="division_number" fields="division"
+				expression="#division['number']" link="true" />	
 			<option type="column" name="division_name" fields="division"
 				expression="#division['name']" link="true" />
-			<option type="column" name="division_number" fields="division"
-				expression="#division['number']" link="true" />
 			<option type="column" name="workFor" fields="workFor"
-				expression="#workFor['number'] + ' - ' + #workFor['name']" />
+				expression="#workFor['name']" />
 				
 			<option type="order" column="number" direction="desc" />
 			

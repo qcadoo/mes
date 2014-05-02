@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.orders.constants;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.google.common.base.Preconditions;
+import com.qcadoo.model.api.Entity;
+
 public enum OrderType {
 
     WITH_PATTERN_TECHNOLOGY("01withPatternTechnology"), WITH_OWN_TECHNOLOGY("02withOwnTechnology");
@@ -35,6 +40,22 @@ public enum OrderType {
 
     public String getStringValue() {
         return state;
+    }
+
+    public static OrderType of(final Entity orderEntity) {
+        Preconditions.checkArgument(orderEntity != null, "Missing entity");
+        return parseString(orderEntity.getStringField(OrderFields.ORDER_TYPE));
+    }
+
+    public static OrderType parseString(final String rawOrderType) {
+        String orderType = StringUtils.trim(rawOrderType);
+        for (OrderType type : values()) {
+            if (StringUtils.equalsIgnoreCase(type.getStringValue(), orderType)) {
+                return type;
+            }
+        }
+
+        throw new IllegalStateException("Unsupported orderType: " + orderType);
     }
 
 }
