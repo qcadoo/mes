@@ -426,8 +426,18 @@ ALTER TABLE basic_parameter ADD COLUMN lockProductionProgress BOOLEAN DEFAULT FA
 -- Table: basicproductioncounting_productioncountingquantity
 -- changed: 16.09.2013
 -- FIXME what about data?
+
 ALTER TABLE basicproductioncounting_productioncountingquantity DROP COLUMN operationproductincomponent_id;
 ALTER TABLE basicproductioncounting_productioncountingquantity DROP COLUMN operationproductoutcomponent_id;
+
+-- end
+
+
+-- Table operationalTasks_operationalTask
+-- description: for each operational task of type 'other task' replaces empty or blank name with number. See #QCADOOMES-2212
+-- changed: 02.05.2014
+
+UPDATE operationaltasks_operationaltask SET name = number WHERE typetask = '01otherCase' AND (name IS NULL OR trim(name) = '');
 
 -- end
 
