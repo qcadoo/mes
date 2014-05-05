@@ -79,6 +79,13 @@ public class TechnologyServiceO {
                 updateTechnology(technology);
 
                 order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
+            } else if (technologyPrototype == null) {
+                Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+                if (technology != null) {
+                    technology.setField(TechnologyFields.PRODUCT, order.getBelongsToField(OrderFields.PRODUCT));
+                    technology = technology.getDataDefinition().save(technology);
+                }
+                order.getGlobalErrors();
             }
         } else {
             if (existingOrder == null) {
@@ -228,6 +235,14 @@ public class TechnologyServiceO {
         technology.setField(TechnologyFields.OPERATION_COMPONENTS, Lists.newArrayList());
 
         technology.getDataDefinition().save(technology);
+    }
+
+    private void updateTechnologyFromOrder(Entity order) {
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if (technology != null) {
+            technology.setField(TechnologyFields.PRODUCT, order.getBelongsToField(OrderFields.PRODUCT));
+            technology = technology.getDataDefinition().save(technology);
+        }
     }
 
     private void deleteTechnology(final Entity technology) {

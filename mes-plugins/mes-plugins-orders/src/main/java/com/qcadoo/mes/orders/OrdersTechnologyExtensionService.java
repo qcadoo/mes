@@ -25,6 +25,8 @@ package com.qcadoo.mes.orders;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -34,6 +36,9 @@ public class OrdersTechnologyExtensionService {
 
     public boolean checkExistingOrders(final DataDefinition dataDefinition, final Entity entity) {
 
+        if (TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue().equals(entity.getStringField(TechnologyFields.TECHNOLOGY_TYPE))) {
+            return true;
+        }
         Entity newProduct = entity.getBelongsToField("product");
         EntityList orders = entity.getHasManyField("orders");
         if (orders == null) {
