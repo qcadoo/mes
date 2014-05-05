@@ -23,24 +23,51 @@
  */
 package com.qcadoo.mes.operationalTasks.validators;
 
+import java.util.Date;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class OperationalTaskValidators {
 
-    public boolean compareDate(final DataDefinition dataDefinition, final Entity entity) {
-        // Date startDate = (Date) entity.getField(OperationalTasksFields.START_DATE);
-        // Date finishDate = (Date) entity.getField(OperationalTasksFields.FINISH_DATE);
-        // if (startDate.compareTo(finishDate) == 1) {
-        // entity.addError(dataDefinition.getField(OperationalTasksFields.START_DATE),
-        // "operationalTasks.operationalTask.finishDateIsEarlier");
-        // entity.addError(dataDefinition.getField(OperationalTasksFields.FINISH_DATE),
-        // "operationalTasks.operationalTask.finishDateIsEarlier");
-        // return false;
-        // }
+    private static final String NAME_IS_BLANK_MESSAGE = "operationalTasks.operationalTask.error.nameIsBlank";
+
+    private static final String WRONG_DATES_ORDER_MESSAGE = "operationalTasks.operationalTask.error.finishDateIsEarlier";
+
+    public boolean onValidate(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+        boolean isValid = true;
+        isValid = hasName(operationalTaskDD, operationalTask) && isValid;
+        isValid = datesAreInCorrectOrder(operationalTaskDD, operationalTask) && isValid;
+        return isValid;
+    }
+
+    private boolean hasName(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
+        if ("01otherCase".equalsIgnoreCase(type) && hasBlankName(operationalTask)) {
+            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.NAME), NAME_IS_BLANK_MESSAGE);
+            return false;
+        }
         return true;
     }
+
+    private boolean hasBlankName(final Entity operationalTask) {
+        return StringUtils.isBlank(operationalTask.getStringField(OperationalTaskFields.NAME));
+    }
+
+    private boolean datesAreInCorrectOrder(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+        Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
+        Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
+        if (finishDate.before(startDate)) {
+            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE), WRONG_DATES_ORDER_MESSAGE);
+            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE), WRONG_DATES_ORDER_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
 }

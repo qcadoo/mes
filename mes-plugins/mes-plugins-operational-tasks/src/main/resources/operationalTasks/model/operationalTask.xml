@@ -51,7 +51,7 @@
 	<hooks>
 		<validatesWith
 			class="com.qcadoo.mes.operationalTasks.validators.OperationalTaskValidators"
-			method="compareDate" />
+			method="onValidate" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
