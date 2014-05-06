@@ -81,10 +81,10 @@
 			<model:boolean name="includeAdditionalTime" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
-			<model:integer name="machineWorkTime" />
+			<model:integer name="machineWorkTime" copyable="false" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
-			<model:integer name="laborWorkTime" />
+			<model:integer name="laborWorkTime" copyable="false"/>
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
 			<model:dictionary name="operationDurationQuantityUNIT"
