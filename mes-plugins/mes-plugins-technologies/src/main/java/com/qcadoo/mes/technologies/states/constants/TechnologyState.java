@@ -25,6 +25,8 @@ package com.qcadoo.mes.technologies.states.constants;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.StateEnum;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.Entity;
 
 public enum TechnologyState implements StateEnum {
 
@@ -76,6 +78,10 @@ public enum TechnologyState implements StateEnum {
 
     public String getStringValue() {
         return stringValue;
+    }
+
+    public static TechnologyState of(final Entity technologyEntity) {
+        return parseString(technologyEntity.getStringField(TechnologyFields.STATE));
     }
 
     public static TechnologyState parseString(final String string) {
