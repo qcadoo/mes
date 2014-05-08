@@ -441,3 +441,68 @@ UPDATE operationaltasks_operationaltask SET name = number WHERE typetask = '01ot
 
 -- end
 
+-- Table: technologies_technology
+-- changed: 02.08.2014
+ALTER TABLE technologies_technology ADD COLUMN range character varying(255);
+ALTER TABLE technologies_technology ALTER COLUMN range SET DEFAULT '01oneDivision'::character varying;
+
+ALTER TABLE technologies_technology ADD COLUMN division_id bigint;
+ALTER TABLE technologies_technology
+ADD CONSTRAINT technology_division_fkey FOREIGN KEY (division_id)
+REFERENCES basic_division (id);
+
+ALTER TABLE technologies_technology ADD COLUMN componentslocation_id bigint;
+ALTER TABLE technologies_technology
+ADD CONSTRAINT technology_componentslocation_fkey FOREIGN KEY (componentslocation_id)
+REFERENCES materialflow_location (id);
+
+ALTER TABLE technologies_technology ADD COLUMN componentsoutputlocation_id bigint;
+ALTER TABLE technologies_technology
+ADD CONSTRAINT technology_componentsoutputlocation_fkey FOREIGN KEY (componentsoutputlocation_id)
+REFERENCES materialflow_location (id);
+
+ALTER TABLE technologies_technology ADD COLUMN productsinputlocation_id bigint;
+ALTER TABLE technologies_technology
+ADD CONSTRAINT technology_productsinputlocation_fkey FOREIGN KEY (productsinputlocation_id)
+REFERENCES materialflow_location (id);
+
+ALTER TABLE technologies_technology ADD COLUMN isdivisionlocation boolean;
+ALTER TABLE technologies_technology ADD COLUMN isdivisioninputlocation boolean;
+ALTER TABLE technologies_technology ADD COLUMN isdivisionoutputlocation boolean;
+
+-- end
+
+-- Table: technologies_operationproductincomponent
+-- changed: 02.08.2014
+
+ALTER TABLE technologies_operationproductincomponent ADD COLUMN componentslocation_id bigint;
+ALTER TABLE technologies_operationproductincomponent
+ADD CONSTRAINT technology_componentslocation_fkey FOREIGN KEY (componentslocation_id)
+REFERENCES materialflow_location (id);
+
+ALTER TABLE technologies_operationproductincomponent ADD COLUMN componentsoutputlocation_id bigint;
+ALTER TABLE technologies_operationproductincomponent
+ADD CONSTRAINT technology_componentsoutputlocation_fkey FOREIGN KEY (componentsoutputlocation_id)
+REFERENCES materialflow_location (id);
+
+ALTER TABLE technologies_operationproductincomponent ADD COLUMN isdivisionlocation boolean;
+ALTER TABLE technologies_operationproductincomponent ADD COLUMN isdivisionoutputlocation boolean;
+
+ALTER TABLE technologies_operationproductincomponent ADD COLUMN flowtypeincomponent character varying(255);
+ALTER TABLE technologies_operationproductincomponent ALTER COLUMN flowtypeincomponent SET DEFAULT '01withinTheProcess'::character varying;
+
+-- end
+
+-- Table: technologies_operationproductoutcomponent
+-- changed: 02.08.2014
+ALTER TABLE technologies_operationproductoutcomponent ADD COLUMN productsinputlocation_id bigint;
+ALTER TABLE technologies_operationproductoutcomponent
+ADD CONSTRAINT technology_productsinputlocation_fkey FOREIGN KEY (productsinputlocation_id)
+REFERENCES materialflow_location (id);
+
+ALTER TABLE technologies_operationproductoutcomponent ADD COLUMN isdivisioninputlocation boolean;
+
+ALTER TABLE technologies_operationproductoutcomponent ADD COLUMN flowtypeoutcomponent character varying(255);
+ALTER TABLE technologies_operationproductoutcomponent ALTER COLUMN flowtypeoutcomponent SET DEFAULT '01withinTheProcess'::character varying;
+
+-- end
