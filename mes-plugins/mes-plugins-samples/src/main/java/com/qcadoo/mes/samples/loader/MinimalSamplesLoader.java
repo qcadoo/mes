@@ -173,6 +173,10 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
                 values.get("supportsothertechnologiesworkstationtypes"));
         productionLine.setField("quantityForOtherWorkstationTypes", values.get("quantityforotherworkstationtypes"));
 
+        if (isEnabledOrEnabling("goodFood")) {
+            productionLine.setField("eurocodSymbol", values.get("eurocodsymbol"));
+        }
+
         productionLine = productionLine.getDataDefinition().save(productionLine);
         if (isEnabledOrEnabling("goodFood")) {
             DataDefinition workstationTypeDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
