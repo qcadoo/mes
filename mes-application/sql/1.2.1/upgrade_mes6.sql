@@ -1,4 +1,3 @@
--- Plugin: masterorders
 -- Table: masterorders_masterorder, masterorderproduct 
 -- changed: 26.09.2013
 -- author: kasi
@@ -10,7 +9,6 @@ ALTER TABLE masterorders_masterorderproduct ALTER COLUMN cumulatedorderquantity 
 -- end
 
 
--- Plugin: costcalculation
 -- Table: costcalculation_costcalculation
 -- changed: 26.09.2013
 -- author: kasi
@@ -32,7 +30,6 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN materialcostmarginvalue
 -- end
 
 
--- Plugin: technologies
 -- Table: technologies_operationproductincomponent, technologies_operationproductoutcomponent
 -- changed: 26.09.2013
 -- author: lupo
@@ -44,7 +41,6 @@ ALTER TABLE technologies_operationproductoutcomponent ALTER COLUMN quantity TYPE
 -- end
 
 
--- Plugin: orders
 -- Table: orders_order
 -- changed: 26.09.2013
 -- author: lupo
@@ -59,7 +55,6 @@ ALTER TABLE orders_order ALTER COLUMN remainingamountofproducttoproduce TYPE num
 -- end
 
 
--- Plugin: basicproductioncounting
 -- Table: basicproductioncounting_productioncountingquantity
 -- changed: 30.09.2013
 -- author: lupo
@@ -72,7 +67,6 @@ ALTER TABLE basicproductioncounting_basicproductioncounting ALTER COLUMN produce
 -- end
 
 
--- Plugin: productioncounting
 -- Table: productioncounting_balanceoperationproductincomponent, productioncounting_balanceoperationproductoutcomponent, productioncounting_recordoperationproductincomponent, productioncounting_recordoperationproductoutcomponent
 -- changed: 30.09.2013
 -- author: lupo
@@ -134,7 +128,6 @@ ALTER TABLE productioncounting_recordoperationproductoutcomponent ALTER COLUMN b
 -- end
 
 
--- Plugin: productioncountingwithcosts
 -- Table: productioncountingwithcosts_operationcostcomponent, productioncountingwithcosts_operationpieceworkcostcomponent, productioncountingwithcosts_technologyinstoperproductincomp
 -- changed: 27.09.2013
 -- author: lupo
@@ -155,3 +148,4 @@ ALTER TABLE productioncountingwithcosts_technologyinstoperproductincomp ALTER CO
 ALTER TABLE productioncountingwithcosts_technologyinstoperproductincomp ALTER COLUMN balance TYPE numeric(19, 5);
 
 -- end
+
