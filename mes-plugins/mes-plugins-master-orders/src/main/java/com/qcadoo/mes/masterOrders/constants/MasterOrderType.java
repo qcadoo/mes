@@ -1,10 +1,7 @@
 package com.qcadoo.mes.masterOrders.constants;
 
-import java.util.Locale;
-
 import org.apache.commons.lang.StringUtils;
 
-import com.google.common.base.Preconditions;
 import com.qcadoo.model.api.Entity;
 
 public enum MasterOrderType {
@@ -22,7 +19,6 @@ public enum MasterOrderType {
     }
 
     public static MasterOrderType of(final Entity masterOrderEntity) {
-        Preconditions.checkArgument(masterOrderEntity != null, "Missing entity");
         return parseString(masterOrderEntity.getStringField(MasterOrderFields.MASTER_ORDER_TYPE));
     }
 

@@ -2,7 +2,6 @@ package com.qcadoo.mes.masterOrders.hooks;
 
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.COMPANY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -115,8 +114,8 @@ public class MasterOrderHooks {
 
         Entity masterOrderFromDB = masterOrderDD.get(masterOrderId);
 
-        if (!(masterOrderFromDB.getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue()) && masterOrder
-                .getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.MANY_PRODUCTS.getStringValue()))) {
+        MasterOrderType existingMasterOrderType = MasterOrderType.of(masterOrderFromDB);
+        if (existingMasterOrderType != MasterOrderType.ONE_PRODUCT && existingMasterOrderType != MasterOrderType.MANY_PRODUCTS) {
             return;
         }
 
@@ -130,6 +129,7 @@ public class MasterOrderHooks {
 
         masterOrder.setField(MasterOrderFields.PRODUCT, null);
         masterOrder.setField(MasterOrderFields.TECHNOLOGY, null);
+        masterOrder.setField(MasterOrderFields.MASTER_ORDER_QUANTITY, null);
         masterOrder.setField(MasterOrderFields.MASTER_ORDER_PRODUCTS, Lists.newArrayList(masterOrderProduct));
     }
 

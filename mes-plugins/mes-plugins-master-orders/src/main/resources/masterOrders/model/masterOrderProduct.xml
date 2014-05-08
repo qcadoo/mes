@@ -15,7 +15,7 @@
 					method="checkIfCanChangeTechnology" />
 		</belongsTo>
 
-		<belongsTo name="masterOrder" model="masterOrder" />
+		<belongsTo name="masterOrder" model="masterOrder" required="true" />
 
 		<decimal name="masterOrderQuantity">
 			<validatesRange from="0" />

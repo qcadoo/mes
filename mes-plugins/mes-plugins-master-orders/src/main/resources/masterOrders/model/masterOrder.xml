@@ -64,7 +64,7 @@
 		         plugin="orders" cascade="nullify" />
 
 		<hasMany name="masterOrderProducts" joinField="masterOrder"
-		         model="masterOrderProduct" />
+		         model="masterOrderProduct" cascade="delete" />
 
 	</fields>
 	<hooks>
