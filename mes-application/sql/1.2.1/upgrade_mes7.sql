@@ -34,3 +34,4 @@ ALTER TABLE productioncounting_productionrecord ADD COLUMN shiftstartday date;
 ALTER TABLE basic_company ADD COLUMN paymentform character varying(255);
 
 -- end
+
