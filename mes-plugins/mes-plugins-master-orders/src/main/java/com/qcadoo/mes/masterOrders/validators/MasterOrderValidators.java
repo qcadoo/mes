@@ -1,8 +1,12 @@
 package com.qcadoo.mes.masterOrders.validators;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.like;
+import static com.qcadoo.model.api.search.SearchRestrictions.ne;
+import static com.qcadoo.model.api.search.SearchRestrictions.not;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -11,13 +15,17 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class MasterOrderValidators {
@@ -25,10 +33,14 @@ public class MasterOrderValidators {
     @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public boolean checkIfCanChangeCompany(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
             final Entity masterOrder, final Object fieldOldValue, final Object fieldNewValue) {
+
         if (isNewlyCreated(masterOrder) || areSame((Entity) fieldOldValue, (Entity) fieldNewValue)
-                || doesNotHaveAnyPendingOrder(masterOrder)) {
+                || doesNotHaveAnyPendingOrder(masterOrder) || checkIfCanSetCompany(masterOrder, fieldNewValue)) {
             return true;
         }
 
@@ -69,6 +81,29 @@ public class MasterOrderValidators {
     private boolean doesNotHaveAnyPendingOrder(final Entity masterOrder) {
         return masterOrderOrdersDataProvider.countBelongingOrders(masterOrder.getId(),
                 ne(OrderFields.STATE, OrderState.PENDING.getStringValue())) == 0;
+    }
+
+    public boolean checkIfCanSetCompany(final Entity masterOrder, final Object fieldNewValue) {
+        boolean isValid = true;
+        List<Entity> orders = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
+                .add(SearchRestrictions.belongsTo(OrderFieldsMO.MASTER_ORDER, masterOrder)).list().getEntities();
+        if (orders.isEmpty()) {
+            return isValid;
+        }
+        Entity companyInMasterOrder = (Entity) fieldNewValue;
+        if (companyInMasterOrder == null) {
+            return isValid;
+        }
+        for (Entity order : orders) {
+            Entity companyInOrder = order.getBelongsToField(OrderFields.COMPANY);
+            if (companyInOrder == null) {
+                isValid = false;
+            } else if (!companyInMasterOrder.getId().equals(companyInOrder.getId())) {
+                isValid = false;
+            }
+        }
+        return isValid;
+
     }
 
     public boolean checkIfCanChangeTechnology(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
