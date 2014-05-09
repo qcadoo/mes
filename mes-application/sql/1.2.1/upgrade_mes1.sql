@@ -395,3 +395,4 @@ CREATE TABLE productionpershift_reasontypeofcorrectionplan
 UPDATE orders_order SET finishdate = startdate + time '00:00:01' WHERE startdate >= finishdate;
 
 -- end
+
