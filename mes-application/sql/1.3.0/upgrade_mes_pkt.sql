@@ -127,23 +127,23 @@ ALTER TABLE productioncounting_productiontrackingstatechange RENAME COLUMN produ
 -- end
 
 
--- Table: operationaltasksfororders_techopercompoperationaltasks
+-- Table: operationaltasksfororders_techopercompoperationaltask
 -- changed: 22.06.2013
 
-CREATE TABLE operationaltasksfororders_techopercompoperationaltasks
+CREATE TABLE operationaltasksfororders_techopercompoperationaltask
 (
   id bigint NOT NULL,
   technologyoperationcomponent_id bigint,
-  CONSTRAINT operationaltasksfororders_techopercompoperationaltasks_pkey PRIMARY KEY (id),
-  CONSTRAINT techopercompoperationaltasks_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
+  CONSTRAINT operationaltasksfororders_techopercompoperationaltask_pkey PRIMARY KEY (id),
+  CONSTRAINT techopercompoperationaltask_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id)
       REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE
 );
 
-ALTER TABLE operationaltasks_operationaltask ADD COLUMN techopercompoperationaltasks_id bigint;      
+ALTER TABLE operationaltasks_operationaltask ADD COLUMN techopercompoperationaltask_id bigint;      
 
 ALTER TABLE operationaltasks_operationaltask
-  ADD CONSTRAINT operationaltask_techopercompoperationaltasks_fkey FOREIGN KEY (techopercompoperationaltasks_id)
-      REFERENCES operationaltasksfororders_techopercompoperationaltasks (id) DEFERRABLE;
+  ADD CONSTRAINT operationaltask_techopercompoperationaltask_fkey FOREIGN KEY (techopercompoperationaltask_id)
+      REFERENCES operationaltasksfororders_techopercompoperationaltask (id) DEFERRABLE;
 
 -- end
 
@@ -244,18 +244,6 @@ ALTER TABLE productioncountingwithcosts_technologyinstoperproductincomp RENAME T
 -- end
 
 
--- Table: costnormsforoperation_calculationoperationcomponent
--- changed: 02.07.2013
-
-ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN tj;
-ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN tpz;
-ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN machineutilization;
-ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN laborutilization;
-ALTER TABLE costnormsforoperation_calculationoperationcomponent DROP COLUMN timenextoperation;
-
--- end
-
-
 -- Table: productionpershift_progressforday
 -- changed: 15.07.2013
 
@@ -302,15 +290,6 @@ DROP TABLE workplans_orderoperationoutputcolumn;
 
 ALTER TABLE basic_parameter ADD COLUMN locktechnologytree boolean DEFAULT false;
 ALTER TABLE basic_parameter ADD COLUMN lockProductionProgress boolean DEFAULT false;
-
--- end
-
-
--- Table: basicproductioncounting_productioncountingquantity
--- changed: 16.09.2013
-
-ALTER TABLE basicproductioncounting_productioncountingquantity DROP COLUMN operationproductincomponent_id;
-ALTER TABLE basicproductioncounting_productioncountingquantity DROP COLUMN operationproductoutcomponent_id;
 
 -- end
 
