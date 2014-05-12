@@ -47,4 +47,6 @@ public final class ParameterFieldsPC {
 
     public static final String GENERATE_PRODUCTION_RECORD_NUMBER_FROM_ORDER_NUMBER = "generateProductionRecordNumberFromOrderNumber";
 
+    public static final String VALIDATE_PRODUCTION_RECORD_TIMES = "validateProductionRecordTimes";
+
 }

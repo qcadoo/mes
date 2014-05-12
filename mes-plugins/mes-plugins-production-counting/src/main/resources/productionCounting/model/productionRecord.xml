@@ -97,6 +97,10 @@
         <validatesWith
                 class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
                 method="checkIfOperationIsSet" />
+        <validatesWith
+                class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+                method="checkIfTimesIsSet" />
+        
     </hooks>
     <identifier expression="#number" />
 </model>

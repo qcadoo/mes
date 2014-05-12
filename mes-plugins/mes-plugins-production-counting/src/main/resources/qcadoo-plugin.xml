@@ -165,6 +165,9 @@
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="generateProductionRecordNumberFromOrderNumber" />
 		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="validateProductionRecordTimes" />
+		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionRecords" model="productionRecord"
 				joinField="order" plugin="productionCounting" cascade="delete" />
@@ -207,6 +210,9 @@
 		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
 			method="checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse" />
+		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
+			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
+			method="checkIfRegisterProductionTimeIsSet" />
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"

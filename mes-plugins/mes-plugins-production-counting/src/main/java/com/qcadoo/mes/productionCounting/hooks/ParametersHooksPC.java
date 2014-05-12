@@ -28,8 +28,11 @@ import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
@@ -47,6 +50,24 @@ public class ParametersHooksPC {
             registerPiecework.setEnabled(true);
         }
         registerPiecework.requestComponentUpdateState();
+    }
+
+    public void checkIfRegisterProductionTimeIsSet(final ViewDefinitionState viewDefinitionState) {
+        CheckBoxComponent registerProductionTime = (CheckBoxComponent) viewDefinitionState
+                .getComponentByReference(ParameterFieldsPC.REGISTER_PRODUCTION_TIME);
+        CheckBoxComponent validateProductionRecordTimes = (CheckBoxComponent) viewDefinitionState
+                .getComponentByReference(ParameterFieldsPC.VALIDATE_PRODUCTION_RECORD_TIMES);
+        if (registerProductionTime.isChecked()) {
+            validateProductionRecordTimes.setEnabled(true);
+        } else {
+            validateProductionRecordTimes.setEnabled(false);
+            validateProductionRecordTimes.setChecked(false);
+            validateProductionRecordTimes.requestComponentUpdateState();
+        }
+    }
+
+    public void checkIfRegisterProductionTimeIsSet(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        checkIfRegisterProductionTimeIsSet(view);
     }
 
 }

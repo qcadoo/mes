@@ -128,8 +128,8 @@
 
 							<option type="required" value="true" />
 
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
+							<option type="searchable" value="name,number,state" />
+							<option type="orderable" value="name,number,state" />
 
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
