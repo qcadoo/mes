@@ -33,10 +33,10 @@
 	<hooks>
 		<validatesWith
 				class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
-				method="checkIfEntityAlreadyExistsForProductAndMasterOrder" />
+				method="onValidate" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
-		        method="countCumulatedOrderQuantity" />
+		        method="onView" />
 		<onDelete class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
-		          method="checkAssignedOrder" />
+		          method="onDelete" />
 	</hooks>
 </model>

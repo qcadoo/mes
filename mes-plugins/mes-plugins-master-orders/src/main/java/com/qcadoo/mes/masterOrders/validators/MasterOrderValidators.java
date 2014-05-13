@@ -15,17 +15,13 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
-import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class MasterOrderValidators {
@@ -33,8 +29,30 @@ public class MasterOrderValidators {
     @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    public boolean onValidate(final DataDefinition masterOrderDD, final Entity masterOrder) {
+        boolean isValid = true;
+        isValid = checkIfProductIsSelected(masterOrderDD, masterOrder) && isValid;
+        isValid = checkIfCanChangeMasterOrderPrefixField(masterOrder) && isValid;
+        return isValid;
+    }
+
+    private boolean checkIfProductIsSelected(final DataDefinition dataDefinition, final Entity masterOrder) {
+        if (isNotOfOneProductType(masterOrder)) {
+            return true;
+        }
+        if (masterOrder.getBelongsToField(MasterOrderFields.PRODUCT) == null) {
+            masterOrder.addError(dataDefinition.getField(MasterOrderFields.PRODUCT),
+                    "masterOrders.masterOrder.product.haveToBeSelected");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkIfCanChangeMasterOrderPrefixField(final Entity masterOrder) {
+        Boolean orderNumbersPrefixIsNotRequired = !masterOrder.getBooleanField(MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER);
+        return isNewlyCreated(masterOrder) || orderNumbersPrefixIsNotRequired
+                || checkIfEachOrderHasNumberStartingWithMasterOrderNumber(masterOrder);
+    }
 
     public boolean checkIfCanChangeCompany(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
             final Entity masterOrder, final Object fieldOldValue, final Object fieldNewValue) {
@@ -48,45 +66,9 @@ public class MasterOrderValidators {
         return false;
     }
 
-    public boolean checkIfCanChangeDeadline(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
-            final Entity masterOrder, final Object fieldOldValue, final Object fieldNewValue) {
-        if (isNewlyCreated(masterOrder) || areSame(fieldOldValue, fieldNewValue) || doesNotHaveAnyPendingOrder(masterOrder)) {
-            return true;
-        }
-        masterOrder.addError(fieldDefinition, "masterOrders.masterOrder.deadline.orderAlreadyExists");
-        return false;
-    }
-
-    public boolean checkIfCanChangeMasterOrderPrefixField(final DataDefinition masterOrderDD, final Entity masterOrder) {
-        Boolean orderNumbersPrefixIsNotRequired = !masterOrder.getBooleanField(MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER);
-        return isNewlyCreated(masterOrder) || orderNumbersPrefixIsNotRequired
-                || checkIfEachOrderHasNumberStartingWithMasterOrderNumber(masterOrder);
-    }
-
-    private boolean checkIfEachOrderHasNumberStartingWithMasterOrderNumber(final Entity masterOrder) {
-        String newMasterOrderNumber = masterOrder.getStringField(MasterOrderFields.NUMBER);
-        SearchCriterion criteria = not(like(OrderFields.NUMBER, newMasterOrderNumber + "%"));
-        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder.getId(),
-                criteria);
-
-        if (unsupportedOrderNumbers.isEmpty()) {
-            return true;
-        }
-
-        addUnsupportedOrdersError(masterOrder, MasterOrderFields.NUMBER,
-                "masterOrders.order.number.alreadyExistsOrderWithWrongNumber", unsupportedOrderNumbers);
-        return false;
-    }
-
-    private boolean doesNotHaveAnyPendingOrder(final Entity masterOrder) {
-        return masterOrderOrdersDataProvider.countBelongingOrders(masterOrder.getId(),
-                ne(OrderFields.STATE, OrderState.PENDING.getStringValue())) == 0;
-    }
-
     public boolean checkIfCanSetCompany(final Entity masterOrder, final Object fieldNewValue) {
         boolean isValid = true;
-        List<Entity> orders = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                .add(SearchRestrictions.belongsTo(OrderFieldsMO.MASTER_ORDER, masterOrder)).list().getEntities();
+        List<Entity> orders = masterOrderOrdersDataProvider.findBelongingOrders(masterOrder, null, null, null);
         if (orders.isEmpty()) {
             return isValid;
         }
@@ -106,6 +88,35 @@ public class MasterOrderValidators {
 
     }
 
+    public boolean checkIfCanChangeDeadline(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
+            final Entity masterOrder, final Object fieldOldValue, final Object fieldNewValue) {
+        if (isNewlyCreated(masterOrder) || areSame(fieldOldValue, fieldNewValue) || doesNotHaveAnyPendingOrder(masterOrder)) {
+            return true;
+        }
+        masterOrder.addError(fieldDefinition, "masterOrders.masterOrder.deadline.orderAlreadyExists");
+        return false;
+    }
+
+    private boolean doesNotHaveAnyPendingOrder(final Entity masterOrder) {
+        return masterOrderOrdersDataProvider.countBelongingOrders(masterOrder,
+                ne(OrderFields.STATE, OrderState.PENDING.getStringValue())) == 0;
+    }
+
+    private boolean checkIfEachOrderHasNumberStartingWithMasterOrderNumber(final Entity masterOrder) {
+        String newMasterOrderNumber = masterOrder.getStringField(MasterOrderFields.NUMBER);
+        SearchCriterion criteria = not(like(OrderFields.NUMBER, newMasterOrderNumber + "%"));
+        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
+                criteria);
+
+        if (unsupportedOrderNumbers.isEmpty()) {
+            return true;
+        }
+
+        addUnsupportedOrdersError(masterOrder, MasterOrderFields.NUMBER,
+                "masterOrders.order.number.alreadyExistsOrderWithWrongNumber", unsupportedOrderNumbers);
+        return false;
+    }
+
     public boolean checkIfCanChangeTechnology(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
             final Entity masterOrder, final Object fieldOldValue, final Object fieldNewValue) {
         return isNewlyCreated(masterOrder) || isNotOfOneProductType(masterOrder)
@@ -114,7 +125,11 @@ public class MasterOrderValidators {
     }
 
     private boolean checkIfEachOrderSupportsNewTechnology(final Entity masterOrder, final Entity technology) {
-        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder.getId(),
+        if (technology == null) {
+            // since absence of technology in master order means 'wildcard technology'.
+            return true;
+        }
+        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
                 not(belongsTo(OrderFields.TECHNOLOGY_PROTOTYPE, technology)));
 
         if (unsupportedOrderNumbers.isEmpty()) {
@@ -134,7 +149,7 @@ public class MasterOrderValidators {
     }
 
     private boolean checkIfEachOrderSupportsNewProduct(final Entity masterOrder, final Entity product) {
-        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder.getId(),
+        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
                 not(belongsTo(OrderFields.PRODUCT, product)));
 
         if (unsupportedOrderNumbers.isEmpty()) {
@@ -146,18 +161,6 @@ public class MasterOrderValidators {
         return false;
     }
 
-    public boolean checkIfProductIsSelected(final DataDefinition dataDefinition, final Entity masterOrder) {
-        if (isNotOfOneProductType(masterOrder)) {
-            return true;
-        }
-        if (masterOrder.getBelongsToField(MasterOrderFields.PRODUCT) == null) {
-            masterOrder.addError(dataDefinition.getField(MasterOrderFields.PRODUCT),
-                    "masterOrders.masterOrder.product.haveToBeSelected");
-            return false;
-        }
-        return true;
-    }
-
     public boolean checkIfCanChangeType(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
             final Entity masterOrder, final Object fieldOldValue, final Object fieldNewValue) {
         if (isNewlyCreated(masterOrder)) {
@@ -166,19 +169,15 @@ public class MasterOrderValidators {
 
         MasterOrderType fromType = MasterOrderType.parseString((String) fieldOldValue);
         MasterOrderType toType = MasterOrderType.parseString((String) fieldNewValue);
-        if (transitionRequireEmptyOrders(fromType, toType) && masterOrderHasAnyOrders(masterOrder)) {
+        if (fromType != toType && masterOrderHasAnyOrders(masterOrder)) {
             masterOrder.addError(fieldDefinition, "masterOrders.masterOrder.alreadyHaveOrder");
             return false;
         }
         return true;
     }
 
-    private boolean transitionRequireEmptyOrders(final MasterOrderType fromType, final MasterOrderType toType) {
-        return fromType == MasterOrderType.UNDEFINED && toType == MasterOrderType.MANY_PRODUCTS;
-    }
-
     private boolean masterOrderHasAnyOrders(final Entity masterOrder) {
-        return masterOrderOrdersDataProvider.countBelongingOrders(masterOrder.getId(), null) > 0;
+        return masterOrderOrdersDataProvider.countBelongingOrders(masterOrder, null) > 0;
     }
 
     private void addUnsupportedOrdersError(final Entity targetEntity, final String errorTargetFieldName,
@@ -191,13 +190,12 @@ public class MasterOrderValidators {
         return masterOrder.getId() == null;
     }
 
-    private boolean isNotOfOneProductType(Entity masterOrder) {
+    private boolean isNotOfOneProductType(final Entity masterOrder) {
         return MasterOrderType.of(masterOrder) != MasterOrderType.ONE_PRODUCT;
     }
 
-    private <T extends Object> boolean areSame(final T newValue, final T oldValue) {
-        return (newValue == null && oldValue == null)
-                || (newValue != null && oldValue != null && ObjectUtils.equals(newValue, oldValue));
+    private boolean areSame(final Object newValue, final Object oldValue) {
+        return ObjectUtils.equals(newValue, oldValue);
     }
 
     private boolean areSame(final Entity newValue, final Entity oldValue) {

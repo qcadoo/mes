@@ -70,19 +70,14 @@
 	<hooks>
 		<validatesWith
 				class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-				method="checkIfProductIsSelected" />
-		<validatesWith
-				class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-				method="checkIfCanChangeMasterOrderPrefixField" />
+				method="onValidate" />
 		<onCreate class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-		          method="setExternalSynchronizedField" />
+		          method="onCreate" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-		        method="countCumulatedOrderQuantity" />
+		        method="onView" />
 		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-		        method="changedDeadlineAndInOrder" />
-		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-		        method="changedTypeFromOneToMany" />
+		        method="onSave" />
 		<onCopy class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-		        method="clearExternalFields" />
+		        method="onCopy" />
 	</hooks>
 </model>

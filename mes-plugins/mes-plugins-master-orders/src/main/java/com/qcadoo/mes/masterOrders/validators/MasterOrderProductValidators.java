@@ -4,7 +4,9 @@ import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields.MASTER_ORDER;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
+import static com.qcadoo.model.api.search.SearchRestrictions.and;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.not;
 
 import java.util.Collection;
 
@@ -30,7 +32,11 @@ public class MasterOrderProductValidators {
     @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
-    public boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
+    public boolean onValidate(final DataDefinition masterOrderDD, final Entity masterOrder) {
+        return checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderDD, masterOrder);
+    }
+
+    private boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
             final Entity masterOrderProduct) {
         SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD.find()
                 .add(belongsTo(MASTER_ORDER, masterOrderProduct.getBelongsToField(MASTER_ORDER)))
@@ -67,7 +73,7 @@ public class MasterOrderProductValidators {
         }
 
         Entity product = masterOrderProduct.getBelongsToField(MasterOrderFields.PRODUCT);
-        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder.getId(),
+        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
                 and(belongsTo(OrderFields.PRODUCT, product), not(belongsTo(OrderFields.TECHNOLOGY_PROTOTYPE, newTechnology))));
         if (unsupportedOrderNumbers.isEmpty()) {
             return true;
@@ -93,7 +99,7 @@ public class MasterOrderProductValidators {
             return true;
         }
 
-        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder.getId(),
+        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
                 belongsTo(OrderFields.PRODUCT, oldProductValue));
         if (unsupportedOrderNumbers.isEmpty()) {
             return true;
