@@ -48,6 +48,7 @@ import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFi
 import static java.util.Arrays.asList;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -126,6 +127,18 @@ public class ProductionRecordService {
             }
         }
         return StringUtils.strip(number.toString());
+    }
+
+    public boolean checkTimeRange(final DataDefinition productionRecordDD, final Entity productionRecord) {
+        Date timeRangeFrom = productionRecord.getDateField(ProductionRecordFields.TIME_RANGE_FROM);
+        Date timeRangeTo = productionRecord.getDateField(ProductionRecordFields.TIME_RANGE_TO);
+
+        if (timeRangeFrom == null || timeRangeTo == null || timeRangeTo.after(timeRangeFrom)) {
+            return true;
+        }
+        productionRecord.addError(productionRecordDD.getField(ProductionRecordFields.TIME_RANGE_TO),
+                "productionCounting.productionRecord.productionRecordError.timeRangeToBeforetumeRangeFrom");
+        return false;
     }
 
     public boolean checkTypeOfProductionRecording(final DataDefinition productionRecordDD, final Entity productionRecord) {
@@ -299,15 +312,18 @@ public class ProductionRecordService {
         if (parameter.getBooleanField(ParameterFieldsPC.VALIDATE_PRODUCTION_RECORD_TIMES)) {
             Integer machineTimie = productionRecord.getIntegerField(ProductionRecordFields.MACHINE_TIME);
             if (machineTimie == null || machineTimie == 0) {
+                isValid = false;
+
                 productionRecord.addError(productionRecordDD.getField(ProductionRecordFields.MACHINE_TIME),
                         "qcadooView.validate.field.error.missing");
             }
             Integer laborTime = productionRecord.getIntegerField(ProductionRecordFields.LABOR_TIME);
             if (laborTime == null || laborTime == 0) {
+                isValid = false;
+
                 productionRecord.addError(productionRecordDD.getField(ProductionRecordFields.LABOR_TIME),
                         "qcadooView.validate.field.error.missing");
             }
-            isValid = false;
         }
 
         return isValid;

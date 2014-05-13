@@ -74,6 +74,10 @@
 		<model:model model="operationPieceworkCostComponent" resource="model/operationPieceworkCostComponent.xml" />
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:boolean name="isSetFieldsFromParameter" persistent="false"/>
+		</model:model-field>
+				
+		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:boolean name="printCostNormsOfMaterials" default="true"/>
 		</model:model-field>
 		

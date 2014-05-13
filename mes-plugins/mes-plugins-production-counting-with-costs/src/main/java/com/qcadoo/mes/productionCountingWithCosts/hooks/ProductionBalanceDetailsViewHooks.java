@@ -67,6 +67,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
@@ -304,6 +305,11 @@ public class ProductionBalanceDetailsViewHooks {
     public void setTheFieldBasedOnParameters(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntityId() == null) {
+            CheckBoxComponent isSetFieldsFromParameter = (CheckBoxComponent) view
+                    .getComponentByReference("isSetFieldsFromParameter");
+            if (isSetFieldsFromParameter.isChecked()) {
+                return;
+            }
             Entity parameter = parameterService.getParameter();
 
             FieldComponent printOperationNorms = (FieldComponent) view
@@ -313,9 +319,19 @@ public class ProductionBalanceDetailsViewHooks {
 
             FieldComponent calculateOperationsCostsMode = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
-            calculateOperationsCostsMode.setFieldValue(parameter.getField(ParameterFieldsPCWC.CALCULATE_OPERATION_COST_MODE_PB));
-            calculateOperationsCostsMode.requestComponentUpdateState();
+            if (parameter.getField(ParameterFieldsPCWC.CALCULATE_OPERATION_COST_MODE_PB) != null) {
+                calculateOperationsCostsMode.setFieldValue(parameter
+                        .getField(ParameterFieldsPCWC.CALCULATE_OPERATION_COST_MODE_PB));
+                calculateOperationsCostsMode.requestComponentUpdateState();
+            }
+            FieldComponent calculateMaterialCostsMode = (FieldComponent) view
+                    .getComponentByReference("calculateMaterialCostsMode");
+            if (parameter.getField(ParameterFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE_PB) != null) {
 
+                calculateMaterialCostsMode
+                        .setFieldValue(parameter.getField(ParameterFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE_PB));
+                calculateMaterialCostsMode.requestComponentUpdateState();
+            }
             FieldComponent includeTPZ = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.INCLUDE_TPZ);
             includeTPZ.setFieldValue(parameter.getBooleanField(ParameterFieldsPCWC.INCLUDE_TPZ_PB));
             includeTPZ.requestComponentUpdateState();
@@ -333,8 +349,11 @@ public class ProductionBalanceDetailsViewHooks {
 
             FieldComponent sourceOfMaterialCosts = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS);
-            sourceOfMaterialCosts.setFieldValue(parameter.getField(ParameterFieldsPCWC.SOURCE_OF_MATERIAL_COSTS_PB));
-            sourceOfMaterialCosts.requestComponentUpdateState();
+            if (parameter.getField(ParameterFieldsPCWC.SOURCE_OF_MATERIAL_COSTS_PB) != null) {
+
+                sourceOfMaterialCosts.setFieldValue(parameter.getField(ParameterFieldsPCWC.SOURCE_OF_MATERIAL_COSTS_PB));
+                sourceOfMaterialCosts.requestComponentUpdateState();
+            }
 
             FieldComponent averageMachineHourlyCost = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST);
@@ -365,7 +384,8 @@ public class ProductionBalanceDetailsViewHooks {
             additionalOverhead.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
                     .getDecimalField(ParameterFieldsPCWC.ADDITIONAL_OVERHEAD_PB))));
             additionalOverhead.requestComponentUpdateState();
-
+            isSetFieldsFromParameter.setFieldValue(true);
+            isSetFieldsFromParameter.requestComponentUpdateState();
         }
     }
 }

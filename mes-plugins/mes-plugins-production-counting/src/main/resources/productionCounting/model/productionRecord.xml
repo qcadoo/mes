@@ -39,8 +39,8 @@
         <belongsTo name="shift" model="shift" plugin="basic" />
         <date name="shiftStartDay" />
 
-        <date name="timeRangeFrom" />
-        <date name="timeRangeTo" />
+        <datetime name="timeRangeFrom" />
+        <datetime name="timeRangeTo" />
 
         <boolean name="lastStateChangeFails" default="false" copyable="false" />
         <string name="lastStateChangeFailCause" copyable="false" />
@@ -100,6 +100,9 @@
         <validatesWith
                 class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
                 method="checkIfTimesIsSet" />
+		<validatesWith
+                class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+                method="checkTimeRange" />
         
     </hooks>
     <identifier expression="#number" />
