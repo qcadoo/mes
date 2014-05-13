@@ -16,6 +16,7 @@ CREATE TABLE productioncounting_staffworktime
 
 -- end
 
+
 -- Table: basic_parameter
 -- changed: 24.01.2014
 
@@ -65,7 +66,5 @@ ALTER TABLE basic_parameter ADD COLUMN averagemachinehourlycostpb numeric(12,5);
 ALTER TABLE basic_parameter ADD COLUMN includeadditionaltimepb boolean;
 ALTER TABLE basic_parameter ALTER COLUMN includeadditionaltimepb SET DEFAULT true;
 
-
-
-
 -- end
+
