@@ -87,6 +87,10 @@
 			type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologyDetailsHooksCC"
 			method="updateViewCostsCalculationButtonState" />
 
+		<view:view-hook plugin="orders" view="orderDetails"
+		                type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.OrderDetailsHooksCC"
+		                method="onBeforeRender" />
+
 		<view:view-listener plugin="technologies" view="technologyDetails"
 			component="form" event="showCostCalculateFromTechnology"
 			class="com.qcadoo.mes.costCalculation.listeners.TechnologyDetailsListenersCC"
