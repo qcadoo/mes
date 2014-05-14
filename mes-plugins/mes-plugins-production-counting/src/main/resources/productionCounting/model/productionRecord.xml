@@ -97,9 +97,6 @@
         <validatesWith
                 class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
                 method="checkIfOperationIsSet" />
-        <validatesWith
-                class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-                method="checkIfTimesIsSet" />
 		<validatesWith
                 class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
                 method="checkTimeRange" />

@@ -28,9 +28,14 @@ import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCo
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.*;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.idNe;
+import static com.qcadoo.model.api.search.SearchRestrictions.ne;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,11 +46,14 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.internal.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordStateChangeFields;
@@ -92,6 +100,9 @@ public final class ProductionRecordBasicListenerService {
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void onLeavingDraft(final StateChangeContext stateChangeContext) {
         Entity productionRecord = stateChangeContext.getOwner();
         productionRecord.setField(ProductionRecordFields.LAST_STATE_CHANGE_FAILS, false);
@@ -102,6 +113,7 @@ public final class ProductionRecordBasicListenerService {
     public void validationOnAccept(final StateChangeContext stateChangeContext) {
         checkIfRecordOperationProductComponentsWereFilled(stateChangeContext);
         checkIfExistsFinalRecord(stateChangeContext);
+        checkIfTimesIsSet(stateChangeContext);
     }
 
     public void onAccept(final StateChangeContext stateChangeContext) {
@@ -115,6 +127,27 @@ public final class ProductionRecordBasicListenerService {
         final Entity productionRecord = stateChangeContext.getOwner();
         updateBasicProductionCounting(productionRecord, new Subtraction());
         setOrderDoneQuantity(productionRecord);
+    }
+
+    public void checkIfTimesIsSet(final StateChangeContext stateChangeContext) {
+        final Entity productionRecord = stateChangeContext.getOwner();
+        Entity orderEntity = productionRecord.getBelongsToField(ProductionRecordFields.ORDER);
+        Entity parameter = parameterService.getParameter();
+        if (parameter.getBooleanField(ParameterFieldsPC.VALIDATE_PRODUCTION_RECORD_TIMES)
+                && orderEntity.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
+            Integer machineTimie = productionRecord.getIntegerField(ProductionRecordFields.MACHINE_TIME);
+            if (machineTimie == null || machineTimie == 0) {
+                stateChangeContext.addFieldValidationError(ProductionRecordFields.MACHINE_TIME,
+                        "qcadooView.validate.field.error.missing");
+            }
+            Integer laborTime = productionRecord.getIntegerField(ProductionRecordFields.LABOR_TIME);
+            if (laborTime == null || laborTime == 0) {
+                stateChangeContext.addFieldValidationError(ProductionRecordFields.LABOR_TIME,
+                        "qcadooView.validate.field.error.missing");
+
+            }
+        }
+
     }
 
     private void checkIfRecordOperationProductComponentsWereFilled(final StateChangeContext stateChangeContext) {

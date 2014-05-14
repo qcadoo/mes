@@ -306,29 +306,6 @@ public class ProductionRecordService {
         return true;
     }
 
-    public boolean checkIfTimesIsSet(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        boolean isValid = true;
-        Entity parameter = parameterService.getParameter();
-        if (parameter.getBooleanField(ParameterFieldsPC.VALIDATE_PRODUCTION_RECORD_TIMES)) {
-            Integer machineTimie = productionRecord.getIntegerField(ProductionRecordFields.MACHINE_TIME);
-            if (machineTimie == null || machineTimie == 0) {
-                isValid = false;
-
-                productionRecord.addError(productionRecordDD.getField(ProductionRecordFields.MACHINE_TIME),
-                        "qcadooView.validate.field.error.missing");
-            }
-            Integer laborTime = productionRecord.getIntegerField(ProductionRecordFields.LABOR_TIME);
-            if (laborTime == null || laborTime == 0) {
-                isValid = false;
-
-                productionRecord.addError(productionRecordDD.getField(ProductionRecordFields.LABOR_TIME),
-                        "qcadooView.validate.field.error.missing");
-            }
-        }
-
-        return isValid;
-    }
-
     public final void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component,
             final String[] args) {
         fillShiftAndDivisionField(view);
