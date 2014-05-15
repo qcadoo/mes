@@ -33,11 +33,8 @@ public class OrderDetailsHooksCC {
             return;
         }
         Entity orderTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if (orderTechnology == null) {
-            return;
-        }
-
-        performCostCalculationButton.setEnabled(SUPPORTED_TECHNOLOGY_STATES.contains(TechnologyState.of(orderTechnology)));
+        boolean enabled = orderTechnology != null && SUPPORTED_TECHNOLOGY_STATES.contains(TechnologyState.of(orderTechnology));
+        performCostCalculationButton.setEnabled(enabled);
         performCostCalculationButton.requestUpdate(true);
     }
 
