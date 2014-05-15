@@ -1,33 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<plugin plugin="productionCountingWithCosts" group="tracking" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<plugin plugin="productionCountingWithCosts" group="tracking"
+	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
@@ -68,263 +56,311 @@
 
 	<modules>
 		<localization:translation path="locales" />
-	
-		<model:model model="technologyOperationProductInComp" resource="model/technologyOperationProductInComp.xml" />
+
+		<model:model model="technologyOperationProductInComp"
+			resource="model/technologyOperationProductInComp.xml" />
 		<model:model model="operationCostComponent" resource="model/operationCostComponent.xml" />
-		<model:model model="operationPieceworkCostComponent" resource="model/operationPieceworkCostComponent.xml" />
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:boolean name="printCostNormsOfMaterials" default="true"/>
+		<model:model model="operationPieceworkCostComponent"
+			resource="model/operationPieceworkCostComponent.xml" />
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
+			<model:boolean name="printCostNormsOfMaterials"
+				default="true" />
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:enum name="sourceOfMaterialCosts"
 				values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
 				required="true" default="01currentGlobalDefinitionsInProduct" />
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:enum name="calculateMaterialCostsMode"
-				values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder" required="true"
-				default="01nominal" />
+				values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
+				required="true" default="01nominal" />
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="averageMachineHourlyCost">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="averageLaborHourlyCost">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="productionCostMargin" default="0">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="materialCostMargin" default="0">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="additionalOverhead" default="0">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="plannedComponentsCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="componentsCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="componentsCostsBalance">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:hasMany name="technologyOperationProductInComponents" joinField="productionBalance"
-				model="technologyOperationProductInComp" plugin="productionCountingWithCosts" 
-				cascade="delete" />
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
+			<model:hasMany name="technologyOperationProductInComponents"
+				joinField="productionBalance" model="technologyOperationProductInComp"
+				plugin="productionCountingWithCosts" cascade="delete" />
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="plannedMachineCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="machineCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="machineCostsBalance">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="plannedLaborCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="laborCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="laborCostsBalance">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:hasMany name="operationCostComponents" joinField="productionBalance"
-				model="operationCostComponent" plugin="productionCountingWithCosts" 
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
+			<model:hasMany name="operationCostComponents"
+				joinField="productionBalance" model="operationCostComponent" plugin="productionCountingWithCosts"
 				cascade="delete" />
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="plannedCyclesCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="cyclesCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="cyclesCostsBalance">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:hasMany name="operationPieceworkCostComponents" joinField="productionBalance"
-				model="operationPieceworkCostComponent" plugin="productionCountingWithCosts" 
-				cascade="delete" />
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
+			<model:hasMany name="operationPieceworkCostComponents"
+				joinField="productionBalance" model="operationPieceworkCostComponent"
+				plugin="productionCountingWithCosts" cascade="delete" />
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="registeredTotalTechnicalProductionCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="registeredTotalTechnicalProductionCostPerUnit">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="totalTechnicalProductionCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="totalTechnicalProductionCostPerUnit">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="balanceTechnicalProductionCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="balanceTechnicalProductionCostPerUnit">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:decimal name="productionCostMarginValue" default="0">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
+			<model:decimal name="productionCostMarginValue"
+				default="0">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="materialCostMarginValue" default="0">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="additionalOverheadValue" default="0">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="totalOverhead">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="totalCosts">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionCounting" model="productionBalance">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="totalCostPerUnit">
 				<model:validatesUnscaledValue max="14" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:decimal name="quantity">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:belongsTo name="technology" model="technology" plugin="technologies" />
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
+			<model:belongsTo name="technology" model="technology"
+				plugin="technologies" />
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:belongsTo name="productionLine" model="productionLine" plugin="productionLines" />
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
+			<model:belongsTo name="productionLine" model="productionLine"
+				plugin="productionLines" />
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
 			<model:boolean name="generatedWithCosts" />
 		</model:model-field>
-		 
-		<model:model-field plugin="costNormsForOperation" model="calculationOperationComponent">
-			<model:belongsTo name="productionBalance" model="productionBalance" plugin="productionCounting" />
+
+		<model:model-field plugin="costNormsForOperation"
+			model="calculationOperationComponent">
+			<model:belongsTo name="productionBalance" model="productionBalance"
+				plugin="productionCounting" />
 		</model:model-field>
-		
-		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:tree name="calculationOperationComponents" joinField="productionBalance"
-				model="calculationOperationComponent" plugin="costNormsForOperation"
-				cascade="delete" />
+
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
+			<model:tree name="calculationOperationComponents"
+				joinField="productionBalance" model="calculationOperationComponent"
+				plugin="costNormsForOperation" cascade="delete" />
 		</model:model-field>
-		
+
 		<!-- productionBalance parameter fields -->
-		
-				
+
+
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="printOperationNormsPB" default="true" />
 		</model:model-field>
-		
+
 		<model:model-field model="parameter" plugin="basic">
 			<model:enum name="calculateOperationCostsModePB" values="01hourly,02piecework"
 				required="true" default="01hourly" />
@@ -333,115 +369,122 @@
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="includeTPZPB" default="true" />
 		</model:model-field>
-		
+
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="includeAdditionalTimePB" default="true" />
 		</model:model-field>
-		
+
 		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="printCostNormsOfMaterialsPB" default="true"/>
+			<model:boolean name="printCostNormsOfMaterialsPB"
+				default="true" />
 		</model:model-field>
-		
-			<model:model-field model="parameter" plugin="basic">
+		<model:model-field plugin="productionCounting"
+			model="productionBalance">
+			<model:boolean name="isSetFieldsFromParameter"
+				persistent="false" />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
 			<model:enum name="sourceOfMaterialCostsPB"
 				values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
 				required="true" default="01currentGlobalDefinitionsInProduct" />
 		</model:model-field>
-		
+
 		<model:model-field model="parameter" plugin="basic">
 			<model:enum name="calculateMaterialCostsModePB"
-				values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder" required="true"
-				default="01nominal" />
+				values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
+				required="true" default="01nominal" />
 		</model:model-field>
-		
+
 		<model:model-field model="parameter" plugin="basic">
 			<model:decimal name="averageMachineHourlyCostPB">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
+
 		<model:model-field model="parameter" plugin="basic">
 			<model:decimal name="averageLaborHourlyCostPB">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
+
 		<model:model-field model="parameter" plugin="basic">
 			<model:decimal name="productionCostMarginPB" default="0">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
+
 		<model:model-field model="parameter" plugin="basic">
 			<model:decimal name="materialCostMarginPB" default="0">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		
+
 		<model:model-field model="parameter" plugin="basic">
 			<model:decimal name="additionalOverheadPB" default="0">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
-		</model:model-field>		
-		
+		</model:model-field>
+
 		<model:model-hook model="productionBalance" plugin="productionCounting">
 			<model:validatesWith
 				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceValidatorsPCWC"
 				method="validatesWith" />
 		</model:model-hook>
-		
+
 		<model:model-hook model="productionBalance" plugin="productionCounting">
 			<model:onCopy
 				class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceHooksPCWC"
 				method="onCopy" />
 		</model:model-hook>
-			
-		<view:view-ribbon-group resource="view/ribbonExtensions/productionBalancesList.xml" />
-		<view:view-ribbon-group resource="view/ribbonExtensions/productionBalanceDetails.xml" />
-		
+
+		<view:view-ribbon-group
+			resource="view/ribbonExtensions/productionBalancesList.xml" />
+		<view:view-ribbon-group
+			resource="view/ribbonExtensions/productionBalanceDetails.xml" />
+
 		<view:view-tab resource="view/tabExtensions/productionBalanceDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
-				
+
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="changeFieldsAndGridsVisibility" />
-		
+
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="changeAssumptionsVisibility" />
-			
+
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="fillCurrencyAndUnitFields" />
-		
+
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="disableFieldsAndGridsWhenGenerated" />
-		
-		<view:view-listener plugin="productionCounting" view="productionBalanceDetails"
-			component="calculateOperationCostsMode" event="onSelectedEntityChange"
+
+		<view:view-listener plugin="productionCounting"
+			view="productionBalanceDetails" component="calculateOperationCostsMode"
+			event="onSelectedEntityChange"
 			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="changeAssumptionsVisibility" />
-		
-		<view:view-hook plugin="basic" view="parameters"
-			type="beforeRender"
+
+		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
 			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ParameterPBDetailsViewHooks"
 			method="fillCurrencyAndUnitFields" />
-			
-		<view:view-hook  plugin="productionCounting" view="productionBalanceDetails"
+
+		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 			method="setTheFieldBasedOnParameters" />
-			
+
 		<custom:custom
 			class="com.qcadoo.mes.productionCountingWithCosts.ProductionCountingWithCostsOnStartupService" />
 	</modules>

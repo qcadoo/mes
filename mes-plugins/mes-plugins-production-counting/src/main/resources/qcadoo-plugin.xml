@@ -173,9 +173,6 @@
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="generateProductionRecordNumberFromOrderNumber" />
 		</model:model-field>
-		 <model:model-field plugin="productionCounting" model="productionBalance">
- 			<model:boolean name="isSetFieldsFromParameter" persistent="false"/>
- 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionTrackings" model="productionTracking"
 				joinField="order" plugin="productionCounting" cascade="delete" />

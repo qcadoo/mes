@@ -191,12 +191,6 @@
 								<layoutElement column="1" row="3">
 									<component type="checkbox" name="includeAdditionalTime"
 										field="includeAdditionalTime" reference="includeAdditionalTime" />
-
-									<component type="checkbox" name="isSetFieldsFromParameter"
-										visable="false" field="#{form}.isSetFieldsFromParameter"
-										reference="isSetFieldsFromParameter">
-									</component>
-
 								</layoutElement>
 							</component>
 
