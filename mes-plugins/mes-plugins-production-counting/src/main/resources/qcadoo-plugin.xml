@@ -117,7 +117,9 @@
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="autoCloseOrder" />
 		</model:model-field>
-		
+		<model:model-field model="parameter" plugin="basic">
+ 			<model:boolean name="validateProductionRecordTimes" />
+ 		</model:model-field>
 		<model:model-field model="staff" plugin="basic">
 			<model:hasMany name="productionTrackings" model="productionTracking"
 				joinField="staff" plugin="productionCounting" />
@@ -171,6 +173,9 @@
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="generateProductionRecordNumberFromOrderNumber" />
 		</model:model-field>
+		 <model:model-field plugin="productionCounting" model="productionBalance">
+ 			<model:boolean name="isSetFieldsFromParameter" persistent="false"/>
+ 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionTrackings" model="productionTracking"
 				joinField="order" plugin="productionCounting" cascade="delete" />
@@ -225,7 +230,9 @@
 		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
 			method="checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse" />
-
+		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
+ 			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
+ 			method="checkIfRegisterProductionTimeIsSet" />
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
 			method="setOrderDefaultValues" />

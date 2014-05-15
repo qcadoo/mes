@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
@@ -44,6 +45,7 @@ import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
@@ -87,6 +89,9 @@ public final class ProductionTrackingListenerService {
     @Autowired
     private OrderClosingHelper orderClosingHelper;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void onChangeFromDraftToAny(final StateChangeContext stateChangeContext) {
         Entity productionTracking = stateChangeContext.getOwner();
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS, false);
@@ -98,6 +103,7 @@ public final class ProductionTrackingListenerService {
         checkIfRecordOperationProductComponentsWereFilled(stateChangeContext);
         checkIfTimesWereFilled(stateChangeContext);
         checkIfExistsFinalRecord(stateChangeContext);
+        checkIfTimesIsSet(stateChangeContext);
     }
 
     public void onLeavingDraft(final StateChangeContext stateChangeContext) {
@@ -270,6 +276,27 @@ public final class ProductionTrackingListenerService {
             productionCounting.setField(BasicProductionCountingFields.PRODUCED_QUANTITY, result);
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);
         }
+    }
+
+    public void checkIfTimesIsSet(final StateChangeContext stateChangeContext) {
+        final Entity productionRecord = stateChangeContext.getOwner();
+        Entity orderEntity = productionRecord.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity parameter = parameterService.getParameter();
+        if (parameter.getBooleanField(ParameterFieldsPC.VALIDATE_PRODUCTION_RECORD_TIMES)
+                && orderEntity.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
+            Integer machineTimie = productionRecord.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
+            if (machineTimie == null || machineTimie == 0) {
+                stateChangeContext.addFieldValidationError(ProductionTrackingFields.MACHINE_TIME,
+                        "qcadooView.validate.field.error.missing");
+            }
+            Integer laborTime = productionRecord.getIntegerField(ProductionTrackingFields.LABOR_TIME);
+            if (laborTime == null || laborTime == 0) {
+                stateChangeContext.addFieldValidationError(ProductionTrackingFields.LABOR_TIME,
+                        "qcadooView.validate.field.error.missing");
+
+            }
+        }
+
     }
 
     private Entity getBasicProductionCounting(final Entity trackingOperationProductComponent,

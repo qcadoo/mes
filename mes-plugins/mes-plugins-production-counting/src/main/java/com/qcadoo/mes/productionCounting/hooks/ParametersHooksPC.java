@@ -28,7 +28,10 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
@@ -40,8 +43,7 @@ public class ParametersHooksPC {
     public void checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse(final ViewDefinitionState view) {
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view
                 .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-        FieldComponent registerPieceworkField = (FieldComponent) view
-                .getComponentByReference(OrderFieldsPC.REGISTER_PIECEWORK);
+        FieldComponent registerPieceworkField = (FieldComponent) view.getComponentByReference(OrderFieldsPC.REGISTER_PIECEWORK);
 
         String typeOfProductionRecording = (String) typeOfProductionRecordingField.getFieldValue();
 
@@ -53,6 +55,24 @@ public class ParametersHooksPC {
             registerPieceworkField.setEnabled(true);
         }
         registerPieceworkField.requestComponentUpdateState();
+    }
+
+    public void checkIfRegisterProductionTimeIsSet(final ViewDefinitionState viewDefinitionState) {
+        CheckBoxComponent registerProductionTime = (CheckBoxComponent) viewDefinitionState
+                .getComponentByReference(ParameterFieldsPC.REGISTER_PRODUCTION_TIME);
+        CheckBoxComponent validateProductionRecordTimes = (CheckBoxComponent) viewDefinitionState
+                .getComponentByReference(ParameterFieldsPC.VALIDATE_PRODUCTION_RECORD_TIMES);
+        if (registerProductionTime.isChecked()) {
+            validateProductionRecordTimes.setEnabled(true);
+        } else {
+            validateProductionRecordTimes.setEnabled(false);
+            validateProductionRecordTimes.setChecked(false);
+            validateProductionRecordTimes.requestComponentUpdateState();
+        }
+    }
+
+    public void checkIfRegisterProductionTimeIsSet(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        checkIfRegisterProductionTimeIsSet(view);
     }
 
 }

@@ -48,7 +48,11 @@
 			</layoutElement>
 			<layoutElement column="1" row="4">
 				<component type="checkbox" name="registerProductionTime"
-					reference="registerProductionTime" field="#{form}.registerProductionTime" />
+					reference="registerProductionTime" field="#{form}.registerProductionTime">
+ 					<listener event="onChange"
+ 						class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
+						method="checkIfRegisterProductionTimeIsSet" />
+				</component>			
 			</layoutElement>
 			<layoutElement column="1" row="5">
 				<component type="checkbox" name="registerPiecework"
@@ -71,7 +75,10 @@
 				<component type="checkbox" name="generateProductionRecordNumberFromOrderNumber"
 					reference="generateProductionRecordNumberFromOrderNumber" field="#{form}.generateProductionRecordNumberFromOrderNumber"/>
 			</layoutElement>
-			
+			<layoutElement column="3" row="3">
+ 				<component type="checkbox" name="validateProductionRecordTimes" hasDescription="true"
+ 					reference="validateProductionRecordTimes" field="#{form}.validateProductionRecordTimes"/>
+ 			</layoutElement>
 		</component>
 	</windowTab>
 	

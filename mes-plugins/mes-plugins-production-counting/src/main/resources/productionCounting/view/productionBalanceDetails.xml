@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view name="productionBalanceDetails" modelName="productionBalance"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
@@ -133,8 +120,8 @@
 
 							<option type="required" value="true" />
 
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
+							<option type="searchable" value="name,number,state" />
+							<option type="orderable" value="name,number,state" />
 
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
@@ -204,6 +191,12 @@
 								<layoutElement column="1" row="3">
 									<component type="checkbox" name="includeAdditionalTime"
 										field="includeAdditionalTime" reference="includeAdditionalTime" />
+
+									<component type="checkbox" name="isSetFieldsFromParameter"
+										visable="false" field="#{form}.isSetFieldsFromParameter"
+										reference="isSetFieldsFromParameter">
+									</component>
+
 								</layoutElement>
 							</component>
 
@@ -333,14 +326,11 @@
 
 			<component type="grid" name="operationsTime" reference="operationsTimeGrid"
 				source="#{form}.operationTimeComponents">
-				<option type="column" name="operationLevel"
-					fields="technologyOperationComponent"
+				<option type="column" name="operationLevel" fields="technologyOperationComponent"
 					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')" />
-				<option type="column" name="operationNumber"
-					fields="technologyOperationComponent"
+				<option type="column" name="operationNumber" fields="technologyOperationComponent"
 					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')" />
-				<option type="column" name="operationName"
-					fields="technologyOperationComponent"
+				<option type="column" name="operationName" fields="technologyOperationComponent"
 					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')" />
 				<option type="column" name="plannedMachineTime" fields="plannedMachineTime"
 					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#plannedMachineTime)" />
@@ -360,14 +350,11 @@
 
 			<component type="grid" name="operationsPiecework"
 				reference="operationsPieceworkGrid" source="#{form}.operationPieceworkComponents">
-				<option type="column" name="operationLevel"
-					fields="technologyOperationComponent"
+				<option type="column" name="operationLevel" fields="technologyOperationComponent"
 					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')" />
-				<option type="column" name="operationNumber"
-					fields="technologyOperationComponent"
+				<option type="column" name="operationNumber" fields="technologyOperationComponent"
 					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')" />
-				<option type="column" name="operationName"
-					fields="technologyOperationComponent"
+				<option type="column" name="operationName" fields="technologyOperationComponent"
 					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')" />
 				<option type="column" name="plannedCycles" fields="plannedCycles"
 					expression="#plannedCycles" />
