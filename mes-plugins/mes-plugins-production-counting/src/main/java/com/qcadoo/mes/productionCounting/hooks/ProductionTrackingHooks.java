@@ -31,7 +31,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.OperationProductsExtractor;
@@ -51,6 +54,9 @@ public class ProductionTrackingHooks {
 
     @Autowired
     private OperationProductsExtractor operationProductsExtractor;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void onCreate(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         setInitialState(productionTracking);
@@ -117,9 +123,35 @@ public class ProductionTrackingHooks {
 
     private void generateNumberIfNeeded(final Entity productionTracking) {
         if (productionTracking.getField(ProductionTrackingFields.NUMBER) == null) {
-            productionTracking.setField(ProductionTrackingFields.NUMBER, numberGeneratorService.generateNumber(
-                    ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING));
+            Entity parameter = parameterService.getParameter();
+            if (parameter.getBooleanField(ParameterFieldsPC.GENERATE_PRODUCTION_RECORD_NUMBER_FROM_ORDER_NUMBER)) {
+                String[] orderNumberSplited = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER)
+                        .getStringField(OrderFields.NUMBER).split("-");
+                if (orderNumberSplited.length > 1) {
+                    String productionRecordNumber = getProductionRecordNumber(orderNumberSplited);
+                    productionTracking.setField(ProductionTrackingFields.NUMBER, productionRecordNumber);
+                } else {
+                    productionTracking.setField(ProductionTrackingFields.NUMBER, numberGeneratorService.generateNumber(
+                            ProductionCountingConstants.PLUGIN_IDENTIFIER, productionTracking.getDataDefinition().getName()));
+                }
+            } else {
+                productionTracking.setField(ProductionTrackingFields.NUMBER, numberGeneratorService.generateNumber(
+                        ProductionCountingConstants.PLUGIN_IDENTIFIER, productionTracking.getDataDefinition().getName()));
+            }
         }
+    }
+
+    private String getProductionRecordNumber(final String[] orderNumberSplited) {
+        StringBuffer number = new StringBuffer();
+        for (int i = 0; i < orderNumberSplited.length; i++) {
+            if (i > 0) {
+                number.append(orderNumberSplited[i]);
+                if (i != orderNumberSplited.length - 1) {
+                    number.append("-");
+                }
+            }
+        }
+        return StringUtils.strip(number.toString());
     }
 
 }
