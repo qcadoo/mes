@@ -37,7 +37,6 @@ import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
@@ -45,7 +44,6 @@ import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -102,7 +100,6 @@ public class OrderHooks {
         isValid = isValid && checkOrderDates(orderDD, order);
         isValid = isValid && checkOrderPlannedQuantity(orderDD, order);
         isValid = isValid && productService.checkIfProductIsNotRemoved(orderDD, order);
-        isValid = isValid && checkChosenTechnologyState(orderDD, order);
         isValid = isValid && checkReasonOfStartDateCorrection(parameter, order);
         isValid = isValid && checkReasonOfEndDateCorrection(parameter, order);
         isValid = isValid && checkEffectiveDeviation(parameter, order);
@@ -165,33 +162,6 @@ public class OrderHooks {
         } else {
             return true;
         }
-    }
-
-    public boolean checkChosenTechnologyState(final DataDefinition orderDD, final Entity order) {
-        if (OrderState.DECLINED.getStringValue().equals(order.getStringField(OrderFields.STATE))
-                || OrderState.ABANDONED.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
-            return true;
-        }
-
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))
-                && order.isActive()) {
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-            if (technology == null) {
-                return true;
-            }
-
-            TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(TechnologyFields.STATE));
-
-            if (TechnologyState.CHECKED != technologyState && TechnologyState.ACCEPTED != technologyState) {
-                order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE),
-                        "orders.validate.technology.error.wrongState.checked");
-
-                return false;
-            }
-        }
-
-        return true;
     }
 
     public void fillProductionLine(final DataDefinition orderDD, final Entity order) {
