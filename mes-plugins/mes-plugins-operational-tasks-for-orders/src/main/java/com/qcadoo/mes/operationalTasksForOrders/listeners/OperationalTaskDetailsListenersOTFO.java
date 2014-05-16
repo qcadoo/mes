@@ -83,6 +83,8 @@ public class OperationalTaskDetailsListenersOTFO {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", technologyOperationComponent.getId());
 
+        parameters.put("window.permanentlyDisabled", true);
+
         String url = "../page/technologies/technologyOperationComponentDetails.html";
         view.redirectTo(url, false, true, parameters);
     }
