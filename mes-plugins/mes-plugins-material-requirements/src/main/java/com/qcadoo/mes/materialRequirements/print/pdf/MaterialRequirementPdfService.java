@@ -38,6 +38,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
@@ -93,11 +94,11 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         orderHeadersWithAlignments.put(translationService.translate("orders.order.name.label", locale), HeaderAlignment.LEFT);
         orderHeadersWithAlignments.put(translationService.translate("orders.order.product.label", locale), HeaderAlignment.LEFT);
         orderHeadersWithAlignments.put(
-                translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale),
-                HeaderAlignment.LEFT);
-        orderHeadersWithAlignments.put(
                 translationService.translate("materialRequirements.materialRequirement.report.order.plannedQuantity", locale),
                 HeaderAlignment.RIGHT);
+        orderHeadersWithAlignments.put(
+                translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale),
+                HeaderAlignment.LEFT);
 
         addOrderSeries(document, materialRequirement, orderHeadersWithAlignments);
 
@@ -160,7 +161,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
             table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuBold7Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             String unit = product.getStringField(ProductFields.UNIT);
             if (unit == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
@@ -186,9 +189,19 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             Entity product = (Entity) order.getField(OrderFields.PRODUCT);
             if (product == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
+                BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+                plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
                 table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
+                BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+                plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                 String unit = product.getStringField(ProductFields.UNIT);
                 if (unit == null) {
                     table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
@@ -196,9 +209,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                     table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
                 }
             }
-            BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-            plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
-            table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
+
         }
         document.add(table);
     }
