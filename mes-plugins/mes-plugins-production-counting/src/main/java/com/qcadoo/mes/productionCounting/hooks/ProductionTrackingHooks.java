@@ -102,7 +102,11 @@ public class ProductionTrackingHooks {
 
     private boolean shouldCopyProducts(final Entity productionTracking) {
         if (productionTracking.getId() == null) {
-            return true;
+            List<Entity> inputProduct = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+            List<Entity> outputProduct = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+            return inputProduct.isEmpty() && outputProduct.isEmpty();
         }
 
         Entity existingProductionTracking = productionTracking.getDataDefinition().get(productionTracking.getId());
