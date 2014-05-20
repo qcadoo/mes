@@ -210,3 +210,22 @@ ALTER TABLE basic_parameter ADD COLUMN workstationsquantityfromproductionline bo
 
 -- end
 
+
+-- Table: technologies_operation
+-- changed: 19.05.2014
+
+UPDATE technologies_operation SET assignedtooperation = '01workstations' WHERE workstationtype_id is not null;
+UPDATE technologies_operation SET assignedtooperation = '02workstationTypes' WHERE assignedtooperation is null;
+
+-- end
+
+
+-- Table: technologies_technologyoperationcomponent
+-- changed: 19.05.2014
+
+UPDATE technologies_technologyoperationcomponent SET assignedtooperation = '02workstationTypes' WHERE assignedtooperation is null;
+
+UPDATE technologies_technologyoperationcomponent SET quantityofworkstations = 1 WHERE quantityofworkstations is null;
+
+-- end
+
