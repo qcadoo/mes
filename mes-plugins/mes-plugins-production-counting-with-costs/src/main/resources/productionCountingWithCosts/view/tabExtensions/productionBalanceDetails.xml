@@ -680,9 +680,8 @@
 								hasLabel="false">
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
-
 							<component type="checkbox" name="isSetFieldsFromParameter"
-								visable="false" field="#{form}.isSetFieldsFromParameter"
+								defaultVisible="false" field="#{form}.isSetFieldsFromParameter"
 								reference="isSetFieldsFromParameter">
 							</component>
 						</layoutElement>

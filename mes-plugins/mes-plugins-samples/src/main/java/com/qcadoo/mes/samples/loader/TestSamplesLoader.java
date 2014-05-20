@@ -29,7 +29,11 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.jdom.Element;
 import org.joda.time.DateTime;
@@ -1077,6 +1081,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         component.setField("quantityOfWorkstations", values.get("quantityofworkstations"));
 
         component = techOperCompDD.save(component);
+        technology.getDataDefinition().save(technology);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test operation component {technology="
                     + ((Entity) component.getField(L_TECHNOLOGY_MODEL_TECHNOLOGY)).getField(L_NUMBER) + ", parent="

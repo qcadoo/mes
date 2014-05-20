@@ -317,7 +317,7 @@
 					<layoutElement column="1" row="7">
 						<component type="lookup" name="company" reference="company"
 							field="company">
-							<option type="column" name="name" fields="name" />
+							<option type="column" name="name" fields="name" link="true" />
 
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
