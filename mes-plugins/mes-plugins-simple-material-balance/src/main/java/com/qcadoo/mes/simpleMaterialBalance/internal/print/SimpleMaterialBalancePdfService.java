@@ -25,15 +25,24 @@ package com.qcadoo.mes.simpleMaterialBalance.internal.print;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
-import com.lowagie.text.*;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
@@ -130,13 +139,13 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.number", locale));
         simpleMaterialBalanceTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name", locale));
-        simpleMaterialBalanceTableHeader.add(translationService.translate("basic.product.unit.label", locale));
         simpleMaterialBalanceTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.needed", locale));
         simpleMaterialBalanceTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.inLocation", locale));
         simpleMaterialBalanceTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.balance", locale));
+        simpleMaterialBalanceTableHeader.add(translationService.translate("basic.product.unit.label", locale));
 
         Map<String, HeaderAlignment> alignments = Maps.newHashMap();
         alignments.put(
@@ -145,7 +154,6 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         alignments.put(
                 translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name", locale),
                 HeaderAlignment.LEFT);
-        alignments.put(translationService.translate("basic.product.unit.label", locale), HeaderAlignment.LEFT);
         alignments.put(
                 translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.needed", locale),
                 HeaderAlignment.RIGHT);
@@ -154,6 +162,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         alignments.put(
                 translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.balance", locale),
                 HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("basic.product.unit.label", locale), HeaderAlignment.LEFT);
 
         PdfPTable table = pdfHelper.createTableWithHeader(6, simpleMaterialBalanceTableHeader, false, alignments);
         List<Entity> simpleMaterialBalanceOrdersComponents = simpleMaterialBalance
@@ -174,7 +183,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
 
             table.addCell(new Phrase(product.getField(L_NUMBER).toString(), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(product.getField(L_NAME).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(product.getField(L_UNIT).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuRegular7Dark()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity simpleMaterialBalanceLocationComponent : simpleMaterialBalanceLocationComponents) {
@@ -184,6 +193,9 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
             table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(numberService.format(available.subtract(neededProductQuantity.getValue(),
                     numberService.getMathContext())), FontUtils.getDejavuBold7Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(new Phrase(product.getField(L_UNIT).toString(), FontUtils.getDejavuRegular7Dark()));
+
         }
         document.add(table);
     }
