@@ -25,8 +25,8 @@
 
 -->
 <view name="productionTrackingsList" modelName="productionTracking"
-	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+      menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
 	<component type="window" name="window" reference="window">
 
@@ -34,9 +34,9 @@
 			<template name="standardGridTemplate" />
 			<group name="status">
 				<smallButton name="acceptTracking" icon="startIcon16.png"
-					state="disabled">
-                    <script>
-                        <![CDATA[
+				             state="disabled">
+					<script>
+						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(productionCounting.productionTrackingsList.window.ribbon.status.acceptTracking.confirm)}")) {
@@ -48,9 +48,9 @@
 					</script>
 				</smallButton>
 				<smallButton name="cancelTracking" icon="deleteIcon16.png"
-					state="disabled">
-                    <script>
-                        <![CDATA[
+				             state="disabled">
+					<script>
+						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(productionCounting.productionTrackingsList.window.ribbon.status.declineTracking.confirm)}")) {
@@ -65,8 +65,25 @@
 		</ribbon>
 
 		<component type="grid" name="productionTrackingsList"
-			reference="grid">
+		           reference="grid">
+			<script>
+				<![CDATA[
+					var acceptRecord = #{window}.getRibbonItem("status.acceptRecord"),
+						cancelRecord = #{window}.getRibbonItem("status.cancelRecord");
 
+					QCDTrack.track(
+							acceptRecord,
+							"onClick",
+							"acceptProductionRecord"
+					);
+
+                    QCDTrack.track(
+							cancelRecord,
+							"onClick",
+							"cancelProductionRecord"
+					);
+				]]>
+			</script>
 			<script>
 				<![CDATA[ 
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
@@ -151,24 +168,24 @@
 			</script>
 
 			<option type="column" name="number" fields="number" link="true"
-				width="150" />
+			        width="150" />
 			<option type="column" name="orderNumber" fields="order" link="true"
-				width="250" expression="#order['number']" />
+			        width="250" expression="#order['number']" />
 			<option type="column" name="technologyOperationComponentNumber"
-				fields="technologyOperationComponent" link="true" width="250"
-				expression="(#technologyOperationComponent != null) ? #technologyOperationComponent['nodeNumber'] + ' ' + #technologyOperationComponent['operation']['name'] : ''" />
+			        fields="technologyOperationComponent" link="true" width="250"
+			        expression="(#technologyOperationComponent != null) ? #technologyOperationComponent['nodeNumber'] + ' ' + #technologyOperationComponent['operation']['name'] : ''" />
 			<option type="column" name="shift" fields="shift" link="true"
-				width="100" expression="#shift['name']" />
+			        width="100" expression="#shift['name']" />
 			<option type="column" name="worker" fields="createUser" link="true"
-				width="200" />
+			        width="200" />
 			<option type="column" name="state" fields="state" reference="state"
-				width="150" />
+			        width="150" />
 			<option type="column" name="createDate" fields="createDate"
-				link="true" width="250" />
+			        link="true" width="250" />
 			<option type="column" name="orderState" fields="order" hidden="true"
-				expression="(#order == null) ? '' : #order['state']" />
+			        expression="(#order == null) ? '' : #order['state']" />
 			<option type="column" name="lastTracking" fields="lastTracking"
-				expression="#lastTracking" />
+			        expression="#lastTracking" />
 
 			<option type="order" column="number" direction="asc" />
 
@@ -182,12 +199,12 @@
 			<option type="multiselect" value="true" />
 
 			<listener event="changeState"
-				class="com.qcadoo.mes.productionCounting.states.client.ProductionTrackingStateChangeViewClient"
-				method="changeState" />
+			          class="com.qcadoo.mes.productionCounting.states.client.ProductionTrackingStateChangeViewClient"
+			          method="changeState" />
 		</component>
 
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
-    </component>
-    
+	</component>
+
 </view>

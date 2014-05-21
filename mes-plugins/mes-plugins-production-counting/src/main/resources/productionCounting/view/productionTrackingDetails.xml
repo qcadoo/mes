@@ -39,7 +39,45 @@
 		<windowTab name="mainTab">
 			<component type="form" name="productionTrackingDetails"
 			           reference="form">
+				<script>
+					<![CDATA[
+                    	var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						var acceptRecord = #{window}.getRibbonItem("status.acceptRecord");
+						var cancelRecord = #{window}.getRibbonItem("status.cancelRecord");
 
+						QCDTrack.track(
+								save,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addProductionRecord" , "modifyProductionRecord")
+						);
+
+						QCDTrack.track(
+								saveBack,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addProductionRecord" , "modifyProductionRecord")
+						);
+
+						QCDTrack.track(
+								saveNew,
+								"onClick",
+								 QCDTrack.eventResolver.formStateDependent( "addProductionRecord" , "modifyProductionRecord")
+						);
+
+						QCDTrack.track(
+								acceptRecord,
+								"onClick",
+								"acceptProductionRecord"
+						);
+
+                    	QCDTrack.track(
+								cancelRecord,
+								"onClick",
+								"cancelProductionRecord"
+						);
+					]]>
+				</script>
 				<script>
 					<![CDATA[
 						this.changeTrackingState = function(eventPerformer, ribbonItemName) {
