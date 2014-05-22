@@ -101,9 +101,9 @@
 					<component type="select" name="typeOfMaterial" field="typeOfMaterial"
 						reference="typeOfMaterial">
 						
-						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.basicProductionCounting.listeners.ProductionCountingQuantityDetailsListeners"
-							method="setTechnologyOperationComponentFieldRequired" />
+<!-- 						<listener event="onSelectedEntityChange" -->
+<!-- 							class="com.qcadoo.mes.basicProductionCounting.listeners.ProductionCountingQuantityDetailsListeners" -->
+<!-- 							method="setTechnologyOperationComponentFieldRequired" /> -->
 					</component>
 				</layoutElement>
 			</component>
