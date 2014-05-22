@@ -84,6 +84,18 @@ public class ProductionCountingQuantityValidators {
                         "basicProductionCounting.productionCountingQuantity.role.error.finalProductOrWasteHasToBeProduced");
 
                 return false;
+            } else if (isTypeOfMaterialIntermediate(typeOfMaterial)) {
+                Entity technologyOperationComponent = productionCountingQuantity
+                        .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+                if (technologyOperationComponent == null) {
+                    productionCountingQuantity
+                            .addError(productionCountingQuantityDD
+                                    .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                                    "basicProductionCounting.productionCountingQuantity.technologyOperationComponent.error.technologyOperationComponentRequired");
+
+                    return false;
+                }
             }
         } else if (isRoleProduced(role)) {
             if (isTypeOfMaterialComponent(typeOfMaterial)) {
