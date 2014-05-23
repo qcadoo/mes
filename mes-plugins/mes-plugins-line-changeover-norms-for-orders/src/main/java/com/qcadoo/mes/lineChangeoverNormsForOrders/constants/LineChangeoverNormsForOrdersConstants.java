@@ -26,13 +26,15 @@ package com.qcadoo.mes.lineChangeoverNormsForOrders.constants;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
+
 public interface LineChangeoverNormsForOrdersConstants {
 
     String PLUGIN_IDENTIFIER = "LineChangeoverNormsForOrders";
 
-    List<String> PREVIOUS_ORDER_FIELDS = Arrays.asList("previousOrder", "previousOrderTechnologyNumber",
+    List<String> PREVIOUS_ORDER_FIELDS = ImmutableList.of("previousOrder", "previousOrderTechnologyNumber",
             "previousOrderTechnologyGroupNumber", "previousOrderDateTo", "previousOrderDateIs");
 
-    List<String> ORDER_FIELDS = Arrays.asList("order", "technologyNumber", "technologyGroupNumber", "dateFrom", "dateIs");
+    List<String> ORDER_FIELDS = ImmutableList.of("order", "technologyNumber", "technologyGroupNumber", "dateFrom", "dateIs");
 
 }

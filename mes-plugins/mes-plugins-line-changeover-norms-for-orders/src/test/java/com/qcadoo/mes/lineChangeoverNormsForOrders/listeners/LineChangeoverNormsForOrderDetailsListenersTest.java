@@ -25,11 +25,16 @@ package com.qcadoo.mes.lineChangeoverNormsForOrders.listeners;
 
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS;
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.LINE_CHANGEOVER_NORM;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.ORDER;
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.OWN_LINE_CHANGEOVER;
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION;
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.PREVIOUS_ORDER;
+import static com.qcadoo.testing.model.EntityTestUtils.stubId;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
@@ -38,17 +43,18 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 public class LineChangeoverNormsForOrderDetailsListenersTest {
 
@@ -59,10 +65,6 @@ public class LineChangeoverNormsForOrderDetailsListenersTest {
     private static final String L_FILTERS = "filters";
 
     private static final long L_ID = 1L;
-
-    private static final long L_PREVIOUS_ORDER_ID = 1L;
-
-    private static final long L_ORDER_ID = 2L;
 
     private static final String L_TECHNOLOGY_GROUP_NUMBER = "000001";
 
@@ -80,17 +82,17 @@ public class LineChangeoverNormsForOrderDetailsListenersTest {
     private ViewDefinitionState view;
 
     @Mock
-    private FieldComponent previousOrderField, orderField, lineChangeoverNormField, previousOrderTechnologyGroupNumberField,
-            technologyGroupNumberField, previousOrderTechnologyNumberField, technologyNumberField;
+    private Entity entityWithId;
 
     @Mock
-    private Entity previousOrderDB, orderDB;
+    private FieldComponent previousOrderTechnologyGroupNumberField, technologyGroupNumberField,
+            previousOrderTechnologyNumberField, technologyNumberField;
 
-    private Map<String, Object> parameters = Maps.newHashMap();
+    @Mock
+    private LookupComponent orderLookup, previousOrderLookup, lineChangeoverNormLookup;
 
-    private Map<String, String> filters = Maps.newHashMap();
-
-    private Map<String, Object> gridOptions = Maps.newHashMap();
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> parametersCaptor;
 
     @Before
     public void init() {
@@ -101,232 +103,211 @@ public class LineChangeoverNormsForOrderDetailsListenersTest {
         setField(lineChangeoverNormsForOrderDetailsListeners, "orderService", orderService);
         setField(lineChangeoverNormsForOrderDetailsListeners, "lineChangeoverNormsForOrdersService",
                 lineChangeoverNormsForOrdersService);
-    }
 
-    @Test
-    public void shouldntShowPreviousOrderIfPreviousOrderIdIsNull() {
-        // given
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
+        given(view.getComponentByReference("order")).willReturn(orderLookup);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
+        given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormLookup);
 
-        given(previousOrderField.getFieldValue()).willReturn(null);
+        given(view.getComponentByReference("previousOrderTechnologyNumber")).willReturn(previousOrderTechnologyNumberField);
+        given(view.getComponentByReference("technologyNumber")).willReturn(technologyNumberField);
 
-        String url = "../page/orders/orderDetails.html";
-
-        // when
-        lineChangeoverNormsForOrderDetailsListeners.showPreviousOrder(view, null, null);
-
-        // then
-        verify(view, never()).redirectTo(url, false, true, parameters);
-    }
-
-    @Test
-    public void shouldShowPreviousOrderIfPreviousOrderIdIsntNull() {
-        // given
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-
-        given(previousOrderField.getFieldValue()).willReturn(L_ID);
-
-        parameters.put("form.id", L_ID);
-
-        String url = "../page/orders/orderDetails.html";
-
-        // when
-        lineChangeoverNormsForOrderDetailsListeners.showPreviousOrder(view, null, null);
-
-        // then
-        verify(view).redirectTo(url, false, true, parameters);
-    }
-
-    @Test
-    public void shouldntShowBestFittingLineChangeoverNormIfLineChangeoverIdIsNull() {
-        // given
-        given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormField);
-
-        given(lineChangeoverNormField.getFieldValue()).willReturn(null);
-
-        String url = "../page/lineChangeoverNorms/lineChangeoverNormsDetails.html";
-
-        // when
-        lineChangeoverNormsForOrderDetailsListeners.showBestFittingLineChangeoverNorm(view, null, null);
-
-        // then
-        verify(view, never()).redirectTo(url, false, true, parameters);
-    }
-
-    @Test
-    public void shouldshowBestFittingLineChangeoverNormIfLineChangeoverNormIdIsntNull() {
-        // given
-        given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormField);
-
-        given(lineChangeoverNormField.getFieldValue()).willReturn(L_ID);
-
-        parameters.put("form.id", L_ID);
-
-        String url = "../page/lineChangeoverNorms/lineChangeoverNormsDetails.html";
-
-        // when
-        lineChangeoverNormsForOrderDetailsListeners.showBestFittingLineChangeoverNorm(view, null, null);
-
-        // then
-        verify(view).redirectTo(url, false, true, parameters);
-    }
-
-    @Test
-    public void shouldntShowLineChangeoverNormForGroupIfTechnologyGroupNumbersAreEmpty() {
-        // given
         given(view.getComponentByReference("previousOrderTechnologyGroupNumber")).willReturn(
                 previousOrderTechnologyGroupNumberField);
         given(view.getComponentByReference("technologyGroupNumber")).willReturn(technologyGroupNumberField);
 
+        stubId(entityWithId, L_ID);
+    }
+
+    private void stubLookup(final LookupComponent lookup, final Entity entity) {
+        given(lookup.isEmpty()).willReturn(entity == null);
+        given(lookup.getEntity()).willReturn(entity);
+        if (entity == null) {
+            given(lookup.getFieldValue()).willReturn(null);
+        } else {
+            Long id = entity.getId();
+            given(lookup.getFieldValue()).willReturn(id);
+        }
+    }
+
+    @Test
+    public void shouldNotRedirectToPreviousOrderIfPreviousOrderIsNull() {
+        // given
+        stubLookup(previousOrderLookup, null);
+
+        // when
+        lineChangeoverNormsForOrderDetailsListeners.showPreviousOrder(view, null, null);
+
+        // then
+        verify(view, never()).redirectTo(anyString(), anyBoolean(), anyBoolean(), anyMap());
+    }
+
+    @Test
+    public void shouldRedirectToPreviousOrderIfPreviousOrderIsNotNull() {
+        // given
+        stubLookup(previousOrderLookup, entityWithId);
+
+        // when
+        lineChangeoverNormsForOrderDetailsListeners.showPreviousOrder(view, null, null);
+
+        // then
+        String url = "../page/orders/orderDetails.html";
+        verify(view).redirectTo(eq(url), anyBoolean(), anyBoolean(), parametersCaptor.capture());
+        Map<String, Object> usedParameters = parametersCaptor.getValue();
+        assertEquals(L_ID, usedParameters.get("form.id"));
+    }
+
+    @Test
+    public void shouldNotRedirectToBestFittingLineChangeoverNormIfLineChangeoverIsNull() {
+        // given
+        stubLookup(lineChangeoverNormLookup, null);
+
+        // when
+        lineChangeoverNormsForOrderDetailsListeners.showBestFittingLineChangeoverNorm(view, null, null);
+
+        // then
+        verify(view, never()).redirectTo(anyString(), anyBoolean(), anyBoolean(), anyMap());
+    }
+
+    @Test
+    public void shouldRedirectToBestFittingLineChangeoverNormIfLineChangeoverNormIsNotNull() {
+        // given
+        stubLookup(lineChangeoverNormLookup, entityWithId);
+
+        // when
+        lineChangeoverNormsForOrderDetailsListeners.showBestFittingLineChangeoverNorm(view, null, null);
+
+        // then
+        String url = "../page/lineChangeoverNorms/lineChangeoverNormsDetails.html";
+        verify(view).redirectTo(eq(url), anyBoolean(), anyBoolean(), parametersCaptor.capture());
+        Map<String, Object> usedParameters = parametersCaptor.getValue();
+        assertEquals(L_ID, usedParameters.get("form.id"));
+    }
+
+    @Test
+    public void shouldNotRedirectToLineChangeoverNormForGroupIfTechnologyGroupNumbersAreEmpty() {
+        // given
         given(previousOrderTechnologyGroupNumberField.getFieldValue()).willReturn(null);
         given(technologyGroupNumberField.getFieldValue()).willReturn(null);
 
-        String url = "../page/lineChangeoverNorms/lineChangeoverNormsList.html";
-
         // when
         lineChangeoverNormsForOrderDetailsListeners.showLineChangeoverNormForGroup(view, null, null);
 
         // then
-        verify(view, never()).redirectTo(url, false, true, parameters);
+        verify(view, never()).redirectTo(anyString(), anyBoolean(), anyBoolean(), anyMap());
     }
 
     @Test
-    public void shouldShowLineChangeoverNormForGroupIfTechnologyGroupNumbersArentEmpty() {
+    public void shouldRedirectToLineChangeoverNormForGroupIfTechnologyGroupNumbersAreNotEmpty() {
         // given
-        given(view.getComponentByReference("previousOrderTechnologyGroupNumber")).willReturn(
-                previousOrderTechnologyGroupNumberField);
-        given(view.getComponentByReference("technologyGroupNumber")).willReturn(technologyGroupNumberField);
-
         given(previousOrderTechnologyGroupNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
         given(technologyGroupNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
 
-        filters.put("fromTechnologyGroup", L_TECHNOLOGY_GROUP_NUMBER);
-        filters.put("toTechnologyGroup", L_TECHNOLOGY_GROUP_NUMBER);
-
-        gridOptions.put(L_FILTERS, filters);
-
-        parameters.put(L_GRID_OPTIONS, gridOptions);
-
-        parameters.put(L_WINDOW_ACTIVE_MENU, "technology.lineChangeoverNorms");
-
-        String url = "../page/lineChangeoverNorms/lineChangeoverNormsList.html";
-
         // when
         lineChangeoverNormsForOrderDetailsListeners.showLineChangeoverNormForGroup(view, null, null);
 
         // then
-        verify(view).redirectTo(url, false, true, parameters);
+        String url = "../page/lineChangeoverNorms/lineChangeoverNormsList.html";
+        verify(view).redirectTo(eq(url), anyBoolean(), anyBoolean(), parametersCaptor.capture());
+        Map<String, Object> usedParameters = parametersCaptor.getValue();
+        assertEquals(2, usedParameters.size());
+        assertEquals("technology.lineChangeoverNorms", usedParameters.get(L_WINDOW_ACTIVE_MENU));
+
+        Map<String, Object> gridOptions = (Map<String, Object>) usedParameters.get(L_GRID_OPTIONS);
+        assertEquals(1, gridOptions.size());
+
+        Map<String, Object> filters = (Map<String, Object>) gridOptions.get(L_FILTERS);
+        assertEquals(2, filters.size());
+        assertEquals(L_TECHNOLOGY_GROUP_NUMBER, filters.get("fromTechnologyGroup"));
+        assertEquals(L_TECHNOLOGY_GROUP_NUMBER, filters.get("toTechnologyGroup"));
     }
 
     @Test
-    public void shouldntShowLineChangeoverNormForTechnologyIfTechnologyNumbersAreEmpty() {
+    public void shouldNotRedirectToLineChangeoverNormsForTechnologyIfTechnologyNumbersAreEmpty() {
         // given
-        given(view.getComponentByReference("previousOrderTechnologyNumber")).willReturn(previousOrderTechnologyNumberField);
-        given(view.getComponentByReference("technologyNumber")).willReturn(technologyNumberField);
-
         given(previousOrderTechnologyNumberField.getFieldValue()).willReturn(null);
         given(technologyNumberField.getFieldValue()).willReturn(null);
 
-        String url = "../page/lineChangeoverNorms/lineChangeoverNormsList.html";
-
         // when
         lineChangeoverNormsForOrderDetailsListeners.showLineChangeoverNormForTechnology(view, null, null);
 
         // then
-        verify(view, never()).redirectTo(url, false, true, parameters);
+        verify(view, never()).redirectTo(anyString(), anyBoolean(), anyBoolean(), anyMap());
     }
 
     @Test
-    public void shouldShowLineChangeoverNormForTechnologyIfTechnologyNumbersArentEmpty() {
+    public void shouldRedirectToLineChangeoverNormsForTechnologyIfTechnologyNumbersAreNotEmpty() {
         // given
-        given(view.getComponentByReference("previousOrderTechnologyNumber")).willReturn(previousOrderTechnologyNumberField);
-        given(view.getComponentByReference("technologyNumber")).willReturn(technologyNumberField);
-
         given(previousOrderTechnologyNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_NUMBER);
         given(technologyNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_NUMBER);
 
-        filters.put("fromTechnology", L_TECHNOLOGY_GROUP_NUMBER);
-        filters.put("toTechnology", L_TECHNOLOGY_GROUP_NUMBER);
-
-        gridOptions.put(L_FILTERS, filters);
-
-        parameters.put(L_GRID_OPTIONS, gridOptions);
-
-        parameters.put(L_WINDOW_ACTIVE_MENU, "technology.lineChangeoverNorms");
-
-        String url = "../page/lineChangeoverNorms/lineChangeoverNormsList.html";
-
         // when
         lineChangeoverNormsForOrderDetailsListeners.showLineChangeoverNormForTechnology(view, null, null);
 
         // then
-        verify(view).redirectTo(url, false, true, parameters);
+        String url = "../page/lineChangeoverNorms/lineChangeoverNormsList.html";
+        verify(view).redirectTo(eq(url), anyBoolean(), anyBoolean(), parametersCaptor.capture());
+        Map<String, Object> usedParameters = parametersCaptor.getValue();
+        assertEquals(2, usedParameters.size());
+        assertEquals("technology.lineChangeoverNorms", usedParameters.get(L_WINDOW_ACTIVE_MENU));
+
+        Map<String, Object> gridOptions = (Map<String, Object>) usedParameters.get(L_GRID_OPTIONS);
+        assertEquals(1, gridOptions.size());
+
+        Map<String, Object> filters = (Map<String, Object>) gridOptions.get(L_FILTERS);
+        assertEquals(2, filters.size());
+        assertEquals(L_TECHNOLOGY_GROUP_NUMBER, filters.get("fromTechnology"));
+        assertEquals(L_TECHNOLOGY_GROUP_NUMBER, filters.get("toTechnology"));
     }
 
     @Test
-    public void shouldntAddMessageWhenCheckIfOrderHasCorrectStateAndIsPreviousIfOrdersAreNull() {
+    public void shouldNotAddMessageWhenOrdersAreNotSpecified() {
         // given
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        stubLookup(previousOrderLookup, null);
+        stubLookup(orderLookup, null);
 
-        given(previousOrderField.getFieldValue()).willReturn(null);
-        given(orderField.getFieldValue()).willReturn(null);
+        given(lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(null, null)).willReturn(true);
 
         // when
         lineChangeoverNormsForOrderDetailsListeners.checkIfOrderHasCorrectStateAndIsPrevious(view, null, null);
 
         // then
-        verify(previousOrderField, never()).addMessage(Mockito.anyString(), Mockito.eq(ComponentState.MessageType.FAILURE));
+        verify(previousOrderLookup, never()).addMessage(anyString(), eq(ComponentState.MessageType.FAILURE));
     }
 
     @Test
-    public void shouldntAddMessageWhenCheckIfOrderHasCorrectStateAndIsPreviousIfOrdersArentNullAndPreviousOrderIsntCorrectAndPrevious() {
+    public void shouldNotAddMessageWhenPreviousOrderIsCorrect() {
         // given
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        stubLookup(previousOrderLookup, entityWithId);
+        stubLookup(orderLookup, entityWithId);
 
-        given(previousOrderField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_ID);
-        given(orderField.getFieldValue()).willReturn(L_ORDER_ID);
-
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_PREVIOUS_ORDER_ID)).willReturn(previousOrderDB);
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_ORDER_ID)).willReturn(orderDB);
-
-        given(lineChangeoverNormsForOrdersService.checkIfOrderHasCorrectStateAndIsPrevious(previousOrderDB, orderDB)).willReturn(
+        given(lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(entityWithId, entityWithId)).willReturn(
                 true);
 
         // when
         lineChangeoverNormsForOrderDetailsListeners.checkIfOrderHasCorrectStateAndIsPrevious(view, null, null);
 
         // then
-        verify(previousOrderField, never()).addMessage(Mockito.anyString(), Mockito.eq(ComponentState.MessageType.FAILURE));
+        verify(previousOrderLookup, never()).addMessage(anyString(), eq(ComponentState.MessageType.FAILURE));
     }
 
     @Test
-    public void shouldAddMessageWhenCheckIfOrderHasCorrectStateAndIsPreviousIfOrdersArentNullAndPreviousOrderIsCorrectAndPrevious() {
+    public void shouldAddMessageWhenPreviousOrderIsIncorrect() {
         // given
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        stubLookup(previousOrderLookup, entityWithId);
+        stubLookup(orderLookup, entityWithId);
 
-        given(previousOrderField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_ID);
-        given(orderField.getFieldValue()).willReturn(L_ORDER_ID);
-
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_PREVIOUS_ORDER_ID)).willReturn(previousOrderDB);
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_ORDER_ID)).willReturn(orderDB);
-
-        given(lineChangeoverNormsForOrdersService.checkIfOrderHasCorrectStateAndIsPrevious(previousOrderDB, orderDB)).willReturn(
+        given(lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(entityWithId, entityWithId)).willReturn(
                 false);
 
         // when
         lineChangeoverNormsForOrderDetailsListeners.checkIfOrderHasCorrectStateAndIsPrevious(view, null, null);
 
         // then
-        verify(previousOrderField).addMessage(Mockito.anyString(), Mockito.eq(ComponentState.MessageType.FAILURE));
+        verify(previousOrderLookup).addMessage(anyString(), eq(ComponentState.MessageType.FAILURE));
     }
 
     @Test
     public final void shouldFillPreviousOrderForm() {
-        // given
-
         // when
         lineChangeoverNormsForOrderDetailsListeners.fillPreviousOrderForm(view, null, null);
 
@@ -336,8 +317,6 @@ public class LineChangeoverNormsForOrderDetailsListenersTest {
 
     @Test
     public void shouldShowOwnLineChangeoverDurationField() {
-        // given
-
         // when
         lineChangeoverNormsForOrderDetailsListeners.showOwnLineChangeoverDurationField(view, null, null);
 

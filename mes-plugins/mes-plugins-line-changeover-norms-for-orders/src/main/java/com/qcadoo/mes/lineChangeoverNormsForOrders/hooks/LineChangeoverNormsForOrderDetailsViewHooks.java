@@ -32,7 +32,6 @@ import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsL
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION;
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.PREVIOUS_ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +41,12 @@ import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsSearchService;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -70,76 +71,81 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
     public final void fillOrderForms(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        FieldComponent orderField = (FieldComponent) view.getComponentByReference(ORDER);
-        FieldComponent previousOrderField = (FieldComponent) view.getComponentByReference(PREVIOUS_ORDER);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ORDER);
+        LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(PREVIOUS_ORDER);
 
-        if (orderForm.getEntityId() != null) {
-            Long orderId = orderForm.getEntityId();
+        if (orderForm.getEntityId() == null) {
+            return;
+        }
+        Entity order = orderForm.getPersistedEntityWithIncludedFormValues();
 
-            Entity order = lineChangeoverNormsForOrdersService.getOrderFromDB(orderId);
+        orderLookup.setFieldValue(order.getId());
+        orderLookup.requestComponentUpdateState();
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
 
-            if (order != null) {
-                orderField.setFieldValue(order.getId());
-                orderField.requestComponentUpdateState();
-                lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
-
-                if (previousOrderField.getFieldValue() == null) {
-                    Entity previousOrder = lineChangeoverNormsForOrdersService.getPreviousOrderFromDB(order);
-                    if (previousOrder != null) {
-                        previousOrderField.setFieldValue(previousOrder.getId());
-                        previousOrderField.requestComponentUpdateState();
-                        lineChangeoverNormsForOrdersService.fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
-                    }
-                }
+        if (previousOrderLookup.isEmpty()) {
+            Entity previousOrder = lineChangeoverNormsForOrdersService.getPreviousOrderFromDB(order);
+            if (previousOrder != null) {
+                previousOrderLookup.setFieldValue(previousOrder.getId());
+                previousOrderLookup.requestComponentUpdateState();
+                lineChangeoverNormsForOrdersService.fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
             }
         }
     }
 
     public void fillLineChangeoverNorm(final ViewDefinitionState view) {
-        FieldComponent orderField = (FieldComponent) view.getComponentByReference(ORDER);
-        FieldComponent previousOrderField = (FieldComponent) view.getComponentByReference(PREVIOUS_ORDER);
+        Entity lineChangeoverNorm = findChangeoverNorm(view);
+        fillChangeoverNormFields(view, lineChangeoverNorm);
+    }
 
+    private Entity findChangeoverNorm(final ViewDefinitionState view) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ORDER);
+        LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(PREVIOUS_ORDER);
+
+        Entity order = orderLookup.getEntity();
+        if (order == null) {
+            return null;
+        }
+        Entity fromTechnology = extractTechnologyPrototypeFrom(previousOrderLookup.getEntity());
+        Entity toTechnology = extractTechnologyPrototypeFrom(order);
+
+        if (fromTechnology == null || toTechnology == null) {
+            return null;
+        }
+        Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
+
+        return changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
+    }
+
+    private Entity extractTechnologyPrototypeFrom(final Entity order) {
+        if (order == null) {
+            return null;
+        }
+        return order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+    }
+
+    private void fillChangeoverNormFields(final ViewDefinitionState view, final Entity lineChangeoverNorm) {
         FieldComponent lineChangeoverNormField = (FieldComponent) view.getComponentByReference("lineChangeoverNorm");
         FieldComponent lineChangeoverNormDurationField = (FieldComponent) view
                 .getComponentByReference("lineChangeoverNormDuration");
-        if ((orderField.getFieldValue() != null) && (previousOrderField.getFieldValue() != null)) {
-            Entity order = lineChangeoverNormsForOrdersService.getOrderFromDB((Long) orderField.getFieldValue());
-            Entity previousOrder = lineChangeoverNormsForOrdersService.getOrderFromDB((Long) previousOrderField.getFieldValue());
 
-            if ((order != null) && (previousOrder != null)) {
-                Long fromTechnologyId = (previousOrder.getBelongsToField(TECHNOLOGY) == null) ? null : previousOrder
-                        .getBelongsToField(TECHNOLOGY).getId();
-                Long toTechnologyId = (order.getBelongsToField(TECHNOLOGY) == null) ? null : order.getBelongsToField(TECHNOLOGY)
-                        .getId();
-
-                if ((fromTechnologyId != null) && (toTechnologyId != null)) {
-                    Entity fromTechnology = lineChangeoverNormsForOrdersService.getTechnologyFromDB(fromTechnologyId);
-                    Entity toTechnology = lineChangeoverNormsForOrdersService.getTechnologyFromDB(toTechnologyId);
-                    Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
-
-                    Entity lineChangeoverNorm = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology,
-                            productionLine);
-
-                    if (lineChangeoverNorm == null) {
-                        lineChangeoverNormField.setFieldValue(null);
-                        lineChangeoverNormDurationField.setFieldValue(null);
-                    } else {
-                        lineChangeoverNormField.setFieldValue(lineChangeoverNorm.getId());
-                        lineChangeoverNormDurationField.setFieldValue(lineChangeoverNorm.getField(DURATION));
-                    }
-                    lineChangeoverNormField.requestComponentUpdateState();
-                    lineChangeoverNormDurationField.requestComponentUpdateState();
-                }
-            }
+        if (lineChangeoverNorm == null) {
+            lineChangeoverNormField.setFieldValue(null);
+            lineChangeoverNormDurationField.setFieldValue(null);
+        } else {
+            lineChangeoverNormField.setFieldValue(lineChangeoverNorm.getId());
+            lineChangeoverNormDurationField.setFieldValue(lineChangeoverNorm.getField(DURATION));
         }
+        lineChangeoverNormField.requestComponentUpdateState();
+        lineChangeoverNormDurationField.requestComponentUpdateState();
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
         FieldComponent productionLineField = (FieldComponent) view.getComponentByReference(PRODUCTION_LINE);
 
-        FieldComponent previousOrderField = (FieldComponent) view.getComponentByReference(PREVIOUS_ORDER);
+        LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(PREVIOUS_ORDER);
 
-        FieldComponent lineChangeoverNormField = (FieldComponent) view.getComponentByReference(LINE_CHANGEOVER_NORM);
+        LookupComponent lineChangeoverNormLookup = (LookupComponent) view.getComponentByReference(LINE_CHANGEOVER_NORM);
 
         FieldComponent previousOrderTechnologyGroupNumberField = (FieldComponent) view
                 .getComponentByReference("previousOrderTechnologyGroupNumber");
@@ -150,32 +156,25 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
         FieldComponent technologyNumberField = (FieldComponent) view.getComponentByReference("technologyNumber");
 
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
-        RibbonGroup lineChangeoverNorms = (RibbonGroup) window.getRibbon().getGroupByName("lineChangeoverNorms");
+        RibbonGroup orders = window.getRibbon().getGroupByName("orders");
+        RibbonGroup lineChangeoverNorms = window.getRibbon().getGroupByName("lineChangeoverNorms");
 
-        RibbonActionItem showPreviousOrder = (RibbonActionItem) orders.getItemByName("showPreviousOrder");
+        RibbonActionItem showPreviousOrder = orders.getItemByName("showPreviousOrder");
 
-        RibbonActionItem showBestFittingLineChangeoverNorm = (RibbonActionItem) lineChangeoverNorms
+        RibbonActionItem showBestFittingLineChangeoverNorm = lineChangeoverNorms
                 .getItemByName("showBestFittingLineChangeoverNorm");
-        RibbonActionItem showChangeoverNormForGroup = (RibbonActionItem) lineChangeoverNorms
-                .getItemByName("showLineChangeoverNormForGroup");
-        RibbonActionItem showChangeoverNormForTechnology = (RibbonActionItem) lineChangeoverNorms
+        RibbonActionItem showChangeoverNormForGroup = lineChangeoverNorms.getItemByName("showLineChangeoverNormForGroup");
+        RibbonActionItem showChangeoverNormForTechnology = lineChangeoverNorms
                 .getItemByName("showLineChangeoverNormForTechnology");
 
         Entity productionLine = lineChangeoverNormsForOrdersService.getProductionLineFromDB((Long) productionLineField
                 .getFieldValue());
 
-        if (previousOrderField.getFieldValue() == null) {
-            updateButtonState(showPreviousOrder, false);
-        } else {
-            updateButtonState(showPreviousOrder, true);
-        }
+        boolean hasDefinedPreviousOrder = !previousOrderLookup.isEmpty();
+        updateButtonState(showPreviousOrder, hasDefinedPreviousOrder);
 
-        if (lineChangeoverNormField.getFieldValue() == null) {
-            updateButtonState(showBestFittingLineChangeoverNorm, false);
-        } else {
-            updateButtonState(showBestFittingLineChangeoverNorm, true);
-        }
+        boolean hasMatchingChangeoverNorm = !lineChangeoverNormLookup.isEmpty();
+        updateButtonState(showBestFittingLineChangeoverNorm, hasMatchingChangeoverNorm);
 
         if (StringUtils.isEmpty((String) previousOrderTechnologyGroupNumberField.getFieldValue())
                 || StringUtils.isEmpty((String) technologyGroupNumberField.getFieldValue())) {

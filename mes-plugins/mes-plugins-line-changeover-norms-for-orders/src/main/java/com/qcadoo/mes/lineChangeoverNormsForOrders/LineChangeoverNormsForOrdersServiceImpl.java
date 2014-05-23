@@ -31,10 +31,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.NUMBER;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.DECLINED;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.TECHNOLOGY_GROUP;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,15 +45,19 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyGroupFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNormsForOrdersService {
@@ -74,130 +76,127 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
 
     @Override
     public void fillOrderForm(final ViewDefinitionState view, final List<String> orderFields) {
-        FieldComponent orderField = (FieldComponent) view.getComponentByReference(orderFields.get(0));
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(orderFields.get(0));
+        Entity order = orderLookup.getEntity();
+        if (order == null) {
+            return;
+        }
 
-        Long orderId = (Long) orderField.getFieldValue();
+        FieldComponent technologyNumberField = (FieldComponent) view.getComponentByReference(orderFields.get(1));
+        FieldComponent technologyGroupNumberField = (FieldComponent) view.getComponentByReference(orderFields.get(2));
+        FieldComponent dateToFromField = (FieldComponent) view.getComponentByReference(orderFields.get(3));
+        FieldComponent dateIsField = (FieldComponent) view.getComponentByReference(orderFields.get(4));
 
-        if (orderId != null) {
-            Entity order = getOrderFromDB(orderId);
+        orderLookup.setFieldValue(order.getId());
+        orderLookup.requestComponentUpdateState();
 
-            if (order != null) {
-                FieldComponent technologyNumberField = (FieldComponent) view.getComponentByReference(orderFields.get(1));
-                FieldComponent technologyGroupNumberField = (FieldComponent) view.getComponentByReference(orderFields.get(2));
-                FieldComponent dateToFromField = (FieldComponent) view.getComponentByReference(orderFields.get(3));
-                FieldComponent dateIsField = (FieldComponent) view.getComponentByReference(orderFields.get(4));
+        setUpTechnologyFields(order, technologyNumberField, technologyGroupNumberField);
 
-                orderField.setFieldValue(order.getId());
-                orderField.requestComponentUpdateState();
+        Date dateToFrom = null;
+        String dateIs = null;
 
-                Entity technology = order.getBelongsToField(TECHNOLOGY);
+        if ("previousOrderDateTo".equals(orderFields.get(3))) {
+            Date effectiveDateTo = (Date) order.getField(EFFECTIVE_DATE_TO);
+            Date correctedDateTo = (Date) order.getField(CORRECTED_DATE_TO);
+            Date dateTo = (Date) order.getField(DATE_TO);
 
-                if (technology != null) {
-                    Entity technologyGroup = technology.getBelongsToField(TECHNOLOGY_GROUP);
+            if (effectiveDateTo != null) {
+                dateToFrom = effectiveDateTo;
+                dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE;
+            } else if (correctedDateTo != null) {
+                dateToFrom = correctedDateTo;
+                dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_CORRECTED;
+            } else if (dateTo != null) {
+                dateToFrom = dateTo;
+                dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_PLANNED;
+            }
+        } else if ("dateFrom".equals(orderFields.get(3))) {
+            Date effectiveDateFrom = (Date) order.getField(EFFECTIVE_DATE_FROM);
+            Date correctedDateFrom = (Date) order.getField(CORRECTED_DATE_FROM);
+            Date dateFrom = (Date) order.getField(DATE_FROM);
 
-                    String technologyNumber = technology.getStringField(NUMBER);
-
-                    technologyNumberField.setFieldValue(technologyNumber);
-
-                    if (technologyGroup != null) {
-                        String technologyGroupNumber = technologyGroup.getStringField(NUMBER);
-
-                        technologyGroupNumberField.setFieldValue(technologyGroupNumber);
-                    }
-                }
-
-                technologyGroupNumberField.requestComponentUpdateState();
-                technologyNumberField.requestComponentUpdateState();
-
-                Date dateToFrom = null;
-                String dateIs = null;
-
-                if ("previousOrderDateTo".equals(orderFields.get(3))) {
-                    Date effectiveDateTo = (Date) order.getField(EFFECTIVE_DATE_TO);
-                    Date correctedDateTo = (Date) order.getField(CORRECTED_DATE_TO);
-                    Date dateTo = (Date) order.getField(DATE_TO);
-
-                    if (effectiveDateTo != null) {
-                        dateToFrom = effectiveDateTo;
-                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE;
-                    } else if (correctedDateTo != null) {
-                        dateToFrom = correctedDateTo;
-                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_CORRECTED;
-                    } else if (dateTo != null) {
-                        dateToFrom = dateTo;
-                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_PLANNED;
-                    }
-                } else if ("dateFrom".equals(orderFields.get(3))) {
-                    Date effectiveDateFrom = (Date) order.getField(EFFECTIVE_DATE_FROM);
-                    Date correctedDateFrom = (Date) order.getField(CORRECTED_DATE_FROM);
-                    Date dateFrom = (Date) order.getField(DATE_FROM);
-
-                    if (effectiveDateFrom != null) {
-                        dateToFrom = effectiveDateFrom;
-                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE;
-                    } else if (correctedDateFrom != null) {
-                        dateToFrom = correctedDateFrom;
-                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_CORRECTED;
-                    } else if (dateFrom != null) {
-                        dateToFrom = dateFrom;
-                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_PLANNED;
-                    }
-                }
-
-                if ((dateToFrom == null) || (dateIs == null)) {
-                    dateToFromField.setFieldValue(null);
-                    dateIsField.setFieldValue(null);
-                } else {
-                    dateToFromField.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
-                            .format(dateToFrom));
-                    dateIsField.setFieldValue(translationService.translate(dateIs, LocaleContextHolder.getLocale()));
-                }
-
-                dateToFromField.requestComponentUpdateState();
-                dateIsField.requestComponentUpdateState();
+            if (effectiveDateFrom != null) {
+                dateToFrom = effectiveDateFrom;
+                dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE;
+            } else if (correctedDateFrom != null) {
+                dateToFrom = correctedDateFrom;
+                dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_CORRECTED;
+            } else if (dateFrom != null) {
+                dateToFrom = dateFrom;
+                dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_PLANNED;
             }
         }
+
+        if (dateToFrom == null || dateIs == null) {
+            dateToFromField.setFieldValue(null);
+            dateIsField.setFieldValue(null);
+        } else {
+            dateToFromField.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
+                    .format(dateToFrom));
+            dateIsField.setFieldValue(translationService.translate(dateIs, LocaleContextHolder.getLocale()));
+        }
+
+        dateToFromField.requestComponentUpdateState();
+        dateIsField.requestComponentUpdateState();
+    }
+
+    private void setUpTechnologyFields(final Entity order, final FieldComponent technologyNumberField,
+            final FieldComponent technologyGroupNumberField) {
+        Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+
+        String technologyNumber = extractTechnologyNumberFrom(technologyPrototype);
+        technologyNumberField.setFieldValue(technologyNumber);
+        technologyNumberField.requestComponentUpdateState();
+
+        String technologyGroupNumber = extractTechnologyGroupNumberFrom(technologyPrototype);
+        technologyGroupNumberField.setFieldValue(technologyGroupNumber);
+        technologyGroupNumberField.requestComponentUpdateState();
+    }
+
+    private String extractTechnologyGroupNumberFrom(final Entity technology) {
+        if (technology == null) {
+            return null;
+        }
+        Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
+        if (technologyGroup == null) {
+            return null;
+        }
+        return technologyGroup.getStringField(TechnologyGroupFields.NUMBER);
+    }
+
+    private String extractTechnologyNumberFrom(final Entity technology) {
+        if (technology == null) {
+            return null;
+        }
+        return technology.getStringField(TechnologyFields.NUMBER);
     }
 
     @Override
-    public boolean checkIfOrderHasCorrectStateAndIsPrevious(final Entity previousOrder, final Entity order) {
-        if ((previousOrder != null)
-                && (order != null)
-                && (ABANDONED.getStringValue().equals(previousOrder.getStringField(STATE))
-                        || DECLINED.getStringValue().equals(previousOrder.getStringField(STATE)) || !checkIfDateIsUncorrect(
-                            previousOrder, order))) {
+    public boolean previousOrderEndsBeforeOrIsWithdrawed(final Entity previousOrder, final Entity order) {
+        boolean bothOrdersAreNotNull = previousOrder != null && order != null;
+        if (bothOrdersAreNotNull && (isDeclinedOrAbandoned(previousOrder) || areDatesCorrect(previousOrder, order))) {
             return false;
         }
 
         return true;
     }
 
-    private boolean checkIfDateIsUncorrect(final Entity previousOrder, final Entity order) {
-        if (previousOrder.getField(DATE_TO) == null || order.getField(DATE_FROM) == null) {
-            return false;
-        }
-        if (((Date) previousOrder.getField(DATE_TO)).getTime() > ((Date) order.getField(DATE_FROM)).getTime()) {
-            return false;
-        }
+    private boolean isDeclinedOrAbandoned(final Entity previousOrder) {
+        return ABANDONED.getStringValue().equals(previousOrder.getStringField(STATE))
+                || DECLINED.getStringValue().equals(previousOrder.getStringField(STATE));
+    }
 
-        return true;
+    private boolean areDatesCorrect(final Entity previousOrder, final Entity order) {
+        if (previousOrder.getField(DATE_TO) == null || order.getField(DATE_FROM) == null) {
+            return true;
+        }
+        return previousOrder.getDateField(DATE_TO).after(order.getDateField(DATE_FROM));
     }
 
     @Override
     public Entity getProductionLineFromDB(final Long productionLineId) {
         return dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get(productionLineId);
-    }
-
-    @Override
-    public Entity getOrderFromDB(final Long orderId) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-    }
-
-    @Override
-    public Entity getTechnologyFromDB(final Long technologyId) {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(
-                technologyId);
     }
 
     @Override
@@ -219,7 +218,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                 .find()
                 .add(SearchRestrictions.or(SearchRestrictions.ne(STATE, DECLINED.getStringValue()),
                         SearchRestrictions.ne(STATE, ABANDONED.getStringValue())))
-                .add(SearchRestrictions.lt(DATE_TO, (Date) order.getField(DATE_FROM))).addOrder(SearchOrders.desc(DATE_TO))
+                .add(SearchRestrictions.lt(DATE_TO, order.getDateField(DATE_FROM))).addOrder(SearchOrders.desc(DATE_TO))
                 .setMaxResults(1).uniqueResult();
     }
 

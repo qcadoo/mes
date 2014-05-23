@@ -110,6 +110,7 @@ public class OrderServiceImpl implements OrderService {
                 cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
     }
 
+    // FIXME - this method doesn't have anything in common with production orders..
     @Override
     public void changeFieldState(final ViewDefinitionState view, final String booleanFieldComponentName,
             final String fieldComponentName) {
