@@ -44,7 +44,7 @@
 				expression="(#product == null) ? '' : #product['name']" />
 			<option type="column" name="found" fields="found" />
 			<option type="column" name="staff" fields="staff"
-				expression="(#staff == null) ? '' : #staff['name']" />
+				expression="(#staff == null) ? '' : #staff['name'] + ' ' + #staff['surname']" />
 				
 			<option type="order" column="number" direction="asc" />
 			
