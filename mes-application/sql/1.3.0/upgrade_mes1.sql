@@ -180,6 +180,8 @@ ALTER TABLE technologies_operationproductincomponent
 
 ALTER TABLE technologies_operationproductincomponent ADD COLUMN isdivisionlocation boolean;
 ALTER TABLE technologies_operationproductincomponent ADD COLUMN isdivisionoutputlocation boolean;
+ALTER TABLE technologies_operationproductincomponent ADD COLUMN isdivisionoutputlocationmodified boolean;
+ALTER TABLE technologies_operationproductincomponent ADD COLUMN isdivisionlocationmodified boolean;
 
 ALTER TABLE technologies_operationproductincomponent ADD COLUMN flowtypeincomponent character varying(255);
 ALTER TABLE technologies_operationproductincomponent ALTER COLUMN flowtypeincomponent SET DEFAULT '01withinTheProcess'::character varying;
@@ -196,6 +198,7 @@ ALTER TABLE technologies_operationproductoutcomponent
 		REFERENCES materialflow_location (id);
 
 ALTER TABLE technologies_operationproductoutcomponent ADD COLUMN isdivisioninputlocation boolean;
+ALTER TABLE technologies_operationproductoutcomponent ADD COLUMN isdivisioninputlocationmodified boolean;
 
 ALTER TABLE technologies_operationproductoutcomponent ADD COLUMN flowtypeoutcomponent character varying(255);
 ALTER TABLE technologies_operationproductoutcomponent ALTER COLUMN flowtypeoutcomponent SET DEFAULT '01withinTheProcess'::character varying;
