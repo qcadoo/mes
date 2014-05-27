@@ -124,28 +124,28 @@
 			<model:hasMany name="productionTrackings" model="productionTracking"
 				joinField="staff" plugin="productionCounting" />
 		</model:model-field>
-		
+
 		<model:model-field model="workstationType" plugin="basic">
 			<model:hasMany name="productionTrackings" model="productionTracking"
 				joinField="workstationType" plugin="productionCounting" />
 		</model:model-field>
-		
+
 		<model:model-field model="division" plugin="basic">
 			<model:hasMany name="productionTrackings" model="productionTracking"
 				joinField="division" plugin="productionCounting" />
 		</model:model-field>
-		
+
 		<model:model-field model="message" plugin="states">
 			<model:belongsTo name="productionTrackingStateChange"
 				plugin="productionCounting" model="productionTrackingStateChange" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="basic" model="shift">
 			<model:hasMany name="productionTrackingStateChanges"
 				plugin="productionCounting" model="productionTrackingStateChange"
 				joinField="shift" cascade="nullify" />
 		</model:model-field>
-		
+
 		<model:model-field model="order" plugin="orders">
 			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach" />
 		</model:model-field>

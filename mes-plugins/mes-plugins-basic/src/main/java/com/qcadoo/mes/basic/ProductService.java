@@ -43,6 +43,10 @@ import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.SearchProjection;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
@@ -66,6 +70,33 @@ public class ProductService {
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+    public Entity find(final SearchProjection projection, final SearchCriterion criteria, final SearchOrder order) {
+        return prepareCriteriaBuilder(projection, criteria, order).setMaxResults(1).uniqueResult();
+    }
+
+    public List<Entity> findAll(final SearchProjection projection, final SearchCriterion criteria, final SearchOrder order) {
+        return prepareCriteriaBuilder(projection, criteria, order).list().getEntities();
+    }
+
+    private SearchCriteriaBuilder prepareCriteriaBuilder(final SearchProjection projection, final SearchCriterion criteria,
+            final SearchOrder order) {
+        SearchCriteriaBuilder scb = getProductDataDefinition().find();
+        if (projection != null) {
+            scb.setProjection(projection);
+        }
+        if (criteria != null) {
+            scb.add(criteria);
+        }
+        if (order != null) {
+            scb.addOrder(order);
+        }
+        return scb;
+    }
+
+    private DataDefinition getProductDataDefinition() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
+    }
 
     public boolean checkIfProductEntityTypeIsCorrect(final Entity product, final ProductFamilyElementType entityType) {
         return entityType.getStringValue().equals(product.getStringField(ENTITY_TYPE));
