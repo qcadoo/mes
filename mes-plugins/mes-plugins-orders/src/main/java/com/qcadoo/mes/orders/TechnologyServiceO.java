@@ -52,19 +52,19 @@ public class TechnologyServiceO {
 
                 deleteTechnology(technology);
 
-                order.setField(OrderFields.TECHNOLOGY, copyTechnology(technologyPrototype));
+                order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype));
             } else if (technologyWasChanged(order)) {
                 Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
                 deleteTechnology(technology);
 
-                order.setField(OrderFields.TECHNOLOGY, copyTechnology(technologyPrototype));
+                order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype));
             }
         } else {
             if (existingOrder == null) {
-                order.setField(OrderFields.TECHNOLOGY, copyTechnology(technologyPrototype));
+                order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype));
             } else if (!isTechnologySet(order)) {
-                order.setField(OrderFields.TECHNOLOGY, copyTechnology(technologyPrototype));
+                order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype));
             }
         }
     }
@@ -182,8 +182,7 @@ public class TechnologyServiceO {
     private Entity createTechnology(final Entity order) {
         Entity newTechnology = getTechnologyDD().create();
 
-        String number = numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
+        String number = generateNumberForTechnologyInOrder(order, null);
 
         Entity product = order.getBelongsToField(TechnologyFields.PRODUCT);
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
@@ -199,11 +198,10 @@ public class TechnologyServiceO {
         return newTechnology;
     }
 
-    private Entity copyTechnology(final Entity technologyPrototype) {
+    private Entity copyTechnology(final Entity order, final Entity technologyPrototype) {
         Entity copyOfTechnology = getTechnologyDD().create();
 
-        String number = numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
+        String number = generateNumberForTechnologyInOrder(order, technologyPrototype);
 
         copyOfTechnology = copyOfTechnology.getDataDefinition().copy(technologyPrototype.getId()).get(0);
 
@@ -269,4 +267,16 @@ public class TechnologyServiceO {
         }
     }
 
+    public String generateNumberForTechnologyInOrder(final Entity order, final Entity technology) {
+        StringBuffer number = new StringBuffer();
+        if (technology == null) {
+            number.append(numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY));
+        } else {
+            number.append(technology.getStringField(TechnologyFields.NUMBER));
+        }
+        number.append(" - ");
+        number.append(order.getStringField(OrderFields.NUMBER));
+        return number.toString();
+    }
 }

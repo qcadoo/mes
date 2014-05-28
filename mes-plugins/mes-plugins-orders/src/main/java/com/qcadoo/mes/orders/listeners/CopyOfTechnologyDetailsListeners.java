@@ -32,7 +32,6 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -94,12 +93,6 @@ public class CopyOfTechnologyDetailsListeners {
                     technologyForm.setEntity(copyOfTechnology);
                 }
             }
-            // TODO sprawdzić
-            // if (copyOfTechnology.getId() == null) {
-            // technologyServiceO.setQuantityOfWorkstationTypes(order, technology);
-            // } else {
-            // technologyServiceO.setQuantityOfWorkstationTypes(order, copyOfTechnology);
-            // }
         }
     }
 
@@ -133,9 +126,6 @@ public class CopyOfTechnologyDetailsListeners {
 
                 order.getDataDefinition().save(order);
 
-                // TODO sprawdzić
-                // technologyServiceO.setQuantityOfWorkstationTypes(order, newTechnology);
-
                 state.setFieldValue(newTechnology.getId());
                 technologyForm.setEntity(newTechnology);
             }
@@ -167,9 +157,6 @@ public class CopyOfTechnologyDetailsListeners {
 
                 order.getDataDefinition().save(order);
 
-                // TODO sprawdzić
-                // technologyServiceO.setQuantityOfWorkstationTypes(order, copyOfTechnology);
-
                 state.setFieldValue(copyOfTechnology.getId());
                 technologyForm.setEntity(copyOfTechnology);
             }
@@ -184,8 +171,7 @@ public class CopyOfTechnologyDetailsListeners {
     private Entity createTechnology(final Entity order) {
         Entity newTechnology = technologyServiceO.getTechnologyDD().create();
 
-        String number = numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
+        String number = technologyServiceO.generateNumberForTechnologyInOrder(order, null);
 
         Entity product = order.getBelongsToField(TechnologyFields.PRODUCT);
 
@@ -202,8 +188,7 @@ public class CopyOfTechnologyDetailsListeners {
     private Entity copyTechnology(final Entity technologyPrototype, final Entity order) {
         Entity copyOfTechnology = technologyServiceO.getTechnologyDD().create();
 
-        String number = numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
+        String number = technologyServiceO.generateNumberForTechnologyInOrder(order, technologyPrototype);
 
         copyOfTechnology = technologyServiceO.getTechnologyDD().copy(technologyPrototype.getId()).get(0);
 
@@ -227,7 +212,7 @@ public class CopyOfTechnologyDetailsListeners {
             return TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue();
         } else {
             return TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue();
-      }
+        }
     }
 
 }
