@@ -104,14 +104,16 @@
 				link="true" />
 			<option type="column" name="controlledQuantity" fields="controlledQuantity"
 				link="true" />
+			<option type="column" name="unit" fields="order" expression="#order['product'].get('unit')"
+				link="true" />
 			<option type="column" name="closed" fields="closed" link="false"
 				width="100" />
 			<option type="order" column="number,order,controlledQuantity,closed"
 				direction="desc" />
 			<option type="correspondingView" value="qualityControls/qualityControlForUnitDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="number,order,controlledQuantity,closed" />
-			<option type="orderable" value="number,order,controlledQuantity,closed" />
+			<option type="searchable" value="number,order,controlledQuantity,unit,closed" />
+			<option type="orderable" value="number,order,controlledQuantity,unit,closed" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 			<listener event="closeQualityControl"

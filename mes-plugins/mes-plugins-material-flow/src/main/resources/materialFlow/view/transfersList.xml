@@ -47,15 +47,17 @@
 			<option type="column" name="product" fields="product"
 				expression="#product['name']" />
 			<option type="column" name="quantity" fields="quantity" />
+			<option type="column" name="unit" fields="product"
+				expression="#product['unit']" />
 			<option type="column" name="staff" fields="staff"
-				expression="#staff['name']" />
+				expression="#staff['name'] + ' ' + #staff['surname']" />
 			
 			<option type="order" column="number" direction="asc" />
 			
 			<option type="searchable"
-				value="number,type,time,locationFrom,locationTo,product,quantity,staff" />
+				value="number,type,time,locationFrom,locationTo,product,quantity,unit,staff" />
 			<option type="orderable"
-				value="number,type,time,locationFrom,locationTo,product,quantity,staff" />
+				value="number,type,time,locationFrom,locationTo,product,quantity,unit,staff" />
 				
 			<option type="correspondingView" value="materialFlow/transferDetails" />
 			<option type="correspondingComponent" value="form" />
