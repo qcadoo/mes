@@ -98,7 +98,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="7" width="5">
 					<component type="lookup" name="staff" field="staff">
-						<option type="column" name="surname" fields="surname" />
+						<option type="column" name="surname" fields="surname" link="true" />
 						<option type="searchable" value="name,surname" />
 						<option type="orderable" value=" name,surname" />
 						
