@@ -112,6 +112,10 @@
 			type="beforeRender" class="com.qcadoo.mes.productionScheduling.hooks.OrderDetailsHooksPS"
 			method="disabledButtonOperationDuration" />
 
+		<view:view-hook plugin="productionLines" view="productionLineDetails"
+			type="beforeRender" class="com.qcadoo.mes.productionScheduling.hooks.ProductionLinesDetailsHooksPS"
+			method="disabledWorkstationTypesTab"/>
+
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="redirectToOperationDurationDetailsInOrder"
 			class="com.qcadoo.mes.productionScheduling.listeners.OrderDetailsListenersPS"
