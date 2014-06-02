@@ -112,7 +112,7 @@ public class ProductDetailsListenersT {
         }
 
         Map<String, String> filters = Maps.newHashMap();
-        filters.put("productName", productName);
+        filters.put("productName", applyInOperator(productName));
 
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put(L_FILTERS, filters);
@@ -143,4 +143,8 @@ public class ProductDetailsListenersT {
         view.redirectTo(url, false, true, parameters);
     }
 
+    private String applyInOperator(final String value){
+        StringBuilder builder = new StringBuilder();
+        return builder.append("[").append(value).append("]").toString();
+    }
 }
