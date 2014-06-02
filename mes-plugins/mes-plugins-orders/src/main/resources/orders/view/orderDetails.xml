@@ -406,7 +406,7 @@
 
 										<criteriaModifier
 											class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-											method="showPatternTechnology" />
+											method="showAcceptedPatternTechnology" />
 
 										<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 											method="setDefaultNameUsingTechnology" />

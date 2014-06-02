@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.criteriaModifiers;
+package com.qcadoo.mes.orders.criteriaModifires;
 
 import org.springframework.stereotype.Service;
 
@@ -31,14 +31,11 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
-public class TechnologyCriteriaModifiers {
-
-    public void showPatternTechnology(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
-    }
+public class TechnologyCriteriaModifiersO {
 
     public void showAcceptedPatternTechnology(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
         scb.add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED));
     }
+
 }

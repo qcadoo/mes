@@ -8,9 +8,14 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
+import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -28,6 +33,12 @@ public class TechnologyServiceO {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private TechnologyStateChangeAspect technologyStateChangeAspect;
+
+    @Autowired
+    private StateChangeContextBuilder stateChangeContextBuilder;
 
     @Transactional
     public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
@@ -210,7 +221,7 @@ public class TechnologyServiceO {
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
 
         copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
-
+        changeTechnologyState(copyOfTechnology, TechnologyStateStringValues.CHECKED);
         return copyOfTechnology;
     }
 
@@ -279,4 +290,32 @@ public class TechnologyServiceO {
         number.append(order.getStringField(OrderFields.NUMBER));
         return number.toString();
     }
+
+    public void changeTechnologyState(final Entity technology, final String targetState) {
+        final StateChangeContext stateChangeContextT = stateChangeContextBuilder.build(
+                technologyStateChangeAspect.getChangeEntityDescriber(), technology, targetState);
+
+        stateChangeContextT.setStatus(StateChangeStatus.IN_PROGRESS);
+        technologyStateChangeAspect.changeState(stateChangeContextT);
+
+    }
+
+    public void setTechnologyNumber(final DataDefinition orderDD, final Entity order) {
+        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if (technology == null) {
+            return;
+        }
+        String number = "";
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+            number = generateNumberForTechnologyInOrder(order, order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+        } else if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(orderType)) {
+            number = generateNumberForTechnologyInOrder(order, null);
+        }
+        technology.setField(TechnologyFields.NUMBER, number);
+        technology = technology.getDataDefinition().save(technology);
+        order.setField(OrderFields.TECHNOLOGY, technology);
+
+    }
+
 }

@@ -37,6 +37,7 @@ import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
@@ -44,6 +45,7 @@ import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -118,7 +120,10 @@ public class OrderHooks {
         copyEndDate(orderDD, order);
         copyProductQuantity(orderDD, order);
         onCorrectingTheRequestedVolume(orderDD, order);
+        technologyServiceO.setTechnologyNumber(orderDD, order);
+
         technologyServiceO.createOrUpdateTechnology(orderDD, order);
+
     }
 
     public void onCopy(final DataDefinition orderDD, final Entity order) {
@@ -491,18 +496,25 @@ public class OrderHooks {
     }
 
     public void setCopyOfTechnology(final DataDefinition orderDD, final Entity order) {
+        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
-
-        Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         Entity copyOfTechnology = technologyDD.create();
-        copyOfTechnology = technologyDD.copy(technologyId).get(0);
-        copyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
-                TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
+        copyOfTechnology = technologyDD.copy(technology.getId()).get(0);
+        String number = null;
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+            number = technologyServiceO.generateNumberForTechnologyInOrder(order,
+                    order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+        } else if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(orderType)) {
+            number = technologyServiceO.generateNumberForTechnologyInOrder(order, null);
+        }
+        copyOfTechnology.setField(TechnologyFields.NUMBER, number);
         copyOfTechnology.getDataDefinition().save(copyOfTechnology);
-
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+            technologyServiceO.changeTechnologyState(copyOfTechnology, TechnologyStateStringValues.CHECKED);
+        }
         order.setField(OrderFields.TECHNOLOGY, copyOfTechnology);
     }
-
 }
