@@ -31,7 +31,7 @@
 	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
-		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin
 		http://schema.qcadoo.org/plugin.xsd 
 		http://schema.qcadoo.org/modules/model 
 		http://schema.qcadoo.org/modules/model.xsd 
@@ -39,8 +39,8 @@
 		http://schema.qcadoo.org/modules/view.xsd 
 		http://schema.qcadoo.org/modules/localization 
 		http://schema.qcadoo.org/modules/localization.xsd 
-		http://schema.qcadoo.org/modules/report 
-		http://schema.qcadoo.org/modules/report.xsd 
+		http://schema.qcadoo.org/modules/report
+		http://schema.qcadoo.org/modules/report.xsd
 		http://schema.qcadoo.org/modules/menu 
 		http://schema.qcadoo.org/modules/menu.xsd">
 
@@ -110,7 +110,7 @@
 
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender" class="com.qcadoo.mes.productionScheduling.hooks.OrderDetailsHooksPS"
-			method="disabledButtonOperationDuration" />
+			method="onBeforeRender" />
 
 		<view:view-hook plugin="productionLines" view="productionLineDetails"
 			type="beforeRender" class="com.qcadoo.mes.productionScheduling.hooks.ProductionLinesDetailsHooksPS"
