@@ -116,7 +116,7 @@ public class ProductDetailsListenersOTest {
 
         given(product.getStringField(NUMBER)).willReturn(L_PRODUCT_NUMBER);
 
-        filters.put("productNumber", L_PRODUCT_NUMBER);
+        filters.put("productNumber", "[" + L_PRODUCT_NUMBER + "]");
 
         gridOptions.put(L_FILTERS, filters);
 
@@ -170,7 +170,7 @@ public class ProductDetailsListenersOTest {
 
         given(product.getStringField(NUMBER)).willReturn(L_PRODUCT_NUMBER);
 
-        filters.put("productNumber", L_PRODUCT_NUMBER);
+        filters.put("productNumber", "[" + L_PRODUCT_NUMBER + "]");
 
         gridOptions.put(L_FILTERS, filters);
 
