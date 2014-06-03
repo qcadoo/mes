@@ -374,9 +374,9 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
-								<component type="input" name="deliveryDateBufferDays"
-									defaultEnabled="never" hasLabel="true" reference="deliveryDateBufferDays">
-									<option type="textRepresentationOnDisabled" value="true" />
+								<component type="label" name="deliveryDateBufferDays"
+									 reference="deliveryDateBufferDays" required="false">
+                                    <option type="labelStyle" value="label" />
 								</component>
 							</layoutElement>
 						</component>

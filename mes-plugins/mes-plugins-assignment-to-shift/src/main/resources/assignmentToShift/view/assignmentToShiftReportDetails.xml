@@ -71,15 +71,15 @@
 								var isGeneratedCheckboxValue = #{generated}.getValue();
 								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 									xslRibbonItem.enable();
-									save.disable("#{translate(goodFood.goodFood.report.message.documentsWasGenerated)}");
-									saveBack.disable("#{translate(goodFood.goodFood.report.message.documentsWasGenerated)}");
-									saveNew.disable("#{translate(goodFood.goodFood.report.message.documentsWasGenerated)}");
-									cancel.disable("#{translate(goodFood.goodFood.report.message.documentsWasGenerated)}");
+									save.disable("#{translate(assignmentToShift.assignmentToShiftReport.report.message.documentsWasGenerated)}");
+									saveBack.disable("#{translate(assignmentToShift.assignmentToShiftReport.report.message.documentsWasGenerated)}");
+									saveNew.disable("#{translate(assignmentToShift.assignmentToShiftReport.report.message.documentsWasGenerated)}");
+									cancel.disable("#{translate(assignmentToShift.assignmentToShiftReport.report.message.documentsWasGenerated)}");
 									copyRibbonItem.enable();
-									generatedRibbonItem.disable("#{translate(goodFood.goodFood.report.message.documentsWasGenerated)}");
+									generatedRibbonItem.disable("#{translate(assignmentToShift.assignmentToShiftReport.report.message.documentsWasGenerated)}");
 									deletedRibbonItem.enable();
 								} else {
-									xslRibbonItem.disable("#{translate(goodFood.goodFood.ribbon.message.recordNotGenerated)}");
+									xslRibbonItem.disable("#{translate(assignmentToShift.assignmentToShiftReport.ribbon.message.recordNotGenerated)}");
 									save.enable();
 									saveBack.enable();
 									saveNew.enable();
@@ -89,8 +89,8 @@
 									deletedRibbonItem.enable();
 								}
 							} else {
-								copyRibbonItem.disable("#{translate(goodFood.goodFood.ribbon.message.recordNotGenerated)}");
-								xslRibbonItem.disable("#{translate(goodFood.goodFood.ribbon.message.recordNotGenerated)}");
+								copyRibbonItem.disable("#{translate(assignmentToShift.assignmentToShiftReport.ribbon.message.recordNotGenerated)}");
+								xslRibbonItem.disable("#{translate(assignmentToShift.assignmentToShiftReport.ribbon.message.recordNotGenerated)}");
 								save.enable();
 								saveBack.enable();
 								saveNew.enable();
