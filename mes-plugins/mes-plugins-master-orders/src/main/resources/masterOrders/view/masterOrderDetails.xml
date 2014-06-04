@@ -248,6 +248,9 @@
 				<option type="fieldCode" value="number" />
 
 				<option type="multiselect" value="true" />
+                <criteriaModifier
+                        class="com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier"
+                        method="filterByMasterOrderNumber"/>
 			</component>
 			<component type="grid" name="orders" reference="ordersGrid"
 				source="#{form}.orders">
@@ -318,7 +321,10 @@
 			method="setUneditableWhenEntityHasUnsaveChanges" />
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-			method="changeRibbonState" />	
-	</hooks>
+			method="changeRibbonState" />
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="setOrderLookupCriteriaModifier" />
+    </hooks>
 
 </view>

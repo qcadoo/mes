@@ -24,16 +24,12 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEFAULT_TECHNOLOGY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.TECHNOLOGY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 
+import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,11 +66,16 @@ public class MasterOrderDetailsHooks {
 
     private static final String L_PRODUCTS_GRID = "productsGrid";
 
+    private static final String L_ORDERS_LOOKUP = "ordersLookup";
+
     @Autowired
     private ExpressionService expressionService;
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
+
+    @Autowired
+    private OrderCriteriaModifier orderCriteriaModifier;
 
     public void hideFieldDependOnMasterOrderType(final ViewDefinitionState view) {
         FieldComponent masterOrderType = (FieldComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_TYPE);
@@ -208,6 +209,18 @@ public class MasterOrderDetailsHooks {
         boolean isEnabled = (masterOrderForm.getEntityId() != null);
 
         changeButtonsState(view, isEnabled);
+    }
+
+    public void setOrderLookupCriteriaModifier(final ViewDefinitionState view) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity masterOrder = masterOrderForm.getEntity();
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(L_ORDERS_LOOKUP);
+        if(masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER)){
+            orderCriteriaModifier.putMasterOrderNumberFilter(orderLookup, masterOrder.getStringField(NUMBER));
+        } else {
+            orderCriteriaModifier.clearMasterOrderNumberFilter(orderLookup);
+        }
     }
 
     private void changeButtonsState(final ViewDefinitionState view, final boolean isEnabled) {
