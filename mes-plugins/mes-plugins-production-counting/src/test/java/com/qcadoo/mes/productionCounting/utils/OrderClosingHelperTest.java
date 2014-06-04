@@ -15,9 +15,10 @@ import org.mockito.MockitoAnnotations;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
-import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -35,10 +36,10 @@ public class OrderClosingHelperTest {
     private OrderClosingHelper orderClosingHelper;
 
     @Mock
-    private DataDefinition productionRecordDD;
+    private DataDefinition productionTrackingDD;
 
     @Mock
-    private Entity productionRecord, order;
+    private Entity productionTracking, order, technology;
 
     @Before
     public final void init() {
@@ -46,14 +47,15 @@ public class OrderClosingHelperTest {
 
         orderClosingHelper = new OrderClosingHelper();
 
-        given(productionRecord.getId()).willReturn(PRODUCTION_RECORD_ID);
-        given(productionRecord.getDataDefinition()).willReturn(productionRecordDD);
-        given(productionRecord.getField(ProductionRecordFields.ORDER)).willReturn(order);
-        given(productionRecord.getBelongsToField(ProductionRecordFields.ORDER)).willReturn(order);
+        given(productionTracking.getId()).willReturn(PRODUCTION_RECORD_ID);
+        given(productionTracking.getDataDefinition()).willReturn(productionTrackingDD);
+        given(productionTracking.getField(ProductionTrackingFields.ORDER)).willReturn(order);
+        given(productionTracking.getBelongsToField(ProductionTrackingFields.ORDER)).willReturn(order);
 
         EntityList tiocs = mockEntityList(NUM_OF_OPERATIONS);
-        given(order.getHasManyField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS)).willReturn(tiocs);
-        given(order.getField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS)).willReturn(tiocs);
+
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
+        given(technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)).willReturn(tiocs);
     }
 
     @Test
@@ -61,10 +63,10 @@ public class OrderClosingHelperTest {
         // given
         orderHasEnabledAutoClose();
         stubTypeOfProductionRecording(TypeOfProductionRecording.CUMULATED);
-        productionRecordIsLast();
+        productionTrackingIsLast();
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertTrue(shouldClose);
@@ -74,10 +76,10 @@ public class OrderClosingHelperTest {
     public final void shouldOrderCanNotBeClosedWhenTypeIsCummulativeAndAcceptingLastRecordButAutoCloseIsNotEnabled() {
         // given
         stubTypeOfProductionRecording(TypeOfProductionRecording.CUMULATED);
-        productionRecordIsLast();
+        productionTrackingIsLast();
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertFalse(shouldClose);
@@ -90,7 +92,7 @@ public class OrderClosingHelperTest {
         stubTypeOfProductionRecording(TypeOfProductionRecording.CUMULATED);
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertFalse(shouldClose);
@@ -104,7 +106,7 @@ public class OrderClosingHelperTest {
         stubSearchCriteriaResults(1L, 2L, 3L);
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertFalse(shouldClose);
@@ -115,11 +117,11 @@ public class OrderClosingHelperTest {
         // given
         orderHasEnabledAutoClose();
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L);
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertFalse(shouldClose);
@@ -133,7 +135,7 @@ public class OrderClosingHelperTest {
         stubSearchCriteriaResults(1L, 2L);
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertFalse(shouldClose);
@@ -144,11 +146,11 @@ public class OrderClosingHelperTest {
         // given
         orderHasEnabledAutoClose();
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L, 3L);
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertTrue(shouldClose);
@@ -158,11 +160,11 @@ public class OrderClosingHelperTest {
     public final void shouldOrderCanNotBeClosedWhenTypeIsForEachOpAndRecordIsLastAndThereIsEnoughtLastRecordsButAutoCloseIsNotEnabled() {
         // given
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L, 3L);
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertFalse(shouldClose);
@@ -172,12 +174,12 @@ public class OrderClosingHelperTest {
     public final void shouldOrderCanBeClosedWhenTypeIsForEachOpAndRecordIsLastAndThereIsMoreThanEnoughtLastRecords() {
         // given
         orderHasEnabledAutoClose();
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
         stubSearchCriteriaResults(1L, 2L, 3L, 4L, 5L, 6L);
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertTrue(shouldClose);
@@ -187,11 +189,11 @@ public class OrderClosingHelperTest {
     public final void shouldOrderCanNotBeClosedWhenTypeIsForEachOpAndRecordIsLastAndThereIsMoreThanEnoughtLastRecordsButAutoCloseIsNotEnabled() {
         // given
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L, 3L, 4L, 5L, 6L);
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertFalse(shouldClose);
@@ -202,11 +204,11 @@ public class OrderClosingHelperTest {
         // given
         orderHasEnabledAutoClose();
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L, 3L, PRODUCTION_RECORD_ID);
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertTrue(shouldClose);
@@ -216,11 +218,11 @@ public class OrderClosingHelperTest {
     public final void shouldOrderCanNotBeClosedWhenTypeIsForEachOpAndRecordIsLastButIsAlreadyAccepted() {
         // given
         stubTypeOfProductionRecording(TypeOfProductionRecording.FOR_EACH);
-        productionRecordIsLast();
+        productionTrackingIsLast();
         stubSearchCriteriaResults(1L, 2L, PRODUCTION_RECORD_ID);
 
         // when
-        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionRecord);
+        boolean shouldClose = orderClosingHelper.orderShouldBeClosed(productionTracking);
 
         // then
         assertFalse(shouldClose);
@@ -231,9 +233,9 @@ public class OrderClosingHelperTest {
         given(order.getField(OrderFieldsPC.AUTO_CLOSE_ORDER)).willReturn(true);
     }
 
-    private void productionRecordIsLast() {
-        given(productionRecord.getBooleanField(ProductionRecordFields.LAST_RECORD)).willReturn(true);
-        given(productionRecord.getField(ProductionRecordFields.LAST_RECORD)).willReturn(true);
+    private void productionTrackingIsLast() {
+        given(productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)).willReturn(true);
+        given(productionTracking.getField(ProductionTrackingFields.LAST_TRACKING)).willReturn(true);
     }
 
     private void stubTypeOfProductionRecording(final TypeOfProductionRecording type) {
@@ -260,7 +262,7 @@ public class OrderClosingHelperTest {
         given(result.getEntities()).willReturn(entities);
         given(scb.list()).willReturn(result);
 
-        given(productionRecordDD.find()).willReturn(scb);
+        given(productionTrackingDD.find()).willReturn(scb);
     }
 
     private EntityList mockEntityList(final int size) {

@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="productionLine" activable="true" 
+<model name="productionLine" activable="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
@@ -35,22 +35,25 @@
 			<validatesLength max="2048" />
 		</string>
 		<belongsTo name="division" plugin="basic" model="division" />
-		<dictionary name="place" dictionary="productionLinePlaces" required="false" />
+		<dictionary name="place" dictionary="productionLinePlaces"
+			required="false" />
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
 		<boolean name="supportsAllTechnologies" default="true" />
 		<file name="documentation" />
-		<manyToMany name="groups" joinField="productionLines" model="technologyGroup"
-			plugin="technologies" copyable="true" />
-		<manyToMany name="technologies" joinField="productionLines" model="technology"
-			plugin="technologies" copyable="true" />
-			
+		<manyToMany name="groups" joinField="productionLines"
+			model="technologyGroup" plugin="technologies" copyable="true" />
+		<manyToMany name="technologies" joinField="productionLines"
+			model="technology" plugin="technologies" copyable="true" />
+
 		<hasMany name="workstationTypeComponents" model="workstationTypeComponent"
 			joinField="productionLine" cascade="delete" />
-			
-		<boolean name="supportsOtherTechnologiesWorkstationTypes" default="true" />
-		<integer name="quantityForOtherWorkstationTypes" default="1" required="true">
+
+		<boolean name="supportsOtherTechnologiesWorkstationTypes"
+			default="true" />
+		<integer name="quantityForOtherWorkstationTypes" default="1"
+			required="true">
 			<validatesRange from="0" exclusively="true" />
 		</integer>
 	</fields>

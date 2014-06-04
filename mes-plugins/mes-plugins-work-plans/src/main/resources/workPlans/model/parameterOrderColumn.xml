@@ -24,21 +24,23 @@
     ***************************************************************************
 
 -->
-<model name="parameterOrderColumn" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+<model name="parameterOrderColumn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<belongsTo name="parameter" plugin="basic" model="parameter"
 			required="true" />
 
-		<belongsTo name="columnForOrders" plugin="workPlans"
-			model="columnForOrders" required="true" lazy="false" />
+		<belongsTo name="columnForOrders" plugin="workPlans" model="columnForOrders"
+			required="true" lazy="false" />
 
 		<priority name="succession" />
 	</fields>
+
 	<hooks>
 		<validatesWith
-			class="com.qcadoo.mes.workPlans.hooks.ParameterColumnModelValidators"
-			method="checkIfColumnForOrdersIsNotAlreadyUsed" />
+			class="com.qcadoo.mes.workPlans.validators.ParameterOrderColumnValidators"
+			method="validatesWith" />
 	</hooks>
 </model>

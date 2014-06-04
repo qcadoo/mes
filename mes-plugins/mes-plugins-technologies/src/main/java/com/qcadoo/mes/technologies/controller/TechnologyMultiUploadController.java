@@ -32,6 +32,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +58,8 @@ import com.qcadoo.view.api.crud.CrudService;
 @Controller
 @RequestMapping("/rest/techologies")
 public class TechnologyMultiUploadController {
+
+    private static final Logger logger = LoggerFactory.getLogger(TechnologyMultiUploadController.class);
 
     @Autowired
     private FileService fileService;
@@ -82,7 +86,7 @@ public class TechnologyMultiUploadController {
         Long technologyId = Long.parseLong(request.getParameter("techId"));
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
-        DataDefinition atachmentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+        DataDefinition attachmentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);
 
         Iterator<String> itr = request.getFileNames();
@@ -96,10 +100,10 @@ public class TechnologyMultiUploadController {
             try {
                 path = fileService.upload(mpf);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Unable to upload attachment.", e);
             }
             if (exts.contains(Files.getFileExtension(path).toUpperCase())) {
-                Entity atchment = atachmentDD.create();
+                Entity atchment = attachmentDD.create();
                 atchment.setField(TechnologyAttachmentFields.ATTACHMENT, path);
                 atchment.setField(TechnologyAttachmentFields.NAME, mpf.getOriginalFilename());
                 atchment.setField(TechnologyAttachmentFields.TECHNOLOGY, technology);
@@ -108,25 +112,34 @@ public class TechnologyMultiUploadController {
                 BigDecimal divider = new BigDecimal(1024, numberService.getMathContext());
                 BigDecimal size = fileSize.divide(divider, L_SCALE, BigDecimal.ROUND_HALF_UP);
                 atchment.setField(TechnologyAttachmentFields.SIZE, size);
-                atachmentDD.save(atchment);
+                attachmentDD.save(atchment);
             }
         }
     }
 
     @RequestMapping(value = "/getAttachment.html", method = RequestMethod.GET)
     public final void getAttachment(@RequestParam("id") final Long[] ids, HttpServletResponse response) {
-        DataDefinition atachmentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+        DataDefinition attachmentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);
-        Entity attachment = atachmentDD.get(ids[0]);
-        response.setHeader("Content-disposition",
-                "inline; filename=" + attachment.getStringField(TechnologyAttachmentFields.NAME));
+        Entity attachment = attachmentDD.get(ids[0]);
         InputStream is = fileService.getInputStream(attachment.getStringField(TechnologyAttachmentFields.ATTACHMENT));
+
         try {
-            IOUtils.copy(is, response.getOutputStream());
+            if (is == null) {
+                response.sendRedirect("/error.html?code=404");
+            }
+
+            response.setHeader("Content-disposition",
+                    "inline; filename=" + attachment.getStringField(TechnologyAttachmentFields.NAME));
+            response.setContentType(fileService.getContentType(attachment.getStringField(TechnologyAttachmentFields.ATTACHMENT)));
+
+            int bytes = IOUtils.copy(is, response.getOutputStream());
+            response.setContentLength(bytes);
+
             response.flushBuffer();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Unable to copy attachment file to response stream.", e);
         }
     }
 }

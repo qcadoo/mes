@@ -24,8 +24,12 @@
 package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
 
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 public interface BasicProductionCountingService {
 
@@ -36,6 +40,42 @@ public interface BasicProductionCountingService {
      *            order
      */
     void createProductionCountingQuantitiesAndOperationRuns(final Entity order);
+
+    /**
+     * Creates production counting operation run
+     * 
+     * @param order
+     *            order
+     * @param technologyOperationComponent
+     *            technology operation component
+     * @param runs
+     *            runs
+     * 
+     * @return production counting operation run entity
+     */
+    Entity createProductionCountingOperationRun(final Entity order, final Entity technologyOperationComponent,
+            final BigDecimal runs);
+
+    /**
+     * Creates production counting quantity
+     * 
+     * @param order
+     *            order
+     * @param technologyOperationComponent
+     *            technology operation component
+     * @param product
+     *            product
+     * @param role
+     *            role
+     * @param isNonComponent
+     *            is non component
+     * @param plannedQuantity
+     *            planned quantity
+     * 
+     * @return production counting quantity entity
+     */
+    Entity createProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent, final Entity product,
+            final String role, final boolean isNonComponent, final BigDecimal plannedQuantity);
 
     /**
      * Updates production counting quantities
@@ -54,6 +94,60 @@ public interface BasicProductionCountingService {
     void createBasicProductionCountings(final Entity order);
 
     /**
+     * Creates basic production counting
+     * 
+     * @param order
+     *            order
+     * @param product
+     *            product
+     * 
+     * @return basic production counting entity
+     */
+    Entity createBasicProductionCounting(final Entity order, final Entity product);
+
+    /**
+     * Associates production counting quantities with basic production countings
+     * 
+     * @param order
+     *            order
+     */
+    void associateProductionCountingQuantitiesWithBasicProductionCountings(final Entity order);
+
+    /**
+     * Gets basic production counting
+     * 
+     * @param basicProductionCoutningId
+     *            basicProductionCoutningId
+     * 
+     * @return basic production counting
+     */
+    Entity getBasicProductionCounting(final Long basicProductionCoutningId);
+
+    /**
+     * Gets production counting quantity
+     * 
+     * @param productionCountingQuantityId
+     *            productionCountingQuantityId
+     * 
+     * @return production counting quantity
+     */
+    Entity getProductionCountingQuantity(final Long productionCountingQuantityId);
+
+    /**
+     * Gets basic production counting data definition
+     * 
+     * @return basic production counting data definition
+     */
+    DataDefinition getBasicProductionCountingDD();
+
+    /**
+     * Gets production counting quantity data definition
+     * 
+     * @return production counting quantity data definition
+     */
+    DataDefinition getProductionCountingQuantityDD();
+
+    /**
      * Gets produced quantity from basic production countings
      * 
      * @param order
@@ -62,5 +156,37 @@ public interface BasicProductionCountingService {
      * @return doneQuantity
      */
     BigDecimal getProducedQuantityFromBasicProductionCountings(final Entity order);
+
+    /**
+     * Fills unit fields
+     * 
+     * @param view
+     *            view
+     * 
+     * @param productName
+     *            product lookup reference name
+     * 
+     * @param referenceNames
+     *            reference names to unit fields
+     */
+    void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames);
+
+    /**
+     * Sets technology operation component field required
+     * 
+     * @param view
+     *            view
+     */
+    void setTechnologyOperationComponentFieldRequired(final ViewDefinitionState view);
+
+    /**
+     * Fills row styles depends of type of material
+     * 
+     * @param productionCountingQuantity
+     *            production counting quantity
+     * 
+     * @return row styles
+     */
+    Set<String> fillRowStylesDependsOfTypeOfMaterial(final Entity productionCountingQuantity);
 
 }

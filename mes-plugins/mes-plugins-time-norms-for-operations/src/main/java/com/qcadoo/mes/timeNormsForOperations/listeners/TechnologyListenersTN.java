@@ -28,6 +28,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.timeNormsForOperations.NormService;
 import com.qcadoo.model.api.Entity;
@@ -39,34 +40,39 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class TechnologyListenersTN {
 
+    private static final String L_FORM = "form";
+
     @Autowired
     private NormService normService;
 
     public void checkOperationOutputQuantities(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form.getEntityId() == null) {
-            return;
-        }
-        Entity technology = form.getEntity();
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        if (!TechnologyState.DRAFT.getStringValue().equals(technology.getStringField("state"))) {
-            // validation will take care of this.
+        if (technologyForm.getEntityId() == null) {
             return;
         }
 
-        // FIXME mici, why would I need this? Without it operationComponents are null
+        Entity technology = technologyForm.getEntity();
+
+        if (!TechnologyState.DRAFT.getStringValue().equals(technology.getStringField(TechnologyFields.STATE))) {
+            return;
+        }
+
         technology = technology.getDataDefinition().get(technology.getId());
 
         List<String> messages = normService.checkOperationOutputQuantities(technology);
 
         if (!messages.isEmpty()) {
             StringBuilder builder = new StringBuilder();
+
             for (String message : messages) {
                 builder.append(message.toString());
                 builder.append(", ");
             }
-            form.addMessage("technologies.technology.validate.error.invalidQuantity", MessageType.INFO, false, builder.toString());
+
+            technologyForm.addMessage("technologies.technology.validate.error.invalidQuantity", MessageType.INFO, false,
+                    builder.toString());
         }
     }
 

@@ -411,7 +411,6 @@ public class OrderReportPdf extends ReportPdfView {
             }
         }
         return columnNames;
-
     }
 
 }

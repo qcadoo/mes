@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
@@ -32,26 +32,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.util.UnitService;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
+import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class TechnologyOperationComponentHooksTNFO {
 
     @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
     private UnitService unitService;
 
-    public void onCreate(final DataDefinition dd, final Entity technologyOperationComponent) {
-        setDefaultUnitOnCreate(dd, technologyOperationComponent);
+    public void onCreate(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        setDefaultUnitOnCreate(technologyOperationComponent);
     }
 
-    private void setDefaultUnitOnCreate(final DataDefinition dd, final Entity technologyOperationComponent) {
+    private void setDefaultUnitOnCreate(final Entity technologyOperationComponent) {
         if (StringUtils.isEmpty(technologyOperationComponent
-                .getStringField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT))) {
+                .getStringField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT))) {
             String defaultUnit = unitService.getDefaultUnitFromSystemParameters();
-            technologyOperationComponent.setField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT, defaultUnit);
+            technologyOperationComponent.setField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT,
+                    defaultUnit);
         }
+    }
+
+    public void createTechOperCompTimeCalculations(final DataDefinition dd, final Entity technologyOperationComponent) {
+        DataDefinition techOperCompTimeCalculationDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
+                TimeNormsConstants.MODEL_TECH_OPER_COMP_TIME_CALCULATION);
+        Entity techOperCompTimeCalculation = techOperCompTimeCalculationDD.create();
+        techOperCompTimeCalculation = techOperCompTimeCalculationDD.save(techOperCompTimeCalculation);
+        technologyOperationComponent.setField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION,
+                techOperCompTimeCalculation);
+        // technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
     }
 
     public void copyTimeNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {
@@ -88,4 +104,19 @@ public class TechnologyOperationComponentHooksTNFO {
         }
         return true;
     }
+
+    public boolean onDelete(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        boolean isDeleted = true;
+
+        Entity techOperCompTimeCalculation = technologyOperationComponent
+                .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
+
+        if (techOperCompTimeCalculation != null) {
+            isDeleted = techOperCompTimeCalculation.getDataDefinition().delete(techOperCompTimeCalculation.getId())
+                    .isSuccessfull();
+        }
+
+        return isDeleted;
+    }
+
 }

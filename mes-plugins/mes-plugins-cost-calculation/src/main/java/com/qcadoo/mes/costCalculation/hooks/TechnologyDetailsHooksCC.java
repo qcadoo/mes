@@ -23,10 +23,9 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
-
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -38,16 +37,23 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class TechnologyDetailsHooksCC {
 
-    public void updateViewCostsCalculationButtonState(final ViewDefinitionState view) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference("form");
+    private static final String L_COST_CALCULATE = "costCalculate";
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonGroup materials = (RibbonGroup) window.getRibbon().getGroupByName("costCalculate");
-        RibbonActionItem costCalculate = (RibbonActionItem) materials.getItemByName("costCalculate");
+    private static final String L_WINDOW = "window";
+
+    private static final String L_FORM = "form";
+
+    public void updateViewCostsCalculationButtonState(final ViewDefinitionState view) {
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup ribbonGroup = window.getRibbon().getGroupByName(L_COST_CALCULATE);
+        RibbonActionItem costCalculate = ribbonGroup.getItemByName(L_COST_CALCULATE);
 
         Entity technology = technologyForm.getEntity();
 
-        if (technology.getId() == null || TechnologyStateStringValues.DRAFT.equals(technology.getStringField(STATE))) {
+        if ((technology.getId() == null)
+                || TechnologyStateStringValues.DRAFT.equals(technology.getStringField(TechnologyFields.STATE))) {
             costCalculate.setEnabled(false);
         } else {
             costCalculate.setEnabled(true);

@@ -23,133 +23,121 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SearchRestrictions.class)
 public class OperationHooksOTFOTest {
 
-    private OperationHooksOTFO hooksOTFO;
+    private OperationHooksOTFO operationHooksOTFO;
 
     @Mock
-    private DataDefinition dataDefinition, techInstOperCompDD, operationalTasksDD;
+    private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
     @Mock
-    private Entity entity, operation, tioc1, task1;
+    private DataDefinition operationDD, operationalTaskDD;
 
     @Mock
-    private DataDefinitionService dataDefinitionService;
-
-    @Mock
-    private SearchCriteriaBuilder builder1, builder2;
-
-    @Mock
-    private SearchResult result1, result2;
+    private Entity operation, operationFromDB, technologyOperationComponent, operationalTask;
 
     @Before
     public void init() {
-        hooksOTFO = new OperationHooksOTFO();
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(hooksOTFO, "dataDefinitionService", dataDefinitionService);
 
-        PowerMockito.mockStatic(SearchRestrictions.class);
-        when(
-                dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).thenReturn(techInstOperCompDD);
-        when(techInstOperCompDD.find()).thenReturn(builder1);
-        SearchCriterion criterion = SearchRestrictions.belongsTo(TechnologyInstanceOperCompFields.OPERATION, operation);
-        when(builder1.add(criterion)).thenReturn(builder1);
-        when(builder1.list()).thenReturn(result1);
+        operationHooksOTFO = new OperationHooksOTFO();
 
-        when(
-                dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
-                        OperationalTasksConstants.MODEL_OPERATIONAL_TASK)).thenReturn(operationalTasksDD);
-        when(operationalTasksDD.find()).thenReturn(builder2);
-        SearchCriterion criterion2 = SearchRestrictions.belongsTo("technologyInstanceOperationComponent", tioc1);
-        when(builder2.add(criterion2)).thenReturn(builder2);
-        when(builder2.list()).thenReturn(result2);
+        ReflectionTestUtils.setField(operationHooksOTFO, "operationalTasksForOrdersService", operationalTasksForOrdersService);
 
+        given(operationalTask.getDataDefinition()).willReturn(operationalTaskDD);
     }
 
     private EntityList mockEntityList(List<Entity> list) {
         EntityList entityList = mock(EntityList.class);
-        when(entityList.iterator()).thenReturn(list.iterator());
+
+        given(entityList.iterator()).willReturn(list.iterator());
+
         return entityList;
     }
 
     @Test
     public void shouldReturnIfEntityIdIsNull() throws Exception {
         // given
-        when(entity.getId()).thenReturn(null);
-        // when
-        hooksOTFO.changedNameOperationTasksWhenEntityNameChanged(dataDefinition, entity);
+        Long operationId = null;
+        String name = "name";
 
+        given(operation.getId()).willReturn(operationId);
+
+        // when
+        operationHooksOTFO.changedNameInOperationalTasksWhenChanged(operationDD, operation);
+
+        // then
+        Mockito.verify(operationalTask, Mockito.never()).setField(OperationalTaskFields.NAME, name);
+        Mockito.verify(operationalTaskDD, Mockito.never()).save(operationalTask);
     }
 
     @Test
-    public void shouldReturnWhenEntityNameIsEqualsOperationName() throws Exception {
+    public void shouldReturnWhenEntityNameIsTheSame() throws Exception {
         // given
-        Long entityId = 1L;
-        String entityName = "name";
+        Long operationId = 1L;
+        String name = "name";
         String operationName = "name";
-        when(entity.getId()).thenReturn(entityId);
-        when(dataDefinition.get(entityId)).thenReturn(operation);
-        when(entity.getStringField("name")).thenReturn(entityName);
-        when(operation.getStringField("name")).thenReturn(operationName);
+
+        given(operation.getId()).willReturn(operationId);
+        given(operationDD.get(operationId)).willReturn(operationFromDB);
+
+        given(operation.getStringField(OperationFields.NAME)).willReturn(name);
+        given(operationFromDB.getStringField(OperationFields.NAME)).willReturn(operationName);
+
         // when
-        hooksOTFO.changedNameOperationTasksWhenEntityNameChanged(dataDefinition, entity);
+        operationHooksOTFO.changedNameInOperationalTasksWhenChanged(operationDD, operation);
 
         // then
+        Mockito.verify(operationalTask, Mockito.never()).setField(OperationalTaskFields.NAME, name);
+        Mockito.verify(operationalTaskDD, Mockito.never()).save(operationalTask);
     }
 
+    @Ignore
     @Test
-    public void shouldSetOperationNameToOperationTaskName() throws Exception {
+    public void shouldChangeOperationalTaskNameWhenOperationNameWasChanged() throws Exception {
         // given
-        Long entityId = 1L;
-        String entityName = "name";
+        Long operationId = 1L;
+        String name = "name";
         String operationName = "name2";
-        when(entity.getId()).thenReturn(entityId);
-        when(dataDefinition.get(entityId)).thenReturn(operation);
-        when(entity.getStringField("name")).thenReturn(entityName);
-        when(operation.getStringField("name")).thenReturn(operationName);
 
-        EntityList tiocs = mockEntityList(Lists.newArrayList(tioc1));
-        EntityList tasks = mockEntityList(Lists.newArrayList(task1));
+        given(operation.getId()).willReturn(operationId);
+        given(operationDD.get(operationId)).willReturn(operationFromDB);
 
-        when(result1.getEntities()).thenReturn(tiocs);
-        when(result2.getEntities()).thenReturn(tasks);
+        given(operation.getStringField(OperationFields.NAME)).willReturn(name);
+        given(operationFromDB.getStringField(OperationFields.NAME)).willReturn(operationName);
+
+        EntityList technologyOperationComponents = mockEntityList(Lists.newArrayList(technologyOperationComponent));
+
+        given(operationalTasksForOrdersService.getTechnologyOperationComponentsForOperation(operation)).willReturn(
+                technologyOperationComponents);
+
         // when
-        hooksOTFO.changedNameOperationTasksWhenEntityNameChanged(dataDefinition, entity);
+        operationHooksOTFO.changedNameInOperationalTasksWhenChanged(operationDD, operation);
 
         // then
-        Mockito.verify(task1).setField("name", "name");
+        Mockito.verify(operationalTask).setField(OperationalTaskFields.NAME, name);
+        Mockito.verify(operationalTaskDD).save(operationalTask);
     }
 
 }

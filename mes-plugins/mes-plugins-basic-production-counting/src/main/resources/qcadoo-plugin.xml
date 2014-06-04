@@ -24,11 +24,12 @@
     ***************************************************************************
 
 -->
-<plugin plugin="basicProductionCounting" group="tracking" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
+<plugin plugin="basicProductionCounting" group="tracking"
+	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
 		http://schema.qcadoo.org/plugin.xsd 
@@ -38,8 +39,6 @@
 		http://schema.qcadoo.org/modules/view.xsd 
 		http://schema.qcadoo.org/modules/localization 
 		http://schema.qcadoo.org/modules/localization.xsd 
-		http://schema.qcadoo.org/modules/report 
-		http://schema.qcadoo.org/modules/report.xsd 
 		http://schema.qcadoo.org/modules/menu 
 		http://schema.qcadoo.org/modules/menu.xsd 
 		http://schema.qcadoo.org/modules/custom 
@@ -64,53 +63,86 @@
 
 	<modules>
 		<localization:translation path="locales" />
-	
+
 		<model:model model="basicProductionCounting" resource="model/basicProductionCounting.xml" />
 		<model:model model="productionCountingQuantity" resource="model/productionCountingQuantity.xml" />
-		<model:model model="productionCountingOperationRun" resource="model/productionCountingOperationRun.xml" />
-	
+		<model:model model="productionCountingOperationRun"
+			resource="model/productionCountingOperationRun.xml" />
+
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="lockProductionProgress" default="false" />
+		</model:model-field>
+		
+		<model:model-field model="product" plugin="basic">
+			<model:hasMany name="basicProductionCountings" model="basicProductionCounting"
+				plugin="basicProductionCounting" joinField="product" cascade="delete" />
+		</model:model-field>
+		<model:model-field model="product" plugin="basic">
+			<model:hasMany name="productionCountingQuantities"
+				model="productionCountingQuantity" plugin="basicProductionCounting"
+				joinField="product" cascade="delete" />
+		</model:model-field>
+		
+		<model:model-field model="technologyOperationComponent"
+			plugin="technologies">
+			<model:hasMany name="productionCountingQuantities"
+				model="productionCountingQuantity" plugin="basicProductionCounting"
+				joinField="technologyOperationComponent" cascade="delete" />
+		</model:model-field>
+		<model:model-field model="technologyOperationComponent"
+			plugin="technologies">
+			<model:hasMany name="productionCountingOperationRuns"
+				model="productionCountingOperationRun" plugin="basicProductionCounting"
+				joinField="technologyOperationComponent" cascade="delete" />
+		</model:model-field>
+		
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="basicProductionCountings" model="basicProductionCounting"
 				plugin="basicProductionCounting" joinField="order" cascade="delete" />
 		</model:model-field>
-	
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionCountingQuantities"
 				model="productionCountingQuantity" plugin="basicProductionCounting"
 				joinField="order" cascade="delete" />
 		</model:model-field>
-		
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionCountingOperationRuns"
 				model="productionCountingOperationRun" plugin="basicProductionCounting"
 				joinField="order" cascade="delete" />
 		</model:model-field>
-	
+
 		<model:model-hook model="order" plugin="orders">
 			<model:onSave
 				class="com.qcadoo.mes.basicProductionCounting.hooks.OrderHooksBPC"
-				method="updateProductionCountingQuantitiesAndOperationRuns" />
+				method="onSave" />
 		</model:model-hook>
-		
+
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
-	
+		<view:view-tab resource="view/tabExtensions/ordersParameters.xml" />
+
 		<view:view-hook view="orderDetails" type="beforeRender"
 			plugin="orders"
 			class="com.qcadoo.mes.basicProductionCounting.hooks.OrderDetailsHooksBPC"
 			method="disabledButtonForAppropriateState" />
-			
+
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="showProductionCounting"
 			class="com.qcadoo.mes.basicProductionCounting.listeners.OrderDetailsListenersBPC"
 			method="showProductionCounting" />
 			
+		<view:view-listener plugin="orders" view="ordersParameters" 
+			component="blockAbilityToChangeApprovalOrder" event="onChange" 
+			class="com.qcadoo.mes.basicProductionCounting.listeners.OrderParametersListenersBPC" 
+			method="onChangeLockOrderPlannedQuantity"/>
+
 		<view:view resource="view/basicProductionCountingList.xml" />
 		<view:view resource="view/basicProductionCountingDetails.xml" />
-	
-		<view:resource uri="public/**/*" />
-	
+		<view:view resource="view/detailedProductionCountingAndProgressList.xml" />
+		<view:view resource="view/detailedProductionCountingList.xml" />
+		<view:view resource="view/productionCountingQuantityAdvancedDetails.xml" />
+		<view:view resource="view/productionCountingQuantityDetails.xml" />
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>

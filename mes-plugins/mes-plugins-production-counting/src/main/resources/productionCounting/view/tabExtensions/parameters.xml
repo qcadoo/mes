@@ -36,50 +36,68 @@
 				<component type="select" name="typeOfProductionRecording"
 					reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
 					default="02cumulated" hasDescription="true">
+                    <option type="labelWidth" value="60" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">
 				<component type="checkbox" name="registerQuantityInProduct"
-					reference="registerQuantityInProduct" field="#{form}.registerQuantityInProduct" />
+					reference="registerQuantityInProduct" field="#{form}.registerQuantityInProduct" >
+                    <option type="labelWidth" value="60" />
+                </component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
 				<component type="checkbox" name="registerQuantityOutProduct"
-					reference="registerQuantityOutProduct" field="#{form}.registerQuantityOutProduct" />
+					reference="registerQuantityOutProduct" field="#{form}.registerQuantityOutProduct" >
+                    <option type="labelWidth" value="60" />
+                </component>
 			</layoutElement>
 			<layoutElement column="1" row="4">
 				<component type="checkbox" name="registerProductionTime"
 					reference="registerProductionTime" field="#{form}.registerProductionTime">
-					<listener event="onChange"
-						class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
+ 					<listener event="onChange"
+ 						class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
 						method="checkIfRegisterProductionTimeIsSet" />
+                    <option type="labelWidth" value="60" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="5">
 				<component type="checkbox" name="registerPiecework"
-					reference="registerPiecework" field="#{form}.registerPiecework" />
+					reference="registerPiecework" field="#{form}.registerPiecework" >
+                    <option type="labelWidth" value="60" />
+                </component>
 			</layoutElement>
 			<layoutElement column="2" row="1">
 				<component type="checkbox" name="justOne" reference="justOne"
-					field="#{form}.justOne" />
+					field="#{form}.justOne" >
+                    <option type="labelWidth" value="80" />
+                </component>
 			</layoutElement>
 			<layoutElement column="2" row="3">
 				<component type="checkbox" name="allowToClose" reference="allowToClose"
-					field="#{form}.allowToClose" hasDescription="true" />
+					field="#{form}.allowToClose" hasDescription="true" >
+                    <option type="labelWidth" value="80" />
+                </component>
 			</layoutElement>
 			<layoutElement column="2" row="5">
 				<component type="checkbox" name="autoCloseOrder"
 					reference="autoCloseOrder" field="#{form}.autoCloseOrder"
-					hasDescription="true" />
+					hasDescription="true" >
+                    <option type="labelWidth" value="80" />
+                </component>
 			</layoutElement>
 			<layoutElement column="3" row="1">
 				<component type="checkbox" name="generateProductionRecordNumberFromOrderNumber"
-					reference="generateProductionRecordNumberFromOrderNumber" field="#{form}.generateProductionRecordNumberFromOrderNumber"/>
+					reference="generateProductionRecordNumberFromOrderNumber" field="#{form}.generateProductionRecordNumberFromOrderNumber">
+                    <option type="labelWidth" value="80" />
+                </component>
 			</layoutElement>
 			<layoutElement column="3" row="3">
-				<component type="checkbox" name="validateProductionRecordTimes" hasDescription="true"
-					reference="validateProductionRecordTimes" field="#{form}.validateProductionRecordTimes"/>
+                <component type="checkbox" name="validateProductionRecordTimes" hasDescription="true"
+                       reference="validateProductionRecordTimes" field="#{form}.validateProductionRecordTimes">
+                    <option type="labelWidth" value="80" />
+                </component>
 			</layoutElement>
-			
 		</component>
 	</windowTab>
+	
 </windowTabExtension>

@@ -1,5 +1,9 @@
 package com.qcadoo.mes.masterOrders.constants;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.qcadoo.model.api.Entity;
+
 public enum MasterOrderType {
 
     UNDEFINED("01undefined"), ONE_PRODUCT("02oneProduct"), MANY_PRODUCTS("03manyProducts");
@@ -14,13 +18,20 @@ public enum MasterOrderType {
         return masterOrderType;
     }
 
-    public static MasterOrderType parseString(final String masterOrderType) {
-        if ("01undefined".equals(masterOrderType)) {
+    public static MasterOrderType of(final Entity masterOrderEntity) {
+        return parseString(masterOrderEntity.getStringField(MasterOrderFields.MASTER_ORDER_TYPE));
+    }
+
+    public static MasterOrderType parseString(final String rawMasterOrderType) {
+        if (StringUtils.isBlank(rawMasterOrderType)) {
             return UNDEFINED;
-        } else if ("02oneProduct".equals(masterOrderType)) {
-            return ONE_PRODUCT;
-        } else if ("03manyProducts".equals(masterOrderType)) {
-            return MANY_PRODUCTS;
+        }
+
+        String masterOrderType = StringUtils.trim(rawMasterOrderType);
+        for (MasterOrderType type : values()) {
+            if (StringUtils.equalsIgnoreCase(type.getStringValue(), masterOrderType)) {
+                return type;
+            }
         }
 
         throw new IllegalStateException("Unsupported masterOrderType: " + masterOrderType);

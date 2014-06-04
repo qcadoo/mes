@@ -57,6 +57,8 @@ public final class ParameterFieldsO {
 
     public static final String BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER = "blockAbilityToChangeApprovalOrder";
 
+    public static final String LOCK_TECHNOLOGY_TREE = "lockTechnologyTree";
+
     public static final String REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME = "reasonNeededWhenCorrectingTheRequestedVolume";
 
 }

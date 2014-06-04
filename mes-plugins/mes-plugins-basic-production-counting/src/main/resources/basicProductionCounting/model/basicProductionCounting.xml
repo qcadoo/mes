@@ -42,14 +42,17 @@
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
+	
+		<hasMany name="productionCountingQuantities" model="productionCountingQuantity"
+			plugin="basicProductionCounting" joinField="basicProductionCounting" cascade="delete" />
 	</fields>
 	
 	<hooks>
 		<validatesWith
-			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingHooks"
-			method="checkValueOfQuantity" />
+			class="com.qcadoo.mes.basicProductionCounting.validators.BasicProductionCountingValidators"
+			method="validatesWith" />
 		<onView 
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingHooks"
-			method="fillPlannedQuantity" />
+			method="onView" />
 	</hooks>
 </model>

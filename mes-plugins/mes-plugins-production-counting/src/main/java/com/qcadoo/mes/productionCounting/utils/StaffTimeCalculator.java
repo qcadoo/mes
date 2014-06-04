@@ -3,12 +3,16 @@ package com.qcadoo.mes.productionCounting.utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.StaffWorkTimeFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjection;
+import com.qcadoo.model.api.search.SearchProjections;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class StaffTimeCalculator {
@@ -25,7 +29,7 @@ public class StaffTimeCalculator {
         SearchProjection rowCntProjection = SearchProjections.rowCount();
         scb.setProjection(SearchProjections.list().add(rowCntProjection).add(totalLaborProjection));
         scb.add(SearchRestrictions.belongsTo(StaffWorkTimeFields.PRODUCTION_RECORD,
-                ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD,
+                ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING,
                 productionRecordId));
 
         // Fix for missing id column. Touch on your own risk.

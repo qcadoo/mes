@@ -28,19 +28,19 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="name" required="true">
-			<validatesLength max="1024" />
-		</string>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
+		</string>
+		<string name="name" required="true">
+			<validatesLength max="1024" />
 		</string>
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		<belongsTo name="division" model="division" />
+		<manyToMany name="divisions" model="division" joinField="workstationTypes" />
 	</fields>
-	
+
 	<hooks />
-	
+
 	<identifier expression="#number + ' - ' + #name" />
 </model>

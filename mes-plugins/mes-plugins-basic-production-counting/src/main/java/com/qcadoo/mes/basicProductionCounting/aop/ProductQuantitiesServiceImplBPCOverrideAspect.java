@@ -36,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
@@ -47,18 +49,19 @@ public class ProductQuantitiesServiceImplBPCOverrideAspect {
     @Autowired
     private ProductQuantitiesServiceImplBPCOverrideUtil productQuantitiesServiceImplBPCOverrideUtil;
 
-    @Pointcut("execution(private java.util.Map<com.qcadoo.model.api.Entity, java.math.BigDecimal> com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl.getProductComponentWithQuantitiesForOrders(..)) "
-            + "&& args(orders, operationRuns, nonComponents)")
+    @Pointcut("execution(private com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl.getProductComponentWithQuantitiesForOrders(..)) "
+            + "&& args(orders, operationRuns, nonComponents, onTheFly)")
     public void getProductComponentWithQuantitiesForOrdersExecution(final List<Entity> orders,
-            final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents) {
+            final Map<Long, BigDecimal> operationRuns, final Set<OperationProductComponentHolder> nonComponents,
+            final boolean onTheFly) {
     }
 
-    @Around("getProductComponentWithQuantitiesForOrdersExecution(orders, operationRuns, nonComponents)")
-    public Map<Entity, BigDecimal> aroundGetProductComponentWithQuantitiesForOrdersExecution(final ProceedingJoinPoint pjp,
-            final List<Entity> orders, final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents)
-            throws Throwable {
+    @Around("getProductComponentWithQuantitiesForOrdersExecution(orders, operationRuns, nonComponents, onTheFly)")
+    public OperationProductComponentWithQuantityContainer aroundGetProductComponentWithQuantitiesForOrdersExecution(
+            final ProceedingJoinPoint pjp, final List<Entity> orders, final Map<Long, BigDecimal> operationRuns,
+            final Set<OperationProductComponentHolder> nonComponents, final boolean onTheFly) throws Throwable {
         return productQuantitiesServiceImplBPCOverrideUtil.getProductComponentWithQuantitiesForOrders(orders, operationRuns,
-                nonComponents);
+                nonComponents, onTheFly);
     }
 
 }

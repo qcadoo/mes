@@ -27,31 +27,38 @@
 <view name="costCalculationList" modelName="costCalculation"
 	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
-	
+
 	<component type="window" name="window" reference="window">
+
 		<ribbon>
 			<template name="standardGridTemplate" />
 		</ribbon>
+
 		<component type="grid" name="costCalculationList" reference="grid">
 			<option type="column" name="number" fields="number" link="true" />
-			<option type="column" name="order" fields="order" link="true" expression="#order==null?'':#order['name']" />
+			<option type="column" name="order" fields="order" link="true"
+				expression="#order==null?'':#order['name']" />
 			<option type="column" name="product" fields="product"
 				expression="#product['name']" link="true" />
 			<option type="column" name="technology" fields="technology"
-				link="true" expression="#technology['name']"  />
+				link="true" expression="#technology['name']" />
 			<option type="column" name="date" fields="date" />
-			<option type="column" name="quantity" fields="quantity"  />
+			<option type="column" name="quantity" fields="quantity" />
 			<option type="column" name="totalCosts" fields="totalCosts" />
 			<option type="column" name="totalCostPerUnit" fields="totalCostPerUnit" />
 			<option type="order" column="order" direction="asc" />
 			<option type="correspondingView" value="costCalculation/costCalculationDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="number,order,product,technology,date,quantity,totalCosts,totalCostPerUnit" />
-			<option type="orderable" value="number,order,product,technology,date,quantity,totalCosts,totalCostPerUnit" />
+			<option type="searchable"
+				value="number,order,product,technology,date,quantity,totalCosts,totalCostPerUnit" />
+			<option type="orderable"
+				value="number,order,product,technology,date,quantity,totalCosts,totalCostPerUnit" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
+
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
+
 </view>

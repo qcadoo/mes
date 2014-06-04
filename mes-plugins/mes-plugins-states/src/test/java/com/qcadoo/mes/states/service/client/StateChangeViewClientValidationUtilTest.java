@@ -90,7 +90,7 @@ public class StateChangeViewClientValidationUtilTest {
 
         // then
         verify(entity, Mockito.never()).addError(Mockito.any(FieldDefinition.class), Mockito.eq(TRANSLATION_KEY));
-        verify(entity).addGlobalError(Mockito.eq(TRANSLATION_KEY));
+        verify(entity).addGlobalError(TRANSLATION_KEY, false);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class StateChangeViewClientValidationUtilTest {
 
         // then
         verify(entity, Mockito.never()).addError(Mockito.any(FieldDefinition.class), Mockito.eq(TRANSLATION_KEY));
-        verify(entity).addGlobalError(TRANSLATION_KEY);
+        verify(entity).addGlobalError(TRANSLATION_KEY, false);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class StateChangeViewClientValidationUtilTest {
 
         // then
         verify(entity, Mockito.never()).addError(Mockito.any(FieldDefinition.class), Mockito.eq(TRANSLATION_KEY));
-        verify(entity).addGlobalError(TRANSLATION_KEY);
+        verify(entity).addGlobalError(TRANSLATION_KEY, false);
     }
 
     private DataDefinition mockDataDefinition(final Iterable<FieldDefinition> fieldDefinitions) {

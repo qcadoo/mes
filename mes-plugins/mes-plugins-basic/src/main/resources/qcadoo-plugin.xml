@@ -32,7 +32,7 @@
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xmlns:custom="http://schema.qcadoo.org/modules/custom"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
-		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/plugin.xsd
 		http://schema.qcadoo.org/modules/model 
 		http://schema.qcadoo.org/modules/model.xsd 
 		http://schema.qcadoo.org/modules/view 
@@ -81,18 +81,20 @@
 		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
 		<model:model model="workstationType" resource="model/workstationType.xml" />
 		<model:model model="division" resource="model/division.xml" />
-		
+
 		<model:model model="parameter" resource="model/parameter.xml" />
 
 		<model:model model="country" resource="model/country.xml" />
 		<model:model model="currency" resource="model/currency.xml" />
-		
+
 		<model:model model="reportColumnWidth" resource="model/reportColumnWidth.xml" />
+
+		<model:model model="workstation" resource="model/workstation.xml" />
 
 		<model:dictionary name="categories" />
 		<model:dictionary name="posts" />
 		<model:dictionary name="reasonTypeOfChangingOrderState" />
-	
+
 		<menu:menu-category name="basic" />
 
 		<menu:menu-item-url name="home" category="home"
@@ -100,14 +102,15 @@
 
 		<menu:menu-item name="companies" category="basic"
 			view="companiesList" />
-			
+
 		<menu:menu-item name="countries" category="administration"
 			view="countriesList" />
-			
+
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
 		<menu:menu-item name="shifts" category="basic" view="shiftsList" />
 		<menu:menu-item name="products" category="basic" view="productsList" />
-		<menu:menu-item name="productsFamilies" category="basic" view="productsFamilies" />
+		<menu:menu-item name="productsFamilies" category="basic"
+			view="productsFamilies" />
 		<menu:menu-item name="workstationTypes" category="basic"
 			view="workstationTypesList" />
 		<menu:menu-item name="divisions" category="basic"
@@ -121,6 +124,9 @@
 
 		<menu:menu-item-url name="conversion" category="basic"
 			url="/unitConversions.html" />
+
+		<menu:menu-item name="workstations" category="basic"
+			view="workstationsList" />
 
 		<view:view resource="view/reportColumnWidthDetails.xml" />
 		<view:view resource="view/companiesList.xml" />
@@ -139,7 +145,6 @@
 		<view:view resource="view/productsFamilies.xml" />
 		<view:view resource="view/productFamiliesAddProduct.xml" />
 
-
 		<view:view resource="view/workstationTypesList.xml" />
 		<view:view resource="view/workstationTypeDetails.xml" />
 
@@ -147,18 +152,25 @@
 		<view:view resource="view/divisionDetails.xml" />
 
 		<view:view resource="view/parameters.xml" />
-			
-		<model:model-field model="unitConversionItem" plugin="qcadooModel">
-			<model:belongsTo name="product" model="product" plugin="basic"/>
+
+		<view:view resource="view/workstationsList.xml" />
+		<view:view resource="view/workstationDetails.xml" />
+
+		<model:model-field model="unitConversionItem"
+			plugin="qcadooModel">
+			<model:belongsTo name="product" model="product"
+				plugin="basic" />
 		</model:model-field>
-		
+
 		<model:model-hook model="unitConversionItem" plugin="qcadooModel">
-			<model:validatesWith class="com.qcadoo.mes.basic.hooks.UnitConversionItemValidatorsB" method="validateUnitOnConversionWithProduct"/>
+			<model:validatesWith
+				class="com.qcadoo.mes.basic.hooks.UnitConversionItemValidatorsB"
+				method="validateUnitOnConversionWithProduct" />
 		</model:model-hook>
 
 		<custom:custom class="com.qcadoo.mes.basic.BasicOnStartupService" />
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>

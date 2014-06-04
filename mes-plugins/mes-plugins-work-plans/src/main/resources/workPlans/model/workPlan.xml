@@ -27,6 +27,7 @@
 <model name="workPlan" activable="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<string name="name" required="true" unique="true">
 			<validatesLength max="1024" />
@@ -35,21 +36,30 @@
 		<string name="worker" />
 		<boolean name="generated" />
 		<string name="fileName" />
+		<boolean name="dontPrintOrdersInWorkPlans" />
 
 		<enum name="type"
 			values="01noDistinction,02byEndProduct,03byWorkstationType,04byDivision"
 			default="01allOperations" required="true" />
 
+		<hasMany name="workPlanOrderColumns" plugin="workPlans"
+			model="workPlanOrderColumn" joinField="workPlan" cascade="delete"
+			copyable="true" />
+
 		<manyToMany name="orders" joinField="workPlans" model="order"
 			plugin="orders" copyable="true" />
-			
+
 		<belongsTo name="inputProductColumnToSortBy" model="columnForInputProducts" />
 		<enum name="orderSorting" values="01asc,02desc"/>
-		
+
 	</fields>
+
 	<hooks>
-		<onCopy class="com.qcadoo.mes.workPlans.hooks.WorkPlanModelHooks"
-			method="clearGeneratedOnCopy" />
+		<onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanHooks"
+			method="onCreate" />
+		<onCopy class="com.qcadoo.mes.workPlans.hooks.WorkPlanHooks"
+			method="onCopy" />
 	</hooks>
+
 	<identifier expression="#name" />
 </model>

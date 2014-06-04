@@ -74,8 +74,6 @@
 		<view:view resource="view/operationalTaskDetails.xml" />
 		
 		<view:resource uri="public/**/*" />
-		
-
 	</modules>
 	
 	<features>

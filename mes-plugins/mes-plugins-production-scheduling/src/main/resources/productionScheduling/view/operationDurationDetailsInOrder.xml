@@ -30,6 +30,7 @@
 	windowWidth="640" windowHeight="500">
 
 	<component type="window" name="window">
+
 		<ribbon>
 			<group name="navigation">
 				<bigButton name="back" action="#{window}.performBack;"
@@ -51,23 +52,26 @@
 								}
 							});	
 						]]>
-					</script>	
+					</script>
 				</bigButton>
 				<bigButton name="copy" icon="copyIcon24.png" state="disabled"
 					action="#{form}.fireEvent(copyRealizationTime);">
-					<script><![CDATA[
-				#{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return; 
-						if (value.content.entityId) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+					<script>
+						<![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (!value || !value.content) {
+										return; 
+									}
+									if (value.content.entityId) {
+										this.enable();
+									} else {
+										this.disable();
+									}
+								}
+							});
+						]]>
+					</script>
 				</bigButton>
 			</group>
 			<group name="orderParameters">
@@ -99,6 +103,7 @@
 				</bigButton>
 			</group>
 		</ribbon>
+		
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="8">
@@ -113,8 +118,8 @@
 					<component type="gridLayout" name="gridQuantity"
 						hasBorders="false" columns="3" rows="1">
 						<layoutElement column="1" row="1" width="2">
-							<component type="input" name="quantity" reference="plannedQuantity"
-								field="plannedQuantity">
+							<component type="input" name="plannedQuantity" reference="plannedQuantity"
+								field="plannedQuantity" defaultEnabled="never">
 								<option type="alignment" value="right" />
 								<option type="labelWidth" value="45" />
 							</component>
@@ -129,18 +134,22 @@
 				<layoutElement column="1" row="3">
 					<component type="lookup" name="productionLine" reference="productionLine"
 						field="productionLine">
-						<option type="required" value="true" />
 						<option type="column" name="name" fields="name" link="true"
 							width="300" />
+							
 						<option type="searchable" value="name,number" />
 						<option type="orderable" value="name,number" />
+						
+						<option type="required" value="true" />
+						
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="calendar" name="deadline" field="deadline" reference="deadline">
+					<component type="calendar" name="deadline" field="deadline"
+						reference="deadline">
 						<option type="labelWidth" value="30" />
 						<option type="withTimePicker" value="true" />
 					</component>
@@ -158,7 +167,8 @@
 							</layoutElement>
 							<layoutElement column="1" row="2">
 								<component type="calendar" name="generatedEndDate"
-									reference="generatedEndDate" field="generatedEndDate" defaultEnabled="false">
+									reference="generatedEndDate" field="generatedEndDate"
+									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
 								</component>
 							</layoutElement>
@@ -173,13 +183,15 @@
 						<component type="gridLayout" name="includedInWorkTime"
 							columns="1" rows="2">
 							<layoutElement column="1" row="1">
-								<component type="checkbox" name="includeTpz" reference="includeTpz"
-									field="#{form}.includeTpz" hasDescription="true">
+								<component type="checkbox" name="includeTpz"
+									reference="includeTpz" field="#{form}.includeTpz"
+									hasDescription="true">
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
-								<component type="checkbox" name="includeAdditionalTime" reference="includeAdditionalTime"
-									field="#{form}.includeAdditionalTime" hasDescription="true">
+								<component type="checkbox" name="includeAdditionalTime"
+									reference="includeAdditionalTime" field="#{form}.includeAdditionalTime"
+									hasDescription="true">
 								</component>
 							</layoutElement>
 						</component>
@@ -193,44 +205,64 @@
 							columns="1" rows="2">
 							<layoutElement column="1" row="1">
 								<component type="time" name="laborWorkTime" reference="laborWorkTime"
-									field="#{form}.laborWorkTime" hasDescription="true" defaultEnabled="false">
+									field="#{form}.laborWorkTime" hasDescription="true"
+									defaultEnabled="false">
 									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
-								<component type="time" name="machineWorkTime" reference="machineWorkTime"
-									field="#{form}.machineWorkTime" hasDescription="true" defaultEnabled="false">
+								<component type="time" name="machineWorkTime"
+									reference="machineWorkTime" field="#{form}.machineWorkTime"
+									hasDescription="true" defaultEnabled="false">
 									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 						</component>
 					</component>
 				</layoutElement>
+				<layoutElement column="1" row="8">
+					<component type="lookup" name="technology" field="#{form}.technology"
+						reference="technology" defaultVisible="false">
+						
+						<option type="searchable" value="name" />
+						<option type="orderable" value="name" />
+						
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+					</component>
+				</layoutElement>
 				<layoutElement column="2" row="1" height="6" width="2">
 					<component type="gridLayout" name="technologyGridLayout"
 						columns="1" rows="1">
 						<layoutElement column="1" row="1">
-							<component type="grid" name="operations" reference="grid"
-								source="#{form}.technologyInstanceOperationComponents">
-								<option type="column" name="nodeNumber" fields="nodeNumber" 
-								     link="true" />
+							<component type="grid" name="technologyOperationComponents"
+								source="#{technology}.operationComponents">
+								<option type="column" name="nodeNumber" fields="nodeNumber"
+									link="true" />
 								<option type="column" name="number" fields="operation"
 									expression="#operation['number']" link="true" />
 								<option type="column" name="name" fields="operation"
 									expression="#operation['name']" link="true" />
-								<option type="column" name="dateFrom" fields="effectiveDateFrom" />	
-								<option type="column" name="dateTo" fields="effectiveDateTo" />	
-								<option type="column" name="workstations" fields="quantityOfWorkstationTypes" />
- 								<option type="column" name="laborWorkTime"
-									fields="laborWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"/>
- 								<option type="column" name="machineWorkTime"
-									fields="machineWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"/>
+								<option type="column" name="dateFrom" fields="operation"
+									expression="#techOperCompTimeCalculation['effectiveDateFrom']"
+									link="true" />
+								<option type="column" name="dateTo" fields="operation"
+									expression="#techOperCompTimeCalculation['effectiveDateTo']" />
+								<option type="column" name="quantityOfWorkstations" fields="quantityOfWorkstations" />
+								<option type="column" name="laborWorkTime" fields="laborWorkTime"
+									expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculation['laborWorkTime'])" />
+								<option type="column" name="machineWorkTime" fields="machineWorkTime"
+									expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculation['machineWorkTime'])" />
+								
 								<option type="order" column="number" direction="asc" />
-								<option type="correspondingView"
-									value="technologies/technologyInstanceOperationComponentDetails" />
-								<option type="correspondingComponent" value="form" />
+								
 								<option type="searchable" value="number, name" />
 								<option type="orderable" value="number, name,dateFrom,dateTo" />
+								
+								<option type="correspondingView"
+									value="technologies/technologyOperationComponentDetails" />
+								<option type="correspondingComponent" value="form" />
+								
 								<option type="fullscreen" value="true" />
 								<option type="multiselect" value="true" />
 							</component>
@@ -238,17 +270,26 @@
 					</component>
 				</layoutElement>
 			</component>
+			
 			<option type="header" value="true" />
 			<option type="expression" value="#number" />
-			<listener event="showOrderParameters" method="showOrderParameters"
-				class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
-			<listener event="generateRealizationTime" method="generateRealizationTime" 
-				class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"	/>
+			
+			<listener event="showOrderParameters" method="showCopyOfTechnology"
+				class="com.qcadoo.mes.productionScheduling.listeners.OperationDurationDetailsInOrderListeners" />
+			<listener event="generateRealizationTime" method="generateRealizationTime"
+				class="com.qcadoo.mes.productionScheduling.listeners.OperationDurationDetailsInOrderListeners" />
 			<listener event="copyRealizationTime" method="copyRealizationTime"
-				class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" 	 />
+				class="com.qcadoo.mes.productionScheduling.listeners.OperationDurationDetailsInOrderListeners" />
 		</component>
 	</component>
+	
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="fillUnitField" />
+		<beforeRender
+			class="com.qcadoo.mes.productionScheduling.hooks.OperationDurationDetailsInOrderHooks"
+			method="fillUnitField" />
+		<beforeRender
+			class="com.qcadoo.mes.productionScheduling.hooks.OperationDurationDetailsInOrderHooks"
+			method="disableCopyRealizationTimeButton" />
 	</hooks>
+	
 </view>

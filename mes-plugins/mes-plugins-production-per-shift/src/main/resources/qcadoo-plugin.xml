@@ -73,37 +73,39 @@
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 		
-		<model:model-field model="technologyInstanceOperationComponent"
+		<model:model-field model="technologyOperationComponent"
 			plugin="technologies">
 			<model:hasMany name="progressForDays" model="progressForDay"
 				plugin="productionPerShift" cascade="delete"
-				joinField="technologyInstanceOperationComponent" />
+				joinField="technologyOperationComponent" />
 		</model:model-field>
-		<model:model-field model="technologyInstanceOperationComponent"
+		<model:model-field model="technologyOperationComponent"
 			plugin="technologies">
 			<model:boolean name="hasCorrections" />
 		</model:model-field>
-		<model:model-hook model="technologyInstanceOperationComponent"
+		
+		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:validatesWith
-				class="com.qcadoo.mes.productionPerShift.validators.TechInstOperCompHooksPPS"
+				class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
 				method="checkGrowingNumberOfDays" />
 		</model:model-hook>
-		<model:model-hook model="technologyInstanceOperationComponent"
+		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:validatesWith
-				class="com.qcadoo.mes.productionPerShift.validators.TechInstOperCompHooksPPS"
+				class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
 				method="checkShiftsIfWorks" />
 		</model:model-hook>
-		<model:model-hook model="technologyInstanceOperationComponent"
+		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:onCopy
-				class="com.qcadoo.mes.productionPerShift.hooks.TechInstOpCompHooksPPS"
+				class="com.qcadoo.mes.productionPerShift.hooks.TechnologyOperationComponentHooksPPS"
 				method="onCopy" />
 		</model:model-hook>
+		
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="redirectToProductionPerShift"
-			class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+			class="com.qcadoo.mes.productionPerShift.listeners.OrderDetailsListenersPPS"
 			method="redirectToProductionPerShift" />
 			
 		<view:view-hook plugin="orders" view="orderDetails"

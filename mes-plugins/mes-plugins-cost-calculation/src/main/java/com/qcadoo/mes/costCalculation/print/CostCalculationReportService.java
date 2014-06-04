@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
@@ -41,6 +42,8 @@ import com.qcadoo.report.api.ReportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
@@ -50,59 +53,61 @@ public class CostCalculationReportService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private CostCalculationPdfService costCalculationPdfService;
-
-    @Autowired
     private FileService fileService;
 
     @Autowired
     private ReportService reportService;
 
-    public void printCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
-                CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_COST_CALCULATION });
+    @Autowired
+    private CostCalculationPdfService costCalculationPdfService;
+
+    public void printCostCalculationReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        reportService.printGeneratedReport(view, state, new String[] { args[0], CostCalculationConstants.PLUGIN_IDENTIFIER,
+                CostCalculationConstants.MODEL_COST_CALCULATION });
     }
 
-    public void generateCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
+    public void generateCostCalculationReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
         if (state instanceof FormComponent) {
-            ComponentState date = viewDefinitionState.getComponentByReference("date");
-            ComponentState generated = viewDefinitionState.getComponentByReference("generated");
-            Entity costCalculation = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
-                    CostCalculationConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
+            FieldComponent dateField = (FieldComponent) view.getComponentByReference(CostCalculationFields.DATE);
+            CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
+
+            Entity costCalculation = getCostCalculation((Long) state.getFieldValue());
 
             if (costCalculation == null) {
                 state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
+
                 return;
-            } else if (StringUtils.hasText(costCalculation.getStringField("fileName"))) {
+            } else if (StringUtils.hasText(costCalculation.getStringField(CostCalculationFields.FILE_NAME))) {
                 state.addMessage("qcadooReport.errorMessage.documentsWasNotGenerated", MessageType.FAILURE);
+
                 return;
             }
 
-            if ("0".equals(generated.getFieldValue())) {
-                date.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, viewDefinitionState.getLocale())
-                        .format(new Date()));
-                generated.setFieldValue("1");
+            if (!generatedField.isChecked()) {
+                dateField.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, view.getLocale()).format(new Date()));
+                generatedField.setChecked(true);
             }
 
-            state.performEvent(viewDefinitionState, "save", new String[0]);
+            state.performEvent(view, "save", new String[0]);
 
             if (state.isHasError()) {
                 return;
             }
 
             if (state.getFieldValue() == null || !((FormComponent) state).isValid()) {
-                date.setFieldValue(null);
-                generated.setFieldValue("0");
+                dateField.setFieldValue(null);
+                generatedField.setChecked(false);
+
                 return;
             }
-            costCalculation = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
-                    CostCalculationConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
+
+            costCalculation = getCostCalculation((Long) state.getFieldValue());
+
             try {
-                generateCostCalDocuments(state, costCalculation);
-                state.performEvent(viewDefinitionState, "reset", new String[0]);
+                generateCostCalculationDocuments(state, costCalculation);
+
+                state.performEvent(view, "reset", new String[0]);
             } catch (IOException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             } catch (DocumentException e) {
@@ -111,10 +116,16 @@ public class CostCalculationReportService {
         }
     }
 
-    private void generateCostCalDocuments(final ComponentState state, final Entity costCalculation) throws IOException,
+    private Entity getCostCalculation(final Long costCalculationId) {
+        return dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
+                CostCalculationConstants.MODEL_COST_CALCULATION).get(costCalculationId);
+    }
+
+    private void generateCostCalculationDocuments(final ComponentState state, final Entity costCalculation) throws IOException,
             DocumentException {
-        Entity costCalculationWithFileName = fileService.updateReportFileName(costCalculation, "date",
+        Entity costCalculationWithFileName = fileService.updateReportFileName(costCalculation, CostCalculationFields.DATE,
                 "costCalculation.costCalculation.report.fileName");
+
         costCalculationPdfService.generateDocument(costCalculationWithFileName, state.getLocale());
     }
 

@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionPerShift.constants;
 public final class ProductionPerShiftConstants {
 
     private ProductionPerShiftConstants() {
+
     }
 
     public static final String PLUGIN_IDENTIFIER = "productionPerShift";

@@ -231,6 +231,11 @@ public final class StateChangeContextImpl implements StateChangeContext {
     }
 
     @Override
+    public void addValidationError(String translationKey, boolean autoClose, String... translationArgs) {
+        messageService.addValidationError(this, null, translationKey, autoClose, translationArgs);
+    }
+
+    @Override
     public String toString() {
         return String.format(TO_STRING_TMPL, entity.getId(), getStatus(), isOwnerValid());
     }

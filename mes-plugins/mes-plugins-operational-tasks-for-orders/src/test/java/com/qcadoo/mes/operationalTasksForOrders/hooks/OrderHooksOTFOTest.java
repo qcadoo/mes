@@ -23,134 +23,142 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SearchRestrictions.class)
 public class OrderHooksOTFOTest {
 
-    private OrderHooksOTFO hooksOTFO;
+    private OrderHooksOTFO orderHooksOTFO;
 
     @Mock
-    private Entity entity, order, prodLine, orderProdLine, task1;
+    private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
     @Mock
-    private DataDefinition dataDefinition, operationalTasksDD;
+    private DataDefinition orderDD, operationalTaskDD;
 
     @Mock
-    private DataDefinitionService dataDefinitionService;
-
-    @Mock
-    private SearchCriteriaBuilder builder;
-
-    @Mock
-    private SearchResult result;
+    private Entity order, orderFromDB, productionLine, orderProductionLine, operationalTask;
 
     @Before
     public void init() {
-        hooksOTFO = new OrderHooksOTFO();
         MockitoAnnotations.initMocks(this);
-        PowerMockito.mockStatic(SearchRestrictions.class);
-        ReflectionTestUtils.setField(hooksOTFO, "dataDefinitionService", dataDefinitionService);
 
-        when(
-                dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
-                        OperationalTasksConstants.MODEL_OPERATIONAL_TASK)).thenReturn(operationalTasksDD);
-        when(operationalTasksDD.find()).thenReturn(builder);
-        SearchCriterion criterion = SearchRestrictions.belongsTo("order", order);
-        when(builder.add(criterion)).thenReturn(builder);
-        when(builder.list()).thenReturn(result);
+        orderHooksOTFO = new OrderHooksOTFO();
+
+        ReflectionTestUtils.setField(orderHooksOTFO, "operationalTasksForOrdersService", operationalTasksForOrdersService);
+
+        given(operationalTask.getDataDefinition()).willReturn(operationalTaskDD);
     }
 
     private EntityList mockEntityList(List<Entity> list) {
         EntityList entityList = mock(EntityList.class);
-        when(entityList.iterator()).thenReturn(list.iterator());
+
+        given(entityList.iterator()).willReturn(list.iterator());
+
         return entityList;
     }
 
     @Test
     public void shouldReturnWhenEntityIdIsNull() throws Exception {
         // given
-        Mockito.when(order.getId()).thenReturn(null);
+        Long orderId = null;
+
+        given(order.getId()).willReturn(orderId);
 
         // when
-        hooksOTFO.changedProductionLine(dataDefinition, order);
+        orderHooksOTFO.changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
+
         // then
     }
 
     @Test
-    public void shouldReturnWhenProductionLineIsThisSame() throws Exception {
+    public void shouldReturnWhenProductionLineIsTheSame() throws Exception {
         // given
         Long orderId = 1L;
-        when(entity.getId()).thenReturn(orderId);
-        when(dataDefinition.get(orderId)).thenReturn(order);
-        when(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).thenReturn(orderProdLine);
-        when(entity.getBelongsToField(OrderFields.PRODUCTION_LINE)).thenReturn(orderProdLine);
+        Long productionLineId = 1L;
+
+        given(order.getId()).willReturn(orderId);
+        given(orderDD.get(orderId)).willReturn(orderFromDB);
+
+        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
+        given(orderFromDB.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
+
+        given(productionLine.getId()).willReturn(productionLineId);
 
         // when
-        hooksOTFO.changedProductionLine(dataDefinition, entity);
+        orderHooksOTFO.changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
+
         // then
+        Mockito.verify(operationalTask, Mockito.never()).setField(OrderFields.PRODUCTION_LINE, null);
+        Mockito.verify(operationalTaskDD, Mockito.never()).save(operationalTask);
     }
 
     @Test
-    public void shouldChangedProdLineWhenProdLineIsNullify() throws Exception {
+    public void shouldReturneWhenProductionLineIsNull() throws Exception {
         // given
         Long orderId = 1L;
-        when(entity.getId()).thenReturn(orderId);
-        when(dataDefinition.get(orderId)).thenReturn(order);
-        when(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).thenReturn(orderProdLine);
-        when(entity.getBelongsToField(OrderFields.PRODUCTION_LINE)).thenReturn(null);
-        EntityList tasks = mockEntityList(Lists.newArrayList(task1));
+        Long productionLineId = 1L;
 
-        when(result.getEntities()).thenReturn(tasks);
+        given(order.getId()).willReturn(orderId);
+        given(orderDD.get(orderId)).willReturn(orderFromDB);
+
+        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
+        given(orderFromDB.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(null);
+
+        given(productionLine.getId()).willReturn(productionLineId);
+
         // when
-        hooksOTFO.changedProductionLine(dataDefinition, entity);
-        // then
+        orderHooksOTFO.changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
 
-        Mockito.verify(task1).setField(OrderFields.PRODUCTION_LINE, null);
+        // then
+        Mockito.verify(operationalTask, Mockito.never()).setField(OrderFields.PRODUCTION_LINE, productionLine);
+        Mockito.verify(operationalTaskDD, Mockito.never()).save(operationalTask);
     }
 
+    @Ignore
     @Test
-    public void shouldChangedProdLineWhenProdLineIsChanging() throws Exception {
+    public void shouldChangeProductionLineWhenProductionLineWasChanged() throws Exception {
         // given
         Long orderId = 1L;
-        when(entity.getId()).thenReturn(orderId);
-        when(dataDefinition.get(orderId)).thenReturn(order);
-        when(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).thenReturn(orderProdLine);
-        when(entity.getBelongsToField(OrderFields.PRODUCTION_LINE)).thenReturn(prodLine);
-        EntityList tasks = mockEntityList(Lists.newArrayList(task1));
+        Long productionLineId = 1L;
+        Long orderProductionLineId = 2L;
 
-        when(result.getEntities()).thenReturn(tasks);
+        given(order.getId()).willReturn(orderId);
+        given(orderDD.get(orderId)).willReturn(orderFromDB);
+
+        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
+        given(orderFromDB.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(orderProductionLine);
+
+        given(productionLine.getId()).willReturn(productionLineId);
+        given(orderProductionLine.getId()).willReturn(orderProductionLineId);
+
+        EntityList operationalTasks = mockEntityList(Lists.newArrayList(operationalTask));
+
+        given(operationalTasksForOrdersService.getOperationalTasksForOrder(order)).willReturn(operationalTasks);
+
         // when
-        hooksOTFO.changedProductionLine(dataDefinition, entity);
-        // then
+        orderHooksOTFO.changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
 
-        Mockito.verify(task1).setField(OrderFields.PRODUCTION_LINE, prodLine);
+        // then
+        Mockito.verify(operationalTask).setField(OrderFields.PRODUCTION_LINE, productionLine);
+        Mockito.verify(operationalTaskDD).save(operationalTask);
     }
+
 }

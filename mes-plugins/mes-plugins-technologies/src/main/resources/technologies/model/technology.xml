@@ -24,43 +24,53 @@
     ***************************************************************************
 
 -->
-<model name="technology" activable="true" 
+<model name="technology" activable="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
+
 		<string name="name" required="true">
 			<validatesLength max="2048" />
 		</string>
 
 		<belongsTo name="product" plugin="basic" model="product"
 			lazy="false" required="true" />
-		
-		<belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
-			lazy="false" />
+
+		<belongsTo name="technologyGroup" plugin="technologies"
+			model="technologyGroup" lazy="false" />
+
+		<belongsTo name="technologyPrototype" model="technology" />
 
 		<boolean name="externalSynchronized" default="true" copyable="false" />
 
 		<boolean name="master" default="false" />
+
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
+
 		<tree name="operationComponents" model="technologyOperationComponent"
 			joinField="technology" cascade="delete" copyable="true" />
+
 		<enum name="state" values="01draft,02accepted,03declined,04outdated,05checked"
 			default="01draft" required="true" />
+
+		<enum name="technologyType" values="01patternTechnology,02ownTechnology" />
+
 		<hasMany name="stateChanges" joinField="technology" model="technologyStateChange"
 			cascade="delete" />
 		<hasMany name="technologyAttachments" joinField="technology" model="technologyAttachment" cascade="delete" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyValidators"
-			method="validate" />
-		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
+		<validatesWith
+			class="com.qcadoo.mes.technologies.validators.TechnologyValidators"
+			method="validatesWith" />
+		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
 			method="onCreate" />
-		<onCopy class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
+		<onCopy class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
 			method="onCopy" />
 		<onSave class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
 			method="onSave" />

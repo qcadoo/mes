@@ -23,22 +23,17 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.AMOUNT_OF_PRODUCT_PRODUCED;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMISSIONED_CORRECTED_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCT;
-import static com.qcadoo.mes.orders.constants.OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TYPE_OF_CORRECTION_CAUSES;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,10 +41,8 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -61,9 +54,6 @@ public class OrderProductQuantityHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberService numberService;
 
     @Autowired
     private ParameterService parameterService;
@@ -135,36 +125,5 @@ public class OrderProductQuantityHooks {
                 unitState.setFieldValue(product.getStringField("unit"));
             }
         }
-    }
-
-    public void setProductQuantity(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form.getEntityId() == null) {
-            return;
-        }
-
-        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                form.getEntityId());
-
-        FieldComponent amountOfPPComponent = (FieldComponent) view.getComponentByReference(AMOUNT_OF_PRODUCT_PRODUCED);
-        FieldComponent remainingAmountOfPTPComponent = (FieldComponent) view
-                .getComponentByReference(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
-
-        String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
-        if (!StringUtils.isEmpty(typeOfProductionRecording)) {
-            amountOfPPComponent.setFieldValue(numberService.format(order.getField(DONE_QUANTITY)));
-            order.setField(AMOUNT_OF_PRODUCT_PRODUCED, order.getField(DONE_QUANTITY));
-        }
-
-        BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(DONE_QUANTITY)), numberService.getMathContext());
-        if (remainingAmountOfPTP.compareTo(BigDecimal.ZERO) == -1) {
-            remainingAmountOfPTPComponent.setFieldValue(numberService.format(BigDecimal.ZERO));
-            order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, numberService.setScale(BigDecimal.ZERO));
-        } else {
-            remainingAmountOfPTPComponent.setFieldValue(numberService.format(remainingAmountOfPTP));
-            order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, numberService.setScale(remainingAmountOfPTP));
-        }
-        order.getDataDefinition().save(order);
     }
 }

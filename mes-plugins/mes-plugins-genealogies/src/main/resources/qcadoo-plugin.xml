@@ -143,6 +143,7 @@
 		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="grid" event="showGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
 			method="showGenealogy" />
+			
 		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="grid" event="newGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
 			method="newGenealogy" />

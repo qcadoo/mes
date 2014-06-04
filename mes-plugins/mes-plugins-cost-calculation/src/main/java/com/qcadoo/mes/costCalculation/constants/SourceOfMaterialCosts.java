@@ -46,4 +46,5 @@ public enum SourceOfMaterialCosts {
 
         throw new IllegalStateException("Unsupported sourceOfMaterialCosts: " + string);
     }
+
 }

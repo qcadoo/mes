@@ -23,50 +23,21 @@
  */
 package com.qcadoo.mes.productionScheduling.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class OrderDetailsHooksPS {
 
-    private static final String L_FORM = "form";
+    @Autowired
+    private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
 
-    private static final String L_WINDOW = "window";
-
-    private static final String L_OPERATION_DURATION = "operationDuration";
-
-    public void disabledButtonOperationDuration(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        Long orderId = orderForm.getEntityId();
-
-        if (orderId != null) {
-            Entity order = orderForm.getEntity().getDataDefinition().get(orderId);
-
-            if ((order != null) && (order.getBelongsToField(OrderFields.TECHNOLOGY) != null)) {
-                disabledButton(view, true);
-
-                return;
-            }
-        }
-
-        disabledButton(view, false);
-    }
-
-    private void disabledButton(final ViewDefinitionState view, final boolean enable) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup group = (RibbonGroup) window.getRibbon().getGroupByName(L_OPERATION_DURATION);
-
-        RibbonActionItem operationDuration = (RibbonActionItem) group.getItemByName(L_OPERATION_DURATION);
-        operationDuration.setEnabled(enable);
-        operationDuration.requestUpdate(true);
+    public void onBeforeRender(final ViewDefinitionState view) {
+        orderDetailsRibbonHelper.setButtonEnabledForPendingOrder(view, "operationDuration", "operationDuration",
+                OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
     }
 
 }

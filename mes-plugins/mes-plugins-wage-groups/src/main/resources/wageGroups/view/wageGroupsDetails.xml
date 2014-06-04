@@ -54,7 +54,7 @@
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="laborHourlyCostCURRENCY"
-									field="laborHourlyCostCURRENCY" hasLabel="false" reference="laborHourlyCostCURRENCY" >
+									field="laborHourlyCostCURRENCY" hasLabel="false" reference="laborHourlyCostCURRENCY" defaultEnabled="false" >
 									<option type="alignment" value="right" />
 								</component>
 							</layoutElement>

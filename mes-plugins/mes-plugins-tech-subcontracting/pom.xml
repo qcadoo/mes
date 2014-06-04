@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>mes-plugins</artifactId>
 		<groupId>com.qcadoo.mes</groupId>
-		<version>1.2.1-SNAPSHOT</version>
+		<version>1.2.1-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-tech-subcontracting</artifactId>
@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-simple-material-balance</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
+			<version>1.2.1-SNAPSHOT-DEV</version>
 		</dependency>
 	</dependencies>
 	

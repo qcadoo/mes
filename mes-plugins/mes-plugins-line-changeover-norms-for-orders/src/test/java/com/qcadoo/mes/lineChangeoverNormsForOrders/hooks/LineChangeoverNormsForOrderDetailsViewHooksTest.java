@@ -31,7 +31,8 @@ import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsL
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION;
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.PREVIOUS_ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -47,11 +48,13 @@ import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsSearchService;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -65,10 +68,6 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
 
     private static final long L_ID = 1L;
 
-    private static final String L_PREVIOUS_ORDER = "000001";
-
-    private static final String L_LINE_CHANGEOVER_NORM = "000001";
-
     private static final String L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER = "000001";
 
     private static final String L_TECHNOLOGY_GROUP_NUMBER = "000002";
@@ -76,14 +75,6 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     private static final String L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER = "000001";
 
     private static final String L_TECHNOLOGY_NUMBER = "000002";
-
-    private static final long L_PREVIOUS_ORDER_ID = 1L;
-
-    private static final long L_ORDER_ID = 2L;
-
-    private static final long L_FROM_TECHNOLOGY_ID = 1L;
-
-    private static final long L_TO_TECHNOLOGY_ID = 2L;
 
     @Mock
     private OrderService orderService;
@@ -104,9 +95,11 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     private FormComponent orderForm;
 
     @Mock
-    private FieldComponent previousOrderField, orderField, productionLineField, lineChangeoverNormField,
-            lineChangeoverNormDurationField, previousOrderTechnologyGroupNumberField, technologyGroupNumberField,
-            previousOrderTechnologyNumberField, technologyNumberField;
+    private FieldComponent productionLineField, lineChangeoverNormDurationField, previousOrderTechnologyGroupNumberField,
+            technologyGroupNumberField, previousOrderTechnologyNumberField, technologyNumberField;
+
+    @Mock
+    private LookupComponent previousOrderLookup, orderLookup, lineChangeoverNormLookup;
 
     @Mock
     private Entity previousOrder, order, fromTechnologyGroup, toTechnologyGroup, fromTechnology, toTechnology, productionLine,
@@ -138,92 +131,95 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
                 lineChangeoverNormsForOrdersService);
     }
 
+    private void stubOrderForm(final Entity order) {
+        if (order == null) {
+            Entity someUnsavedOrder = mockEntity();
+            given(orderForm.getPersistedEntityWithIncludedFormValues()).willReturn(someUnsavedOrder);
+            given(orderForm.getEntity()).willReturn(someUnsavedOrder);
+            given(orderForm.getEntityId()).willReturn(null);
+        } else {
+            given(orderForm.getPersistedEntityWithIncludedFormValues()).willReturn(order);
+            given(orderForm.getEntity()).willReturn(order);
+            given(orderForm.getEntityId()).willReturn(1L);
+        }
+    }
+
     @Test
-    public void shouldntFillOrderFormsIfOrderFormEntityIdIsNull() {
+    public void shouldNotFillOrderFormsIfOrderFormEntityIdIsNull() {
         // given
         given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
 
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
+        given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
 
-        given(orderForm.getEntityId()).willReturn(null);
+        stubOrderForm(null);
 
         // when
         lineChangeoverNormsForOrderDetailsViewHooks.fillOrderForms(view);
 
         // then
-        verify(orderField, never()).setFieldValue(Mockito.any());
-        verify(previousOrderField, never()).setFieldValue(Mockito.any());
+        verify(orderLookup, never()).setFieldValue(Mockito.any());
+        verify(previousOrderLookup, never()).setFieldValue(Mockito.any());
 
         verify(lineChangeoverNormsForOrdersService, never()).fillOrderForm(view, ORDER_FIELDS);
         verify(lineChangeoverNormsForOrdersService, never()).fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
     }
 
     @Test
-    public void shouldntFillOrderFormsIfOrderFormEntityIdIsntNullAndOrderIsNull() {
+    public void shouldNotFillOrderFormsIfOrderFormEntityIdIsNotNullAndOrderIsNull() {
         // given
         given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
 
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
+        given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
 
-        given(orderForm.getEntityId()).willReturn(L_ID);
-
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_ID)).willReturn(null);
+        stubOrderForm(null);
 
         // when
         lineChangeoverNormsForOrderDetailsViewHooks.fillOrderForms(view);
 
         // then
-        verify(orderField, never()).setFieldValue(Mockito.any());
-        verify(previousOrderField, never()).setFieldValue(Mockito.any());
+        verify(orderLookup, never()).setFieldValue(Mockito.any());
+        verify(previousOrderLookup, never()).setFieldValue(Mockito.any());
 
         verify(lineChangeoverNormsForOrdersService, never()).fillOrderForm(view, ORDER_FIELDS);
         verify(lineChangeoverNormsForOrdersService, never()).fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
     }
 
     @Test
-    public void shouldFillOrderFormsIfOrderFormEntityIdIsntNullAndOrderIsntNullAndPreviousOrderIdIsntNull() {
+    public void shouldFillOrderFormsIfOrderFormEntityIdIsntNullAndOrderIsNotNullAndPreviousOrderIdIsNotNull() {
         // given
         given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
 
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
+        given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
 
-        given(orderForm.getEntityId()).willReturn(L_ID);
+        stubOrderForm(order);
 
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_ID)).willReturn(order);
-
-        given(order.getId()).willReturn(L_ORDER_ID);
-
-        given(previousOrderField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_ID);
+        given(previousOrderLookup.isEmpty()).willReturn(false);
 
         // when
         lineChangeoverNormsForOrderDetailsViewHooks.fillOrderForms(view);
 
         // then
-        verify(orderField).setFieldValue(Mockito.any());
-        verify(previousOrderField, never()).setFieldValue(Mockito.any());
+        verify(orderLookup).setFieldValue(Mockito.any());
+        verify(previousOrderLookup, never()).setFieldValue(Mockito.any());
 
         verify(lineChangeoverNormsForOrdersService).fillOrderForm(view, ORDER_FIELDS);
         verify(lineChangeoverNormsForOrdersService, never()).fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
     }
 
     @Test
-    public void shouldFillOrderFormsIfOrderFormEntityIdIsntNullAndOrderIsntNullAndPreviousOrderIsNull() {
+    public void shouldFillOrderFormsIfOrderFormEntityIdIsntNullAndOrderIsNotNullAndPreviousOrderIsNull() {
         // given
         given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
 
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
+        given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
 
-        given(orderForm.getEntityId()).willReturn(L_ID);
+        stubOrderForm(order);
 
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_ID)).willReturn(order);
-
-        given(order.getId()).willReturn(L_ORDER_ID);
-
-        given(previousOrderField.getFieldValue()).willReturn(null);
+        given(previousOrderLookup.isEmpty()).willReturn(true);
 
         given(lineChangeoverNormsForOrdersService.getPreviousOrderFromDB(order)).willReturn(null);
 
@@ -231,28 +227,24 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         lineChangeoverNormsForOrderDetailsViewHooks.fillOrderForms(view);
 
         // then
-        verify(orderField).setFieldValue(Mockito.any());
-        verify(previousOrderField, never()).setFieldValue(Mockito.any());
+        verify(orderLookup).setFieldValue(Mockito.any());
+        verify(previousOrderLookup, never()).setFieldValue(Mockito.any());
 
         verify(lineChangeoverNormsForOrdersService).fillOrderForm(view, ORDER_FIELDS);
         verify(lineChangeoverNormsForOrdersService, never()).fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
     }
 
     @Test
-    public void shouldFillOrderFormsIfOrderFormEntityIdIsntNullAndOrderIsntNullAndPreviousOrderIsntNull() {
+    public void shouldFillOrderFormsIfOrderFormEntityIdIsNotNullAndOrderIsNotNullAndPreviousOrderIsNotNull() {
         // given
         given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
 
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
+        given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
 
-        given(orderForm.getEntityId()).willReturn(L_ID);
+        stubOrderForm(order);
 
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_ID)).willReturn(order);
-
-        given(order.getId()).willReturn(L_ORDER_ID);
-
-        given(previousOrderField.getFieldValue()).willReturn(null);
+        given(previousOrderLookup.isEmpty()).willReturn(true);
 
         given(lineChangeoverNormsForOrdersService.getPreviousOrderFromDB(order)).willReturn(previousOrder);
 
@@ -260,107 +252,76 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         lineChangeoverNormsForOrderDetailsViewHooks.fillOrderForms(view);
 
         // then
-        verify(orderField).setFieldValue(Mockito.any());
-        verify(previousOrderField).setFieldValue(Mockito.any());
+        verify(orderLookup).setFieldValue(Mockito.any());
+        verify(previousOrderLookup).setFieldValue(Mockito.any());
 
         verify(lineChangeoverNormsForOrdersService).fillOrderForm(view, ORDER_FIELDS);
         verify(lineChangeoverNormsForOrdersService).fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
     }
 
     @Test
-    public void shouldntFillLineChangeoverNormIfOrderFieldsAreNull() {
+    public void shouldntFillLineChangeoverNormIfOrderLookupsAreEmpty() {
         // given
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
+        given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
 
-        given(view.getComponentByReference("lineChangeoverNorm")).willReturn(lineChangeoverNormField);
+        given(view.getComponentByReference("lineChangeoverNorm")).willReturn(lineChangeoverNormLookup);
         given(view.getComponentByReference("lineChangeoverNormDuration")).willReturn(lineChangeoverNormDurationField);
 
-        given(previousOrderField.getFieldValue()).willReturn(null);
-        given(orderField.getFieldValue()).willReturn(null);
+        given(previousOrderLookup.getEntity()).willReturn(null);
+        given(orderLookup.getEntity()).willReturn(null);
 
         // when
         lineChangeoverNormsForOrderDetailsViewHooks.fillLineChangeoverNorm(view);
 
         // then
-        verify(lineChangeoverNormField, never()).setFieldValue(Mockito.any());
-        verify(lineChangeoverNormDurationField, never()).setFieldValue(Mockito.any());
-    }
-
-    @Test
-    public void shouldntFillLineChangeoverNormIfOrderFieldsAreNullAndOrdersAreNull() {
-        // given
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
-
-        given(view.getComponentByReference("lineChangeoverNorm")).willReturn(lineChangeoverNormField);
-        given(view.getComponentByReference("lineChangeoverNormDuration")).willReturn(lineChangeoverNormDurationField);
-
-        given(previousOrderField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_ID);
-        given(orderField.getFieldValue()).willReturn(L_ORDER_ID);
-
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_PREVIOUS_ORDER_ID)).willReturn(null);
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_ORDER_ID)).willReturn(null);
-
-        // when
-        lineChangeoverNormsForOrderDetailsViewHooks.fillLineChangeoverNorm(view);
-
-        // then
-        verify(lineChangeoverNormField, never()).setFieldValue(Mockito.any());
-        verify(lineChangeoverNormDurationField, never()).setFieldValue(Mockito.any());
+        verify(lineChangeoverNormLookup).setFieldValue(null);
+        verify(lineChangeoverNormLookup, never()).setFieldValue(Mockito.notNull());
+        verify(lineChangeoverNormDurationField).setFieldValue(null);
+        verify(lineChangeoverNormDurationField, never()).setFieldValue(Mockito.notNull());
     }
 
     @Test
     public void shouldntFillLineChangeoverNormIfOrderFieldsAreNullAndOrdersArentNullAndTechnologiesAreNull() {
         // given
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
+        given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
 
-        given(view.getComponentByReference("lineChangeoverNorm")).willReturn(lineChangeoverNormField);
+        given(view.getComponentByReference("lineChangeoverNorm")).willReturn(lineChangeoverNormLookup);
         given(view.getComponentByReference("lineChangeoverNormDuration")).willReturn(lineChangeoverNormDurationField);
 
-        given(previousOrderField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_ID);
-        given(orderField.getFieldValue()).willReturn(L_ORDER_ID);
+        given(previousOrderLookup.getEntity()).willReturn(previousOrder);
+        given(orderLookup.getEntity()).willReturn(order);
 
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_PREVIOUS_ORDER_ID)).willReturn(previousOrder);
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_ORDER_ID)).willReturn(order);
-
-        given(previousOrder.getBelongsToField(TECHNOLOGY)).willReturn(null);
-        given(order.getBelongsToField(TECHNOLOGY)).willReturn(null);
+        stubBelongsToField(previousOrder, OrderFields.TECHNOLOGY_PROTOTYPE, null);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, null);
 
         // when
         lineChangeoverNormsForOrderDetailsViewHooks.fillLineChangeoverNorm(view);
 
         // then
-        verify(lineChangeoverNormField, never()).setFieldValue(Mockito.any());
-        verify(lineChangeoverNormDurationField, never()).setFieldValue(Mockito.any());
+        verify(lineChangeoverNormLookup).setFieldValue(null);
+        verify(lineChangeoverNormLookup, never()).setFieldValue(Mockito.notNull());
+        verify(lineChangeoverNormDurationField).setFieldValue(null);
+        verify(lineChangeoverNormDurationField, never()).setFieldValue(Mockito.notNull());
     }
 
     @Test
-    public void shouldntFillLineChangeoverNormIfOrderFieldsAreNullAndOrdersArentNullAndTechnologiesArentNullAndLineChangeoverNormIsNull() {
+    public void shouldntFillLineChangeoverNormIfOrderFieldsAreNullAndOrdersAreNotNullAndTechnologiesAreNotNullAndLineChangeoverNormIsNull() {
         // given
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
+        given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
 
-        given(view.getComponentByReference("lineChangeoverNorm")).willReturn(lineChangeoverNormField);
+        given(view.getComponentByReference("lineChangeoverNorm")).willReturn(lineChangeoverNormLookup);
         given(view.getComponentByReference("lineChangeoverNormDuration")).willReturn(lineChangeoverNormDurationField);
 
-        given(previousOrderField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_ID);
-        given(orderField.getFieldValue()).willReturn(L_ORDER_ID);
+        given(previousOrderLookup.getEntity()).willReturn(previousOrder);
+        given(orderLookup.getEntity()).willReturn(order);
 
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_PREVIOUS_ORDER_ID)).willReturn(previousOrder);
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_ORDER_ID)).willReturn(order);
+        stubBelongsToField(previousOrder, OrderFields.TECHNOLOGY_PROTOTYPE, fromTechnology);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, toTechnology);
 
-        given(previousOrder.getBelongsToField(TECHNOLOGY)).willReturn(fromTechnology);
-        given(order.getBelongsToField(TECHNOLOGY)).willReturn(toTechnology);
-
-        given(fromTechnology.getId()).willReturn(L_FROM_TECHNOLOGY_ID);
-        given(toTechnology.getId()).willReturn(L_TO_TECHNOLOGY_ID);
-
-        given(lineChangeoverNormsForOrdersService.getTechnologyFromDB(L_FROM_TECHNOLOGY_ID)).willReturn(fromTechnology);
-        given(lineChangeoverNormsForOrdersService.getTechnologyFromDB(L_TO_TECHNOLOGY_ID)).willReturn(toTechnology);
-
-        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        stubBelongsToField(order, OrderFields.PRODUCTION_LINE, productionLine);
 
         given(changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine)).willReturn(null);
 
@@ -368,35 +329,26 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         lineChangeoverNormsForOrderDetailsViewHooks.fillLineChangeoverNorm(view);
 
         // then
-        verify(lineChangeoverNormField).setFieldValue(null);
+        verify(lineChangeoverNormLookup).setFieldValue(null);
         verify(lineChangeoverNormDurationField).setFieldValue(null);
     }
 
     @Test
-    public void shouldFillLineChangeoverNormIfOrderFieldsAreNullAndOrdersArentNullAndTechnologiesArentNullAndLineChangeoverNormIsntNull() {
+    public void shouldFillLineChangeoverNormIfOrderFieldsAreNullAndOrdersAreNotNullAndTechnologiesAreNotNullAndLineChangeoverNormIsntNull() {
         // given
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
-        given(view.getComponentByReference(ORDER)).willReturn(orderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
+        given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
 
-        given(view.getComponentByReference("lineChangeoverNorm")).willReturn(lineChangeoverNormField);
+        given(view.getComponentByReference("lineChangeoverNorm")).willReturn(lineChangeoverNormLookup);
         given(view.getComponentByReference("lineChangeoverNormDuration")).willReturn(lineChangeoverNormDurationField);
 
-        given(previousOrderField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_ID);
-        given(orderField.getFieldValue()).willReturn(L_ORDER_ID);
+        given(previousOrderLookup.getEntity()).willReturn(previousOrder);
+        given(orderLookup.getEntity()).willReturn(order);
 
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_PREVIOUS_ORDER_ID)).willReturn(previousOrder);
-        given(lineChangeoverNormsForOrdersService.getOrderFromDB(L_ORDER_ID)).willReturn(order);
+        stubBelongsToField(previousOrder, OrderFields.TECHNOLOGY_PROTOTYPE, fromTechnology);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, toTechnology);
 
-        given(previousOrder.getBelongsToField(TECHNOLOGY)).willReturn(fromTechnology);
-        given(order.getBelongsToField(TECHNOLOGY)).willReturn(toTechnology);
-
-        given(fromTechnology.getId()).willReturn(L_FROM_TECHNOLOGY_ID);
-        given(toTechnology.getId()).willReturn(L_TO_TECHNOLOGY_ID);
-
-        given(lineChangeoverNormsForOrdersService.getTechnologyFromDB(L_FROM_TECHNOLOGY_ID)).willReturn(fromTechnology);
-        given(lineChangeoverNormsForOrdersService.getTechnologyFromDB(L_TO_TECHNOLOGY_ID)).willReturn(toTechnology);
-
-        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        stubBelongsToField(order, OrderFields.PRODUCTION_LINE, productionLine);
 
         given(changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine)).willReturn(
                 lineChangeoverNorm);
@@ -405,18 +357,18 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         lineChangeoverNormsForOrderDetailsViewHooks.fillLineChangeoverNorm(view);
 
         // then
-        verify(lineChangeoverNormField).setFieldValue(Mockito.any());
+        verify(lineChangeoverNormLookup).setFieldValue(Mockito.any());
         verify(lineChangeoverNormDurationField).setFieldValue(Mockito.any());
     }
 
     @Test
-    public void shouldntUpdateRibbonState() {
+    public void shouldNotUpdateRibbonState() {
         // given
         given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLineField);
 
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
 
-        given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormField);
+        given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormLookup);
 
         given(view.getComponentByReference("previousOrderTechnologyGroupNumber")).willReturn(
                 previousOrderTechnologyGroupNumberField);
@@ -425,7 +377,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(view.getComponentByReference("previousOrderTechnologyNumber")).willReturn(previousOrderTechnologyNumberField);
         given(view.getComponentByReference("technologyNumber")).willReturn(technologyNumberField);
 
-        given(view.getComponentByReference("window")).willReturn((ComponentState) window);
+        given(view.getComponentByReference("window")).willReturn(window);
 
         given(window.getRibbon()).willReturn(ribbon);
 
@@ -443,8 +395,8 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(productionLineField.getFieldValue()).willReturn(L_ID);
         given(lineChangeoverNormsForOrdersService.getProductionLineFromDB(L_ID)).willReturn(productionLine);
 
-        given(previousOrderField.getFieldValue()).willReturn(null);
-        given(lineChangeoverNormField.getFieldValue()).willReturn(null);
+        given(previousOrderLookup.isEmpty()).willReturn(true);
+        given(lineChangeoverNormLookup.isEmpty()).willReturn(true);
         given(previousOrderTechnologyGroupNumberField.getFieldValue()).willReturn(null);
         given(technologyGroupNumberField.getFieldValue()).willReturn(null);
         given(previousOrderTechnologyNumberField.getFieldValue()).willReturn(null);
@@ -461,13 +413,13 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     }
 
     @Test
-    public void shouldntUpdateRibbonStateIfSearchLineChangeoverNormIsNull() {
+    public void shouldNotUpdateRibbonStateIfSearchLineChangeoverNormIsNull() {
         // given
         given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLineField);
 
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
 
-        given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormField);
+        given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormLookup);
 
         given(view.getComponentByReference("previousOrderTechnologyGroupNumber")).willReturn(
                 previousOrderTechnologyGroupNumberField);
@@ -494,8 +446,8 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(productionLineField.getFieldValue()).willReturn(L_ID);
         given(lineChangeoverNormsForOrdersService.getProductionLineFromDB(L_ID)).willReturn(null);
 
-        given(previousOrderField.getFieldValue()).willReturn(null);
-        given(lineChangeoverNormField.getFieldValue()).willReturn(null);
+        given(previousOrderLookup.isEmpty()).willReturn(true);
+        given(lineChangeoverNormLookup.isEmpty()).willReturn(true);
         given(previousOrderTechnologyGroupNumberField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER);
         given(technologyGroupNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
         given(previousOrderTechnologyNumberField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER);
@@ -530,9 +482,9 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         // given
         given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLineField);
 
-        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
 
-        given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormField);
+        given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormLookup);
 
         given(view.getComponentByReference("previousOrderTechnologyGroupNumber")).willReturn(
                 previousOrderTechnologyGroupNumberField);
@@ -541,7 +493,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(view.getComponentByReference("previousOrderTechnologyNumber")).willReturn(previousOrderTechnologyNumberField);
         given(view.getComponentByReference("technologyNumber")).willReturn(technologyNumberField);
 
-        given(view.getComponentByReference("window")).willReturn((ComponentState) window);
+        given(view.getComponentByReference("window")).willReturn(window);
 
         given(window.getRibbon()).willReturn(ribbon);
 
@@ -559,8 +511,8 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(productionLineField.getFieldValue()).willReturn(L_ID);
         given(lineChangeoverNormsForOrdersService.getProductionLineFromDB(L_ID)).willReturn(productionLine);
 
-        given(previousOrderField.getFieldValue()).willReturn(L_PREVIOUS_ORDER);
-        given(lineChangeoverNormField.getFieldValue()).willReturn(L_LINE_CHANGEOVER_NORM);
+        given(previousOrderLookup.isEmpty()).willReturn(false);
+        given(lineChangeoverNormLookup.isEmpty()).willReturn(false);
         given(previousOrderTechnologyGroupNumberField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER);
         given(technologyGroupNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
         given(previousOrderTechnologyNumberField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER);

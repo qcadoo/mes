@@ -74,7 +74,6 @@
 
 				<option type="header" value="true" />
 				<option type="expression" value="'@' + #columnForOutputProducts[name]" />
-
 			</component>
 		</windowTab>
 

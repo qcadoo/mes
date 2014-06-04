@@ -62,46 +62,40 @@
 
 	<modules>
 		<localization:translation path="locales" />
-
+	
 		<model:dictionary name="productionLinePlaces" />
-
+	
 		<model:model model="productionLine" resource="model/productionLine.xml" />
 		<model:model model="workstationTypeComponent" resource="model/workstationTypeComponent.xml" />
-		
-		<model:model-field plugin="basic" model="parameter">
-		    <model:belongsTo name="defaultProductionLine" plugin="productionLines" model="productionLine" required="true" />
-		</model:model-field>
 
+		<model:model-field plugin="basic" model="parameter">
+			<model:belongsTo name="defaultProductionLine" plugin="productionLines"
+				model="productionLine" required="true" />
+		</model:model-field>
+	
 		<model:model-field plugin="technologies" model="technologyGroup">
 			<model:manyToMany name="productionLines" joinField="groups"
 				model="productionLine" plugin="productionLines" />
 		</model:model-field>
-
+	
 		<model:model-field plugin="technologies" model="technology">
 			<model:manyToMany name="productionLines" joinField="technologies"
 				model="productionLine" plugin="productionLines" />
 		</model:model-field>
 
-		<model:model-field plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:integer name="quantityOfWorkstationTypes" default="1">
-				<validatesRange from="0" exclusively="true" />
-			</model:integer>
-		</model:model-field>
-		
 		<model:model-hook model="parameter" plugin="basic">
-		    <model:onCreate class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter"/>
+			<model:onCreate
+				class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter" />
 		</model:model-hook>
-		
+
 		<menu:menu-item name="productionLines" category="technology"
 			view="productionLinesList" />
-
+	
 		<view:view resource="view/productionLinesList.xml" />
 		<view:view resource="view/productionLineDetails.xml" />
-
+	
 		<view:view resource="view/workstationTypeComponentDetails.xml" />
-		
-		<view:view-tab resource="view/tabExtensions/technologyInstanceOperationComponentDetails.xml" />
+
 	</modules>
 	
 	<features>

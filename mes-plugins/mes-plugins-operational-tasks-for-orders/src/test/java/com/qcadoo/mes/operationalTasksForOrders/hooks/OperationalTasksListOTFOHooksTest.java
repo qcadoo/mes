@@ -23,12 +23,13 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -40,17 +41,15 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -61,149 +60,146 @@ import com.qcadoo.view.api.components.LookupComponent;
 @PrepareForTest(SearchRestrictions.class)
 public class OperationalTasksListOTFOHooksTest {
 
-    private OperationalTasksListOTFOHooks hooks;
+    private static final String L_GRID = "grid";
 
-    @Mock
-    private ViewDefinitionState view;
+    private OperationalTasksListHooksOTFO operationalTasksListHooksOTFO;
 
     @Mock
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private Entity prodInEntity, prodOutEntity, prodIn1, prodIn2, prodOut1, techOperComp, tioc, task1, task2;
+    private ViewDefinitionState view;
 
     @Mock
-    EntityList tasks, tiocs, operations, prodsIn, prodsOut;
+    private LookupComponent productInLookup, productOutLookup;
 
     @Mock
-    private LookupComponent productIn, productOut;
+    private GridComponent grid;
 
     @Mock
-    private DataDefinition tasksDD, tiocDD, prodInDD, prodOutDD;
+    private DataDefinition technologyOperationComponentDD, operationProductInComponentDD, operationProductOutComponentDD;
 
     @Mock
-    private SearchCriteriaBuilder tiocBuilder, tasksBuilder, prodInBuilder, prodOutBuilder;
+    private Entity productIn, productOut, operationProductInComponent, operationProductOutComponent,
+            technologyOperationComponent, operationalTask;
 
     @Mock
-    private SearchResult tiocResult, tasksResult, prodInResult, prodOutResult;
+    private SearchCriteriaBuilder searchCriteriaBuilder;
 
     @Mock
-    private GridComponent gridComponent;
+    private SearchResult technologyOperationComponentsResult, operationProductInComponentsResult,
+            operationProductOutComponentsResult;
 
     @Before
     public void init() {
-        hooks = new OperationalTasksListOTFOHooks();
-
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(hooks, "dataDefinitionService", dataDefinitionService);
+
+        operationalTasksListHooksOTFO = new OperationalTasksListHooksOTFO();
+
         PowerMockito.mockStatic(SearchRestrictions.class);
 
-        when(view.getComponentByReference(OperationalTasksFields.PRODUCT_IN)).thenReturn(productIn);
-        when(view.getComponentByReference(OperationalTasksFields.PRODUCT_OUT)).thenReturn(productOut);
-        when(view.getComponentByReference("grid")).thenReturn(gridComponent);
-        // QUERY FOR TIOC
-        when(
+        ReflectionTestUtils.setField(operationalTasksListHooksOTFO, "dataDefinitionService", dataDefinitionService);
+
+        given(view.getComponentByReference(OperationalTaskFields.PRODUCT_IN)).willReturn(productInLookup);
+        given(view.getComponentByReference(OperationalTaskFields.PRODUCT_OUT)).willReturn(productOutLookup);
+        given(view.getComponentByReference(L_GRID)).willReturn(grid);
+
+        given(
                 dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).thenReturn(tiocDD);
-        when(tiocDD.find()).thenReturn(tiocBuilder);
-        SearchCriterion tiocCriterion = SearchRestrictions.belongsTo(
-                TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT, techOperComp);
-        when(tiocBuilder.add(tiocCriterion)).thenReturn(tiocBuilder);
-        when(tiocBuilder.list()).thenReturn(tiocResult);
+                        TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)).willReturn(technologyOperationComponentDD);
+        given(technologyOperationComponentDD.find()).willReturn(searchCriteriaBuilder);
 
-        // QUERY FOR TASK
-        when(
-                dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
-                        OperationalTasksConstants.MODEL_OPERATIONAL_TASK)).thenReturn(tasksDD);
-        when(tasksDD.find()).thenReturn(tasksBuilder);
-        SearchCriterion tasksCriterion = SearchRestrictions.belongsTo(
-                OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, tioc);
-        when(tasksBuilder.add(tasksCriterion)).thenReturn(tasksBuilder);
-        when(tasksBuilder.list()).thenReturn(tasksResult);
+        given(searchCriteriaBuilder.list()).willReturn(technologyOperationComponentsResult);
 
-        // QUERY FOR PROD_IN
-        when(productIn.getEntity()).thenReturn(prodInEntity);
+        given(productInLookup.getEntity()).willReturn(productIn);
 
-        when(
+        given(
                 dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)).thenReturn(prodInDD);
-        when(prodInDD.find()).thenReturn(prodInBuilder);
-        SearchCriterion prodInCriterion = SearchRestrictions.belongsTo("product", prodInEntity);
-        when(prodInBuilder.add(prodInCriterion)).thenReturn(prodInBuilder);
-        when(prodInBuilder.list()).thenReturn(prodInResult);
+                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)).willReturn(operationProductInComponentDD);
+        given(operationProductInComponentDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OperationProductInComponentFields.PRODUCT, productIn)))
+                .willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.list()).willReturn(operationProductInComponentsResult);
 
-        // QUERY FOR PROD_OUT
-        when(productOut.getEntity()).thenReturn(prodOutEntity);
+        given(productOutLookup.getEntity()).willReturn(productOut);
 
-        when(
+        given(
                 dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)).thenReturn(prodOutDD);
-        when(prodOutDD.find()).thenReturn(prodOutBuilder);
-        SearchCriterion prodOutCriterion = SearchRestrictions.belongsTo("product", prodOutEntity);
-        when(prodOutBuilder.add(prodOutCriterion)).thenReturn(prodOutBuilder);
-        when(prodOutBuilder.list()).thenReturn(prodOutResult);
+                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)).willReturn(operationProductOutComponentDD);
+        given(operationProductOutComponentDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OperationProductOutComponentFields.PRODUCT, productOut)))
+                .willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.list()).willReturn(operationProductOutComponentsResult);
 
     }
 
     private EntityList mockEntityList(List<Entity> list) {
         EntityList entityList = mock(EntityList.class);
-        when(entityList.iterator()).thenReturn(list.iterator());
+
+        given(entityList.iterator()).willReturn(list.iterator());
+
         return entityList;
     }
 
     @Test
     public void shouldReturnWhenProduInAndProduOutIsNull() throws Exception {
         // given
-        when(productIn.getEntity()).thenReturn(null);
-        when(productOut.getEntity()).thenReturn(null);
+        given(productInLookup.getEntity()).willReturn(null);
+        given(productOutLookup.getEntity()).willReturn(null);
+
+        EntityList operationalTasks = mockEntityList(Lists.newArrayList(operationalTask));
 
         // when
-        hooks.addDiscriminatorRestrictionToGrid(view);
+        operationalTasksListHooksOTFO.addDiscriminatorRestrictionToGrid(view);
+
         // then
+        Mockito.verify(grid, Mockito.never()).setEntities(operationalTasks);
     }
 
+    @Ignore
     @Test
     public void shouldReturnTasksForProductInWhenProdOutIsNull() throws Exception {
         // given
-        when(productOut.getEntity()).thenReturn(null);
+        given(productOutLookup.getEntity()).willReturn(null);
 
-        EntityList productsInLists = mockEntityList(Lists.newArrayList(prodIn1, prodIn2));
-        when(prodInResult.getEntities()).thenReturn(productsInLists);
+        EntityList operationProductInComponents = mockEntityList(Lists.newArrayList(operationProductInComponent));
 
-        EntityList tiocsLists = mockEntityList(Lists.newArrayList(tioc));
-        when(tiocResult.getEntities()).thenReturn(tiocsLists);
+        given(operationProductInComponentsResult.getEntities()).willReturn(operationProductInComponents);
 
-        List<Entity> tasks = Lists.newArrayList(task2);
-        EntityList tasksList = mockEntityList(tasks);
-        when(tasksResult.getEntities()).thenReturn(tasksList);
+        EntityList technologyOperationComponents = mockEntityList(Lists.newArrayList(technologyOperationComponent));
+
+        given(technologyOperationComponentsResult.getEntities()).willReturn(technologyOperationComponents);
+
+        EntityList operationalTasks = mockEntityList(Lists.newArrayList(operationalTask));
+
         // when
-        hooks.addDiscriminatorRestrictionToGrid(view);
+        operationalTasksListHooksOTFO.addDiscriminatorRestrictionToGrid(view);
+
         // then
-
-        Mockito.verify(gridComponent).setEntities(tasks);
-
+        Mockito.verify(grid).setEntities(operationalTasks);
     }
 
+    @Ignore
     @Test
     public void shouldReturnTasksForProductOutWhenProdInIsNull() throws Exception {
         // given
-        when(productIn.getEntity()).thenReturn(null);
+        given(productInLookup.getEntity()).willReturn(null);
 
-        EntityList productsOutLists = mockEntityList(Lists.newArrayList(prodOut1));
-        when(prodOutResult.getEntities()).thenReturn(productsOutLists);
+        EntityList operationProductOutComponents = mockEntityList(Lists.newArrayList(operationProductOutComponent));
 
-        EntityList tiocsLists = mockEntityList(Lists.newArrayList(tioc));
-        when(tiocResult.getEntities()).thenReturn(tiocsLists);
+        given(operationProductOutComponentsResult.getEntities()).willReturn(operationProductOutComponents);
 
-        List<Entity> tasks = Lists.newArrayList(task1, task2);
-        EntityList tasksList = mockEntityList(tasks);
-        when(tasksResult.getEntities()).thenReturn(tasksList);
+        EntityList technologyOperationComponents = mockEntityList(Lists.newArrayList(technologyOperationComponent));
+
+        given(technologyOperationComponentsResult.getEntities()).willReturn(technologyOperationComponents);
+
+        EntityList operationalTasks = mockEntityList(Lists.newArrayList(operationalTask));
+
         // when
-        hooks.addDiscriminatorRestrictionToGrid(view);
+        operationalTasksListHooksOTFO.addDiscriminatorRestrictionToGrid(view);
         // then
 
-        Mockito.verify(gridComponent).setEntities(tasks);
-
+        Mockito.verify(grid).setEntities(operationalTasks);
     }
 
 }

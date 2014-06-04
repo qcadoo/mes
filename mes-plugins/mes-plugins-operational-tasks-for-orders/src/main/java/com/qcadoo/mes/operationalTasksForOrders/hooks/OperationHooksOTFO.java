@@ -23,56 +23,59 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
-import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.NAME;
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
-import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class OperationHooksOTFO {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
-    public void changedNameOperationTasksWhenEntityNameChanged(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getId() == null) {
+    public void changedNameInOperationalTasksWhenChanged(final DataDefinition operationDD, final Entity operation) {
+        Long operationId = operation.getId();
+
+        if (operationId == null) {
             return;
         }
-        Entity operation = dataDefinition.get(entity.getId());
-        String entityName = entity.getStringField(NAME);
-        String operationName = operation.getStringField(NAME);
 
-        if (!entityName.equals(operationName)) {
-            changedNameOperationTasks(entity);
+        Entity operationFromDB = operationDD.get(operationId);
+
+        String name = operation.getStringField(OperationFields.NAME);
+        String operationName = operationFromDB.getStringField(OperationFields.NAME);
+
+        if (!name.equals(operationName)) {
+            changedNameInOperationalTasks(operation);
         }
     }
 
-    private void changedNameOperationTasks(final Entity operation) {
-        DataDefinition techInstOperCompDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
-        DataDefinition operationalTasksDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
-                OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
-        List<Entity> techInstOperCompsWithOperation = techInstOperCompDD.find()
-                .add(SearchRestrictions.belongsTo(OPERATION, operation)).list().getEntities();
-        for (Entity techInstOperComp : techInstOperCompsWithOperation) {
-            List<Entity> operationalTasksList = operationalTasksDD.find()
-                    .add(SearchRestrictions.belongsTo(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, techInstOperComp)).list()
-                    .getEntities();
-            for (Entity operationalTask : operationalTasksList) {
-                operationalTask.setField(NAME, operation.getStringField(NAME));
-                operationalTasksDD.save(operationalTask);
+    private void changedNameInOperationalTasks(final Entity operation) {
+        List<Entity> technologyOperationComponents = operationalTasksForOrdersService
+                .getTechnologyOperationComponentsForOperation(operation);
+
+        for (Entity technologyOperationComponent : technologyOperationComponents) {
+            List<Entity> techOperCompOperationalTasks = operationalTasksForOrdersService
+                    .getTechOperCompOperationalTasksForTechnologyOperationComponent(technologyOperationComponent);
+
+            for (Entity techOperCompOperationalTask : techOperCompOperationalTasks) {
+                List<Entity> operationalTasksList = operationalTasksForOrdersService
+                        .getOperationalTasksForTechOperCompOperationalTasks(techOperCompOperationalTask);
+
+                for (Entity operationalTask : operationalTasksList) {
+                    operationalTask.setField(OperationalTaskFields.NAME, operation.getStringField(OperationFields.NAME));
+
+                    operationalTask.getDataDefinition().save(operationalTask);
+                }
             }
         }
     }
+
 }

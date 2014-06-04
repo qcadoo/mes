@@ -103,6 +103,11 @@
 			class="com.qcadoo.mes.genealogiesForComponents.GenealogiesForComponentsService"
 			method="disableBatchRequiredForTechnology" />
 
+		<view:view-hook plugin="orders" view="copyOfTechnologyDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.genealogiesForComponents.GenealogiesForComponentsService"
+			method="disableBatchRequiredForTechnology" />
+			
 		<view:view-hook plugin="genealogies" view="orderGenealogyDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.genealogiesForComponents.GenealogiesForComponentsService"

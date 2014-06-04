@@ -23,18 +23,12 @@
  */
 package com.qcadoo.mes.orders.states;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Before;
@@ -99,34 +93,6 @@ public class OrderStateValidationServiceTest {
     }
 
     @Test
-    public void shouldPerformValidationAccepted() throws Exception {
-        // given
-        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
-        given(order.getField(DEADLINE)).willReturn(new Date());
-        given(order.getField(START_DATE)).willReturn(new Date(System.currentTimeMillis() - 10000));
-
-        // when
-        orderStateValidationService.validationOnAccepted(stateChangeContext);
-
-        // then
-        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
-        verify(stateChangeContext, never()).addFieldValidationError(DEADLINE, L_WRONG_DEADLINE);
-    }
-
-    @Test
-    public void shouldPerformValidationInProgress() throws Exception {
-        // given
-        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
-
-        // when
-        orderStateValidationService.validationOnInProgress(stateChangeContext);
-
-        // then
-        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
-    }
-
-    @Test
     public void shouldPerformValidationCompleted() throws Exception {
         // given
         given(order.getField(Mockito.anyString())).willReturn("fieldValue");
@@ -137,100 +103,6 @@ public class OrderStateValidationServiceTest {
 
         // then
         verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
-        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_WRONG_EFFECTIVE_DATE_TO));
-    }
-
-    @Test
-    public void shouldPerformValidationAcceptedFail() throws Exception {
-        // given
-        given(order.getField(Mockito.anyString())).willReturn(null);
-        stubTechnologyField(null);
-
-        // when
-        orderStateValidationService.validationOnAccepted(stateChangeContext);
-
-        // then
-        for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY)) {
-            verify(stateChangeContext).addFieldValidationError(field, L_MISSING_MESSAGE);
-        }
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
-    }
-
-    @Test
-    public void shouldPerformValidationAcceptedFailOnTechnologyState() throws Exception {
-        // given
-        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
-        given(order.getField(DEADLINE)).willReturn(new Date());
-        given(order.getField(START_DATE)).willReturn(new Date(System.currentTimeMillis() - 10000));
-        stubTechnologyState(TechnologyState.DRAFT);
-
-        // when
-        orderStateValidationService.validationOnAccepted(stateChangeContext);
-
-        // then
-        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
-        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
-        verify(stateChangeContext, never()).addFieldValidationError(DEADLINE, L_WRONG_DEADLINE);
-    }
-
-    @Test
-    public void shouldPerformValidationAcceptedFailOnProductionLine() throws Exception {
-        // given
-        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
-        given(order.getField(DEADLINE)).willReturn(new Date());
-        given(order.getField(START_DATE)).willReturn(new Date(System.currentTimeMillis() - 10000));
-
-        // when
-        orderStateValidationService.validationOnAccepted(stateChangeContext);
-
-        // then
-        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
-    }
-
-    @Test
-    public void shouldPerformValidationInProgressFail() throws Exception {
-        // given
-        given(order.getField(Mockito.anyString())).willReturn(null);
-        stubTechnologyField(null);
-
-        // when
-        orderStateValidationService.validationOnInProgress(stateChangeContext);
-
-        // then
-        for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY)) {
-            verify(stateChangeContext).addFieldValidationError(field, L_MISSING_MESSAGE);
-        }
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
-    }
-
-    @Test
-    public void shouldPerformValidationInProgresFailOnTechnologyState() throws Exception {
-        // given
-        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
-        stubTechnologyState(TechnologyState.DRAFT);
-
-        // when
-        orderStateValidationService.validationOnInProgress(stateChangeContext);
-
-        // then
-        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
-        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
-    }
-
-    @Test
-    public void shouldPerformValidationCompletedFail() throws Exception {
-        // given
-        given(order.getField(Mockito.anyString())).willReturn(null);
-        stubTechnologyField(null);
-
-        // when
-        orderStateValidationService.validationOnCompleted(stateChangeContext);
-
-        // then
-        for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY)) {
-            verify(stateChangeContext).addFieldValidationError(field, L_MISSING_MESSAGE);
-        }
         verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_WRONG_EFFECTIVE_DATE_TO));
     }
 

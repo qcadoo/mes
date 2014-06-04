@@ -58,10 +58,19 @@
 		<enum name="state"
 			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
 			required="true" />
+			
+		<enum name="orderType"
+			values="01withPatternTechnology,02withOwnTechnology"
+			default="01withPatternTechnology" required="true" />
+			
 		<belongsTo name="company" plugin="basic" model="company" />
 		<belongsTo name="product" plugin="basic" model="product"
 			required="true" />
+			
 		<belongsTo name="technology" plugin="technologies" model="technology" />
+		
+		<belongsTo name="technologyPrototype" plugin="technologies" model="technology" />
+		
 		<belongsTo name="productionLine" plugin="productionLines"
 			model="productionLine" required="true" />
 
@@ -81,10 +90,6 @@
 		<hasMany name="stateChanges" joinField="order" model="orderStateChange"
 			cascade="delete" />
 
-		<tree name="technologyInstanceOperationComponents" copyable="true"
-			joinField="order" model="technologyInstanceOperationComponent"
-			plugin="technologies" cascade="delete" />
-			
 		<decimal name="commissionedPlannedQuantity">
 			<validatesRange from="0" exclusively="false" />
 			<validatesUnscaledValue max="7" />
@@ -111,7 +116,6 @@
 
 		<hasMany name="typeOfCorrectionCauses" joinField="order" model="typeOfCorrectionCauses"
 			cascade="delete" />
-			
 		<hasMany name="reasonTypesCorrectionDateFrom" model="reasonTypeCorrectionDateFrom"
 			joinField="order" cascade="delete" />
 		<hasMany name="reasonTypesCorrectionDateTo" model="reasonTypeCorrectionDateTo"
@@ -123,22 +127,16 @@
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="onValidate" />
-	
+			method="validatesWith" />
+		
 		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="setInitialState" />
-		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="setCommissionedPlannedQuantity" />
-		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
-		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder"
-			method="createTechnologyInstanceForOrder" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyProductQuantity" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="onCorrectingTheRequestedVolume" />
-		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
-		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="clearOrSetSpecyfiedValueOrderFieldsOnCopy" />
-		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setProductQuantity" />
+			method="onCreate" />
+		
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks"
+			method="onSave" />
+			
+		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks"
+			method="onCopy" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

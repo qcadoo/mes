@@ -62,5 +62,4 @@ public class CompanyHooksD {
 
         return deliveriesDeleted;
     }
-
 }

@@ -1,10 +1,5 @@
 package com.qcadoo.mes.technologies.hooks;
 
-import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.REFERENCE_TECHNOLOGY;
-import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
-
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -12,9 +7,15 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.AssignedToOperation;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentReferenceMode;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -27,61 +28,94 @@ public class TechnologyOperationComponentHooks {
     @Autowired
     private TechnologyService technologyService;
 
-    private static final String L_OPERATION = "operation";
-
     public void onCreate(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         copyCommentAndAttachmentFromOperation(technologyOperationComponent);
         setParentIfRootNodeAlreadyExists(technologyOperationComponent);
         copyReferencedTechnology(technologyOperationComponentDD, technologyOperationComponent);
+        copyWorkstationsSettingsFromOperation(technologyOperationComponent);
+    }
+
+    private void copyWorkstationsSettingsFromOperation(final Entity technologyOperationComponent) {
+        Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+        if (operation != null) {
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS,
+                    operation.getIntegerField(OperationFields.QUANTITY_OF_WORKSTATIONS));
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION,
+                    operation.getField(OperationFields.ASSIGNED_TO_OPERATION));
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATION_TYPE,
+                    operation.getBelongsToField(OperationFields.WORKSTATION_TYPE));
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS,
+                    operation.getManyToManyField(OperationFields.WORKSTATIONS));
+        }
     }
 
     private void copyCommentAndAttachmentFromOperation(final Entity technologyOperationComponent) {
-        technologyService.copyCommentAndAttachmentFromLowerInstance(technologyOperationComponent, OPERATION);
+        technologyService.copyCommentAndAttachmentFromLowerInstance(technologyOperationComponent,
+                TechnologyOperationComponentFields.OPERATION);
     }
 
     private void setParentIfRootNodeAlreadyExists(final Entity technologyOperationComponent) {
         Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
         EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
         if (tree == null) {
             return;
         }
+
         if (tree.isEmpty()) {
             return;
         }
+
         EntityTreeNode rootNode = tree.getRoot();
-        if (rootNode == null || technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
+
+        if ((rootNode == null)
+                || (technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT) != null)) {
             return;
         }
+
         technologyOperationComponent.setField(TechnologyOperationComponentFields.PARENT, rootNode);
     }
 
     private void copyReferencedTechnology(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
-        if (!TechnologyOperationComponentFields.REFERENCETECHNOLOGY.equals(technologyOperationComponent
+        if (!TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY.equals(technologyOperationComponent
                 .getField(TechnologyOperationComponentFields.ENTITY_TYPE))
-                && technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY) == null) {
+                && (technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY) == null)) {
             return;
         }
 
-        boolean copy = "02copy".equals(technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCEMODE));
+        boolean isCopy = TechnologyOperationComponentReferenceMode.COPY.getStringValue().equals(
+                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.REFERENCE_MODE));
 
         Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
         Entity referencedTechnology = technologyOperationComponent
-                .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY);
+                .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
 
-        Set<Long> technologies = new HashSet<Long>();
+        Set<Long> technologies = Sets.newHashSet();
         technologies.add(technology.getId());
 
-        boolean cyclic = checkForCyclicReferences(technologies, referencedTechnology, copy);
+        boolean isCyclic = checkForCyclicReferences(technologies, referencedTechnology, isCopy);
 
-        if (cyclic) {
+        if (isCyclic) {
             technologyOperationComponent.addError(
-                    technologyOperationComponentDD.getField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY),
+                    technologyOperationComponentDD.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY),
                     "technologies.technologyReferenceTechnologyComponent.error.cyclicDependency");
+
             return;
         }
-        if (copy) {
+
+        if (isCopy) {
             EntityTreeNode root = referencedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+
+            if (root == null) {
+                technologyOperationComponent.addError(
+                        technologyOperationComponentDD.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY),
+                        "technologies.technologyReferenceTechnologyComponent.error.operationComponentsEmpty");
+
+                return;
+            }
+
             Entity copiedRoot = copyReferencedTechnologyOperations(root,
                     technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY));
 
@@ -90,8 +124,10 @@ public class TechnologyOperationComponentHooks {
                     technologyOperationComponent.setField(entry.getKey(), entry.getValue());
                 }
             }
-            technologyOperationComponent.setField(TechnologyOperationComponentFields.ENTITY_TYPE, L_OPERATION);
-            technologyOperationComponent.setField(REFERENCE_TECHNOLOGY, null);
+
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.ENTITY_TYPE,
+                    TechnologyOperationComponentType.OPERATION.getStringValue());
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY, null);
         }
     }
 
@@ -104,35 +140,55 @@ public class TechnologyOperationComponentHooks {
 
         for (Entry<String, Object> entry : node.getFields().entrySet()) {
             Object value = entry.getValue();
+
             if (value instanceof EntityList) {
                 EntityList entities = (EntityList) value;
-                List<Entity> copies = new ArrayList<Entity>();
+
+                List<Entity> copies = Lists.newArrayList();
+
                 for (Entity entity : entities) {
                     copies.add(copyReferencedTechnologyOperations(entity, technology));
                 }
+
                 copy.setField(entry.getKey(), copies);
             }
         }
+
         return copy;
     }
 
     private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology, final boolean copy) {
-
         if (!copy && technologies.contains(referencedTechnology.getId())) {
             return true;
         }
+
         technologies.add(referencedTechnology.getId());
 
-        for (Entity operationComponent : referencedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS)) {
-            if (REFERENCE_TECHNOLOGY.equals(operationComponent.getField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
-                boolean cyclic = checkForCyclicReferences(technologies,
-                        operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY), false);
-                if (cyclic) {
+        for (Entity technologyOperationComponent : referencedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS)) {
+            if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
+                    technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+                boolean isCyclic = checkForCyclicReferences(technologies,
+                        technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY),
+                        false);
+
+                if (isCyclic) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
+    public void onSave(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        clearField(technologyOperationComponent);
+
+    }
+
+    private void clearField(final Entity technologyOperationComponent) {
+        String assignedToOperation = technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION);
+        if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperation)) {
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
+        }
+    }
 }

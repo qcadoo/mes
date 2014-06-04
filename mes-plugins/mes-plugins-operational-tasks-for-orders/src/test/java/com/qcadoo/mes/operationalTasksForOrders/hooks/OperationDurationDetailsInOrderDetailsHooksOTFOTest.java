@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -45,106 +46,129 @@ import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class OperationDurationDetailsInOrderDetailsHooksOTFOTest {
 
-    private OperationDurationDetailsInOrderDetailsHooksOTFO otfo;
+    private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
+
+    private static final String L_OPERATIONAL_TASKS = "operationalTasks";
+
+    private static final String L_CREATE_OPERATIONAL_TASKS = "createOperationalTasks";
+
+    private static final String L_GENERATED_END_DATE = "generatedEndDate";
+
+    private OperationDurationDetailsInOrderDetailsHooksOTFO operationDurationDetailsInOrderDetailsHooksOTFO;
 
     @Mock
     private ViewDefinitionState view;
 
     @Mock
-    private WindowComponentState windowComponent;
+    private WindowComponentState window;
 
     @Mock
     private Ribbon ribbon;
 
     @Mock
-    private RibbonGroup ribbonGroup;
+    private RibbonGroup operationalTasks;
 
     @Mock
-    private RibbonActionItem actionItem;
+    private RibbonActionItem createOperationalTasks;
 
     @Mock
-    private FieldComponent generatedEndDate;
+    private FormComponent orderForm;
 
     @Mock
-    private FormComponent form;
+    private FieldComponent generatedEndDateField;
 
     @Mock
-    private Entity formEntity, order;
+    private DataDefinition orderDD;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private Entity order, technology;
 
     @Before
     public void init() {
-        otfo = new OperationDurationDetailsInOrderDetailsHooksOTFO();
-
         MockitoAnnotations.initMocks(this);
 
+        operationDurationDetailsInOrderDetailsHooksOTFO = new OperationDurationDetailsInOrderDetailsHooksOTFO();
+
         Long orderId = 1L;
-        when(view.getComponentByReference("window")).thenReturn((ComponentState) windowComponent);
-        when(windowComponent.getRibbon()).thenReturn(ribbon);
-        when(ribbon.getGroupByName("operationalTasks")).thenReturn(ribbonGroup);
-        when(ribbonGroup.getItemByName("createOperationalTasks")).thenReturn(actionItem);
 
-        when(view.getComponentByReference("generatedEndDate")).thenReturn(generatedEndDate);
+        given(view.getComponentByReference(L_WINDOW)).willReturn((ComponentState) window);
+        given(window.getRibbon()).willReturn(ribbon);
+        given(ribbon.getGroupByName(L_OPERATIONAL_TASKS)).willReturn(operationalTasks);
+        given(operationalTasks.getItemByName(L_CREATE_OPERATIONAL_TASKS)).willReturn(createOperationalTasks);
 
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntity()).thenReturn(formEntity);
-        when(formEntity.getDataDefinition()).thenReturn(dataDefinition);
-        when(form.getEntityId()).thenReturn(orderId);
-        when(dataDefinition.get(orderId)).thenReturn(order);
+        given(view.getComponentByReference(L_GENERATED_END_DATE)).willReturn(generatedEndDateField);
+
+        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(orderForm.getEntityId()).willReturn(orderId);
+        given(orderForm.getEntity()).willReturn(order);
+        given(order.getDataDefinition()).willReturn(orderDD);
+        given(orderDD.get(orderId)).willReturn(order);
     }
 
     @Test
-    public void shouldEnabledButtonWhenIsGeneratedAndOrderStateIsAccepted() throws Exception {
+    public void shouldEnableButtonWhenIsGeneratedAndOrderStateIsAccepted() throws Exception {
         // given
-        String date = "01-02-2012";
-        when(generatedEndDate.getFieldValue()).thenReturn(date);
-        when(order.getStringField("state")).thenReturn(OrderStateStringValues.ACCEPTED);
+        String generatedEndDate = "01-02-2012";
+
+        given(generatedEndDateField.getFieldValue()).willReturn(generatedEndDate);
+        given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.ACCEPTED);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
+
         // when
-        otfo.disabledCreateButton(view);
+        operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
+
         // then
-        Mockito.verify(actionItem).setEnabled(true);
+        Mockito.verify(createOperationalTasks).setEnabled(true);
     }
 
     @Test
-    public void shouldDisabledWhenIsNotGeneratedAndOrderStateIsInProgress() throws Exception {
+    public void shouldDisableButtonWhenIsNotGeneratedAndOrderStateIsInProgress() throws Exception {
         // given
-        when(generatedEndDate.getFieldValue()).thenReturn("");
-        when(order.getStringField("state")).thenReturn(OrderStateStringValues.IN_PROGRESS);
+        String generatedEndDate = "";
+
+        given(generatedEndDateField.getFieldValue()).willReturn(generatedEndDate);
+        given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.IN_PROGRESS);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
 
         // when
-        otfo.disabledCreateButton(view);
+        operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
+
         // then
-        Mockito.verify(actionItem).setEnabled(false);
+        Mockito.verify(createOperationalTasks).setEnabled(false);
     }
 
     @Test
-    public void shouldDisabledFieldWhenOrderStateIsIncorrectAndIsNotGEnerated() throws Exception {
+    public void shouldDisableButtonWhenIsNotGeneratedAndOrderStateIsIncorrect() throws Exception {
         // given
-        // given
-        when(generatedEndDate.getFieldValue()).thenReturn("");
-        when(order.getStringField("state")).thenReturn(OrderStateStringValues.ABANDONED);
+        String generatedEndDate = "";
+
+        given(generatedEndDateField.getFieldValue()).willReturn(generatedEndDate);
+        given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.ABANDONED);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
 
         // when
-        otfo.disabledCreateButton(view);
+        operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
+
         // then
-        Mockito.verify(actionItem).setEnabled(false);
-        // then
+        Mockito.verify(createOperationalTasks).setEnabled(false);
     }
 
     @Test
-    public void shouldDisabledFieldWhenOrderStateIsIncorrectAndIsGEnerated() throws Exception {
+    public void shouldDisableFieldWhenIsGeneratedAndOrderStateIsIncorrect() throws Exception {
         // given
-        // given
-        String date = "01-02-2012";
-        when(generatedEndDate.getFieldValue()).thenReturn(date);
-        when(order.getStringField("state")).thenReturn(OrderStateStringValues.DECLINED);
+        String generatedEndDate = "01-02-2012";
+
+        given(generatedEndDateField.getFieldValue()).willReturn(generatedEndDate);
+        given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.DECLINED);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
 
         // when
-        otfo.disabledCreateButton(view);
+        operationDurationDetailsInOrderDetailsHooksOTFO.disableCreateButton(view);
+
         // then
-        Mockito.verify(actionItem).setEnabled(false);
-        // then
+        Mockito.verify(createOperationalTasks).setEnabled(false);
     }
+
 }

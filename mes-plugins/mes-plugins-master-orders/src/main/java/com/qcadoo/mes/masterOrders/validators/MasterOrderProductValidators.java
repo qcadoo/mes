@@ -2,111 +2,120 @@ package com.qcadoo.mes.masterOrders.validators;
 
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields.MASTER_ORDER;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.and;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.not;
 
-import java.util.List;
+import java.util.Collection;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class MasterOrderProductValidators {
 
-    public boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
+    @Autowired
+    private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
+
+    public boolean onValidate(final DataDefinition masterOrderDD, final Entity masterOrder) {
+        return checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderDD, masterOrder);
+    }
+
+    private boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
             final Entity masterOrderProduct) {
         SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD.find()
-                .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrderProduct.getBelongsToField(MASTER_ORDER)))
-                .add(SearchRestrictions.belongsTo(PRODUCT, masterOrderProduct.getBelongsToField(PRODUCT)));
+                .add(belongsTo(MASTER_ORDER, masterOrderProduct.getBelongsToField(MASTER_ORDER)))
+                .add(belongsTo(PRODUCT, masterOrderProduct.getBelongsToField(PRODUCT)));
+        // It decreases unnecessary mapping overhead
+        searchCriteriaBuilder.setProjection(alias(id(), "id"));
 
         Long masterOrderId = masterOrderProduct.getId();
         if (masterOrderId != null) {
             searchCriteriaBuilder.add(SearchRestrictions.ne("id", masterOrderId));
         }
-        List<Entity> masterOrderProductList = searchCriteriaBuilder.list().getEntities();
-
-        if (masterOrderProductList.isEmpty()) {
+        if (searchCriteriaBuilder.setMaxResults(1).uniqueResult() == null) {
             return true;
-        } else {
-            masterOrderProduct.addError(masterOrderProductDD.getField(PRODUCT),
-                    "masterOrders.masterOrderProduct.alreadyExistsForProductAndMasterOrder");
-
-            return false;
         }
+
+        masterOrderProduct.addError(masterOrderProductDD.getField(PRODUCT),
+                "masterOrders.masterOrderProduct.alreadyExistsForProductAndMasterOrder");
+        return false;
     }
 
-    public boolean checkIfCanChangedTechnology(final DataDefinition masterProductOrderDD, final Entity masterProductOrder) {
-        if (masterProductOrder.getId() == null) {
+    public boolean checkIfCanChangeTechnology(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+            final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
+        if (masterOrderProduct.getId() == null) {
             return true;
         }
-        Entity masterOrderProductFromDB = masterProductOrderDD.get(masterProductOrder.getId());
-        Entity masterOrder = masterProductOrder.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-        Entity technologyFromDB = masterOrderProductFromDB.getBelongsToField(MasterOrderFields.TECHNOLOGY);
-        Entity productFromDB = masterProductOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-        Entity technology = masterProductOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
-        if (technology == null || (technologyFromDB != null && technology.getId().equals(technologyFromDB.getId()))) {
+        Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
+        if (MasterOrderType.of(masterOrder) != MasterOrderType.MANY_PRODUCTS) {
             return true;
         }
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(
-                MasterOrderType.MANY_PRODUCTS.getStringValue())) {
+        Entity oldTechnology = (Entity) fieldOldValue;
+        Entity newTechnology = (Entity) fieldNewValue;
+        if (isNullOrDoesNotChange(oldTechnology, newTechnology)) {
             return true;
         }
 
-        List<Entity> orders = masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
-                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, productFromDB)).list().getEntities();
-        boolean isValid = true;
-        StringBuilder orderNumberListWitkWrongNumer = new StringBuilder();
-        for (Entity order : orders) {
-            Entity technologyFromOrder = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            if ((technologyFromOrder == null) || !technologyFromOrder.getId().equals(technology.getId())) {
-                isValid = false;
-                orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
-                orderNumberListWitkWrongNumer.append(", ");
-            }
+        Entity product = masterOrderProduct.getBelongsToField(MasterOrderFields.PRODUCT);
+        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
+                and(belongsTo(OrderFields.PRODUCT, product), not(belongsTo(OrderFields.TECHNOLOGY_PROTOTYPE, newTechnology))));
+        if (unsupportedOrderNumbers.isEmpty()) {
+            return true;
         }
-        if (!isValid) {
-            masterProductOrder.addError(masterProductOrderDD.getField(MasterOrderFields.TECHNOLOGY),
-                    "masterOrders.masterOrder.technology.wrongTechnology", orderNumberListWitkWrongNumer.toString());
-        }
-        return isValid;
+
+        masterOrderProduct.addError(fieldDefinition, "masterOrders.masterOrder.technology.wrongTechnology",
+                StringUtils.join(unsupportedOrderNumbers, ", "));
+        return false;
     }
 
-    public boolean checkIfCanChangedProduct(final DataDefinition masterOrderProductDD, final Entity masterProductOrder) {
-        if (masterProductOrder.getId() == null) {
+    public boolean checkIfCanChangeProduct(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+            final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
+        if (masterOrderProduct.getId() == null) {
             return true;
         }
-        Entity masterOrderProductFromDB = masterOrderProductDD.get(masterProductOrder.getId());
-        Entity productFromDB = masterOrderProductFromDB.getBelongsToField(MasterOrderFields.PRODUCT);
-        Entity product = masterProductOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-        Entity masterOrder = masterProductOrder.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-        if (product == null || (productFromDB != null && product.getId().equals(productFromDB.getId()))) {
+        Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
+        if (MasterOrderType.of(masterOrder) != MasterOrderType.MANY_PRODUCTS) {
             return true;
         }
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(
-                MasterOrderType.MANY_PRODUCTS.getStringValue())) {
+        Entity oldProductValue = (Entity) fieldOldValue;
+        Entity newProductValue = (Entity) fieldNewValue;
+        if (wasOrIsNullOrDoesNotChange(oldProductValue, newProductValue)) {
             return true;
         }
 
-        List<Entity> orders = masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
-                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, productFromDB)).list().getEntities();
-        boolean isValid = true;
-        StringBuilder orderNumberListWitkWrongNumer = new StringBuilder();
-        for (Entity order : orders) {
-            isValid = false;
-            orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
-            orderNumberListWitkWrongNumer.append(", ");
+        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
+                belongsTo(OrderFields.PRODUCT, oldProductValue));
+        if (unsupportedOrderNumbers.isEmpty()) {
+            return true;
         }
-        if (!isValid) {
-            masterProductOrder.addError(masterOrderProductDD.getField(MasterOrderFields.PRODUCT),
-                    "masterOrders.masterOrder.product.wrongProduct", orderNumberListWitkWrongNumer.toString());
-        }
-        return isValid;
+
+        masterOrderProduct.addError(fieldDefinition, "masterOrders.masterOrder.product.wrongProduct",
+                StringUtils.join(unsupportedOrderNumbers, ", "));
+        return false;
+    }
+
+    private boolean wasOrIsNullOrDoesNotChange(final Entity oldValue, final Entity newValue) {
+        return oldValue == null || isNullOrDoesNotChange(oldValue, newValue);
+    }
+
+    private boolean isNullOrDoesNotChange(final Entity oldValue, final Entity newValue) {
+        return newValue == null || (oldValue != null && ObjectUtils.equals(oldValue.getId(), newValue.getId()));
     }
 
 }

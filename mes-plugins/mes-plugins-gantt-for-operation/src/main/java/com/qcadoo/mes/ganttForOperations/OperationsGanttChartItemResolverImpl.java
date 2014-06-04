@@ -40,6 +40,9 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionScheduling.OrderTimePredictionService;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -88,10 +91,13 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                 return Collections.emptyMap();
             }
 
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
             List<Entity> operations = dataDefinitionService
                     .get(com.qcadoo.mes.technologies.constants.TechnologiesConstants.PLUGIN_IDENTIFIER,
-                            com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
-                    .find().add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).list().getEntities();
+                            com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                    .find().add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology)).list()
+                    .getEntities();
 
             if (operations.isEmpty()) {
                 LOG.warn("Cannot find operations for " + order);
@@ -108,13 +114,17 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
             Map<String, List<GanttChartItem>> items = new LinkedHashMap<String, List<GanttChartItem>>();
             Map<String, Integer> counters = new HashMap<String, Integer>();
 
-            List<Entity> sortedOperationFromTree = entityTreeUtilsService.getSortedEntities(order
-                    .getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS));
+            List<Entity> sortedOperationFromTree = entityTreeUtilsService.getSortedEntities(order.getBelongsToField(
+                    OrderFields.TECHNOLOGY).getTreeField(TechnologyFields.OPERATION_COMPONENTS));
 
             for (Entity operationFromTree : sortedOperationFromTree) {
                 Entity operation = operations.get(operations.indexOf(operationFromTree));
-                Date dateFrom = operation.getDateField(EFFECTIVE_DATE_FROM_FIELD);
-                Date dateTo = operation.getDateField(EFFECTIVE_DATE_TO_FIELD);
+                Date dateFrom = operation.getBelongsToField(
+                        TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION).getDateField(
+                        EFFECTIVE_DATE_FROM_FIELD);
+                Date dateTo = operation
+                        .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION).getDateField(
+                                EFFECTIVE_DATE_TO_FIELD);
 
                 if (dateFrom == null || dateTo == null || dateTo.before(scale.getDateFrom())) {
                     continue;

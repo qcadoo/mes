@@ -45,4 +45,5 @@ public interface ColumnFiller {
      * @return The Keys of the map are productComponents, values are Maps columnIdentifier -> columnValue
      */
     Map<Entity, Map<String, String>> getValues(final List<Entity> orders);
+
 }

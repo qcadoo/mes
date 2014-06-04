@@ -24,7 +24,9 @@
 package com.qcadoo.mes.orders.states.constants;
 
 import com.google.common.base.Preconditions;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateEnum;
+import com.qcadoo.model.api.Entity;
 
 public enum OrderState implements StateEnum {
 
@@ -87,6 +89,13 @@ public enum OrderState implements StateEnum {
     @Override
     public String getStringValue() {
         return stringValue;
+    }
+
+    public static OrderState of(final Entity order) {
+        if (order == null) {
+            return null;
+        }
+        return parseString(order.getStringField(OrderFields.STATE));
     }
 
     public static OrderState parseString(final String string) {

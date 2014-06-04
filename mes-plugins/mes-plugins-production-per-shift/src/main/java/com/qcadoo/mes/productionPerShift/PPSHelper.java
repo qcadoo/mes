@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift;
 
-import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
-import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAY;
-
 import java.util.Date;
 
 import org.joda.time.DateTime;
@@ -35,77 +32,87 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class PPSHelper {
+
+    private static final String L_PRODUCTION_PER_SHIFT_OPERATION = "productionPerShiftOperation";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public Long getPpsIdForOrder(final Long orderId) {
-        DataDefinition ppsDateDef = getPpsDataDef();
+        DataDefinition ppsDateDef = getProductionPerShiftDD();
         String query = "select id as ppsId from #productionPerShift_productionPerShift where order.id = :orderId";
         Entity projectionResults = ppsDateDef.find(query).setLong("orderId", orderId).setMaxResults(1).uniqueResult();
+
         if (projectionResults == null) {
             return null;
         }
+
         return (Long) projectionResults.getField("ppsId");
     }
 
     public Long createPpsForOrderAndReturnId(final Long orderId) {
-        DataDefinition ppsDataDef = getPpsDataDef();
-        Entity pps = ppsDataDef.create();
-        pps.setField("order", orderId);
-        return ppsDataDef.save(pps).getId();
+        DataDefinition productionPerShiftDD = getProductionPerShiftDD();
+
+        Entity productionPerShift = productionPerShiftDD.create();
+        productionPerShift.setField(ProductionPerShiftFields.ORDER, orderId);
+        productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, PlannedProgressType.PLANNED.getStringValue());
+
+        return productionPerShiftDD.save(productionPerShift).getId();
     }
 
-    public DataDefinition getPpsDataDef() {
+    public DataDefinition getProductionPerShiftDD() {
         return dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT);
     }
 
-    public DataDefinition getDailyProgressDataDef() {
+    public DataDefinition getDailyProgressDD() {
         return dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_DAILY_PROGRESS);
     }
 
-    public Entity getTiocFromOperationLookup(final ViewDefinitionState viewState) {
-        ComponentState operationLookup = viewState.getComponentByReference("productionPerShiftOperation");
+    public Entity getTechnologyOperationComponentFromOperationLookup(final ViewDefinitionState view) {
+        LookupComponent operationLookup = (LookupComponent) view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
+
         Long id = (Long) operationLookup.getFieldValue();
-        Entity tioc = null;
+        Entity technologyOperationComponent = null;
+
         if (id != null) {
-            tioc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).get(id);
+            technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(id);
         }
-        return tioc;
+
+        return technologyOperationComponent;
     }
 
     public boolean shouldHasCorrections(final ViewDefinitionState viewState) {
-        return ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE)).getFieldValue().equals(
-                PlannedProgressType.CORRECTED.getStringValue());
+        FieldComponent plannedProgressTypeField = (FieldComponent) viewState
+                .getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE);
+
+        return PlannedProgressType.CORRECTED.getStringValue().equals(plannedProgressTypeField.getFieldValue());
     }
 
     public Date getDateAfterStartOrderForProgress(final Entity order, final Entity progressForDay) {
-        final Integer day = Integer.valueOf(progressForDay.getField(DAY).toString());
+        final Integer day = Integer.valueOf(progressForDay.getField(ProgressForDayFields.DAY).toString());
 
         return getDateAfterStartOrderForProgress(order, day);
     }
 
     public Date getDateAfterStartOrderForProgress(final Entity order, final Integer day) {
-        final Date startOrder = getPlannedOrCorrectedDate(order);
+        final Date startOrder = order.getDateField(OrderFields.START_DATE);
 
         return new DateTime(startOrder).plusDays(day - 1).toDate();
-    }
-
-    private Date getPlannedOrCorrectedDate(final Entity order) {
-        return order.getDateField(OrderFields.START_DATE);
     }
 
 }

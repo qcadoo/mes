@@ -26,14 +26,14 @@ package com.qcadoo.mes.costNormsForOperation.constants;
 public enum CalculateOperationCostMode {
     HOURLY("01hourly"), PIECEWORK("02piecework");
 
-    private String stringValue;
+    private String calculateOperationCostMode;
 
-    private CalculateOperationCostMode(final String stringValue) {
-        this.stringValue = stringValue;
+    private CalculateOperationCostMode(final String calculateOperationCostMode) {
+        this.calculateOperationCostMode = calculateOperationCostMode;
     }
 
     public String getStringValue() {
-        return stringValue;
+        return calculateOperationCostMode;
     }
 
     public static CalculateOperationCostMode parseString(final String string) {
@@ -45,4 +45,5 @@ public enum CalculateOperationCostMode {
 
         throw new IllegalStateException("Unsupported calculateOperationCostMode: " + string);
     }
+
 }

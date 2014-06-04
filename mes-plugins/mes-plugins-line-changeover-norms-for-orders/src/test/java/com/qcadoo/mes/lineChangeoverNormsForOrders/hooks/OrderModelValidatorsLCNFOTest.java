@@ -23,8 +23,8 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.ORDER;
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.PREVIOUS_ORDER;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -39,6 +39,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
+import com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -62,15 +63,15 @@ public class OrderModelValidatorsLCNFOTest {
         orderModelValidatorsLCNFO = new OrderModelValidatorsLCNFO();
 
         setField(orderModelValidatorsLCNFO, "lineChangeoverNormsForOrdersService", lineChangeoverNormsForOrdersService);
+
+        stubBelongsToField(order, OrderFieldsLCNFO.PREVIOUS_ORDER, previousOrderDB);
+        stubBelongsToField(order, OrderFieldsLCNFO.ORDER, orderDB);
     }
 
     @Test
-    public void shouldReturnFalseWhenCheckIfOrderHasCorrectStateAndIsPreviousIfPreviousOrderIsntCorrectAndPrevious() {
+    public void shouldReturnFalseWhenPreviousOrderIsNotCorrect() {
         // given
-        given(order.getBelongsToField(PREVIOUS_ORDER)).willReturn(previousOrderDB);
-        given(order.getBelongsToField(ORDER)).willReturn(orderDB);
-
-        given(lineChangeoverNormsForOrdersService.checkIfOrderHasCorrectStateAndIsPrevious(previousOrderDB, orderDB)).willReturn(
+        given(lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(previousOrderDB, orderDB)).willReturn(
                 false);
 
         // when
@@ -83,12 +84,9 @@ public class OrderModelValidatorsLCNFOTest {
     }
 
     @Test
-    public void shouldReturnTrueWhenCheckIfOrderHasCorrectStateAndIsPreviousIfPreviousOrderIsCorrectAndPrevious() {
+    public void shouldReturnTrueWhenPreviousOrderIsCorrect() {
         // given
-        given(order.getBelongsToField(PREVIOUS_ORDER)).willReturn(previousOrderDB);
-        given(order.getBelongsToField(ORDER)).willReturn(orderDB);
-
-        given(lineChangeoverNormsForOrdersService.checkIfOrderHasCorrectStateAndIsPrevious(previousOrderDB, orderDB)).willReturn(
+        given(lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(previousOrderDB, orderDB)).willReturn(
                 true);
 
         // when

@@ -84,10 +84,13 @@ public class WorkingHours implements Comparable<WorkingHours> {
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof WorkingHours)) {
+
+        if (!(obj instanceof WorkingHours)) {
             return false;
         }
+
         WorkingHours other = (WorkingHours) obj;
+
         return ObjectUtils.equals(hours, other.hours);
     }
 

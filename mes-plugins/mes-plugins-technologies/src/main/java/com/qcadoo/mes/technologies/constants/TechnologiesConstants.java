@@ -26,11 +26,13 @@ package com.qcadoo.mes.technologies.constants;
 public final class TechnologiesConstants {
 
     private TechnologiesConstants() {
+
     }
 
     public static final String PLUGIN_IDENTIFIER = "technologies";
 
     // MODEL
+
     public static final String MODEL_OPERATION = "operation";
 
     public static final String MODEL_OPERATION_PRODUCT_IN_COMPONENT = "operationProductInComponent";
@@ -40,8 +42,6 @@ public final class TechnologiesConstants {
     public static final String MODEL_TECHNOLOGY = "technology";
 
     public static final String MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
-    public static final String MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
     public static final String MODEL_OPERATION_NUMBER_FIELD_NAME = "number";
 
@@ -53,11 +53,12 @@ public final class TechnologiesConstants {
 
     public static final String OPERATION_COMPONENTS = "operationComponents";
 
-    public static final String FIELD_ENTITY_TYPE = "entityType";
-
-    public static final String FIELD_NAME = "name";
+    // FIXME MAKU remove if never used (prehistoric constants..)
+    // public static final String FIELD_ENTITY_TYPE = "entityType";
+    // public static final String FIELD_NAME = "name";
 
     // VIEW
+
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";
 
     public static final String VIEW_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "operationProductInComponentDetails";
@@ -73,15 +74,5 @@ public final class TechnologiesConstants {
     public static final String VIEW_TECHNOLOGY_OPERATION_COMPONENT_DETAILS = "technologyOperationComponentDetails";
 
     public static final String VIEW_TECHNOLOGY_REFERENCE_TECHNOLOGY_COMPONENT_DETAILS = "technologyReferenceTechnologyComponentDetails";
-
-    public static final String MODEL_BASIC_PRODUCT = "product";
-
-    public static final String MODEL_BASIC_MACHINE = "machine";
-
-    public static final String REFERENCE_TECHNOLOGY = "referenceTechnology";
-
-    public static final String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
-
-    public static final String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
 
 }

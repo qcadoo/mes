@@ -117,10 +117,10 @@ public class TechnologyTreeValidatorsTest {
         given(technologyTreeValidationService.checkConsumingTheSameProductFromManySubOperations(tree)).willReturn(nodesMap);
 
         // when
-        technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(techDataDefinition, technology);
+        technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(techDataDefinition, technology, true);
 
         // then
-        Mockito.verify(technology).addGlobalError(messageKey, parentNode, productName, productNumber);
+        Mockito.verify(technology).addGlobalError(messageKey, true, parentNode, productName, productNumber);
     }
 
     @Test

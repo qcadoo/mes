@@ -29,8 +29,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,8 +40,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -60,9 +61,9 @@ public class MrpAlgorithmStrategyTSTest {
     @Mock
     private Entity operComp1, operComp2;
 
-    private Map<Entity, BigDecimal> productComponentQuantities;
+    private OperationProductComponentWithQuantityContainer productComponentQuantities;
 
-    private Set<Entity> nonComponents;
+    private Set<OperationProductComponentHolder> nonComponents;
 
     @Mock
     private DataDefinition ddIn, ddOut;
@@ -102,8 +103,8 @@ public class MrpAlgorithmStrategyTSTest {
         when(productInComponent2.getField("quantity")).thenReturn(new BigDecimal(2));
         when(productOutComponent4.getField("quantity")).thenReturn(BigDecimal.ONE);
 
-        productComponentQuantities = new HashMap<Entity, BigDecimal>();
-        nonComponents = new HashSet<Entity>();
+        productComponentQuantities = new OperationProductComponentWithQuantityContainer();
+        nonComponents = Sets.newHashSet();
 
         productComponentQuantities.put(productInComponent1, new BigDecimal(5));
         productComponentQuantities.put(productInComponent3, BigDecimal.ONE);
@@ -112,7 +113,7 @@ public class MrpAlgorithmStrategyTSTest {
         productComponentQuantities.put(productOutComponent4, BigDecimal.ONE);
         productComponentQuantities.put(productInComponent2, new BigDecimal(2));
 
-        nonComponents.add(productInComponent2);
+        nonComponents.add(new OperationProductComponentHolder(productInComponent2));
 
         when(product1.getId()).thenReturn(1L);
         when(product2.getId()).thenReturn(2L);
@@ -142,6 +143,8 @@ public class MrpAlgorithmStrategyTSTest {
         when(productOutComponent2.getDataDefinition()).thenReturn(ddOut);
         when(productOutComponent4.getDataDefinition()).thenReturn(ddOut);
 
+        when(ddIn.getName()).thenReturn("operationProductInComponent");
+        when(ddOut.getName()).thenReturn("operationProductOutComponent");
     }
 
     private static EntityList mockEntityListIterator(List<Entity> list) {
@@ -153,12 +156,12 @@ public class MrpAlgorithmStrategyTSTest {
     @Test
     public void shouldReturnMapWithoutProductFromSubcontractingOperation() throws Exception {
         // given
-        Map<Entity, BigDecimal> productsMap = algorithmStrategyTS.perform(productComponentQuantities, nonComponents,
+        Map<Long, BigDecimal> productsMap = algorithmStrategyTS.perform(productComponentQuantities, nonComponents,
                 MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS, "productInComponent");
 
         assertEquals(2, productsMap.size());
-        assertEquals(new BigDecimal(5), productsMap.get(product1));
-        assertEquals(BigDecimal.ONE, productsMap.get(product3));
+        assertEquals(new BigDecimal(5), productsMap.get(product1.getId()));
+        assertEquals(BigDecimal.ONE, productsMap.get(product3.getId()));
 
         // then
     }
@@ -169,13 +172,13 @@ public class MrpAlgorithmStrategyTSTest {
         when(operComp1.getBooleanField("isSubcontracting")).thenReturn(true);
 
         // when
-        Map<Entity, BigDecimal> productsMap = algorithmStrategyTS.perform(productComponentQuantities, nonComponents,
+        Map<Long, BigDecimal> productsMap = algorithmStrategyTS.perform(productComponentQuantities, nonComponents,
                 MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS, "productInComponent");
 
         assertEquals(3, productsMap.size());
-        assertEquals(new BigDecimal(5), productsMap.get(product1));
-        assertEquals(BigDecimal.ONE, productsMap.get(product2));
-        assertEquals(BigDecimal.ONE, productsMap.get(product3));
+        assertEquals(new BigDecimal(5), productsMap.get(product1.getId()));
+        assertEquals(BigDecimal.ONE, productsMap.get(product2.getId()));
+        assertEquals(BigDecimal.ONE, productsMap.get(product3.getId()));
     }
 
     @Test
@@ -185,15 +188,15 @@ public class MrpAlgorithmStrategyTSTest {
         when(operComp2.getBooleanField("isSubcontracting")).thenReturn(true);
 
         // when
-        Map<Entity, BigDecimal> productsMap = algorithmStrategyTS.perform(productComponentQuantities, nonComponents,
+        Map<Long, BigDecimal> productsMap = algorithmStrategyTS.perform(productComponentQuantities, nonComponents,
                 MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS, "productInComponent");
 
         // then
         assertEquals(4, productsMap.size());
-        assertEquals(new BigDecimal(5), productsMap.get(product1));
-        assertEquals(BigDecimal.ONE, productsMap.get(product2));
-        assertEquals(BigDecimal.ONE, productsMap.get(product3));
-        assertEquals(BigDecimal.ONE, productsMap.get(product4));
+        assertEquals(new BigDecimal(5), productsMap.get(product1.getId()));
+        assertEquals(BigDecimal.ONE, productsMap.get(product2.getId()));
+        assertEquals(BigDecimal.ONE, productsMap.get(product3.getId()));
+        assertEquals(BigDecimal.ONE, productsMap.get(product4.getId()));
     }
 
 }

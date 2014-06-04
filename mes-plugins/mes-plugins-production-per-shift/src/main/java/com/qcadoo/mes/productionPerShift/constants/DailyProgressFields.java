@@ -34,4 +34,5 @@ public final class DailyProgressFields {
     public static final String SHIFT = "shift";
 
     public static final String QUANTITY = "quantity";
+
 }

@@ -23,11 +23,10 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.Entity;
 
@@ -39,13 +38,14 @@ public class BpcOrderStateListenerService {
 
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
-        final Entity technology = order.getBelongsToField(TECHNOLOGY);
+        final Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         if (technology == null) {
             stateChangeContext.addValidationError("orders.order.technology.isEmpty");
         } else {
             basicProductionCountingService.createProductionCountingQuantitiesAndOperationRuns(order);
             basicProductionCountingService.createBasicProductionCountings(order);
+            basicProductionCountingService.associateProductionCountingQuantitiesWithBasicProductionCountings(order);
         }
     }
 

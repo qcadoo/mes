@@ -34,6 +34,7 @@
 			required="true" />
 		<decimal name="quantity" required="true" />
 		<decimal name="price" default="0" />
+		<decimal name="value" persistent="false" />
 		<string name="batch" />
 		<datetime name="time" required="true" />
 	</fields>
@@ -41,6 +42,9 @@
 		<validatesWith
 			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelValidators"
 			method="checkIfLocationIsWarehouse" />
+		<onView
+			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
+			method="onView" />
 <!-- 		<onCreate -->
 <!-- 			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" -->
 <!-- 			method="generateBatch" /> -->

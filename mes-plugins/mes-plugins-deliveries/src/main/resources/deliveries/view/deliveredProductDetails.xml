@@ -27,7 +27,7 @@
 <view name="deliveredProductDetails" modelName="deliveredProduct"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	windowWidth="640" windowHeight="430">
+	windowWidth="720" windowHeight="440">
 
 	<component type="window" name="window">
 
@@ -72,15 +72,15 @@
 						<component type="borderLayout" name="quantityBorderLayout">
 							<option type="label" value="quantityLabel" />
 							<component type="gridLayout" name="quantityGridLayout"
-								hasBorders="false" columns="2" rows="2">
-								<layoutElement column="1" row="1">
+								hasBorders="false" columns="9" rows="2">
+								<layoutElement column="1" row="1" width="4">
 									<component type="gridLayout" name="orderedQuantityGridLayout"
 										hasBorders="false" columns="4" rows="1">
 										<layoutElement column="1" row="1" width="3">
 											<component type="input" name="orderedQuantity"
 												reference="orderedQuantity" defaultEnabled="never">
 												<option type="alignment" value="right" />
-												<option type="labelWidth" value="40" />
+												<option type="labelWidth" value="45" />
 											</component>
 										</layoutElement>
 										<layoutElement column="4" row="1">
@@ -92,7 +92,7 @@
 										</layoutElement>
 									</component>
 								</layoutElement>
-								<layoutElement column="1" row="2">
+								<layoutElement column="1" row="2" width="4">
 									<component type="gridLayout" name="deliveredQuantityGridLayout"
 										hasBorders="false" columns="4" rows="1">
 										<layoutElement column="1" row="1" width="3">
@@ -100,7 +100,8 @@
 												field="#{form}.deliveredQuantity" reference="deliveredQuantity"
 												hasDescription="true">
 												<option type="alignment" value="right" />
-												<option type="labelWidth" value="40" />
+												<option type="labelWidth" value="45" />
+												
 												<listener event="onInputChange" method="calculatePrice"
 													class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
 											</component>
@@ -114,14 +115,14 @@
 										</layoutElement>
 									</component>
 								</layoutElement>
-								<layoutElement column="2" row="2">
+								<layoutElement column="5" row="2" width="4">
 									<component type="gridLayout" name="damagedQuantityGridLayout"
 										hasBorders="false" columns="4" rows="1">
 										<layoutElement column="1" row="1" width="3">
 											<component type="input" name="damagedQuantity"
 												field="#{form}.damagedQuantity" reference="damagedQuantity">
 												<option type="alignment" value="right" />
-												<option type="labelWidth" value="40" />
+												<option type="labelWidth" value="45" />
 											</component>
 										</layoutElement>
 										<layoutElement column="4" row="1">
@@ -140,15 +141,16 @@
 						<component type="borderLayout" name="priceBorderLayout">
 							<option type="label" value="priceLabel" />
 							<component type="gridLayout" name="priceGridLayout"
-								hasBorders="false" columns="2" rows="1">
-								<layoutElement column="1" row="1">
+								hasBorders="false" columns="9" rows="1">
+								<layoutElement column="1" row="1" width="4">
 									<component type="gridLayout" name="totalPriceGridLayout"
 										hasBorders="false" columns="4" rows="1">
 										<layoutElement column="1" row="1" width="3">
 											<component type="input" name="totalPrice" field="#{form}.totalPrice"
 												reference="totalPrice">
 												<option type="alignment" value="right" />
-												<option type="labelWidth" value="40" />
+												<option type="labelWidth" value="45" />
+												
 												<listener event="onInputChange" method="calculatePriceFromTotalPrice"
 													class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
 											</component>
@@ -162,14 +164,15 @@
 										</layoutElement>
 									</component>
 								</layoutElement>
-								<layoutElement column="2" row="1">
+								<layoutElement column="5" row="1" width="4">
 									<component type="gridLayout" name="pricePerUnitGridLayout"
 										hasBorders="false" columns="4" rows="1">
 										<layoutElement column="1" row="1" width="3">
 											<component type="input" name="pricePerUnit" field="#{form}.pricePerUnit"
 												reference="pricePerUnit" >
 												<option type="alignment" value="right" />
-												<option type="labelWidth" value="40" />
+												<option type="labelWidth" value="45" />
+												
 												<listener event="onInputChange" method="calculatePriceFromPricePerUnit"
 													class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
 											</component>
@@ -187,11 +190,14 @@
 						</component>
 					</layoutElement>
 				</component>
+				
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>
+		
 	</component>
+	
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
@@ -206,4 +212,5 @@
 			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
 			method="setDeliveredQuantityFieldRequired" />
 	</hooks>
+	
 </view>

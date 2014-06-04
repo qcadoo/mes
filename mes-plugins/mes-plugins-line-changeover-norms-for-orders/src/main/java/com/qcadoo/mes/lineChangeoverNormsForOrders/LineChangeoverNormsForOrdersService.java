@@ -35,13 +35,9 @@ public interface LineChangeoverNormsForOrdersService {
 
     void fillOrderForm(final ViewDefinitionState view, final List<String> orderFields);
 
-    boolean checkIfOrderHasCorrectStateAndIsPrevious(final Entity previousOrder, final Entity order);
+    boolean previousOrderEndsBeforeOrIsWithdrawed(final Entity previousOrder, final Entity order);
 
     Entity getProductionLineFromDB(final Long productionLineId);
-
-    Entity getOrderFromDB(final Long orderId);
-
-    Entity getTechnologyFromDB(final Long technologyId);
 
     Entity getTechnologyByNumberFromDB(final String number);
 

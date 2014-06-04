@@ -81,7 +81,7 @@
 
 		<model:model-enum-value plugin="materialFlow"
 			model="location" enum="type" value="02warehouse" />
-   		
+			
    		<model:model-hook plugin="basic" model="parameter">
 			<model:validatesWith
 				class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"

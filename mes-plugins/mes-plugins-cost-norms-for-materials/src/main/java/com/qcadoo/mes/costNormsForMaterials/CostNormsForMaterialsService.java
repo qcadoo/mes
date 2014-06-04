@@ -24,11 +24,6 @@
 package com.qcadoo.mes.costNormsForMaterials;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields.AVERAGE_COST;
-import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields.COST_FOR_NUMBER;
-import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST;
-import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields.NOMINAL_COST;
-import static com.qcadoo.mes.technologies.constants.MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,13 +36,16 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
+import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -91,18 +89,18 @@ public class CostNormsForMaterialsService {
 
         List<Entity> inputProducts = Lists.newArrayList();
 
-        Map<Entity, BigDecimal> productQuantities = getProductQuantitiesFromTechnology(technologyId);
+        Map<Long, BigDecimal> productQuantities = getProductQuantitiesFromTechnology(technologyId);
 
         if (!productQuantities.isEmpty()) {
-            for (Map.Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
-                Entity product = productQuantity.getKey();
+            for (Map.Entry<Long, BigDecimal> productQuantity : productQuantities.entrySet()) {
+                Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
                 BigDecimal quantity = productQuantity.getValue();
 
                 Entity operationProductInComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                         TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
 
-                operationProductInComponent.setField(BasicConstants.MODEL_PRODUCT, product);
-                operationProductInComponent.setField("quantity", quantity);
+                operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT, product);
+                operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, quantity);
 
                 inputProducts.add(operationProductInComponent);
             }
@@ -111,18 +109,18 @@ public class CostNormsForMaterialsService {
         grid.setEntities(inputProducts);
     }
 
-    public Map<Entity, BigDecimal> getProductQuantitiesFromTechnology(final Long technologyId) {
+    public Map<Long, BigDecimal> getProductQuantitiesFromTechnology(final Long technologyId) {
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
 
-        Entity operationComponentRoot = technology.getTreeField(TechnologiesConstants.OPERATION_COMPONENTS).getRoot();
+        Entity operationComponentRoot = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
 
         if (operationComponentRoot != null) {
             try {
                 BigDecimal giventQty = technologyService.getProductCountForOperationComponent(operationComponentRoot);
 
-                Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                        giventQty, COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
+                Map<Long, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                        giventQty, MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
 
                 return productQuantities;
             } catch (IllegalStateException e) {
@@ -159,13 +157,16 @@ public class CostNormsForMaterialsService {
 
         if (technologyInstOperProductInComps != null) {
             for (Entity technologyInstOperProductInComp : technologyInstOperProductInComps) {
-                Entity product = technologyInstOperProductInComp.getBelongsToField(BasicConstants.MODEL_PRODUCT);
+                Entity product = technologyInstOperProductInComp.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT);
 
-                technologyInstOperProductInComp.setField(COST_FOR_NUMBER, product.getField(ProductFieldsCNFP.COST_FOR_NUMBER));
-                technologyInstOperProductInComp.setField(NOMINAL_COST, product.getField(ProductFieldsCNFP.NOMINAL_COST));
-                technologyInstOperProductInComp.setField(LAST_PURCHASE_COST,
+                technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER,
+                        product.getField(ProductFieldsCNFP.COST_FOR_NUMBER));
+                technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.NOMINAL_COST,
+                        product.getField(ProductFieldsCNFP.NOMINAL_COST));
+                technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST,
                         product.getField(ProductFieldsCNFP.LAST_PURCHASE_COST));
-                technologyInstOperProductInComp.setField(AVERAGE_COST, product.getField(ProductFieldsCNFP.AVERAGE_COST));
+                technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.AVERAGE_COST,
+                        product.getField(ProductFieldsCNFP.AVERAGE_COST));
 
                 technologyInstOperProductInComp = technologyInstOperProductInComp.getDataDefinition().save(
                         technologyInstOperProductInComp);

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.simpleMaterialBalance.internal.print;
@@ -46,7 +46,6 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
-import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.simpleMaterialBalance.util.EntityLocationNumberComparator;
 import com.qcadoo.mes.simpleMaterialBalance.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -54,7 +53,6 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
-import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -141,13 +139,13 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.number", locale));
         simpleMaterialBalanceTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name", locale));
-        simpleMaterialBalanceTableHeader.add(translationService.translate("basic.product.unit.label", locale));
         simpleMaterialBalanceTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.needed", locale));
         simpleMaterialBalanceTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.inLocation", locale));
         simpleMaterialBalanceTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.balance", locale));
+        simpleMaterialBalanceTableHeader.add(translationService.translate("basic.product.unit.label", locale));
 
         Map<String, HeaderAlignment> alignments = Maps.newHashMap();
         alignments.put(
@@ -156,7 +154,6 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         alignments.put(
                 translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name", locale),
                 HeaderAlignment.LEFT);
-        alignments.put(translationService.translate("basic.product.unit.label", locale), HeaderAlignment.LEFT);
         alignments.put(
                 translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.needed", locale),
                 HeaderAlignment.RIGHT);
@@ -165,34 +162,39 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         alignments.put(
                 translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.balance", locale),
                 HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate("basic.product.unit.label", locale), HeaderAlignment.LEFT);
 
         PdfPTable table = pdfHelper.createTableWithHeader(6, simpleMaterialBalanceTableHeader, false, alignments);
         List<Entity> simpleMaterialBalanceOrdersComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS);
         MrpAlgorithm mrpAlgorithm = MrpAlgorithm.parseString(simpleMaterialBalance.getStringField("mrpAlgorithm"));
 
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantitiesForComponents(
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantitiesForComponents(
                 simpleMaterialBalanceOrdersComponents, mrpAlgorithm);
 
         List<Entity> simpleMaterialBalanceLocationComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS);
-        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
-        for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
-            table.addCell(new Phrase(entry.getKey().getField(L_NUMBER).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(L_NAME).toString(), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(L_UNIT).toString(), FontUtils.getDejavuRegular7Dark()));
+
+        // TODO LUPO fix comparator
+        // products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
+
+        for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
+
+            table.addCell(new Phrase(product.getField(L_NUMBER).toString(), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(product.getField(L_NAME).toString(), FontUtils.getDejavuRegular7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuRegular7Dark()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity simpleMaterialBalanceLocationComponent : simpleMaterialBalanceLocationComponents) {
                 available = available.add(materialFlowService.calculateShouldBeInLocation(simpleMaterialBalanceLocationComponent
-                        .getBelongsToField(L_LOCATION).getId(), entry.getKey().getId(), (Date) simpleMaterialBalance
-                        .getField(L_DATE)));
+                        .getBelongsToField(L_LOCATION).getId(), product.getId(), (Date) simpleMaterialBalance.getField(L_DATE)));
             }
             table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase(numberService.format(available.subtract(entry.getValue(), numberService.getMathContext())),
-                    FontUtils.getDejavuBold9Dark()));
+            table.addCell(new Phrase(numberService.format(available.subtract(neededProductQuantity.getValue(),
+                    numberService.getMathContext())), FontUtils.getDejavuBold7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(new Phrase(product.getField(L_UNIT).toString(), FontUtils.getDejavuRegular7Dark()));
 
         }
         document.add(table);

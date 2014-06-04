@@ -79,4 +79,10 @@ public class MessagesHolderImpl implements MessagesHolder {
         return messageService;
     }
 
+    @Override
+    public void addValidationError(final String translationKey, final boolean autoClose, final String... translationArgs) {
+        messagesList.add(messageService.createMessage(translationKey, VALIDATION_ERROR, autoClose, null, translationArgs));
+
+    }
+
 }

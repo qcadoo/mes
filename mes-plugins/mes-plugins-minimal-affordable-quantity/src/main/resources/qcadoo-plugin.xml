@@ -72,7 +72,8 @@
 		</model:model-field>
 
 		<view:view-tab resource="view/tabExtensions/minimalAffordableQuantity.xml" />
-
+		<view:view-tab resource="view/tabExtensions/copyOfTechnologyDetails.xml" />
+		
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="save"
 			class="com.qcadoo.mes.minimalAffordableQuantity.QuantityService"

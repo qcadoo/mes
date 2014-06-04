@@ -43,8 +43,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionCounting.internal.ProductionBalanceService;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.ProductionBalanceService;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
 import com.qcadoo.mes.productionCountingWithCosts.pdf.ProductionBalanceWithCostsPdfService;
 import com.qcadoo.model.api.DataDefinition;
@@ -66,10 +66,10 @@ public class GenerateProductionBalanceWithCostsTest {
     private FileService fileService;
 
     @Mock
-    private ProductionBalanceWithCostsPdfService productionBalanceWithCostsPdfService;
+    private ProductionBalanceService productionBalanceService;
 
     @Mock
-    private ProductionBalanceService productionBalanceService;
+    private ProductionBalanceWithCostsPdfService productionBalanceWithCostsPdfService;
 
     @Mock
     private Entity productionBalance, order, technology, productionLine;
@@ -111,10 +111,12 @@ public class GenerateProductionBalanceWithCostsTest {
     public void shouldSetQuantityTechnologyProductionLineAndTechnicalProductionCostPerUnitFieldsAndSaveEntity() {
         // given
         BigDecimal quantity = BigDecimal.TEN;
+        BigDecimal doneQuantity = BigDecimal.TEN;
 
         given(productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS)).willReturn(
                 BigDecimal.valueOf(100));
         given(order.getDecimalField(OrderFields.PLANNED_QUANTITY)).willReturn(quantity);
+        given(order.getDecimalField(OrderFields.DONE_QUANTITY)).willReturn(doneQuantity);
         given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
 
         // when
@@ -126,8 +128,6 @@ public class GenerateProductionBalanceWithCostsTest {
         verify(productionBalance).setField(ProductionBalanceFieldsPCWC.PRODUCTION_LINE, productionLine);
         verify(productionBalance).setField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
                 BigDecimal.TEN.setScale(5, RoundingMode.HALF_EVEN));
-
-        // verify(dataDefinition).save(balance);
     }
 
     @Test

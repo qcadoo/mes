@@ -18,26 +18,12 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.samples.loader;
 
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DESCRIPTION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EMAIL;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES_DICTIONARY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_FROM;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_TO;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT_FROM;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT_TO;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_MODEL_PRODUCTION_LINE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.*;
 
 import java.util.Map;
 
@@ -47,7 +33,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.samples.constants.SamplesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -82,7 +70,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         readDataFromXML(dataset, "shifts", locale);
         readDataFromXML(dataset, "conversionItem", locale);
 
-        if (isEnabledOrEnabling(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
+        if (isEnabledOrEnabling(L_PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
             readDataFromXML(dataset, L_DEFAULT_PRODUCTION_LINE, locale);
         }
@@ -128,7 +116,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         Entity user = dataDefinitionService.get("qcadooSecurity", "user").create();
 
         user.setField("userName", values.get("login"));
-        user.setField(L_EMAIL, values.get(L_EMAIL));
+        user.setField(L_EMAIL, values.get(SamplesConstants.L_EMAIL));
         user.setField("firstName", values.get("firstname"));
         user.setField("lastName", values.get("lastname"));
         user.setField("password", "123");
@@ -148,8 +136,8 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     }
 
     protected void addShifts(final Map<String, String> values) {
-        Entity shift = dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_SHIFT)
-                .create();
+        Entity shift = dataDefinitionService
+                .get(SamplesConstants.L_BASIC_PLUGIN_IDENTIFIER, SamplesConstants.L_BASIC_MODEL_SHIFT).create();
 
         shift.setField(L_NAME, values.get(L_NAME));
         shift.setField("mondayWorking", values.get("mondayworking"));
@@ -175,8 +163,8 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     }
 
     protected void addProductionLines(final Map<String, String> values) {
-        Entity productionLine = dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER,
-                PRODUCTION_LINES_MODEL_PRODUCTION_LINE).create();
+        Entity productionLine = dataDefinitionService.get(L_PRODUCTION_LINES_PLUGIN_IDENTIFIER,
+                L_PRODUCTION_LINES_MODEL_PRODUCTION_LINE).create();
 
         productionLine.setField(L_NAME, values.get(L_NAME));
         productionLine.setField(L_NUMBER, values.get(L_NUMBER));
@@ -191,15 +179,16 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
 
         productionLine = productionLine.getDataDefinition().save(productionLine);
         if (isEnabledOrEnabling("goodFood")) {
-            if (dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).find()
-                    .add(SearchRestrictions.eq(L_NUMBER, "GL.EKSTR")).uniqueResult() == null) {
-                Entity machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).create();
+            DataDefinition workstationTypeDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                    BasicConstants.MODEL_WORKSTATION_TYPE);
+            if (workstationTypeDD.find().add(SearchRestrictions.eq(L_NUMBER, "GL.EKSTR")).uniqueResult() == null) {
+                Entity machine = workstationTypeDD.create();
                 machine.setField(L_NUMBER, "GL.EKSTR");
                 machine.setField(L_NAME, "Głowica ekstruzyjna");
                 machine.setField(L_DESCRIPTION, "");
-                machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
-                Entity workstationTypeComponent = dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER,
-                        "workstationTypeComponent").create();
+                machine = workstationTypeDD.save(machine);
+                Entity workstationTypeComponent = dataDefinitionService.get(
+                        SamplesConstants.L_PRODUCTION_LINES_PLUGIN_IDENTIFIER, "workstationTypeComponent").create();
                 workstationTypeComponent.setField("quantity", 1);
                 workstationTypeComponent.setField("productionLine", productionLine);
                 workstationTypeComponent.setField("workstationType", machine);
@@ -217,7 +206,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     }
 
     protected Entity getProductionLineByNumber(final String number) {
-        return dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER, PRODUCTION_LINES_MODEL_PRODUCTION_LINE).find()
+        return dataDefinitionService.get(L_PRODUCTION_LINES_PLUGIN_IDENTIFIER, L_PRODUCTION_LINES_MODEL_PRODUCTION_LINE).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 

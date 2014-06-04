@@ -23,18 +23,14 @@
  */
 package com.qcadoo.mes.basicProductionCounting.listeners;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCED_QUANTITY;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
-import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
-
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -47,21 +43,22 @@ public class BasicProductionCountingDetailsListeners {
     private static final String L_FORM = "form";
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private BasicProductionCountingService basicProductionCountingService;
 
-    public void fillDoneQuantityField(final ViewDefinitionState viewState, final ComponentState triggerState, final String[] args) {
-        FormComponent form = (FormComponent) viewState.getComponentByReference(L_FORM);
-        FieldComponent producedQuantity = (FieldComponent) viewState.getComponentByReference(PRODUCED_QUANTITY);
+    public void fillDoneQuantityField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent producedQuantity = (FieldComponent) view
+                .getComponentByReference(BasicProductionCountingFields.PRODUCED_QUANTITY);
+
         Long basicProductionCountingId = form.getEntityId();
 
         if (basicProductionCountingId != null) {
-            final Entity basicProductionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                    BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(basicProductionCountingId);
+            Entity basicProductionCounting = basicProductionCountingService.getBasicProductionCounting(basicProductionCountingId);
 
-            Entity order = basicProductionCounting.getBelongsToField(ORDER);
-            Entity product = basicProductionCounting.getBelongsToField(PRODUCT);
+            Entity order = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
+            Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
 
-            if (order.getBelongsToField(PRODUCT).getId().equals(product.getId())) {
+            if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId())) {
                 final String fieldValue = (String) producedQuantity.getFieldValue();
                 if (fieldValue == null || fieldValue.isEmpty()) {
                     return;
@@ -69,13 +66,13 @@ public class BasicProductionCountingDetailsListeners {
                 try {
                     final BigDecimal doneQuantity = new BigDecimal(fieldValue.replace(",", ".").replace(" ", "")
                             .replace("\u00A0", ""));
-                    order.setField(DONE_QUANTITY, doneQuantity);
+                    order.setField(OrderFields.DONE_QUANTITY, doneQuantity);
                     order = order.getDataDefinition().save(order);
                 } catch (NumberFormatException ex) {
                     return;
                 }
                 if (!order.isValid()) {
-                    producedQuantity.addMessage(order.getError(DONE_QUANTITY));
+                    producedQuantity.addMessage(order.getError(OrderFields.DONE_QUANTITY));
                 }
             }
         }

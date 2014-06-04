@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.states.aop.listener;
 
-import static com.qcadoo.mes.orders.states.constants.OrderStateStringValues.COMPLETED;
-import static com.qcadoo.mes.orders.states.constants.OrderStateStringValues.WILDCARD_STATE;
-
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -34,8 +31,9 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangePhase;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.internal.orderStates.PcOrderStatesListenerService;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.states.ProductionCountingOrderStatesListenerService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
@@ -48,24 +46,39 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 public class ProductionCountingOrderStatesListenerAspect extends AbstractStateListenerAspect {
 
     @Autowired
-    private PcOrderStatesListenerService listenerService;
+    private ProductionCountingOrderStatesListenerService productionCountingOrderStatesListenerService;
 
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
     }
 
     @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
+    @RunForStateTransition(sourceState = OrderStateStringValues.WILDCARD_STATE, targetState = OrderStateStringValues.COMPLETED)
     @Before(PHASE_EXECUTION_POINTCUT)
-    public void validationOnComplete(final StateChangeContext stateChangeContext, final int phase) {
-        listenerService.validationOnComplete(stateChangeContext);
+    public void validationOnCompleted(final StateChangeContext stateChangeContext, final int phase) {
+        productionCountingOrderStatesListenerService.validationOnComplete(stateChangeContext);
     }
 
     @RunInPhase(OrderStateChangePhase.DEFAULT)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
+    @RunForStateTransition(sourceState = OrderStateStringValues.WILDCARD_STATE, targetState = OrderStateStringValues.COMPLETED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onComplete(final StateChangeContext stateChangeContext, final int phase) {
-        listenerService.onComplete(stateChangeContext);
+        productionCountingOrderStatesListenerService.onComplete(stateChangeContext);
+    }
+
+    @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = OrderStateStringValues.WILDCARD_STATE, targetState = OrderStateStringValues.ABANDONED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnAbandone(final StateChangeContext stateChangeContext, final int phase) {
+        productionCountingOrderStatesListenerService.validationOnAbandone(stateChangeContext);
+    }
+
+    @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = OrderStateStringValues.WILDCARD_STATE, targetState = OrderStateStringValues.DECLINED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnRefuse(final StateChangeContext stateChangeContext, final int phase) {
+        productionCountingOrderStatesListenerService.validationOnDecline(stateChangeContext);
+
     }
 
 }

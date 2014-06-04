@@ -1,48 +1,52 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubHasManyField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubId;
+import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.testing.model.EntityListMock;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
 public class MasterOrderHooksTest {
+
+    private static final Long MASTER_ORDER_ID = 1L;
 
     private MasterOrderHooks masterOrderHooks;
 
@@ -53,16 +57,10 @@ public class MasterOrderHooksTest {
     private Entity masterOrder, product, order1, order2, customer;
 
     @Mock
-    private DataDefinitionService dataDefinitionService;
+    private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
-    @Mock
-    private SearchCriteriaBuilder builder;
-
-    @Mock
-    private SearchResult searchResult;
-
-    @Mock
-    private List<Entity> orders;
+    @Captor
+    private ArgumentCaptor<List<Entity>> entityListCaptor;
 
     @Before
     public void init() {
@@ -70,58 +68,45 @@ public class MasterOrderHooksTest {
 
         MockitoAnnotations.initMocks(this);
 
-        ReflectionTestUtils.setField(masterOrderHooks, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(masterOrderHooks, "masterOrderOrdersDataProvider", masterOrderOrdersDataProvider);
 
         PowerMockito.mockStatic(SearchRestrictions.class);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(orderDD);
-        given(orderDD.find()).willReturn(builder);
-        given(builder.add(Mockito.any(SearchCriterion.class))).willReturn(builder);
-        given(builder.add(Mockito.any(SearchCriterion.class))).willReturn(builder);
-        given(builder.list()).willReturn(searchResult);
     }
 
     @Test
     public final void shouldReturnWhenMasterOrderDoesnotSave() {
         // given
-        given(masterOrder.getId()).willReturn(null);
+        stubId(masterOrder, null);
         // when
-        masterOrderHooks.countCumulatedOrderQuantity(masterOrderDD, masterOrder);
+        masterOrderHooks.calculateCumulativeQuantityFromOrders(masterOrder);
         // then
         verify(masterOrder, never()).setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, BigDecimal.ONE);
     }
 
     @Test
     public final void shouldReturnWhenMasterOrderTypeIsIncorrect() {
-        Long masterOrderId = 1L;
         // given
-        given(masterOrder.getId()).willReturn(masterOrderId);
-        given(masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn("01undefined");
+        stubId(masterOrder, MASTER_ORDER_ID);
+        stubMasterOrderType(MasterOrderType.UNDEFINED);
         // when
-        masterOrderHooks.countCumulatedOrderQuantity(masterOrderDD, masterOrder);
+        masterOrderHooks.calculateCumulativeQuantityFromOrders(masterOrder);
         // then
         verify(masterOrder, never()).setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, BigDecimal.ONE);
     }
 
     @Test
     public final void shouldSetCumulatedQuantity() {
-        Long masterOrderId = 1L;
-
-        BigDecimal plannedQuantityOrder1 = BigDecimal.TEN;
-        BigDecimal plannedQuantityOrder2 = BigDecimal.TEN;
         // given
-        given(masterOrder.getId()).willReturn(masterOrderId);
-        given(masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn("02oneProduct");
-        given(masterOrder.getBelongsToField(MasterOrderFields.PRODUCT)).willReturn(product);
+        stubId(masterOrder, MASTER_ORDER_ID);
+        MasterOrderType masterOrderType = MasterOrderType.ONE_PRODUCT;
+        stubMasterOrderType(masterOrderType);
+        stubBelongsToField(masterOrder, MasterOrderFields.PRODUCT, product);
 
-        given(order1.getDecimalField(OrderFields.PLANNED_QUANTITY)).willReturn(plannedQuantityOrder1);
-        given(order2.getDecimalField(OrderFields.PLANNED_QUANTITY)).willReturn(plannedQuantityOrder2);
-        List<Entity> orders = mockEntityList(Lists.newArrayList(order1, order2));
-
-        given(searchResult.getEntities()).willReturn(orders);
+        BigDecimal quantitiesSum = BigDecimal.valueOf(20L);
+        stubOrdersPlannedQuantitiesSum(masterOrder, quantitiesSum);
 
         // when
-        masterOrderHooks.countCumulatedOrderQuantity(masterOrderDD, masterOrder);
+        masterOrderHooks.calculateCumulativeQuantityFromOrders(masterOrder);
 
         // then
         verify(masterOrder).setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, new BigDecimal(20));
@@ -129,19 +114,15 @@ public class MasterOrderHooksTest {
 
     @Test
     public final void shouldSetZeroWhenOrderDoesnotExists() {
-        Long masterOrderId = 1L;
-
         // given
-        given(masterOrder.getId()).willReturn(masterOrderId);
-        given(masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn("02oneProduct");
-        given(masterOrder.getBelongsToField(MasterOrderFields.PRODUCT)).willReturn(product);
+        stubId(masterOrder, MASTER_ORDER_ID);
+        stubMasterOrderType(MasterOrderType.ONE_PRODUCT);
+        stubBelongsToField(masterOrder, MasterOrderFields.PRODUCT, product);
 
-        List<Entity> orders = Lists.newArrayList();
-
-        given(searchResult.getEntities()).willReturn(orders);
+        stubOrdersPlannedQuantitiesSum(masterOrder, BigDecimal.ZERO);
 
         // when
-        masterOrderHooks.countCumulatedOrderQuantity(masterOrderDD, masterOrder);
+        masterOrderHooks.calculateCumulativeQuantityFromOrders(masterOrder);
 
         // then
         verify(masterOrder).setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, BigDecimal.ZERO);
@@ -151,7 +132,7 @@ public class MasterOrderHooksTest {
     @Test
     public final void shouldSetExternalSynchronized() {
         // when
-        masterOrderHooks.setExternalSynchronizedField(masterOrderDD, masterOrder);
+        masterOrderHooks.setExternalSynchronizedField(masterOrder);
         // then
         verify(masterOrder).setField(MasterOrderFields.EXTERNAL_SYNCHRONIZED, true);
 
@@ -160,108 +141,110 @@ public class MasterOrderHooksTest {
     @Test
     public final void shouldReturnWhenMasterOrderIsNotSave() {
         // given
-        given(masterOrder.getId()).willReturn(null);
+        stubId(masterOrder, null);
         // when
-        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrder);
         // then
         verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
     }
 
     @Test
     public final void shouldReturnWhenDeadlineIsNull() {
-        Long masterOrderId = 1L;
         // given
-        given(masterOrder.getId()).willReturn(masterOrderId);
-        given(masterOrder.getDateField(MasterOrderFields.DEADLINE)).willReturn(null);
-        given(masterOrder.getDateField(MasterOrderFields.COMPANY)).willReturn(null);
+        stubId(masterOrder, MASTER_ORDER_ID);
+        stubDateField(masterOrder, MasterOrderFields.DEADLINE, null);
+        stubDateField(masterOrder, MasterOrderFields.COMPANY, null);
         // when
-        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrder);
         // then
         verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
 
     }
 
-    @Ignore
     @Test
     public final void shouldSetDeadline() {
-        Long masterOrderId = 1L;
-        Date deadline = new Date();
         // given
-        given(masterOrder.getId()).willReturn(masterOrderId);
-        given(masterOrder.getDateField(DEADLINE)).willReturn(deadline);
+        DateTime now = DateTime.now();
 
-        given(order1.getStringField(OrderFields.STATE)).willReturn(OrderState.PENDING.getStringValue());
-        given(order2.getStringField(OrderFields.STATE)).willReturn(OrderState.IN_PROGRESS.getStringValue());
-        orders = mockEntityList(Lists.newArrayList(order1, order2));
-        order1.setField(DEADLINE, deadline);
+        stubId(masterOrder, MASTER_ORDER_ID);
+        stubDateField(masterOrder, MasterOrderFields.DEADLINE, now.toDate());
 
-        List<Entity> actualOrders = Lists.newArrayList(order1, order2);
-        given(masterOrder.getHasManyField(MasterOrderFields.ORDERS)).willReturn((EntityList) orders);
+        stubStringField(order1, OrderFields.STATE, OrderState.PENDING.getStringValue());
+        stubStringField(order2, OrderFields.STATE, OrderState.IN_PROGRESS.getStringValue());
+
+        stubDateField(order1, OrderFields.DEADLINE, now.plusHours(6).toDate());
+
+        EntityList orders = mockEntityList(Lists.newArrayList(order1, order2));
+        stubHasManyField(masterOrder, MasterOrderFields.ORDERS, orders);
 
         // when
-        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrder);
         // then
-        verify(masterOrder).setField(MasterOrderFields.ORDERS, actualOrders);
+        verify(masterOrder).setField(eq(MasterOrderFields.ORDERS), entityListCaptor.capture());
+        List<Entity> actualOrders = entityListCaptor.getValue();
+        assertEquals(2, actualOrders.size());
+        assertTrue(actualOrders.contains(order1));
+        assertTrue(actualOrders.contains(order2));
+
     }
 
     @Test
-    public final void shouldReturnWhenMasterOrderDoesnotHaveId() {
+    public final void shouldReturnWhenMasterOrderDoesNotHaveId() {
         // given
         given(masterOrder.getId()).willReturn(null);
         // when
-        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrder);
         // then
         verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
     }
 
     @Test
     public final void shouldReturnWhenDeadlineInMasterOrderIsNull() {
-        Long masterOrderId = 1L;
         // given
-        given(masterOrder.getId()).willReturn(masterOrderId);
+        stubId(masterOrder, MASTER_ORDER_ID);
         given(masterOrder.getBelongsToField(MasterOrderFields.COMPANY)).willReturn(null);
         // when
-        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrder);
         // then
         verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
 
     }
 
-    @Ignore
     @Test
     public final void shouldSetCustomer() {
-        Long masterOrderId = 1L;
         // given
-        given(masterOrder.getId()).willReturn(masterOrderId);
-        given(masterOrder.getBelongsToField(MasterOrderFields.COMPANY)).willReturn(customer);
+        stubId(masterOrder, MASTER_ORDER_ID);
+        stubBelongsToField(masterOrder, MasterOrderFields.COMPANY, customer);
 
-        given(order1.getStringField(OrderFields.STATE)).willReturn(OrderState.PENDING.getStringValue());
-        given(order2.getStringField(OrderFields.STATE)).willReturn(OrderState.IN_PROGRESS.getStringValue());
-        orders = mockEntityList(Lists.newArrayList(order1, order2));
-        order1.setField(OrderFields.COMPANY, customer);
+        stubStringField(order1, OrderFields.STATE, OrderState.PENDING.getStringValue());
+        stubStringField(order2, OrderFields.STATE, OrderState.IN_PROGRESS.getStringValue());
+        Entity yetAnotherCustomer = mockEntity();
+        stubBelongsToField(order1, OrderFields.COMPANY, yetAnotherCustomer);
 
-        List<Entity> actualOrders = Lists.newArrayList(order1, order2);
-        given(masterOrder.getHasManyField(MasterOrderFields.ORDERS)).willReturn((EntityList) orders);
+        EntityList orders = mockEntityList(Lists.newArrayList(order1, order2));
+        given(masterOrder.getHasManyField(MasterOrderFields.ORDERS)).willReturn(orders);
 
         // when
-        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrder);
+
         // then
-        verify(masterOrder).setField(MasterOrderFields.ORDERS, actualOrders);
+        verify(masterOrder).setField(eq(MasterOrderFields.ORDERS), entityListCaptor.capture());
+        List<Entity> actualOrders = entityListCaptor.getValue();
+        assertEquals(2, actualOrders.size());
+        assertTrue(actualOrders.contains(order1));
+        assertTrue(actualOrders.contains(order2));
+    }
+
+    private void stubMasterOrderType(final MasterOrderType masterOrderType) {
+        stubStringField(masterOrder, MasterOrderFields.MASTER_ORDER_TYPE, masterOrderType.getStringValue());
+    }
+
+    private void stubOrdersPlannedQuantitiesSum(final Entity masterOrder, final BigDecimal quantitiesSum) {
+        given(masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(eq(masterOrder), any(Entity.class))).willReturn(
+                quantitiesSum);
     }
 
     private static EntityList mockEntityList(final List<Entity> entities) {
-        final EntityList entitiesList = mock(EntityList.class);
-
-        given(entitiesList.iterator()).willAnswer(new Answer<Iterator<Entity>>() {
-
-            @Override
-            public Iterator<Entity> answer(final InvocationOnMock invocation) throws Throwable {
-                return ImmutableList.copyOf(entities).iterator();
-            }
-        });
-
-        given(entitiesList.isEmpty()).willReturn(entities.isEmpty());
-
-        return entitiesList;
+        return EntityListMock.create(entities);
     }
 }

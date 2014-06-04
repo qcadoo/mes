@@ -205,7 +205,7 @@ public class ProductDetailsListenersTTest {
 
         given(product.getStringField(NAME)).willReturn(L_PRODUCT_NAME);
 
-        filters.put("productName", L_PRODUCT_NAME);
+        filters.put("productName", "["+ L_PRODUCT_NAME + "]");
 
         gridOptions.put(L_FILTERS, filters);
 

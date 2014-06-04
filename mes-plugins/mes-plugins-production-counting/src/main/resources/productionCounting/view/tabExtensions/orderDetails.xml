@@ -29,47 +29,49 @@
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
                     plugin="orders" view="orderDetails">
 
-    <windowTab name="productionCounting" reference="productionCounting">
-        <component type="gridLayout" name="gridLayout" reference="gridLayout"
-                   columns="3" rows="5">
-            <layoutElement column="1" row="1">
-                <component type="select" name="typeOfProductionRecording"
-                           reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
-                           default="01basic">
-                    <listener event="onSelectedEntityChange"
-                              class="com.qcadoo.mes.productionCounting.listeners.ProductionRecordDetailsListeners"
-                              method="disableFields"/>
-                </component>
-            </layoutElement>
-            <layoutElement column="1" row="2">
-                <component type="checkbox" name="registerQuantityInProduct"
-                           reference="registerQuantityInProduct" field="#{form}.registerQuantityInProduct"/>
-            </layoutElement>
-            <layoutElement column="1" row="3">
-                <component type="checkbox" name="registerQuantityOutProduct"
-                           reference="registerQuantityOutProduct" field="#{form}.registerQuantityOutProduct"/>
-            </layoutElement>
-            <layoutElement column="1" row="4">
-                <component type="checkbox" name="registerProductionTime"
-                           reference="registerProductionTime" field="#{form}.registerProductionTime"/>
-            </layoutElement>
-            <layoutElement column="1" row="5">
-                <component type="checkbox" name="registerPiecework"
-                           reference="registerPiecework" field="#{form}.registerPiecework"/>
-            </layoutElement>
-            <layoutElement column="2" row="1" width="2">
-                <component type="checkbox" name="justOne" reference="justOne"
-                           field="#{form}.justOne"/>
-            </layoutElement>
-            <layoutElement column="2" row="2" width="2">
-                <component type="checkbox" name="allowToClose" reference="allowToClose"
-                           field="#{form}.allowToClose" hasDescription="true"/>
-            </layoutElement>
-            <layoutElement column="2" row="3" width="2">
-                <component type="checkbox" name="autoCloseOrder"
-                           reference="autoCloseOrder" field="#{form}.autoCloseOrder"
-                           hasDescription="true"/>
-            </layoutElement>
-        </component>
-    </windowTab>
+	<windowTab name="productionCounting" reference="productionCounting">
+		<component type="gridLayout" name="gridLayout" reference="gridLayout"
+			columns="3" rows="5">
+			<layoutElement column="1" row="1">
+				<component type="select" name="typeOfProductionRecording"
+					reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
+					default="01basic">
+					
+					<listener event="onSelectedEntityChange"
+						class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
+						method="disableFields" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="checkbox" name="registerQuantityInProduct"
+					reference="registerQuantityInProduct" field="#{form}.registerQuantityInProduct" />
+			</layoutElement>
+			<layoutElement column="1" row="3">
+				<component type="checkbox" name="registerQuantityOutProduct"
+					reference="registerQuantityOutProduct" field="#{form}.registerQuantityOutProduct" />
+			</layoutElement>
+			<layoutElement column="1" row="4">
+				<component type="checkbox" name="registerProductionTime"
+					reference="registerProductionTime" field="#{form}.registerProductionTime" />
+			</layoutElement>
+			<layoutElement column="1" row="5">
+				<component type="checkbox" name="registerPiecework"
+					reference="registerPiecework" field="#{form}.registerPiecework" />
+			</layoutElement>
+			<layoutElement column="2" row="1" width="2">
+				<component type="checkbox" name="justOne" reference="justOne"
+					field="#{form}.justOne" />
+			</layoutElement>
+			<layoutElement column="2" row="2" width="2">
+				<component type="checkbox" name="allowToClose" reference="allowToClose"
+					field="#{form}.allowToClose" hasDescription="true" />
+			</layoutElement>
+			<layoutElement column="2" row="3" width="2">
+				<component type="checkbox" name="autoCloseOrder"
+					reference="autoCloseOrder" field="#{form}.autoCloseOrder"
+					hasDescription="true" />
+			</layoutElement>
+		</component>
+	</windowTab>
+	
 </windowTabExtension>

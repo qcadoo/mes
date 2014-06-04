@@ -95,6 +95,10 @@
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 
+		<view:view-hook plugin="orders" view="orderDetails" type="beforeRender"
+		                class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.OrderDetailsHooksLCNFO"
+		                method="onBeforeRender" />
+
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="showChangeover"
 			class="com.qcadoo.mes.lineChangeoverNormsForOrders.listeners.OrderDetailsListenersLCNFO"

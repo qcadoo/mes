@@ -43,13 +43,15 @@
 			<option type="column" name="product" fields="product"
 				expression="(#product == null) ? '' : #product['name']" />
 			<option type="column" name="found" fields="found" />
+			<option type="column" name="unit" fields="product"
+				expression="(#product == null) ? '' : #product['unit']" />
 			<option type="column" name="staff" fields="staff"
-				expression="(#staff == null) ? '' : #staff['name']" />
+				expression="(#staff == null) ? '' : #staff['name'] + ' ' + #staff['surname']" />
 				
 			<option type="order" column="number" direction="asc" />
 			
-			<option type="searchable" value="number,stockCorrectionDate,location,product,found,staff" />
-			<option type="orderable" value="number,stockCorrectionDate,location,product,found,staff" />
+			<option type="searchable" value="number,stockCorrectionDate,location,product,found,unit,staff" />
+			<option type="orderable" value="number,stockCorrectionDate,location,product,found,unit,staff" />
 			
 			<option type="correspondingView" value="materialFlow/stockCorrectionDetails" /> 
 			<option type="correspondingComponent" value="form" />

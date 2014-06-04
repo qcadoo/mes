@@ -29,8 +29,7 @@ import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalc
 import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.ORDER;
 import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.START_DATE;
-import static com.qcadoo.mes.costNormsForOperation.constants.TechnologyInstanceOperCompFieldsCNFO.LABOR_HOURLY_COST;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS;
+import static com.qcadoo.mes.costNormsForOperation.constants.TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST;
 
 import java.util.Date;
 import java.util.List;
@@ -44,6 +43,7 @@ import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrde
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -122,10 +122,11 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity avgLaborCostCalcForOrder = form.getEntity().getDataDefinition().get(form.getEntityId());
         Entity order = avgLaborCostCalcForOrder.getBelongsToField(AvgLaborCostCalcForOrderFields.ORDER);
-        List<Entity> tiocs = order.getHasManyField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
-        for (Entity tioc : tiocs) {
-            tioc.setField(LABOR_HOURLY_COST, avgLaborCostCalcForOrder.getDecimalField(AVERAGE_LABOR_HOURLY_COST));
-            tioc.getDataDefinition().save(tioc);
+        List<Entity> tocs = order.getBelongsToField(OrderFields.TECHNOLOGY)
+                .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+        for (Entity toc : tocs) {
+            toc.setField(LABOR_HOURLY_COST, avgLaborCostCalcForOrder.getDecimalField(AVERAGE_LABOR_HOURLY_COST));
+            toc.getDataDefinition().save(toc);
         }
     }
 

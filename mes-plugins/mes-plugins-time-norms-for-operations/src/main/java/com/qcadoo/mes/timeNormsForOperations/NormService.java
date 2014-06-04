@@ -35,7 +35,7 @@ import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompFieldsTNFO;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.Entity;
 
 @Service
@@ -85,12 +85,12 @@ public class NormService {
     private BigDecimal getProductionInOneCycle(final Entity operationComponent) {
         String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
         if (TechnologyOperationComponentType.OPERATION.getStringValue().equals(entityType)) {
-            return operationComponent.getDecimalField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE);
+            return operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE);
         } else if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(entityType)) {
             Entity refOperationComp = operationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY)
+                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
                     .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
-            return refOperationComp.getDecimalField(TechnologyOperCompFieldsTNFO.PRODUCTION_IN_ONE_CYCLE);
+            return refOperationComp.getDecimalField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE);
         } else {
             throw new IllegalStateException("operationComponent has illegal type, id = " + operationComponent.getId());
         }

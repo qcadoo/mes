@@ -55,6 +55,11 @@
 									<option type="expression"
 										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 									<option type="fieldCode" value="number" />
+
+									<criteriaModifier
+											class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+											method="showPatternTechnology" />
+
 									<listener event="onSelectedEntityChange"
 										class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners"
 										method="enabledButtonAfterSelectionTechnologies" />
@@ -70,6 +75,11 @@
 									<option type="expression"
 										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 									<option type="fieldCode" value="number" />
+
+									<criteriaModifier
+											class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+											method="showPatternTechnology" />
+
 									<listener event="onSelectedEntityChange"
 										class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners"
 										method="enabledButtonAfterSelectionTechnologies" />

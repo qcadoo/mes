@@ -41,9 +41,9 @@ public final class TechnologyOperationComponentFields {
 
     public static final String PRIORITY = "priority";
 
-    public static final String REFERENCETECHNOLOGY = "referenceTechnology";
+    public static final String REFERENCE_TECHNOLOGY = "referenceTechnology";
 
-    public static final String REFERENCEMODE = "referenceMode";
+    public static final String REFERENCE_MODE = "referenceMode";
 
     public static final String NODE_NUMBER = "nodeNumber";
 
@@ -58,5 +58,13 @@ public final class TechnologyOperationComponentFields {
     public static final String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
 
     public static final String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
+
+    public static final String WORKSTATIONS = "workstations";
+
+    public static final String WORKSTATION_TYPE = "workstationType";
+
+    public static final String ASSIGNED_TO_OPERATION = "assignedToOperation";
+
+    public static final String QUANTITY_OF_WORKSTATIONS = "quantityOfWorkstations";
 
 }

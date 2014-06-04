@@ -23,13 +23,19 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.constants;
 
-public interface ProductionCountingWithCostsConstants {
+public final class ProductionCountingWithCostsConstants {
 
-    String PLUGIN_IDENTIFIER = "productionCountingWithCosts";
+    private ProductionCountingWithCostsConstants() {
 
-    String MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP = "technologyInstOperProductInComp";
+    }
 
-    String MODEL_OPERATION_COST_COMPONENT = "operationCostComponent";
+    public static final String PLUGIN_IDENTIFIER = "productionCountingWithCosts";
 
-    String MODEL_OPERATION_PIECEWORK_COST_COMPONENT = "operationPieceworkCostComponent";
+    // MODEL
+    public static final String MODEL_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENT = "technologyOperationProductInComp";
+
+    public static final String MODEL_OPERATION_COST_COMPONENT = "operationCostComponent";
+
+    public static final String MODEL_OPERATION_PIECEWORK_COST_COMPONENT = "operationPieceworkCostComponent";
+
 }

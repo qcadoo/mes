@@ -23,15 +23,14 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.listeners;
 
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -44,33 +43,46 @@ import com.qcadoo.view.api.components.LookupComponent;
 @Service
 public class OrderDetailsListenersOTFO {
 
+    private static final String L_FORM = "form";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void deleteOperationTasksWhenTechnologyIsChanged(final ViewDefinitionState viewDefinitionState,
-            final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        if (form.getEntityId() == null) {
+    public void deleteOperationTasksWhenTechnologyIsChanged(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
+
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
             return;
         }
-        Entity order = form.getEntity().getDataDefinition().get(form.getEntityId());
-        Entity technology = order.getBelongsToField(TECHNOLOGY);
-        if (technology == null) {
+
+        Entity orderFromDB = orderForm.getEntity().getDataDefinition().get(orderId);
+
+        Entity technology = technologyLookup.getEntity();
+        Entity orderTechnology = orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (orderTechnology == null) {
             return;
         }
-        Entity technologyFromLookup = ((LookupComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY)).getEntity();
-        if (technologyFromLookup == null || !technologyFromLookup.equals(technology)) {
-            deleteOperationTaskForOrder(order);
+
+        if ((technology == null) || !orderTechnology.getId().equals(technology.getId())) {
+            deleteOperationTaskForOrder(orderFromDB);
         }
     }
 
     private void deleteOperationTaskForOrder(final Entity order) {
         DataDefinition operationTaskDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
-        List<Entity> operationTasksList = operationTaskDD.find().add(SearchRestrictions.belongsTo(ORDER, order)).list()
-                .getEntities();
-        for (Entity operationalTask : operationTasksList) {
+
+        List<Entity> operationTasks = operationTaskDD.find()
+                .add(SearchRestrictions.belongsTo(OperationalTaskFieldsOTFO.ORDER, order)).list().getEntities();
+
+        for (Entity operationalTask : operationTasks) {
             operationTaskDD.delete(operationalTask.getId());
         }
     }
+
 }

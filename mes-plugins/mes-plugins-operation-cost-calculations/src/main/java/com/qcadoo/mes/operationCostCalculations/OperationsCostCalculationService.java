@@ -28,18 +28,50 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
+import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
 
 @Service
 public interface OperationsCostCalculationService {
 
-    void calculateOperationsCost(final Entity costCalculation);
+    /**
+     * 
+     * @param costCalculationOrProductionBalance
+     *            cost calculation or production balance
+     */
+    void calculateOperationsCost(final Entity costCalculationOrProductionBalance);
 
-    Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent, final BigDecimal margin,
-            final BigDecimal plannedQuantity, final Map<Entity, OperationWorkTime> realizationTimes);
+    /**
+     * 
+     * @param calculationOperationComponent
+     *            calculation operation component
+     * @param productionCostMargin
+     *            production cost margin
+     * @param quantity
+     *            quantity
+     * @param operationTimes
+     *            operation times
+     * 
+     * @return cost
+     */
+    Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode calculationOperationComponent,
+            final BigDecimal productionCostMargin, final BigDecimal quantity, final OperationTimesContainer operationTimes);
 
-    BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
-            final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity);
+    /**
+     * 
+     * @param calculationOperationComponent
+     *            calculation operation component
+     * @param productionCostMargin
+     *            production cost margin
+     * @param quantity
+     *            quantity
+     * @param operationRuns
+     *            operation runs
+     * 
+     * @return cost
+     */
+    BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode calculationOperationComponent,
+            final BigDecimal productionCostMargin, final BigDecimal quantity, final Map<Long, BigDecimal> operationRuns);
+
 }

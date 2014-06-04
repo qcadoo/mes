@@ -105,6 +105,10 @@
 			<plugin>lineChangeoverNormsForOrders</plugin>
 			<version>[1.2.0</version>
 		</dependency>
+		<dependency>
+			<plugin>qcadooExport</plugin>
+			<version>[1.2.0</version>
+		</dependency>
 	</dependencies>
 	
 	<modules>

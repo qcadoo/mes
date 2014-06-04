@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.techSubcontracting.aop;
 
-import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -35,7 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
@@ -46,22 +45,22 @@ public class ProductQuantitiesServiceImplTSOverrideAspect {
     @Autowired
     private ProductQuantitiesServiceImplTSOverrideUtil productQuantitiesServiceImplTSOverrideUtil;
 
-    @Pointcut("execution(private java.util.Map<com.qcadoo.model.api.Entity, java.math.BigDecimal> com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl.getProductComponentWithQuantitiesWithoutNonComponents(..)) "
+    @Pointcut("execution(private com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl.getProductComponentWithQuantitiesWithoutNonComponents(..)) "
             + "&& args(productComponentWithQuantities, nonComponents)")
     public void getProductComponentWithQuantitiesWithoutNonComponentsExecution(
-            final Map<Entity, BigDecimal> productComponentWithQuantities, final Set<Entity> nonComponents) {
+            final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            final Set<OperationProductComponentHolder> nonComponents) {
     }
 
-    @SuppressWarnings("unchecked")
     @Around("getProductComponentWithQuantitiesWithoutNonComponentsExecution(productComponentWithQuantities, nonComponents)")
-    public Map<Entity, BigDecimal> aroundGetProductComponentWithQuantitiesWithoutNonComponentsExecution(
-            final ProceedingJoinPoint pjp, final Map<Entity, BigDecimal> productComponentWithQuantities,
-            final Set<Entity> nonComponents) throws Throwable {
+    public OperationProductComponentWithQuantityContainer aroundGetProductComponentWithQuantitiesWithoutNonComponentsExecution(
+            final ProceedingJoinPoint pjp, final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            final Set<OperationProductComponentHolder> nonComponents) throws Throwable {
         if (productQuantitiesServiceImplTSOverrideUtil.shouldOverride()) {
             return productQuantitiesServiceImplTSOverrideUtil.getProductComponentWithQuantitiesWithoutNonComponents(
                     productComponentWithQuantities, nonComponents);
         } else {
-            return (Map<Entity, BigDecimal>) pjp.proceed();
+            return (OperationProductComponentWithQuantityContainer) pjp.proceed();
         }
     }
 

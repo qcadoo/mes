@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.samples.loader;
@@ -121,8 +121,8 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
                 LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(L_NAME) + ", item="
                         + item.getField(L_NAME) + ", description=" + item.getField("description") + "}");
             }
-
             item.getDataDefinition().save(item);
+
         }
     }
 
@@ -188,8 +188,8 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     }
 
     protected void addCompany(final Map<String, String> values) {
-        Entity company = dataDefinitionService
-                .get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).create();
+        Entity company = dataDefinitionService.get(SamplesConstants.L_BASIC_PLUGIN_IDENTIFIER,
+                SamplesConstants.L_BASIC_MODEL_COMPANY).create();
 
         LOG.debug("id: " + values.get("id") + "number: " + values.get(L_NUMBER) + " companyFullName "
                 + values.get("companyfullname") + " tax " + values.get("tax") + " street " + values.get("street") + " house "
@@ -221,18 +221,18 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     }
 
     private Entity getCompany(final String number) {
-        return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
+        return dataDefinitionService.get(SamplesConstants.L_BASIC_PLUGIN_IDENTIFIER, SamplesConstants.L_BASIC_MODEL_COMPANY)
+                .find().add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getCurrency(final String code) {
-        return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_CURRENCY).find()
-                .add(SearchRestrictions.eq("alphabeticCode", code)).setMaxResults(1).uniqueResult();
+        return dataDefinitionService.get(SamplesConstants.L_BASIC_PLUGIN_IDENTIFIER, SamplesConstants.L_BASIC_MODEL_CURRENCY)
+                .find().add(SearchRestrictions.eq("alphabeticCode", code)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getCountry(final String code) {
-        return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COUNTRY).find()
-                .add(SearchRestrictions.eq("code", code)).setMaxResults(1).uniqueResult();
+        return dataDefinitionService.get(SamplesConstants.L_BASIC_PLUGIN_IDENTIFIER, SamplesConstants.L_BASIC_MODEL_COUNTRY)
+                .find().add(SearchRestrictions.eq("code", code)).setMaxResults(1).uniqueResult();
     }
 
 }

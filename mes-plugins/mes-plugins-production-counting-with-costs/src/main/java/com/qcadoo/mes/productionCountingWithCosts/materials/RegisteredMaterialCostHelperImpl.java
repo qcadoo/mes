@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
-import com.qcadoo.mes.productionCountingWithCosts.util.DecimalUtils;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -45,7 +44,7 @@ public final class RegisteredMaterialCostHelperImpl implements RegisteredMateria
         final BigDecimal materialCostMargin = BigDecimalUtils.convertNullToZero(productionBalance
                 .getDecimalField(ProductionBalanceFieldsPCWC.MATERIAL_COST_MARGIN));
         final BigDecimal registeredMaterialCost = getRegisteredMaterialCost(productionBalance);
-        final BigDecimal materialCostMarginFactor = DecimalUtils.toPercent(materialCostMargin, numberService.getMathContext());
+        final BigDecimal materialCostMarginFactor = BigDecimalUtils.toPercent(materialCostMargin, numberService.getMathContext());
         final BigDecimal registeredMaterialMarginValue = registeredMaterialCost.multiply(materialCostMarginFactor,
                 numberService.getMathContext());
 

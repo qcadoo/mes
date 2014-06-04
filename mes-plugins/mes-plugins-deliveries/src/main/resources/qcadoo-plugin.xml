@@ -87,7 +87,12 @@
 			<model:belongsTo name="deliveryStateChange" plugin="deliveries"
 				model="deliveryStateChange" />
 		</model:model-field>
-	
+		
+		<model:model-field plugin="basic" model="shift">
+			<model:hasMany name="deliveryStateChanges" plugin="deliveries"
+				model="deliveryStateChange" joinField="shift" cascade="nullify" />
+		</model:model-field>
+		
 		<model:model-field plugin="basic" model="parameter">
 			<model:string name="defaultDescription">
 				<model:validatesLength max="2048" />
@@ -146,10 +151,10 @@
 		</model:model-field>
 		
 		<model:model-hook plugin="basic" model="company">
-			<model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD" 
+			<model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
 				method="onDelete" />
 		</model:model-hook>
-		
+
 		<menu:menu-category name="requirements" />
 
 		<menu:menu-item name="deliveries" category="requirements"

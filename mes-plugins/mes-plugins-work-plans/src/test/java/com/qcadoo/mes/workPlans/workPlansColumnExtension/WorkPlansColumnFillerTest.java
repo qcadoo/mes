@@ -33,7 +33,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +45,15 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -54,16 +61,25 @@ import com.qcadoo.model.api.NumberService;
 
 public class WorkPlansColumnFillerTest {
 
+    private static final String L_PLANNED_QUANTITY = "plannedQuantity";
+
+    private static final String L_PRODUCT_NAME = "productName";
+
+    private static final String L_PRODUCT = "product";
+
     private WorkPlansColumnFiller workPlansColumnFiller;
+
+    @Mock
+    private NumberService numberService;
 
     @Mock
     private ProductQuantitiesService productQuantitiesService;
 
     @Mock
-    private Entity order, order2, product, productComponent, technology, operComp;
+    private Entity order, order2, product, operationProductComponent, technology, operationComponent;
 
     @Mock
-    private NumberService numberService;
+    private DataDefinition operationProductComponentDD;
 
     private EntityTree mockEntityTree(List<Entity> list) {
         EntityTree entityTree = mock(EntityTree.class);
@@ -83,6 +99,9 @@ public class WorkPlansColumnFillerTest {
 
         workPlansColumnFiller = new WorkPlansColumnFiller();
 
+        ReflectionTestUtils.setField(workPlansColumnFiller, "numberService", numberService);
+        ReflectionTestUtils.setField(workPlansColumnFiller, "productQuantitiesService", productQuantitiesService);
+
         given(numberService.format(Mockito.any(BigDecimal.class))).willAnswer(new Answer<String>() {
 
             @Override
@@ -93,20 +112,19 @@ public class WorkPlansColumnFillerTest {
             }
         });
 
-        ReflectionTestUtils.setField(workPlansColumnFiller, "numberService", numberService);
-        ReflectionTestUtils.setField(workPlansColumnFiller, "productQuantitiesService", productQuantitiesService);
+        given(order.getStringField(OrderFields.NAME)).willReturn("order");
+        given(order.getStringField(OrderFields.NUMBER)).willReturn("1234");
+        given(order.getField(OrderFields.PLANNED_QUANTITY)).willReturn(new BigDecimal(11));
+        given(order.getBelongsToField(OrderFields.PRODUCT)).willReturn(product);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
 
-        given(order.getStringField("name")).willReturn("order");
-        given(order.getStringField("number")).willReturn("1234");
-        given(order.getField("plannedQuantity")).willReturn(new BigDecimal(11));
-        given(order2.getStringField("name")).willReturn("order2");
+        given(order2.getStringField(OrderFields.NAME)).willReturn("order2");
+        given(order2.getBelongsToField(OrderFields.PRODUCT)).willReturn(product);
 
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order2.getBelongsToField("product")).willReturn(product);
-
-        given(product.getStringField("name")).willReturn("product");
-        given(product.getStringField("number")).willReturn("123");
-        given(product.getStringField("unit")).willReturn("abc");
+        given(product.getId()).willReturn(1L);
+        given(product.getStringField(ProductFields.NAME)).willReturn("product");
+        given(product.getStringField(ProductFields.NUMBER)).willReturn("123");
+        given(product.getStringField(ProductFields.UNIT)).willReturn("abc");
     }
 
     @Test
@@ -131,21 +149,28 @@ public class WorkPlansColumnFillerTest {
     public void shouldReturnCorrectColumnValuesForProducts() {
         // given
         List<Entity> orders = asList(order);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        EntityTree operComps = mockEntityTree(asList(operComp));
-        EntityTree operComps2 = mockEntityTree(asList(operComp));
-        given(technology.getTreeField("operationComponents")).willReturn(operComps, operComps2);
 
-        given(operComp.getStringField("entityType")).willReturn("operation");
-        EntityList prodInComps = mockEntityList(asList(productComponent));
-        EntityList prodInComps2 = mockEntityList(asList(productComponent));
-        given(productComponent.getBelongsToField("product")).willReturn(product);
-        given(operComp.getHasManyField("operationProductInComponents")).willReturn(prodInComps, prodInComps2);
+        EntityTree operComps = mockEntityTree(asList(operationComponent));
+        EntityTree operComps2 = mockEntityTree(asList(operationComponent));
+        given(technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS)).willReturn(operComps, operComps2);
+
+        given(operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE)).willReturn(
+                TechnologyOperationComponentEntityType.OPERATION.getStringValue());
+        given(operationComponent.getId()).willReturn(1L);
+        EntityList prodInComps = mockEntityList(asList(operationProductComponent));
+        EntityList prodInComps2 = mockEntityList(asList(operationProductComponent));
+        given(operationProductComponent.getBelongsToField("operationComponent")).willReturn(operationComponent);
+        given(operationProductComponent.getBelongsToField(L_PRODUCT)).willReturn(product);
+        given(operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)).willReturn(
+                prodInComps, prodInComps2);
         EntityList prodOutComps = mockEntityList(new ArrayList<Entity>());
-        given(operComp.getHasManyField("operationProductOutComponents")).willReturn(prodOutComps);
+        given(operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS))
+                .willReturn(prodOutComps);
 
-        HashMap<Entity, BigDecimal> quantities = new HashMap<Entity, BigDecimal>();
-        quantities.put(productComponent, new BigDecimal(11));
+        given(operationProductComponent.getDataDefinition()).willReturn(operationProductComponentDD);
+        given(operationProductComponentDD.getName()).willReturn(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
+        OperationProductComponentWithQuantityContainer quantities = new OperationProductComponentWithQuantityContainer();
+        quantities.put(operationProductComponent, new BigDecimal(11));
         given(productQuantitiesService.getProductComponentQuantities(orders)).willReturn(quantities);
 
         // when
@@ -153,7 +178,7 @@ public class WorkPlansColumnFillerTest {
 
         // then
         assertEquals(1, columnValues.size());
-        assertEquals("product (123)", columnValues.get(productComponent).get("productName"));
-        assertEquals("11.00000 abc", columnValues.get(productComponent).get("plannedQuantity"));
+        assertEquals("product (123)", columnValues.get(operationProductComponent).get(L_PRODUCT_NAME));
+        assertEquals("11.00000 abc", columnValues.get(operationProductComponent).get(L_PLANNED_QUANTITY));
     }
 }

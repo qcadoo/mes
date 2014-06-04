@@ -187,10 +187,13 @@ public class Shift {
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof Shift)) {
+
+        if (!(obj instanceof Shift)) {
             return false;
         }
+
         Shift other = (Shift) obj;
+
         return new EqualsBuilder().append(shiftId, other.shiftId).append(timetableExceptions, other.timetableExceptions)
                 .append(workingHoursPerDay, other.workingHoursPerDay).isEquals();
     }

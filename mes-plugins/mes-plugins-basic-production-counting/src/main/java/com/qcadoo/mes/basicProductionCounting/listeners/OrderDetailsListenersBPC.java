@@ -33,8 +33,8 @@ import com.qcadoo.view.api.ViewDefinitionState;
 @Service
 public class OrderDetailsListenersBPC {
 
-    public void showProductionCounting(final ViewDefinitionState viewState, final ComponentState triggerState, final String[] args) {
-        Long orderId = (Long) triggerState.getFieldValue();
+    public void showProductionCounting(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long orderId = (Long) state.getFieldValue();
 
         if (orderId == null) {
             return;
@@ -48,7 +48,7 @@ public class OrderDetailsListenersBPC {
         }
 
         String url = "../page/basicProductionCounting/basicProductionCountingList.html?context=" + json.toString();
-        viewState.redirectTo(url, false, true);
+        view.redirectTo(url, false, true);
     }
 
 }

@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -71,6 +72,9 @@ public class DeliveryDetailsHooks {
 
     @Autowired
     private StateChangeHistoryService stateChangeHistoryService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
@@ -205,6 +209,14 @@ public class DeliveryDetailsHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity delivery = form.getEntity();
         deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
+
+        LookupComponent currency = (LookupComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
+        if (currency.getFieldValue() == null && form.getEntityId() == null) {
+            Entity currencyEntity = currencyService.getCurrentCurrency();
+            currency.setFieldValue(currencyEntity.getId());
+            currency.requestComponentUpdateState();
+        }
+
     }
 
     public void disableShowProductButton(final ViewDefinitionState view) {

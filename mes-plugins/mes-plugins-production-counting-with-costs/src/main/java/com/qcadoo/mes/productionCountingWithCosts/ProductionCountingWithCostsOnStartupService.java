@@ -26,7 +26,7 @@ package com.qcadoo.mes.productionCountingWithCosts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.productionCounting.internal.ProductionCountingGenerateProductionBalance;
+import com.qcadoo.mes.productionCounting.ProductionCountingGenerateProductionBalance;
 import com.qcadoo.plugin.api.Module;
 
 @Component
@@ -36,21 +36,21 @@ public class ProductionCountingWithCostsOnStartupService extends Module {
     private ProductionCountingGenerateProductionBalance productionCountingGenerateProductionBalance;
 
     @Autowired
-    private GenerateProductionBalanceWithCosts generateProductionBalance;
+    private GenerateProductionBalanceWithCosts generateProductionBalanceWithCosts;
 
     @Override
     public void enable() {
-        productionCountingGenerateProductionBalance.addObserver(generateProductionBalance);
+        productionCountingGenerateProductionBalance.addObserver(generateProductionBalanceWithCosts);
     }
 
     @Override
     public void enableOnStartup() {
-        productionCountingGenerateProductionBalance.addObserver(generateProductionBalance);
+        productionCountingGenerateProductionBalance.addObserver(generateProductionBalanceWithCosts);
     }
 
     @Override
     public void disable() {
-        productionCountingGenerateProductionBalance.deleteObserver(generateProductionBalance);
+        productionCountingGenerateProductionBalance.deleteObserver(generateProductionBalanceWithCosts);
     }
 
 }

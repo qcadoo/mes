@@ -44,14 +44,14 @@
 			</script>
 		</bigButton>
 	</group>
-	<group name="techInstOperComp">
-		<bigButton name="showOperationParameter" icon="genealogyIcon24.png">
+	<group name="technologyOperationComponent">
+		<bigButton name="showOperationParameters" icon="genealogyIcon24.png">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
 						onClick: function() {
 							if(window.canClose()) {
-								#{form}.performEvent('showOperationParameter', []);
+								#{form}.performEvent('showOperationParameters', []);
 							}
 						}
 					});		
@@ -59,7 +59,7 @@
 			</script>
 		</bigButton>
 	</group>
-	<group name="operationalTasksList">
+	<group name="operationalTasks">
 		<bigButton name="showOperationalTasksWithOrder" icon="genealogyIcon24.png">
 			<script>
 				<![CDATA[

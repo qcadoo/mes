@@ -113,7 +113,7 @@ public class AssignmentToShiftReportDetailsListeners {
             assignmentReportXlsService.generateDocument(assignmentToShiftReportWithFileName, locale, PageSize.A3);
 
         } catch (IOException e) {
-            throw new IllegalStateException("Problem with saving goodFood report");
+            throw new IllegalStateException("Problem with saving report");
         }
     }
 

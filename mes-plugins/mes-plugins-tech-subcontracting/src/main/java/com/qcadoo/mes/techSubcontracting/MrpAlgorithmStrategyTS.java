@@ -23,13 +23,11 @@
  */
 package com.qcadoo.mes.techSubcontracting;
 
-import static com.qcadoo.mes.technologies.constants.OperationProductInComponentFields.OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.OperationProductInComponentFields.PRODUCT;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.CHILDREN;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,9 +36,13 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.techSubcontracting.constants.TechnologyOperationComponentFieldsTS;
 import com.qcadoo.mes.technologies.MrpAlgorithmStrategy;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
@@ -54,21 +56,26 @@ public class MrpAlgorithmStrategyTS implements MrpAlgorithmStrategy {
         return MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS.equals(mrpAlgorithm);
     }
 
-    public Map<Entity, BigDecimal> perform(final Map<Entity, BigDecimal> productComponentWithQuantities,
-            final Set<Entity> nonComponents, final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) {
-        Map<Entity, BigDecimal> productWithQuantities = new HashMap<Entity, BigDecimal>();
+    public Map<Long, BigDecimal> perform(final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            final Set<OperationProductComponentHolder> nonComponents, final MrpAlgorithm mrpAlgorithm,
+            final String operationProductComponentModelName) {
+        OperationProductComponentWithQuantityContainer allWithSameEntityType = productComponentWithQuantities
+                .getAllWithSameEntityType(operationProductComponentModelName);
 
-        for (Entry<Entity, BigDecimal> productComponentWithQuantity : productComponentWithQuantities.entrySet()) {
-            Entity operationProductComponent = productComponentWithQuantity.getKey();
+        Map<Long, BigDecimal> productWithQuantities = Maps.newHashMap();
 
-            if (operationProductComponentModelName.equals(operationProductComponent.getDataDefinition().getName())) {
-                if (nonComponents.contains(operationProductComponent)) {
+        for (Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity : allWithSameEntityType.asMap()
+                .entrySet()) {
+            OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
 
-                    Entity product = operationProductComponent.getBelongsToField(PRODUCT);
-                    Entity technologyOperationComponent = operationProductComponent.getBelongsToField(OPERATION_COMPONENT);
+            if (nonComponents.contains(operationProductComponentHolder)) {
+                Entity product = operationProductComponentHolder.getProduct();
+                Entity technologyOperationComponent = operationProductComponentHolder.getTechnologyOperationComponent();
 
+                if (technologyOperationComponent != null) {
                     List<Entity> children = technologyOperationComponent.getHasManyField(CHILDREN).find()
-                            .add(SearchRestrictions.eq("isSubcontracting", true)).list().getEntities();
+                            .add(SearchRestrictions.eq(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING, true)).list()
+                            .getEntities();
 
                     boolean isSubcontracting = false;
                     for (Entity child : children) {
@@ -84,9 +91,9 @@ public class MrpAlgorithmStrategyTS implements MrpAlgorithmStrategy {
                         continue;
                     }
                 }
-
-                productQuantitiesService.addProductQuantitiesToList(productComponentWithQuantity, productWithQuantities);
             }
+
+            productQuantitiesService.addProductQuantitiesToList(productComponentWithQuantity, productWithQuantities);
         }
 
         return productWithQuantities;

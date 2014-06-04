@@ -23,11 +23,17 @@
  */
 package com.qcadoo.mes.productionLines.constants;
 
-public interface ProductionLinesConstants {
+public final class ProductionLinesConstants {
 
-    String PLUGIN_IDENTIFIER = "productionLines";
+    private ProductionLinesConstants() {
 
-    String MODEL_PRODUCTION_LINE = "productionLine";
+    }
 
-    String MODEL_WORKSTATION_TYPE_COMPONENT = "workstationTypeComponent";
+    public static final String PLUGIN_IDENTIFIER = "productionLines";
+
+    // MODEL
+    public static final String MODEL_PRODUCTION_LINE = "productionLine";
+
+    public static final String MODEL_WORKSTATION_TYPE_COMPONENT = "workstationTypeComponent";
+
 }

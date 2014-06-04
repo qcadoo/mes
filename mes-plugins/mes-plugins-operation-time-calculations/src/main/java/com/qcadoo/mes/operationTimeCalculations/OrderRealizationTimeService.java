@@ -40,8 +40,7 @@ public interface OrderRealizationTimeService {
     /**
      * 
      * @param operationComponent
-     *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
-     *            technologyInstanceOperationComponent
+     *            operationComponent of an operation we want to estimate.
      * @param plannedQuantity
      *            How many products we want this operation to produce
      * @param productionLine
@@ -55,8 +54,7 @@ public interface OrderRealizationTimeService {
     /**
      * 
      * @param operationComponent
-     *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
-     *            technologyInstanceOperationComponent
+     *            operationComponent of an operation we want to estimate.
      * @param plannedQuantity
      *            How many products we want this operation to produce
      * @param includeTpz
@@ -74,8 +72,7 @@ public interface OrderRealizationTimeService {
     /**
      * 
      * @param operationComponent
-     *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
-     *            technologyInstanceOperationComponent
+     *            operationComponent of an operation we want to estimate.
      * @param plannedQuantity
      *            How many products we want this operation to produce
      * @param includeTpz

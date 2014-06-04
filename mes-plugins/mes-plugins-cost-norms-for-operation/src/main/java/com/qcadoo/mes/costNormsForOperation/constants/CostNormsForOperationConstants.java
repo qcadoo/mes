@@ -27,11 +27,18 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-public interface CostNormsForOperationConstants {
+public final class CostNormsForOperationConstants {
 
-    String PLUGIN_IDENTIFIER = "costNormsForOperation";
+    private CostNormsForOperationConstants() {
 
-    String MODEL_CALCULATION_OPERATION_COMPONENT = "calculationOperationComponent";
+    }
 
-    Set<String> FIELDS = Sets.newHashSet("pieceworkCost", "numberOfOperations", "laborHourlyCost", "machineHourlyCost");
+    public static final String PLUGIN_IDENTIFIER = "costNormsForOperation";
+
+    // MODEL
+    public static final String MODEL_CALCULATION_OPERATION_COMPONENT = "calculationOperationComponent";
+
+    public static final Set<String> FIELDS = Sets.newHashSet("pieceworkCost", "numberOfOperations", "laborHourlyCost",
+            "machineHourlyCost");
+
 }

@@ -23,12 +23,16 @@
  */
 package com.qcadoo.mes.productionScheduling.constants;
 
-public interface ProductionSchedulingConstants {
+public final class ProductionSchedulingConstants {
 
-    String PLUGIN_IDENTIFIER = "productionScheduling";
+    private ProductionSchedulingConstants() {
 
-    String VIEW_RIBBON_ACTION_ITEM_GROUP = "orderGantt";
+    }
 
-    String VIEW_RIBBON_ACTION_ITEM_NAME = "operationsGantt";
+    public static final String PLUGIN_IDENTIFIER = "productionScheduling";
+
+    public static final String VIEW_RIBBON_ACTION_ITEM_GROUP = "orderGantt";
+
+    public static final String VIEW_RIBBON_ACTION_ITEM_NAME = "operationsGantt";
 
 }

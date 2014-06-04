@@ -50,7 +50,7 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 public class OrderStateValidationAspect extends AbstractStateListenerAspect {
 
     @Autowired
-    private OrderStateValidationService validationService;
+    private OrderStateValidationService orderStateValidationService;
 
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
@@ -60,21 +60,21 @@ public class OrderStateValidationAspect extends AbstractStateListenerAspect {
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = ACCEPTED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnAccept(final StateChangeContext stateChangeContext, final int phase) {
-        validationService.validationOnAccepted(stateChangeContext);
+        orderStateValidationService.validationOnAccepted(stateChangeContext);
     }
 
     @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = IN_PROGRESS)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnInProgress(final StateChangeContext stateChangeContext, final int phase) {
-        validationService.validationOnInProgress(stateChangeContext);
+        orderStateValidationService.validationOnInProgress(stateChangeContext);
     }
 
     @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnCompleted(final StateChangeContext stateChangeContext, final int phase) {
-        validationService.validationOnCompleted(stateChangeContext);
+        orderStateValidationService.validationOnCompleted(stateChangeContext);
     }
 
 }

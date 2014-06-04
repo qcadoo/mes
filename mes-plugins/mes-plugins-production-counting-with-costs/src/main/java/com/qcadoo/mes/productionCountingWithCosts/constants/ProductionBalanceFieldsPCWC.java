@@ -51,7 +51,7 @@ public final class ProductionBalanceFieldsPCWC {
 
     public static final String COMPONENTS_COSTS_BALANCE = "componentsCostsBalance";
 
-    public static final String TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS = "technologyInstOperProductInComps";
+    public static final String TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS = "technologyOperationProductInComponents";
 
     public static final String PLANNED_MACHINE_COSTS = "plannedMachineCosts";
 

@@ -43,15 +43,16 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class LineChangeoverNormsForOrderDetailsListeners {
 
-    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+    private static final String L_FILTERS = "filters";
 
     private static final String L_GRID_OPTIONS = "grid.options";
 
-    private static final String L_FILTERS = "filters";
+    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     @Autowired
     private OrderService orderService;
@@ -60,10 +61,9 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
 
     public final void showPreviousOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FieldComponent previousOrderField = (FieldComponent) view.getComponentByReference(PREVIOUS_ORDER);
+        LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(PREVIOUS_ORDER);
 
-        Long previousOrderId = (Long) previousOrderField.getFieldValue();
-
+        Long previousOrderId = (Long) previousOrderLookup.getFieldValue();
         if (previousOrderId == null) {
             return;
         }
@@ -152,20 +152,15 @@ public class LineChangeoverNormsForOrderDetailsListeners {
 
     public final void checkIfOrderHasCorrectStateAndIsPrevious(final ViewDefinitionState view,
             final ComponentState componentState, final String[] args) {
-        FieldComponent previousOrderField = (FieldComponent) view.getComponentByReference(PREVIOUS_ORDER);
-        FieldComponent orderField = (FieldComponent) view.getComponentByReference(ORDER);
+        LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(PREVIOUS_ORDER);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ORDER);
 
-        Long previousOrderId = (Long) previousOrderField.getFieldValue();
-        Long orderId = (Long) orderField.getFieldValue();
+        Entity previousOrder = previousOrderLookup.getEntity();
+        Entity order = orderLookup.getEntity();
 
-        if ((previousOrderId != null) && (orderId != null)) {
-            Entity previousOrderDB = lineChangeoverNormsForOrdersService.getOrderFromDB(previousOrderId);
-            Entity orderDB = lineChangeoverNormsForOrdersService.getOrderFromDB(orderId);
-
-            if (!lineChangeoverNormsForOrdersService.checkIfOrderHasCorrectStateAndIsPrevious(previousOrderDB, orderDB)) {
-                previousOrderField.addMessage("orders.order.previousOrder.message.orderIsIncorrect",
-                        ComponentState.MessageType.FAILURE);
-            }
+        if (!lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(previousOrder, order)) {
+            previousOrderLookup.addMessage("orders.order.previousOrder.message.orderIsIncorrect",
+                    ComponentState.MessageType.FAILURE);
         }
     }
 

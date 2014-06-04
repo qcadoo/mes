@@ -31,11 +31,12 @@ public final class OperationPieceworkCostComponentFields {
 
     public static final String PRODUCTION_BALANCE = "productionBalance";
 
-    public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     public static final String PLANNED_CYCLES_COSTS = "plannedCyclesCosts";
 
     public static final String CYCLES_COSTS = "cyclesCosts";
 
     public static final String CYCLES_COSTS_BALANCE = "cyclesCostsBalance";
+
 }

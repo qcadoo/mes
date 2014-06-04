@@ -24,12 +24,13 @@
     ***************************************************************************
 
 -->
-<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
-    xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
-    plugin="technologies"
-    view="technologyDetails">
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
+	plugin="technologies" view="technologyDetails">
 
-     <group name="costCalculate">
-          <bigButton name="costCalculate" icon="calculateTimeIcon24.png" action="#{form}.fireEvent(showCostCalculateFromTechnology);"/>
-     </group>
+	<group name="costCalculate">
+		<bigButton name="costCalculate" icon="calculateTimeIcon24.png"
+			action="#{form}.fireEvent(showCostCalculateFromTechnology);" />
+	</group>
 </ribbonExtension>

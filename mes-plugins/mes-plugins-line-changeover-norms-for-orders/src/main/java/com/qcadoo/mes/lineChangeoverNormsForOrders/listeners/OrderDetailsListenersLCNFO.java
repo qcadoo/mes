@@ -47,4 +47,5 @@ public class OrderDetailsListenersLCNFO {
         String url = "../page/lineChangeoverNormsForOrders/lineChangeoverNormsForOrderDetails.html";
         viewState.redirectTo(url, false, true, parameters);
     }
+
 }

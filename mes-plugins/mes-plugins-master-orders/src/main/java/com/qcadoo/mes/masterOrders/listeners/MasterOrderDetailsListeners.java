@@ -1,8 +1,11 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -19,12 +22,14 @@ public class MasterOrderDetailsListeners {
 
     private static final String L_FORM = "form";
 
+    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
     @Autowired
     private ExpressionService expressionService;
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
-    
+
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
@@ -55,10 +60,10 @@ public class MasterOrderDetailsListeners {
         Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
         String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                 view.getLocale());
-        
+
         defaultTechnology.setFieldValue(defaultTechnologyValue);
         technology.setFieldValue(defaultTechnologyEntity.getId());
-        
+
         defaultTechnology.requestComponentUpdateState();
         technology.requestComponentUpdateState();
     }
@@ -73,4 +78,22 @@ public class MasterOrderDetailsListeners {
         masterOrderDetailsHooks.setUneditableWhenEntityHasUnsaveChanges(view);
     }
 
+    public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity masterOrder = masterOrderForm.getEntity();
+
+        Long masterOrderId = masterOrder.getId();
+
+        if (masterOrderId == null) {
+            return;
+        }
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.masterOrder", masterOrderId);
+
+        parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
+
+        String url = "../page/orders/orderDetails.html";
+        view.redirectTo(url, false, true, parameters);
+    }
 }

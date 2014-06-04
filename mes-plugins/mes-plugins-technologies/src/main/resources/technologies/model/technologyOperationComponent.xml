@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="technologyOperationComponent" 
+<model name="technologyOperationComponent" auditable="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
@@ -52,10 +52,26 @@
 			joinField="operationComponent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent"
 			joinField="operationComponent" cascade="delete" copyable="true" />
+			
+		<manyToMany name="workstations" plugin="basic" model="workstation"
+			joinField="operationComponents" cascade="delete" copyable="true" />
+			
+		<!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
+			joinField="operations" />-->
+			
+		<enum name="assignedToOperation" values="01workstations,02workstationTypes" default="02workstationTypes" required="true" copyable="true"/>
+		
+		<belongsTo name="workstationType" plugin="basic" model="workstationType"/>
+
+		<integer name="quantityOfWorkstations" default="1" required="true">
+			<validatesRange from="1" exclusively="false" />
+		</integer>
 	</fields>
 	<hooks>
 		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks"
 			method="onCreate" />
+		<onSave class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks" method="onSave"/>
+		
 		<!-- 		TODO DEV_TEAM when we add reference -->
 		<!-- 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyOperationComponentValidators" -->
 		<!-- 			method="validateEntityTypeOfTechnologyOperationComponent" /> -->

@@ -76,10 +76,13 @@ public class ShiftTimetableExceptions {
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof ShiftTimetableExceptions)) {
+
+        if (!(obj instanceof ShiftTimetableExceptions)) {
             return false;
         }
+
         ShiftTimetableExceptions other = (ShiftTimetableExceptions) obj;
+
         return ObjectUtils.equals(exceptions, other.exceptions);
     }
 

@@ -62,7 +62,7 @@ public class ProductDetailsListenersO {
         }
 
         Map<String, String> filters = Maps.newHashMap();
-        filters.put("productNumber", productNumber);
+        filters.put("productNumber", applyInOperator(productNumber));
 
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put(L_FILTERS, filters);
@@ -92,7 +92,7 @@ public class ProductDetailsListenersO {
         }
 
         Map<String, String> filters = Maps.newHashMap();
-        filters.put("productNumber", productNumber);
+        filters.put("productNumber", applyInOperator(productNumber));
 
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put(L_FILTERS, filters);
@@ -104,6 +104,11 @@ public class ProductDetailsListenersO {
 
         String url = "../page/orders/ordersPlanningList.html";
         view.redirectTo(url, false, true, parameters);
+    }
+
+    private String applyInOperator(final String value){
+        StringBuilder builder = new StringBuilder();
+        return builder.append("[").append(value).append("]").toString();
     }
 
 }

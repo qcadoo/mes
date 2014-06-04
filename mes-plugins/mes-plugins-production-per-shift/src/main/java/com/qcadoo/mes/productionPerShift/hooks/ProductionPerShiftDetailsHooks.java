@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
-import static com.qcadoo.mes.productionPerShift.constants.DailyProgressFields.SHIFT;
-import static com.qcadoo.mes.productionPerShift.constants.PlannedProgressType.PLANNED;
-import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_COMMENT;
-import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPES;
-import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
-import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
-import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAILY_PROGRESS;
-import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.HAS_CORRECTIONS;
-import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.PROGRESS_FOR_DAYS;
-import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -49,43 +34,51 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.ShiftFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
-import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
-import com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS;
+import com.qcadoo.mes.productionPerShift.constants.*;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class ProductionPerShiftDetailsHooks {
 
+    private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
+
+    private static final String L_PROGRESS = "progress";
+
+    private static final String L_COPY_FROM_PLANNED = "copyFromPlanned";
+
+    private static final String L_CLEAR = "clear";
+
     private static final String L_PRODUCTION_PER_SHIFT_OPERATION = "productionPerShiftOperation";
 
-    private static final String L_PROGRESS_FOR_DAYS = "progressForDays";
+    private static final String L_PRODUCES = "produces";
 
-    private static final String L_ORDER = "order";
-
-    private static final String L_DAY = "day";
+    private static final String L_SET_ROOT = "setRoot";
 
     private static final String L_DATE = "date";
+
+    private static final String L_UNIT = "unit";
+
+    private static final String L_WAS_IT_CORRECTED = "wasItCorrected";
 
     private static final String L_ORDER_CORRECTED_START_DATE = "orderCorrectedStartDate";
 
@@ -105,107 +98,165 @@ public class ProductionPerShiftDetailsHooks {
     @Autowired
     private PPSHelper ppsHelper;
 
+    public void setTechnologyField(final ViewDefinitionState view) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionPerShiftFields.ORDER);
+
+        Entity order = orderLookup.getEntity();
+
+        if (order == null) {
+            return;
+        }
+
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(ProductionPerShiftFields.TECHNOLOGY);
+        LookupComponent productionPerShiftOperationLookup = (LookupComponent) view
+                .getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
+
+        technologyLookup.setFieldValue(technology.getId());
+        technologyLookup.requestComponentUpdateState();
+
+        productionPerShiftOperationLookup.setEnabled(true);
+        productionPerShiftOperationLookup.requestComponentUpdateState();
+    }
+
     public void fillSetRoot(final ViewDefinitionState view) {
-        FieldComponent setRootField = (FieldComponent) view.getComponentByReference("setRoot");
-        setRootField.setFieldValue(false);
-        setRootField.requestComponentUpdateState();
+        CheckBoxComponent setRootCheckBox = (CheckBoxComponent) view.getComponentByReference(L_SET_ROOT);
+
+        setRootCheckBox.setChecked(false);
+        setRootCheckBox.requestComponentUpdateState();
     }
 
     public void addRootForOperation(final ViewDefinitionState view) {
-        FieldComponent setRootField = (FieldComponent) view.getComponentByReference("setRoot");
-        if (setRootField.getFieldValue() != null && setRootField.getFieldValue().equals("1")) {
+        CheckBoxComponent setRootCheckBox = (CheckBoxComponent) view.getComponentByReference(L_SET_ROOT);
+
+        if (setRootCheckBox.isChecked()) {
             return;
         }
-        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
-        EntityTree techInstOperComps = order.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
-        if (techInstOperComps.isEmpty()) {
+
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionPerShiftFields.ORDER);
+        Entity order = orderLookup.getEntity();
+
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        EntityTree technologyOperationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+        if (technologyOperationComponents.isEmpty()) {
             return;
         }
-        Entity root = techInstOperComps.getRoot();
-        FieldComponent operation = (FieldComponent) view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
 
-        if (operation.getFieldValue() == null) {
-            operation.setFieldValue(root.getId());
-            setRootField.setFieldValue(true);
+        Entity root = technologyOperationComponents.getRoot();
+
+        LookupComponent productionPerShiftOperationLookup = (LookupComponent) view
+                .getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
+
+        if (productionPerShiftOperationLookup.getFieldValue() == null) {
+            productionPerShiftOperationLookup.setFieldValue(root.getId());
+            setRootCheckBox.setChecked(true);
         }
-        operation.requestComponentUpdateState();
-        setRootField.requestComponentUpdateState();
 
+        productionPerShiftOperationLookup.requestComponentUpdateState();
+        setRootCheckBox.requestComponentUpdateState();
     }
 
     public void disablePlannedProgressTypeForPendingOrder(final ViewDefinitionState view) {
-        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
-        FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
-        if (plannedProgressType.getFieldValue().equals("") || isPlanned(plannedProgressType.getFieldValue())) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionPerShiftFields.ORDER);
+        FieldComponent plannedProgressType = (FieldComponent) view
+                .getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE);
+
+        Entity order = orderLookup.getEntity();
+
+        if (StringUtils.isEmpty((String) plannedProgressType.getFieldValue()) || isPlanned(plannedProgressType.getFieldValue())) {
             plannedProgressType.setFieldValue(PlannedProgressType.PLANNED.getStringValue());
         } else {
             plannedProgressType.setFieldValue(PlannedProgressType.CORRECTED.getStringValue());
         }
-        if (order.getStringField(OrderFields.STATE).equals(PENDING.getStringValue())) {
+
+        if (OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
             plannedProgressType.setEnabled(false);
         } else {
             plannedProgressType.setEnabled(true);
         }
+
         plannedProgressType.requestComponentUpdateState();
     }
 
     public void fillProducedField(final ViewDefinitionState view) {
-        ComponentState producesInput = view.getComponentByReference("produces");
-        if (!producesInput.getFieldValue().equals("")) {
-            return;
-        }
+        LookupComponent productionPerShiftOperationLookup = (LookupComponent) view
+                .getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
+        LookupComponent producesField = (LookupComponent) view.getComponentByReference(L_PRODUCES);
+
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
-                .getComponentByReference(L_PROGRESS_FOR_DAYS);
-        Entity tioc = ((LookupComponent) view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
-        if (tioc == null) {
+                .getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
+
+        Entity productionPerShiftOperation = productionPerShiftOperationLookup.getEntity();
+
+        if (productionPerShiftOperation == null) {
             progressForDaysADL.setFieldValue(null);
+
             return;
         } else {
-            String producedProduct = null;
-            Entity toc = tioc.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
-            Entity prodComp = technologyService.getMainOutputProductComponent(toc);
-            Entity prod = prodComp.getBelongsToField("product");
-            producedProduct = prod.getStringField("name");
-            producesInput.setFieldValue(producedProduct);
+            Entity operationProductOutComponent = technologyService.getMainOutputProductComponent(productionPerShiftOperation);
+
+            Entity product = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+
+            producesField.setFieldValue(product.getId());
+            producesField.requestComponentUpdateState();
+
             fillUnitFields(view);
         }
     }
 
     private void fillUnitFields(final ViewDefinitionState view) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
-                .getComponentByReference(L_PROGRESS_FOR_DAYS);
-        Entity tioc = ((LookupComponent) view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
-        Entity toc = tioc.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
-        Entity prodComp = technologyService.getMainOutputProductComponent(toc);
-        Entity prod = prodComp.getBelongsToField("product");
-        for (FormComponent form : progressForDaysADL.getFormComponents()) {
-            AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) form
-                    .findFieldComponentByName("dailyProgress");
-            for (FormComponent formComponent : dailyProgressADL.getFormComponents()) {
-                FieldComponent unit = formComponent.findFieldComponentByName(UNIT);
-                unit.setFieldValue(prod.getStringField(UNIT));
-                unit.requestComponentUpdateState();
+                .getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
+
+        LookupComponent productionPerShiftOperationLookup = (LookupComponent) view
+                .getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
+
+        Entity productionPerShiftOperation = productionPerShiftOperationLookup.getEntity();
+
+        Entity operationProductOutComponent = technologyService.getMainOutputProductComponent(productionPerShiftOperation);
+        Entity product = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+
+        for (FormComponent progressForDayForm : progressForDaysADL.getFormComponents()) {
+            AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) progressForDayForm
+                    .findFieldComponentByName(ProgressForDayFields.DAILY_PROGRESS);
+
+            for (FormComponent dailyProgressForm : dailyProgressADL.getFormComponents()) {
+                FieldComponent unitField = dailyProgressForm.findFieldComponentByName(L_UNIT);
+
+                unitField.setFieldValue(product.getStringField(ProductFields.UNIT));
+                unitField.requestComponentUpdateState();
             }
+
             dailyProgressADL.requestComponentUpdateState();
         }
+
         progressForDaysADL.requestComponentUpdateState();
     }
 
     public void setOrderStartDate(final ViewDefinitionState view) {
-        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         FieldComponent orderPlannedStartDate = (FieldComponent) view.getComponentByReference(L_ORDER_PLANNED_START_DATE);
         FieldComponent orderCorrectedStartDate = (FieldComponent) view.getComponentByReference(L_ORDER_CORRECTED_START_DATE);
         FieldComponent orderEffectiveStartDate = (FieldComponent) view.getComponentByReference(L_ORDER_EFFECTIVE_START_DATE);
+
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionPerShiftFields.ORDER);
+
+        Entity order = orderLookup.getEntity();
+
         orderPlannedStartDate.setFieldValue(DateUtils.toDateTimeString(order.getDateField(OrderFields.DATE_FROM)));
         orderCorrectedStartDate.setFieldValue(DateUtils.toDateTimeString(order.getDateField(OrderFields.CORRECTED_DATE_FROM)));
         orderEffectiveStartDate.setFieldValue(DateUtils.toDateTimeString(order.getDateField(OrderFields.EFFECTIVE_DATE_FROM)));
+
         orderPlannedStartDate.requestComponentUpdateState();
         orderCorrectedStartDate.requestComponentUpdateState();
         orderEffectiveStartDate.requestComponentUpdateState();
     }
 
     public void disableReasonOfCorrection(final ViewDefinitionState view) {
-        FieldComponent progressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
+        FieldComponent progressType = (FieldComponent) view
+                .getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE);
 
         if (isPlanned(progressType.getFieldValue())) {
             setResonOfCorrectionEnabled(view, false);
@@ -216,14 +267,14 @@ public class ProductionPerShiftDetailsHooks {
 
     private void setResonOfCorrectionEnabled(final ViewDefinitionState view, final boolean enabled) {
         AwesomeDynamicListComponent plannedProgressCorrectionTypes = (AwesomeDynamicListComponent) view
-                .getComponentByReference(PLANNED_PROGRESS_CORRECTION_TYPES);
+                .getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPES);
         FieldComponent plannedProgressCorrectionComment = (FieldComponent) view
-                .getComponentByReference(PLANNED_PROGRESS_CORRECTION_COMMENT);
+                .getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_COMMENT);
 
         plannedProgressCorrectionTypes.setEnabled(enabled);
 
-        for (FormComponent formComponent : plannedProgressCorrectionTypes.getFormComponents()) {
-            formComponent.setFormEnabled(enabled);
+        for (FormComponent plannedProgressCorrectionTypeForm : plannedProgressCorrectionTypes.getFormComponents()) {
+            plannedProgressCorrectionTypeForm.setFormEnabled(enabled);
         }
 
         plannedProgressCorrectionComment.setEnabled(enabled);
@@ -231,213 +282,294 @@ public class ProductionPerShiftDetailsHooks {
 
     public void fillProgressForDays(final ViewDefinitionState view) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
-                .getComponentByReference(L_PROGRESS_FOR_DAYS);
+                .getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
 
-        Entity tioc = ((LookupComponent) view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
+        LookupComponent productionPerShiftOperationLookup = (LookupComponent) view
+                .getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
 
-        if (tioc == null) {
+        Entity productionPerShiftOperation = productionPerShiftOperationLookup.getEntity();
+
+        if (productionPerShiftOperation == null) {
             progressForDaysADL.setFieldValue(null);
         } else {
-            FieldComponent plannedProgressType = ((FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE));
-            List<Entity> progressForDays = tioc.getHasManyField(PROGRESS_FOR_DAYS).find()
-                    .add(SearchRestrictions.eq(CORRECTED, !isPlanned(plannedProgressType.getFieldValue()))).list().getEntities();
+            FieldComponent plannedProgressType = ((FieldComponent) view
+                    .getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE));
+
+            List<Entity> progressForDays = productionPerShiftOperation
+                    .getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS).find()
+                    .add(SearchRestrictions.eq(ProgressForDayFields.CORRECTED, !isPlanned(plannedProgressType.getFieldValue())))
+                    .list().getEntities();
+
             progressForDaysADL.setFieldValue(progressForDays);
         }
 
         progressForDaysADL.requestComponentUpdateState();
+
         fillUnitFields(view);
         disableComponents(view);
     }
 
     public void refreshProgressForDaysADL(final ViewDefinitionState view) {
         fillUnitFields(view);
-        if (!progressTypeWasChange(view) || !tiocWasChanged(view)) {
+
+        if (!progressTypeWasChanged(view) || !technologyOperationComponentWasChanged(view)) {
             return;
         }
+
         fillProgressForDays(view);
     }
 
     @SuppressWarnings("unchecked")
-    private boolean tiocWasChanged(final ViewDefinitionState view) {
+    private boolean technologyOperationComponentWasChanged(final ViewDefinitionState view) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
-                .getComponentByReference(L_PROGRESS_FOR_DAYS);
+                .getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
+
         List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
+
         if (progressForDays.isEmpty()) {
             return true;
         }
-        Entity tioc = ((LookupComponent) view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
-        Entity tiocFromPfdays = progressForDays.get(0).getDataDefinition().get(progressForDays.get(0).getId())
-                .getBelongsToField(ProgressForDayFields.TECH_INST_OPER_COMP);
-        if (!tioc.getId().equals(tiocFromPfdays.getId())) {
+
+        LookupComponent productionPerShiftOperationLookup = (LookupComponent) view
+                .getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
+
+        Entity productionPerShiftOperation = productionPerShiftOperationLookup.getEntity();
+        Entity progressForDay = progressForDays.get(0);
+
+        if (progressForDay.getId() == null) {
+            return false;
+        }
+
+        Entity technologyOperationComponentFromProgressForDays = progressForDay.getDataDefinition().get(progressForDay.getId())
+                .getBelongsToField(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        if (!productionPerShiftOperation.getId().equals(technologyOperationComponentFromProgressForDays.getId())) {
             return true;
         }
+
         return false;
     }
 
     @SuppressWarnings("unchecked")
-    private boolean progressTypeWasChange(final ViewDefinitionState view) {
+    private boolean progressTypeWasChanged(final ViewDefinitionState view) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
-                .getComponentByReference(L_PROGRESS_FOR_DAYS);
+                .getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
+
         List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
+
         if (progressForDays.isEmpty()) {
             return true;
         }
-        FieldComponent progressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
-        boolean corrected = progressForDays.get(0).getBooleanField(CORRECTED);
-        if ((isPlanned(progressType.getFieldValue()) && !corrected)) {
+
+        FieldComponent progressType = (FieldComponent) view
+                .getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE);
+
+        boolean corrected = progressForDays.get(0).getBooleanField(ProgressForDayFields.CORRECTED);
+
+        if (isPlanned(progressType.getFieldValue()) && !corrected) {
             return true;
         }
+
         return false;
     }
 
     private boolean isPlanned(final Object progressType) {
-        return PLANNED.getStringValue().equals(progressType);
+        return PlannedProgressType.PLANNED.getStringValue().equals(progressType);
     }
 
     private void disableComponents(final ViewDefinitionState view) {
-        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
-                .getComponentByReference(L_PROGRESS_FOR_DAYS);
-        boolean shouldDisabled = ppsHelper.shouldHasCorrections(view)
-                || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue());
+                .getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
 
-        for (FormComponent form : progressForDaysADL.getFormComponents()) {
-            ((FieldComponent) form.findFieldComponentByName("day")).setEnabled(shouldDisabled);
-            AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) form
-                    .findFieldComponentByName("dailyProgress");
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionPerShiftFields.ORDER);
+
+        Entity order = orderLookup.getEntity();
+
+        boolean isEnabled = (ppsHelper.shouldHasCorrections(view) || OrderState.PENDING.getStringValue().equals(
+                order.getStringField(OrderFields.STATE)));
+
+        for (FormComponent progressForDaysForm : progressForDaysADL.getFormComponents()) {
+            FieldComponent dayField = (FieldComponent) progressForDaysForm.findFieldComponentByName(ProgressForDayFields.DAY);
+
+            AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) progressForDaysForm
+                    .findFieldComponentByName(ProgressForDayFields.DAILY_PROGRESS);
+
             for (FormComponent dailyProgressForm : dailyProgressADL.getFormComponents()) {
-                FieldComponent shift = (FieldComponent) dailyProgressForm.findFieldComponentByName("shift");
-                FieldComponent quantity = (FieldComponent) dailyProgressForm.findFieldComponentByName("quantity");
-                FieldComponent unit = (FieldComponent) dailyProgressForm.findFieldComponentByName(UNIT);
-                shift.setEnabled(shouldDisabled);
-                shift.requestComponentUpdateState();
-                quantity.setEnabled(shouldDisabled);
-                quantity.requestComponentUpdateState();
-                unit.setEnabled(shouldDisabled);
-                unit.requestComponentUpdateState();
+                LookupComponent shiftLookup = (LookupComponent) dailyProgressForm
+                        .findFieldComponentByName(DailyProgressFields.SHIFT);
+                FieldComponent quantityField = (FieldComponent) dailyProgressForm
+                        .findFieldComponentByName(DailyProgressFields.QUANTITY);
+                FieldComponent unitField = (FieldComponent) dailyProgressForm.findFieldComponentByName(L_UNIT);
+
+                shiftLookup.setEnabled(isEnabled);
+                shiftLookup.requestComponentUpdateState();
+                quantityField.setEnabled(isEnabled);
+                quantityField.requestComponentUpdateState();
+                unitField.setEnabled(isEnabled);
+                unitField.requestComponentUpdateState();
             }
-            dailyProgressADL.setEnabled(shouldDisabled);
+
+            dayField.setEnabled(isEnabled);
+            dayField.requestComponentUpdateState();
+
+            dailyProgressADL.setEnabled(isEnabled);
             dailyProgressADL.requestComponentUpdateState();
         }
-        progressForDaysADL.setEnabled(shouldDisabled);
-        progressForDaysADL.requestComponentUpdateState();
 
+        progressForDaysADL.setEnabled(isEnabled);
+        progressForDaysADL.requestComponentUpdateState();
     }
 
     public void changeButtonState(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonGroup progressSelectedOperation = (RibbonGroup) window.getRibbon().getGroupByName("progress");
-        RibbonActionItem clearButton = (RibbonActionItem) progressSelectedOperation.getItemByName("clear");
-        RibbonActionItem copyButton = (RibbonActionItem) progressSelectedOperation.getItemByName("copyFromPlanned");
-        FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+
+        RibbonGroup progress = (RibbonGroup) window.getRibbon().getGroupByName(L_PROGRESS);
+
+        RibbonActionItem clear = (RibbonActionItem) progress.getItemByName(L_CLEAR);
+        RibbonActionItem copyFromPlanned = (RibbonActionItem) progress.getItemByName(L_COPY_FROM_PLANNED);
+
+        FieldComponent plannedProgressType = (FieldComponent) view
+                .getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE);
+
         if (isPlanned(plannedProgressType.getFieldValue())) {
-            clearButton.setEnabled(false);
-            copyButton.setEnabled(false);
+            clear.setEnabled(false);
+            copyFromPlanned.setEnabled(false);
         } else {
-            clearButton.setEnabled(true);
-            copyButton.setEnabled(true);
+            clear.setEnabled(true);
+            copyFromPlanned.setEnabled(true);
         }
-        clearButton.requestUpdate(true);
-        copyButton.requestUpdate(true);
+
+        clear.requestUpdate(true);
+        copyFromPlanned.requestUpdate(true);
     }
 
     public void checkIfWasItCorrected(final ViewDefinitionState view) {
-        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
-        List<Entity> tiocWithCorrectedPlan = dataDefinitionService
-                .get(PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).find()
-                .add(SearchRestrictions.belongsTo(L_ORDER, order))
-                .add(SearchRestrictions.eq(TechInstOperCompFieldsPPS.HAS_CORRECTIONS, true)).list().getEntities();
-        FieldComponent wasItCorrected = (FieldComponent) view.getComponentByReference("wasItCorrected");
-        if (tiocWithCorrectedPlan.isEmpty()) {
-            wasItCorrected.setFieldValue(false);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(ProductionPerShiftFields.TECHNOLOGY);
+        Entity technology = technologyLookup.getEntity();
+
+        List<Entity> technologyOperationComponentsWithCorrectedPlan = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
+                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology))
+                .add(SearchRestrictions.eq(TechnologyOperationComponentFieldsPPS.HAS_CORRECTIONS, true)).list().getEntities();
+
+        CheckBoxComponent wasItCorrected = (CheckBoxComponent) view.getComponentByReference(L_WAS_IT_CORRECTED);
+
+        if (technologyOperationComponentsWithCorrectedPlan.isEmpty()) {
+            wasItCorrected.setChecked(false);
         } else {
-            wasItCorrected.setFieldValue(true);
+            wasItCorrected.setChecked(true);
         }
+
         wasItCorrected.requestComponentUpdateState();
     }
 
     public void checkShiftsIfWorks(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
-        final Entity productionPerShift = form.getEntity();
+        final FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        final Entity productionPerShift = productionPerShiftForm.getEntity();
+
         final Entity order = productionPerShift.getBelongsToField(ProductionPerShiftFields.ORDER);
+
         if (order == null) {
             return;
         }
-        List<Entity> tiocs = order.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
-        if (tiocs == null) {
+
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        List<Entity> technologyOperationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+        if (technologyOperationComponents == null) {
             final Entity orderFromDb = order.getDataDefinition().get(order.getId());
-            tiocs = orderFromDb.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
-            if (tiocs == null) {
+
+            technology = orderFromDb.getBelongsToField(OrderFields.TECHNOLOGY);
+
+            technologyOperationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+            if (technologyOperationComponents == null) {
                 return;
             }
         }
-        for (Entity tioc : tiocs) {
-            checkShiftsIfWorks(form, tioc);
+
+        for (Entity technologyOperationComponent : technologyOperationComponents) {
+            checkShiftsIfWorks(productionPerShiftForm, order, technologyOperationComponent);
         }
     }
 
-    private void checkShiftsIfWorks(final FormComponent formComponent, final Entity tioc) {
-        final List<Entity> progressForDays = tioc.getHasManyField(PROGRESS_FOR_DAYS);
+    private void checkShiftsIfWorks(final FormComponent productionPerShiftForm, final Entity order,
+            final Entity technologyOperationComponent) {
+        final List<Entity> progressForDays = technologyOperationComponent
+                .getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
+
         for (Entity progressForDay : progressForDays) {
-            if ((progressForDay.getBooleanField(CORRECTED) && !tioc.getBooleanField(HAS_CORRECTIONS))) {
+            if ((progressForDay.getBooleanField(ProgressForDayFields.CORRECTED) && !technologyOperationComponent
+                    .getBooleanField(TechnologyOperationComponentFieldsPPS.HAS_CORRECTIONS))) {
                 continue;
             }
-            final List<Entity> dailyProgressList = progressForDay.getHasManyField(DAILY_PROGRESS);
+
+            final List<Entity> dailyProgressList = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
+
             for (Entity dailyProgress : dailyProgressList) {
-                Entity shift = dailyProgress.getBelongsToField(SHIFT);
+                Entity shift = dailyProgress.getBelongsToField(DailyProgressFields.SHIFT);
+
                 if (shift == null) {
                     continue;
                 }
+
                 boolean isFirstDailyProgress = dailyProgressList.get(0).equals(dailyProgress);
-                if (!checkIfShiftWorks(progressForDays, progressForDay, tioc, shift, isFirstDailyProgress)) {
+
+                if (!checkIfShiftWorks(progressForDays, progressForDay, shift, order, isFirstDailyProgress)) {
                     final String shiftName = shift.getStringField(ShiftFields.NAME);
                     final String workDate = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
-                            .format(ppsHelper.getDateAfterStartOrderForProgress(tioc.getBelongsToField(L_ORDER), progressForDay));
-                    formComponent.addMessage("productionPerShift.progressForDay.shiftDoesNotWork", MessageType.INFO, shiftName,
-                            workDate);
+                            .format(ppsHelper.getDateAfterStartOrderForProgress(order, progressForDay));
+
+                    productionPerShiftForm.addMessage("productionPerShift.progressForDay.shiftDoesNotWork", MessageType.INFO,
+                            shiftName, workDate);
                 }
             }
         }
     }
 
-    private boolean checkIfShiftWorks(final List<Entity> progressForDays, final Entity progressForDay, final Entity tioc,
-            final Entity shift, final boolean isFirstDailyProgress) {
+    private boolean checkIfShiftWorks(final List<Entity> progressForDays, final Entity progressForDay, final Entity shift,
+            final Entity order, final boolean isFirstDailyProgress) {
         boolean works = false;
+
         if (progressForDay.equals(progressForDays.get(0)) && isFirstDailyProgress) {
-            Entity shiftFromDay = shiftsService.getShiftFromDateWithTime(ppsHelper.getDateAfterStartOrderForProgress(
-                    tioc.getBelongsToField(L_ORDER), progressForDay));
+            Entity shiftFromDay = shiftsService.getShiftFromDateWithTime(ppsHelper.getDateAfterStartOrderForProgress(order,
+                    progressForDay));
+
             if (shiftFromDay == null) {
                 works = false;
             } else if (shift.getId().equals(shiftFromDay.getId())) {
                 works = true;
             }
         } else {
-            works = shiftsService.checkIfShiftWorkAtDate(
-                    ppsHelper.getDateAfterStartOrderForProgress(tioc.getBelongsToField(L_ORDER), progressForDay), shift);
+            works = shiftsService.checkIfShiftWorkAtDate(ppsHelper.getDateAfterStartOrderForProgress(order, progressForDay),
+                    shift);
         }
+
         return works;
     }
 
     public void updateProgressForDaysDates(final ViewDefinitionState view) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
-                .getComponentByReference(L_PROGRESS_FOR_DAYS);
+                .getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
 
-        LookupComponent productionPerShiftOperationLookup = (LookupComponent) view
-                .getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionPerShiftFields.ORDER);
 
-        Entity productionPerShiftOperation = productionPerShiftOperationLookup.getEntity();
-        Entity order = productionPerShiftOperation.getBelongsToField(L_ORDER);
+        Entity order = orderLookup.getEntity();
 
-        for (FormComponent progressForDay : progressForDaysADL.getFormComponents()) {
-            FieldComponent dayField = progressForDay.findFieldComponentByName(L_DAY);
-            FieldComponent dateField = progressForDay.findFieldComponentByName(L_DATE);
+        if (order == null) {
+            return;
+        }
 
-            Entity progressForDayEntity = progressForDay.getEntity();
-            if (progressForDayEntity.getId() != null) {
-                progressForDayEntity = progressForDayEntity.getDataDefinition().get(progressForDayEntity.getId());
-            }
-            if (progressForDayEntity.getField(ProgressForDayFields.DATE_OF_DAY) == null) {
+        for (FormComponent progressForDayForm : progressForDaysADL.getFormComponents()) {
+            FieldComponent dayField = progressForDayForm.findFieldComponentByName(ProgressForDayFields.DAY);
+            FieldComponent dateField = progressForDayForm.findFieldComponentByName(L_DATE);
+
+            Entity progressForDay = progressForDayForm.getPersistedEntityWithIncludedFormValues();
+
+            if (StringUtils.isEmpty(progressForDay.getStringField(ProgressForDayFields.DATE_OF_DAY))) {
                 String day = (String) dayField.getFieldValue();
+
                 if (!StringUtils.isEmpty(day)) {
                     Date date = ppsHelper.getDateAfterStartOrderForProgress(order, Integer.parseInt(day));
 
@@ -446,6 +578,7 @@ public class ProductionPerShiftDetailsHooks {
                 }
             }
         }
+
         progressForDaysADL.requestComponentUpdateState();
     }
 

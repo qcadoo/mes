@@ -27,7 +27,6 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.PLUGIN_IDENTIFIER;
-import static com.qcadoo.model.api.types.TreeType.NODE_NUMBER_FIELD;
 import static java.lang.Long.valueOf;
 
 import java.util.List;
@@ -43,6 +42,10 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -54,6 +57,10 @@ import com.qcadoo.report.api.xls.XlsHelper;
 
 @Component(value = "technologiesTechnologyDetailsXlsView")
 public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
+
+    private static final String L_PRODUCT = "product";
+
+    private static final String L_QUANTITY = "quantity";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -74,15 +81,17 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
     protected String addContent(final Map<String, Object> model, final HSSFWorkbook workbook, final Locale locale) {
         HSSFSheet sheet = workbook.createSheet(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.title", locale));
+
         addOrderHeader(sheet, locale);
         addOrderSeries(model, sheet, locale);
+
         return translationService.translate("technologies.technologiesTechnologyDetails.report.fileName", locale);
     }
 
     private void addOrderHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
         int columnCounter = 0;
-        for (String headerText : newArrayList("level", "name", "direction", "productNumber", "productName", "quantity", "unit")) {
+        for (String headerText : newArrayList("level", "name", "direction", "productNumber", "productName", L_QUANTITY, "unit")) {
             HSSFCell cell = header.createCell(columnCounter);
             cell.setCellValue(translationService.translate("technologies.technologiesTechnologyDetails.report.columnHeader."
                     + headerText, locale));
@@ -95,35 +104,46 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
         checkState(model.get("id") != null, "Unable to generate report for unsaved technology! (missing id)");
 
         DataDefinition technologyDD = dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_TECHNOLOGY);
+
         Entity technology = technologyDD.get(valueOf(model.get("id").toString()));
-        EntityTree technologyTree = technology.getTreeField("operationComponents");
+
+        EntityTree technologyTree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         treeNumberingService.generateTreeNumbers(technologyTree);
 
         List<Entity> technologyOperationsList = entityTreeUtilsService.getSortedEntities(technologyTree);
 
         int rowNum = 1;
         for (Entity technologyOperation : technologyOperationsList) {
-            String nodeNumber = technologyOperation.getStringField(NODE_NUMBER_FIELD);
-            String operationName = technologyOperation.getBelongsToField("operation").getStringField("name");
-            List<Entity> technologyOperationProducts = Lists.newLinkedList();
-            technologyOperationProducts.addAll(technologyOperation.getHasManyField("operationProductInComponents"));
-            technologyOperationProducts.addAll(technologyOperation.getHasManyField("operationProductOutComponents"));
+            String nodeNumber = technologyOperation.getStringField(TechnologyOperationComponentFields.NODE_NUMBER);
+            String operationName = technologyOperation.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
+                    .getStringField(OperationFields.NAME);
 
-            for (Entity product : technologyOperationProducts) {
+            List<Entity> operationProductComponents = Lists.newLinkedList();
+
+            operationProductComponents.addAll(technologyOperation
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS));
+            operationProductComponents.addAll(technologyOperation
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS));
+
+            for (Entity operatonProductComponent : operationProductComponents) {
                 HSSFRow row = sheet.createRow(rowNum++);
+
+                Entity product = operatonProductComponent.getBelongsToField(L_PRODUCT);
+
                 String productType = "technologies.technologiesTechnologyDetails.report.direction.out";
-                if (product.getDataDefinition().getName().equals("operationProductInComponent")) {
+
+                if (operatonProductComponent.getDataDefinition().getName().equals("operationProductInComponent")) {
                     productType = "technologies.technologiesTechnologyDetails.report.direction.in";
                 }
+
                 row.createCell(0).setCellValue(nodeNumber);
                 row.createCell(1).setCellValue(operationName);
                 row.createCell(2).setCellValue(translationService.translate(productType, locale));
-                row.createCell(3).setCellValue(product.getBelongsToField("product").getStringField("number"));
-                row.createCell(4).setCellValue(product.getBelongsToField("product").getStringField("name"));
-                row.createCell(5).setCellValue(product.getField("quantity").toString());
-                row.createCell(6).setCellValue(product.getBelongsToField("product").getStringField("unit"));
+                row.createCell(3).setCellValue(product.getStringField(ProductFields.NUMBER));
+                row.createCell(4).setCellValue(product.getStringField(ProductFields.NAME));
+                row.createCell(5).setCellValue(operatonProductComponent.getField(L_QUANTITY).toString());
+                row.createCell(6).setCellValue(product.getStringField(ProductFields.UNIT));
             }
-
         }
 
         sheet.autoSizeColumn((short) 0);
@@ -133,6 +153,6 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
         sheet.autoSizeColumn((short) 4);
         sheet.autoSizeColumn((short) 5);
         sheet.autoSizeColumn((short) 6);
-
     }
+
 }

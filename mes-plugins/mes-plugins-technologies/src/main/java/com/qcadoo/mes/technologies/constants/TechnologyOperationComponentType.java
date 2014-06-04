@@ -6,14 +6,14 @@ public enum TechnologyOperationComponentType {
 
     OPERATION("operation"), REFERENCE_TECHNOLOGY("referenceTechnology");
 
-    private final String stringValue;
+    private final String technologyOperationComponentType;
 
-    private TechnologyOperationComponentType(final String stringValue) {
-        this.stringValue = stringValue;
+    private TechnologyOperationComponentType(final String technologyOperationComponentType) {
+        this.technologyOperationComponentType = technologyOperationComponentType;
     }
 
     public String getStringValue() {
-        return this.stringValue;
+        return this.technologyOperationComponentType;
     }
 
     public static TechnologyOperationComponentType parseString(final String string) {

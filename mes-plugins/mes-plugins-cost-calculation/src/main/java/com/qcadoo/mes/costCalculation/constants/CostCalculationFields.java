@@ -37,9 +37,11 @@ public final class CostCalculationFields {
 
     public static final String QUANTITY = "quantity";
 
+    public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
+
     public static final String TECHNOLOGY = "technology";
 
-    public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
+    public static final String PRODUCTION_LINE = "productionLine";
 
     public static final String CALCULATE_MATERIAL_COSTS_MODE = "calculateMaterialCostsMode";
 

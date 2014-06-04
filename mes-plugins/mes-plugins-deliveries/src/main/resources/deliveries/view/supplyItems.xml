@@ -40,7 +40,7 @@
 			<option type="column" name="deliveryState" fields="delivery"
 				expression="'@deliveries.delivery.state.value.' + #delivery['state']" />
 			<option type="column" name="deliveryNumber" fields="delivery"
-				expression="#delivery['number']" />
+                expression="#delivery['number']" />
 			<option type="column" name="deliveryName" fields="delivery"
 				expression="#delivery['name']" />
 			<option type="column" name="productNumber" fields="product"

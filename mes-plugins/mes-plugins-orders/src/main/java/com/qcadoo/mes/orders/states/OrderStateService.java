@@ -23,15 +23,38 @@
  */
 package com.qcadoo.mes.orders.states;
 
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.util.OrderDatesService;
+import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class OrderStateService {
 
+    @Autowired
+    private OrderDatesService orderDatesService;
+
     public boolean isSynchronized(final Entity order) {
         return order.getBooleanField(OrderFields.EXTERNAL_SYNCHRONIZED);
     }
+
+    public void checkOrderDates(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
+        DateRange orderDateRange = orderDatesService.getCalculatedDates(order);
+        Date dateFrom = orderDateRange.getFrom();
+        Date dateTo = orderDateRange.getTo();
+
+        if (dateFrom == null || dateTo == null || dateTo.after(dateFrom)) {
+            return;
+        }
+
+        stateChangeContext.addValidationError("orders.validate.global.error.datesOrder.overdue");
+    }
+
 }

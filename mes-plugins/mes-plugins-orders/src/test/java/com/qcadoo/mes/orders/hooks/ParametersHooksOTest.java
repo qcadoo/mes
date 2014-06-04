@@ -59,7 +59,6 @@ public class ParametersHooksOTest {
         parametersHooksO = new ParametersHooksO();
 
         setField(parametersHooksO, "orderService", orderService);
-
     }
 
     @Test
@@ -74,10 +73,8 @@ public class ParametersHooksOTest {
                 DELAYED_EFFECTIVE_DATE_FROM_TIME);
         verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM,
                 EARLIER_EFFECTIVE_DATE_FROM_TIME);
-        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO,
-                DELAYED_EFFECTIVE_DATE_TO_TIME);
-        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO,
-                EARLIER_EFFECTIVE_DATE_TO_TIME);
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO, DELAYED_EFFECTIVE_DATE_TO_TIME);
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO, EARLIER_EFFECTIVE_DATE_TO_TIME);
     }
 
 }

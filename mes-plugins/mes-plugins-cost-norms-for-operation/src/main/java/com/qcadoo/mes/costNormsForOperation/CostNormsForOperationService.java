@@ -39,7 +39,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class CostNormsForOperationService {
@@ -67,17 +66,6 @@ public class CostNormsForOperationService {
         Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_OPERATION).get((Long) operationLookup.getFieldValue());
         applyCostNormsFromGivenSource(view, operation);
-    }
-
-    public void copyCostValuesFromTechnology(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        Entity technologyInstanceOperationComponent = ((FormComponent) view.getComponentByReference("form")).getEntity();
-        // Be sure that entity isn't in detached state
-        technologyInstanceOperationComponent = technologyInstanceOperationComponent.getDataDefinition().get(
-                technologyInstanceOperationComponent.getId());
-        applyCostNormsFromGivenSource(view,
-                technologyInstanceOperationComponent.getBelongsToField("technologyOperationComponent"));
-
     }
 
     public void inheritOperationNormValues(final ViewDefinitionState view, final ComponentState componentState,
@@ -110,12 +98,6 @@ public class CostNormsForOperationService {
     }
 
     /* ******* MODEL HOOKS ******* */
-
-    public void copyCostNormsToTechnologyInstanceOperationComponent(final DataDefinition dd,
-            final Entity technologyInstanceOperationComponent) {
-        copyCostValuesFromGivenOperation(technologyInstanceOperationComponent,
-                technologyInstanceOperationComponent.getBelongsToField("technologyOperationComponent"));
-    }
 
     public void copyCostNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {
         if ("referenceTechnology".equals(technologyOperationComponent.getField("entityType"))) {
