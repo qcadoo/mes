@@ -1,12 +1,8 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
-<<<<<<< HEAD
  * Project: Qcadoo MES
-=======
- * Project: Qcadoo Framework
->>>>>>> master
- * Version: 1.2.0
+ * Version: 1.3
  *
  * This file is part of Qcadoo.
  *
