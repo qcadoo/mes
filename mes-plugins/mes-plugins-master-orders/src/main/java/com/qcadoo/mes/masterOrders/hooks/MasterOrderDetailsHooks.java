@@ -238,4 +238,8 @@ public class MasterOrderDetailsHooks {
         window.requestRibbonRender();
     }
 
+    public void setProductLookupRequired(final ViewDefinitionState view){
+        FieldComponent productField = (FieldComponent) view.getComponentByReference(PRODUCT);
+        productField.setRequired(true);
+    }
 }

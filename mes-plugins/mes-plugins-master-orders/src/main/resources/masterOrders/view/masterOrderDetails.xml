@@ -325,6 +325,9 @@
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
                 method="setOrderLookupCriteriaModifier" />
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="setProductLookupRequired" />
     </hooks>
 
 </view>
