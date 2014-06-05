@@ -102,11 +102,6 @@
 				model="qualityControl" joinField="order" cascade="nullify" />
 		</model:model-field>
 
-		<model:model-hook plugin="genealogies" model="genealogy">
-			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
-				method="generateOnSaveQualityControl" />
-		</model:model-hook>
-
 		<model:model-hook model="parameter" plugin="basic">
 		    <model:onCreate class="com.qcadoo.mes.qualityControls.ParameterServiceQC" method="addFieldsForParameter"/>
 		</model:model-hook>

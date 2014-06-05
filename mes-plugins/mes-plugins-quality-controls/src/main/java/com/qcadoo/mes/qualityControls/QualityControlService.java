@@ -339,26 +339,6 @@ public final class QualityControlService {
         }
     }
 
-    public void generateOnSaveQualityControl(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField(ORDER_LITERAL);
-        Entity technology = order.getBelongsToField(TECHNOLOGY_LITERAL);
-        if (technology == null) {
-            return;
-        } else {
-            Object qualityControl = technology.getField(QUALITY_CONTROL_TYPE_LITERAL);
-
-            if (qualityControl == null) {
-                return;
-            } else {
-                boolean qualityControlType = TYPE_01FOR_BATCH.equals(technology.getStringField(QUALITY_CONTROL_TYPE_LITERAL));
-
-                if (isQualityControlAutoGenEnabled() || qualityControlType) {
-                    createAndSaveControlForSingleBatch(order, entity);
-                }
-            }
-        }
-    }
-
     public void generateQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() == null) {

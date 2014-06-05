@@ -17,14 +17,11 @@
 	<modules>
 		<module>mes-plugins-orders</module>
 		<module>mes-plugins-basic</module>
-		<module>mes-plugins-genealogies</module>
 		<module>mes-plugins-quality-controls</module>
 		<module>mes-plugins-material-requirements</module>
 		<module>mes-plugins-work-plans</module>
 		<module>mes-plugins-technologies</module>
 		<module>mes-plugins-quality-controls-for-operation</module>
-		<module>mes-plugins-quality-controls-for-batch</module>
-		<module>mes-plugins-genealogies-for-components</module>
 		<module>mes-plugins-samples</module>
 		<module>mes-plugins-production-scheduling</module>
 		<module>mes-plugins-stoppage</module>

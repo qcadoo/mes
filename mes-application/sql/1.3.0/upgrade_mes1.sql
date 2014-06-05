@@ -232,3 +232,41 @@ UPDATE technologies_technologyoperationcomponent SET quantityofworkstations = 1 
 
 -- end
 
+-- Remove legacy plugins: genealogies, genealogies for components and quality controls for batch.
+-- last touched 05.06.2014 by maku
+
+-- drop genealogies for components tables (order matters!)
+drop table genealogiesforcomponents_productinbatch;
+drop table genealogiesforcomponents_genealogyproductincomponent;
+
+-- drop genealogies tables (order matters!)
+drop table genealogies_otherfeature;
+drop table genealogies_shiftfeature;
+drop table genealogies_currentattribute;
+drop table genealogies_postfeature;
+drop table genealogies_genealogy;
+
+-- there is no such drop tables chain for 'quality controls for batch' because this plugin didn't have any models.
+
+-- remove entries from plugins table
+delete from qcadooplugin_plugin where identifier = 'genealogies';
+delete from qcadooplugin_plugin where identifier = 'genealogiesForComponents';
+delete from qcadooplugin_plugin where identifier = 'qualityControlsForBatch';
+
+-- drop columns added by genealogies plugin
+alter table technologies_technology drop column batchrequired;
+alter table technologies_technology drop column shiftFeatureRequired;
+alter table technologies_technology drop column postFeatureRequired;
+alter table technologies_technology drop column otherFeatureRequired;
+alter table basic_product drop column batch;
+alter table basic_product drop column lastUsedBatch;
+alter table basic_product drop column genealogyBatchReq;
+alter table basic_parameter drop column batchForDoneOrder;
+
+-- drop columns added by genelogies for components plugin
+alter table technologies_operationProductInComponent drop column batchRequired;
+
+-- there is no such statements for 'quality controls for batch' because it didn't provide any model field injections.
+
+
+-- end

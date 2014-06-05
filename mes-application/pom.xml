@@ -43,27 +43,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-genealogies</artifactId>
-			<version>1.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-genealogies-for-components</artifactId>
-			<version>1.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-quality-controls</artifactId>
 			<version>1.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-quality-controls-for-operation</artifactId>
-			<version>1.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-quality-controls-for-batch</artifactId>
 			<version>1.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
