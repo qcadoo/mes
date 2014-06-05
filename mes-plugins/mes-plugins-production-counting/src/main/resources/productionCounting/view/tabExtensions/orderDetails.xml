@@ -36,7 +36,7 @@
 				<component type="select" name="typeOfProductionRecording"
 					reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
 					default="01basic">
-					
+                    <option type="labelWidth" value="60" />
 					<listener event="onSelectedEntityChange"
 						class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
 						method="disableFields" />
@@ -44,32 +44,46 @@
 			</layoutElement>
 			<layoutElement column="1" row="2">
 				<component type="checkbox" name="registerQuantityInProduct"
-					reference="registerQuantityInProduct" field="#{form}.registerQuantityInProduct" />
+					reference="registerQuantityInProduct" field="#{form}.registerQuantityInProduct" >
+                    <option type="labelWidth" value="60" />
+                </component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
 				<component type="checkbox" name="registerQuantityOutProduct"
-					reference="registerQuantityOutProduct" field="#{form}.registerQuantityOutProduct" />
+					reference="registerQuantityOutProduct" field="#{form}.registerQuantityOutProduct" >
+                    <option type="labelWidth" value="60" />
+                </component>
 			</layoutElement>
 			<layoutElement column="1" row="4">
 				<component type="checkbox" name="registerProductionTime"
-					reference="registerProductionTime" field="#{form}.registerProductionTime" />
+					reference="registerProductionTime" field="#{form}.registerProductionTime" >
+                    <option type="labelWidth" value="60" />
+                </component>
 			</layoutElement>
 			<layoutElement column="1" row="5">
 				<component type="checkbox" name="registerPiecework"
-					reference="registerPiecework" field="#{form}.registerPiecework" />
+					reference="registerPiecework" field="#{form}.registerPiecework" >
+                    <option type="labelWidth" value="60" />
+                </component>
 			</layoutElement>
-			<layoutElement column="2" row="1" width="2">
+			<layoutElement column="2" row="1">
 				<component type="checkbox" name="justOne" reference="justOne"
-					field="#{form}.justOne" />
+					field="#{form}.justOne" >
+                    <option type="labelWidth" value="80" />
+                </component>
 			</layoutElement>
-			<layoutElement column="2" row="2" width="2">
+			<layoutElement column="2" row="2">
 				<component type="checkbox" name="allowToClose" reference="allowToClose"
-					field="#{form}.allowToClose" hasDescription="true" />
+					field="#{form}.allowToClose" hasDescription="true" >
+                    <option type="labelWidth" value="80" />
+                </component>
 			</layoutElement>
-			<layoutElement column="2" row="3" width="2">
+			<layoutElement column="2" row="3">
 				<component type="checkbox" name="autoCloseOrder"
 					reference="autoCloseOrder" field="#{form}.autoCloseOrder"
-					hasDescription="true" />
+					hasDescription="true" >
+                    <option type="labelWidth" value="80" />
+                </component>
 			</layoutElement>
 		</component>
 	</windowTab>
