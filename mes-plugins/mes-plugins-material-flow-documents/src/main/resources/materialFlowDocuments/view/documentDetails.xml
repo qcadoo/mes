@@ -187,5 +187,7 @@
         </windowTab>
     </component>
     <hooks>
+        <beforeRender class="com.qcadoo.mes.materialFlowDocuments.hooks.DocumentDetailsHooks" method="showPositionsAttributes" />
+        <beforeRender class="com.qcadoo.mes.materialFlowDocuments.hooks.DocumentDetailsHooks" method="disableFormIfDocumentIsAccepted" />
     </hooks>
 </view>

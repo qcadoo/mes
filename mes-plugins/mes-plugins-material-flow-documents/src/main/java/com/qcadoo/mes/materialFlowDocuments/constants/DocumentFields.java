@@ -18,4 +18,5 @@ public final class DocumentFields {
 
     public static final String TYPE = "type";
 
+    public static final String STATE = "state";
 }
