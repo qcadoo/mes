@@ -10,6 +10,8 @@ public final class DocumentFields {
 
     public static final String TIME = "time";
 
+    public static final String USER = "user";
+
     public static final String LOCATION_FROM = "locationFrom";
 
     public static final String LOCATION_TO = "locationTo";

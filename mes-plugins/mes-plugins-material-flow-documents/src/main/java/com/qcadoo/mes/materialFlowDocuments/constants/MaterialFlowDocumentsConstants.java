@@ -2,9 +2,9 @@ package com.qcadoo.mes.materialFlowDocuments.constants;
 
 public class MaterialFlowDocumentsConstants {
 
-    String PLUGIN_IDENTIFIER = "materialFlowDocuments";
+    public static final String PLUGIN_IDENTIFIER = "materialFlowDocuments";
 
     // MODEL
 
-    String MODEL_DOCUMENT = "document";
+    public static final String MODEL_DOCUMENT = "document";
 }

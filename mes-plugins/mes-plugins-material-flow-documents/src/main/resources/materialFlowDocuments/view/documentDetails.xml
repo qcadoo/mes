@@ -10,7 +10,7 @@
             <group name="state">
                 <smallButton name="accept" icon="startIcon16.png"
                              action="#{form}.fireEvent(createResourcesForReceiptDocuments);" state="enabled" >
-                </smallButton>
+                </smallButton>acce
             </group>
         </ribbon>
         <windowTab name="generalTab" reference="generalTab">
@@ -207,6 +207,7 @@
         </windowTab>
     </component>
     <hooks>
+        <beforeRender class="com.qcadoo.mes.materialFlowDocuments.hooks.DocumentDetailsHooks" method="initializeDocument" />
         <beforeRender class="com.qcadoo.mes.materialFlowDocuments.hooks.DocumentDetailsHooks" method="showPositionsAttributes" />
         <beforeRender class="com.qcadoo.mes.materialFlowDocuments.hooks.DocumentDetailsHooks" method="disableFormIfDocumentIsAccepted" />
     </hooks>
