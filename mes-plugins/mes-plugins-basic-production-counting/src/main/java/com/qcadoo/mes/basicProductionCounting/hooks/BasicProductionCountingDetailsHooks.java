@@ -25,6 +25,9 @@ package com.qcadoo.mes.basicProductionCounting.hooks;
 
 import java.util.Arrays;
 
+import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
+import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.view.api.components.GridComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +48,8 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class BasicProductionCountingDetailsHooks {
 
+    private static final String L_GRID = "productionCountingQuantities";
+
     private static final String L_FORM = "form";
 
     private static final String L_BASIC = "01basic";
@@ -59,6 +64,26 @@ public class BasicProductionCountingDetailsHooks {
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private ProductionProgressModifyLockHelper progressModifyLockHelper;
+
+    public void setFieldEditableDependsOfOrderState(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+
+        Long formId = form.getEntityId();
+        if (formId == null) {
+            return;
+        }
+        Entity basicProductionCounting = form.getEntity();
+
+        boolean isLocked = progressModifyLockHelper.isLocked(orderService.getOrder( basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER).getId()));
+        grid.setEnabled(!isLocked);
+    }
 
     public void disableUsedAndProducedFieldsDependsOfProductType(final ViewDefinitionState view) {
         FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);

@@ -267,6 +267,8 @@ public class TechnologyServiceO {
         technology.setField(TechnologyFields.OPERATION_COMPONENTS, Lists.newArrayList());
 
         technology.getDataDefinition().save(technology);
+
+        changeTechnologyState(technology, TechnologyStateStringValues.DRAFT);
     }
 
     private void updateTechnologyFromOrder(Entity order) {
