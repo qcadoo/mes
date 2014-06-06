@@ -1,6 +1,5 @@
 package com.qcadoo.mes.materialFlowDocuments.constants;
 
-
 public enum DocumentState {
 
     DRAFT("01draft"), ACCEPTED("02accepted");
@@ -24,3 +23,4 @@ public enum DocumentState {
         }
     }
 }
+

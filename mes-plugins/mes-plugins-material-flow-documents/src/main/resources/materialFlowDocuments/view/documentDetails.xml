@@ -7,11 +7,16 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardFormTemplate" excludeItems="actions.copy,actions.delete"/>
+            <group name="state">
+                <smallButton name="accept" icon="startIcon16.png"
+                             action="#{form}.fireEvent(createResourcesForReceiptDocuments);" state="enabled" >
+                </smallButton>
+            </group>
         </ribbon>
         <windowTab name="generalTab" reference="generalTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="7">
+                           rows="4">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" reference="number"
                                    field="number" />
@@ -29,19 +34,18 @@
                     </layoutElement>
                     <layoutElement column="1" row="4">
                         <component type="lookup" name="user" field="user"
-                                   reference="user">
-                            <option type="column" fields="lastName" name="lastName" link="true" />
+                                   reference="user" defaultEnabled="false">
 
-                            <option type="searchable" value="firstName,lastName" />
-                            <option type="orderable" value="firstName,lastName" />
+                            <option type="searchable" value="firstName" />
+                            <option type="orderable" value="firstName" />
 
                             <option type="expression" value="#firstName + '  ' + #lastName" />
                             <option type="fieldCode" value="firstName" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5">
+                    <layoutElement column="2" row="1">
                         <component type="lookup" name="locationFrom" field="locationFrom"
-                                   reference="locationFrom">
+                                   reference="locationFrom" defaultEnabled="false">
                             <option type="searchable" value="name" />
                             <option type="orderable" value="name" />
 
@@ -50,9 +54,9 @@
 
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6">
+                    <layoutElement column="2" row="2">
                         <component type="lookup" name="locationTo" field="locationTo"
-                                   reference="locationTo">
+                                   reference="locationTo" defaultEnabled="false">
 
                             <option type="searchable" value="name" />
                             <option type="orderable" value="name" />
@@ -61,7 +65,20 @@
                             <option type="fieldCode" value="name" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7">
+                    <layoutElement column="2" row="3">
+                        <component type="lookup" name="delivery" field="delivery"
+                                   reference="delivery">
+
+                            <option type="column" fields="name" name="name" link="true" />
+
+                            <option type="searchable" value="number,name" />
+                            <option type="orderable" value="number,name" />
+
+                            <option type="expression" value="#number" />
+                            <option type="fieldCode" value="number" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
                         <component type="select" name="state" field="state"
                                    reference="state" defaultEnabled="false">
                         </component>
@@ -69,6 +86,9 @@
                 </component>
                 <option type="header" value="true" />
                 <option type="expression" value="#number" />
+                <listener event="createResourcesForReceiptDocuments"
+                          class="com.qcadoo.mes.materialFlowDocuments.listeners.DocumentDetailsListeners"
+                          method="createResourcesForReceiptDocuments" />
             </component>
         </windowTab>
 

@@ -2,8 +2,10 @@ package com.qcadoo.mes.materialFlowDocuments.listeners;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.materialFlowDocuments.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowDocuments.constants.DocumentState;
 import com.qcadoo.mes.materialFlowDocuments.constants.DocumentType;
 import com.qcadoo.mes.materialFlowDocuments.service.ResourceManagementService;
 import com.qcadoo.model.api.Entity;
@@ -17,6 +19,7 @@ public class DocumentDetailsListeners {
     @Autowired
     private ResourceManagementService resourceManagementService;
 
+    @Transactional
     public void createResourcesForReceiptDocuments(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
         FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
@@ -32,5 +35,8 @@ public class DocumentDetailsListeners {
         } else {
             throw new IllegalStateException("Unsupported document type");
         }
+
+        document.setField(DocumentFields.STATE, DocumentState.ACCEPTED);
+        document.getDataDefinition().save(document);
     }
 }
