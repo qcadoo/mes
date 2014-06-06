@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlowDocuments.listeners;
 
+import com.qcadoo.view.api.components.FieldComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,5 +39,20 @@ public class DocumentDetailsListeners {
 
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED);
         document.getDataDefinition().save(document);
+    }
+
+    public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args){
+        FieldComponent locationFrom = (FieldComponent) view.getComponentByReference("locationFrom");
+        locationFrom.setFieldValue(null);
+        locationFrom.requestComponentUpdateState();
+
+        FieldComponent locationTo = (FieldComponent) view.getComponentByReference("locationTo");
+        locationTo.setFieldValue(null);
+        locationFrom.requestComponentUpdateState();
+    }
+
+    public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args){
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference("form");
+        masterOrderForm.performEvent(view, "refresh");
     }
 }

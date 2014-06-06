@@ -7,7 +7,7 @@
     <windowTab name="algorithmTab" reference="algorithmTab">
         <component type="gridLayout" name="algorithmTabGridLayout" columns="3" rows="1">
             <layoutElement column="1" row="1">
-                <component type="select" name="algorithm" field="algorithm" reference="algorithm"/>
+                <component type="select" name="algorithm" field="#{form}.algorithm" reference="algorithm"/>
             </layoutElement>
         </component>
     </windowTab>

@@ -48,7 +48,7 @@ public class DocumentDetailsHooks {
     @Autowired
     private UserService userService;
 
-    public void showPositionsAttributes(final ViewDefinitionState view) {
+    public void showFieldsByDocumentType(final ViewDefinitionState view) {
 
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
@@ -56,19 +56,37 @@ public class DocumentDetailsHooks {
         String documentType = document.getStringField(DocumentFields.TYPE);
         if (DocumentType.RECEIPT.getStringValue().equals(documentType)
                 || DocumentType.INTERNAL_INBOUND.getStringValue().equals(documentType)) {
-            showInboundDocumentPositionsAttributesAndFillInUnit(view, true);
+            enableInboundDocumentPositionsAttributesAndFillInUnit(view, true);
+            showWarehouse(view, false, true);
+        } else if(DocumentType.TRANSFER.getStringValue().equals(documentType)){
+            enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
+            showWarehouse(view, true, true);
+        } else if(DocumentType.RELEASE.getStringValue().equals(documentType) ||
+                DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
+            enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
+            showWarehouse(view, true, false);
         } else {
-            showInboundDocumentPositionsAttributesAndFillInUnit(view, false);
+            enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
+            showWarehouse(view, false, false);
         }
     }
 
-    private void showInboundDocumentPositionsAttributesAndFillInUnit(final ViewDefinitionState view, final boolean show) {
+    private void showWarehouse(final ViewDefinitionState view, boolean from, boolean to) {
+        FieldComponent locationFrom = (FieldComponent) view.getComponentByReference("locationFrom");
+        locationFrom.setEnabled(from);
+
+        FieldComponent locationTo = (FieldComponent) view.getComponentByReference("locationTo");
+        locationTo.setEnabled(to);
+    }
+
+    private void enableInboundDocumentPositionsAttributesAndFillInUnit(final ViewDefinitionState view, final boolean enabled) {
 
         AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             for (String fieldName : INBOUND_FIELDS) {
                 FieldComponent field = positionForm.findFieldComponentByName(fieldName);
-                field.setVisible(show);
+                field.setEnabled(enabled);
+                field.setFieldValue(null);
             }
             fillInUnit(positionForm);
         }
@@ -98,7 +116,7 @@ public class DocumentDetailsHooks {
         DocumentState state = DocumentState.parseString(document.getStringField(DocumentFields.STATE));
 
         if (DocumentState.ACCEPTED.equals(state)) {
-            formComponent.setEnabled(false);
+            formComponent.setFormEnabled(false);
             enableRibbon(window, false);
         }
     }
