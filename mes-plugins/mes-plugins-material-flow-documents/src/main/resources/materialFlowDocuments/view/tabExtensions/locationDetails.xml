@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="materialFlow" view="locationDetails">
+
+    <windowTab name="algorithmTab" reference="algorithmTab">
+        <component type="gridLayout" name="algorithmTabGridLayout" columns="3" rows="1">
+            <layoutElement column="1" row="1">
+                <component type="select" name="algorithm" field="algorithm" reference="algorithm"/>
+            </layoutElement>
+        </component>
+    </windowTab>
+</windowTabExtension>

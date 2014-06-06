@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="documentDetails"
+      modelName="document">
+
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy,actions.delete"/>
+        </ribbon>
+        <windowTab name="generalTab" reference="generalTab">
+            <component type="form" name="form" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="7">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" reference="number"
+                                   field="number" />
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="calendar" name="time" reference="time"
+                                   field="time">
+                            <option type="withTimePicker" value="true" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="select" name="type" field="type"
+                                   reference="type">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="lookup" name="user" field="user"
+                                   reference="user">
+                            <option type="column" fields="lastName" name="lastName" link="true" />
+
+                            <option type="searchable" value="firstName,lastName" />
+                            <option type="orderable" value="firstName,lastName" />
+
+                            <option type="expression" value="#firstName + '  ' + #lastName" />
+                            <option type="fieldCode" value="firstName" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="lookup" name="locationFrom" field="locationFrom"
+                                   reference="locationFrom">
+                            <option type="searchable" value="name" />
+                            <option type="orderable" value="name" />
+
+                            <option type="expression" value="#name" />
+                            <option type="fieldCode" value="name" />
+
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="lookup" name="locationTo" field="locationTo"
+                                   reference="locationTo">
+
+                            <option type="searchable" value="name" />
+                            <option type="orderable" value="name" />
+
+                            <option type="expression" value="#name" />
+                            <option type="fieldCode" value="name" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultEnabled="false">
+                        </component>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true" />
+                <option type="expression" value="#number" />
+            </component>
+        </windowTab>
+
+        <windowTab name="positionsListTab">
+            <component type="awesomeDynamicList" name="positions"
+                       source="#{form}.positions" reference="positions">
+                <option type="hasButtons" value="true" />
+                <option type="hasBorder" value="false" />
+                <header>
+                    <component type="gridLayout" name="mainGridLayout"
+                               columns="8" rows="1">
+                        <layoutElement column="1" row="1">
+                            <component type="label" name="numberLabel" />
+                        </layoutElement>
+                        <layoutElement column="2" row="1">
+                            <component type="label" name="productLabel" />
+                        </layoutElement>
+                        <layoutElement column="3" row="1">
+                            <component type="label" name="quantityLabel" />
+                        </layoutElement>
+                        <layoutElement column="4" row="1">
+                            <component type="label" name="unitLabel" />
+                        </layoutElement>
+                        <layoutElement column="5" row="1">
+                            <component type="label" name="priceLabel" />
+                        </layoutElement>
+                        <layoutElement column="6" row="1">
+                            <component type="label" name="batchLabel" />
+                        </layoutElement>
+                        <layoutElement column="7" row="1">
+                            <component type="label" name="productionDateLabel" />
+                        </layoutElement>
+                        <layoutElement column="8" row="1">
+                            <component type="label" name="expirationDateLabel" />
+                        </layoutElement>
+                    </component>
+                </header>
+                <components>
+                    <component type="gridLayout" name="productLayout"
+                               columns="8" rows="1">
+                        <layoutElement column="1" row="1">
+                            <component type="input" name="number" field="number" hasLabel="false"/>
+                        </layoutElement>
+                        <layoutElement column="2" row="1">
+                            <component type="lookup" name="product" field="product" reference="product" hasLabel="false">
+                                <option type="column" fields="name" name="name" link="true" />
+
+                                <option type="searchable" value="number,name" />
+                                <option type="orderable" value="number,name" />
+
+                                <option type="expression" value="#number + ' - ' + #name" />
+                                <option type="fieldCode" value="number" />
+
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="3" row="1">
+                            <component type="input" name="quantity" field="quantity" hasLabel="false">
+                                <option type="alignment" value="right" />
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="4" row="1">
+                            <component type="input" name="unit" field="unit" hasLabel="false">
+                                <option type="textRepresentationOnDisabled" value="true" />
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="5" row="1">
+                            <component type="input" name="price" field="price" hasLabel="false">
+                                <option type="alignment" value="right" />
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="6" row="1">
+                            <component type="input" name="batch" field="batch" hasLabel="false">
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="7" row="1">
+                            <component type="calendar" name="productionDate" field="productionDate" hasLabel="false">
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="8" row="1">
+                            <component type="calendar" name="expirationDate" field="expirationDate" hasLabel="false">
+                            </component>
+                        </layoutElement>
+                    </component>
+                </components>
+            </component>
+        </windowTab>
+        <windowTab name="auditTab">
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="4">
+                <layoutElement column="1" row="1" height="4">
+                    <component type="borderLayout" name="auditBorderLayout"
+                               reference="auditBorderLayout">
+                        <option type="label" value="auditLayoutLabel" />
+                        <component type="gridLayout" name="gridLayout" columns="1"
+                                   rows="4">
+                            <layoutElement column="1" row="1">
+                                <component type="input" name="createDate" field="#{form}.createDate"
+                                           defaultEnabled="false" />
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="input" name="createUser" field="#{form}.createUser"
+                                           defaultEnabled="false" />
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
+                                <component type="input" name="updateDate" field="#{form}.updateDate"
+                                           defaultEnabled="false" />
+                            </layoutElement>
+                            <layoutElement column="1" row="4">
+                                <component type="input" name="updateUser" field="#{form}.updateUser"
+                                           defaultEnabled="false" />
+                            </layoutElement>
+                        </component>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+    </component>
+    <hooks>
+    </hooks>
+</view>

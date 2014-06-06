@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="position"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true">
+            <validatesLength max="255" />
+        </string>
+        <belongsTo name="product" model="product" plugin="basic"
+                   required="true" />
+        <decimal name="quantity" required="true" />
+        <decimal name="price" default="0" />
+        <string name="batch" />
+        <string name="unit" persistent="false"/>
+        <date name="productionDate" />
+        <date name="expirationDate" />
+        <belongsTo name="document" model="document" />
+    </fields>
+    <hooks>
+    </hooks>
+</model>

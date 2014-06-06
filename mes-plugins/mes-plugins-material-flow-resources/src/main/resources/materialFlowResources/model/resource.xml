@@ -37,6 +37,8 @@
 		<decimal name="value" persistent="false" />
 		<string name="batch" />
 		<datetime name="time" required="true" />
+        <date name="productionDate" />
+        <date name="expirationDate" />
 	</fields>
 	<hooks>
 		<validatesWith

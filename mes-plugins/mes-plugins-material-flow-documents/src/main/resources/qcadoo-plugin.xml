@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.3
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="materialFlowDocuments" group="flow" version="${qcadoo.plugin.version}"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:report="http://schema.qcadoo.org/modules/report"
+        xsi:schemaLocation="
+	   http://schema.qcadoo.org/modules/report
+	   http://schema.qcadoo.org/modules/report.xsd
+		http://schema.qcadoo.org/plugin
+		http://schema.qcadoo.org/plugin.xsd
+		http://schema.qcadoo.org/modules/model
+		http://schema.qcadoo.org/modules/model.xsd
+		http://schema.qcadoo.org/modules/view
+		http://schema.qcadoo.org/modules/view.xsd
+		http://schema.qcadoo.org/modules/menu
+		http://schema.qcadoo.org/modules/menu.xsd
+		http://schema.qcadoo.org/modules/localization
+		http://schema.qcadoo.org/modules/localization.xsd">
+
+	<information>
+		<name>MES - Material Flow Documents Module</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com</url>
+		</vendor>
+		<description>Adds the warehouse documents which can handle resource management.</description>
+		<license>AGPL</license>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>materialFlowResources</plugin>
+			<version>[1.2.1</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+
+        <model:model model="document" resource="model/document.xml" />
+        <model:model model="position" resource="model/position.xml" />
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo" default="01fifo" required="true" />
+        </model:model-field>
+
+        <menu:menu-item name="documents" category="materialFlow"
+                        view="documentsList" />
+
+        <view:view resource="view/documentsList.xml" />
+        <view:view resource="view/documentDetails.xml" />
+
+        <view:view-tab resource="view/tabExtensions/locationDetails.xml" />
+
+        <view:view-grid-column plugin="materialFlowResources" view="resourcesList" component="grid">
+            <view:column name="productionDate" fields="productionDate" orderable="true" searchable="true" />
+            <view:column name="expirationDate" fields="expirationDate" orderable="true" searchable="true" />
+            <view:column name="batch" fields="batch" orderable="true" searchable="true" />
+        </view:view-grid-column>
+
+		<view:resource uri="public/**/*" />
+	</modules>
+	
+	<features>
+		<end-user />
+	</features>
+	
+</plugin>
