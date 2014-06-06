@@ -88,17 +88,4 @@ public class BasicProductionCountingListHooks {
         ribbonActionItem.requestUpdate(true);
     }
 
-    public void setGridEditableDependsOfOrderState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_ORDER);
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
-
-        Long orderId = orderForm.getEntityId();
-        if (orderId == null) {
-            return;
-        }
-
-        boolean isLocked = progressModifyLockHelper.isLocked(orderService.getOrder(orderId));
-        grid.setEnabled(!isLocked);
-    }
-
 }
