@@ -268,7 +268,9 @@ public class TechnologyServiceO {
 
         technology.getDataDefinition().save(technology);
 
-        changeTechnologyState(technology, TechnologyStateStringValues.DRAFT);
+        if(TechnologyStateStringValues.CHECKED.equals(technology.getStringField(TechnologyFields.STATE))) {
+            changeTechnologyState(technology, TechnologyStateStringValues.DRAFT);
+        }
     }
 
     private void updateTechnologyFromOrder(Entity order) {
