@@ -54,7 +54,7 @@
 			joinField="operationComponent" cascade="delete" copyable="true" />
 			
 		<manyToMany name="workstations" plugin="basic" model="workstation"
-			joinField="operationComponents" cascade="delete" copyable="true" />
+			joinField="operationComponents" cascade="nullify" copyable="true" />
 			
 		<!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
 			joinField="operations" />-->

@@ -118,7 +118,7 @@
 	
 		<model:model-field plugin="basic" model="workstation">
 			<model:manyToMany name="operationComponents" plugin="technologies"
-				model="technologyOperationComponent" joinField="workstations" copyable="true" />
+				model="technologyOperationComponent" joinField="workstations" copyable="true" cascade="nullify"/>
 		</model:model-field>
 		
 		<model:model-hook plugin="basic" model="workstation">
