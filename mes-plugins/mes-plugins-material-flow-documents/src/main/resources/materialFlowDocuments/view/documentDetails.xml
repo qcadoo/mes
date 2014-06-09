@@ -6,11 +6,11 @@
 
     <component type="window" name="window" reference="window">
         <ribbon>
-            <template name="standardFormTemplate" excludeItems="actions.copy,actions.delete"/>
+            <template name="standardFormTemplate"/>
             <group name="state">
                 <smallButton name="accept" icon="startIcon16.png"
                              action="#{form}.fireEvent(createResourcesForReceiptDocuments);" state="enabled" >
-                </smallButton>acce
+                </smallButton>
             </group>
         </ribbon>
         <windowTab name="generalTab" reference="generalTab">
@@ -133,7 +133,9 @@
                     <component type="gridLayout" name="productLayout"
                                columns="8" rows="1">
                         <layoutElement column="1" row="1">
-                            <component type="input" name="number" field="number" hasLabel="false"/>
+                            <component type="input" name="number" field="number" hasLabel="false">
+                                <option type="textRepresentationOnDisabled" value="true" />
+                            </component>
                         </layoutElement>
                         <layoutElement column="2" row="1">
                             <component type="lookup" name="product" field="product" reference="product" hasLabel="false">
@@ -214,8 +216,7 @@
         </windowTab>
     </component>
     <hooks>
-        <beforeRender class="com.qcadoo.mes.materialFlowDocuments.hooks.DocumentDetailsHooks" method="initializeDocument" />
         <beforeRender class="com.qcadoo.mes.materialFlowDocuments.hooks.DocumentDetailsHooks" method="showFieldsByDocumentType" />
-        <beforeRender class="com.qcadoo.mes.materialFlowDocuments.hooks.DocumentDetailsHooks" method="disableFormIfDocumentIsAccepted" />
+        <beforeRender class="com.qcadoo.mes.materialFlowDocuments.hooks.DocumentDetailsHooks" method="initializeDocument" />
     </hooks>
 </view>

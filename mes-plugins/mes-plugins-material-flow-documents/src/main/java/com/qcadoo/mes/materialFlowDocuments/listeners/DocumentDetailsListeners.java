@@ -1,6 +1,5 @@
 package com.qcadoo.mes.materialFlowDocuments.listeners;
 
-import com.qcadoo.view.api.components.FieldComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +11,7 @@ import com.qcadoo.mes.materialFlowDocuments.service.ResourceManagementService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
@@ -37,8 +37,9 @@ public class DocumentDetailsListeners {
             throw new IllegalStateException("Unsupported document type");
         }
 
-        document.setField(DocumentFields.STATE, DocumentState.ACCEPTED);
-        document.getDataDefinition().save(document);
+        document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
+        Entity savedDocument = document.getDataDefinition().save(document);
+        formComponent.setEntity(savedDocument);
     }
 
     public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args){

@@ -32,7 +32,7 @@ public class DocumentDetailsHooks {
 
     private static final String RIBBON_GROUP = "actions";
 
-    private static final List<String> RIBBON_ACTION_ITEM = Arrays.asList("saveBack", "saveNew", "save");
+    private static final List<String> RIBBON_ACTION_ITEM = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
 
     private static final String STATE_GROUP = "state";
 
@@ -108,47 +108,40 @@ public class DocumentDetailsHooks {
         positionForm.setEntity(position);
     }
 
-    public void disableFormIfDocumentIsAccepted(final ViewDefinitionState view) {
-
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
-        Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
-        DocumentState state = DocumentState.parseString(document.getStringField(DocumentFields.STATE));
-
-        if (DocumentState.ACCEPTED.equals(state)) {
-            formComponent.setFormEnabled(false);
-            enableRibbon(window, false);
-        }
-    }
-
-    private void enableRibbon(final WindowComponent window, final boolean enable) {
-        for (String actionItem : RIBBON_ACTION_ITEM) {
-            window.getRibbon().getGroupByName(RIBBON_GROUP).getItemByName(actionItem).setEnabled(enable);
-            window.getRibbon().getGroupByName(RIBBON_GROUP).getItemByName(actionItem).requestUpdate(true);
-        }
-        RibbonActionItem acceptAction = (RibbonActionItem) window.getRibbon().getGroupByName(STATE_GROUP).getItemByName(ACCEPT_ITEM);
-        acceptAction.setEnabled(enable);
-        acceptAction.requestUpdate(true);
-    }
-
     public void initializeDocument(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
         Long documentId = formComponent.getEntityId();
+        Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
+        DocumentState state = DocumentState.parseString(document.getStringField(DocumentFields.STATE));
+
         if (documentId == null) {
-            disableAcceptButton(window);
+            changeAcceptButtonState(window, false);
             numberGeneratorService.generateAndInsertNumber(view, MaterialFlowDocumentsConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowDocumentsConstants.MODEL_DOCUMENT, FORM, DocumentFields.NUMBER);
             FieldComponent date = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
             FieldComponent user = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
             date.setFieldValue(setDateToField(new Date()));
             user.setFieldValue(userService.getCurrentUserEntity().getId());
+        } else if (DocumentState.DRAFT.equals(state)){
+            changeAcceptButtonState(window, true);
+        } else if (DocumentState.ACCEPTED.equals(state)) {
+            formComponent.setFormEnabled(false);
+            disableRibbon(window);
         }
     }
 
-    private void disableAcceptButton(WindowComponent window) {
+    private void disableRibbon(final WindowComponent window) {
+        for (String actionItem : RIBBON_ACTION_ITEM) {
+            window.getRibbon().getGroupByName(RIBBON_GROUP).getItemByName(actionItem).setEnabled(false);
+            window.getRibbon().getGroupByName(RIBBON_GROUP).getItemByName(actionItem).requestUpdate(true);
+        }
+        changeAcceptButtonState(window, false);
+    }
+
+    private void changeAcceptButtonState(WindowComponent window, final boolean enable) {
         RibbonActionItem actionItem = (RibbonActionItem)  window.getRibbon().getGroupByName(STATE_GROUP).getItemByName(ACCEPT_ITEM);
-        actionItem.setEnabled(false);
+        actionItem.setEnabled(enable);
         actionItem.requestUpdate(true);
     }
 

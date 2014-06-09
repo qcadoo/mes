@@ -6,7 +6,6 @@ import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PROD
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,17 +42,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
 
         public static WarehouseAlgorithm parseString(final String type) {
-            if (FIFO.getStringValue().equalsIgnoreCase(type)) {
-                return FIFO;
-            } else if (LIFO.getStringValue().equalsIgnoreCase(type)) {
+            if (LIFO.getStringValue().equalsIgnoreCase(type)) {
                 return LIFO;
             } else if (FEFO.getStringValue().equalsIgnoreCase(type)) {
                 return FEFO;
             } else if (LEFO.getStringValue().equalsIgnoreCase(type)) {
                 return LEFO;
-            }
-            {
-                throw new IllegalArgumentException("Couldn't parse WarehouseAlgorithm from string '" + type + "'");
+            } else {
+                return FIFO;
             }
         }
     };
@@ -68,18 +64,19 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Transactional
     public void createResourcesForReceiptDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_TO);
+        String date = document.getStringField(DocumentFields.TIME);
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-            createResource(warehouse, position);
+            createResource(warehouse, position, date);
         }
     }
 
-    private Entity createResource(final Entity warehouse, final Entity position) {
+    private Entity createResource(final Entity warehouse, final Entity position, final String date) {
 
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
         Entity resource = resourceDD.create();
-        resource.setField(ResourceFields.TIME, position.getBelongsToField(PositionFields.DOCUMENT).getField(DocumentFields.TIME));
+        resource.setField(ResourceFields.TIME, date);
         resource.setField(ResourceFields.LOCATION, warehouse);
         resource.setField(ResourceFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
         resource.setField(ResourceFields.QUANTITY, position.getField(PositionFields.QUANTITY));
@@ -91,7 +88,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return resourceDD.save(resource);
     }
 
-    private Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, Date date) {
+    private Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, String date) {
 
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
@@ -154,19 +151,21 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     public void moveResourcesForTransferDocument(Entity document) {
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
+        String date = document.getStringField(DocumentFields.TIME);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
                 .getStringField(LocationFieldsMFD.ALGORITHM));
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-            moveResources(warehouseFrom, warehouseTo, position, warehouseAlgorithm);
+            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+            moveResources(warehouseFrom, warehouseTo, product, quantity, date, warehouseAlgorithm);
         }
 
     }
 
-    private void moveResources(Entity warehouseFrom, Entity warehouseTo, Entity position, WarehouseAlgorithm warehouseAlgorithm) {
-        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+    private void moveResources(Entity warehouseFrom, Entity warehouseTo, Entity product, BigDecimal quantity, String date,
+            WarehouseAlgorithm warehouseAlgorithm) {
         List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, warehouseAlgorithm);
 
-        BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
 
@@ -175,8 +174,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 resource.getDataDefinition().delete(resource.getId());
 
-                createResource(warehouseTo, resource, resourceQuantity, position.getBelongsToField(PositionFields.DOCUMENT)
-                        .getDateField(DocumentFields.TIME));
+                createResource(warehouseTo, resource, resourceQuantity, date);
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
                     return;
@@ -188,8 +186,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 resource.getDataDefinition().save(resource);
 
-                createResource(warehouseTo, resource, quantity,
-                        position.getBelongsToField(PositionFields.DOCUMENT).getDateField(DocumentFields.TIME));
+                createResource(warehouseTo, resource, quantity, date);
 
                 return;
             }
