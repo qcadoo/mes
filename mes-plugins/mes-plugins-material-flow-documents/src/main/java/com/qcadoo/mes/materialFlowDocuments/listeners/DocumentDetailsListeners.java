@@ -21,7 +21,7 @@ public class DocumentDetailsListeners {
     private ResourceManagementService resourceManagementService;
 
     @Transactional
-    public void createResourcesForReceiptDocuments(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
 
         FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
         final Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
@@ -37,6 +37,8 @@ public class DocumentDetailsListeners {
             throw new IllegalStateException("Unsupported document type");
         }
 
+//        FieldComponent state = (FieldComponent) view.getComponentByReference(DocumentFields.STATE);
+//        state.setFieldValue(DocumentState.ACCEPTED.getStringValue());
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
         Entity savedDocument = document.getDataDefinition().save(document);
         formComponent.setEntity(savedDocument);

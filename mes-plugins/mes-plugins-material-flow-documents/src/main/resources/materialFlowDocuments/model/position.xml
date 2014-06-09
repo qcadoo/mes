@@ -15,5 +15,6 @@
         <belongsTo name="document" model="document" />
     </fields>
     <hooks>
+        <validatesWith class="com.qcadoo.mes.materialFlowDocuments.validators.PositionValidators" method="checkAttributesRequirement" />
     </hooks>
 </model>

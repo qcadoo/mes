@@ -24,6 +24,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -113,15 +114,18 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
                 .getStringField(LocationFieldsMFD.ALGORITHM));
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-            BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
-            updateResources(warehouse, product, quantity, warehouseAlgorithm);
+            updateResources(warehouse, position, warehouseAlgorithm);
+            if(!position.isValid()){
+                document.addGlobalError("error.code");
+            }
         }
     }
 
-    private void updateResources(Entity warehouse, Entity product, BigDecimal quantity, WarehouseAlgorithm warehouseAlgorithm) {
+    private void updateResources(Entity warehouse, Entity position, WarehouseAlgorithm warehouseAlgorithm) {
+        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouse, product, warehouseAlgorithm);
 
+        BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
 
@@ -144,6 +148,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             }
         }
 
+        position.addError(position.getDataDefinition().getField(PositionFields.QUANTITY), "materialFlow.error.position.quantity.notEnough");
     }
 
     @Override
@@ -155,17 +160,18 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
                 .getStringField(LocationFieldsMFD.ALGORITHM));
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-            BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
-            moveResources(warehouseFrom, warehouseTo, product, quantity, date, warehouseAlgorithm);
+            moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);
         }
 
     }
 
-    private void moveResources(Entity warehouseFrom, Entity warehouseTo, Entity product, BigDecimal quantity, String date,
+    private void moveResources(Entity warehouseFrom, Entity warehouseTo, Entity position, String date,
             WarehouseAlgorithm warehouseAlgorithm) {
+
+        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, warehouseAlgorithm);
 
+        BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
 
@@ -191,6 +197,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 return;
             }
         }
+        position.addError(position.getDataDefinition().getField(PositionFields.QUANTITY), "materialFlow.error.position.quantity.notEnough");
     }
 
     private List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product,

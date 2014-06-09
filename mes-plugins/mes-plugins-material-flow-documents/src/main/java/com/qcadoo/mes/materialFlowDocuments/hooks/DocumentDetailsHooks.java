@@ -48,8 +48,8 @@ public class DocumentDetailsHooks {
     @Autowired
     private UserService userService;
 
+    // fixme: refactor
     public void showFieldsByDocumentType(final ViewDefinitionState view) {
-
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
 
@@ -86,7 +86,9 @@ public class DocumentDetailsHooks {
             for (String fieldName : INBOUND_FIELDS) {
                 FieldComponent field = positionForm.findFieldComponentByName(fieldName);
                 field.setEnabled(enabled);
-                field.setFieldValue(null);
+                if(!enabled){
+                    field.setFieldValue(null);
+                }
             }
             fillInUnit(positionForm);
         }
@@ -109,6 +111,8 @@ public class DocumentDetailsHooks {
     }
 
     public void initializeDocument(final ViewDefinitionState view) {
+
+        showFieldsByDocumentType(view);
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
         Long documentId = formComponent.getEntityId();
