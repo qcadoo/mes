@@ -24,7 +24,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -113,11 +112,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
                 .getStringField(LocationFieldsMFD.ALGORITHM));
+        boolean eneoughResources = true;
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             updateResources(warehouse, position, warehouseAlgorithm);
-            if(!position.isValid()){
-                document.addGlobalError("error.code");
-            }
+            eneoughResources = eneoughResources && position.isValid();
+        }
+        if(!eneoughResources){
+            document.addGlobalError("materialFlow.error.position.quantity.notEnough");
         }
     }
 
@@ -159,8 +160,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         String date = document.getStringField(DocumentFields.TIME);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
                 .getStringField(LocationFieldsMFD.ALGORITHM));
+        boolean eneoughResources = true;
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);
+            eneoughResources = eneoughResources && position.isValid();
+        }
+        if(!eneoughResources){
+            document.addGlobalError("materialFlow.error.position.quantity.notEnough");
         }
 
     }

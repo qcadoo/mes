@@ -25,6 +25,11 @@ public class DocumentDetailsListeners {
 
         FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
         final Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
+        Entity savedDocument = document.getDataDefinition().save(document);
+        if(!savedDocument.isValid()){
+           formComponent.setEntity(savedDocument);
+           return;
+        }
 
         DocumentType documentType = DocumentType.parseString(document.getStringField(DocumentFields.TYPE));
         if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
@@ -37,10 +42,11 @@ public class DocumentDetailsListeners {
             throw new IllegalStateException("Unsupported document type");
         }
 
-//        FieldComponent state = (FieldComponent) view.getComponentByReference(DocumentFields.STATE);
-//        state.setFieldValue(DocumentState.ACCEPTED.getStringValue());
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
-        Entity savedDocument = document.getDataDefinition().save(document);
+        savedDocument = document.getDataDefinition().save(document);
+        if(!savedDocument.isValid()){
+            savedDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+        }
         formComponent.setEntity(savedDocument);
     }
 
@@ -55,7 +61,7 @@ public class DocumentDetailsListeners {
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args){
-        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference("form");
-        masterOrderForm.performEvent(view, "refresh");
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        form.performEvent(view, "refresh");
     }
 }

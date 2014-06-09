@@ -99,7 +99,7 @@
             <component type="awesomeDynamicList" name="positions"
                        source="#{form}.positions" reference="positions">
                 <option type="hasButtons" value="true" />
-                <option type="hasBorder" value="false" />
+                <option type="hasBorder" value="true" />
                 <header>
                     <component type="gridLayout" name="mainGridLayout"
                                columns="8" rows="1">
