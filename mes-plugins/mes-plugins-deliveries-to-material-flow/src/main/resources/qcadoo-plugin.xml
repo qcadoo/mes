@@ -62,6 +62,10 @@
 			<plugin>materialFlowResources</plugin>
 			<version>[1.1.7</version>
 		</dependency>
+		<dependency>
+			<plugin>materialFlowDocuments</plugin>
+			<version>[1.2.1</version>
+		</dependency>
 	</dependencies>
 
 	<modules>

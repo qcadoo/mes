@@ -7,4 +7,6 @@ public class MaterialFlowDocumentsConstants {
     // MODEL
 
     public static final String MODEL_DOCUMENT = "document";
+
+    public static final String MODEL_POSITION = "position";
 }

@@ -23,12 +23,14 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveryFieldsDTMF;
@@ -38,11 +40,19 @@ import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.mes.materialFlow.constants.TransferType;
+import com.qcadoo.mes.materialFlowDocuments.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowDocuments.constants.DocumentState;
+import com.qcadoo.mes.materialFlowDocuments.constants.DocumentType;
+import com.qcadoo.mes.materialFlowDocuments.constants.MaterialFlowDocumentsConstants;
+import com.qcadoo.mes.materialFlowDocuments.constants.PositionFields;
+import com.qcadoo.mes.materialFlowDocuments.service.ResourceManagementService;
 import com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.UserService;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class DeliveryStateServiceMF {
@@ -52,6 +62,15 @@ public class DeliveryStateServiceMF {
 
     @Autowired
     private MaterialFlowService materialFlowService;
+
+    @Autowired
+    private ResourceManagementService resourceManagementService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private UserService userService;
 
     public void createTransfersForTheReceivedProducts(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
@@ -90,6 +109,56 @@ public class DeliveryStateServiceMF {
                 transfer.getDataDefinition().save(transfer);
             }
         }
+    }
+
+    public void createDocumentsForTheReceivedProducts(final StateChangeContext stateChangeContext) {
+        final Entity delivery = stateChangeContext.getOwner();
+
+        if (delivery == null) {
+            return;
+        }
+
+        Entity location = delivery.getBelongsToField(DeliveryFieldsDTMF.LOCATION);
+
+        if (location == null) {
+            return;
+        }
+
+        List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+
+        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowDocumentsConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowDocumentsConstants.MODEL_DOCUMENT);
+        Entity document = documentDD.create();
+        document.setField(DocumentFields.LOCATION_TO,location);
+        document.setField(DocumentFields.DELIVERY,delivery);
+        document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
+        document.setField(DocumentFields.TIME, new Date());
+        document.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
+        document.setField(DocumentFields.TYPE, DocumentType.RECEIPT.getStringValue());
+        document.setField(DocumentFields.NUMBER, numberGeneratorService.generateNumber(MaterialFlowDocumentsConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowDocumentsConstants.MODEL_DOCUMENT));
+
+        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowDocumentsConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowDocumentsConstants.MODEL_POSITION);
+
+        List<Entity> positions = Lists.newArrayList();
+
+        for (Entity deliveredProduct : deliveredProducts) {
+            Entity position = positionDD.create();
+
+            position.setField(PositionFields.PRODUCT, deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT));
+            position.setField(PositionFields.QUANTITY,
+                    deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
+            position.setField(PositionFields.PRICE,
+                    deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
+            positions.add(position);
+        }
+        
+        document.setField(DocumentFields.POSITIONS, positions);
+
+        Entity savedDocument = documentDD.save(document);
+
+        resourceManagementService.createResourcesForReceiptDocuments(savedDocument);
     }
 
 }

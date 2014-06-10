@@ -70,7 +70,7 @@
                     </layoutElement>
                     <layoutElement column="2" row="3">
                         <component type="lookup" name="delivery" field="delivery"
-                                   reference="delivery">
+                                   reference="delivery" defaultEnabled="false">
 
                             <option type="column" fields="name" name="name" link="true" />
 

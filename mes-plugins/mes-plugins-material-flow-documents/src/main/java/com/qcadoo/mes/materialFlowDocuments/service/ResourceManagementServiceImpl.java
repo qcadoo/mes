@@ -64,13 +64,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Transactional
     public void createResourcesForReceiptDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_TO);
-        String date = document.getStringField(DocumentFields.TIME);
+        Object date = document.getField(DocumentFields.TIME);
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             createResource(warehouse, position, date);
         }
     }
 
-    private Entity createResource(final Entity warehouse, final Entity position, final String date) {
+    private Entity createResource(final Entity warehouse, final Entity position, final Object date) {
 
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
@@ -88,7 +88,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return resourceDD.save(resource);
     }
 
-    private Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, String date) {
+    private Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, Object date) {
 
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
@@ -112,12 +112,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
                 .getStringField(LocationFieldsMFD.ALGORITHM));
-        boolean eneoughResources = true;
+        boolean enoughResources = true;
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             updateResources(warehouse, position, warehouseAlgorithm);
-            eneoughResources = eneoughResources && position.isValid();
+            enoughResources = enoughResources && position.isValid();
         }
-        if(!eneoughResources){
+        if(!enoughResources){
             document.addGlobalError("materialFlow.error.position.quantity.notEnough");
         }
     }
@@ -157,21 +157,21 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     public void moveResourcesForTransferDocument(Entity document) {
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
-        String date = document.getStringField(DocumentFields.TIME);
+        Object date = document.getField(DocumentFields.TIME);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
                 .getStringField(LocationFieldsMFD.ALGORITHM));
-        boolean eneoughResources = true;
+        boolean enoughResources = true;
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);
-            eneoughResources = eneoughResources && position.isValid();
+            enoughResources = enoughResources && position.isValid();
         }
-        if(!eneoughResources){
+        if(!enoughResources){
             document.addGlobalError("materialFlow.error.position.quantity.notEnough");
         }
 
     }
 
-    private void moveResources(Entity warehouseFrom, Entity warehouseTo, Entity position, String date,
+    private void moveResources(Entity warehouseFrom, Entity warehouseTo, Entity position, Object date,
             WarehouseAlgorithm warehouseAlgorithm) {
 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
