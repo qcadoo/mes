@@ -1,5 +1,8 @@
 package com.qcadoo.mes.materialFlowDocuments.validators;
 
+import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
+import static com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR.WAREHOUSE;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowDocuments.constants.DocumentFields;
@@ -26,10 +29,16 @@ public class DocumentValidators {
     }
 
     private boolean hasWarehouse(final DataDefinition dataDefinition, final Entity entity, String warehouseField) {
-        if (entity.getField(warehouseField) != null) {
-            return true;
+        Entity location = entity.getBelongsToField(warehouseField);
+        if (location == null) {
+            entity.addError(dataDefinition.getField(warehouseField), "materialFlow.error.document.warehouse.required");
+            return false;
         }
-        entity.addError(dataDefinition.getField(warehouseField), "materialFlow.error.document.warehouse.required");
-        return false;
+        if (!WAREHOUSE.getStringValue().equals(location.getStringField(TYPE))) {
+            entity.addError(dataDefinition.getField(warehouseField),
+                    "materialFlow.document.validate.global.error.locationIsNotWarehouse");
+            return false;
+        }
+        return true;
     }
 }
