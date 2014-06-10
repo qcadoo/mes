@@ -73,6 +73,7 @@
 		<model:model model="technology" resource="model/technology.xml" />
 		<model:model model="technologyOperationComponent"
 			resource="model/technologyOperationComponent.xml" />
+		<model:model model="productStructureTreeNode" resource="model/productStructureTreeNode.xml" />
 		
 		<model:model model="technologyStateChange" resource="model/technologyStateChange.xml" />
 		
