@@ -113,9 +113,6 @@
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingListHooks"
 			method="updateRibbonState" />
-		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingListHooks"
-			method="setGridEditableDependsOfOrderState" />
 	</hooks>
 
 </view>

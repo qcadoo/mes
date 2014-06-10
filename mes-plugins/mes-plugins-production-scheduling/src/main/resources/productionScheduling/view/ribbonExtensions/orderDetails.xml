@@ -29,7 +29,7 @@
 	plugin="orders"
 	view="orderDetails">
 	<group name="operationDuration">
-		<bigButton name="operationDuration" icon="iconProducts24.png" state="enabled" >
+		<bigButton name="operationDuration" icon="iconProducts24.png" state="disabled" >
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({

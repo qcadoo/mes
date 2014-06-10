@@ -501,8 +501,7 @@ public class OrderHooks {
                 TechnologiesConstants.MODEL_TECHNOLOGY);
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
-        Entity copyOfTechnology = technologyDD.create();
-        copyOfTechnology = technologyDD.copy(technology.getId()).get(0);
+        Entity copyOfTechnology = technologyDD.copy(technology.getId()).get(0);
         String number = null;
         if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
             number = technologyServiceO.generateNumberForTechnologyInOrder(order,

@@ -36,7 +36,7 @@ public class OrderDetailsHooksPS {
     private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        orderDetailsRibbonHelper.setButtonEnabledForPendingOrder(view, "operationDuration", "operationDuration",
+        orderDetailsRibbonHelper.setButtonEnabled(view, "operationDuration", "operationDuration",
                 OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
     }
 

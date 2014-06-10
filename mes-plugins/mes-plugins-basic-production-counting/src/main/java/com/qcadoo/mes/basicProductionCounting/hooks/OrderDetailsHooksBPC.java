@@ -23,48 +23,37 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Predicate;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class OrderDetailsHooksBPC {
 
-    private static final String L_WINDOW = "window";
+    private static final Predicate<Entity> NOT_DECLINED_OR_PENDING = new Predicate<Entity>() {
 
-    private static final String L_FORM = "form";
+        @Override
+        public boolean apply(final Entity order) {
+            if (order == null) {
+                return false;
+            }
+            OrderState orderState = OrderState.of(order);
+            return orderState != OrderState.DECLINED && orderState != OrderState.PENDING;
+        }
+    };
+
+    @Autowired
+    private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
 
     public void disabledButtonForAppropriateState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup basicProductionCounting = window.getRibbon().getGroupByName(
-                BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP);
-
-        RibbonActionItem productionCounting = basicProductionCounting
-                .getItemByName(BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_NAME);
-
-        Long orderId = orderForm.getEntityId();
-
-        if (orderId == null) {
-            return;
-        }
-
-        Entity order = orderForm.getEntity();
-        String state = order.getStringField(OrderFields.STATE);
-
-        if (OrderState.DECLINED.getStringValue().equals(state) || OrderState.PENDING.getStringValue().equals(state)) {
-            productionCounting.setEnabled(false);
-            productionCounting.requestUpdate(true);
-        }
+        orderDetailsRibbonHelper.setButtonEnabled(view, BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP,
+                BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_NAME, NOT_DECLINED_OR_PENDING);
     }
 
 }

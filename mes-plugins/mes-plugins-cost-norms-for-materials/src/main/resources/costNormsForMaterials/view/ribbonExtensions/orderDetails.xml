@@ -30,7 +30,7 @@
     view="orderDetails">
 
 	<group name="materials">
-		<bigButton name="viewCosts" icon="calculateTimeIcon24.png">
+		<bigButton name="viewCosts" icon="calculateTimeIcon24.png" state="disabled">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({

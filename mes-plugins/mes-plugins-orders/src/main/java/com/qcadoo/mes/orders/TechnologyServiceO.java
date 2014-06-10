@@ -65,23 +65,32 @@ public class TechnologyServiceO {
 
     @Transactional
     public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
-        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
+        OrderType orderType = OrderType.of(order);
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
-            if (technologyPrototype != null) {
+        if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
+            if (technologyPrototype == null) {
+                removeTechnologyFromOrder(order);
+            } else {
                 createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype);
             }
-        } else if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(orderType)) {
+        } else if (orderType == OrderType.WITH_OWN_TECHNOLOGY) {
             createOrUpdateForOwnTechnology(order, technologyPrototype);
         }
+    }
+
+    private void removeTechnologyFromOrder(final Entity order) {
+        Entity orderTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        deleteTechnology(orderTechnology);
+
+        order.setField(OrderFields.TECHNOLOGY, null);
     }
 
     private void createOrUpdateTechnologyForWithPatternTechnology(final Entity order, final Entity technologyPrototype) {
         Entity existingOrder = getExistingOrder(order);
 
         if (isTechnologyCopied(order)) {
-            if (isOrderTypeChnagedToWithPatternTechnology(order)) {
+            if (isOrderTypeChangedToWithPatternTechnology(order)) {
                 Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
                 deleteTechnology(technology);
@@ -172,7 +181,7 @@ public class TechnologyServiceO {
         return true;
     }
 
-    private boolean isOrderTypeChnagedToWithPatternTechnology(final Entity order) {
+    private boolean isOrderTypeChangedToWithPatternTechnology(final Entity order) {
         Entity existingOrder = getExistingOrder(order);
 
         if (existingOrder == null) {
@@ -271,15 +280,10 @@ public class TechnologyServiceO {
         changeTechnologyState(technology, TechnologyStateStringValues.DRAFT);
     }
 
-    private void updateTechnologyFromOrder(Entity order) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if (technology != null) {
-            technology.setField(TechnologyFields.PRODUCT, order.getBelongsToField(OrderFields.PRODUCT));
-            technology = technology.getDataDefinition().save(technology);
-        }
-    }
-
     private void deleteTechnology(final Entity technology) {
+        if (technology == null || technology.getId() == null) {
+            return;
+        }
         technology.getDataDefinition().delete(technology.getId());
     }
 

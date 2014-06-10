@@ -30,7 +30,7 @@
     view="orderDetails">
 
 	<group name="changeover">
-		<bigButton name="showChangeover" icon="genealogyClockIcon24.png">
+		<bigButton name="showChangeover" icon="genealogyClockIcon24.png" state="disabled">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
