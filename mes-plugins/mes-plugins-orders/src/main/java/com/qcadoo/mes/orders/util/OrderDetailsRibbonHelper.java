@@ -25,12 +25,13 @@ package com.qcadoo.mes.orders.util;
 
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -58,14 +59,17 @@ public class OrderDetailsRibbonHelper {
         }
     };
 
-    public void setButtonEnabledForPendingOrder(final ViewDefinitionState view, final String ribbonGroupName,
-            final String ribbonItemName, final Predicate<Entity> predicate) {
+    @Autowired
+    private OrderService orderService;
+
+    public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
+            final Predicate<Entity> predicate) {
         RibbonActionItem ribbonItem = getRibbonItem(view, ribbonGroupName, ribbonItemName);
         Entity order = getOrderEntity(view);
-        if (ribbonItem == null || order == null || OrderState.of(order) != OrderState.PENDING) {
+        if (ribbonItem == null) {
             return;
         }
-        ribbonItem.setEnabled(predicate.apply(order));
+        ribbonItem.setEnabled(order != null && predicate.apply(order));
         ribbonItem.requestUpdate(true);
     }
 
@@ -74,7 +78,11 @@ public class OrderDetailsRibbonHelper {
         if (form == null) {
             return null;
         }
-        return form.getPersistedEntityWithIncludedFormValues();
+        Long orderId = form.getEntityId();
+        if (orderId == null) {
+            return null;
+        }
+        return orderService.getOrder(orderId);
     }
 
     private RibbonActionItem getRibbonItem(final ViewDefinitionState view, final String ribbonGroupName,

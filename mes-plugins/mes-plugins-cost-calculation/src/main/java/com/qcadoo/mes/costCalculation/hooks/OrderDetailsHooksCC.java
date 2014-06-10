@@ -36,7 +36,7 @@ public class OrderDetailsHooksCC {
     private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        orderDetailsRibbonHelper.setButtonEnabledForPendingOrder(view, "costCalculate", "costCalculate",
+        orderDetailsRibbonHelper.setButtonEnabled(view, "costCalculate", "costCalculate",
                 OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
     }
 

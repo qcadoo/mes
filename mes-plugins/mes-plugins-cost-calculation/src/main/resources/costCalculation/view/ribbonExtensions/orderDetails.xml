@@ -31,6 +31,7 @@
 
 	<group name="costCalculate">
 		<bigButton name="costCalculate" icon="calculateTimeIcon24.png"
-			action="#{form}.fireEvent(showCostCalculateFromOrder);" />
+			action="#{form}.fireEvent(showCostCalculateFromOrder);"
+			state="disabled" />
 	</group>
 </ribbonExtension>

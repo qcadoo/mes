@@ -110,7 +110,7 @@
 			
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderDetailsHooksPPS"
-			method="updateViewPPSButtonState" />
+			method="onBeforeRender" />
 	</modules>
 	
 	<features>
