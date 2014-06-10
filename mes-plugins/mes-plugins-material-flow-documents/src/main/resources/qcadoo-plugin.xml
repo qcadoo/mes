@@ -62,6 +62,7 @@
 
         <model:model model="document" resource="model/document.xml" />
         <model:model model="position" resource="model/position.xml" />
+        <model:model model="warehouseStock" resource="model/warehouseStock.xml" />
 
         <model:model-field plugin="materialFlow" model="location">
             <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo" default="01fifo" />
@@ -81,9 +82,12 @@
 
         <menu:menu-item name="documents" category="materialFlow"
                         view="documentsList" />
+        <menu:menu-item name="warehouseStock" category="materialFlow"
+                        view="warehouseStocksList" />
 
         <view:view resource="view/documentsList.xml" />
         <view:view resource="view/documentDetails.xml" />
+        <view:view resource="view/warehouseStocksList.xml" />
 
         <view:view-tab resource="view/tabExtensions/locationDetails.xml" />
 

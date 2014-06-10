@@ -131,8 +131,18 @@ public class DocumentDetailsHooks {
             changeAcceptButtonState(window, true);
         } else if (DocumentState.ACCEPTED.equals(state)) {
             formComponent.setFormEnabled(false);
+            disableADL(view);
             disableRibbon(window);
         }
+    }
+
+    private void disableADL(ViewDefinitionState view) {
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        for (FormComponent positionForm : positionsADL.getFormComponents()) {
+            positionForm.setFormEnabled(false);
+        }
+        positionsADL.setEnabled(false);
+        positionsADL.requestComponentUpdateState();
     }
 
     private void disableRibbon(final WindowComponent window) {
