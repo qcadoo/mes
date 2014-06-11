@@ -28,13 +28,13 @@
 	auditable="true" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" required="true"/>
-		<belongsTo name="technology" model="technology" required="true"/>
-		<belongsTo name="product" plugin="basic" model="product" required="true" />
+		<string name="number" />
+		<belongsTo name="technology" model="technology" />
+		<belongsTo name="product" plugin="basic" model="product" persistent="false"/>
 		<belongsTo name="operation" model="technologyOperationComponent" persistent="false"/>
-		<decimal name="quantity" required="true" persistent="false" />
+		<decimal name="quantity" persistent="false" />
 		
-		<hasMany name="children" model="productStructureTreeNode" joinField="parent" cascade="delete" copyable="true" />
+		<hasMany name="children" model="productStructureTreeNode" joinField="parent" cascade="delete" />
 		<belongsTo name="parent" model="productStructureTreeNode" />
 		<priority name="priority" scope="parent" />
 		<string name="nodeNumber" />

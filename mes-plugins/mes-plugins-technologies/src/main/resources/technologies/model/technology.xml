@@ -65,7 +65,7 @@
 		<hasMany name="technologyAttachments" joinField="technology" model="technologyAttachment" cascade="delete" />
 	
 		<tree name="productStructureTree" model="productStructureTreeNode"
-			joinField="technology" cascade="delete" copyable="true" persistent="false"/>
+			joinField="technology" cascade="delete" persistent="false"/>
 
 	</fields>
 	<hooks>
