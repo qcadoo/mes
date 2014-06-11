@@ -30,7 +30,6 @@
 		<module>mes-plugins-gantt-for-orders</module>
 		<module>mes-plugins-gantt-for-shifts</module>
 		<module>mes-plugins-material-flow</module>
-        <module>mes-plugins-material-flow-documents</module>
 		<module>mes-plugins-material-flow-resources</module>
 		<module>mes-plugins-material-flow-multitransfers</module>
 		<module>mes-plugins-time-norms-for-operations</module>

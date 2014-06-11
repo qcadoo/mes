@@ -40,13 +40,8 @@ import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.mes.materialFlow.constants.TransferType;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentState;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentType;
-import com.qcadoo.mes.materialFlowDocuments.constants.MaterialFlowDocumentsConstants;
-import com.qcadoo.mes.materialFlowDocuments.constants.PositionFields;
-import com.qcadoo.mes.materialFlowDocuments.service.ResourceManagementService;
-import com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -126,8 +121,8 @@ public class DeliveryStateServiceMF {
 
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 
-        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowDocumentsConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowDocumentsConstants.MODEL_DOCUMENT);
+        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
         Entity document = documentDD.create();
         document.setField(DocumentFields.LOCATION_TO,location);
         document.setField(DocumentFields.DELIVERY,delivery);
@@ -135,11 +130,11 @@ public class DeliveryStateServiceMF {
         document.setField(DocumentFields.TIME, new Date());
         document.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
         document.setField(DocumentFields.TYPE, DocumentType.RECEIPT.getStringValue());
-        document.setField(DocumentFields.NUMBER, numberGeneratorService.generateNumber(MaterialFlowDocumentsConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowDocumentsConstants.MODEL_DOCUMENT));
+        document.setField(DocumentFields.NUMBER, numberGeneratorService.generateNumber(
+                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT));
 
-        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowDocumentsConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowDocumentsConstants.MODEL_POSITION);
+        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_POSITION);
 
         List<Entity> positions = Lists.newArrayList();
 

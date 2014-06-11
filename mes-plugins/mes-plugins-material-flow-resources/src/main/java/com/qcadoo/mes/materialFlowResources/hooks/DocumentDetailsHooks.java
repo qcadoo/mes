@@ -1,4 +1,4 @@
-package com.qcadoo.mes.materialFlowDocuments.hooks;
+package com.qcadoo.mes.materialFlowResources.hooks;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
@@ -12,11 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentState;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentType;
-import com.qcadoo.mes.materialFlowDocuments.constants.MaterialFlowDocumentsConstants;
-import com.qcadoo.mes.materialFlowDocuments.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -121,8 +117,8 @@ public class DocumentDetailsHooks {
 
         if (documentId == null) {
             changeAcceptButtonState(window, false);
-            numberGeneratorService.generateAndInsertNumber(view, MaterialFlowDocumentsConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowDocumentsConstants.MODEL_DOCUMENT, FORM, DocumentFields.NUMBER);
+            numberGeneratorService.generateAndInsertNumber(view, MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                    MaterialFlowResourcesConstants.MODEL_DOCUMENT, FORM, DocumentFields.NUMBER);
             FieldComponent date = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
             FieldComponent user = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
             date.setFieldValue(setDateToField(new Date()));

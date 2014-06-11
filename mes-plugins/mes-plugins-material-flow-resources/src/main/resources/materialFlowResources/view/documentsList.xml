@@ -30,7 +30,7 @@
             <option type="orderable"
                     value="number,time,locationFrom,locationTo,user,type,state" />
 
-            <option type="correspondingView" value="materialFlowDocuments/documentDetails" />
+            <option type="correspondingView" value="materialFlowResources/documentDetails" />
             <option type="correspondingComponent" value="form" />
 
             <option type="fullscreen" value="true" />

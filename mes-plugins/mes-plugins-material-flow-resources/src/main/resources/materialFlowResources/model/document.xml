@@ -16,6 +16,6 @@
         <hasMany name="positions" model="position" joinField="document" cascade="delete" copyable="true" />
     </fields>
     <hooks>
-        <validatesWith class="com.qcadoo.mes.materialFlowDocuments.validators.DocumentValidators" method="hasWarehouses"/>
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.DocumentValidators" method="hasWarehouses"/>
     </hooks>
 </model>

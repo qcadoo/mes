@@ -1,4 +1,4 @@
-package com.qcadoo.mes.materialFlowDocuments.service;
+package com.qcadoo.mes.materialFlowResources.service;
 
 import com.qcadoo.model.api.Entity;
 

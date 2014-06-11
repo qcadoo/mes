@@ -1,4 +1,4 @@
-package com.qcadoo.mes.materialFlowDocuments.service;
+package com.qcadoo.mes.materialFlowResources.service;
 
 import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATION;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
@@ -13,11 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowDocuments.constants.LocationFieldsMFD;
-import com.qcadoo.mes.materialFlowDocuments.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -111,7 +107,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     public void updateResourcesForReleaseDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
-                .getStringField(LocationFieldsMFD.ALGORITHM));
+                .getStringField(LocationFieldsMFR.ALGORITHM));
         boolean enoughResources = true;
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             updateResources(warehouse, position, warehouseAlgorithm);
@@ -159,7 +155,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
         Object date = document.getField(DocumentFields.TIME);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
-                .getStringField(LocationFieldsMFD.ALGORITHM));
+                .getStringField(LocationFieldsMFR.ALGORITHM));
         boolean enoughResources = true;
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);

@@ -1,12 +1,12 @@
-package com.qcadoo.mes.materialFlowDocuments.validators;
+package com.qcadoo.mes.materialFlowResources.validators;
 
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR.WAREHOUSE;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 

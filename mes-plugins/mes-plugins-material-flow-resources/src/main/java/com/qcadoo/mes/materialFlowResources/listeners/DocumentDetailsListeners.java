@@ -1,13 +1,13 @@
-package com.qcadoo.mes.materialFlowDocuments.listeners;
+package com.qcadoo.mes.materialFlowResources.listeners;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentState;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentType;
-import com.qcadoo.mes.materialFlowDocuments.service.ResourceManagementService;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;

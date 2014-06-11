@@ -17,6 +17,6 @@
         <priority name="number" scope="document"/>
     </fields>
     <hooks>
-        <validatesWith class="com.qcadoo.mes.materialFlowDocuments.validators.PositionValidators" method="checkAttributesRequirement" />
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators" method="checkAttributesRequirement" />
     </hooks>
 </model>

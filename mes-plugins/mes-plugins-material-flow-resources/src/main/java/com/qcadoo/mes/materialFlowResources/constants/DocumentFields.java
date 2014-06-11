@@ -1,4 +1,4 @@
-package com.qcadoo.mes.materialFlowDocuments.constants;
+package com.qcadoo.mes.materialFlowResources.constants;
 
 public final class DocumentFields {
 

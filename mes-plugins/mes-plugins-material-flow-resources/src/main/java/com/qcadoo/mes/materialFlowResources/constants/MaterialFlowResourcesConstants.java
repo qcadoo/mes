@@ -29,6 +29,10 @@ public interface MaterialFlowResourcesConstants {
 
     // MODEL
 
-    String MODEL_RESOURCE = "resource";
+    public static final String MODEL_RESOURCE = "resource";
+
+    public static final String MODEL_DOCUMENT = "document";
+
+    public static final String MODEL_POSITION = "position";
 
 }

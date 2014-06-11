@@ -64,6 +64,9 @@
 		<localization:translation path="locales" />
 	
 		<model:model model="resource" resource="model/resource.xml" />
+        <model:model model="document" resource="model/document.xml" />
+        <model:model model="position" resource="model/position.xml" />
+        <model:model model="warehouseStock" resource="model/warehouseStock.xml" />
 
 		<model:model-field plugin="basic" model="parameter">
 			<model:enum name="changeDateWhenTransferToWarehouseType"
@@ -78,6 +81,21 @@
 			<model:hasMany name="resources" model="resource"
 			plugin="materialFlowResources" joinField="location" cascade="delete"/>
 		</model:model-field>
+        <model:model-field plugin="materialFlow" model="location">
+            <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo" default="01fifo" />
+        </model:model-field>
+        <model:model-field plugin="materialFlow" model="location">
+            <model:boolean name="requirePrice" />
+        </model:model-field>
+        <model:model-field plugin="materialFlow" model="location">
+            <model:boolean name="requireBatch" />
+        </model:model-field>
+        <model:model-field plugin="materialFlow" model="location">
+            <model:boolean name="requireProductionDate" />
+        </model:model-field>
+        <model:model-field plugin="materialFlow" model="location">
+            <model:boolean name="requireExpirationDate" />
+        </model:model-field>
 
 		<model:model-enum-value plugin="materialFlow"
 			model="location" enum="type" value="02warehouse" />
@@ -132,6 +150,10 @@
 		
 		<menu:menu-item name="resources" category="materialFlow"
 			view="resourcesList" />
+        <menu:menu-item name="documents" category="materialFlow"
+                        view="documentsList" />
+        <menu:menu-item name="warehouseStock" category="materialFlow"
+                        view="warehouseStocksList" />
 				
 		<view:view-listener plugin="materialFlow" view="transferDetails" 
 			component="locationFrom" event="onSelectedEntityChange" 
@@ -150,9 +172,14 @@
 			
 		<view:view resource="view/resourceDetails.xml" />
 		<view:view resource="view/resourcesList.xml" />
-		
-		<view:view-tab resource="view/tabExtensions/parameters.xml" />
-	
+        <view:view resource="view/documentDetails.xml" />
+        <view:view resource="view/documentsList.xml" />
+        <view:view resource="view/warehouseStocksList.xml" />
+
+
+        <view:view-tab resource="view/tabExtensions/parameters.xml" />
+        <view:view-tab resource="view/tabExtensions/locationDetails.xml" />
+
 		<view:resource uri="public/**/*" />
 	</modules>
 	

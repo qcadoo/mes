@@ -1,11 +1,11 @@
-package com.qcadoo.mes.materialFlowDocuments.validators;
+package com.qcadoo.mes.materialFlowResources.validators;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowDocuments.constants.DocumentType;
-import com.qcadoo.mes.materialFlowDocuments.constants.LocationFieldsMFD;
-import com.qcadoo.mes.materialFlowDocuments.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -21,10 +21,10 @@ public class PositionValidators {
                 || DocumentType.INTERNAL_INBOUND.getStringValue().equals(documentType)) {
             Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
             return validatePositionAttributes(dataDefinition, position,
-                    warehouseTo.getBooleanField(LocationFieldsMFD.REQUIRE_PRICE),
-                    warehouseTo.getBooleanField(LocationFieldsMFD.REQUIRE_BATCH),
-                    warehouseTo.getBooleanField(LocationFieldsMFD.REQUIRE_PRODUCTION_DATE),
-                    warehouseTo.getBooleanField(LocationFieldsMFD.REQUIRE_EXPIRATION_DATE));
+                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRICE),
+                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_BATCH),
+                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRODUCTION_DATE),
+                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
         }
 
         return true;
