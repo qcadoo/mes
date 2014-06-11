@@ -73,9 +73,9 @@
 		</model:model-field>
 		
 		<menu:menu-item name="multitransfer" category="materialFlow"
-			view="multitransfer" />
+			view="multitransfer" active="false"/>
 		<menu:menu-item name="transferTemplates" category="materialFlow"
-			view="transferTemplatesList" />
+			view="transferTemplatesList" active="false"/>
 		
 		<view:view resource="view/multitransfer.xml" />
 		<view:view resource="view/transferTemplateDetails.xml" />
