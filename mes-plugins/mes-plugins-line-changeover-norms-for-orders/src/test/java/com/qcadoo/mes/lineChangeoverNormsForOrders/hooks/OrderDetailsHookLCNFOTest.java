@@ -23,40 +23,43 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.base.Predicate;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
-import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.testing.model.EntityTestUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.ribbon.Ribbon;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class OrderDetailsHookLCNFOTest {
 
     private OrderDetailsHooksLCNFO orderDetailsHooksLCNFO;
 
     @Mock
+    private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
+
+    @Mock
+    private Entity order, technologyPrototype;
+
+    @Mock
     private ViewDefinitionState view;
 
-    @Mock
-    private RibbonActionItem showChangeoverButton;
-
-    @Mock
-    private LookupComponent technologyPrototypeLookup;
-
-    @Mock
-    private ComponentState orderTypeSelect;
+    @Captor
+    private ArgumentCaptor<Predicate<Entity>> predicateCaptor;
 
     @Before
     public void init() {
@@ -64,84 +67,44 @@ public class OrderDetailsHookLCNFOTest {
 
         MockitoAnnotations.initMocks(this);
 
-        given(view.getComponentByReference("orderType")).willReturn(orderTypeSelect);
-        given(view.getComponentByReference("technologyPrototype")).willReturn(technologyPrototypeLookup);
-
-        RibbonGroup changeoverGroup = mock(RibbonGroup.class);
-        given(changeoverGroup.getItemByName("showChangeover")).willReturn(showChangeoverButton);
-
-        Ribbon ribbon = mock(Ribbon.class);
-        given(ribbon.getGroupByName("changeover")).willReturn(changeoverGroup);
-
-        WindowComponentState window = mock(WindowComponentState.class);
-        given(window.getRibbon()).willReturn(ribbon);
-
-        given(view.getComponentByReference("window")).willReturn(window);
+        ReflectionTestUtils.setField(orderDetailsHooksLCNFO, "orderDetailsRibbonHelper", orderDetailsRibbonHelper);
     }
 
     private void stubOrderType(final OrderType type) {
-        given(orderTypeSelect.getFieldValue()).willReturn(type.getStringValue());
+        EntityTestUtils.stubStringField(order, OrderFields.ORDER_TYPE, type.getStringValue());
     }
 
-    private void techPrototypeIsDefined(final boolean hasValue) {
-        given(technologyPrototypeLookup.isEmpty()).willReturn(!hasValue);
-    }
-
-    private void verifyButtonEnabled(final boolean expectedValue) {
-        verify(showChangeoverButton).setEnabled(expectedValue);
-        verify(showChangeoverButton, never()).setEnabled(!expectedValue);
+    private void stubTechnologyPrototype(final Entity technology) {
+        EntityTestUtils.stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technology);
     }
 
     @Test
-    public final void shouldDisableButtonWhenOrderHasOwnTechnologyAndTechnologyPrototypeIsNull() {
-        // given
+    public final void shouldDelegateToOrderDetailsRibbonHelperAndUseValidPredicate() {
+        // when
+        orderDetailsHooksLCNFO.onBeforeRender(view);
+
+        // then
+        verify(orderDetailsRibbonHelper).setButtonEnabled(any(ViewDefinitionState.class), eq("changeover"), eq("showChangeover"),
+                predicateCaptor.capture());
+        Predicate<Entity> predicate = predicateCaptor.getValue();
+
+        assertFalse(predicate.apply(null));
+
         stubOrderType(OrderType.WITH_OWN_TECHNOLOGY);
-        techPrototypeIsDefined(false);
+        stubTechnologyPrototype(null);
+        assertFalse(predicate.apply(order));
 
-        // when
-        orderDetailsHooksLCNFO.onBeforeRender(view);
-
-        // then
-        verifyButtonEnabled(false);
-    }
-
-    @Test
-    public final void shouldDisableButtonWhenOrderHasOwnTechnologyAndTechnologyPrototypeIsNotNull() {
-        // given
         stubOrderType(OrderType.WITH_OWN_TECHNOLOGY);
-        techPrototypeIsDefined(true);
+        stubTechnologyPrototype(technologyPrototype);
+        assertFalse(predicate.apply(order));
 
-        // when
-        orderDetailsHooksLCNFO.onBeforeRender(view);
-
-        // then
-        verifyButtonEnabled(false);
-    }
-
-    @Test
-    public final void shouldDisableButtonWhenOrderHasPatternTechnologyAndTechnologyPrototypeIsNull() {
-        // given
         stubOrderType(OrderType.WITH_PATTERN_TECHNOLOGY);
-        techPrototypeIsDefined(false);
+        stubTechnologyPrototype(null);
+        assertFalse(predicate.apply(order));
 
-        // when
-        orderDetailsHooksLCNFO.onBeforeRender(view);
-
-        // then
-        verifyButtonEnabled(false);
-    }
-
-    @Test
-    public final void shouldEnableButtonWhenOrderHasPatternTechnologyAndTechnologyPrototypeIsNotNull() {
-        // given
         stubOrderType(OrderType.WITH_PATTERN_TECHNOLOGY);
-        techPrototypeIsDefined(true);
-
-        // when
-        orderDetailsHooksLCNFO.onBeforeRender(view);
-
-        // then
-        verifyButtonEnabled(true);
+        stubTechnologyPrototype(technologyPrototype);
+        assertTrue(predicate.apply(order));
     }
 
 }
