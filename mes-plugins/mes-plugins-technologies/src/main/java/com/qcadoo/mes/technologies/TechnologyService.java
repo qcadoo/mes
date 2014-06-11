@@ -332,7 +332,8 @@ public class TechnologyService {
             } else {
                 addOperationsFromSubtechnologiesToList(
                         technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
-                                .getTreeField(TechnologyFields.OPERATION_COMPONENTS), technologyOperationComponents);
+                                .getTreeField(TechnologyFields.OPERATION_COMPONENTS), technologyOperationComponents
+                );
             }
         }
     }
@@ -378,7 +379,6 @@ public class TechnologyService {
     }
 
     /**
-     * 
      * @param technologyOperationComponent
      * @return productOutComponent. Assuming operation can have only one product/intermediate.
      */
@@ -424,10 +424,9 @@ public class TechnologyService {
     }
 
     /**
-     * 
      * @param operationComponent
      * @return Quantity of the output product associated with this operationComponent. Assuming operation can have only one
-     *         product/intermediate.
+     * product/intermediate.
      */
     public BigDecimal getProductCountForOperationComponent(final Entity operationComponent) {
         return getMainOutputProductComponent(operationComponent).getDecimalField(L_QUANTITY);
@@ -435,9 +434,8 @@ public class TechnologyService {
 
     /**
      * Check if technology with given id is external synchronized.
-     * 
-     * @param technologyId
-     *            identifier of the queried technology
+     *
+     * @param technologyId identifier of the queried technology
      * @return true if technology is external synchronized
      */
     public boolean isExternalSynchronized(final Long technologyId) {
@@ -452,4 +450,47 @@ public class TechnologyService {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
     }
 
+    public boolean isIntermediateProduct(final Entity opic) {
+        boolean isIntermediate = false;
+
+        Entity toc = opic.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+
+        List<Entity> childs = toc.getDataDefinition().find()
+                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.PARENT, toc)).list().getEntities();
+
+        if (childs.isEmpty()) {
+            return isIntermediate;
+        }
+
+        long productId = opic.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId();
+        for (Entity child : childs) {
+            for (Entity childOPOC : child.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
+                long childProductId = childOPOC.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId();
+                if (productId == childProductId) {
+                    isIntermediate = true;
+                    return isIntermediate;
+                }
+            }
+        }
+        return isIntermediate;
+    }
+
+    public boolean isFinalProduct(final Entity opoc) {
+        boolean isFinalProduct = false;
+
+        Entity toc = opoc.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+
+        if (toc.getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
+            return isFinalProduct;
+        }
+
+        Entity technology = toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+
+        if (technology.getBelongsToField(TechnologyFields.PRODUCT).getId()
+                .equals(opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId())) {
+            isFinalProduct = true;
+        }
+
+        return isFinalProduct;
+    }
 }
