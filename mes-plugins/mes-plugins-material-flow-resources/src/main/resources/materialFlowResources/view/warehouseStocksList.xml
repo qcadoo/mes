@@ -11,8 +11,12 @@
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
+            <option type="column" name="locationNumber" fields="location"
+                    expression="#location['number']" />
             <option type="column" name="locationName" fields="location"
                     expression="#location['name']"/>
+            <option type="column" name="productNumber" fields="product"
+                    expression="#product['number']" />
             <option type="column" name="productName" fields="product"
                     expression="#product['name']"/>
             <option type="column" name="quantity" fields="quantity"/>
@@ -22,9 +26,9 @@
             <option type="order" column="locationName" direction="asc" />
 
             <option type="searchable"
-                    value="locationName,productName,quantity,unit" />
+                    value="locationNumber,locationName,productNumber,productName,quantity,unit" />
             <option type="orderable"
-                    value="locationName,productName,quantity,unit" />
+                    value="locationNumber,locationName,productNumber,productName,quantity,unit" />
 
             <option type="fullscreen" value="true" />
             <option type="multiselect" value="true" />
