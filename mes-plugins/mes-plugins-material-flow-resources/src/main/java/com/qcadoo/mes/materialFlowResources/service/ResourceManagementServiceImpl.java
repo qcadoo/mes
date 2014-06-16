@@ -20,6 +20,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -199,6 +200,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 return;
             }
         }
+
         position.addError(position.getDataDefinition().getField(PositionFields.QUANTITY), "materialFlow.error.position.quantity.notEnough");
     }
 

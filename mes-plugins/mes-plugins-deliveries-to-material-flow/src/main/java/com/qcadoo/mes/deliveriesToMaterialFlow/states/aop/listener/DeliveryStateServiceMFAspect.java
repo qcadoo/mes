@@ -57,8 +57,6 @@ public class DeliveryStateServiceMFAspect extends AbstractStateListenerAspect {
     @RunForStateTransition(targetState = DeliveryStateStringValues.RECEIVED)
     @After(PHASE_EXECUTION_POINTCUT)
     public void createTransfersForTheReceivedProducts(final StateChangeContext stateChangeContext, final int phase) {
-        // FIXME remove after analysis
-        deliveryStateServiceMF.createTransfersForTheReceivedProducts(stateChangeContext);
         deliveryStateServiceMF.createDocumentsForTheReceivedProducts(stateChangeContext);
     }
 
