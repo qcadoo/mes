@@ -92,6 +92,18 @@ public class DocumentBuilder {
     }
 
     /**
+     * Use this method to set document fields added by any extending plugins.
+     *
+     * @param field field name
+     * @param value field value
+     * @return this builder
+     */
+    public DocumentBuilder setField(String field, Object value) {
+        document.setField(field, value);
+        return this;
+    }
+
+    /**
      * Save document in database and creates resources if document is accepted.
      * 
      * @return Created document entity.
