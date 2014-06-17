@@ -345,13 +345,27 @@
 								method="fillCompanyFieldsForSupplier" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="2">
+                    <layoutElement column="2" row="2">
+                        <component type="lookup" name="location" reference="location"
+                                   field="#{form}.location">
+                            <option type="column" name="name" fields="name" link="true"/>
+                            <option type="column" name="type" fields="type" />
+
+                            <option type="searchable" value="number,name,type" />
+                            <option type="orderable" value="number,name,type" />
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+                            <option type="fieldCode" value="number" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="3">
 						<component type="calendar" name="deliveryDate" field="deliveryDate"
 							reference="deliveryDate" hasDescription="true">
 							<option type="withTimePicker" value="true" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="3" height="3">
+					<layoutElement column="2" row="4" height="2">
 						<component type="textarea" name="deliveryAddress" field="deliveryAddress"
 							reference="deliveryAddress" />
 					</layoutElement>
@@ -636,6 +650,10 @@
 			method="fillCurrencyFields" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="disableShowProductButton" />
+        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+            method="fillLocationDefaultValue" />
+        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+            method="changeLocationEnabledDependOnState" />
 	</hooks>
 
 </view>

@@ -69,19 +69,6 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="3">
-                        <component type="lookup" name="delivery" field="delivery"
-                                   reference="delivery" defaultEnabled="false">
-
-                            <option type="column" fields="name" name="name" link="true" />
-
-                            <option type="searchable" value="number,name" />
-                            <option type="orderable" value="number,name" />
-
-                            <option type="expression" value="#number" />
-                            <option type="fieldCode" value="number" />
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="2" row="4">
                         <component type="select" name="state" field="state"
                                    reference="state" defaultEnabled="false">
                         </component>

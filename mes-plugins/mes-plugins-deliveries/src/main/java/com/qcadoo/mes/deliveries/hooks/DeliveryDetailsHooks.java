@@ -25,6 +25,7 @@ package com.qcadoo.mes.deliveries.hooks;
 
 import java.util.List;
 
+import com.qcadoo.mes.basic.ParameterService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,9 @@ public class DeliveryDetailsHooks {
 
     @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
@@ -222,5 +226,47 @@ public class DeliveryDetailsHooks {
     public void disableShowProductButton(final ViewDefinitionState view) {
         deliveriesService.disableShowProductButton(view);
     }
+
+    public void fillLocationDefaultValue(final ViewDefinitionState view) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (deliveryForm.getEntityId() != null) {
+            return;
+        }
+
+        LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFields.LOCATION);
+        Entity location = locationField.getEntity();
+
+        if (location == null) {
+            Entity defaultLocation = parameterService.getParameter().getBelongsToField(DeliveryFields.LOCATION);
+
+            if (defaultLocation == null) {
+                locationField.setFieldValue(null);
+            } else {
+                locationField.setFieldValue(defaultLocation.getId());
+            }
+            locationField.requestComponentUpdateState();
+        }
+    }
+
+    public void changeLocationEnabledDependOnState(final ViewDefinitionState view) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFields.LOCATION);
+
+        if (deliveryForm.getEntityId() == null) {
+            locationField.setEnabled(true);
+        } else {
+            FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
+            String state = stateField.getFieldValue().toString();
+            if (DeliveryState.DECLINED.getStringValue().equals(state) || DeliveryState.RECEIVED.getStringValue().equals(state)
+                    || DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
+                locationField.setEnabled(false);
+            } else {
+                locationField.setEnabled(true);
+            }
+        }
+    }
+
 
 }

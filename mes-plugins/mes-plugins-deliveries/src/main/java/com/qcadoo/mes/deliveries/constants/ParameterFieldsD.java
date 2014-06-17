@@ -35,4 +35,5 @@ public final class ParameterFieldsD {
 
     public static final String OTHER_ADDRESS = "otherAddress";
 
+    public static final String LOCATION = "location";
 }

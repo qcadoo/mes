@@ -73,4 +73,6 @@ public final class DeliveryFields {
 
     public static final String ACTIVE = "active";
 
+    public static final String LOCATION ="location";
+
 }

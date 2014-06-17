@@ -1,7 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.validators;
 
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
-import static com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR.WAREHOUSE;
+import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 
 import org.springframework.stereotype.Service;
 

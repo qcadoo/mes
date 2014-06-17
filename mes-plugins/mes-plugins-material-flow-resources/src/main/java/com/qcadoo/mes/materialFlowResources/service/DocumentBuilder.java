@@ -32,9 +32,8 @@ public class DocumentBuilder {
         this.document = createDocument(userService, numberGeneratorService);
     }
 
-    public DocumentBuilder receipt(final Entity locationTo, final Entity delivery) {
+    public DocumentBuilder receipt(final Entity locationTo) {
         document.setField(DocumentFields.LOCATION_TO, locationTo);
-        document.setField(DocumentFields.DELIVERY, delivery);
         document.setField(DocumentFields.TYPE, DocumentType.RECEIPT.getStringValue());
         return this;
     }

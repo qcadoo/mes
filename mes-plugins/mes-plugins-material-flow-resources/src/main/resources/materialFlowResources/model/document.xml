@@ -12,7 +12,6 @@
         <belongsTo name="locationFrom" model="location" plugin="materialFlow" />
         <belongsTo name="locationTo" model="location" plugin="materialFlow" />
         <belongsTo name="user" model="user" plugin="qcadooSecurity" required="true" />
-        <belongsTo name="delivery" model="delivery" plugin="deliveries" />
         <hasMany name="positions" model="position" joinField="document" cascade="delete" copyable="true" />
     </fields>
     <hooks>

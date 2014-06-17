@@ -96,9 +96,6 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:boolean name="requireExpirationDate" />
         </model:model-field>
-
-		<model:model-enum-value plugin="materialFlow"
-			model="location" enum="type" value="02warehouse" />
 			
    		<model:model-hook plugin="basic" model="parameter">
 			<model:validatesWith

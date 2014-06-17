@@ -21,12 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesToMaterialFlow.hooks;
+package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveryFieldsDTMF.LOCATION;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.LOCATION;
+import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -34,19 +36,15 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.materialFlow.constants.LocationType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 
-public class ParameterHooksDTMFTest {
+public class SupplyParameterHooksTest {
 
-    private ParameterHooksDTMF parameterHooksDTMF;
-
-    @Mock
-    private MaterialFlowResourcesService materialFlowResourcesService;
+    private SupplyParameterHooks supplyParameterHooks;
 
     @Mock
     private DataDefinition parameterDD;
@@ -58,18 +56,17 @@ public class ParameterHooksDTMFTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        parameterHooksDTMF = new ParameterHooksDTMF();
-
-        ReflectionTestUtils.setField(parameterHooksDTMF, "materialFlowResourcesService", materialFlowResourcesService);
+        supplyParameterHooks = new SupplyParameterHooks();
     }
 
     @Test
     public void shouldReturnTrueWhenCheckIfLocationIsWarehouse() {
         // given
         given(parameter.getBelongsToField(LOCATION)).willReturn(null);
-
+        given(location.getStringField(TYPE)).willReturn(LocationType.WAREHOUSE.getStringValue());
+        
         // when
-        boolean result = parameterHooksDTMF.checkIfLocationIsWarehouse(parameterDD, parameter);
+        boolean result = supplyParameterHooks.checkIfLocationIsWarehouse(parameterDD, parameter);
 
         // then
         Assert.assertTrue(result);
@@ -81,10 +78,10 @@ public class ParameterHooksDTMFTest {
     public void shouldReturnFalseWhenCheckIfLocationIsWarehouse() {
         // given
         given(parameter.getBelongsToField(LOCATION)).willReturn(location);
-        given(materialFlowResourcesService.isLocationIsWarehouse(location)).willReturn(false);
+        given(location.getStringField(TYPE)).willReturn(LocationType.CONTROL_POINT.getStringValue());
 
         // when
-        boolean result = parameterHooksDTMF.checkIfLocationIsWarehouse(parameterDD, parameter);
+        boolean result = supplyParameterHooks.checkIfLocationIsWarehouse(parameterDD, parameter);
 
         // then
         Assert.assertFalse(result);

@@ -22,6 +22,4 @@ public final class DocumentFields {
 
     public static final String STATE = "state";
 
-    public static final String DELIVERY = "delivery";
-
 }

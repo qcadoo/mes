@@ -21,14 +21,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesToMaterialFlow.constants;
+package com.qcadoo.mes.materialFlow.criteriaModifiers;
 
-public final class ParameterFieldsDTMF {
+import org.springframework.stereotype.Service;
 
-    private ParameterFieldsDTMF() {
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlow.constants.LocationType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
+@Service
+public class LocationCriteriaModifiers {
+
+    public void showWarehousesOnly(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.eq(LocationFields.TYPE, LocationType.WAREHOUSE.getStringValue()));
     }
-
-    public static final String LOCATION = "location";
 
 }

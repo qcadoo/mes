@@ -25,12 +25,12 @@ package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 
 import java.util.List;
 
+import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DocumentFieldsDTMF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveryFieldsDTMF;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -49,7 +49,7 @@ public class DeliveryStateServiceMF {
             return;
         }
 
-        Entity location = delivery.getBelongsToField(DeliveryFieldsDTMF.LOCATION);
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
 
         if (location == null) {
             return;
@@ -58,7 +58,8 @@ public class DeliveryStateServiceMF {
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
-        documentBuilder.receipt(location, delivery);
+        documentBuilder.receipt(location);
+        documentBuilder.setField(DocumentFieldsDTMF.DELIVERY, delivery);
 
         for (Entity deliveredProduct : deliveredProducts) {
             documentBuilder.addPosition(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT),
