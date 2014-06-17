@@ -21,3 +21,15 @@ CREATE TABLE technologies_productstructuretreenode
   CONSTRAINT productstructuretreenode_technology_fkey FOREIGN KEY (technology_id)
       REFERENCES technologies_technology (id) DEFERRABLE
 );
+
+-- end
+
+-- Delete genealogies, genealogiesForComponent and qualityControlsForBatch view items.
+-- last touched 17.06.2014 by maku
+
+delete from qcadooview_item where pluginidentifier in ('genealogies', 'genealogiesForComponents', 'qualityControlsForBatch');
+delete from qcadooview_view where pluginidentifier in ('genealogies', 'genealogiesForComponents', 'qualityControlsForBatch');
+delete from qcadooview_category where pluginidentifier in ('genealogies', 'genealogiesForComponents', 'qualityControlsForBatch');
+delete from qcadoomodel_dictionary where pluginidentifier in ('genealogies', 'genealogiesForComponents', 'qualityControlsForBatch');
+
+--end
