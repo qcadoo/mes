@@ -29,6 +29,7 @@ CREATE TABLE technologies_productstructuretreenode
 
 delete from qcadooview_item where pluginidentifier in ('genealogies', 'genealogiesForComponents', 'qualityControlsForBatch');
 delete from qcadooview_view where pluginidentifier in ('genealogies', 'genealogiesForComponents', 'qualityControlsForBatch');
+update qcadooview_category set pluginidentifier='advancedGenealogy' where pluginidentifier='genealogies' AND name='advancedGenealogy';
 delete from qcadooview_category where pluginidentifier in ('genealogies', 'genealogiesForComponents', 'qualityControlsForBatch');
 delete from qcadoomodel_dictionary where pluginidentifier in ('genealogies', 'genealogiesForComponents', 'qualityControlsForBatch');
 
