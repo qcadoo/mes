@@ -57,8 +57,8 @@
                     	var save = #{window}.getRibbonItem("actions.save");
 						var saveBack = #{window}.getRibbonItem("actions.saveBack");
 						var saveNew = #{window}.getRibbonItem("actions.saveNew");
-						var acceptRecord = #{window}.getRibbonItem("status.acceptRecord");
-						var cancelRecord = #{window}.getRibbonItem("status.cancelRecord");
+						var acceptRecord = #{window}.getRibbonItem("status.acceptTracking");
+						var cancelRecord = #{window}.getRibbonItem("status.cancelTracking");
 
 						QCDTrack.track(
 								save,
