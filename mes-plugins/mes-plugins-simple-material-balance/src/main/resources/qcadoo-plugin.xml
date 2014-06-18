@@ -81,8 +81,6 @@
 				cascade="nullify" />
 		</model:model-field>
 
-		<menu:menu-category name="requirements" />
-
 		<menu:menu-item name="simpleMaterialBalance" category="requirements"
 			view="simpleMaterialBalanceList" />
 
