@@ -68,8 +68,8 @@
 		           reference="grid">
 			<script>
 				<![CDATA[
-					var acceptRecord = #{window}.getRibbonItem("status.acceptRecord"),
-						cancelRecord = #{window}.getRibbonItem("status.cancelRecord");
+					var acceptRecord = #{window}.getRibbonItem("status.acceptTracking"),
+						cancelRecord = #{window}.getRibbonItem("status.cancelTracking");
 
 					QCDTrack.track(
 							acceptRecord,
