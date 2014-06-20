@@ -25,5 +25,5 @@
 
 -->
 <deliveries>
-	<row NUMBER="000001" NAME="Dostawa - 1" DESCRIPTION="Dostawa - 1" DELIVERYADDRESS="Basztowa 4/4, 31-134 Kraków" SUPPLIER="2" DELIVERYDATE="2013-03-11 13:01:27" STATE="05approved"/>
+	<row NUMBER="000001" NAME="Dostawa - 1" DESCRIPTION="Dostawa - 1" DELIVERYADDRESS="Basztowa 4/4, 31-134 Kraków" SUPPLIER="2" DELIVERYDATE="2013-03-11 13:01:27" STATE="05approved" LOCATION="9"/>
 </deliveries>

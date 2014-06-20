@@ -353,6 +353,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         delivery.setField(L_STATE, values.get(L_STATE));
         delivery.setField("deliveryDate", values.get("deliverydate"));
         delivery.setField("externalSynchronized", true);
+        delivery.setField(L_LOCATION, getLocationByNumber(values.get(L_LOCATION)));
         delivery.getDataDefinition().save(delivery);
 
     }
