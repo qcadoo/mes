@@ -268,6 +268,8 @@ public final class SamplesConstants {
 
     public static final String L_TYPE = "type";
 
+    public static final String L_ALGORITHM = "algorithm";
+
     public static final String L_TIME = "time";
 
     public static final String L_STAFF = "staff";

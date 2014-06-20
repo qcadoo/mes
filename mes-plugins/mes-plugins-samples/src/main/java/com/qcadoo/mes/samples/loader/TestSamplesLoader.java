@@ -887,6 +887,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if ("02warehouse".equals(values.get(L_TYPE))) {
             if (isEnabledOrEnabling("materialFlowResources")) {
                 location.setField(L_TYPE, values.get(L_TYPE));
+                location.setField(L_ALGORITHM, values.get(L_ALGORITHM));
                 location.getDataDefinition().save(location);
             }
         } else {

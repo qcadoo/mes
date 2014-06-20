@@ -144,6 +144,11 @@
 				class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
 				method="checkIfTransfersResourcesAreValid" />
 		</model:model-hook>
+
+        <model:model-hook plugin="materialFlow" model="location">
+            <model:validatesWith class="com.qcadoo.mes.materialFlowResources.validators.LocationValidators"
+                method="hasAlgorithm" />
+        </model:model-hook>
 		
 		<menu:menu-item name="resources" category="materialFlow"
 			view="resourcesList" />
