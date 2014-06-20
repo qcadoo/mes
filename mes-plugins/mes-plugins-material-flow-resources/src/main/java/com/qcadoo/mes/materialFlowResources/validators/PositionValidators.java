@@ -1,5 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.validators;
 
+import java.util.Date;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -55,5 +57,18 @@ public class PositionValidators {
         }
 
         return result;
+    }
+
+    public boolean validateDates(final DataDefinition dataDefinition, final Entity position) {
+
+        Date productionDate = position.getDateField(PositionFields.PRODUCTION_DATE);
+        Date expirationDate = position.getDateField(PositionFields.EXPIRATION_DATE);
+        if (productionDate != null && expirationDate != null && expirationDate.compareTo(productionDate) < 0) {
+            position.addError(dataDefinition.getField(PositionFields.EXPIRATION_DATE),
+                    "materialFlow.error.position.expirationDate.lessThenProductionDate");
+            return false;
+        }
+
+        return true;
     }
 }

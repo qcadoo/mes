@@ -18,5 +18,6 @@
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators" method="checkAttributesRequirement" />
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators" method="validateDates" />
     </hooks>
 </model>
