@@ -13,6 +13,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
 public class DocumentDetailsListeners {
@@ -20,34 +21,41 @@ public class DocumentDetailsListeners {
     @Autowired
     private ResourceManagementService resourceManagementService;
 
-    @Transactional
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
 
         FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
-        final Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
-        Entity savedDocument = document.getDataDefinition().save(document);
-        if(!savedDocument.isValid()){
-           formComponent.setEntity(savedDocument);
+        Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
+        Entity documentToCreateResourcesFor = document.getDataDefinition().save(document);
+        if(!documentToCreateResourcesFor.isValid()){
+           formComponent.setEntity(documentToCreateResourcesFor);
            return;
         }
 
-        DocumentType documentType = DocumentType.parseString(document.getStringField(DocumentFields.TYPE));
-        if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
-            resourceManagementService.createResourcesForReceiptDocuments(document);
-        } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {
-            resourceManagementService.updateResourcesForReleaseDocuments(document);
-        } else if (DocumentType.TRANSFER.equals(documentType)) {
-            resourceManagementService.moveResourcesForTransferDocument(document);
-        } else {
-            throw new IllegalStateException("Unsupported document type");
-        }
+        createResources(documentToCreateResourcesFor);
 
-        document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
-        savedDocument = document.getDataDefinition().save(document);
+        documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
+        Entity savedDocument = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
         if(!savedDocument.isValid()){
             savedDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
         }
         formComponent.setEntity(savedDocument);
+    }
+
+    @Transactional
+    public void createResources(Entity documentToCreateResourcesFor) {
+        DocumentType documentType = DocumentType.parseString(documentToCreateResourcesFor.getStringField(DocumentFields.TYPE));
+        if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
+            resourceManagementService.createResourcesForReceiptDocuments(documentToCreateResourcesFor);
+        } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {
+            resourceManagementService.updateResourcesForReleaseDocuments(documentToCreateResourcesFor);
+        } else if (DocumentType.TRANSFER.equals(documentType)) {
+            resourceManagementService.moveResourcesForTransferDocument(documentToCreateResourcesFor);
+        } else {
+            throw new IllegalStateException("Unsupported document type");
+        }
+        if(!documentToCreateResourcesFor.isValid()){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
     }
 
     public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args){

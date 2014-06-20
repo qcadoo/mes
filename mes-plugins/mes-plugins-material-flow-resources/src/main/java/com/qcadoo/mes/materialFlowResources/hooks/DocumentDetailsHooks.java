@@ -82,9 +82,6 @@ public class DocumentDetailsHooks {
             for (String fieldName : INBOUND_FIELDS) {
                 FieldComponent field = positionForm.findFieldComponentByName(fieldName);
                 field.setEnabled(enabled);
-                if(!enabled){
-                    field.setFieldValue(null);
-                }
             }
             fillInUnit(positionForm);
         }

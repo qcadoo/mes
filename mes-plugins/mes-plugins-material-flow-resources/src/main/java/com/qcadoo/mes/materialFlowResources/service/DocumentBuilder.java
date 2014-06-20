@@ -115,10 +115,11 @@ public class DocumentBuilder {
         Entity savedDocument = documentDD.save(document);
         if (savedDocument.isValid() && DocumentState.ACCEPTED.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
             createResources(savedDocument);
+            if(!savedDocument.isValid()){
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            }
         }
-        if(!savedDocument.isValid()){
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        }
+
         return savedDocument;
     }
 

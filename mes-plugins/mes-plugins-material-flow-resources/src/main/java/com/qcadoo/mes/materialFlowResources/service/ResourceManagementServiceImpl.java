@@ -20,7 +20,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -110,16 +109,25 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
                 .getStringField(LocationFieldsMFR.ALGORITHM));
         boolean enoughResources = true;
+        List<Entity> generatedPositions = Lists.newArrayList();
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-            updateResources(warehouse, position, warehouseAlgorithm);
+            generatedPositions.addAll(updateResources(warehouse, position, warehouseAlgorithm));
             enoughResources = enoughResources && position.isValid();
         }
+
         if(!enoughResources){
             document.addGlobalError("materialFlow.error.position.quantity.notEnough");
+        } else {
+            document.setField(DocumentFields.POSITIONS, generatedPositions);
+            document.getDataDefinition().save(document);
         }
     }
 
-    private void updateResources(Entity warehouse, Entity position, WarehouseAlgorithm warehouseAlgorithm) {
+    private List<Entity> updateResources(Entity warehouse, Entity position, WarehouseAlgorithm warehouseAlgorithm) {
+        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_POSITION);
+        List<Entity> newPositions = Lists.newArrayList();
+
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouse, product, warehouseAlgorithm);
 
@@ -127,13 +135,22 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
 
+            Entity newPosition = positionDD.create();
+            newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
+            newPosition.setField(PositionFields.PRICE, resource.getField(ResourceFields.PRICE));
+            newPosition.setField(PositionFields.BATCH, resource.getField(ResourceFields.BATCH));
+            newPosition.setField(PositionFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
+            newPosition.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
+
             if (quantity.compareTo(resourceQuantity) >= 0) {
                 quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
 
                 resource.getDataDefinition().delete(resource.getId());
+                newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceQuantity));
+                newPositions.add(newPosition);
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
-                    return;
+                    return newPositions;
                 }
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
@@ -142,15 +159,19 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 resource.getDataDefinition().save(resource);
 
-                return;
+                newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
+                newPositions.add(newPosition);
+                return newPositions;
             }
         }
 
-        position.addError(position.getDataDefinition().getField(PositionFields.QUANTITY), "materialFlow.error.position.quantity.notEnough");
+        position.addError(position.getDataDefinition().getField(PositionFields.QUANTITY),
+                "materialFlow.error.position.quantity.notEnough");
+        return Lists.newArrayList(position);
     }
 
     @Override
-    @Transactional
+   @Transactional
     public void moveResourcesForTransferDocument(Entity document) {
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
