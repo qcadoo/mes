@@ -120,7 +120,7 @@
                     <component type="gridLayout" name="productLayout"
                                columns="8" rows="1">
                         <layoutElement column="1" row="1">
-                            <component type="input" name="number" field="number" hasLabel="false">
+                            <component type="input" name="number" field="number" hasLabel="false" persistent="false">
                                 <option type="textRepresentationOnDisabled" value="true" />
                                 <option type="alignment" value="right" />
                             </component>
@@ -145,7 +145,7 @@
                             </component>
                         </layoutElement>
                         <layoutElement column="4" row="1">
-                            <component type="input" name="unit" field="unit" hasLabel="false">
+                            <component type="input" name="unit" field="unit" hasLabel="false" persistent="false">
                                 <option type="textRepresentationOnDisabled" value="true" />
                             </component>
                         </layoutElement>
