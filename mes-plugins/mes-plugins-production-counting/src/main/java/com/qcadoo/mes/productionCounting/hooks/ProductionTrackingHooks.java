@@ -68,6 +68,7 @@ public class ProductionTrackingHooks {
 
     public void onSave(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         generateNumberIfNeeded(productionTracking);
+        setTimesToZeroIfEmpty(productionTracking);
         copyProducts(productionTracking);
     }
 
@@ -118,6 +119,16 @@ public class ProductionTrackingHooks {
         Object newOrderValue = productionTracking.getField(ProductionTrackingFields.ORDER);
 
         return !ObjectUtils.equals(oldOrderValue, newOrderValue) || !ObjectUtils.equals(oldTocValue, newTocValue);
+    }
+
+    private void setTimesToZeroIfEmpty(final Entity productionTracking) {
+        setTimeToZeroIfNull(productionTracking, ProductionTrackingFields.LABOR_TIME);
+        setTimeToZeroIfNull(productionTracking, ProductionTrackingFields.MACHINE_TIME);
+    }
+
+    private void setTimeToZeroIfNull(final Entity productionTracking, final String timeFieldName) {
+        Integer time = productionTracking.getIntegerField(timeFieldName);
+        productionTracking.setField(timeFieldName, ObjectUtils.defaultIfNull(time, 0));
     }
 
     private void setInitialState(final Entity productionTracking) {

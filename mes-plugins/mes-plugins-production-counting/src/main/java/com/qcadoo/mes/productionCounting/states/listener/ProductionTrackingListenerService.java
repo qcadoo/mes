@@ -101,7 +101,6 @@ public final class ProductionTrackingListenerService {
 
     public void validationOnAccept(final StateChangeContext stateChangeContext) {
         checkIfRecordOperationProductComponentsWereFilled(stateChangeContext);
-        checkIfTimesWereFilled(stateChangeContext);
         checkIfExistsFinalRecord(stateChangeContext);
         checkIfTimesIsSet(stateChangeContext);
     }
@@ -143,16 +142,6 @@ public final class ProductionTrackingListenerService {
                 .add(SearchRestrictions.isNotNull(L_USED_QUANTITY));
 
         return (searchBuilder.list().getTotalNumberOfEntities() != 0);
-    }
-
-    private void checkIfTimesWereFilled(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
-        Integer machineTime = productionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
-        Integer laborTime = productionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);
-
-        if ((machineTime == null) || (laborTime == null)) {
-            stateChangeContext.addValidationError("productionCounting.productionTracking.messages.error.timesNotFilled");
-        }
     }
 
     public void checkIfExistsFinalRecord(final StateChangeContext stateChangeContext) {
