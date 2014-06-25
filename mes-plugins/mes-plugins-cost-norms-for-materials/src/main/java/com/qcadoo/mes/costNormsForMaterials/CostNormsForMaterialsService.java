@@ -29,6 +29,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +70,9 @@ public class CostNormsForMaterialsService {
     private static final String L_ORDER = "order";
 
     private static final String L_VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
+
+    @Autowired
+    private NumberService numberService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -178,4 +186,63 @@ public class CostNormsForMaterialsService {
         grid.setEntities(inputProducts);
     }
 
+    public void updateCostsForProductInOrder(Entity order, Long productId, Optional<BigDecimal> costForNumber,
+                                              Optional<BigDecimal> costForOrder) {
+        Entity technologyInstOperProductInComp = getTechnologyInstOperProductInCompFromDB(productId, order);
+        Preconditions.checkArgument(technologyInstOperProductInComp != null, String.format(
+                "TechnologyInstanceOperationProductInComponent not found for product: %d order: %d", productId, order.getId()));
+
+        technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.COST_FOR_ORDER,
+                numberService.setScale(costForOrder.or(BigDecimal.ZERO)));
+
+        Optional<BigDecimal> oldQuantity = Optional.fromNullable(technologyInstOperProductInComp
+                .getDecimalField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER));
+
+        if (oldQuantity.isPresent()) {
+            if (BigDecimal.ZERO.equals(oldQuantity.get())) {
+                oldQuantity = Optional.of(BigDecimal.ONE);
+            }
+
+            BigDecimal nominalCost = technologyInstOperProductInComp
+                    .getDecimalField(TechnologyInstOperProductInCompFields.NOMINAL_COST);
+            BigDecimal lastPurchaseCost = technologyInstOperProductInComp
+                    .getDecimalField(TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST);
+            BigDecimal averageCost = technologyInstOperProductInComp
+                    .getDecimalField(TechnologyInstOperProductInCompFields.AVERAGE_COST);
+
+            nominalCost = costForNumber.or(BigDecimal.ONE).multiply(nominalCost, numberService.getMathContext())
+                    .divide(oldQuantity.get(), numberService.getMathContext());
+            lastPurchaseCost = costForNumber.or(BigDecimal.ONE).multiply(lastPurchaseCost, numberService.getMathContext())
+                    .divide(oldQuantity.get(), numberService.getMathContext());
+            averageCost = costForNumber.or(BigDecimal.ONE).multiply(averageCost, numberService.getMathContext())
+                    .divide(oldQuantity.get(), numberService.getMathContext());
+
+            technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER,
+                    numberService.setScale(costForNumber.or(BigDecimal.ONE)));
+            technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.NOMINAL_COST,
+                    numberService.setScale(nominalCost));
+            technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST,
+                    numberService.setScale(lastPurchaseCost));
+            technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.AVERAGE_COST,
+                    numberService.setScale(averageCost));
+
+        } else {
+            LOG.debug(String.format(
+                    "There are no costs in TechnologyInstanceOperationProductInComponent (id: %d ) to recalculate.",
+                    technologyInstOperProductInComp.getId()));
+        }
+
+        technologyInstOperProductInComp.getDataDefinition().save(technologyInstOperProductInComp);
+    }
+
+    private Entity getTechnologyInstOperProductInCompFromDB(final Long productId, final Entity orderFromDB) {
+        return dataDefinitionService
+                .get(CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
+                        CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP)
+                .find()
+                .add(SearchRestrictions.belongsTo(TechnologyInstOperProductInCompFields.PRODUCT,
+                        BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT, productId))
+                .add(SearchRestrictions.belongsTo(TechnologyInstOperProductInCompFields.ORDER, orderFromDB)).setMaxResults(1)
+                .uniqueResult();
+    }
 }
