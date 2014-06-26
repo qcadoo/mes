@@ -37,16 +37,31 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -332,8 +347,7 @@ public class TechnologyService {
             } else {
                 addOperationsFromSubtechnologiesToList(
                         technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
-                                .getTreeField(TechnologyFields.OPERATION_COMPONENTS), technologyOperationComponents
-                );
+                                .getTreeField(TechnologyFields.OPERATION_COMPONENTS), technologyOperationComponents);
             }
         }
     }
@@ -382,6 +396,7 @@ public class TechnologyService {
      * @param technologyOperationComponent
      * @return productOutComponent. Assuming operation can have only one product/intermediate.
      */
+    // TODO dev_team introduce MainTocOutputProductProvider
     public Entity getMainOutputProductComponent(Entity technologyOperationComponent) {
         if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
                 technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
@@ -426,7 +441,7 @@ public class TechnologyService {
     /**
      * @param operationComponent
      * @return Quantity of the output product associated with this operationComponent. Assuming operation can have only one
-     * product/intermediate.
+     *         product/intermediate.
      */
     public BigDecimal getProductCountForOperationComponent(final Entity operationComponent) {
         return getMainOutputProductComponent(operationComponent).getDecimalField(L_QUANTITY);
@@ -434,8 +449,9 @@ public class TechnologyService {
 
     /**
      * Check if technology with given id is external synchronized.
-     *
-     * @param technologyId identifier of the queried technology
+     * 
+     * @param technologyId
+     *            identifier of the queried technology
      * @return true if technology is external synchronized
      */
     public boolean isExternalSynchronized(final Long technologyId) {
