@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.*;
@@ -12,8 +14,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 public class DocumentBuilder {
 
@@ -59,7 +59,7 @@ public class DocumentBuilder {
      * @return DocumentBuilder.this
      */
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity) {
-        return addPosition(product, quantity, null);
+        return addPosition(product, quantity, null, null, null, null);
     }
 
     /**
@@ -68,9 +68,13 @@ public class DocumentBuilder {
      * @param product
      * @param quantity
      * @param price
+     * @param batch
+     * @param expirationDate
+     * @param productionDate
      * @return DocumentBuilder.this
      */
-    public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal price) {
+    public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal price,
+            final String batch, final Date productionDate, final Date expirationDate) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
@@ -81,6 +85,9 @@ public class DocumentBuilder {
         position.setField(PositionFields.PRODUCT, product);
         position.setField(PositionFields.QUANTITY, quantity);
         position.setField(PositionFields.PRICE, price);
+        position.setField(PositionFields.BATCH, batch);
+        position.setField(PositionFields.PRODUCTION_DATE, productionDate);
+        position.setField(PositionFields.EXPIRATION_DATE, expirationDate);
         positions.add(position);
         return this;
     }
