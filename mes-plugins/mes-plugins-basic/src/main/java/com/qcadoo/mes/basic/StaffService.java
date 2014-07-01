@@ -64,6 +64,10 @@ public class StaffService {
                 L_FORM, StaffFields.NUMBER);
     }
 
+    /**
+     * @deprecated use com.qcadoo.mes.basic.util.StaffNameExtractor.extractNameAndSurname
+     */
+    @Deprecated
     public String extractFullName(final Entity staff) {
         if (staff == null) {
             return null;
