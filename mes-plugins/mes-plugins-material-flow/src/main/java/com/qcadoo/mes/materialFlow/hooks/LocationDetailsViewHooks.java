@@ -30,6 +30,7 @@ import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Component
@@ -59,5 +60,15 @@ public class LocationDetailsViewHooks {
             form.setFormEnabled(false);
         }
 
+    }
+
+    public void disableTypeEdit(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        } else {
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference("type");
+            fieldComponent.setEnabled(false);
+        }
     }
 }
