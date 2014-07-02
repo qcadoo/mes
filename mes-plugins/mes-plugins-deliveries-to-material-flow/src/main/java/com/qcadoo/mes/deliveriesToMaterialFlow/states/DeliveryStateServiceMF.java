@@ -51,15 +51,7 @@ public class DeliveryStateServiceMF {
     public void createDocumentsForTheReceivedProducts(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
 
-        if (delivery == null) {
-            return;
-        }
-
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-
-        if (location == null) {
-            return;
-        }
 
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 

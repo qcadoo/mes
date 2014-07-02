@@ -349,14 +349,15 @@
                         <component type="lookup" name="location" reference="location"
                                    field="#{form}.location"  hasDescription="true">
                             <option type="column" name="name" fields="name" link="true"/>
-                            <option type="column" name="type" fields="type" />
 
-                            <option type="searchable" value="number,name,type" />
-                            <option type="orderable" value="number,name,type" />
+                            <option type="searchable" value="number,name" />
+                            <option type="orderable" value="number,name" />
 
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
                             <option type="fieldCode" value="number" />
+                            <criteriaModifier class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                              method="showWarehousesOnly" />
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="3">

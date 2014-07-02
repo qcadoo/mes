@@ -50,27 +50,28 @@
                         <component type="lookup" name="locationFrom" field="locationFrom"
                                    reference="locationFrom" >
                             <option type="column" name="name" fields="name" />
-                            <option type="column" name="type" fields="type" />
 
-                            <option type="searchable" value="number,name,type" />
-                            <option type="orderable" value="number,name,type" />
+                            <option type="searchable" value="number,name" />
+                            <option type="orderable" value="number,name" />
 
                             <option type="expression" value="#number + ' - ' + #name" />
                             <option type="fieldCode" value="number" />
-
+                            <criteriaModifier class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                              method="showWarehousesOnly" />
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2">
                         <component type="lookup" name="locationTo" field="locationTo"
                                    reference="locationTo" >
                             <option type="column" name="name" fields="name" />
-                            <option type="column" name="type" fields="type" />
 
-                            <option type="searchable" value="number,name,type" />
-                            <option type="orderable" value="number,name,type" />
+                            <option type="searchable" value="number,name" />
+                            <option type="orderable" value="number,name" />
 
                             <option type="expression" value="#number + ' - ' + #name" />
                             <option type="fieldCode" value="number" />
+                            <criteriaModifier class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                              method="showWarehousesOnly" />
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="3">
