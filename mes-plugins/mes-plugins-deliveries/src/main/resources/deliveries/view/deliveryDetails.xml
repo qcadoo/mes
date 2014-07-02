@@ -347,7 +347,7 @@
 					</layoutElement>
                     <layoutElement column="2" row="2">
                         <component type="lookup" name="location" reference="location"
-                                   field="#{form}.location"  hasDescription="true">
+                                   field="#{form}.location" >
                             <option type="column" name="name" fields="name" link="true"/>
 
                             <option type="searchable" value="number,name" />

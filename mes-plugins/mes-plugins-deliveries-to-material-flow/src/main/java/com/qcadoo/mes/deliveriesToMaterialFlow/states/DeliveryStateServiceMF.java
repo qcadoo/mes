@@ -53,6 +53,10 @@ public class DeliveryStateServiceMF {
 
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
 
+        if (location == null) {
+            return;
+        }
+
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();

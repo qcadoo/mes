@@ -26,7 +26,6 @@ package com.qcadoo.mes.deliveries.states;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.LOCATION;
 
 import java.util.List;
 
@@ -45,7 +44,7 @@ public class DeliveryStateValidationService {
     private static final String ENTITY_IS_NULL = "entity is null";
 
     public void validationOnApproved(final StateChangeContext stateChangeContext) {
-        final List<String> references = Lists.newArrayList(DELIVERY_DATE, LOCATION);
+        final List<String> references = Lists.newArrayList(DELIVERY_DATE);
 
         checkRequired(references, stateChangeContext);
     }
