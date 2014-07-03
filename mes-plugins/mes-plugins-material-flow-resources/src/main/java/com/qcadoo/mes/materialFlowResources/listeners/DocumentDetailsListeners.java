@@ -3,17 +3,20 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
 public class DocumentDetailsListeners {
@@ -21,24 +24,33 @@ public class DocumentDetailsListeners {
     @Autowired
     private ResourceManagementService resourceManagementService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+
+        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
         FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
-        Entity documentToCreateResourcesFor = document.getDataDefinition().save(document);
-        if(!documentToCreateResourcesFor.isValid()){
+        document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
+        Entity documentToCreateResourcesFor = documentDD.save(document);
+       
+        if (!documentToCreateResourcesFor.isValid()) {
+            documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
            formComponent.setEntity(documentToCreateResourcesFor);
            return;
         }
 
         createResources(documentToCreateResourcesFor);
 
-        documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
-        Entity savedDocument = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
-        if(!savedDocument.isValid()){
-            savedDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+        if (!documentToCreateResourcesFor.isValid()) {
+            Entity recentlySavedDocument = documentDD.get(document.getId());
+            recentlySavedDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+            documentToCreateResourcesFor = documentDD.save(recentlySavedDocument);
         }
-        formComponent.setEntity(savedDocument);
+        formComponent.setEntity(documentToCreateResourcesFor);
     }
 
     @Transactional
