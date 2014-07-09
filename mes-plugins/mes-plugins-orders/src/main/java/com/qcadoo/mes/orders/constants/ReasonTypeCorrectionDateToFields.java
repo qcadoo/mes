@@ -29,8 +29,10 @@ public final class ReasonTypeCorrectionDateToFields {
 
     }
 
-    public static final String ORDER = "order";
+    public static final String ORDER = CommonReasonTypeFields.ORDER;
 
     public static final String REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChangingOrderState";
+
+    public static final String DATE = CommonReasonTypeFields.DATE;
 
 }
