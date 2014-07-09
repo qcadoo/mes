@@ -47,8 +47,6 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.materialFlow.hooks.TransferModelValidators"
 			method="validateTransfer" />
-		<validatesWith class="com.qcadoo.mes.materialFlow.hooks.TransferModelValidators"
-			method="validateTransfer" />
 		<onCreate
 			class="com.qcadoo.mes.materialFlow.hooks.TransferModelHooks"
 			method="copyProductionOrConsumptionDataFromBelongingTransformation" />
