@@ -23,29 +23,30 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
+import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubDecimalField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubHasManyField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
+import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 
 public class TransformationsModelValidatorsTest {
 
@@ -57,8 +58,6 @@ public class TransformationsModelValidatorsTest {
 
     private static final String L_NUMBER_PRODUCTION_1 = "0000P1";
 
-    private static final String L_NUMBER_PRODUCTION_2 = "0000P2";
-
     @Mock
     private MaterialFlowService materialFlowService;
 
@@ -66,8 +65,7 @@ public class TransformationsModelValidatorsTest {
     private DataDefinition transformationsDD, transferDD;
 
     @Mock
-    private Entity transformations, transferConsumption1, transferConsumption2, transferProduction1, transferProduction2,
-            productConsumption1, productProduction1;
+    private Entity transformations, productConsumption, productProduction;
 
     @Before
     public void init() {
@@ -76,35 +74,18 @@ public class TransformationsModelValidatorsTest {
         transformationsModelValidators = new TransformationsModelValidators();
 
         setField(transformationsModelValidators, "materialFlowService", materialFlowService);
-    }
 
-    private static EntityList mockEntityListIterator(final List<Entity> list) {
-        EntityList entityList = mock(EntityList.class);
-
-        given(entityList.iterator()).willReturn(list.iterator());
-
-        return entityList;
+        stubHasManyField(transformations, TRANSFERS_PRODUCTION, Lists.<Entity> newArrayList());
+        stubHasManyField(transformations, TRANSFERS_CONSUMPTION, Lists.<Entity> newArrayList());
     }
 
     @Test
     public void shouldReturnFalseWhenCheckIfTransfersAreValidAndTransfersArentNull() {
         // given
-        EntityList transfersConsumption = mockEntityListIterator(Arrays.asList(transferConsumption1));
-        EntityList transfersProduction = mockEntityListIterator(Arrays.asList(transferProduction1));
-
-        given(transferConsumption1.getDataDefinition()).willReturn(transferDD);
-        given(transferProduction1.getDataDefinition()).willReturn(transferDD);
-
-        given(transferConsumption1.getStringField(NUMBER)).willReturn(null);
-        given(transferConsumption1.getBelongsToField(PRODUCT)).willReturn(null);
-        given(transferConsumption1.getDecimalField(QUANTITY)).willReturn(null);
-
-        given(transferProduction1.getStringField(NUMBER)).willReturn(null);
-        given(transferProduction1.getBelongsToField(PRODUCT)).willReturn(null);
-        given(transferProduction1.getDecimalField(QUANTITY)).willReturn(null);
-
-        given(transformations.getHasManyField(TRANSFERS_CONSUMPTION)).willReturn(transfersConsumption);
-        given(transformations.getHasManyField(TRANSFERS_CONSUMPTION)).willReturn(transfersProduction);
+        Entity transferConsumption = mockTransfer(null, null, null);
+        Entity transferProduction = mockTransfer(null, null, null);
+        stubHasManyField(transformations, TRANSFERS_CONSUMPTION, Lists.newArrayList(transferConsumption));
+        stubHasManyField(transformations, TRANSFERS_PRODUCTION, Lists.newArrayList(transferProduction));
 
         // when
         boolean result = transformationsModelValidators.checkIfTransfersAreValid(transformationsDD, transformations);
@@ -116,25 +97,9 @@ public class TransformationsModelValidatorsTest {
     @Test
     public void shouldReturnFalseWhenCheckIfTransfersAreValidAndTransferProductAlreadyAdded() {
         // given
-        given(transferConsumption1.getDataDefinition()).willReturn(transferDD);
-        given(transferConsumption2.getDataDefinition()).willReturn(transferDD);
-        given(transferProduction1.getDataDefinition()).willReturn(transferDD);
-
-        given(transferConsumption1.getStringField(NUMBER)).willReturn(L_NUMBER_CONSUMPTION_1);
-        given(transferConsumption1.getBelongsToField(PRODUCT)).willReturn(productConsumption1);
-        given(transferConsumption1.getDecimalField(QUANTITY)).willReturn(new BigDecimal(1L));
-        given(transferConsumption1.getId()).willReturn(null);
-
-        given(transferConsumption2.getStringField(NUMBER)).willReturn(L_NUMBER_CONSUMPTION_2);
-        given(transferConsumption2.getBelongsToField(PRODUCT)).willReturn(productConsumption1);
-        given(transferConsumption2.getDecimalField(QUANTITY)).willReturn(new BigDecimal(1L));
-        given(transferConsumption2.getId()).willReturn(null);
-
-        EntityList transfersConsumption = mockEntityListIterator(Arrays.asList(transferConsumption1, transferConsumption2));
-        EntityList transfersProduction = mockEntityListIterator(Arrays.asList(transferProduction1));
-
-        given(transformations.getHasManyField(TRANSFERS_CONSUMPTION)).willReturn(transfersConsumption);
-        given(transformations.getHasManyField(TRANSFERS_CONSUMPTION)).willReturn(transfersProduction);
+        Entity transferConsumption1 = mockTransfer(L_NUMBER_CONSUMPTION_1, productConsumption, BigDecimal.ONE);
+        Entity transferConsumption2 = mockTransfer(L_NUMBER_CONSUMPTION_2, productProduction, BigDecimal.ONE);
+        stubHasManyField(transformations, TRANSFERS_CONSUMPTION, Lists.newArrayList(transferConsumption1, transferConsumption2));
 
         // when
         boolean result = transformationsModelValidators.checkIfTransfersAreValid(transformationsDD, transformations);
@@ -146,25 +111,9 @@ public class TransformationsModelValidatorsTest {
     @Test
     public void shouldReturnFalseWhenCheckIfTransfersAreValidAndTransfersNumersArentDistinct() {
         // given
-        given(transferConsumption1.getDataDefinition()).willReturn(transferDD);
-        given(transferConsumption2.getDataDefinition()).willReturn(transferDD);
-        given(transferProduction1.getDataDefinition()).willReturn(transferDD);
-
-        given(transferConsumption1.getStringField(NUMBER)).willReturn(L_NUMBER_CONSUMPTION_1);
-        given(transferConsumption1.getBelongsToField(PRODUCT)).willReturn(productConsumption1);
-        given(transferConsumption1.getDecimalField(QUANTITY)).willReturn(new BigDecimal(1L));
-        given(transferConsumption1.getId()).willReturn(null);
-
-        given(transferConsumption2.getStringField(NUMBER)).willReturn(L_NUMBER_CONSUMPTION_1);
-        given(transferConsumption2.getBelongsToField(PRODUCT)).willReturn(productConsumption1);
-        given(transferConsumption2.getDecimalField(QUANTITY)).willReturn(new BigDecimal(1L));
-        given(transferConsumption2.getId()).willReturn(null);
-
-        EntityList transfersConsumption = mockEntityListIterator(Arrays.asList(transferConsumption1, transferConsumption2));
-        EntityList transfersProduction = mockEntityListIterator(Arrays.asList(transferProduction1));
-
-        given(transformations.getHasManyField(TRANSFERS_CONSUMPTION)).willReturn(transfersConsumption);
-        given(transformations.getHasManyField(TRANSFERS_CONSUMPTION)).willReturn(transfersProduction);
+        Entity transferConsumption1 = mockTransfer(L_NUMBER_CONSUMPTION_1, productConsumption, BigDecimal.ONE);
+        Entity transferConsumption2 = mockTransfer(L_NUMBER_CONSUMPTION_1, productProduction, BigDecimal.ONE);
+        stubHasManyField(transformations, TRANSFERS_CONSUMPTION, Lists.newArrayList(transferConsumption1, transferConsumption2));
 
         // when
         boolean result = transformationsModelValidators.checkIfTransfersAreValid(transformationsDD, transformations);
@@ -176,24 +125,11 @@ public class TransformationsModelValidatorsTest {
     @Test
     public void shouldReturnTrueWhenCheckIfTransfersAreValidAndTransfersArentNull() {
         // given
-        given(transferConsumption1.getDataDefinition()).willReturn(transferDD);
-        given(transferProduction1.getDataDefinition()).willReturn(transferDD);
+        Entity transferConsumption = mockTransfer(L_NUMBER_CONSUMPTION_1, productProduction, BigDecimal.ONE);
+        Entity transferProduction = mockTransfer(L_NUMBER_PRODUCTION_1, productProduction, BigDecimal.ONE);
 
-        given(transferConsumption1.getStringField(NUMBER)).willReturn(L_NUMBER_CONSUMPTION_1);
-        given(transferConsumption1.getBelongsToField(PRODUCT)).willReturn(productConsumption1);
-        given(transferConsumption1.getDecimalField(QUANTITY)).willReturn(new BigDecimal(1L));
-        given(transferConsumption1.getId()).willReturn(null);
-
-        given(transferProduction1.getStringField(NUMBER)).willReturn(L_NUMBER_PRODUCTION_1);
-        given(transferProduction1.getBelongsToField(PRODUCT)).willReturn(productProduction1);
-        given(transferProduction1.getDecimalField(QUANTITY)).willReturn(new BigDecimal(1L));
-        given(transferProduction1.getId()).willReturn(null);
-
-        EntityList transfersConsumption = mockEntityListIterator(Arrays.asList(transferConsumption1));
-        EntityList transfersProduction = mockEntityListIterator(Arrays.asList(transferProduction1));
-
-        given(transformations.getHasManyField(TRANSFERS_CONSUMPTION)).willReturn(transfersConsumption);
-        given(transformations.getHasManyField(TRANSFERS_CONSUMPTION)).willReturn(transfersProduction);
+        stubHasManyField(transformations, TRANSFERS_CONSUMPTION, Lists.newArrayList(transferConsumption));
+        stubHasManyField(transformations, TRANSFERS_PRODUCTION, Lists.newArrayList(transferProduction));
 
         // when
         boolean result = transformationsModelValidators.checkIfTransfersAreValid(transformationsDD, transformations);
@@ -204,14 +140,19 @@ public class TransformationsModelValidatorsTest {
 
     @Test
     public void shouldReturnTrueWhenCheckIfTransfersAreValidAndAllTransfersAreNull() {
-        // given
-        given(transformations.getHasManyField(TRANSFERS_CONSUMPTION)).willReturn(null);
-        given(transformations.getHasManyField(TRANSFERS_CONSUMPTION)).willReturn(null);
-
         // when
         boolean result = transformationsModelValidators.checkIfTransfersAreValid(transformationsDD, transformations);
 
         // then
         assertTrue(result);
+    }
+
+    private Entity mockTransfer(final String number, final Entity product, final BigDecimal quantity) {
+        Entity transfer = mockEntity(transferDD);
+        stubStringField(transfer, TransferFields.NUMBER, number);
+        stubBelongsToField(transfer, TransferFields.PRODUCT, product);
+        stubDecimalField(transfer, TransferFields.QUANTITY, quantity);
+        given(transfer.getId()).willReturn(null);
+        return transfer;
     }
 }
