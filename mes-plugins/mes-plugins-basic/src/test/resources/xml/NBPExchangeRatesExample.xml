@@ -1,0 +1,26 @@
+<tabela_kursow typ="C" uid="14c134">
+    <numer_tabeli>134/C/NBP/2014</numer_tabeli>
+    <data_notowania>2014-07-11</data_notowania>
+    <data_publikacji>2014-07-14</data_publikacji>
+    <pozycja>
+        <nazwa_waluty>dolar amerykański</nazwa_waluty>
+        <przelicznik>1</przelicznik>
+        <kod_waluty>USD</kod_waluty>
+        <kurs_kupna>3,0146</kurs_kupna>
+        <kurs_sprzedazy>3,0756</kurs_sprzedazy>
+    </pozycja>
+    <pozycja>
+        <nazwa_waluty>dolar australijski</nazwa_waluty>
+        <przelicznik>1</przelicznik>
+        <kod_waluty>AUD</kod_waluty>
+        <kurs_kupna>2,8355</kurs_kupna>
+        <kurs_sprzedazy>2,8927</kurs_sprzedazy>
+    </pozycja>
+    <pozycja>
+        <nazwa_waluty>dolar kanadyjski</nazwa_waluty>
+        <przelicznik>1</przelicznik>
+        <kod_waluty>CAD</kod_waluty>
+        <kurs_kupna>2,8164</kurs_kupna>
+        <kurs_sprzedazy>2,8732</kurs_sprzedazy>
+    </pozycja>
+</tabela_kursow>
