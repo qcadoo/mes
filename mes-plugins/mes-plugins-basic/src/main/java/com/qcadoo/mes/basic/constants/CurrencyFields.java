@@ -37,6 +37,6 @@ public final class CurrencyFields {
 
     public static final String MINOR_UNIT = "minorUnit";
 
-    public static final String exchangeRate = "exchangeRate";
+    public static final String EXCHANGE_RATE = "exchangeRate";
 
 }
