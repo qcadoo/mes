@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.basic;
 
-import static com.qcadoo.mes.basic.constants.CurrencyFields.ALPHABETIC_CODE;
-import static com.qcadoo.mes.basic.constants.CurrencyFields.CURRENCY;
-import static com.qcadoo.mes.basic.constants.CurrencyFields.ISO_CODE;
-import static com.qcadoo.mes.basic.constants.CurrencyFields.MINOR_UNIT;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -49,6 +44,8 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+
+import static com.qcadoo.mes.basic.constants.CurrencyFields.*;
 
 @Component
 public class CurrencyLoader {
@@ -108,6 +105,7 @@ public class CurrencyLoader {
         currency.setField(ALPHABETIC_CODE, values.get(ALPHABETIC_CODE.toLowerCase(Locale.ENGLISH)));
         currency.setField(ISO_CODE, Integer.valueOf(values.get(ISO_CODE.toLowerCase(Locale.ENGLISH))));
         currency.setField(MINOR_UNIT, Integer.valueOf(values.get(MINOR_UNIT.toLowerCase(Locale.ENGLISH))));
+        currency.setField(exchangeRate, "0");
 
         currency = currencyDataDefinition.save(currency);
 
