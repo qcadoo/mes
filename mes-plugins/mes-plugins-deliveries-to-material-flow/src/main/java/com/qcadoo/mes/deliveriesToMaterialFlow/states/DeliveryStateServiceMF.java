@@ -26,6 +26,7 @@ package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.qcadoo.mes.basic.constants.CurrencyFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +53,7 @@ public class DeliveryStateServiceMF {
         final Entity delivery = stateChangeContext.getOwner();
 
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        Entity currency = delivery.getBelongsToField(DeliveryFields.CURRENCY);
 
         if (location == null) {
             return;
@@ -73,12 +75,30 @@ public class DeliveryStateServiceMF {
             BigDecimal positionQuantity = quantity.get().subtract(damagedQuantity.or(BigDecimal.ZERO),
                     numberService.getMathContext());
             if (positionQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                documentBuilder.addPosition(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT), positionQuantity,
-                        deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT), null, null, null);
+                documentBuilder.addPosition(
+                        product(deliveredProduct),
+                        positionQuantity,
+                        price(deliveredProduct, currency),
+                        null, null, null
+                );
             }
         }
 
         documentBuilder.setAccepted().build();
+  }
+
+  private BigDecimal price(Entity deliveredProduct, Entity currency) {
+      BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
+      BigDecimal pricePerUnit = deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
+      return exRateExists(exRate) ? pricePerUnit.multiply(exRate) : pricePerUnit;
+  }
+
+  private boolean exRateExists(BigDecimal exRate) {
+      return exRate.compareTo(BigDecimal.ZERO) > 0;
+  }
+
+  private Entity product(Entity deliveredProduct) {
+      return deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
   }
 
 }
