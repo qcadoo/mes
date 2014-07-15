@@ -93,3 +93,19 @@ ALTER TABLE materialflow_location ADD COLUMN requireexpirationdate BOOL;
 
 
 -- end
+
+
+-- Table: technologies_productstructuretreenode
+-- create: 14.07.2014
+
+CREATE TABLE technologies_barcodeoperationcomponent
+(
+  id BIGINT NOT NULL,
+  operationcomponent_id BIGINT,
+  code character varying(20),
+  active boolean DEFAULT true,
+  CONSTRAINT technologies_barcodeoperationcomponent_pkey PRIMARY KEY (id),
+  CONSTRAINT barcodeoperationcomponen_operationcomponent_fkey FOREIGN KEY (operationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE
+);
+-- end

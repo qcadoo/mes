@@ -51,6 +51,8 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_TECHNOLOGY_ATTACHMENT = "technologyAttachment";
 
+    public static final String MODEL_BARCODE_OPERATION_COMPONENT = "barcodeOperationComponent";
+
     public static final String MODEL_PRODUCT_STRUCTURE_TREE_NODE = "productStructureTreeNode";
 
     public static final String OPERATION_COMPONENTS = "operationComponents";
