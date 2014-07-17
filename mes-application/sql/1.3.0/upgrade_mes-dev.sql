@@ -150,3 +150,10 @@ VALUES (nextval('hibernate_sequence'), 'orders', 'deviationsReport', TRUE,
 );
 
 -- end
+
+-- Add exchangeRate to Currency in mes-plugins-basic
+-- last touched 17.07.2014 by adso
+
+ALTER TABLE basic_currency ADD COLUMN "exchangerate" NUMERIC(12, 5) DEFAULT 1;
+
+-- end
