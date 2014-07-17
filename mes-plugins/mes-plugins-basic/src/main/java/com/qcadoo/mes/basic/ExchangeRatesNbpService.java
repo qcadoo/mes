@@ -29,9 +29,7 @@ import java.util.Map;
 
 public interface ExchangeRatesNbpService {
 
-    String CRON_LAST_A = "0 20 12 ? * MON-FRI";    // working days  11:45 - 12:15 -> 12:20
-    String CRON_LAST_B = "0 20 12 ? * WED";        // wednesday     11:45 - 12:15 -> 12:20
-    String CRON_LAST_C = "0 20 8 ? * MON-FRI";     // working days  07:45 - 08:15 -> 08:20
+    String CRON_LAST_ALL = "0 20 13 ? * MON-FRI";     // working days  07:45 - 08:15 -> 08:20
 
     Map<String, BigDecimal> get(NbpProperties nbpProperties);
 

@@ -25,9 +25,5 @@ package com.qcadoo.mes.basic;
 
 public interface ExchangeRatesUpdateService {
 
-    void updateLastA();
-
-    void updateLastB();
-
-    void updateLastC();
+    void update();
 }

@@ -51,18 +51,10 @@ public class ExchangeRatesUpdateServiceImpl implements ExchangeRatesUpdateServic
         this.dataDefinitionService = dataDefinitionService;
     }
 
-    @Override @Scheduled(cron = ExchangeRatesNbpService.CRON_LAST_A)
-    public void updateLastA() {
+    @Override @Scheduled(cron = ExchangeRatesNbpService.CRON_LAST_ALL)
+    public void update() {
         updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_A));
-    }
-
-    @Override @Scheduled(cron = ExchangeRatesNbpService.CRON_LAST_B)
-    public void updateLastB() {
         updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_B));
-    }
-
-    @Override @Scheduled(cron = ExchangeRatesNbpService.CRON_LAST_C)
-    public void updateLastC() {
         updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_C));
     }
 
