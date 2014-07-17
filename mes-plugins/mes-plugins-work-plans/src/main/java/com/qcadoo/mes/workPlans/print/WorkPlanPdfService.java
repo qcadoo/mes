@@ -400,7 +400,9 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
                     addOperationComment(document, operationComponent, locale);
                 }
 
-                addBarcode(writer, document, operationComponent);
+                if (!parameter.getBooleanField(ParameterFieldsWP.HIDE_BARCODE_OPERATION_COMPONENT_IN_WORK_PLAN)) {
+                    addBarcode(writer, document, operationComponent);
+                }
 
                 if (isOutputProductTableEnabled(operationComponent)) {
                     addOutProductsSeries(document, workPlan, columnValues, operationComponent, locale);
