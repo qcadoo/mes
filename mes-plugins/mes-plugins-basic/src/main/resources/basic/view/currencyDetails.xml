@@ -45,6 +45,7 @@
 					
 					<option type="expression" value="#alphabeticCode + ' - ' + #currency" />
 					<option type="fieldCode" value="alphabeticCode" />
+                    <option type="column" name="exchangeRate" fields="exchangeRate"/>
 				</component>
 			</layoutElement>
 		</component>

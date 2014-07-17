@@ -21,22 +21,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.constants;
+package com.qcadoo.mes.basic;
 
-public final class CurrencyFields {
+public interface ExchangeRatesUpdateService {
 
-    private CurrencyFields() {
+    void updateLastA();
 
-    }
+    void updateLastB();
 
-    public static final String CURRENCY = "currency";
-
-    public static final String ALPHABETIC_CODE = "alphabeticCode";
-
-    public static final String ISO_CODE = "isoCode";
-
-    public static final String MINOR_UNIT = "minorUnit";
-
-    public static final String EXCHANGE_RATE = "exchangeRate";
-
+    void updateLastC();
 }
