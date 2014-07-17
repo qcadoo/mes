@@ -56,7 +56,7 @@ public interface ExchangeRatesNbpService {
         LAST_C("LastC"){
             @Override
             public String fieldName() {
-                return "kurs_kupna";
+                return "kurs_sprzedazy";
             }
         };
 
@@ -70,8 +70,6 @@ public interface ExchangeRatesNbpService {
             return "http://www.nbp.pl/kursy/xml/" + xmlFileName + ".xml";
         }
 
-        public String fieldName() {
-            return null;
-        }
+        public abstract String fieldName();
     }
 }
