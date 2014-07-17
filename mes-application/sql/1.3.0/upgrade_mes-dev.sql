@@ -94,7 +94,6 @@ ALTER TABLE materialflow_location ADD COLUMN requireexpirationdate BOOL;
 
 -- end
 
-
 -- Table: technologies_productstructuretreenode
 -- create: 14.07.2014
 
@@ -108,4 +107,46 @@ CREATE TABLE technologies_barcodeoperationcomponent
   CONSTRAINT barcodeoperationcomponen_operationcomponent_fkey FOREIGN KEY (operationcomponent_id)
       REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE
 );
+-- end
+
+--  Add 'update date' field to the orders' deviation/correction reason type models.
+-- last touched at 09.07.2014 by maku
+
+ALTER TABLE orders_reasontypecorrectiondatefrom ADD COLUMN "date" TIMESTAMP;
+ALTER TABLE orders_reasontypecorrectiondateto ADD COLUMN "date" TIMESTAMP;
+ALTER TABLE orders_reasontypedeviationeffectivestart ADD COLUMN "date" TIMESTAMP;
+ALTER TABLE orders_reasontypedeviationeffectiveend ADD COLUMN "date" TIMESTAMP;
+ALTER TABLE orders_typeofcorrectioncauses ADD COLUMN "date" TIMESTAMP;
+
+-- end
+
+-- Add view and menu item for order deviations report
+-- last touched at 11.07.2014 by maku
+
+INSERT INTO qcadooview_view (id, pluginidentifier, name, view)
+VALUES (nextval('hibernate_sequence'), 'orders', 'deviationsReportGenerator', 'deviationsReportGenerator');
+INSERT INTO qcadooview_item (id, pluginidentifier, name, active,
+        category_id,
+        view_id,
+        succession)
+VALUES (nextval('hibernate_sequence'), 'orders', 'deviationsReport', TRUE,
+        (SELECT
+           id
+         FROM qcadooview_category
+         WHERE name = 'orders'),
+        (SELECT
+           id
+         FROM qcadooview_view
+         WHERE name =
+               'deviationsReportGenerator'),
+        (SELECT
+           max(succession) + 1
+         FROM qcadooview_item
+         WHERE category_id = (SELECT
+                                id
+                              FROM qcadooview_category
+                              WHERE name = 'orders')
+        )
+);
+
 -- end

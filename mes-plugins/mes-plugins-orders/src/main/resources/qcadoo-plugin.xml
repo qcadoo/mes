@@ -166,6 +166,9 @@
 		<menu:menu-item name="productionOrdersPlanning" category="orders"
 		                view="ordersPlanningList" />
 
+		<menu:menu-item name="deviationsReport" category="orders"
+		                view="deviationsReportGenerator" />
+
 		<view:view resource="view/ordersList.xml" />
 		<view:view resource="view/ordersPlanningList.xml" />
 		<view:view resource="view/orderDetails.xml" />
@@ -177,6 +180,8 @@
 		<view:view resource="view/orderStateChangeReasonDialog.xml" />
 
 		<view:view resource="view/copyOfTechnologyDetails.xml" />
+
+		<view:view resource="view/deviationsReportGenerator.xml" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml" />
 		<view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml" />

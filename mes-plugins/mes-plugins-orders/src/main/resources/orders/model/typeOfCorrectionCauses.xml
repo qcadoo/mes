@@ -31,6 +31,9 @@
 	<fields>
 		<belongsTo name="order" model="order" />
 		<dictionary name="reasonType" dictionary="reasonTypeOfChangingOrderState" required="true" />
+		<datetime name="date" />
 	</fields>
-	<hooks />
+	<hooks>
+		<onSave class="com.qcadoo.mes.orders.hooks.TypeOfCorrectionCausesHooks" method="onSave" />
+	</hooks>
 </model>

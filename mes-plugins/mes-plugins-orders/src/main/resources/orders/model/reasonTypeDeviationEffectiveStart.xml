@@ -25,11 +25,14 @@
 
 -->
 <model name="reasonTypeDeviationEffectiveStart"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="order" model="order" required="true" />
 		<dictionary name="reasonTypeOfChangingOrderState" dictionary="reasonTypeOfChangingOrderState" required="true" />
+		<datetime name="date" />
 	</fields>
-	<hooks />
+	<hooks>
+		<onSave class="com.qcadoo.mes.orders.hooks.ReasonTypeDeviationEffectiveStartHooks" method="onSave" />
+	</hooks>
 </model>
