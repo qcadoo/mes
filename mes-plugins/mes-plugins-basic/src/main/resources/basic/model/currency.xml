@@ -34,7 +34,7 @@
 		</string>
 		<integer name="isoCode" unique="true" copyable="false" />
 		<integer name="minorUnit" required="true" copyable="false" />
-        <decimal name="exchangeRate" default="0" />
+        <decimal name="exchangeRate" default="1.0" />
 	</fields>
 	
 	<hooks />

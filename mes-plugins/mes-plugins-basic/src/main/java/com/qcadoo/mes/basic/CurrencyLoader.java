@@ -105,7 +105,7 @@ public class CurrencyLoader {
         currency.setField(ALPHABETIC_CODE, values.get(ALPHABETIC_CODE.toLowerCase(Locale.ENGLISH)));
         currency.setField(ISO_CODE, Integer.valueOf(values.get(ISO_CODE.toLowerCase(Locale.ENGLISH))));
         currency.setField(MINOR_UNIT, Integer.valueOf(values.get(MINOR_UNIT.toLowerCase(Locale.ENGLISH))));
-        currency.setField(EXCHANGE_RATE, "0");
+        currency.setField(EXCHANGE_RATE, "1.0");
 
         currency = currencyDataDefinition.save(currency);
 
