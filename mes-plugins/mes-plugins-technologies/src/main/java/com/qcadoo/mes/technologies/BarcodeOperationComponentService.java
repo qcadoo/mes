@@ -26,6 +26,7 @@ package com.qcadoo.mes.technologies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
 import com.qcadoo.mes.technologies.constants.BarcodeOperationComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -72,5 +73,15 @@ public class BarcodeOperationComponentService {
                 .add(SearchRestrictions.belongsTo(BarcodeOperationComponentFields.OPERATION_COMPONENT, operationComponent))
                 .setMaxResults(1).uniqueResult();
         return barcode.getStringField(BarcodeOperationComponentFields.CODE);
+    }
+
+    public Optional<Entity> getOperationComponetForBarcode(final String code) {
+        Entity barcode = getBarcodeOperationComponentDD().find()
+                .add(SearchRestrictions.eq(BarcodeOperationComponentFields.CODE, code))
+                .setMaxResults(1).uniqueResult();
+        if (barcode == null) {
+            return Optional.fromNullable(null);
+        }
+        return Optional.fromNullable(barcode.getBelongsToField(BarcodeOperationComponentFields.OPERATION_COMPONENT));
     }
 }
