@@ -50,7 +50,7 @@ public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
             final InputStream input = new URL(nbpProperties.getUrl()).openStream();
             return parse(input, nbpProperties);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Reading URL stream failed", e);
         }
         return new HashMap<String, BigDecimal>();
     }
