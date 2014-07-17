@@ -112,17 +112,18 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         Entity dictionary = getDictionaryByName(values.get(L_NAME));
 
         if (dictionary != null) {
-            Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
-            item.setField("dictionary", dictionary);
-            item.setField(L_NAME, values.get("item"));
-            item.setField("description", values.get("description"));
+            if (!checkIfDictionaryItemExists(values.get("item"))) {
+                Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
+                item.setField("dictionary", dictionary);
+                item.setField(L_NAME, values.get("item"));
+                item.setField("description", values.get("description"));
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(L_NAME) + ", item="
-                        + item.getField(L_NAME) + ", description=" + item.getField("description") + "}");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(L_NAME) + ", item="
+                            + item.getField(L_NAME) + ", description=" + item.getField("description") + "}");
+                }
+                item.getDataDefinition().save(item);
             }
-            item.getDataDefinition().save(item);
-
         }
     }
 
@@ -235,4 +236,12 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
                 .find().add(SearchRestrictions.eq("code", code)).setMaxResults(1).uniqueResult();
     }
 
+    private Entity getDictionaryItem(final String itemName) {
+        return dataDefinitionService.get("qcadooModel", "dictionaryItem").find().add(SearchRestrictions.eq(L_NAME, itemName))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private boolean checkIfDictionaryItemExists(final String itemName) {
+        return getDictionaryItem(itemName) != null;
+    }
 }
