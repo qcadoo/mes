@@ -50,9 +50,9 @@ public class ExchangeRatesNbpServiceImplTest {
         assertTrue(map.containsKey("USD"));
         assertTrue(map.containsKey("CAD"));
         assertTrue(map.containsKey("AUD"));
-        assertTrue(map.containsValue(new BigDecimal("3.0146")));
-        assertTrue(map.containsValue(new BigDecimal("2.8164")));
-        assertTrue(map.containsValue(new BigDecimal("2.8355")));
+        assertTrue(map.containsValue(new BigDecimal("3.0756")));
+        assertTrue(map.containsValue(new BigDecimal("2.8927")));
+        assertTrue(map.containsValue(new BigDecimal("2.8732")));
     }
 
     @Test
