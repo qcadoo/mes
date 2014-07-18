@@ -30,6 +30,7 @@ import static com.qcadoo.model.api.search.SearchProjections.list;
 import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 import static com.qcadoo.model.api.search.SearchProjections.sum;
 import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -44,6 +45,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrder;
@@ -91,7 +93,13 @@ public class MasterOrderOrdersDataProvider {
     public List<Entity> findBelongingOrders(final Entity masterOrder, final SearchProjection projection,
             final SearchCriterion additionalCriteria, final SearchOrder searchOrder) {
         SearchCriteriaBuilder scb = getOrderDD().find();
-        scb.add(belongsTo(OrderFieldsMO.MASTER_ORDER, masterOrder));
+        // TODO we have to fix problem with converting Form's entity into hibernate's generic entity.
+        // scb.add(belongsTo(OrderFieldsMO.MASTER_ORDER, masterOrder));
+        // we can't use belongsTo(fieldName, dataDefinition, id)) because it'll cause
+        // StackOverflows (this method is used MasterOrder's on View hook
+        // Below is my [maku] workaround:
+        scb.createAlias(OrderFieldsMO.MASTER_ORDER, "mo_alias", JoinType.INNER);
+        scb.add(eq("mo_alias.id", masterOrder.getId()));
         if (additionalCriteria != null) {
             scb.add(additionalCriteria);
         }
