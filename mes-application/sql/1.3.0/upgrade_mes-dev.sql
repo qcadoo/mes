@@ -94,7 +94,7 @@ ALTER TABLE materialflow_location ADD COLUMN requireexpirationdate BOOL;
 
 -- end
 
--- Table: technologies_productstructuretreenode
+-- Table: technologies_barcodeoperationcomponent
 -- create: 14.07.2014
 
 CREATE TABLE technologies_barcodeoperationcomponent
@@ -151,9 +151,17 @@ VALUES (nextval('hibernate_sequence'), 'orders', 'deviationsReport', TRUE,
 
 -- end
 
+
 -- Add exchangeRate to Currency in mes-plugins-basic
 -- last touched 17.07.2014 by adso
 
 ALTER TABLE basic_currency ADD COLUMN "exchangerate" NUMERIC(12, 5) DEFAULT 1;
+
+-- end
+
+-- Table: basic_parameter
+-- create: 22.07.2014
+
+ALTER TABLE basic_parameter ADD COLUMN hidebarcodeoperationcomponentinworkplans boolean;
 
 -- end
