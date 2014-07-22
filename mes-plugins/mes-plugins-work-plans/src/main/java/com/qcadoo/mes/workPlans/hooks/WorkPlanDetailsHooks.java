@@ -86,10 +86,8 @@ public class WorkPlanDetailsHooks {
             view.getComponentByReference(WorkPlanFields.DONT_PRINT_ORDERS_IN_WORK_PLANS).setEnabled(isEnabled);
             view.getComponentByReference(WorkPlanFields.ORDERS).setEnabled(isEnabled);
             view.getComponentByReference(WorkPlanFields.WORK_PLAN_ORDER_COLUMNS).setEnabled(isEnabled);
-            view.getComponentByReference("workPlanComponents").setEnabled(isEnabled);
-            view.getComponentByReference("columnsForOrders").setEnabled(isEnabled);
-            view.getComponentByReference("inputProductColumnToSortBy").setEnabled(isEnabled);
-            view.getComponentByReference("orderSorting").setEnabled(isEnabled);
+            view.getComponentByReference(WorkPlanFields.INPUT_PRODUCT_COLUMN_TO_SORT_BY).setEnabled(isEnabled);
+            view.getComponentByReference(WorkPlanFields.ORDER_SORTING).setEnabled(isEnabled);
         }
     }
 
