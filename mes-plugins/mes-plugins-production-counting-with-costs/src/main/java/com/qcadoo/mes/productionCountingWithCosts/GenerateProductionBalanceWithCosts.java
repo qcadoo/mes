@@ -166,9 +166,12 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         final BigDecimal doneQuantity = order.getDecimalField(OrderFields.DONE_QUANTITY);
         costCalculationService.calculateTotalCosts(productionBalance, productionCosts, doneQuantity);
 
-        BigDecimal totalTechnicalProductionCosts = productionBalance
-                .getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS);
-        BigDecimal perUnit = totalTechnicalProductionCosts.divide(doneQuantity, numberService.getMathContext());
+        BigDecimal perUnit = BigDecimal.ZERO;
+        if (!BigDecimalUtils.valueEquals(BigDecimal.ZERO, doneQuantity)) {
+            BigDecimal totalTechnicalProductionCosts = productionBalance
+                    .getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS);
+            perUnit = totalTechnicalProductionCosts.divide(doneQuantity, numberService.getMathContext());
+        }
 
         productionBalance.setField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
                 numberService.setScale(perUnit));
