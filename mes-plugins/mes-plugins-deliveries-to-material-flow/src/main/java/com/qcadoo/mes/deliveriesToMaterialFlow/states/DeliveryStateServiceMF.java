@@ -67,12 +67,11 @@ public class DeliveryStateServiceMF {
 
         for (Entity deliveredProduct : deliveredProducts) {
 
-            Optional<BigDecimal> quantity = Optional.fromNullable(deliveredProduct
-                    .getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
+            BigDecimal quantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
             Optional<BigDecimal> damagedQuantity = Optional.fromNullable(deliveredProduct
                     .getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY));
 
-            BigDecimal positionQuantity = quantity.get().subtract(damagedQuantity.or(BigDecimal.ZERO),
+            BigDecimal positionQuantity = quantity.subtract(damagedQuantity.or(BigDecimal.ZERO),
                     numberService.getMathContext());
             if (positionQuantity.compareTo(BigDecimal.ZERO) > 0) {
                 documentBuilder.addPosition(

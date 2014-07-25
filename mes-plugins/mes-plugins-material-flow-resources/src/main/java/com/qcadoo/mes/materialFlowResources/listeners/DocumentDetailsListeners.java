@@ -48,7 +48,7 @@ public class DocumentDetailsListeners {
         if (!documentToCreateResourcesFor.isValid()) {
             Entity recentlySavedDocument = documentDD.get(document.getId());
             recentlySavedDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-            documentToCreateResourcesFor = documentDD.save(recentlySavedDocument);
+            documentDD.save(recentlySavedDocument);
         }
         formComponent.setEntity(documentToCreateResourcesFor);
     }
