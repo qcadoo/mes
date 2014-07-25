@@ -7,7 +7,9 @@
         <belongsTo name="product" model="product" plugin="basic"
                    required="true" />
         <decimal name="quantity" required="true" >
-            <validatesRange from="0" exclusively="true"/>
+            <validatesRange from="0" exclusively="true" />
+            <validatesUnscaledValue max="9" />
+            <validatesScale max="5" />
         </decimal>
         <decimal name="price" default="0" />
         <string name="batch" />
