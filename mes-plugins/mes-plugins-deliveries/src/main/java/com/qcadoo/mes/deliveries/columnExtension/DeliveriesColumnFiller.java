@@ -176,31 +176,11 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     }
 
     private void fillProductUnit(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
-        String productUnit = null;
-
-        if (orderedProduct == null) {
-            productUnit = "";
-        } else {
-            Entity product = orderedProduct.getBelongsToField(PRODUCT);
-
-            productUnit = product.getStringField(UNIT);
-        }
-
-        values.get(orderedProduct).put("productUnit", productUnit);
+        values.get(orderedProduct).put("productUnit", orderedProduct == null ? "" : orderedProduct.getBelongsToField(PRODUCT).getStringField(UNIT));
     }
 
     private void fillProductUnit(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
-        String productUnit = null;
-
-        if (deliveryProduct.getDeliveredProductId() == null) {
-            productUnit = "";
-        } else {
-            Entity product = deliveriesService.getProduct(deliveryProduct);
-
-            productUnit = product.getStringField(UNIT);
-        }
-
-        values.get(deliveryProduct).put("productUnit", productUnit);
+        values.get(deliveryProduct).put("productUnit", deliveryProduct == null ? "" : deliveriesService.getProduct(deliveryProduct).getStringField(UNIT));
     }
 
     private void fillSuccession(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct,
