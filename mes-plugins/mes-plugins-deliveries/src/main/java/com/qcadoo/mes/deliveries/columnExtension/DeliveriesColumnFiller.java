@@ -339,21 +339,14 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     }
 
     private void fillCurrency(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
-        Entity entity = null;
-        String currency = "";
-        if (deliveryProduct.getDeliveredProductId() != null) {
-            entity = dataDefinitionService
-                    .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT).get(
-                            deliveryProduct.getDeliveredProductId());
-        } else {
+        Entity deliveredOrOrderedProduct = deliveryProduct.getDeliveredProductId() != null ?
+                deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId())
+                : deliveriesService.getOrderedProduct(deliveryProduct.getOrderedProductId());
+        Entity delivery = deliveredOrOrderedProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+        values.get(deliveryProduct).put("currency", pricePerUnit(deliveredOrOrderedProduct) == null ? "" : deliveriesService.getCurrency(delivery));
+    }
 
-            entity = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT)
-                    .get(deliveryProduct.getOrderedProductId());
-
-        }
-        Entity delivery = entity.getBelongsToField(DeliveredProductFields.DELIVERY);
-        currency = deliveriesService.getCurrency(delivery);
-
-        values.get(deliveryProduct).put("currency", currency);
+    private BigDecimal pricePerUnit(Entity delivery) {
+        return delivery.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
     }
 }
