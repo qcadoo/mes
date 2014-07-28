@@ -28,9 +28,8 @@ import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +50,7 @@ public class ExchangeRatesUpdateServiceImpl implements ExchangeRatesUpdateServic
         this.dataDefinitionService = dataDefinitionService;
     }
 
-    @Override @Scheduled(cron = ExchangeRatesNbpService.CRON_LAST_ALL)
+    @Override @Async @Scheduled(cron = ExchangeRatesNbpService.CRON_LAST_ALL)
     public void update() {
         updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_A));
         updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_B));
