@@ -41,5 +41,8 @@
 		<belongsTo name="technology" model="technology" plugin="technologies"
 			persistent="false" />
 	</fields>
-	<hooks />
+	<hooks>
+		<onSave class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftHooks"
+		        method="onSave" />
+	</hooks>
 </model>

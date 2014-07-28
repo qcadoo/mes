@@ -39,4 +39,6 @@ public final class ProgressForDayFields {
 
     public static final String DATE_OF_DAY = "dateOfDay";
 
+    public static final String ACTUAL_DATE_OF_DAY = "actualDateOfDay";
+
 }

@@ -23,31 +23,41 @@
  */
 package com.qcadoo.mes.productionPerShift.validators;
 
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.idNe;
+import static com.qcadoo.model.api.search.SearchRestrictions.isNotNull;
+
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.utils.EntityUtils;
 
 @Service
 public class DailyProgressValidators {
 
-    public boolean checkUniqueShift(final DataDefinition dailyProgressDD, final Entity dailyProgress) {
-        Entity secondDailyProgress = dailyProgressDD
-                .find()
-                .add(SearchRestrictions.belongsTo(DailyProgressFields.SHIFT,
-                        dailyProgress.getBelongsToField(DailyProgressFields.SHIFT)))
-                .add(SearchRestrictions.belongsTo(DailyProgressFields.PROGRESS_FOR_DAY,
-                        dailyProgress.getBelongsToField(DailyProgressFields.PROGRESS_FOR_DAY))).setMaxResults(1).uniqueResult();
-        if (secondDailyProgress != null && dailyProgress.getId() == null) {
+    public boolean validateShiftUniqueness(final DataDefinition dailyProgressDD, final Entity dailyProgress) {
+        Entity progressForDay = dailyProgress.getBelongsToField(DailyProgressFields.PROGRESS_FOR_DAY);
+        if (progressForDay == null) {
+            return true;
+        }
+        SearchCriteriaBuilder scb = dailyProgressDD.find();
+        scb.setProjection(id());
+        scb.add(belongsTo(DailyProgressFields.SHIFT, dailyProgress.getBelongsToField(DailyProgressFields.SHIFT)));
+        scb.add(belongsTo(DailyProgressFields.PROGRESS_FOR_DAY, progressForDay));
+        scb.add(isNotNull(DailyProgressFields.PROGRESS_FOR_DAY));
+        if (dailyProgress.getId() != null) {
+            scb.add(idNe(dailyProgress.getId()));
+        }
+        if (Optional.fromNullable(scb.setMaxResults(1).uniqueResult()).isPresent()) {
             dailyProgress.addError(dailyProgressDD.getField(DailyProgressFields.SHIFT),
                     "productionPerShift.dailyProgress.shiftAndProgressForDay.mustBeUnique");
-
             return false;
         }
-
         return true;
     }
-
 }

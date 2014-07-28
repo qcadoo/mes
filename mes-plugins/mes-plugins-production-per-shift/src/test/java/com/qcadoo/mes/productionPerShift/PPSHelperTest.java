@@ -34,9 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -52,12 +50,6 @@ public class PPSHelperTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private ViewDefinitionState view;
-
-    @Mock
-    private FieldComponent fieldComponent;
-
-    @Mock
     private DataDefinition dataDefinition;
 
     @Mock
@@ -70,32 +62,6 @@ public class PPSHelperTest {
         ppsHelper = new PPSHelper();
 
         ReflectionTestUtils.setField(ppsHelper, "dataDefinitionService", dataDefinitionService);
-    }
-
-    @Test
-    public void shouldReturnFalseWhenProgressTypeIsPlanned() throws Exception {
-        // given
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(fieldComponent);
-        given(fieldComponent.getFieldValue()).willReturn(PlannedProgressType.PLANNED.getStringValue());
-
-        // when
-        boolean result = ppsHelper.shouldHasCorrections(view);
-
-        // then
-        Assert.assertFalse(result);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenProgressTypeIsPlanned() throws Exception {
-        // given
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(fieldComponent);
-        given(fieldComponent.getFieldValue()).willReturn(PlannedProgressType.CORRECTED.getStringValue());
-
-        // when
-        boolean result = ppsHelper.shouldHasCorrections(view);
-
-        // then
-        Assert.assertTrue(result);
     }
 
     @Test

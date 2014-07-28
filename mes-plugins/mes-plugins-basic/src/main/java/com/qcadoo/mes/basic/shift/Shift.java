@@ -35,6 +35,7 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Maps;
@@ -90,7 +91,7 @@ public class Shift {
      * @return true if this shift works at given day of week and time.
      */
     public boolean worksAt(final int dayOfWeek, final LocalTime time) {
-        return findWorkTimeAt(dayOfWeek, time) != null;
+        return findWorkTimeAt(dayOfWeek, time).isPresent();
     }
 
     /**
@@ -152,20 +153,16 @@ public class Shift {
      * @param date
      * @return
      */
-    public DateRange findWorkTimeAt(final Date date) {
-        DateTime dateTime = new DateTime(date);
-        TimeRange timeRangeFromPlan = findWorkTimeAt(dateTime.getDayOfWeek(), dateTime.toLocalTime());
-
-        if (timeRangeFromPlan == null) {
-            DateRange additionalWorkTime = timetableExceptions.findDateRangeFor(TimetableExceptionType.WORK_TIME, date);
-            return additionalWorkTime;
-        } else {
-            DateRange additionalFreeTime = timetableExceptions.findDateRangeFor(TimetableExceptionType.FREE_TIME, date);
-            if (additionalFreeTime == null) {
-                return buildDateRangeFrom(timeRangeFromPlan, date);
-            }
-            return null;
+    public Optional<DateRange> findWorkTimeAt(final Date date) {
+        if (timetableExceptions.hasFreeTimeAt(date)) {
+            return Optional.absent();
         }
+        DateTime dateTime = new DateTime(date);
+        Optional<TimeRange> maybeTimeRangeFromPlan = findWorkTimeAt(dateTime.getDayOfWeek(), dateTime.toLocalTime());
+        for (TimeRange timeRangeFromPlan : maybeTimeRangeFromPlan.asSet()) {
+            return Optional.of(buildDateRangeFrom(timeRangeFromPlan, date));
+        }
+        return timetableExceptions.findDateRangeFor(TimetableExceptionType.WORK_TIME, date);
     }
 
     private DateRange buildDateRangeFrom(final TimeRange timeRange, final Date date) {
@@ -196,21 +193,20 @@ public class Shift {
      * @param time
      * @return
      */
-    public TimeRange findWorkTimeAt(final int dayOfWeek, final LocalTime time) {
+    public Optional<TimeRange> findWorkTimeAt(final int dayOfWeek, final LocalTime time) {
         for (WorkingHours workingHours : workingHoursPerDay.get(dayOfWeek)) {
-            TimeRange timeRange = workingHours.findRangeFor(time);
-            if (timeRange != null) {
+            Optional<TimeRange> timeRange = workingHours.findRangeFor(time);
+            if (timeRange.isPresent()) {
                 return timeRange;
             }
         }
-        // TODO MAKU maybe it should returns empty TimeRange instead of null?
-        return null;
+        return Optional.absent();
     }
 
     /**
-     * Returns copy of the underlying entity.
+     * Returns a copy of the underlying entity.
      * 
-     * @return copy of the underlying entity.
+     * @return a copy of the underlying entity.
      */
     public Entity getEntity() {
         return shift.copy();
@@ -256,7 +252,8 @@ public class Shift {
 
         public static final String THURSDAY_LITERAL = "thursday";
 
-        public static final String WENSDAY_LITERAL = "wensday";
+        // value of this constant refers to name of field in shift model, which currently has a typo..
+        public static final String WEDNESDAY_LITERAL = "wensday";
 
         public static final String TUESDAY_LITERAL = "tuesday";
 
@@ -268,7 +265,7 @@ public class Shift {
             Map<Integer, String> dayNumsToDayName = Maps.newHashMapWithExpectedSize(7);
             dayNumsToDayName.put(DateTimeConstants.MONDAY, MONDAY_LITERAL);
             dayNumsToDayName.put(DateTimeConstants.TUESDAY, TUESDAY_LITERAL);
-            dayNumsToDayName.put(DateTimeConstants.WEDNESDAY, WENSDAY_LITERAL);
+            dayNumsToDayName.put(DateTimeConstants.WEDNESDAY, WEDNESDAY_LITERAL);
             dayNumsToDayName.put(DateTimeConstants.THURSDAY, THURSDAY_LITERAL);
             dayNumsToDayName.put(DateTimeConstants.FRIDAY, FRIDAY_LITERAL);
             dayNumsToDayName.put(DateTimeConstants.SATURDAY, SATURDAY_LITERAL);

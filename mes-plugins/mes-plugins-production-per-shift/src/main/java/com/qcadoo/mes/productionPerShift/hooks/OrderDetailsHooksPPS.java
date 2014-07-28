@@ -27,18 +27,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class OrderDetailsHooksPPS {
 
+    private static final Predicate<Entity> HAS_DEFINED_PLANNED_START_DATE = new Predicate<Entity>() {
+
+        @Override
+        public boolean apply(final Entity order) {
+            return order.getDateField(OrderFields.DATE_FROM) != null;
+        }
+    };
+
     @Autowired
     private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift",
-                OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY,
+        Predicate<Entity> predicate = Predicates.and(HAS_DEFINED_PLANNED_START_DATE,
+                OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
+        orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", predicate,
                 Optional.of("orders.ribbon.message.mustChangeTechnologyState"));
     }
 

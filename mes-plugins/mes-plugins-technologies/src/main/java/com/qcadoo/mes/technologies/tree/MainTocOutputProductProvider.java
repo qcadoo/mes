@@ -16,28 +16,24 @@ public class MainTocOutputProductProvider {
 
     private static final String PRODUCT_ALIAS = "product";
 
-    private static final String TOC_MAIN_OUTPUT_PRODUCT_QUERY = "select \n" + "opoc.product as " + PRODUCT_ALIAS + "\n"
-            + "from #technologies_operationProductOutComponent opoc,\n" + "#technologies_operationProductInComponent opic\n"
-            + "inner join opoc.operationComponent toc\n" + "inner join toc.parent parentToc\n" + "where \n" + "toc.id=:tocId\n"
-            + "and \n" + "opoc.product.id = opic.product.id\n" + "and opic.operationComponent.id = parentToc.id";
+    private static final String TOC_MAIN_OUTPUT_PRODUCT_QUERY = "select prod as " + PRODUCT_ALIAS + "\n"
+            + "from #technologies_operationProductOutComponent opoc\n left join opoc.operationComponent toc \n"
+            + "left join toc.technology as tech\n left join toc.operationProductOutComponents opoc \n"
+            + "left join toc.parent tocParent \n left join tocParent.operationProductInComponents parentOpic \n"
+            + "left join opoc.product as prod \n where\n toc.id = :tocId\n and\n"
+            + "( (tocParent is null and opoc.product = tech.product) "
+            + " or (tocParent is not null and parentOpic.product = opoc.product) )";
 
-    private final Function<Long, Optional<Entity>> findF;
+    private final Function<Long, Optional<Entity>> findF = new Function<Long, Optional<Entity>>() {
+
+        @Override
+        public Optional<Entity> apply(final Long tocId) {
+            return find(tocId);
+        }
+    };
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    public MainTocOutputProductProvider() {
-        this.findF = new Function<Long, Optional<Entity>>() {
-
-            @Override
-            public Optional<Entity> apply(final Long tocId) {
-                if (tocId == null) {
-                    return Optional.absent();
-                }
-                return find(tocId);
-            }
-        };
-    }
 
     /**
      * Returns function that transforms id of the technology operation into its main output product entity. Calling
@@ -57,6 +53,9 @@ public class MainTocOutputProductProvider {
      * @return main product
      */
     public Optional<Entity> find(final Long tocId) {
+        if (tocId == null) {
+            return Optional.absent();
+        }
         DataDefinition productDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
         SearchQueryBuilder sqb = productDD.find(TOC_MAIN_OUTPUT_PRODUCT_QUERY);
         sqb.setLong("tocId", tocId);

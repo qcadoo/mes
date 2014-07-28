@@ -29,7 +29,10 @@ import java.util.List;
 import org.apache.commons.lang.ObjectUtils;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimaps;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.basic.constants.ShiftFields;
@@ -71,22 +74,23 @@ public class ShiftTimetableExceptions {
     }
 
     public boolean hasFreeTimeAt(final Date date) {
-        return findDateRangeFor(TimetableExceptionType.FREE_TIME, date) != null;
+        return findDateRangeFor(TimetableExceptionType.FREE_TIME, date).isPresent();
     }
 
     public boolean hasWorkTimeAt(final Date date) {
-        return findDateRangeFor(TimetableExceptionType.WORK_TIME, date) != null;
+        return findDateRangeFor(TimetableExceptionType.WORK_TIME, date).isPresent();
     }
 
-    public DateRange findDateRangeFor(final TimetableExceptionType type, final Date date) {
+    public Optional<DateRange> findDateRangeFor(final TimetableExceptionType type, final Date date) {
         // TODO MAKU optimize if needed (sorted dates + break if subsequent date range doesn't start after given date?).
         // But for now this might be an overhead so I'm leaving it out.
-        for (DateRange dateRange : exceptions.get(type)) {
-            if (dateRange.contains(date)) {
-                return dateRange;
+        return Iterables.tryFind(exceptions.get(type), new Predicate<DateRange>() {
+
+            @Override
+            public boolean apply(final DateRange dateRange) {
+                return dateRange.contains(date);
             }
-        }
-        return null;
+        });
     }
 
     @Override

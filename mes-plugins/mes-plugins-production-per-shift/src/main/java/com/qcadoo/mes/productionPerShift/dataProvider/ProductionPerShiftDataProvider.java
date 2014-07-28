@@ -21,11 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionPerShift.util;
+package com.qcadoo.mes.productionPerShift.dataProvider;
 
 import static com.qcadoo.model.api.search.SearchOrders.desc;
-import static com.qcadoo.model.api.search.SearchProjections.*;
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.groupField;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.max;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import static com.qcadoo.model.api.search.SearchProjections.sum;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.in;
+import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -63,17 +70,18 @@ public class ProductionPerShiftDataProvider {
     private static final String DOT = ".";
 
     /**
-     * Alias for technologyOperationComponent. Use this constant when building additional search criterion for #getSumOfQuantities
+     * Alias for technologyOperationComponent. Use this constant when building additional search criterion for
+     * #countSumOfQuantities
      */
     public static final String TECHNOLOGY_OPERATION_COMPONENT_ALIAS = "toc_alias";
 
     /**
-     * Alias for ProgressForDay. Use this constant when building additional search criterion for #getSumOfQuantities
+     * Alias for ProgressForDay. Use this constant when building additional search criterion for #countSumOfQuantities
      */
     public static final String PROGRESS_FOR_DAY_ALIAS = "pfd_alias";
 
     /**
-     * Alias for dailyProgress. Use this constant when building additional search criterion for #getSumOfQuantities
+     * Alias for dailyProgress. Use this constant when building additional search criterion for #countSumOfQuantities
      */
     public static final String DAILY_PROGRESS_ALIAS = "dp_alias";
 
@@ -107,7 +115,7 @@ public class ProductionPerShiftDataProvider {
      * @return sum of quantities from matching daily shift progresses or BigDecimal#ZERO if there is no matching progress entries.
      * @since 1.3.0
      */
-    public BigDecimal getSumOfQuantities(final Long technologyId, final SearchCriterion additionalCriteria) {
+    public BigDecimal countSumOfQuantities(final Long technologyId, final SearchCriterion additionalCriteria) {
         Set<Long> pfdIds = findIdsOfEffectiveProgressForDay(technologyId);
 
         if (pfdIds.isEmpty()) {
@@ -163,7 +171,7 @@ public class ProductionPerShiftDataProvider {
         SearchProjectionList projectionsList = list();
         projectionsList.add(alias(max(PROGRESS_FOR_DAY_ALIAS + DOT + ID), ID_PROJECTION));
         projectionsList.add(groupField(TECHNOLOGY_OPERATION_COMPONENT_ALIAS + DOT + ID));
-        projectionsList.add(groupField(PROGRESS_FOR_DAY_ALIAS + DOT + ProgressForDayFields.DATE_OF_DAY));
+        projectionsList.add(groupField(PROGRESS_FOR_DAY_ALIAS + DOT + ProgressForDayFields.ACTUAL_DATE_OF_DAY));
 
         SearchCriteriaBuilder scb = progressForDayDD.findWithAlias(PROGRESS_FOR_DAY_ALIAS);
         scb.setProjection(projectionsList);

@@ -26,7 +26,6 @@ package com.qcadoo.mes.productionPerShift.validators;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -142,46 +141,6 @@ public class TechnologyOperationComponentValidatorsPPSTest {
 
         // when
         boolean result = technologyOperationComponentValidatorsPPS.checkGrowingNumberOfDays(technologyOperationComponentDD,
-                technologyOperationComponent);
-
-        // then
-        Assert.assertTrue(result);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenPFDIsEmpty() {
-        // given
-        progressForDays = mockEntityList(Collections.<Entity> emptyList());
-        given(technologyOperationComponent.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(
-                progressForDays);
-        given(progressForDays.isEmpty()).willReturn(true);
-
-        // when
-        boolean result = technologyOperationComponentValidatorsPPS.checkShiftsIfWorks(technologyOperationComponentDD,
-                technologyOperationComponent);
-
-        // then
-        Assert.assertTrue(result);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenEntityHasCorrentionAndPfdIsCorrected() {
-        // given
-        String day = "1";
-
-        Entity progressForDay = mock(Entity.class);
-        EntityList progressForDays = mockEntityList(Lists.newArrayList(progressForDay));
-
-        given(technologyOperationComponent.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(
-                progressForDays);
-        given(progressForDays.get(0)).willReturn(progressForDay);
-        given(progressForDay.getField(ProgressForDayFields.DAY)).willReturn(day);
-        given(progressForDay.getBooleanField(ProgressForDayFields.CORRECTED)).willReturn(true);
-        given(technologyOperationComponent.getBooleanField(TechnologyOperationComponentFieldsPPS.HAS_CORRECTIONS)).willReturn(
-                false);
-
-        // when
-        boolean result = technologyOperationComponentValidatorsPPS.checkShiftsIfWorks(technologyOperationComponentDD,
                 technologyOperationComponent);
 
         // then

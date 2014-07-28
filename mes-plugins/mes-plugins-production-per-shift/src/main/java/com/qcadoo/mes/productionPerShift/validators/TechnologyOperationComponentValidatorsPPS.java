@@ -81,20 +81,4 @@ public class TechnologyOperationComponentValidatorsPPS {
         return true;
     }
 
-    public boolean checkShiftsIfWorks(final DataDefinition technologyOperationComponentDD,
-            final Entity technologyOperationComponent) {
-        List<Entity> progressForDays = technologyOperationComponent
-                .getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
-
-        for (Entity progressForDay : progressForDays) {
-            if (progressForDay.getField(ProgressForDayFields.DAY) == null) {
-                technologyOperationComponent.addGlobalError("productionPerShift.progressForDay.dayIsNull");
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
 }

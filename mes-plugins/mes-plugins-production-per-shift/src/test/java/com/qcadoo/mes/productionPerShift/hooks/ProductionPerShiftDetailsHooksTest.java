@@ -23,53 +23,44 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
+import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.ShiftsService;
+import com.google.common.collect.Sets;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.mes.productionPerShift.PPSHelper;
-import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
-import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
+import com.qcadoo.mes.productionPerShift.PpsDetailsViewAwareTest;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
-import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
-import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.productionPerShift.constants.ProgressType;
+import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
+import com.qcadoo.mes.technologies.tree.MainTocOutputProductProvider;
+import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyOperationDataProvider;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -79,432 +70,386 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
 
-public class ProductionPerShiftDetailsHooksTest {
+public class ProductionPerShiftDetailsHooksTest extends PpsDetailsViewAwareTest {
 
-    private static final String L_FORM = "form";
+    private static final String COPY_FROM_PLANNED_BUTTON_NAME = "copyFromPlanned";
 
-    private static final String L_WINDOW = "window";
-
-    private static final String L_PROGRESS = "progress";
-
-    private static final String L_COPY_FROM_PLANNED = "copyFromPlanned";
-
-    private static final String L_CLEAR = "clear";
-
-    private static final String L_PRODUCTION_PER_SHIFT_OPERATION = "productionPerShiftOperation";
-
-    private static final String L_PRODUCES = "produces";
-
-    private static final String L_SET_ROOT = "setRoot";
-
-    private static final String L_UNIT = "unit";
-
-    private static final String L_ORDER_CORRECTED_START_DATE = "orderCorrectedStartDate";
-
-    private static final String L_ORDER_PLANNED_START_DATE = "orderPlannedStartDate";
-
-    private static final String L_ORDER_EFFECTIVE_START_DATE = "orderEffectiveStartDate";
+    private static final String CLEAR_BUTTON_NAME = "clear";
 
     private ProductionPerShiftDetailsHooks productionPerShiftDetailsHooks;
 
     @Mock
-    private DataDefinitionService dataDefinitionService;
+    private MainTocOutputProductProvider mainTocOutputProductProvider;
 
     @Mock
-    private TechnologyService technologyService;
+    private TechnologyOperationDataProvider technologyOperationDataProvider;
 
     @Mock
-    private ShiftsService shiftsService;
-
-    @Mock
-    private PPSHelper ppsHelper;
-
-    @Mock
-    private ViewDefinitionState view;
-
-    @Mock
-    private FormComponent form, form1;
-
-    @Mock
-    private FieldComponent operationField, plannedProgressTypeField, plannedDateField, corretedDateField, effectiveDateField,
-            plannedProgressCorrectionCommentField, unitField, setRootField;
-
-    @Mock
-    private LookupComponent lookupComponent, producesLookup;
-
-    @Mock
-    private DataDefinition orderDD, technologyDD, technologyOperationComponentDD;
-
-    @Mock
-    private Entity order, technology, technologyOperationComponent, operationProductOutComponent, product, shift;
-
-    @Mock
-    private EntityTreeNode root;
-
-    @Mock
-    private EntityTree technologyOperationComponents;
-
-    @Mock
-    private EntityList progressForDays;
-
-    @Mock
-    private SearchResult searchResult;
-
-    @Mock
-    private SearchCriteriaBuilder searchCriteriaBuilder;
-
-    @Mock
-    private List<FormComponent> forms, forms1;
-
-    @Mock
-    private Iterator<FormComponent> iteratorForm, iteratorForm1;
-
-    @Mock
-    private AwesomeDynamicListComponent adl, dailyProgress, plannedProgressCorrectionTypes;
-
-    private Long orderId;
+    private ProgressForDayDataProvider progressForDayDataProvider;
 
     @Before
     public void init() {
+        super.init();
         productionPerShiftDetailsHooks = new ProductionPerShiftDetailsHooks();
-        MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(productionPerShiftDetailsHooks, "shiftsService", shiftsService);
-        ReflectionTestUtils.setField(productionPerShiftDetailsHooks, "technologyService", technologyService);
-        ReflectionTestUtils.setField(productionPerShiftDetailsHooks, "ppsHelper", ppsHelper);
+        setField(productionPerShiftDetailsHooks, "mainTocOutputProductProvider", mainTocOutputProductProvider);
+        setField(productionPerShiftDetailsHooks, "technologyOperationDataProvider", technologyOperationDataProvider);
+        setField(productionPerShiftDetailsHooks, "progressForDayDataProvider", progressForDayDataProvider);
 
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(orderDD);
-        given(
-                dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)).willReturn(technologyOperationComponentDD);
-        given(view.getComponentByReference(ProductionPerShiftFields.ORDER)).willReturn(lookupComponent);
-        given(lookupComponent.getEntity()).willReturn(order);
-        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
-                .willReturn(technologyDD);
-        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
     }
 
-    @Test
-    public void shouldFillProducesFieldAfterSelection() {
-        // given
-        String prodName = "asdf";
-        String unit = "PLN";
+    private void stubMainTocProduct(final Entity product) {
+        given(mainTocOutputProductProvider.find(anyLong())).willReturn(Optional.fromNullable(product));
+        given(mainTocOutputProductProvider.findAsFunction()).willReturn(new Function<Long, Optional<Entity>>() {
 
-        given(view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).willReturn(lookupComponent);
-        given(lookupComponent.getEntity()).willReturn(technologyOperationComponent);
-        given(view.getComponentByReference(L_PRODUCES)).willReturn(producesLookup);
-        given(producesLookup.getEntity()).willReturn(null);
-
-        given(technologyService.getMainOutputProductComponent(technologyOperationComponent)).willReturn(
-                operationProductOutComponent);
-        given(operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT)).willReturn(product);
-        given(product.getStringField(ProductFields.NAME)).willReturn(prodName);
-        given(view.getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(adl);
-        given(adl.getFormComponents()).willReturn(forms);
-        given(forms.iterator()).willReturn(iteratorForm);
-        given(iteratorForm.next()).willReturn(form);
-        given(iteratorForm.hasNext()).willReturn(true, false);
-
-        given(form.findFieldComponentByName(ProgressForDayFields.DAILY_PROGRESS)).willReturn(dailyProgress);
-        given(dailyProgress.getFormComponents()).willReturn(forms1);
-        given(forms1.iterator()).willReturn(iteratorForm1);
-        given(iteratorForm1.next()).willReturn(form1);
-        given(iteratorForm1.hasNext()).willReturn(true, false);
-
-        given(product.getStringField(ProductFields.UNIT)).willReturn(unit);
-        given(form1.findFieldComponentByName(L_UNIT)).willReturn(unitField);
-
-        // when
-        productionPerShiftDetailsHooks.fillProducedField(view);
-
-        // then
-        Mockito.verify(unitField).setFieldValue(unit);
+            @Override
+            public Optional<Entity> apply(final Long input) {
+                return Optional.fromNullable(product);
+            }
+        });
     }
 
-    @Ignore
+    private void stubProgressForDayDataProviderFindForOp(final Entity technologyOperation, final boolean hasCorrections,
+            final Collection<Entity> results) {
+        given(progressForDayDataProvider.findForOperation(technologyOperation, hasCorrections)).willAnswer(
+                new Answer<List<Entity>>() {
+
+                    @Override
+                    public List<Entity> answer(final InvocationOnMock invocation) throws Throwable {
+                        return Lists.newLinkedList(results);
+                    }
+                });
+    }
+
+    private void stubOrderState(final OrderState orderState) {
+        stubStringField(order, OrderFields.STATE, Optional.fromNullable(orderState).transform(new Function<OrderState, String>() {
+
+            @Override
+            public String apply(final OrderState input) {
+                return input.getStringValue();
+            }
+        }).orNull());
+    }
+
     @Test
     public void shouldAddRootForOperation() throws Exception {
         // given
-        Long entityId = 1L;
-        Long operationId = 2L;
-        Long rootId = 2L;
-
-        given(view.getComponentByReference(L_SET_ROOT)).willReturn(setRootField);
-        given(setRootField.getFieldValue()).willReturn("");
-        given(view.getComponentByReference(L_FORM)).willReturn(form);
-        given(form.getEntityId()).willReturn(entityId);
-
-        given(order.getBelongsToField(OrderFields.TECHNOLOGY).getTreeField(TechnologyFields.OPERATION_COMPONENTS)).willReturn(
-                technologyOperationComponents);
-        given(technologyOperationComponents.isEmpty()).willReturn(false);
-        given(technologyOperationComponents.getRoot()).willReturn(root);
-        given(view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).willReturn(operationField);
-        given(operationField.getFieldValue()).willReturn(null);
-        given(view.getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(adl);
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(plannedProgressTypeField);
-        given(plannedProgressTypeField.getFieldValue()).willReturn(PlannedProgressType.PLANNED.getStringValue());
-        given(order.getStringField(OrderFields.STATE)).willReturn(OrderState.PENDING.getStringValue());
-        given(operationField.getFieldValue()).willReturn(null);
-        given(root.getId()).willReturn(rootId);
+        final Long rootOperationId = 2L;
+        LookupComponent technologyOperationLookup = mockLookup(mockEntity());
+        stubViewComponent(OPERATION_LOOKUP_REF, technologyOperationLookup);
+        Entity rootOperation = mockEntity(rootOperationId);
+        given(technologyOperationDataProvider.findRoot(anyLong())).willReturn(Optional.of(rootOperation));
 
         // when
-        productionPerShiftDetailsHooks.addRootForOperation(view);
+        productionPerShiftDetailsHooks.fillTechnologyOperationLookup(view, technology);
 
         // then
-        Assert.assertEquals(rootId, operationId);
+        verify(technologyOperationLookup).setFieldValue(rootOperationId);
     }
 
     @Test
-    public void shouldDisabledPlannedProgressTypeForPendingOrder() throws Exception {
+    public void shouldEnableProgressType() throws Exception {
+        ProgressType progressType = ProgressType.PLANNED;
+        Set<OrderState> unsupportedStates = ImmutableSet.of(OrderState.PENDING);
+        Set<OrderState> allStates = ImmutableSet.copyOf(OrderState.values());
+        for (OrderState orderState : Sets.difference(allStates, unsupportedStates)) {
+            performPlannedProgressDisablingTest(progressType, orderState, true);
+        }
+    }
+
+    @Test
+    public void shouldDisableProgressType() throws Exception {
+        ProgressType progressType = ProgressType.PLANNED;
+        performPlannedProgressDisablingTest(progressType, OrderState.PENDING, false);
+    }
+
+    private void performPlannedProgressDisablingTest(final ProgressType progressType, final OrderState orderState,
+            final boolean expectEnabled) {
         // given
-        String empty = "";
-        given(orderDD.get(orderId)).willReturn(order);
-        given(order.getStringField(OrderFields.STATE)).willReturn(OrderState.PENDING.getStringValue());
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(plannedProgressTypeField);
-        given(plannedProgressTypeField.getFieldValue()).willReturn(empty);
+        FieldComponent progressTypeComboBox = mock(FieldComponent.class);
+        stubViewComponent(PROGRESS_TYPE_COMBO_REF, progressTypeComboBox);
 
         // when
-        productionPerShiftDetailsHooks.disablePlannedProgressTypeForPendingOrder(view);
+        productionPerShiftDetailsHooks.setupProgressTypeComboBox(view, orderState, progressType);
 
         // then
-        verify(plannedProgressTypeField).setFieldValue(PlannedProgressType.PLANNED.getStringValue());
-        verify(plannedProgressTypeField).setEnabled(false);
+        verify(progressTypeComboBox).setFieldValue(progressType.getStringValue());
+        verify(progressTypeComboBox).setEnabled(expectEnabled);
     }
 
     @Test
     public void shouldEnabledPlannedProgressTypeForInProgressOrder() throws Exception {
         // given
-        String empty = "";
-        given(view.getComponentByReference(ProductionPerShiftFields.ORDER)).willReturn(lookupComponent);
-        given(lookupComponent.getEntity()).willReturn(order);
-        given(order.getStringField(OrderFields.STATE)).willReturn(OrderState.IN_PROGRESS.getStringValue());
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(plannedProgressTypeField);
-        given(plannedProgressTypeField.getFieldValue()).willReturn(empty);
+        ProgressType progressType = ProgressType.PLANNED;
 
         // when
-        productionPerShiftDetailsHooks.disablePlannedProgressTypeForPendingOrder(view);
+        productionPerShiftDetailsHooks.setupProgressTypeComboBox(view, OrderState.IN_PROGRESS, progressType);
 
         // then
-        verify(plannedProgressTypeField).setEnabled(true);
+        verify(progressTypeComboBox).setFieldValue(progressType.getStringValue());
+        verify(progressTypeComboBox).setEnabled(true);
     }
 
     @Test
     public void shouldSetOrderStartDatesWhenPlannedDateExists() throws Exception {
         // given
-        given(orderDD.get(orderId)).willReturn(order);
-        given(view.getComponentByReference(L_ORDER_PLANNED_START_DATE)).willReturn(plannedDateField);
-        given(view.getComponentByReference(L_ORDER_CORRECTED_START_DATE)).willReturn(corretedDateField);
-        given(view.getComponentByReference(L_ORDER_EFFECTIVE_START_DATE)).willReturn(effectiveDateField);
+        ComponentState plannedDateField = mockFieldComponent(null);
+        ComponentState correctedDateField = mockFieldComponent(null);
+        ComponentState effectiveDateField = mockFieldComponent(null);
+
+        stubViewComponent(PLANNED_START_DATE_TIME_REF, plannedDateField);
+        stubViewComponent(CORRECTED_START_DATE_TIME_REF, correctedDateField);
+        stubViewComponent(EFFECTIVE_START_DATE_TIME_REF, effectiveDateField);
 
         Date planned = new Date();
 
-        given(order.getField(OrderFields.DATE_FROM)).willReturn(planned);
-        given(order.getField(OrderFields.CORRECTED_DATE_FROM)).willReturn(null);
-        given(order.getField(OrderFields.EFFECTIVE_DATE_FROM)).willReturn(null);
+        stubDateField(order, OrderFields.DATE_FROM, planned);
+        stubDateField(order, OrderFields.CORRECTED_DATE_FROM, null);
+        stubDateField(order, OrderFields.EFFECTIVE_DATE_FROM, null);
 
         // when
-        productionPerShiftDetailsHooks.setOrderStartDate(view);
+        productionPerShiftDetailsHooks.fillOrderDateComponents(view, order);
 
         // then
-        verify(plannedDateField).setFieldValue(Mockito.any(Date.class));
+        verify(plannedDateField).setFieldValue(DateUtils.toDateTimeString(planned));
+        verify(correctedDateField).setFieldValue("");
+        verify(effectiveDateField).setFieldValue("");
     }
 
     @Test
     public void shouldSetOrderStartDatesWhenPlannedAndCorrectedDateExists() throws Exception {
         // given
-        given(orderDD.get(orderId)).willReturn(order);
-        given(view.getComponentByReference(L_ORDER_PLANNED_START_DATE)).willReturn(plannedDateField);
-        given(view.getComponentByReference(L_ORDER_CORRECTED_START_DATE)).willReturn(corretedDateField);
-        given(view.getComponentByReference(L_ORDER_EFFECTIVE_START_DATE)).willReturn(effectiveDateField);
+        ComponentState plannedDateField = mockFieldComponent(null);
+        ComponentState correctedDateField = mockFieldComponent(null);
+        ComponentState effectiveDateField = mockFieldComponent(null);
+
+        stubViewComponent(PLANNED_START_DATE_TIME_REF, plannedDateField);
+        stubViewComponent(CORRECTED_START_DATE_TIME_REF, correctedDateField);
+        stubViewComponent(EFFECTIVE_START_DATE_TIME_REF, effectiveDateField);
 
         Date planned = new Date();
         Date corrected = new Date();
         Date effective = new Date();
 
-        given(order.getField(OrderFields.DATE_FROM)).willReturn(planned);
-        given(order.getField(OrderFields.CORRECTED_DATE_FROM)).willReturn(corrected);
-        given(order.getField(OrderFields.EFFECTIVE_DATE_FROM)).willReturn(effective);
+        stubDateField(order, OrderFields.DATE_FROM, planned);
+        stubDateField(order, OrderFields.CORRECTED_DATE_FROM, corrected);
+        stubDateField(order, OrderFields.EFFECTIVE_DATE_FROM, effective);
 
         // when
-        productionPerShiftDetailsHooks.setOrderStartDate(view);
+        productionPerShiftDetailsHooks.fillOrderDateComponents(view, order);
 
         // then
-        verify(plannedDateField).setFieldValue(Mockito.any(Date.class));
-        verify(corretedDateField).setFieldValue(Mockito.any(Date.class));
-        verify(effectiveDateField).setFieldValue(Mockito.any(Date.class));
+        verify(plannedDateField).setFieldValue(DateUtils.toDateTimeString(planned));
+        verify(correctedDateField).setFieldValue(DateUtils.toDateTimeString(corrected));
+        verify(effectiveDateField).setFieldValue(DateUtils.toDateTimeString(effective));
     }
 
     @Test
-    public void shouldDisableReasonOfCorrectionsFieldForPlannedProgressType() throws Exception {
-        // given
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(plannedProgressTypeField);
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPES)).willReturn(
-                plannedProgressCorrectionTypes);
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_COMMENT)).willReturn(
-                plannedProgressCorrectionCommentField);
-        given(plannedProgressTypeField.getFieldValue()).willReturn(PlannedProgressType.PLANNED.getStringValue());
+    public void shouldDisableReasonOfCorrections() throws Exception {
+        stubProgressType(ProgressType.PLANNED);
+
+        Set<OrderState> unsupportedStates = ImmutableSet.of(OrderState.ABANDONED, OrderState.DECLINED, OrderState.COMPLETED);
+        for (OrderState orderState : unsupportedStates) {
+            stubOrderState(orderState);
+            performReasonOfCorrectionDisablingTest(false);
+        }
+    }
+
+    @Test
+    public void shouldEnableReasonOfCorrections() throws Exception {
+        stubProgressType(ProgressType.CORRECTED);
+
+        Set<OrderState> unsupportedStates = ImmutableSet.of(OrderState.ABANDONED, OrderState.DECLINED, OrderState.COMPLETED);
+        Set<OrderState> allStates = ImmutableSet.copyOf(OrderState.values());
+        for (OrderState orderState : Sets.difference(allStates, unsupportedStates)) {
+            stubOrderState(orderState);
+            performReasonOfCorrectionDisablingTest(true);
+        }
+    }
+
+    private void performReasonOfCorrectionDisablingTest(final boolean expectFieldsToBeEnabled) {
+        AwesomeDynamicListComponent correctionReasonTypes = mock(AwesomeDynamicListComponent.class);
+        stubViewComponent(ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPES, correctionReasonTypes);
+
+        FieldComponent correctionCommentComponent = mockFieldComponent(null);
+        stubViewComponent(ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_COMMENT, correctionCommentComponent);
 
         // when
         productionPerShiftDetailsHooks.disableReasonOfCorrection(view);
 
         // then
-        verify(plannedProgressCorrectionTypes).setEnabled(false);
-        verify(plannedProgressCorrectionCommentField).setEnabled(false);
+        verify(correctionReasonTypes).setEnabled(expectFieldsToBeEnabled);
+        verify(correctionCommentComponent).setEnabled(expectFieldsToBeEnabled);
     }
 
     @Test
-    public void shouldEnableReasonOfCorrectionsFieldForCorrectedProgressType() throws Exception {
+    public void shouldFillProgressesADL() throws Exception {
         // given
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(plannedProgressTypeField);
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPES)).willReturn(
-                plannedProgressCorrectionTypes);
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_COMMENT)).willReturn(
-                plannedProgressCorrectionCommentField);
-        given(plannedProgressTypeField.getFieldValue()).willReturn(PlannedProgressType.CORRECTED.getStringValue());
+        Entity technologyOperation = mockEntity(3L);
+        stubViewComponent(OPERATION_LOOKUP_REF, mockLookup(technologyOperation));
+
+        LookupComponent producedProductLookup = mockLookup(null);
+        stubViewComponent(PRODUCED_PRODUCT_LOOKUP_REF, producedProductLookup);
+
+        long productId = 100L;
+        Entity product = mockEntity(productId);
+        stubMainTocProduct(product);
+        stubProgressType(ProgressType.CORRECTED);
+        stubOrderState(OrderState.PENDING);
+
+        Entity firstPfd = mockEntity();
+        Entity secondPfd = mockEntity();
+        stubProgressForDayDataProviderFindForOp(technologyOperation, true, Lists.newArrayList(firstPfd, secondPfd));
+
+        String productUnit = "someArbitraryUnit";
+        stubStringField(product, ProductFields.UNIT, productUnit);
+
+        FieldComponent firstDayField = mockFieldComponent(null);
+        LookupComponent firstShiftLookup = mockLookup(mockEntity());
+        FieldComponent firstQuantityFieldComponent = mockFieldComponent(null);
+        FieldComponent firstUnitFieldComponent = mockFieldComponent(null);
+        FormComponent firstPfdForm = mockProgressForDayRowForm(firstDayField, firstShiftLookup, firstQuantityFieldComponent,
+                firstUnitFieldComponent);
+
+        FieldComponent secondDayField = mockFieldComponent(null);
+        LookupComponent secondShiftLookup = mockLookup(mockEntity());
+        FieldComponent secondQuantityFieldComponent = mockFieldComponent(null);
+        FieldComponent secondUnitFieldComponent = mockFieldComponent(null);
+        FormComponent secondPfdForm = mockProgressForDayRowForm(secondDayField, secondShiftLookup, secondQuantityFieldComponent,
+                secondUnitFieldComponent);
+
+        AwesomeDynamicListComponent progressesAdl = mock(AwesomeDynamicListComponent.class);
+        stubViewComponent("progressForDays", progressesAdl);
+        given(progressesAdl.getFormComponents()).willReturn(Lists.newArrayList(firstPfdForm, secondPfdForm));
 
         // when
-        productionPerShiftDetailsHooks.disableReasonOfCorrection(view);
+        productionPerShiftDetailsHooks.setProductAndFillProgressForDays(view);
 
         // then
-        verify(plannedProgressCorrectionTypes).setEnabled(true);
-        verify(plannedProgressCorrectionCommentField).setEnabled(true);
+        verify(progressesAdl).setFieldValue(Lists.newArrayList(firstPfd, secondPfd));
+        verify(producedProductLookup).setFieldValue(productId);
+        // verify(firstShiftLookup).setEnabled(true);
+        // verify(firstQuantityFieldComponent).setEnabled(true);
+        verify(firstUnitFieldComponent).setFieldValue(productUnit);
+        // verify(secondShiftLookup).setEnabled(true);
+        // verify(secondQuantityFieldComponent).setEnabled(true);
+        verify(secondUnitFieldComponent).setFieldValue(productUnit);
+    }
+
+    private FormComponent mockProgressForDayRowForm(final FieldComponent dayField, final LookupComponent shiftLookup,
+            final FieldComponent quantityField, final FieldComponent unitField) {
+        FormComponent progressForDayForm = mockForm(mockEntity());
+
+        AwesomeDynamicListComponent dailyProgressesAdl = mock(AwesomeDynamicListComponent.class);
+        FormComponent dailyProgressForm = mockForm(mockEntity());
+        stubFormComponent(dailyProgressForm, "unit", unitField);
+        stubFormComponent(dailyProgressForm, "quantity", quantityField);
+        stubFormComponent(dailyProgressForm, "shift", shiftLookup);
+        given(dailyProgressesAdl.getFormComponents()).willReturn(Lists.newArrayList(dailyProgressForm));
+
+        stubFormComponent(progressForDayForm, "dailyProgress", dailyProgressesAdl);
+        stubFormComponent(progressForDayForm, "day", dayField);
+        return progressForDayForm;
     }
 
     @Test
-    @Ignore
-    public void shouldFillProgressForDaysSelectedOperation() throws Exception {
+    public final void shouldEnableComponents() {
+        Set<OrderState> unsupportedStates = ImmutableSet.of(OrderState.ABANDONED, OrderState.DECLINED, OrderState.COMPLETED);
+        Set<OrderState> allStates = ImmutableSet.copyOf(OrderState.values());
+        for (OrderState orderState : Sets.difference(allStates, unsupportedStates)) {
+            performComponentDisablingTest(ProgressType.CORRECTED, orderState, true);
+        }
+        performComponentDisablingTest(ProgressType.PLANNED, OrderState.PENDING, true);
+    }
+
+    @Test
+    public final void shouldDisableComponents() {
+        Set<OrderState> unsupportedStates = ImmutableSet.of(OrderState.ABANDONED, OrderState.DECLINED, OrderState.COMPLETED);
+        for (OrderState orderState : unsupportedStates) {
+            performComponentDisablingTest(ProgressType.CORRECTED, orderState, false);
+            if (orderState != OrderState.PENDING) {
+                performComponentDisablingTest(ProgressType.PLANNED, orderState, false);
+            }
+        }
+    }
+
+    private void performComponentDisablingTest(final ProgressType progressType, final OrderState orderState,
+            final boolean expectToBeEnabled) {
         // given
-        given(view.getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(adl);
+        FormComponent firstPfdFirstDailyForm = mockForm(mockEntity());
+        FormComponent firstPfdSecondDailyForm = mockForm(mockEntity());
+        AwesomeDynamicListComponent firstPfdDailyAdl = mock(AwesomeDynamicListComponent.class);
+        given(firstPfdDailyAdl.getFormComponents()).willReturn(
+                Lists.newArrayList(firstPfdFirstDailyForm, firstPfdSecondDailyForm));
 
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(plannedProgressTypeField);
-        given(technologyOperationComponent.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(
-                progressForDays);
-        given(plannedProgressTypeField.getFieldValue()).willReturn(PlannedProgressType.CORRECTED.getStringValue());
+        FormComponent firstPfdForm = mockForm(mockEntity());
+        stubFormComponent(firstPfdForm, DAILY_PROGRESS_ADL_REF, firstPfdDailyAdl);
 
-        SearchCriterion searchCriterion = SearchRestrictions.eq(ProgressForDayFields.CORRECTED, true);
+        FormComponent secondPfdFirstDailyForm = mockForm(mockEntity());
+        AwesomeDynamicListComponent secondPfdDailyAdl = mock(AwesomeDynamicListComponent.class);
+        given(secondPfdDailyAdl.getFormComponents()).willReturn(Lists.newArrayList(secondPfdFirstDailyForm));
 
-        given(progressForDays.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(searchCriterion)).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(progressForDays);
+        FormComponent secondPfdForm = mockForm(mockEntity());
+        stubFormComponent(secondPfdForm, DAILY_PROGRESS_ADL_REF, secondPfdDailyAdl);
+
+        AwesomeDynamicListComponent progressForDaysAdl = mock(AwesomeDynamicListComponent.class);
+        stubViewComponent("progressForDays", progressForDaysAdl);
+        given(progressForDaysAdl.getFormComponents()).willReturn(Lists.newArrayList(firstPfdForm, secondPfdForm));
 
         // when
-        productionPerShiftDetailsHooks.fillProgressForDays(view);
+        productionPerShiftDetailsHooks.disableComponents(progressForDaysAdl, progressType, orderState);
 
         // then
-        Mockito.verify(adl).setFieldValue(progressForDays);
+        verify(progressForDaysAdl).setEnabled(expectToBeEnabled);
+
+        verify(firstPfdFirstDailyForm).setFormEnabled(expectToBeEnabled);
+        verify(firstPfdSecondDailyForm).setFormEnabled(expectToBeEnabled);
+        verify(firstPfdDailyAdl).setEnabled(expectToBeEnabled);
+        verify(firstPfdForm).setFormEnabled(expectToBeEnabled);
+
+        verify(secondPfdFirstDailyForm).setFormEnabled(expectToBeEnabled);
+        verify(secondPfdDailyAdl).setEnabled(expectToBeEnabled);
+        verify(secondPfdForm).setFormEnabled(expectToBeEnabled);
     }
 
     @Test
-    public void shouldDisabledButtonWhenProgressTypeIsPlanne() throws Exception {
+    public void shouldDisabledRibbonButtons() throws Exception {
+        Set<OrderState> unsupportedStates = ImmutableSet.of(OrderState.ABANDONED, OrderState.DECLINED, OrderState.COMPLETED);
+        for (OrderState orderState : unsupportedStates) {
+            performRibbonDisablingTest(ProgressType.PLANNED, orderState, false);
+        }
+    }
+
+    @Test
+    public void shouldEnabledRibbonButtons() throws Exception {
+        Set<OrderState> unsupportedStates = ImmutableSet.of(OrderState.ABANDONED, OrderState.DECLINED, OrderState.COMPLETED);
+        Set<OrderState> allStates = ImmutableSet.copyOf(OrderState.values());
+        for (OrderState orderState : Sets.difference(allStates, unsupportedStates)) {
+            performRibbonDisablingTest(ProgressType.CORRECTED, orderState, true);
+        }
+    }
+
+    private void performRibbonDisablingTest(final ProgressType progressType, final OrderState orderState,
+            final boolean expectEnabledButtons) {
         // given
         WindowComponentState window = mock(WindowComponentState.class);
+        stubViewComponent(WINDOW_REF, window);
         Ribbon ribbon = mock(Ribbon.class);
-        RibbonGroup progressSelectedOperation = mock(RibbonGroup.class);
-        RibbonActionItem clear = mock(RibbonActionItem.class);
-        RibbonActionItem copyFromPlanned = mock(RibbonActionItem.class);
-
-        given(view.getComponentByReference(L_WINDOW)).willReturn(window);
         given(window.getRibbon()).willReturn(ribbon);
-        given(ribbon.getGroupByName(L_PROGRESS)).willReturn(progressSelectedOperation);
-        given(progressSelectedOperation.getItemByName(L_CLEAR)).willReturn(clear);
-        given(progressSelectedOperation.getItemByName(L_COPY_FROM_PLANNED)).willReturn(copyFromPlanned);
-
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(plannedProgressTypeField);
-        given(plannedProgressTypeField.getFieldValue()).willReturn(PlannedProgressType.PLANNED.getStringValue());
-
-        // when
-        productionPerShiftDetailsHooks.changeButtonState(view);
-
-        // then
-        Mockito.verify(clear).setEnabled(false);
-        Mockito.verify(copyFromPlanned).setEnabled(false);
-    }
-
-    @Test
-    public void shouldEnabledButtonWhenProgressTypeIsCorrected() throws Exception {
-        // given
-        WindowComponentState windowComponent = mock(WindowComponentState.class);
-        Ribbon ribbon = mock(Ribbon.class);
-        RibbonGroup progressSelectedOperation = mock(RibbonGroup.class);
+        RibbonGroup progressRibbonGroup = mock(RibbonGroup.class);
+        given(ribbon.getGroupByName(PROGRESS_RIBBON_GROUP_NAME)).willReturn(progressRibbonGroup);
         RibbonActionItem clear = mock(RibbonActionItem.class);
         RibbonActionItem copyFromPlanned = mock(RibbonActionItem.class);
-
-        given(view.getComponentByReference(L_WINDOW)).willReturn(windowComponent);
-        given(windowComponent.getRibbon()).willReturn(ribbon);
-        given(ribbon.getGroupByName(L_PROGRESS)).willReturn(progressSelectedOperation);
-        given(progressSelectedOperation.getItemByName(L_CLEAR)).willReturn(clear);
-        given(progressSelectedOperation.getItemByName(L_COPY_FROM_PLANNED)).willReturn(copyFromPlanned);
-
-        given(view.getComponentByReference(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE)).willReturn(plannedProgressTypeField);
-        given(plannedProgressTypeField.getFieldValue()).willReturn(PlannedProgressType.CORRECTED.getStringValue());
+        given(progressRibbonGroup.getItems()).willReturn(Lists.newArrayList(clear, copyFromPlanned));
+        given(progressRibbonGroup.getItemByName(CLEAR_BUTTON_NAME)).willReturn(clear);
+        given(progressRibbonGroup.getItemByName(COPY_FROM_PLANNED_BUTTON_NAME)).willReturn(copyFromPlanned);
 
         // when
-        productionPerShiftDetailsHooks.changeButtonState(view);
+        productionPerShiftDetailsHooks.changeButtonState(view, progressType, orderState);
 
         // then
-        Mockito.verify(clear).setEnabled(true);
-        Mockito.verify(copyFromPlanned).setEnabled(true);
-    }
-
-    @Test
-    public void returnFalseWhenFirstProgressDoesnotWorkAtDateTime() throws Exception {
-        // given
-        Entity productionPerShift = mock(Entity.class);
-        Entity progressForDay = mock(Entity.class);
-        Integer day = Integer.valueOf(1);
-        EntityList progressForDays = mockEntityList(Lists.newArrayList(progressForDay));
-        Entity dailyProgress = mock(Entity.class);
-        EntityList dailyProgressList = mockEntityList(Lists.newArrayList(dailyProgress));
-        Date correctedDate = new Date();
-
-        given(view.getComponentByReference(L_FORM)).willReturn(form);
-        given(form.getEntity()).willReturn(productionPerShift);
-
-        given(order.getBelongsToField(OrderFields.TECHNOLOGY).getTreeField(TechnologyFields.OPERATION_COMPONENTS)).willReturn(
-                technologyOperationComponents);
-
-        given(technologyOperationComponents.iterator()).willAnswer(new Answer<Iterator<Entity>>() {
-
-            @Override
-            public Iterator<Entity> answer(final InvocationOnMock invocation) throws Throwable {
-                return Lists.newArrayList(technologyOperationComponent).iterator();
-            }
-        });
-
-        given(technologyOperationComponent.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)).willReturn(
-                progressForDays);
-
-        given(progressForDays.get(0)).willReturn(progressForDay);
-        given(progressForDay.getField(ProgressForDayFields.DAY)).willReturn(day);
-        given(progressForDay.getBooleanField(ProgressForDayFields.CORRECTED)).willReturn(false);
-
-        given(progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS)).willReturn(dailyProgressList);
-        given(dailyProgressList.get(0)).willReturn(dailyProgress);
-        given(dailyProgress.getBelongsToField(DailyProgressFields.SHIFT)).willReturn(shift);
-
-        given(productionPerShift.getBelongsToField(ProductionPerShiftFields.ORDER)).willReturn(order);
-        given(order.getDateField(OrderFields.START_DATE)).willReturn(correctedDate);
-
-        given(ppsHelper.getDateAfterStartOrderForProgress(order, progressForDay)).willReturn(correctedDate);
-
-        // when
-        productionPerShiftDetailsHooks.checkShiftsIfWorks(view);
-
-        // then
-        // Assert.assertFalse(result);
-    }
-
-    public EntityList mockEntityList(final List<Entity> entities) {
-        final EntityList entityList = mock(EntityList.class);
-        given(entityList.iterator()).willAnswer(new Answer<Iterator<Entity>>() {
-
-            @Override
-            public Iterator<Entity> answer(final InvocationOnMock invocation) throws Throwable {
-                return ImmutableList.copyOf(entities).iterator();
-            }
-        });
-        given(entityList.isEmpty()).willReturn(entities.isEmpty());
-        return entityList;
+        verify(clear).setEnabled(expectEnabledButtons);
+        verify(copyFromPlanned).setEnabled(expectEnabledButtons);
     }
 
 }

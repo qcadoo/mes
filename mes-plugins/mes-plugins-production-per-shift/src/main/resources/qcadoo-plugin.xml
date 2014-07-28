@@ -25,23 +25,17 @@
 
 -->
 <plugin plugin="productionPerShift" group="planning" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
-	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd" >
+       http://schema.qcadoo.org/modules/localization.xsd">
 
 	<information>
 		<name>MES - Production per shift</name>
@@ -49,7 +43,8 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
-		<description>Lets you define how many products should be outputted in a production order in the following shifts.</description>
+		<description>Lets you define how many products should be outputted in a production order in the following shifts.
+		</description>
 		<license>AGPL</license>
 	</information>
 
@@ -57,7 +52,7 @@
 	<dependencies>
 		<dependency>
 			<plugin>orders</plugin>
-			<version>[0.4.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 	</dependencies>
 
@@ -72,47 +67,46 @@
 		<view:view resource="view/productionPerShiftDetails.xml" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
-		
+
 		<model:model-field model="technologyOperationComponent"
-			plugin="technologies">
+		                   plugin="technologies">
 			<model:hasMany name="progressForDays" model="progressForDay"
-				plugin="productionPerShift" cascade="delete"
-				joinField="technologyOperationComponent" />
+			               plugin="productionPerShift" cascade="delete"
+			               joinField="technologyOperationComponent" />
 		</model:model-field>
 		<model:model-field model="technologyOperationComponent"
-			plugin="technologies">
+		                   plugin="technologies">
 			<model:boolean name="hasCorrections" />
 		</model:model-field>
-		
+
 		<model:model-hook model="technologyOperationComponent"
-			plugin="technologies">
+		                  plugin="technologies">
 			<model:validatesWith
-				class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
-				method="checkGrowingNumberOfDays" />
+					class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
+					method="checkGrowingNumberOfDays" />
 		</model:model-hook>
 		<model:model-hook model="technologyOperationComponent"
-			plugin="technologies">
-			<model:validatesWith
-				class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
-				method="checkShiftsIfWorks" />
-		</model:model-hook>
-		<model:model-hook model="technologyOperationComponent"
-			plugin="technologies">
+		                  plugin="technologies">
 			<model:onCopy
-				class="com.qcadoo.mes.productionPerShift.hooks.TechnologyOperationComponentHooksPPS"
-				method="onCopy" />
+					class="com.qcadoo.mes.productionPerShift.hooks.TechnologyOperationComponentHooksPPS"
+					method="onCopy" />
 		</model:model-hook>
-		
+		<model:model-hook plugin="orders" model="order">
+			<model:onUpdate
+					class="com.qcadoo.mes.productionPerShift.hooks.OrderHooksPPS"
+					method="onUpdate" />
+		</model:model-hook>
+
 		<view:view-listener plugin="orders" view="orderDetails"
-			component="form" event="redirectToProductionPerShift"
-			class="com.qcadoo.mes.productionPerShift.listeners.OrderDetailsListenersPPS"
-			method="redirectToProductionPerShift" />
-			
+		                    component="form" event="redirectToProductionPerShift"
+		                    class="com.qcadoo.mes.productionPerShift.listeners.OrderDetailsListenersPPS"
+		                    method="redirectToProductionPerShift" />
+
 		<view:view-hook plugin="orders" view="orderDetails"
-			type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderDetailsHooksPPS"
-			method="onBeforeRender" />
+		                type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderDetailsHooksPPS"
+		                method="onBeforeRender" />
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>

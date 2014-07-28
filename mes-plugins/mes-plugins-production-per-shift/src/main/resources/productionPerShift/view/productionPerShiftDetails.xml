@@ -25,9 +25,9 @@
 
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="productionPerShiftDetails" modelPlugin="productionPerShift"
-	modelName="productionPerShift">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="productionPerShiftDetails" modelPlugin="productionPerShift"
+      modelName="productionPerShift">
 
 	<component type="window" name="window" reference="window">
 
@@ -35,89 +35,65 @@
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 			<group name="actions">
 				<bigButton name="save" icon="saveIcon24.png" state="enabled"
-					action="#{progressForDays}.fireEvent(saveProgressForDays);" />
+				           action="#{progressForDays}.fireEvent(savePlan);" />
 				<bigButton name="refresh" icon="updateIcon24.png" state="enabled"
-					action="#{form}.performRefresh;" />
+				           action="#{form}.fireEvent(refreshView);" />
 			</group>
 			<group name="progress">
 				<bigButton name="clear" icon="deleteIcon24.png" state="enabled"
-					action="#{form}.fireEvent(deleteProgressForDays)" />
+				           action="#{form}.fireEvent(deleteProgressForDays)" />
 				<bigButton name="copyFromPlanned" icon="copyIcon24.png"
-					state="enabled" action="#{form}.fireEvent(copyFromPlanned)" />
+				           state="enabled" action="#{form}.fireEvent(copyFromPlanned)" />
 			</group>
 		</ribbon>
 
 		<windowTab name="mainTab" reference="productionPerShiftTab">
 			<component type="form" name="form" reference="form">
-				<component type="lookup" name="order" field="order"
-					reference="order" hasLabel="false" defaultVisible="false">
-					<option type="column" name="name" fields="name" link="true" />
-					<option type="column" name="state" fields="state" />
-					<option type="column" name="typeOfProductionRecording"
-						fields="typeOfProductionRecording" />
+				<listener event="deleteProgressForDays"
+				          class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+				          method="deleteProgressForDays" />
+				<listener event="copyFromPlanned"
+				          class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+				          method="copyFromPlanned" />
+				<listener event="refreshView"
+				          class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+				          method="refreshView" />
 
-					<option type="required" value="true" />
-
-					<option type="searchable" value="name,number,typeOfProductionRecording" />
-					<option type="orderable" value="name,number,typeOfProductionRecording" />
-
-					<option type="order" column="number" direction="desc" />
-
-					<option type="expression"
-						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-					<option type="fieldCode" value="number" />
-				</component>
-				<component type="lookup" name="technology" field="technology"
-					reference="technology" hasLabel="false" defaultVisible="false">
-					<option type="column" name="name" fields="name" link="true" />
-
-					<option type="searchable" value="name,number" />
-					<option type="orderable" value="name,number" />
-
-					<option type="order" column="number" direction="desc" />
-
-					<option type="expression"
-						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-					<option type="fieldCode" value="number" />
-				</component>
-
-				<component type="checkbox" name="setRoot" reference="setRoot"
-					hasLabel="false" defaultVisible="false" />
 				<component type="gridLayout" name="mainGridLayout"
-					columns="3" rows="1">
+				           columns="3" rows="1">
 					<layoutElement column="1" row="1">
 						<component type="borderLayout" name="plannedProgress">
 							<component type="gridLayout" name="plannedProgressGridLayout"
-								columns="1" rows="3">
+							           columns="1" rows="3">
 								<layoutElement column="1" row="1">
 									<component type="select" name="plannedProgressType"
-										field="#{form}.plannedProgressType" reference="plannedProgressType"
-										defaultValue="01planned">
+									           field="#{form}.plannedProgressType" reference="plannedProgressType"
+									           defaultValue="01planned">
 
 										<listener event="onSelectedEntityChange"
-											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
-											method="changeView" />
+										          class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+										          method="changeView" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
 									<component type="borderLayout" name="orderStartDate">
 										<component type="gridLayout" name="orderStartDateGridLayout"
-											columns="1" rows="3">
+										           columns="1" rows="3">
 											<layoutElement column="1" row="1">
 												<component type="calendar" name="orderPlannedStartDate"
-													reference="orderPlannedStartDate" defaultEnabled="false">
+												           reference="orderPlannedStartDate" defaultEnabled="false">
 													<option type="withTimePicker" value="true" />
 												</component>
 											</layoutElement>
 											<layoutElement column="1" row="2">
 												<component type="calendar" name="orderCorrectedStartDate"
-													reference="orderCorrectedStartDate" defaultEnabled="false">
+												           reference="orderCorrectedStartDate" defaultEnabled="false">
 													<option type="withTimePicker" value="true" />
 												</component>
 											</layoutElement>
 											<layoutElement column="1" row="3">
 												<component type="calendar" name="orderEffectiveStartDate"
-													reference="orderEffectiveStartDate" defaultEnabled="false">
+												           reference="orderEffectiveStartDate" defaultEnabled="false">
 													<option type="withTimePicker" value="true" />
 												</component>
 											</layoutElement>
@@ -128,8 +104,8 @@
 								</layoutElement>
 								<layoutElement column="1" row="3">
 									<component type="checkbox" name="wasItCorrected"
-										reference="wasItCorrected" defaultEnabled="false"
-										hasDescription="true">
+									           reference="wasItCorrected" defaultEnabled="false"
+									           hasDescription="true">
 									</component>
 								</layoutElement>
 							</component>
@@ -137,33 +113,36 @@
 							<option type="label" value="plannedProgressLabel" />
 						</component>
 						<component type="borderLayout" name="reasonOfCorrection"
-							reference="reasonOfCorrection">
+						           reference="reasonOfCorrection">
 							<component type="gridLayout" name="plannedProgressGridLayout"
-								columns="1" rows="3">
+							           columns="1" rows="3">
 								<layoutElement column="1" row="1">
 									<component type="gridLayout"
-										name="plannedProgressCorrectionTypesGridLayout" columns="3"
-										rows="1">
+									           name="plannedProgressCorrectionTypesGridLayout" columns="3"
+									           rows="1">
 										<layoutElement column="1" row="1">
 											<component type="label"
-												name="plannedProgressCorrectionTypesLabel">
+											           name="plannedProgressCorrectionTypesLabel">
 												<option type="labelStyle" value="label" />
 											</component>
 										</layoutElement>
 										<layoutElement column="2" row="1" width="2">
 											<component type="awesomeDynamicList" name="plannedProgressCorrectionTypes"
-												source="#{form}.plannedProgressCorrectionTypes" reference="plannedProgressCorrectionTypes"
-												defaultEnabled="false">
+											           source="#{form}.plannedProgressCorrectionTypes"
+											           reference="plannedProgressCorrectionTypes"
+											           defaultEnabled="false">
 												<option type="hasBorder" value="false" />
 												<option type="hasButtons" value="true" />
 
 												<components>
 													<component type="gridLayout"
-														name="reasonTypeOfCorrectionPlanGridLayout" columns="1"
-														rows="1">
+													           name="reasonTypeOfCorrectionPlanGridLayout" columns="1"
+													           rows="1">
 														<layoutElement column="1" row="1">
+
+
 															<component type="select" name="reasonType"
-																field="reasonType" hasLabel="false" />
+															           field="reasonType" hasLabel="false" />
 														</layoutElement>
 													</component>
 												</components>
@@ -173,7 +152,8 @@
 								</layoutElement>
 								<layoutElement column="1" row="2" height="2">
 									<component type="textarea" name="plannedProgressCorrectionComment"
-										field="#{form}.plannedProgressCorrectionComment" reference="plannedProgressCorrectionComment">
+									           field="#{form}.plannedProgressCorrectionComment"
+									           reference="plannedProgressCorrectionComment">
 									</component>
 								</layoutElement>
 							</component>
@@ -184,13 +164,13 @@
 					<layoutElement column="2" row="1" width="2">
 						<component type="borderLayout" name="operationProgress">
 							<component type="gridLayout" name="plannedProgressGridLayout"
-								columns="2" rows="2">
+							           columns="2" rows="2">
 								<layoutElement column="1" row="1">
 									<component type="lookup" name="productionPerShiftOperation"
-										reference="productionPerShiftOperation" source="#{technology}.operationComponents"
-										field="#{form}.technologyOperationComponent">
+									           reference="productionPerShiftOperation" source="#{technology}.operationComponents"
+									           field="#{form}.technologyOperationComponent">
 										<option type="column" name="name" fields="operation"
-											expression="#operation['name']" link="true" />
+										        expression="#operation['name']" link="true" />
 										<option type="column" name="hasCorrections" fields="hasCorrections" />
 
 										<option type="searchable" value="name,nodeNumber,hasCorrections" />
@@ -200,76 +180,83 @@
 										<option type="fieldCode" value="nodeNumber" />
 
 										<listener event="onSelectedEntityChange"
-											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
-											method="fillProgressForDays" />
+										          class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+										          method="onTechnologyOperationChange" />
 									</component>
 								</layoutElement>
 								<layoutElement column="2" row="1">
 									<component type="lookup" name="produces" reference="produces"
-										model="product" plugin="basic" defaultEnabled="never">
+									           model="product" plugin="basic" defaultEnabled="never">
 										<option type="column" name="name" fields="name" link="true"
-											width="200" />
+										        width="200" />
 										<option type="column" name="ean" fields="ean" />
-			
+
 										<option type="searchable" value="name,ean" />
 										<option type="orderable" value="name,ean" />
-			
+
 										<option type="expression"
-											value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+										        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 										<option type="fieldCode" value="number" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" width="2" row="2">
 									<component type="awesomeDynamicList" name="progressForDay"
-										source="#{productionPerShiftOperation}.progressForDays"
-										reference="progressForDays">
+									           source="#{productionPerShiftOperation}.progressForDays"
+									           reference="progressForDays">
 										<option type="hasBorder" value="true" />
 										<option type="hasButtons" value="true" />
 
 										<components>
 											<component type="gridLayout" name="plannedDayProgressGridLayout"
-												columns="4" rows="1">
+											           columns="4" rows="1">
 												<layoutElement column="1" row="1">
 													<component type="gridLayout" name="dayGridLayout"
-														columns="1" rows="2">
+													           columns="1" rows="3">
 														<layoutElement column="1" row="1">
 															<component type="input" name="day" field="day"
-																reference="day" hasDescription="true" />
+															           reference="day" hasDescription="true" />
 														</layoutElement>
 														<layoutElement column="1" row="2">
 															<component type="calendar" name="date"
-																reference="date" hasLabel="false" defaultEnabled="false"
-																field="dateOfDay" />
+															           reference="date" hasLabel="false"
+															           defaultEnabled="never"
+															           field="dateOfDay" />
+														</layoutElement>
+														<layoutElement column="1" row="3">
+															<component type="calendar" name="actualDateOfDay"
+															           reference="actualDateOfDay" hasLabel="false"
+															           defaultEnabled="never"
+															           field="actualDateOfDay" />
 														</layoutElement>
 													</component>
 												</layoutElement>
 
 												<layoutElement column="2" row="1" width="3">
 													<component type="awesomeDynamicList" name="dailyProgress"
-														source="dailyProgress" reference="dailyProgress">
+													           source="dailyProgress" reference="dailyProgress">
 														<option type="hasBorder" value="true" />
 														<option type="hasButtons" value="true" />
 
 														<components>
 															<component type="gridLayout" name="dailyProgressGridLayout"
-																columns="5" rows="1">
+															           columns="5" rows="1">
 																<layoutElement column="1" row="1" width="2">
 																	<component type="lookup" name="shift" field="shift"
-																		reference="shift">
-																		
+																	           reference="shift">
+
 																		<option type="expression" value="#name" />
 																		<option type="fieldCode" value="name" />
 																	</component>
 																</layoutElement>
 																<layoutElement column="3" row="1" width="2">
 																	<component type="input" name="quantity"
-																		field="quantity" reference="quantity" />
+																	           field="quantity" reference="quantity" />
 																</layoutElement>
 																<layoutElement column="5" row="1">
 																	<component type="input" name="unit"
-																		reference="unit" hasLabel="false">
+																	           reference="unit" hasLabel="false">
 																		<option type="textRepresentationOnDisabled"
-																			value="true" />
+																		        value="true" />
 																	</component>
 																</layoutElement>
 															</component>
@@ -280,14 +267,11 @@
 										</components>
 
 										<listener event="onAddRow"
-											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
-											method="updateProgressForDays" />
-										<listener event="onDeleteRow"
-											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
-											method="saveProgressForDays" />
-										<listener event="saveProgressForDays"
-											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
-											method="saveProgressForDays" />
+										          class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+										          method="updateProgressForDays" />
+										<listener event="savePlan"
+										          class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+										          method="savePlan" />
 									</component>
 								</layoutElement>
 							</component>
@@ -299,14 +283,42 @@
 
 				<option type="header" value="true" />
 				<option type="expression"
-					value="#order.get('name') + ' - ' + #order.get('number') + ' - ' + '@orders.order.state.value.' + #order.get('state')" />
+				        value="#order.get('name') + ' - ' + #order.get('number') + ' - ' + '@orders.order.state.value.' + #order.get('state')" />
 
-				<listener event="deleteProgressForDays"
-					class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
-					method="deleteProgressForDays" />
-				<listener event="copyFromPlanned"
-					class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
-					method="copyFromPlanned" />
+				<component type="lookup" name="order" field="order"
+				           reference="order" hasLabel="false" defaultVisible="false">
+					<option type="column" name="name" fields="name" link="true" />
+					<option type="column" name="state" fields="state" />
+					<option type="column" name="typeOfProductionRecording"
+					        fields="typeOfProductionRecording" />
+
+					<option type="required" value="true" />
+
+					<option type="searchable" value="name,number,typeOfProductionRecording" />
+					<option type="orderable" value="name,number,typeOfProductionRecording" />
+
+					<option type="order" column="number" direction="desc" />
+
+					<option type="expression"
+					        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+					<option type="fieldCode" value="number" />
+				</component>
+				<component type="lookup" name="technology" field="technology"
+				           reference="technology" hasLabel="false" defaultVisible="false">
+					<option type="column" name="name" fields="name" link="true" />
+
+					<option type="searchable" value="name,number" />
+					<option type="orderable" value="name,number" />
+
+					<option type="order" column="number" direction="desc" />
+
+					<option type="expression"
+					        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+					<option type="fieldCode" value="number" />
+				</component>
+
+				<component type="checkbox" name="viewIsInitialized" reference="viewIsInitialized"
+				           hasLabel="false" defaultVisible="false" />
 			</component>
 		</windowTab>
 
@@ -315,41 +327,8 @@
 
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="setTechnologyField" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="fillSetRoot" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="addRootForOperation" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="disablePlannedProgressTypeForPendingOrder" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="fillProducedField" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="refreshProgressForDaysADL" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="setOrderStartDate" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="disableReasonOfCorrection" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="changeButtonState" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="checkIfWasItCorrected" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="checkShiftsIfWorks" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="updateProgressForDaysDates" />
+				class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+				method="onBeforeRender" />
 	</hooks>
 
 </view>

@@ -25,7 +25,6 @@ package com.qcadoo.mes.basic.shift;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -41,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.basic.constants.ShiftFields;
@@ -96,10 +96,10 @@ public class ShiftTest {
         assertTrue(shift.worksAt(workTimeBegin.plusHours(1).toDate()));
         assertFalse(shift.worksAt(workTimeBegin.minusHours(1).toDate()));
 
-        assertEquals(new DateRange(mondayMidnight.plusHours(6).toDate(), mondayMidnight.plusHours(12).toDate()),
+        assertEquals(Optional.of(new DateRange(mondayMidnight.plusHours(6).toDate(), mondayMidnight.plusHours(12).toDate())),
                 shift.findWorkTimeAt(mondayMidnight.plusHours(7).toDate()));
-        assertNull(shift.findWorkTimeAt(mondayMidnight.plusDays(2).toDate()));
-        assertNull(shift.findWorkTimeAt(mondayMidnight.plusHours(9).toDate()));
+        assertFalse(shift.findWorkTimeAt(mondayMidnight.plusDays(2).toDate()).isPresent());
+        assertFalse(shift.findWorkTimeAt(mondayMidnight.plusHours(9).toDate()).isPresent());
     }
 
     private EntityList mockEntityList(final List<Entity> entities) {

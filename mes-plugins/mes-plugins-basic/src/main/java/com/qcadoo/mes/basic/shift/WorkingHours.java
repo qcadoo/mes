@@ -34,6 +34,7 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.qcadoo.commons.dateTime.TimeRange;
 
@@ -81,16 +82,16 @@ public class WorkingHours implements Comparable<WorkingHours> {
     }
 
     public boolean contains(final LocalTime time) {
-        return findRangeFor(time) != null;
+        return findRangeFor(time).isPresent();
     }
 
-    public TimeRange findRangeFor(final LocalTime time) {
+    public Optional<TimeRange> findRangeFor(final LocalTime time) {
         for (TimeRange hoursRange : hours) {
             if (hoursRange.contains(time)) {
-                return hoursRange;
+                return Optional.of(hoursRange);
             }
         }
-        return null;
+        return Optional.absent();
     }
 
     public Set<TimeRange> getTimeRanges() {
