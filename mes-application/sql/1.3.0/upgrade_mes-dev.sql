@@ -121,15 +121,15 @@ ALTER TABLE orders_typeofcorrectioncauses ADD COLUMN "date" TIMESTAMP;
 -- end
 
 -- Add view and menu item for order deviations report
--- last touched at 11.07.2014 by maku
+-- last touched at 30.07.2014 by maku
 
 INSERT INTO qcadooview_view (id, pluginidentifier, name, view)
-VALUES (nextval('hibernate_sequence'), 'orders', 'deviationsReportGenerator', 'deviationsReportGenerator');
+VALUES (nextval('hibernate_sequence'), 'deviationCausesReporting', 'deviationsReportGenerator', 'deviationsReportGenerator');
 INSERT INTO qcadooview_item (id, pluginidentifier, name, active,
         category_id,
         view_id,
         succession)
-VALUES (nextval('hibernate_sequence'), 'orders', 'deviationsReport', TRUE,
+VALUES (nextval('hibernate_sequence'), 'deviationCausesReporting', 'deviationsReport', TRUE,
         (SELECT
            id
          FROM qcadooview_category
@@ -163,5 +163,16 @@ ALTER TABLE basic_currency ADD COLUMN "exchangerate" NUMERIC(12, 5) DEFAULT 1;
 -- create: 22.07.2014
 
 ALTER TABLE basic_parameter ADD COLUMN hidebarcodeoperationcomponentinworkplans boolean;
+
+-- end
+
+-- Enable new plugin deviationCausesReporting and its dependency (PPS)
+-- last touched 30.07.2014 by maku
+
+UPDATE qcadooplugin_plugin SET state = 'ENABLING'
+  WHERE identifier = 'productionPerShift' AND NOT EXISTS (SELECT id FROM qcadooplugin_plugin WHERE identifier = 'productionPerShift' AND state = 'ENABLED');
+
+INSERT INTO qcadooplugin_plugin (id, identifier, version, state, issystem)
+VALUES (nextval('hibernate_sequence'), 'deviationCausesReporting', '1.3.0', 'ENABLING', false);
 
 -- end

@@ -21,8 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.orders.constants.CommonReasonTypeFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.deviations.constants.DeviationType;
+import com.qcadoo.mes.orders.constants.deviationReasonTypes.DeviationModelDescriber;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -39,8 +38,7 @@ public class CommonReasonTypeModelHooksTest {
     @Mock
     private Entity reasonTypeEntity;
 
-    @Mock
-    private DeviationType deviationType;
+    private DeviationModelDescriber deviationModelDescriber;
 
     @Mock
     private DataDefinition reasonDD;
@@ -53,11 +51,12 @@ public class CommonReasonTypeModelHooksTest {
         MockitoAnnotations.initMocks(this);
 
         commonReasonTypeModelHooks = new CommonReasonTypeModelHooks();
-        given(deviationType.getReasonModelName()).willReturn("reasonModel");
-        given(deviationType.getReasonTypeInReasonModelFieldName()).willReturn("reasonField");
+
+        deviationModelDescriber = new DeviationModelDescriber("reasonPlugin", "reasonModel", "reasonField");
 
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, "reasonModel")).willReturn(reasonDD);
+        given(dataDefinitionService.get(deviationModelDescriber.getModelPlugin(), deviationModelDescriber.getModelName()))
+                .willReturn(reasonDD);
 
         ReflectionTestUtils.setField(commonReasonTypeModelHooks, "dataDefinitionService", dataDefinitionService);
     }
@@ -81,7 +80,7 @@ public class CommonReasonTypeModelHooksTest {
         stubFindResults(false);
 
         // when
-        commonReasonTypeModelHooks.updateDate(reasonTypeEntity, deviationType);
+        commonReasonTypeModelHooks.updateDate(reasonTypeEntity, deviationModelDescriber);
 
         // then
         verify(reasonTypeEntity).setField(eq(CommonReasonTypeFields.DATE), dateCaptor.capture());
@@ -98,7 +97,7 @@ public class CommonReasonTypeModelHooksTest {
         stubFindResults(false);
 
         // when
-        commonReasonTypeModelHooks.updateDate(reasonTypeEntity, deviationType);
+        commonReasonTypeModelHooks.updateDate(reasonTypeEntity, deviationModelDescriber);
 
         // then
         verify(reasonTypeEntity).setField(eq(CommonReasonTypeFields.DATE), dateCaptor.capture());
@@ -114,7 +113,7 @@ public class CommonReasonTypeModelHooksTest {
         stubFindResults(true);
 
         // when
-        commonReasonTypeModelHooks.updateDate(reasonTypeEntity, deviationType);
+        commonReasonTypeModelHooks.updateDate(reasonTypeEntity, deviationModelDescriber);
 
         // then
         verify(reasonTypeEntity, never()).setField(eq(CommonReasonTypeFields.DATE), any());
