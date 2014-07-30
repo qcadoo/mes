@@ -29,7 +29,7 @@ import org.joda.time.LocalDate;
 
 import com.google.common.base.Preconditions;
 
-public class DeviationSummary implements DeviationCauseHolder {
+public class DeviationSummary {
 
     private final String deviationCause;
 
