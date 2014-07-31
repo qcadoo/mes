@@ -279,7 +279,7 @@
 		<view:view-listener plugin="basic" view="productDetails"
 			component="form" event="save"
 			class="com.qcadoo.mes.timeNormsForOperations.validators.ProductValidatorsTNFO"
-			method="checkIfProductUnitChange" />
+			method="checkIfUnitChangeDoesNotCorruptAnyTechnology" />
 	
 		<view:view-listener plugin="technologies"
 			view="technologyOperationComponentDetails" component="operation"
