@@ -2,6 +2,7 @@ package com.qcadoo.mes.deviationCausesReporting.dataProvider;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,10 +15,12 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.deviationCausesReporting.DeviationsReportCriteria;
 import com.qcadoo.mes.deviationCausesReporting.constants.DeviationType;
+import com.qcadoo.mes.deviationCausesReporting.domain.DeviationCauseHolderComparators;
 import com.qcadoo.mes.deviationCausesReporting.domain.DeviationWithOccurrencesCount;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.deviationReasonTypes.DeviationModelDescriber;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -25,6 +28,11 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.constants.QcadooModelConstants;
 
+/**
+ * Provider for deviations' occurrences count.
+ * 
+ * @since 1.3.0
+ */
 @Service
 public class DeviationWithOccurrencesDataProvider {
 
@@ -32,8 +40,11 @@ public class DeviationWithOccurrencesDataProvider {
 
     private static final String L_DATE_TO = "dateToPlaceholder";
 
-    private static final String PARTIAL_COUNT_SUB_QUERY_TPL = "(select count(*) from #${MODEL_PLUGIN}_${MODEL_NAME} "
-            + "where ${REASON_TYPE_FIELD_NAME} = di.name and date >= :" + L_DATE_FROM + " AND date <= :" + L_DATE_TO + ")";
+    private static final String L_EXCLUDED_ORDER_STATES = "excludedOrderStates";
+
+    private static final String PARTIAL_COUNT_SUB_QUERY_TPL = "(SELECT count(*) FROM #${MODEL_PLUGIN}_${MODEL_NAME} "
+            + "WHERE ${REASON_TYPE_FIELD_NAME} = di.name AND date >= :" + L_DATE_FROM + " AND date <= :" + L_DATE_TO
+            + " AND ${ORDER_PATH}.${ORDER_STATE} NOT IN (:" + L_EXCLUDED_ORDER_STATES + "))";
 
     private static final String TOTAL_OCCURRENCES_PROJECTION = prepareTotalOccurrencesForProblemProjection();
 
@@ -44,9 +55,13 @@ public class DeviationWithOccurrencesDataProvider {
                     @Override
                     public String apply(final DeviationType deviationType) {
                         DeviationModelDescriber modelDescriber = deviationType.getModelDescriber();
-                        StrSubstitutor substitutor = new StrSubstitutor(ImmutableMap.of("MODEL_PLUGIN",
-                                modelDescriber.getModelPlugin(), "MODEL_NAME", modelDescriber.getModelName(),
-                                "REASON_TYPE_FIELD_NAME", modelDescriber.getReasonTypeFieldName()), "${", "}");
+                        HashMap<String, String> placeholderValues = Maps.newHashMap();
+                        placeholderValues.put("MODEL_PLUGIN", modelDescriber.getModelPlugin());
+                        placeholderValues.put("MODEL_NAME", modelDescriber.getModelName());
+                        placeholderValues.put("REASON_TYPE_FIELD_NAME", modelDescriber.getReasonTypeFieldName());
+                        placeholderValues.put("ORDER_PATH", deviationType.getPathToOrder());
+                        placeholderValues.put("ORDER_STATE", OrderFields.STATE);
+                        StrSubstitutor substitutor = new StrSubstitutor(placeholderValues, "${", "}");
                         return substitutor.replace(PARTIAL_COUNT_SUB_QUERY_TPL).toString();
                     }
                 });
@@ -57,9 +72,9 @@ public class DeviationWithOccurrencesDataProvider {
 
     private static final String TOTAL_COUNT_ALIAS = "totalCountProjectionAlias";
 
-    private static final String ALL_PROBLEM_OCCURRENCES_QUERY = "select di.name as " + CAUSE_ALIAS + ", ("
-            + TOTAL_OCCURRENCES_PROJECTION + ") as " + TOTAL_COUNT_ALIAS
-            + " from #qcadooModel_dictionaryItem as di where di.dictionary.name = 'reasonTypeOfChangingOrderState'";
+    private static final String ALL_PROBLEM_OCCURRENCES_QUERY = "SELECT di.name AS " + CAUSE_ALIAS + ", ("
+            + TOTAL_OCCURRENCES_PROJECTION + ") AS " + TOTAL_COUNT_ALIAS
+            + " FROM #qcadooModel_dictionaryItem AS di WHERE di.dictionary.name = 'reasonTypeOfChangingOrderState'";
 
     private static final Function<Entity, DeviationWithOccurrencesCount> DEVIATION_PROJECTION_TO_POJO = new Function<Entity, DeviationWithOccurrencesCount>() {
 
@@ -74,8 +89,16 @@ public class DeviationWithOccurrencesDataProvider {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    /**
+     * Return a List of POJOs representing a pair of deviation's cause and number of its occurrences.
+     * 
+     * @param criteria
+     *            restrictions for deviations to be summarized.
+     * @return ImmutableList of POJOs representing a pair of deviation's cause and number of its occurrences.
+     */
     public ImmutableList<DeviationWithOccurrencesCount> getDeviationsWithOccurrencesCount(final DeviationsReportCriteria criteria) {
-        return FluentIterable.from(getMatchingOccurrencesProjection(criteria)).transform(DEVIATION_PROJECTION_TO_POJO).toList();
+        return FluentIterable.from(getMatchingOccurrencesProjection(criteria)).transform(DEVIATION_PROJECTION_TO_POJO)
+                .toSortedList(DeviationCauseHolderComparators.BY_REASON_ASC);
     }
 
     private List<Entity> getMatchingOccurrencesProjection(final DeviationsReportCriteria criteria) {
@@ -83,6 +106,7 @@ public class DeviationWithOccurrencesDataProvider {
         Interval searchInterval = criteria.getSearchInterval();
         sqb.setTimestamp(L_DATE_FROM, searchInterval.getStart().toDate());
         sqb.setTimestamp(L_DATE_TO, searchInterval.getEnd().toDate());
+        sqb.setParameterList(L_EXCLUDED_ORDER_STATES, criteria.getExcludedOrderStates());
         return sqb.list().getEntities();
     }
 

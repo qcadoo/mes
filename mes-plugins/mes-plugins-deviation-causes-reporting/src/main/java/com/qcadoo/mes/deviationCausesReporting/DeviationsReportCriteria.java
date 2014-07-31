@@ -8,8 +8,12 @@ import org.joda.time.LocalDate;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 
 public final class DeviationsReportCriteria {
+
+    private static final ImmutableSet<String> EXCLUDED_ORDER_STATES = ImmutableSet.of(OrderStateStringValues.PENDING);
 
     private final Interval searchInterval;
 
@@ -56,6 +60,10 @@ public final class DeviationsReportCriteria {
 
     public Interval getSearchInterval() {
         return searchInterval;
+    }
+
+    public ImmutableSet<String> getExcludedOrderStates() {
+        return EXCLUDED_ORDER_STATES;
     }
 
     @Override

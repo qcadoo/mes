@@ -109,14 +109,16 @@ CREATE TABLE technologies_barcodeoperationcomponent
 );
 -- end
 
---  Add 'update date' field to the orders' deviation/correction reason type models.
--- last touched at 09.07.2014 by maku
+--  Add 'update date' field to the orders & pps deviation/correction reason type models.
+-- last touched at 31.07.2014 by maku
 
 ALTER TABLE orders_reasontypecorrectiondatefrom ADD COLUMN "date" TIMESTAMP;
 ALTER TABLE orders_reasontypecorrectiondateto ADD COLUMN "date" TIMESTAMP;
 ALTER TABLE orders_reasontypedeviationeffectivestart ADD COLUMN "date" TIMESTAMP;
 ALTER TABLE orders_reasontypedeviationeffectiveend ADD COLUMN "date" TIMESTAMP;
 ALTER TABLE orders_typeofcorrectioncauses ADD COLUMN "date" TIMESTAMP;
+
+ALTER TABLE productionpershift_reasontypeofcorrectionplan ADD COLUMN "date" TIMESTAMP;
 
 -- end
 

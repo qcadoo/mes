@@ -6,7 +6,7 @@ import org.joda.time.LocalDate;
 
 import com.google.common.base.Preconditions;
 
-public class DeviationSummary {
+public class DeviationSummary implements DeviationCauseHolder {
 
     private final String deviationCause;
 

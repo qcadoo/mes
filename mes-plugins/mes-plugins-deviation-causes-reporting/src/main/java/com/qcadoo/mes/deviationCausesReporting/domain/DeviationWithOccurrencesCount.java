@@ -8,7 +8,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.google.common.base.Preconditions;
 
-public class DeviationWithOccurrencesCount {
+public class DeviationWithOccurrencesCount implements DeviationCauseHolder {
 
     private final String deviationCause;
 

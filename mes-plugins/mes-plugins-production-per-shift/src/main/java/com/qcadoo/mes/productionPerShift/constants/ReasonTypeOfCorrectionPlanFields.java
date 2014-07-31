@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productionPerShift.constants;
 
+import com.qcadoo.mes.orders.constants.CommonReasonTypeFields;
+
 public final class ReasonTypeOfCorrectionPlanFields {
 
     private ReasonTypeOfCorrectionPlanFields() {
@@ -31,6 +33,7 @@ public final class ReasonTypeOfCorrectionPlanFields {
 
     public static final String PRODUCTION_PER_SHIFT = "productionPerShift";
 
-    public static final String REASON_TYPE_OF_CORRECTION_PLAN = "reasonTypeOfCorrectionPlan";
+    public static final String REASON_TYPE_OF_CORRECTION_PLAN = "reasonType";
 
+    public static final String DATE = CommonReasonTypeFields.DATE;
 }
