@@ -24,7 +24,14 @@
 package com.qcadoo.mes.basic;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -517,6 +524,9 @@ public class ShiftsServiceImpl implements ShiftsService {
                 .add(SearchRestrictions.eq(getDayOfWeekName(date) + WORKING_LITERAL, true)).list().getEntities();
     }
 
+    /**
+     * @deprecated Use Shift#worksAt
+     */
     @Override
     @Deprecated
     public boolean checkIfShiftWorkAtDate(final Date date, final Entity shift) {

@@ -32,6 +32,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 import com.google.common.base.Preconditions;
@@ -105,11 +106,35 @@ public class Shift {
     }
 
     /**
+     * Check if this shift will be working at given local date. This method is NOT aware of timetable exceptions
+     * 
+     * @param localDate
+     * @return true if this shift will be working at given local date.
+     */
+    public boolean worksAt(final LocalDate localDate) {
+        return worksAt(localDate.getDayOfWeek());
+    }
+
+    /**
+     * Check if this shift will be working at given date and time. This method is aware of timetable exceptions
+     * 
+     * @param dateTime
+     * @return true if this shift will be working at given date and time.
+     */
+    public boolean worksAt(final DateTime dateTime) {
+        return worksAt(dateTime.toDate());
+    }
+
+    /**
      * Check if this shift will be working at given date and time. This method is aware of timetable exceptions
      * 
      * @param date
      * @return true if this shift will be working at given date and time.
+     * 
+     * @deprecated use worksAt(DateTime) if you want to check if shift works at given date and time, or works(LocalDate) if all
+     *             you want is just check if shift works at given day.
      */
+    @Deprecated
     public boolean worksAt(final Date date) {
         DateTime dateTime = new DateTime(date);
         return (worksAt(dateTime.getDayOfWeek(), dateTime.toLocalTime()) && !timetableExceptions.hasFreeTimeAt(date))
