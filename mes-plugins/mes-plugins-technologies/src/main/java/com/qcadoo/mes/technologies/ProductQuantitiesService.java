@@ -205,7 +205,10 @@ public interface ProductQuantitiesService {
      *            Operation Component
      * 
      * @return
+     * 
+     * @deprecated use com.qcadoo.mes.technologies.tree.traversing.MainOutputProductCriteriaBuilder
      */
+    @Deprecated
     Entity getOutputProductsFromOperationComponent(final Entity operationComponent);
 
     /**
