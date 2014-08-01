@@ -26,7 +26,9 @@ package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,15 +51,17 @@ public class DeliveryStateServiceMF {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void createDocumentsForTheReceivedProducts(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
 
-        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-        Entity currency = delivery.getBelongsToField(DeliveryFields.CURRENCY);
-
-        if (location == null) {
+        Entity location = location(delivery);
+        if (location == null)
             return;
-        }
+
+        Entity currency = currency(delivery);
 
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 
@@ -82,22 +86,33 @@ public class DeliveryStateServiceMF {
                 );
             }
         }
-
         documentBuilder.setAccepted().build();
-  }
+    }
 
-  private BigDecimal price(Entity deliveredProduct, Entity currency) {
-      BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
-      BigDecimal pricePerUnit = deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
-      return exRateExists(exRate) ? pricePerUnit.multiply(exRate) : pricePerUnit;
-  }
+    private Entity currency(Entity delivery) {
+        Entity currency = delivery.getBelongsToField(DeliveryFields.CURRENCY);
+        return currency != null ? currency : currencyFromParameter();
+    }
 
-  private boolean exRateExists(BigDecimal exRate) {
-      return exRate.compareTo(BigDecimal.ZERO) > 0;
-  }
+    private Entity location(Entity delivery) {
+        return delivery.getBelongsToField(DeliveryFields.LOCATION);
+    }
 
-  private Entity product(Entity deliveredProduct) {
-      return deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-  }
+    private BigDecimal price(Entity deliveredProduct, Entity currency) {
+        BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
+        BigDecimal pricePerUnit = deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
+        return exRateExists(exRate) ? pricePerUnit.multiply(exRate) : pricePerUnit;
+    }
 
+    private boolean exRateExists(BigDecimal exRate) {
+        return exRate.compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    private Entity product(Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+    }
+
+    private Entity currencyFromParameter() {
+        return parameterService.getParameter().getBelongsToField(ParameterFields.CURRENCY);
+    }
 }
