@@ -339,11 +339,14 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     }
 
     private void fillCurrency(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
-        Entity deliveredOrOrderedProduct = deliveryProduct.getDeliveredProductId() != null ?
-                deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId())
-                : deliveriesService.getOrderedProduct(deliveryProduct.getOrderedProductId());
-        Entity delivery = deliveredOrOrderedProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-        values.get(deliveryProduct).put("currency", pricePerUnit(deliveredOrOrderedProduct) == null ? "" : deliveriesService.getCurrency(delivery));
+        if(deliveryProduct.getDeliveredProductId() != null) {
+            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+            values.get(deliveryProduct).put("currency", pricePerUnit(deliveredProduct) == null ? "" : deliveriesService.getCurrency(delivery(deliveredProduct)));
+        }
+    }
+
+    private Entity delivery(Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
     }
 
     private BigDecimal pricePerUnit(Entity delivery) {
