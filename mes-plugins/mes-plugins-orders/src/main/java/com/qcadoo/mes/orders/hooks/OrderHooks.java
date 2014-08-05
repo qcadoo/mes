@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
@@ -43,7 +44,6 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -121,16 +121,14 @@ public class OrderHooks {
         copyProductQuantity(orderDD, order);
         onCorrectingTheRequestedVolume(orderDD, order);
         technologyServiceO.setTechnologyNumber(orderDD, order);
-
         technologyServiceO.createOrUpdateTechnology(orderDD, order);
-
     }
 
     public void onCopy(final DataDefinition orderDD, final Entity order) {
         setInitialState(orderDD, order);
         clearOrSetSpecyfiedValueOrderFieldsOnCopy(orderDD, order);
         setProductQuantity(orderDD, order);
-        setCopyOfTechnology(orderDD, order);
+        setCopyOfTechnology(order);
     }
 
     public void setInitialState(final DataDefinition orderDD, final Entity order) {
@@ -495,25 +493,32 @@ public class OrderHooks {
         order.setField(OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY, null);
     }
 
-    public void setCopyOfTechnology(final DataDefinition orderDD, final Entity order) {
-        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
-        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+    void setCopyOfTechnology(final Entity order) {
+        order.setField(OrderFields.TECHNOLOGY, copyTechnology(order).orNull());
+    }
 
-        Entity copyOfTechnology = technologyDD.copy(technology.getId()).get(0);
-        String number = null;
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
-            number = technologyServiceO.generateNumberForTechnologyInOrder(order,
-                    order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
-        } else if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(orderType)) {
-            number = technologyServiceO.generateNumberForTechnologyInOrder(order, null);
+    private Optional<Entity> copyTechnology(final Entity order) {
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if (technology == null) {
+            return Optional.absent();
         }
+        String number = generateTechnologyNumberFor(order).orNull();
+        Entity copyOfTechnology = technology.getDataDefinition().copy(technology.getId()).get(0);
         copyOfTechnology.setField(TechnologyFields.NUMBER, number);
         copyOfTechnology.getDataDefinition().save(copyOfTechnology);
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+        if (OrderType.of(order) == OrderType.WITH_PATTERN_TECHNOLOGY) {
             technologyServiceO.changeTechnologyState(copyOfTechnology, TechnologyStateStringValues.CHECKED);
         }
-        order.setField(OrderFields.TECHNOLOGY, copyOfTechnology);
+        return Optional.of(copyOfTechnology);
     }
+
+    private Optional<String> generateTechnologyNumberFor(final Entity order) {
+        OrderType orderType = OrderType.of(order);
+        Optional<Entity> maybeTechnologyPrototype = Optional.absent();
+        if (OrderType.WITH_PATTERN_TECHNOLOGY == orderType) {
+            maybeTechnologyPrototype = Optional.fromNullable(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+        }
+        return Optional.fromNullable(technologyServiceO.generateNumberForTechnologyInOrder(order, maybeTechnologyPrototype.orNull()));
+    }
+
 }
