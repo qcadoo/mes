@@ -40,6 +40,8 @@ import static org.mockito.Mockito.verify;
 import java.math.BigDecimal;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -162,13 +164,18 @@ public class MasterOrderHooksTest {
     }
 
     @Test
-    public final void shouldReturnWhenMasterOrderIsNotSave() {
+    public final void shouldThrowExceptionWhenMasterOrderIsNotSave() {
         // given
         stubId(masterOrder, null);
-        // when
-        masterOrderHooks.changedDeadlineAndInOrder(masterOrder);
-        // then
-        verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
+
+        try {
+            // when
+            masterOrderHooks.changedDeadlineAndInOrder(masterOrder);
+            Assert.fail();
+        } catch (IllegalArgumentException ignored) {
+            // then
+            verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
+        }
     }
 
     @Test
@@ -209,16 +216,6 @@ public class MasterOrderHooksTest {
         assertTrue(actualOrders.contains(order1));
         assertTrue(actualOrders.contains(order2));
 
-    }
-
-    @Test
-    public final void shouldReturnWhenMasterOrderDoesNotHaveId() {
-        // given
-        given(masterOrder.getId()).willReturn(null);
-        // when
-        masterOrderHooks.changedDeadlineAndInOrder(masterOrder);
-        // then
-        verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
     }
 
     @Test
