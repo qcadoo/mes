@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.workPlans.constants;
 
-import java.util.Set;
-
 import com.google.common.collect.Sets;
+
+import java.util.Set;
 
 public final class WorkPlansConstants {
 

@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.controller;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.google.common.io.Files;
 import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
@@ -50,6 +36,18 @@ import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Controller
 @RequestMapping("/rest/workplans")

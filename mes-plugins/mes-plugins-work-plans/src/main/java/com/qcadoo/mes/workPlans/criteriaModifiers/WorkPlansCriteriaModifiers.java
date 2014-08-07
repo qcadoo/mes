@@ -23,15 +23,14 @@
  */
 package com.qcadoo.mes.workPlans.criteriaModifiers;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class WorkPlansCriteriaModifiers {

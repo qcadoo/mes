@@ -23,18 +23,17 @@
  */
 package com.qcadoo.mes.workPlans.listeners;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrdersListListenersWP {

@@ -23,12 +23,11 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class WorkPlansListHooks {
