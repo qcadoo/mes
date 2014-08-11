@@ -101,7 +101,7 @@ public class OrderDetailsHooksMO {
             }
 
             if (StringUtils.isEmpty((String) deadlineField.getFieldValue()) && (masterOrderDeadline != null)) {
-                deadlineField.setFieldValue(DateUtils.toDateString(masterOrderDeadline));
+                deadlineField.setFieldValue(DateUtils.toDateTimeString(masterOrderDeadline));
             }
 
             if ((productLookup.getEntity() == null) && (masterOrderProduct != null)) {
