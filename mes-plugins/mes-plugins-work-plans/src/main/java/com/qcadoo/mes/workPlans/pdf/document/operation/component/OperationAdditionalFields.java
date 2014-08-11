@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
+import com.google.common.base.Optional;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -51,30 +52,23 @@ public class OperationAdditionalFields {
     }
 
     public void print(Entity operationComponent, Document document, Locale locale) throws DocumentException {
-        String imagePath;
-        try {
-            imagePath = getImageUrlInWorkPlan(operationComponent);
-        } catch (NoSuchElementException e) {
+        Optional<String> imageUrlInWorkPlan = getImageUrlInWorkPlan(operationComponent);
+
+        if(!imageUrlInWorkPlan.isPresent())
             return;
-        }
 
         document.add(new Paragraph(title(locale), FontUtils.getDejavuBold10Dark()));
-        pdfHelper.addImage(document, imagePath);
+        pdfHelper.addImage(document, imageUrlInWorkPlan.get());
         document.add(Chunk.NEXTPAGE);
+
     }
 
     private String title(Locale locale) {
         return translationService.translate("workPlans.workPlan.report.additionalFields", locale);
     }
 
-    String getImageUrlInWorkPlan(final Entity technologyOperationComponent) {
-        String imagePath = imagePath(technologyOperationComponent);
-
-        if (imagePath == null) {
-            throw new NoSuchElementException("no image");
-        } else {
-            return imagePath;
-        }
+    private Optional<String> getImageUrlInWorkPlan(final Entity technologyOperationComponent) {
+        return Optional.of(imagePath(technologyOperationComponent));
     }
 
     private String imagePath(Entity technologyOperationComponent) {

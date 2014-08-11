@@ -72,7 +72,7 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
             List<Entity> operationProductInComponents = operationProductInComponents(operationComponent);
             Map<String, Entity> existingProductNumberToOperationProductInComponent = productNumberToOperationProductComponent(existingOperationProductInComponents);
             Map<String, Entity> productNumberToOperationProductInComponent = productNumberToOperationProductComponent(operationProductInComponents);
-            if (equals(existingProductNumberToOperationProductInComponent, productNumberToOperationProductInComponent)) {
+            if (containsAll(existingProductNumberToOperationProductInComponent, productNumberToOperationProductInComponent)) {
                 for (Map.Entry<String, Entity> entry : existingProductNumberToOperationProductInComponent.entrySet()) {
                     Entity existingOperationProductInComponent = entry.getValue();
                     Entity operationProductInComponent = productNumberToOperationProductInComponent.get(entry.getKey());
@@ -110,7 +110,7 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
 
     }
 
-    private boolean equals(Map<String, Entity> map1, Map<String, Entity> map2) {
+    private boolean containsAll(Map<String, Entity> map1, Map<String, Entity> map2) {
         return map1.keySet().containsAll(map2.keySet());
     }
 

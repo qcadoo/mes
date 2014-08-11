@@ -59,7 +59,7 @@ public class DocumentHeader {
     }
 
     private String name(Entity workPlan) {
-        return workPlan.getField(WorkPlanFields.NAME).toString();
+        return workPlan.getStringField(WorkPlanFields.NAME);
     }
 
     private String author(Locale locale) {
