@@ -27,7 +27,8 @@ public class DocumentDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
 
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
@@ -36,11 +37,11 @@ public class DocumentDetailsListeners {
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
         Entity documentToCreateResourcesFor = documentDD.save(document);
-       
+
         if (!documentToCreateResourcesFor.isValid()) {
             documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-           formComponent.setEntity(documentToCreateResourcesFor);
-           return;
+            formComponent.setEntity(documentToCreateResourcesFor);
+            return;
         }
 
         createResources(documentToCreateResourcesFor);
@@ -56,7 +57,7 @@ public class DocumentDetailsListeners {
 
     @Transactional
     public void createResources(Entity documentToCreateResourcesFor) {
-        DocumentType documentType = DocumentType.parseString(documentToCreateResourcesFor.getStringField(DocumentFields.TYPE));
+        DocumentType documentType = DocumentType.of(documentToCreateResourcesFor);
         if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
             resourceManagementService.createResourcesForReceiptDocuments(documentToCreateResourcesFor);
         } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {
@@ -66,12 +67,12 @@ public class DocumentDetailsListeners {
         } else {
             throw new IllegalStateException("Unsupported document type");
         }
-        if(!documentToCreateResourcesFor.isValid()){
+        if (!documentToCreateResourcesFor.isValid()) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
     }
 
-    public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args){
+    public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FieldComponent locationFrom = (FieldComponent) view.getComponentByReference("locationFrom");
         locationFrom.setFieldValue(null);
         locationFrom.requestComponentUpdateState();
@@ -81,7 +82,7 @@ public class DocumentDetailsListeners {
         locationFrom.requestComponentUpdateState();
     }
 
-    public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args){
+    public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         form.performEvent(view, "refresh");
     }

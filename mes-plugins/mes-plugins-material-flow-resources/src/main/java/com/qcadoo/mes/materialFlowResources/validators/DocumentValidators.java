@@ -15,7 +15,7 @@ public class DocumentValidators {
 
     public boolean hasWarehouses(final DataDefinition dataDefinition, final Entity entity) {
 
-        DocumentType documentType = DocumentType.parseString(entity.getStringField(DocumentFields.TYPE));
+        DocumentType documentType = DocumentType.of(entity);
         if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
             return hasWarehouse(dataDefinition, entity, DocumentFields.LOCATION_TO);
         } else if (DocumentType.TRANSFER.equals(documentType)) {

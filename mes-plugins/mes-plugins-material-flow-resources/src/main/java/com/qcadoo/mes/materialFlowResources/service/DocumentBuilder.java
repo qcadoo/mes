@@ -8,7 +8,11 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -99,9 +103,11 @@ public class DocumentBuilder {
 
     /**
      * Use this method to set document fields added by any extending plugins.
-     *
-     * @param field field name
-     * @param value field value
+     * 
+     * @param field
+     *            field name
+     * @param value
+     *            field value
      * @return this builder
      */
     public DocumentBuilder setField(String field, Object value) {
@@ -120,9 +126,9 @@ public class DocumentBuilder {
 
         document.setField(DocumentFields.POSITIONS, positions);
         Entity savedDocument = documentDD.save(document);
-        if (savedDocument.isValid() && DocumentState.ACCEPTED.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
+        if (savedDocument.isValid() && DocumentState.of(document) == DocumentState.ACCEPTED) {
             createResources(savedDocument);
-            if(!savedDocument.isValid()){
+            if (!savedDocument.isValid()) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
         }
@@ -131,7 +137,7 @@ public class DocumentBuilder {
     }
 
     private void createResources(Entity savedDocument) {
-        DocumentType documentType = DocumentType.parseString(savedDocument.getStringField(DocumentFields.TYPE));
+        DocumentType documentType = DocumentType.of(savedDocument);
         if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
             resourceManagementService.createResourcesForReceiptDocuments(savedDocument);
         } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {

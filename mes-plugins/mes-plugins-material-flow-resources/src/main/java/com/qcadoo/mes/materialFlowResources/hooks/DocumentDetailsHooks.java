@@ -12,7 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -35,12 +39,12 @@ public class DocumentDetailsHooks {
     private static final String ACCEPT_ITEM = "accept";
 
     private static final List<String> INBOUND_FIELDS = Arrays.asList("price", "batch", "productionDate", "expirationDate");
-    
+
     public static final String FORM = "form";
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-    
+
     @Autowired
     private UserService userService;
 
@@ -54,11 +58,11 @@ public class DocumentDetailsHooks {
                 || DocumentType.INTERNAL_INBOUND.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, true);
             showWarehouse(view, false, true);
-        } else if(DocumentType.TRANSFER.getStringValue().equals(documentType)){
+        } else if (DocumentType.TRANSFER.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, true, true);
-        } else if(DocumentType.RELEASE.getStringValue().equals(documentType) ||
-                DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
+        } else if (DocumentType.RELEASE.getStringValue().equals(documentType)
+                || DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, true, false);
         } else {
@@ -110,7 +114,7 @@ public class DocumentDetailsHooks {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
         Long documentId = formComponent.getEntityId();
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
-        DocumentState state = DocumentState.parseString(document.getStringField(DocumentFields.STATE));
+        DocumentState state = DocumentState.of(document);
 
         if (documentId == null) {
             changeAcceptButtonState(window, false);
@@ -120,7 +124,7 @@ public class DocumentDetailsHooks {
             FieldComponent user = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
             date.setFieldValue(setDateToField(new Date()));
             user.setFieldValue(userService.getCurrentUserEntity().getId());
-        } else if (DocumentState.DRAFT.equals(state)){
+        } else if (DocumentState.DRAFT.equals(state)) {
             changeAcceptButtonState(window, true);
         } else if (DocumentState.ACCEPTED.equals(state)) {
             formComponent.setFormEnabled(false);
@@ -147,7 +151,8 @@ public class DocumentDetailsHooks {
     }
 
     private void changeAcceptButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem actionItem = (RibbonActionItem)  window.getRibbon().getGroupByName(STATE_GROUP).getItemByName(ACCEPT_ITEM);
+        RibbonActionItem actionItem = (RibbonActionItem) window.getRibbon().getGroupByName(STATE_GROUP)
+                .getItemByName(ACCEPT_ITEM);
         actionItem.setEnabled(enable);
         actionItem.requestUpdate(true);
     }

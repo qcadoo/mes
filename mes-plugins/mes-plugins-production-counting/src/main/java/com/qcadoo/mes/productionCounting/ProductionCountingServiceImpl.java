@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.productionCounting;
 
+import static com.qcadoo.model.api.search.SearchRestrictions.and;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
+import static com.qcadoo.model.api.search.SearchRestrictions.or;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -44,11 +49,15 @@ import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingReportFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.print.utils.EntityProductionTrackingComparator;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -140,9 +149,27 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
     @Override
     public List<Entity> getProductionTrackingsForOrder(final Entity order) {
-        return getProductionTrackingDD().find()
-                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
-                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order)).list().getEntities();
+        SearchCriteriaBuilder scb = getProductionTrackingDD().find();
+        final String scAlias = "sc_alias";
+        scb.createAlias(ProductionTrackingFields.STATE_CHANGES, scAlias, JoinType.INNER);
+        scb.createCriteria(ProductionTrackingFields.ORDER, "ord_alias", JoinType.INNER).add(idEq(order.getId()));
+
+        SearchCriterion hasStateChangeFromDraftToAccepted = and(
+                eq(scAlias + "." + ProductionTrackingStateChangeFields.SOURCE_STATE, ProductionTrackingStateStringValues.DRAFT),
+                eq(scAlias + "." + ProductionTrackingStateChangeFields.TARGET_STATE, ProductionTrackingStateStringValues.ACCEPTED));
+
+        SearchCriterion isAlreadyAccepted = and(eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED),
+                eq(scAlias + "." + ProductionTrackingStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()),
+                hasStateChangeFromDraftToAccepted);
+
+        SearchCriterion isFinalRecordDuringAcceptation = and(eq(ProductionTrackingFields.LAST_TRACKING, true),
+                eq(scAlias + "." + ProductionTrackingStateChangeFields.STATUS, StateChangeStatus.IN_PROGRESS.getStringValue()),
+                hasStateChangeFromDraftToAccepted);
+
+        /* This is a workaround for missing production tracking entity during its acceptance. */
+        scb.add(or(isAlreadyAccepted, isFinalRecordDuringAcceptation));
+
+        return scb.list().getEntities();
     }
 
     @Override
