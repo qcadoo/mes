@@ -28,6 +28,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.qcadoo.mes.orders.OrderService;
@@ -63,25 +64,16 @@ public class OrderDetailsRibbonHelper {
     private OrderService orderService;
 
     public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
-            final Predicate<Entity> predicate) {
+            final Predicate<Entity> predicate, final Optional<String> message) {
         RibbonActionItem ribbonItem = getRibbonItem(view, ribbonGroupName, ribbonItemName);
         Entity order = getOrderEntity(view);
+        boolean enabled = order != null && predicate.apply(order);
         if (ribbonItem == null) {
             return;
         }
-        ribbonItem.setEnabled(order != null && predicate.apply(order));
-        ribbonItem.requestUpdate(true);
-    }
-
-    public void setMessageForDisabledButton(final ViewDefinitionState view, final String ribbonGroupName,
-            final String ribbonItemName) {
-        RibbonActionItem ribbonItem = getRibbonItem(view, ribbonGroupName, ribbonItemName);
-
-        if (ribbonItem == null) {
-            return;
-        }
-        if (!ribbonItem.isEnabled()) {
-            ribbonItem.setMessage("orders.ribbon.message.mustChangeTechnologyState");
+        ribbonItem.setEnabled(enabled);
+        if (!enabled && message.isPresent()) {
+            ribbonItem.setMessage(message.get());
         }
         ribbonItem.requestUpdate(true);
     }

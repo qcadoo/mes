@@ -174,13 +174,15 @@
 								}
 							}
 						}
+						
 
 						function updateRibbon(state) {
 							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
 							var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
 							var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 							var checkState = #{window}.getRibbonItem("status.checkTechnology");
-
+							var deleteItem = #{window}.getRibbonItem("actions.delete");
+							
 							var generateProductStructure = #{window}.getRibbonItem("productStructure.generateProductStructure");
 
 							acceptState.forState="02accepted";
@@ -209,6 +211,7 @@
 								cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
 								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
 								toggleEditable(true, "");
+								deleteItem.disable();
 							} else if (state == "03declined" || state == "04outdated") {
 								acceptState.disable();
 								checkState.disable();

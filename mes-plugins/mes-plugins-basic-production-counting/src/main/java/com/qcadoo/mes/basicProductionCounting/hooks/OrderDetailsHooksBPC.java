@@ -26,6 +26,7 @@ package com.qcadoo.mes.basicProductionCounting.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -53,7 +54,8 @@ public class OrderDetailsHooksBPC {
 
     public void disabledButtonForAppropriateState(final ViewDefinitionState view) {
         orderDetailsRibbonHelper.setButtonEnabled(view, BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP,
-                BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_NAME, NOT_DECLINED_OR_PENDING);
+                BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_NAME, NOT_DECLINED_OR_PENDING,
+                Optional.<String> absent());
     }
 
 }
