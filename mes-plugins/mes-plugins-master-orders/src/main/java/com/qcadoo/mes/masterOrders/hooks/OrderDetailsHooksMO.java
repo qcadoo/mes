@@ -59,8 +59,8 @@ public class OrderDetailsHooksMO {
 
         Entity order = orderForm.getEntity();
 
+        Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
         if (order.getId() == null) {
-            Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
 
             if (masterOrder != null) {
                 Long masterOrderId = masterOrder.getId();
@@ -70,6 +70,17 @@ public class OrderDetailsHooksMO {
                 fillMasterOrderFields(view, masterOrder);
             }
         }
+        if (masterOrder != null) {
+            disableOrderType(view);
+        }
+    }
+
+    private void disableOrderType(final ViewDefinitionState view) {
+
+        FieldComponent orderTypeField = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
+
+        orderTypeField.setEnabled(false);
+        orderTypeField.requestComponentUpdateState();
     }
 
     private void fillMasterOrderFields(final ViewDefinitionState view, final Entity masterOrder) {
