@@ -38,6 +38,7 @@ public class OrderDetailsHooksPPS {
     public void onBeforeRender(final ViewDefinitionState view) {
         orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift",
                 OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
+        orderDetailsRibbonHelper.setMessageForDisabledButton(view, "orderProgressPlans", "productionPerShift");
     }
 
 }

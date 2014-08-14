@@ -73,6 +73,19 @@ public class OrderDetailsRibbonHelper {
         ribbonItem.requestUpdate(true);
     }
 
+    public void setMessageForDisabledButton(final ViewDefinitionState view, final String ribbonGroupName,
+            final String ribbonItemName) {
+        RibbonActionItem ribbonItem = getRibbonItem(view, ribbonGroupName, ribbonItemName);
+
+        if (ribbonItem == null) {
+            return;
+        }
+        if (!ribbonItem.isEnabled()) {
+            ribbonItem.setMessage("orders.ribbon.message.mustChangeTechnologyState");
+        }
+        ribbonItem.requestUpdate(true);
+    }
+
     private Entity getOrderEntity(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form == null) {

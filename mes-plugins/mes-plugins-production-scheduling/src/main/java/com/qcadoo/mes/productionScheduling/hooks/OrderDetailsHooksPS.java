@@ -38,6 +38,8 @@ public class OrderDetailsHooksPS {
     public void onBeforeRender(final ViewDefinitionState view) {
         orderDetailsRibbonHelper.setButtonEnabled(view, "operationDuration", "operationDuration",
                 OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
+
+        orderDetailsRibbonHelper.setMessageForDisabledButton(view, "operationDuration", "operationDuration");
     }
 
 }

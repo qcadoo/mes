@@ -38,6 +38,7 @@ public class OrderDetailsHooksCC {
     public void onBeforeRender(final ViewDefinitionState view) {
         orderDetailsRibbonHelper.setButtonEnabled(view, "costCalculate", "costCalculate",
                 OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
+        orderDetailsRibbonHelper.setMessageForDisabledButton(view, "costCalculate", "costCalculate");
     }
 
 }
