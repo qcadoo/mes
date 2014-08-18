@@ -37,7 +37,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
@@ -86,7 +85,7 @@ public class OrderDetailsHookLCNFOTest {
 
         // then
         verify(orderDetailsRibbonHelper).setButtonEnabled(any(ViewDefinitionState.class), eq("changeover"), eq("showChangeover"),
-                predicateCaptor.capture(), eq(Optional.<String> absent()));
+                predicateCaptor.capture());
         Predicate<Entity> predicate = predicateCaptor.getValue();
 
         assertFalse(predicate.apply(null));

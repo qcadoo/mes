@@ -64,6 +64,11 @@ public class OrderDetailsRibbonHelper {
     private OrderService orderService;
 
     public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
+            final Predicate<Entity> predicate) {
+        setButtonEnabled(view, ribbonGroupName, ribbonItemName, predicate, Optional.<String> absent());
+    }
+
+    public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
             final Predicate<Entity> predicate, final Optional<String> message) {
         RibbonActionItem ribbonItem = getRibbonItem(view, ribbonGroupName, ribbonItemName);
         Entity order = getOrderEntity(view);
