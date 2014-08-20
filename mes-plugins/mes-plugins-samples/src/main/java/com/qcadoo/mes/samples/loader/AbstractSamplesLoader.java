@@ -36,7 +36,6 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.samples.api.SamplesLoader;
@@ -49,7 +48,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
-@Transactional
 public abstract class AbstractSamplesLoader implements SamplesLoader {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SamplesLoader.class);
@@ -69,7 +67,6 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     private StateChangeSamplesClient stateChangeSamplesClient;
 
     @Override
-    @Transactional
     public void load() {
         if (databaseHasToBePrepared()) {
             LOG.debug("Database has to be prepared ...");

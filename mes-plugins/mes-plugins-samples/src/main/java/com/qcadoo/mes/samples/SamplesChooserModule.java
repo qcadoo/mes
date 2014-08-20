@@ -25,7 +25,6 @@ package com.qcadoo.mes.samples;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.samples.api.SamplesLoader;
 import com.qcadoo.mes.samples.resolver.SamplesLoaderResolver;
@@ -38,7 +37,6 @@ public class SamplesChooserModule extends Module {
     private SamplesLoaderResolver samplesLoaderResolver;
 
     @Override
-    @Transactional
     public void multiTenantEnable() {
         SamplesLoader samplesLoader = samplesLoaderResolver.resolve();
         samplesLoader.load();
