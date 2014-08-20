@@ -214,8 +214,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
-									copyProductsWithoutQuantityAndPriceBtn.enable();
-									copyProductsWithQuantityAndPriceBtn.enable();
+									//copyProductsWithoutQuantityAndPriceBtn.enable();
+									//copyProductsWithQuantityAndPriceBtn.enable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "02prepared") {
@@ -229,8 +229,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
-									copyProductsWithoutQuantityAndPriceBtn.enable();
-									copyProductsWithQuantityAndPriceBtn.enable();
+									//copyProductsWithoutQuantityAndPriceBtn.enable();
+									//copyProductsWithQuantityAndPriceBtn.enable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "03duringCorrection") {
@@ -244,8 +244,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
-									copyProductsWithoutQuantityAndPriceBtn.enable();
-									copyProductsWithQuantityAndPriceBtn.enable();
+									//copyProductsWithoutQuantityAndPriceBtn.enable();
+									//copyProductsWithQuantityAndPriceBtn.enable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "05approved") {
@@ -259,8 +259,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.disable();
-									copyProductsWithoutQuantityAndPriceBtn.enable();
-									copyProductsWithQuantityAndPriceBtn.enable();
+									//copyProductsWithoutQuantityAndPriceBtn.enable();
+									//copyProductsWithQuantityAndPriceBtn.enable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "06received") {
@@ -656,6 +656,8 @@
             method="fillLocationDefaultValue" />
         <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
             method="changeLocationEnabledDependOnState" />
+        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+            method="updateCopyOrderedProductButtonsState" />
 	</hooks>
 
 </view>
