@@ -122,38 +122,6 @@ ALTER TABLE productionpershift_reasontypeofcorrectionplan ADD COLUMN "date" TIME
 
 -- end
 
--- Add view and menu item for order deviations report
--- last touched at 30.07.2014 by maku
-
-INSERT INTO qcadooview_view (id, pluginidentifier, name, view)
-VALUES (nextval('hibernate_sequence'), 'deviationCausesReporting', 'deviationsReportGenerator', 'deviationsReportGenerator');
-INSERT INTO qcadooview_item (id, pluginidentifier, name, active,
-        category_id,
-        view_id,
-        succession)
-VALUES (nextval('hibernate_sequence'), 'deviationCausesReporting', 'deviationsReport', TRUE,
-        (SELECT
-           id
-         FROM qcadooview_category
-         WHERE name = 'orders'),
-        (SELECT
-           id
-         FROM qcadooview_view
-         WHERE name =
-               'deviationsReportGenerator'),
-        (SELECT
-           max(succession) + 1
-         FROM qcadooview_item
-         WHERE category_id = (SELECT
-                                id
-                              FROM qcadooview_category
-                              WHERE name = 'orders')
-        )
-);
-
--- end
-
-
 -- Add exchangeRate to Currency in mes-plugins-basic
 -- last touched 17.07.2014 by adso
 
