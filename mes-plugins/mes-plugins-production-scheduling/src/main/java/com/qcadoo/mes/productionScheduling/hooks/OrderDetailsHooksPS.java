@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionScheduling.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -37,7 +38,9 @@ public class OrderDetailsHooksPS {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         orderDetailsRibbonHelper.setButtonEnabled(view, "operationDuration", "operationDuration",
-                OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
+                OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY,
+                Optional.of("orders.ribbon.message.mustChangeTechnologyState"));
+
     }
 
 }

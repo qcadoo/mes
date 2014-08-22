@@ -37,16 +37,31 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -378,10 +393,10 @@ public class TechnologyService {
     }
 
     /**
-     * 
      * @param technologyOperationComponent
      * @return productOutComponent. Assuming operation can have only one product/intermediate.
      */
+    // TODO dev_team introduce MainTocOutputProductProvider
     public Entity getMainOutputProductComponent(Entity technologyOperationComponent) {
         if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
                 technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
@@ -424,7 +439,6 @@ public class TechnologyService {
     }
 
     /**
-     * 
      * @param operationComponent
      * @return Quantity of the output product associated with this operationComponent. Assuming operation can have only one
      *         product/intermediate.
@@ -452,4 +466,47 @@ public class TechnologyService {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
     }
 
+    public boolean isIntermediateProduct(final Entity opic) {
+        boolean isIntermediate = false;
+
+        Entity toc = opic.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+
+        List<Entity> childs = toc.getDataDefinition().find()
+                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.PARENT, toc)).list().getEntities();
+
+        if (childs.isEmpty()) {
+            return isIntermediate;
+        }
+
+        long productId = opic.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId();
+        for (Entity child : childs) {
+            for (Entity childOPOC : child.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
+                long childProductId = childOPOC.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId();
+                if (productId == childProductId) {
+                    isIntermediate = true;
+                    return isIntermediate;
+                }
+            }
+        }
+        return isIntermediate;
+    }
+
+    public boolean isFinalProduct(final Entity opoc) {
+        boolean isFinalProduct = false;
+
+        Entity toc = opoc.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+
+        if (toc.getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
+            return isFinalProduct;
+        }
+
+        Entity technology = toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+
+        if (technology.getBelongsToField(TechnologyFields.PRODUCT).getId()
+                .equals(opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId())) {
+            isFinalProduct = true;
+        }
+
+        return isFinalProduct;
+    }
 }

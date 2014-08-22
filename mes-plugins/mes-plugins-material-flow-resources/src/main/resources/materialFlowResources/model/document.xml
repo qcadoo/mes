@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="document" activable="true" auditable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255" />
+        </string>
+        <enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer" required="true" />
+        <datetime name="time" required="true" />
+        <enum name="state" values="01draft,02accepted" default="01draft" required="true" />
+        <belongsTo name="locationFrom" model="location" plugin="materialFlow" />
+        <belongsTo name="locationTo" model="location" plugin="materialFlow" />
+        <belongsTo name="user" model="user" plugin="qcadooSecurity" required="true" />
+        <hasMany name="positions" model="position" joinField="document" cascade="delete" copyable="true" />
+    </fields>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.DocumentValidators" method="hasWarehouses"/>
+    </hooks>
+</model>

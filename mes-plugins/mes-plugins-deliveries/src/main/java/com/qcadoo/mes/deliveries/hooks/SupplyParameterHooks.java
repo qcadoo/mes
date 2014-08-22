@@ -25,8 +25,13 @@ package com.qcadoo.mes.deliveries.hooks;
 
 import static com.qcadoo.mes.deliveries.constants.DefaultAddressType.OTHER;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_ADDRESS;
+import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.LOCATION;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
+import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 
+import com.qcadoo.mes.materialFlow.constants.LocationType;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.view.api.ComponentState;
@@ -59,6 +64,20 @@ public class SupplyParameterHooks {
         }
 
         field.requestComponentUpdateState();
+    }
+
+    public boolean checkIfLocationIsWarehouse(final DataDefinition parameterDD, final Entity parameter) {
+        Entity location = parameter.getBelongsToField(LOCATION);
+
+        if ((location != null) && !isLocationIsWarehouse(location)) {
+            parameter.addError(parameterDD.getField(LOCATION), "parameter.validate.global.error.locationIsNotWarehouse");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isLocationIsWarehouse(final Entity location) {
+        return ((location != null) && LocationType.WAREHOUSE.getStringValue().equals(location.getStringField(TYPE)));
     }
 
 }

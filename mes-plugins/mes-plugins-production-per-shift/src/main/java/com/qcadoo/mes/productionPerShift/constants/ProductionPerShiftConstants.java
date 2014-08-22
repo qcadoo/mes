@@ -37,4 +37,6 @@ public final class ProductionPerShiftConstants {
 
     public static final String MODEL_DAILY_PROGRESS = "dailyProgress";
 
+    public static final String MODEL_REASON_TYPE_OF_CORRECTION_PLAN = "reasonTypeOfCorrectionPlan";
+
 }

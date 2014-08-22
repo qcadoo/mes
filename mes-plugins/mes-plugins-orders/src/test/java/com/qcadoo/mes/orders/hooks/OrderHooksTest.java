@@ -23,9 +23,19 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubDecimalField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubId;
+import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.notNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
@@ -37,15 +47,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
+import com.google.common.collect.ImmutableList;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDatesService;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 public class OrderHooksTest {
 
@@ -66,6 +83,12 @@ public class OrderHooksTest {
     private FieldDefinition dateToField, plannedQuantityField;
 
     @Mock
+    private TechnologyServiceO technologyServiceO;
+
+    @Mock
+    private NumberGeneratorService numberGeneratorService;
+
+    @Mock
     private Entity order, product, productionLine, defaultProductionLine;
 
     @Before
@@ -76,13 +99,15 @@ public class OrderHooksTest {
 
         setField(orderHooks, "orderService", orderService);
         setField(orderHooks, "orderDatesService", orderDatesService);
+        setField(orderHooks, "technologyServiceO", technologyServiceO);
+        setField(orderHooks, "numberGeneratorService", numberGeneratorService);
     }
 
     @Test
     public void shouldntFillProductionLineIfFormIsSavedAndProductionLineIsntNull() {
         // given
-        given(order.getId()).willReturn(null);
-        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
+        stubId(order, null);
+        stubBelongsToField(order, OrderFields.PRODUCTION_LINE, productionLine);
 
         // when
         orderHooks.fillProductionLine(orderDD, order);
@@ -94,20 +119,7 @@ public class OrderHooksTest {
     @Test
     public void shouldntFillProductionLineIfOrderIsntSaved() {
         // given
-        given(order.getId()).willReturn(L_ID);
-
-        // when
-        orderHooks.fillProductionLine(orderDD, order);
-
-        // then
-        verify(order, never()).setField(OrderFields.PRODUCTION_LINE, defaultProductionLine);
-    }
-
-    @Test
-    public void shouldntFillProductionLineIfOrderIsSavedAndProductionLineIsntNull() {
-        // given
-        given(order.getId()).willReturn(null);
-        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(productionLine);
+        stubId(order, L_ID);
 
         // when
         orderHooks.fillProductionLine(orderDD, order);
@@ -119,8 +131,8 @@ public class OrderHooksTest {
     @Test
     public void shouldntFillProductionLineIfOrderIsSavedAndProductionLineIsNullAndDefaultProductionLineIsNull() {
         // given
-        given(order.getId()).willReturn(null);
-        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(null);
+        stubId(order, null);
+        stubBelongsToField(order, OrderFields.PRODUCTION_LINE, null);
 
         given(orderService.getDefaultProductionLine()).willReturn(null);
 
@@ -134,8 +146,8 @@ public class OrderHooksTest {
     @Test
     public void shouldFillProductionLineIfOrderIsSavedAndProductionLineIsNullAndDefaultProductionLineIsntNull() {
         // given
-        given(order.getId()).willReturn(null);
-        given(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).willReturn(null);
+        stubId(order, null);
+        stubBelongsToField(order, OrderFields.PRODUCTION_LINE, null);
 
         given(orderService.getDefaultProductionLine()).willReturn(defaultProductionLine);
 
@@ -238,7 +250,7 @@ public class OrderHooksTest {
     @Test
     public void shouldReturnTrueForPlannedQuantityValidationIfThereIsNoProduct() throws Exception {
         // given
-        given(order.getBelongsToField(OrderFields.PRODUCT)).willReturn(null);
+        stubBelongsToField(order, OrderFields.PRODUCT, null);
 
         // when
         boolean result = orderHooks.checkOrderPlannedQuantity(orderDD, order);
@@ -250,8 +262,8 @@ public class OrderHooksTest {
     @Test
     public void shouldReturnTrueForPlannedQuantityValidation() throws Exception {
         // given
-        given(order.getBelongsToField(OrderFields.PRODUCT)).willReturn(product);
-        given(order.getDecimalField(OrderFields.PLANNED_QUANTITY)).willReturn(BigDecimal.ONE);
+        stubBelongsToField(order, OrderFields.PRODUCT, product);
+        stubDecimalField(order, OrderFields.PLANNED_QUANTITY, BigDecimal.ONE);
 
         // when
         boolean result = orderHooks.checkOrderPlannedQuantity(orderDD, order);
@@ -263,8 +275,8 @@ public class OrderHooksTest {
     @Test
     public void shouldReturnFalseForPlannedQuantityValidation() throws Exception {
         // given
-        given(order.getBelongsToField(OrderFields.PRODUCT)).willReturn(product);
-        given(order.getDecimalField(OrderFields.PLANNED_QUANTITY)).willReturn(null);
+        stubBelongsToField(order, OrderFields.PRODUCT, product);
+        stubDecimalField(order, OrderFields.PLANNED_QUANTITY, null);
         given(orderDD.getField(OrderFields.PLANNED_QUANTITY)).willReturn(plannedQuantityField);
 
         // when
@@ -281,8 +293,8 @@ public class OrderHooksTest {
         Date startDate = new Date();
         Date finishDate = new Date();
 
-        given(order.getDateField(OrderFields.START_DATE)).willReturn(startDate);
-        given(order.getDateField(OrderFields.FINISH_DATE)).willReturn(finishDate);
+        stubDateField(order, OrderFields.START_DATE, startDate);
+        stubDateField(order, OrderFields.FINISH_DATE, finishDate);
 
         // when
         orderHooks.clearOrSetSpecyfiedValueOrderFieldsOnCopy(orderDD, order);
@@ -298,4 +310,46 @@ public class OrderHooksTest {
         verify(order).setField(OrderFields.DATE_TO, finishDate);
     }
 
+    @Test
+    public final void shouldNotSetCopyOfTechnology() {
+        // given
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, null);
+
+        // when
+        orderHooks.setCopyOfTechnology(order);
+
+        // then
+        verify(order, never()).setField(eq(OrderFields.TECHNOLOGY), notNull());
+    }
+
+    @Test
+    public final void shouldSetCopyOfTechnology() {
+        // given
+        final String generatedNumber = "NEWLY GENERATED NUM";
+        given(technologyServiceO.generateNumberForTechnologyInOrder(eq(order), any(Entity.class))).willReturn(generatedNumber);
+
+        DataDefinition technologyDD = mock(DataDefinition.class);
+        Entity technology = mockEntity(technologyDD);
+        Entity technologyCopy = mockEntity(technologyDD);
+
+        given(technologyDD.copy(any(Long[].class))).willReturn(ImmutableList.of(technologyCopy));
+        given(technologyDD.save(any(Entity.class))).willAnswer(new Answer<Entity>() {
+
+            @Override
+            public Entity answer(final InvocationOnMock invocation) throws Throwable {
+                return (Entity) invocation.getArguments()[0];
+            }
+        });
+
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
+        stubStringField(order, OrderFields.ORDER_TYPE, OrderType.WITH_OWN_TECHNOLOGY.getStringValue());
+
+        // when
+        orderHooks.setCopyOfTechnology(order);
+
+        // then
+        verify(order).setField(OrderFields.TECHNOLOGY, technologyCopy);
+        verify(order, never()).setField(OrderFields.TECHNOLOGY, technology);
+        verify(technologyCopy).setField(TechnologyFields.NUMBER, generatedNumber);
+    }
 }

@@ -47,7 +47,7 @@
 						<component type="textarea" name="name" field="name" />
 					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="select" name="type" field="type" />
+						<component type="select" name="type" field="type" reference="type" />
 					</layoutElement>
 				</component>
 				
@@ -87,5 +87,6 @@
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialFlow.hooks.LocationDetailsViewHooks"
 			method="disableLocationFormForExternalItems" />
+        <beforeRender class="com.qcadoo.mes.materialFlow.hooks.LocationDetailsViewHooks" method="disableTypeEdit" />
 	</hooks>
 </view>

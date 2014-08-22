@@ -104,5 +104,7 @@
 		        method="onSave" />
 		<onCopy class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
 		        method="onCopy" />
+		<onUpdate class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
+		        method="onUpdate" />
 	</hooks>
 </model>

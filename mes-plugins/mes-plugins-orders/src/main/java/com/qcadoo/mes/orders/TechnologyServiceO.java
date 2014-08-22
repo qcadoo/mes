@@ -277,7 +277,7 @@ public class TechnologyServiceO {
 
         technology.getDataDefinition().save(technology);
 
-        if(TechnologyStateStringValues.CHECKED.equals(technology.getStringField(TechnologyFields.STATE))) {
+        if (TechnologyStateStringValues.CHECKED.equals(technology.getStringField(TechnologyFields.STATE))) {
             changeTechnologyState(technology, TechnologyStateStringValues.DRAFT);
         }
     }

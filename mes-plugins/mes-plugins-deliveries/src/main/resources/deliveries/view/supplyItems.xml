@@ -50,6 +50,7 @@
 			<option type="column" name="orderedQuantity" fields="orderedQuantity" />
 			<option type="column" name="productUnit" fields="product"
 				expression="#product['unit']" />
+			<option type="column" name="pricePerUnit" fields="pricePerUnit" />
 			<option type="column" name="supplier" fields="delivery"
 				expression="#delivery.get('supplier')?.get('name')" />
 

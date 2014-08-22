@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="documentsList"
+      modelName="document"
+      menuAccessible="true">
+
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardGridTemplate" excludeItems="actions.copy,actions.delete" />
+        </ribbon>
+
+        <component type="grid" name="grid" reference="grid">
+            <option type="column" name="number" fields="number" link="true"
+                    width="70" />
+            <option type="column" name="type" fields="type" />
+            <option type="column" name="time" fields="time" />
+            <option type="column" name="state" fields="state" />
+            <option type="column" name="locationFrom" fields="locationFrom"
+                    expression="#locationFrom['name']" />
+            <option type="column" name="locationTo" fields="locationTo"
+                    expression="#locationTo['name']" />
+            <option type="column" name="user" fields="user"
+                    expression="#user['firstName'] + ' ' + #user['lastName']" />
+
+            <option type="order" column="number" direction="asc" />
+
+            <option type="searchable"
+                    value="number,time,locationFrom,locationTo,user,type,state" />
+            <option type="orderable"
+                    value="number,time,locationFrom,locationTo,user,type,state" />
+
+            <option type="correspondingView" value="materialFlowResources/documentDetails" />
+            <option type="correspondingComponent" value="form" />
+
+            <option type="fullscreen" value="true" />
+            <option type="multiselect" value="true" />
+            <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.DocumentsCriteriaModifier" method="hideDraftDocumentsWithOrder" />
+        </component>
+
+        <option type="fixedHeight" value="true" />
+        <option type="header" value="false" />
+    </component>
+</view>

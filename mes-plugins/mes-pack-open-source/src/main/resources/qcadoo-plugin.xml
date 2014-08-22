@@ -25,23 +25,16 @@
 
 -->
 <plugin plugin="openSource" group="other" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
-	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/model
-       http://schema.qcadoo.org/modules/model.xsd
-       http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
+
+
+
+
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd">
 
 	<information>
 		<name>Qcadoo MES :: Pack :: Open source</name>
@@ -56,91 +49,95 @@
 	<dependencies>
 		<dependency>
 			<plugin>productionScheduling</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>catNumbersInDeliveries</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>productionCountingWithCosts</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>workPlans</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>deliveriesToMaterialFlow</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>materialFlowMultitransfers</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>techSubcontrForDeliveries</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>techSubcontrForProductionCounting</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>avgLaborCostCalcForOrder</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>techSubcontrForOperTasks</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>masterOrders</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>stoppage</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>minimalAffordableQuantity</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>productionPerShift</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
+		</dependency>
+		<dependency>
+			<plugin>deviationCausesReporting</plugin>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>qualityControlsForOperation</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>ganttForOperations</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>ganttForOrders</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>ganttForShifts</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>lineChangeoverNormsForOrders</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 		<dependency>
 			<plugin>qcadooExport</plugin>
-			<version>[1.2.0</version>
+			<version>[1.3.0</version>
 		</dependency>
 	</dependencies>
-	
+
 	<modules>
 		<localization:translation path="locales" />
-		
+
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>

@@ -49,12 +49,17 @@
 				expression="#product['unit']" />
 			<option type="column" name="price" fields="price" />
 			<option type="column" name="value" fields="value" />
-			<option type="column" name="time" fields="time" />
+            <option type="column" name="time" fields="time" />
+            <option type="column" name="productionDate" fields="productionDate" />
+            <option type="column" name="expirationDate" fields="expirationDate" />
+            <option type="column" name="batch" fields="batch" />
 
 			<option type="order" column="productNumber" direction="asc" />
 
-			<option type="searchable" value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time" />
-			<option type="orderable" value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time" />
+			<option type="searchable"
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch" />
+			<option type="orderable"
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch" />
 
 			<option type="correspondingView" value="materialFlowResources/resourceDetails" />
 			<option type="correspondingComponent" value="form" />

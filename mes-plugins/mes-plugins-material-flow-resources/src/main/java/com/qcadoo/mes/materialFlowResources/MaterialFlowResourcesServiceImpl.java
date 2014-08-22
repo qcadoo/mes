@@ -29,11 +29,11 @@ import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATI
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR.WAREHOUSE;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
+import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

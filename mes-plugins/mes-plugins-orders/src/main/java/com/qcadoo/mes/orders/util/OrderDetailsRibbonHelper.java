@@ -28,6 +28,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.qcadoo.mes.orders.OrderService;
@@ -64,12 +65,21 @@ public class OrderDetailsRibbonHelper {
 
     public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
             final Predicate<Entity> predicate) {
+        setButtonEnabled(view, ribbonGroupName, ribbonItemName, predicate, Optional.<String> absent());
+    }
+
+    public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
+            final Predicate<Entity> predicate, final Optional<String> message) {
         RibbonActionItem ribbonItem = getRibbonItem(view, ribbonGroupName, ribbonItemName);
         Entity order = getOrderEntity(view);
+        boolean enabled = order != null && predicate.apply(order);
         if (ribbonItem == null) {
             return;
         }
-        ribbonItem.setEnabled(order != null && predicate.apply(order));
+        ribbonItem.setEnabled(enabled);
+        if (!enabled && message.isPresent()) {
+            ribbonItem.setMessage(message.get());
+        }
         ribbonItem.requestUpdate(true);
     }
 

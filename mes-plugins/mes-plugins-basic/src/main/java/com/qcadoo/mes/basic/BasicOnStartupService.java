@@ -41,12 +41,16 @@ public class BasicOnStartupService extends Module {
     @Autowired
     private ReportColumnWidthLoader reportColumnWidthLoader;
 
+    @Autowired
+    private ExchangeRatesUpdateService exchangeRatesUpdateService;
+
     @Override
     @Transactional
     public void multiTenantEnable() {
         countryLoader.loadCountries();
         currencyLoader.loadCurrencies();
         reportColumnWidthLoader.loadReportColumnWidths();
+        exchangeRatesUpdateService.update();
     }
 
 }

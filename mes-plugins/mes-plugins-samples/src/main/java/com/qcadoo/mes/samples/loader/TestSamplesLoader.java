@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.samples.constants.SamplesConstants;
@@ -54,7 +53,6 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Component
-@Transactional
 public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestSamplesLoader.class);
@@ -353,6 +351,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         delivery.setField(L_STATE, values.get(L_STATE));
         delivery.setField("deliveryDate", values.get("deliverydate"));
         delivery.setField("externalSynchronized", true);
+        delivery.setField(L_LOCATION, getLocationByNumber(values.get(L_LOCATION)));
         delivery.getDataDefinition().save(delivery);
 
     }
@@ -726,7 +725,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         order.setField(L_BASIC_MODEL_PRODUCT, product);
         if (order.getField(L_TECHNOLOGY_MODEL_TECHNOLOGY) == null) {
-            order.setField(L_TECHNOLOGY_MODEL_TECHNOLOGY, getDefaultTechnologyForProduct(product));
+            // order.setField(L_TECHNOLOGY_MODEL_TECHNOLOGY, getDefaultTechnologyForProduct(product));
         }
 
         if (LOG.isDebugEnabled()) {
@@ -886,6 +885,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if ("02warehouse".equals(values.get(L_TYPE))) {
             if (isEnabledOrEnabling("materialFlowResources")) {
                 location.setField(L_TYPE, values.get(L_TYPE));
+                location.setField(L_ALGORITHM, values.get(L_ALGORITHM));
                 location.getDataDefinition().save(location);
             }
         } else {

@@ -32,8 +32,7 @@
 	<component type="window" name="window">
 
 		<ribbon>
-			<group template="navigation" />
-			<group template="formSaveAction" />
+			<template name="standardFormTemplate" excludeItems="actions.copy, actions.delete, actions.refresh" />
 		</ribbon>
 
 		<windowTab name="mainTab">

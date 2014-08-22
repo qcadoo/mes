@@ -36,7 +36,6 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.samples.api.SamplesLoader;
@@ -49,7 +48,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
-@Transactional
 public abstract class AbstractSamplesLoader implements SamplesLoader {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SamplesLoader.class);
@@ -69,7 +67,6 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     private StateChangeSamplesClient stateChangeSamplesClient;
 
     @Override
-    @Transactional
     public void load() {
         if (databaseHasToBePrepared()) {
             LOG.debug("Database has to be prepared ...");
@@ -112,17 +109,18 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         Entity dictionary = getDictionaryByName(values.get(L_NAME));
 
         if (dictionary != null) {
-            Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
-            item.setField("dictionary", dictionary);
-            item.setField(L_NAME, values.get("item"));
-            item.setField("description", values.get("description"));
+            if (!checkIfDictionaryItemExists(values.get("item"))) {
+                Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
+                item.setField("dictionary", dictionary);
+                item.setField(L_NAME, values.get("item"));
+                item.setField("description", values.get("description"));
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(L_NAME) + ", item="
-                        + item.getField(L_NAME) + ", description=" + item.getField("description") + "}");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Add test dictionary item {dictionary=" + dictionary.getField(L_NAME) + ", item="
+                            + item.getField(L_NAME) + ", description=" + item.getField("description") + "}");
+                }
+                item.getDataDefinition().save(item);
             }
-            item.getDataDefinition().save(item);
-
         }
     }
 
@@ -235,4 +233,12 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
                 .find().add(SearchRestrictions.eq("code", code)).setMaxResults(1).uniqueResult();
     }
 
+    private Entity getDictionaryItem(final String itemName) {
+        return dataDefinitionService.get("qcadooModel", "dictionaryItem").find().add(SearchRestrictions.eq(L_NAME, itemName))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private boolean checkIfDictionaryItemExists(final String itemName) {
+        return getDictionaryItem(itemName) != null;
+    }
 }

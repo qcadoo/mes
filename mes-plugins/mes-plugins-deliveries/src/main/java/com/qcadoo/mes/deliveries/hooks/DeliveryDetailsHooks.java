@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
@@ -64,6 +65,12 @@ public class DeliveryDetailsHooks {
 
     private static final String L_SHOW_RELATED_DELIVERIES = "showRelatedDeliveries";
 
+    private static final String L_COPY_ORDERED_PRODUCTS_TO_DELIVERY = "copyOrderedProductsToDelivered";
+
+    private static final String L_COPY_PRODUCTS_WITHOUT_QUANTITY = "copyProductsWithoutQuantityAndPrice";
+
+    private static final String L_COPY_PRODUCTS_WITH_QUANTITY = "copyProductsWithQuantityAndPrice";
+
     @Autowired
     private DeliveriesService deliveriesService;
 
@@ -75,6 +82,9 @@ public class DeliveryDetailsHooks {
 
     @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
@@ -221,6 +231,71 @@ public class DeliveryDetailsHooks {
 
     public void disableShowProductButton(final ViewDefinitionState view) {
         deliveriesService.disableShowProductButton(view);
+    }
+
+    public void fillLocationDefaultValue(final ViewDefinitionState view) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (deliveryForm.getEntityId() != null) {
+            return;
+        }
+
+        LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFields.LOCATION);
+        Entity location = locationField.getEntity();
+
+        if (location == null) {
+            Entity defaultLocation = parameterService.getParameter().getBelongsToField(DeliveryFields.LOCATION);
+
+            if (defaultLocation == null) {
+                locationField.setFieldValue(null);
+            } else {
+                locationField.setFieldValue(defaultLocation.getId());
+            }
+            locationField.requestComponentUpdateState();
+        }
+    }
+
+    public void changeLocationEnabledDependOnState(final ViewDefinitionState view) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFields.LOCATION);
+
+        if (deliveryForm.getEntityId() == null) {
+            locationField.setEnabled(true);
+        } else {
+            FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
+            String state = stateField.getFieldValue().toString();
+            if (DeliveryState.DECLINED.getStringValue().equals(state) || DeliveryState.RECEIVED.getStringValue().equals(state)
+                    || DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
+                locationField.setEnabled(false);
+            } else {
+                locationField.setEnabled(true);
+            }
+        }
+    }
+
+    public void updateCopyOrderedProductButtonsState(final ViewDefinitionState view) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Long deliveryId = deliveryForm.getEntityId();
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_COPY_ORDERED_PRODUCTS_TO_DELIVERY);
+
+        RibbonActionItem copyWithout = (RibbonActionItem) reports.getItemByName(L_COPY_PRODUCTS_WITHOUT_QUANTITY);
+        RibbonActionItem copyWith = (RibbonActionItem) reports.getItemByName(L_COPY_PRODUCTS_WITH_QUANTITY);
+
+        if (deliveryId == null) {
+            return;
+        }
+
+        Entity delivery = deliveriesService.getDelivery(deliveryId);
+        boolean hasOrderedProducts = !delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS).isEmpty();
+
+        copyWith.setEnabled(hasOrderedProducts);
+        copyWithout.setEnabled(hasOrderedProducts);
+        copyWith.requestUpdate(true);
+        copyWithout.requestUpdate(true);
+
     }
 
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -44,6 +45,7 @@
 		<module>mes-plugins-production-lines</module>
 		<module>mes-plugins-operation-time-calculations</module>
 		<module>mes-plugins-operation-cost-calculations</module>
+		<module>mes-plugins-deviation-causes-reporting</module>
 		<module>mes-plugins-production-per-shift</module>
 		<module>mes-plugins-line-changeover-norms</module>
 		<module>mes-plugins-line-changeover-norms-for-orders</module>
@@ -63,8 +65,8 @@
 		<module>mes-plugins-deliveries-to-material-flow</module>
 		<module>mes-plugins-tech-subcontr-for-production-counting</module>
 		<module>mes-plugins-cat-numbers-in-deliveries</module>
-    	<module>mes-plugins-master-orders</module>
-    <module>mes-pack-open-source</module>
-  </modules>
+		<module>mes-plugins-master-orders</module>
+		<module>mes-pack-open-source</module>
+	</modules>
 
 </project>

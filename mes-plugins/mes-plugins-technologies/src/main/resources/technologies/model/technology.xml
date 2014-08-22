@@ -25,57 +25,61 @@
 
 -->
 <model name="technology" activable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
 
-		<string name="name" required="true">
-			<validatesLength max="2048" />
-		</string>
+        <string name="name" required="true">
+            <validatesLength max="2048"/>
+        </string>
 
-		<belongsTo name="product" plugin="basic" model="product"
-			lazy="false" required="true" />
+        <belongsTo name="product" plugin="basic" model="product"
+                   lazy="false" required="true"/>
 
-		<belongsTo name="technologyGroup" plugin="technologies"
-			model="technologyGroup" lazy="false" />
+        <belongsTo name="technologyGroup" plugin="technologies"
+                   model="technologyGroup" lazy="false"/>
 
-		<belongsTo name="technologyPrototype" model="technology" />
+        <belongsTo name="technologyPrototype" model="technology"/>
 
-		<boolean name="externalSynchronized" default="true" copyable="false" />
+        <boolean name="externalSynchronized" default="true" copyable="false"/>
 
-		<boolean name="master" default="false" />
+        <boolean name="master" default="false" copyable="false"/>
 
-		<string name="description">
-			<validatesLength max="2048" />
-		</string>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
 
-		<tree name="operationComponents" model="technologyOperationComponent"
-			joinField="technology" cascade="delete" copyable="true" />
+        <tree name="operationComponents" model="technologyOperationComponent"
+              joinField="technology" cascade="delete" copyable="true"/>
 
-		<enum name="state" values="01draft,02accepted,03declined,04outdated,05checked"
-			default="01draft" required="true" />
+        <enum name="state" values="01draft,02accepted,03declined,04outdated,05checked"
+              default="01draft" required="true"/>
 
-		<enum name="technologyType" values="01patternTechnology,02ownTechnology" />
+        <enum name="technologyType" values="01patternTechnology,02ownTechnology"/>
 
-		<hasMany name="stateChanges" joinField="technology" model="technologyStateChange"
-			cascade="delete" />
-		<hasMany name="technologyAttachments" joinField="technology" model="technologyAttachment" cascade="delete" />
-	</fields>
-	<hooks>
-		<validatesWith
-			class="com.qcadoo.mes.technologies.validators.TechnologyValidators"
-			method="validatesWith" />
-		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
-			method="onCreate" />
-		<onCopy class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
-			method="onCopy" />
-		<onSave class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
-			method="onSave" />
-		<onUpdate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
-			method="onUpdate" />
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
+        <hasMany name="stateChanges" joinField="technology" model="technologyStateChange"
+                 cascade="delete"/>
+        <hasMany name="technologyAttachments" joinField="technology" model="technologyAttachment" cascade="delete"/>
+
+        <tree name="productStructureTree" model="productStructureTreeNode"
+              joinField="technology" cascade="delete" persistent="false"/>
+
+    </fields>
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.technologies.validators.TechnologyValidators"
+                method="validatesWith"/>
+        <onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
+                  method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
+                method="onCopy"/>
+        <onSave class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
+                method="onSave"/>
+        <onUpdate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
+                  method="onUpdate"/>
+    </hooks>
+    <identifier expression="#number + ' - ' + #name"/>
 </model>

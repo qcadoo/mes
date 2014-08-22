@@ -23,9 +23,15 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +39,19 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.*;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Image;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.Barcode128;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.DivisionFields;
@@ -44,11 +60,20 @@ import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.workPlans.constants.*;
+import com.qcadoo.mes.workPlans.constants.ColumnForOrdersFields;
+import com.qcadoo.mes.workPlans.constants.OrderSorting;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
+import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
+import com.qcadoo.mes.workPlans.constants.TechnologyOperationInputColumnFields;
+import com.qcadoo.mes.workPlans.constants.TechnologyOperationOutputColumnFields;
+import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
+import com.qcadoo.mes.workPlans.constants.WorkPlanOrderColumnFields;
+import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.util.OperationProductComponentComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
@@ -56,11 +81,11 @@ import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
-import com.qcadoo.report.api.pdf.PdfDocumentService;
+import com.qcadoo.report.api.pdf.PdfDocumentWithWriterService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
 @Service
-public class WorkPlanPdfService extends PdfDocumentService {
+public class WorkPlanPdfService extends PdfDocumentWithWriterService {
 
     private static final String L_NAME = "name";
 
@@ -85,6 +110,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private BarcodeOperationComponentService barcodeOperationComponentService;
+
     enum ProductDirection {
         IN, OUT;
     }
@@ -95,14 +123,15 @@ public class WorkPlanPdfService extends PdfDocumentService {
     }
 
     @Override
-    public void buildPdfContent(final Document document, final Entity workPlan, final Locale locale) throws DocumentException {
+    public void buildPdfContent(final PdfWriter writer, final Document document, final Entity workPlan, final Locale locale)
+            throws DocumentException {
         addMainHeader(document, workPlan, locale);
 
         if (!workPlan.getBooleanField(WorkPlanFields.DONT_PRINT_ORDERS_IN_WORK_PLANS)) {
             addOrdersTable(document, workPlan, locale);
         }
 
-        addOperations(document, workPlan, locale);
+        addOperations(writer, document, workPlan, locale);
     }
 
     void addMainHeader(final Document document, final Entity workPlan, final Locale locale) throws DocumentException {
@@ -193,7 +222,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return orderHeader;
     }
 
-    private void addOperations(final Document document, final Entity workPlan, final Locale locale) throws DocumentException {
+    private void addOperations(final PdfWriter writer, final Document document, final Entity workPlan, final Locale locale)
+            throws DocumentException {
         final List<Entity> orders = workPlan.getManyToManyField(WorkPlanFields.ORDERS);
 
         final boolean haveManyOrders = orders.size() > 1;
@@ -208,7 +238,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
             final Long orderId = orderIdWithTitleAndOperationComponent.getKey();
             final Entity order = orderIdWithOrderMap.get(orderId);
 
-            addOperationsForSpecifiedOrder(document, workPlan, orderIdWithTitleAndOperationComponent.getValue(),
+            addOperationsForSpecifiedOrder(writer, document, workPlan, orderIdWithTitleAndOperationComponent.getValue(),
                     orderColumnValues.get(orderId), order, haveManyOrders, locale);
         }
     }
@@ -337,7 +367,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return new PrioritizedString(suffix + " " + workstationName);
     }
 
-    private void addOperationsForSpecifiedOrder(final Document document, final Entity workPlan,
+    private void addOperationsForSpecifiedOrder(final PdfWriter writer, final Document document, final Entity workPlan,
             final Map<PrioritizedString, List<Entity>> orderOpComponentsMap, final Map<Entity, Map<String, String>> columnValues,
             final Entity order, final boolean haveManyOrders, final Locale locale) throws DocumentException {
         Entity parameter = parameterService.getParameter();
@@ -370,6 +400,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
                     addOperationComment(document, operationComponent, locale);
                 }
 
+                if (!parameter.getBooleanField(ParameterFieldsWP.HIDE_BARCODE_OPERATION_COMPONENT_IN_WORK_PLAN)) {
+                    addBarcode(writer, document, operationComponent);
+                }
+
                 if (isOutputProductTableEnabled(operationComponent)) {
                     addOutProductsSeries(document, workPlan, columnValues, operationComponent, locale);
                 }
@@ -389,6 +423,24 @@ public class WorkPlanPdfService extends PdfDocumentService {
         }
     }
 
+    private void addBarcode(final PdfWriter writer, final Document document, final Entity operationComponent)
+            throws DocumentException {
+        PdfContentByte cb = writer.getDirectContent();
+
+        Barcode128 code128 = new Barcode128();
+        code128.setCode(barcodeOperationComponentService.getCodeFromBarcodeForOperationComponet(operationComponent));
+        PdfPTable barcodeTable = new PdfPTable(1);
+        barcodeTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+        barcodeTable.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
+        barcodeTable.getDefaultCell().setBorder(0);
+        barcodeTable.setWidthPercentage(10f);
+        barcodeTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        Image barcodeimg = code128.createImageWithBarcode(cb, null, null);
+        barcodeTable.addCell(barcodeimg);
+
+        document.add(barcodeTable);
+    }
+
     private void addOperationInfoToTheOperationHeader(final PdfPTable operationTable, final Entity operationComponent,
             final Locale locale) {
         String operationLevel = operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER);
@@ -404,6 +456,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 .getStringField(OperationFields.NUMBER);
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
                 translationService.translate("workPlans.workPlan.report.operation.number", locale), operationNumber);
+
     }
 
     private void addWorkstationInfoToTheOperationHeader(final PdfPTable operationTable, final Entity operationComponent,

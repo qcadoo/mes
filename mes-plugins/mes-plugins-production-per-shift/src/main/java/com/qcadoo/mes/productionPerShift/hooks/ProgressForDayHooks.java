@@ -25,12 +25,12 @@ package com.qcadoo.mes.productionPerShift.hooks;
 
 import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -44,6 +44,9 @@ public class ProgressForDayHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private PPSHelper ppsHelper;
+
     public void saveDateOfDay(final DataDefinition progressForDayDD, final Entity progressForDay) {
         Entity technology = progressForDay.getBelongsToField(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT)
                 .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
@@ -52,20 +55,8 @@ public class ProgressForDayHooks {
                 .add(SearchRestrictions.belongsTo(OrderFields.TECHNOLOGY, technology)).setMaxResults(1).uniqueResult();
 
         Integer day = (Integer) progressForDay.getField(ProgressForDayFields.DAY);
-        DateTime orderStartDate;
-
-        if (progressForDay.getBooleanField(ProgressForDayFields.CORRECTED)) {
-            if (order.getField(OrderFields.CORRECTED_DATE_FROM) == null) {
-                orderStartDate = new DateTime(order.getDateField(OrderFields.DATE_FROM));
-            } else {
-                orderStartDate = new DateTime(order.getDateField(OrderFields.CORRECTED_DATE_FROM));
-            }
-        } else {
-            orderStartDate = new DateTime(order.getDateField(OrderFields.DATE_FROM));
-        }
-
-        Date dayOfDay = orderStartDate.plusDays(day - 1).toDate();
-        progressForDay.setField(ProgressForDayFields.DATE_OF_DAY, dayOfDay);
+        Date dateOfDay = ppsHelper.getDateAfterStartOrderForProgress(order, day);
+        progressForDay.setField(ProgressForDayFields.DATE_OF_DAY, dateOfDay);
     }
 
 }

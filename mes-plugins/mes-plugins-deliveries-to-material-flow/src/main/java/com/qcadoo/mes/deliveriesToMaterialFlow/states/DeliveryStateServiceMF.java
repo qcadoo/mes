@@ -23,73 +23,96 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveryFieldsDTMF;
-import com.qcadoo.mes.deliveriesToMaterialFlow.constants.TransferFieldsDTMF;
-import com.qcadoo.mes.materialFlow.MaterialFlowService;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlow.constants.TransferFields;
-import com.qcadoo.mes.materialFlow.constants.TransferType;
-import com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR;
+import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DocumentFieldsDTMF;
+import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
+import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class DeliveryStateServiceMF {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private DocumentManagementService documentManagementService;
 
     @Autowired
-    private MaterialFlowService materialFlowService;
+    private NumberService numberService;
 
-    public void createTransfersForTheReceivedProducts(final StateChangeContext stateChangeContext) {
+    @Autowired
+    private ParameterService parameterService;
+
+    public void createDocumentsForTheReceivedProducts(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
 
-        if (delivery == null) {
+        Entity location = location(delivery);
+        if (location == null)
             return;
-        }
 
-        Entity location = delivery.getBelongsToField(DeliveryFieldsDTMF.LOCATION);
+        Entity currency = currency(delivery);
 
-        if (location == null) {
-            return;
-        }
+        List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 
-        if (StringUtils.isEmpty(location.getStringField(LocationFields.EXTERNAL_NUMBER))) {
-            List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+        DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+        documentBuilder.receipt(location);
+        documentBuilder.setField(DocumentFieldsDTMF.DELIVERY, delivery);
 
-            DataDefinition transferDD = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowConstants.MODEL_TRANSFER);
+        for (Entity deliveredProduct : deliveredProducts) {
 
-            for (Entity deliveredProduct : deliveredProducts) {
-                Entity transfer = transferDD.create();
+            BigDecimal quantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
+            Optional<BigDecimal> damagedQuantity = Optional.fromNullable(deliveredProduct
+                    .getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY));
 
-                transfer.setField(TransferFields.NUMBER, materialFlowService.generateNumberFromProduct(
-                        deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT), MaterialFlowConstants.MODEL_TRANSFER));
-                transfer.setField(TransferFields.TYPE, TransferType.TRANSPORT.getStringValue());
-                transfer.setField(TransferFields.TIME, delivery.getDateField(DeliveryFields.DELIVERY_DATE));
-                transfer.setField(TransferFields.LOCATION_TO, delivery.getBelongsToField(DeliveryFieldsDTMF.LOCATION));
-                transfer.setField(TransferFields.PRODUCT, deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT));
-                transfer.setField(TransferFields.QUANTITY,
-                        deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
-                transfer.setField(TransferFieldsMFR.PRICE,
-                        deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
-                transfer.setField(TransferFieldsDTMF.FROM_DELIVERY, delivery);
-
-                transfer.getDataDefinition().save(transfer);
+            BigDecimal positionQuantity = quantity.subtract(damagedQuantity.or(BigDecimal.ZERO),
+                    numberService.getMathContext());
+            if (positionQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                documentBuilder.addPosition(
+                        product(deliveredProduct),
+                        positionQuantity,
+                        price(deliveredProduct, currency),
+                        null, null, null
+                );
             }
         }
+        documentBuilder.setAccepted().build();
     }
 
+    private Entity currency(Entity delivery) {
+        Entity currency = delivery.getBelongsToField(DeliveryFields.CURRENCY);
+        return currency != null ? currency : currencyFromParameter();
+    }
+
+    private Entity location(Entity delivery) {
+        return delivery.getBelongsToField(DeliveryFields.LOCATION);
+    }
+
+    private BigDecimal price(Entity deliveredProduct, Entity currency) {
+        BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
+        BigDecimal pricePerUnit = deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
+        return exRateExists(exRate) ? pricePerUnit.multiply(exRate) : pricePerUnit;
+    }
+
+    private boolean exRateExists(BigDecimal exRate) {
+        return exRate.compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    private Entity product(Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+    }
+
+    private Entity currencyFromParameter() {
+        return parameterService.getParameter().getBelongsToField(ParameterFields.CURRENCY);
+    }
 }

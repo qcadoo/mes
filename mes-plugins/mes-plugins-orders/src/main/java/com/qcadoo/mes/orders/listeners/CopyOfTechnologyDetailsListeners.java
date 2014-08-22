@@ -28,14 +28,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.ImmutableList;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.TechnologyFieldsO;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityOpResult;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -69,12 +72,10 @@ public class CopyOfTechnologyDetailsListeners {
 
             Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-            Entity copyOfTechnology = technologyServiceO.getTechnologyDD().create();
-
             Entity technologyPrototype = technologyPrototypeLookup.getEntity();
 
             if (technologyAndOrderPrototypesAreDifferent(orderTechnologyPrototype, technologyPrototype)) {
-                copyOfTechnology = copyTechnology(technologyPrototype, order);
+                Entity copyOfTechnology = copyTechnology(technologyPrototype, order);
 
                 if (copyOfTechnology.isValid()) {
                     order.setField(OrderFields.TECHNOLOGY, null);
@@ -136,30 +137,25 @@ public class CopyOfTechnologyDetailsListeners {
     public void clearAndLoadPatternTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         final FormComponent technologyForm = (FormComponent) state;
 
-        Long technologyId = (Long) state.getFieldValue();
+        Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
+        Entity order = getOrderWithTechnology(technology);
 
-        if (technologyId != null) {
-            Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
-            Entity order = getOrderWithTechnology(technology);
-
-            Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-            Entity copyOfTechnology = copyTechnology(orderTechnologyPrototype, order);
-
-            if (copyOfTechnology.isValid()) {
-                order.setField(OrderFields.TECHNOLOGY, null);
-
-                order.getDataDefinition().save(order);
-
-                deleteTechnology(technology);
-
-                order.setField(OrderFields.TECHNOLOGY, copyOfTechnology);
-
-                order.getDataDefinition().save(order);
-
-                state.setFieldValue(copyOfTechnology.getId());
-                technologyForm.setEntity(copyOfTechnology);
-            }
+        Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        EntityOpResult deleteResult = deleteTechnology(technology);
+        if (!deleteResult.isSuccessfull()) {
+            technologyForm.addMessage("orders.copyOfTechnology.reloadFromPattern.failure.deletePrevented",
+                    ComponentState.MessageType.FAILURE);
+            return;
+        }
+        Entity copyOfTechnology = copyTechnology(orderTechnologyPrototype, order);
+        if (copyOfTechnology.isValid()) {
+            copyOfTechnology.setField(TechnologyFieldsO.ORDERS, ImmutableList.of(order));
+            copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
+            state.setFieldValue(copyOfTechnology.getId());
+            technologyForm.setEntity(copyOfTechnology);
+        } else {
+            technologyForm.addMessage("orders.copyOfTechnology.reloadFromPattern.failure.validationError",
+                    ComponentState.MessageType.FAILURE);
         }
     }
 
@@ -186,11 +182,9 @@ public class CopyOfTechnologyDetailsListeners {
     }
 
     private Entity copyTechnology(final Entity technologyPrototype, final Entity order) {
-        Entity copyOfTechnology = technologyServiceO.getTechnologyDD().create();
-
         String number = technologyServiceO.generateNumberForTechnologyInOrder(order, technologyPrototype);
 
-        copyOfTechnology = technologyServiceO.getTechnologyDD().copy(technologyPrototype.getId()).get(0);
+        Entity copyOfTechnology = technologyServiceO.getTechnologyDD().copy(technologyPrototype.getId()).get(0);
 
         copyOfTechnology.setField(TechnologyFields.NUMBER, number);
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
@@ -201,14 +195,12 @@ public class CopyOfTechnologyDetailsListeners {
         return copyOfTechnology;
     }
 
-    private void deleteTechnology(final Entity technology) {
-        technology.getDataDefinition().delete(technology.getId());
+    private EntityOpResult deleteTechnology(final Entity technology) {
+        return technology.getDataDefinition().delete(technology.getId());
     }
 
     private String getTechnologyType(final Entity order) {
-        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
-
-        if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(orderType)) {
+        if (OrderType.of(order) == OrderType.WITH_OWN_TECHNOLOGY) {
             return TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue();
         } else {
             return TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue();

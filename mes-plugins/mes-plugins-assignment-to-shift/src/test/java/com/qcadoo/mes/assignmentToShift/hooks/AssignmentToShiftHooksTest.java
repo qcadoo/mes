@@ -23,11 +23,15 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.SHIFT;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.START_DATE;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.STATE;
 import static com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState.DRAFT;
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.refEq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,182 +39,196 @@ import static org.mockito.Mockito.verify;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
+import com.qcadoo.mes.assignmentToShift.dataProviders.AssignmentToShiftCriteria;
+import com.qcadoo.mes.assignmentToShift.dataProviders.AssignmentToShiftDataProvider;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftStateChangeDescriber;
+import com.qcadoo.mes.basic.shift.Shift;
+import com.qcadoo.mes.basic.shift.ShiftsFactory;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SearchRestrictions.class)
 public class AssignmentToShiftHooksTest {
 
-    private AssignmentToShiftHooks hooks;
+    private static final LocalDate START_DATE = LocalDate.now();
 
-    @Autowired
+    private AssignmentToShiftHooks assignmentToShiftHooks;
+
+    @Mock
     private AssignmentToShiftStateChangeDescriber describer;
 
     @Mock
     private StateChangeEntityBuilder stateChangeEntityBuilder;
 
     @Mock
-    private DataDefinition assignmentToShiftDD;
+    private AssignmentToShiftDataProvider assignmentToShiftDataProvider;
 
     @Mock
-    private Entity assignmentToShift, shift;
+    private ShiftsFactory shiftsFactory;
 
     @Mock
-    private SearchCriteriaBuilder searchCriteriaBuilder;
+    private Shift shiftPojo;
 
-    @Mock
-    private SearchResult searchResult;
-
-    @Mock
-    private List<Entity> assignmentToShifts;
-
-    @Mock
-    private Date startDate;
+    private Entity assignmentToShift, shiftEntity;
 
     @Before
     public void init() {
-        hooks = new AssignmentToShiftHooks();
+        assignmentToShiftHooks = new AssignmentToShiftHooks();
 
         MockitoAnnotations.initMocks(this);
 
-        ReflectionTestUtils.setField(hooks, "stateChangeEntityBuilder", stateChangeEntityBuilder);
+        ReflectionTestUtils.setField(assignmentToShiftHooks, "stateChangeEntityBuilder", stateChangeEntityBuilder);
+        ReflectionTestUtils.setField(assignmentToShiftHooks, "describer", describer);
+        ReflectionTestUtils.setField(assignmentToShiftHooks, "assignmentToShiftDataProvider", assignmentToShiftDataProvider);
+        ReflectionTestUtils.setField(assignmentToShiftHooks, "shiftsFactory", shiftsFactory);
 
-        PowerMockito.mockStatic(SearchRestrictions.class);
+        assignmentToShift = mockEntity(mock(DataDefinition.class));
+        shiftEntity = mockEntity(mock(DataDefinition.class));
+        given(shiftEntity.copy()).willReturn(shiftEntity);
+        given(shiftsFactory.buildFrom(any(Entity.class))).willReturn(shiftPojo);
+
+        stubBelongsToField(assignmentToShift, AssignmentToShiftFields.SHIFT, shiftEntity);
+        stubDateField(assignmentToShift, AssignmentToShiftFields.START_DATE, START_DATE.toDate());
+
+        stubFind(null);
+        stubFindAll(ImmutableList.<Entity> of());
+    }
+
+    private void stubFindAll(final List<Entity> results) {
+        given(
+                assignmentToShiftDataProvider.findAll(any(AssignmentToShiftCriteria.class), any(Optional.class),
+                        any(Optional.class))).willReturn(Lists.newArrayList(results));
+    }
+
+    private void stubFind(final Entity result) {
+        given(assignmentToShiftDataProvider.find(any(AssignmentToShiftCriteria.class), any(Optional.class))).willReturn(
+                Optional.fromNullable(result));
     }
 
     @Test
     public void shouldSetInitialState() {
-        // given
-
         // when
-        hooks.setInitialState(assignmentToShiftDD, assignmentToShift);
+        assignmentToShiftHooks.setInitialState(assignmentToShift);
 
         // then
         verify(stateChangeEntityBuilder).buildInitial(describer, assignmentToShift, DRAFT);
     }
 
     @Test
-    public void shouldClearFieldStateOnCopy() {
-        // given
-
+    public void shouldReturnTrueWhenCheckUniqueEntityIfEntityIsNotSaved() {
         // when
-        hooks.clearState(assignmentToShiftDD, assignmentToShift);
-
-        // then
-        verify(assignmentToShift).setField(STATE, DRAFT.getStringValue());
-    }
-
-    @Test
-    public void shouldReturnTrueWhenCheckUniqueEntityIfEntityIsntSaved() {
-        // given
-        given(assignmentToShift.getId()).willReturn(null);
-
-        given(assignmentToShift.getBelongsToField(SHIFT)).willReturn(null);
-        given(assignmentToShift.getField(START_DATE)).willReturn(null);
-
-        given(assignmentToShiftDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(assignmentToShifts);
-        given(assignmentToShifts.isEmpty()).willReturn(true);
-
-        // when
-        boolean result = hooks.checkUniqueEntity(assignmentToShiftDD, assignmentToShift);
+        boolean result = assignmentToShiftHooks.checkUniqueEntity(assignmentToShift);
 
         // then
         Assert.assertTrue(result);
-
-        verify(assignmentToShift, never()).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
-    }
-
-    @Test
-    public void shouldReturnTrueWhenCheckUniqueEntityIfEntityIsSaved() {
-        // given
-        given(assignmentToShift.getId()).willReturn(1L);
-
-        given(assignmentToShift.getBelongsToField(SHIFT)).willReturn(null);
-        given(assignmentToShift.getField(START_DATE)).willReturn(null);
-
-        given(assignmentToShiftDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(assignmentToShifts);
-        given(assignmentToShifts.isEmpty()).willReturn(true);
-
-        // when
-        boolean result = hooks.checkUniqueEntity(assignmentToShiftDD, assignmentToShift);
-
-        // then
-        Assert.assertTrue(result);
-
         verify(assignmentToShift, never()).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
     }
 
     @Test
     public void shouldReturnFalseWhenCheckUniqueEntityIfEntityIsntSaved() {
         // given
-        given(assignmentToShift.getId()).willReturn(null);
-
-        given(assignmentToShift.getBelongsToField(SHIFT)).willReturn(shift);
-        given(assignmentToShift.getField(START_DATE)).willReturn(startDate);
-
-        given(assignmentToShiftDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(assignmentToShifts);
-        given(assignmentToShifts.isEmpty()).willReturn(false);
+        stubFind(mockEntity());
 
         // when
-        boolean result = hooks.checkUniqueEntity(assignmentToShiftDD, assignmentToShift);
+        boolean result = assignmentToShiftHooks.checkUniqueEntity(assignmentToShift);
 
         // then
         Assert.assertFalse(result);
-
         verify(assignmentToShift, times(2)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
     }
 
     @Test
     public void shouldReturnFalseWhenCheckUniqueEntityIfEntityIsSaved() {
         // given
-        given(assignmentToShift.getId()).willReturn(1L);
-
-        given(assignmentToShift.getBelongsToField(SHIFT)).willReturn(shift);
-        given(assignmentToShift.getField(START_DATE)).willReturn(startDate);
-
-        given(assignmentToShiftDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(assignmentToShifts);
-        given(assignmentToShifts.isEmpty()).willReturn(false);
+        stubFind(mockEntity());
 
         // when
-        boolean result = hooks.checkUniqueEntity(assignmentToShiftDD, assignmentToShift);
+        boolean result = assignmentToShiftHooks.checkUniqueEntity(assignmentToShift);
 
         // then
         Assert.assertFalse(result);
-
         verify(assignmentToShift, times(2)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
+    }
+
+    @Test
+    public final void shouldPickUpNextDay() {
+        // given
+        Entity startProjection1 = mockStartDateProjection(START_DATE.plusDays(1));
+        Entity startProjection2 = mockStartDateProjection(START_DATE.plusDays(2));
+        Entity startProjection3 = mockStartDateProjection(START_DATE.plusDays(3));
+        stubFindAll(Lists.newArrayList(startProjection1, startProjection2, startProjection3));
+
+        given(shiftPojo.worksAt(START_DATE)).willReturn(true);
+        given(shiftPojo.worksAt(START_DATE.plusDays(1))).willReturn(false);
+        given(shiftPojo.worksAt(START_DATE.plusDays(2))).willReturn(true);
+        given(shiftPojo.worksAt(START_DATE.plusDays(3))).willReturn(false);
+        given(shiftPojo.worksAt(START_DATE.plusDays(4))).willReturn(false);
+        given(shiftPojo.worksAt(START_DATE.plusDays(5))).willReturn(true);
+
+        // when
+        assignmentToShiftHooks.setNextDay(assignmentToShift);
+
+        // then
+        ArgumentCaptor<Date> dateCaptor = ArgumentCaptor.forClass(Date.class);
+        verify(assignmentToShift).setField(eq(AssignmentToShiftFields.START_DATE), dateCaptor.capture());
+        Date pickedUpNextStartDate = dateCaptor.getValue();
+        Assert.assertTrue(START_DATE.plusDays(5).toDate().compareTo(pickedUpNextStartDate) == 0);
+    }
+
+    @Test
+    public final void shouldPickUpNextDayIfThereIsNoOccupiedDates() {
+        // given
+        given(shiftPojo.worksAt(START_DATE)).willReturn(true);
+        given(shiftPojo.worksAt(START_DATE.plusDays(1))).willReturn(false);
+        given(shiftPojo.worksAt(START_DATE.plusDays(2))).willReturn(true);
+        given(shiftPojo.worksAt(START_DATE.plusDays(3))).willReturn(false);
+        given(shiftPojo.worksAt(START_DATE.plusDays(4))).willReturn(false);
+        given(shiftPojo.worksAt(START_DATE.plusDays(5))).willReturn(true);
+
+        // when
+        assignmentToShiftHooks.setNextDay(assignmentToShift);
+
+        // then
+        ArgumentCaptor<Date> dateCaptor = ArgumentCaptor.forClass(Date.class);
+        verify(assignmentToShift).setField(eq(AssignmentToShiftFields.START_DATE), dateCaptor.capture());
+        Date pickedUpNextStartDate = dateCaptor.getValue();
+        Assert.assertTrue(START_DATE.plusDays(2).toDate().compareTo(pickedUpNextStartDate) == 0);
+    }
+
+    @Test
+    public final void shouldNotPickUpAnyDateIfShiftNeverWork() {
+        // given
+        Entity startProjection1 = mockStartDateProjection(START_DATE.plusDays(1));
+        Entity startProjection2 = mockStartDateProjection(START_DATE.plusDays(2));
+        Entity startProjection3 = mockStartDateProjection(START_DATE.plusDays(3));
+        stubFindAll(Lists.newArrayList(startProjection1, startProjection2, startProjection3));
+
+        // when
+        assignmentToShiftHooks.setNextDay(assignmentToShift);
+
+        // then
+        verify(assignmentToShift).setField(eq(AssignmentToShiftFields.START_DATE), refEq(null));
+    }
+
+    private Entity mockStartDateProjection(final LocalDate localDate) {
+        Entity projection = mockEntity();
+        stubDateField(projection, AssignmentToShiftFields.START_DATE, localDate.toDate());
+        return projection;
     }
 
 }

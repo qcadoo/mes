@@ -68,6 +68,7 @@ public class OrderRealizationDaysResolver {
 
     private static final int DAYS_IN_YEAR = 365;
 
+    // FIXME maku - pass collection of Shifts as an argument to avoid querying DB multiple times for the same data.
     private OrderRealizationDayWithShifts findFirstWorkingDayAfter(final DateTime orderStartDate, final int startFrom) {
         for (int offset = startFrom; offset < startFrom + DAYS_IN_YEAR; offset++) {
             List<Shift> workingShifts = getShiftsWorkingAt(orderStartDate.plusDays(offset).getDayOfWeek());

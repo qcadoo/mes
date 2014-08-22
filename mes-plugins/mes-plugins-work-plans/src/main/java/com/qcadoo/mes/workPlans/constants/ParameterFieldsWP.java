@@ -51,4 +51,6 @@ public final class ParameterFieldsWP {
 
     public static final String PRINT_OPERATION_AT_FIRST_PAGE_IN_WORK_PLANS = "printOperationAtFirstPageInWorkPlans";
 
+    public static final String HIDE_BARCODE_OPERATION_COMPONENT_IN_WORK_PLAN = "hideBarcodeOperationComponentInWorkPlans";
+
 }

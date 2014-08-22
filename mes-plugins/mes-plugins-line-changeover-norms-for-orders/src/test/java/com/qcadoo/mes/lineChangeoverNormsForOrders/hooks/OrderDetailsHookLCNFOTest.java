@@ -106,5 +106,4 @@ public class OrderDetailsHookLCNFOTest {
         stubTechnologyPrototype(technologyPrototype);
         assertTrue(predicate.apply(order));
     }
-
 }

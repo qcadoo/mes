@@ -62,6 +62,10 @@
 					</script>
 				</bigButton>
 			</group>
+			<group name="productStructure">
+				<bigButton name="generateProductStructure" icon="generateIcon24.png"
+						action="#{productStructureForm}.fireEvent(generateProductStructure);" state="disabled" />
+			</group>
 		</ribbon>
 
 		<windowTab name="mainTab">
@@ -170,12 +174,16 @@
 								}
 							}
 						}
+						
 
 						function updateRibbon(state) {
 							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
 							var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
 							var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 							var checkState = #{window}.getRibbonItem("status.checkTechnology");
+							var deleteItem = #{window}.getRibbonItem("actions.delete");
+							
+							var generateProductStructure = #{window}.getRibbonItem("productStructure.generateProductStructure");
 
 							acceptState.forState="02accepted";
 							acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
@@ -192,23 +200,28 @@
 								acceptState.enable();
 								cancelState.enable();
 								checkState.enable();
+								generateProductStructure.disable();
 								toggleEditable(true, "");
 							} else if (state == "02accepted") {
 								acceptState.disable();
 								checkState.disable();
 								cancelState.enable();
+								generateProductStructure.enable();
 								cancelState.forState="04outdated";
 								cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
 								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
 								toggleEditable(true, "");
+								deleteItem.disable();
 							} else if (state == "03declined" || state == "04outdated") {
 								acceptState.disable();
 								checkState.disable();
 								cancelState.disable();
+								generateProductStructure.disable();
 								toggleEditable(false);
 							} else if ( state == "05checked"){
 								cancelState.enable();
 								checkState.enable();
+								generateProductStructure.enable();
 								checkState.forState="01draft"
 								checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
 								checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
@@ -220,7 +233,9 @@
 								acceptState.disable();
 								cancelState.disable();
 								checkState.disable();
-							}
+
+								generateProductStructure.enable();
+							}					
 						}
 
 					]]>
@@ -457,6 +472,39 @@
 						<option type="fullscreen" value="true" />
 					</component>
 				</layoutElement>
+			</component>
+		</windowTab>
+		<windowTab name="productStructure">
+			<component type="form" name="productStructureForm" reference="productStructureForm">
+				<component type="gridLayout" name="gridsLayout" rows="1" columns="1">
+					<layoutElement row="1" column="1">
+						<component type="tree" name="productStructureTree" reference="productStructureTree"
+							field="productStructureTree">
+							<dataType name="productStructureTreeNode">
+								<option type="nodeLabelExpression"
+										value="#parent != null ? 
+											(#operation.get('operation').get('id') !=  #parent['operation'].get('operation').id ? 
+												(#technology.get('id') == #parent['technology'].get('id') ?
+													'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' +  #operation.get('operation').get('name') + '&lt;/span&gt;' + '&lt;/b&gt;'
+													: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;span style=&quot;color: #68bb25&quot;&gt;&lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' + #operation.get('operation').get('name') + '&lt;/span&gt;' + ' (' + #technology.get('name') + ')' + '&lt;/b&gt;&lt;/span&gt;' 
+												)
+												: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') 
+											) 
+											: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' + #operation.get('operation').get('name') + '&lt;/span&gt;' + '&lt;/b&gt;' " /> 
+								<option type="nodeIcon" value="/technologies/public/css/icons/operationIcon16.png" />
+								<option type="newIcon" value="/technologies/public/css/icons/newOperationIcon16.png" />
+								
+							</dataType>
+							<option type="hasNewButtons" value="false" />
+							<option type="hasDeleteButton" value="false" />
+							<option type="hasEditButton" value="false" />
+							<option type="hasMoveButton" value="false" />
+						</component>
+					</layoutElement>
+				</component>
+				<listener event="generateProductStructure"
+					class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+						method="generateProductStructure" />
 			</component>
 
 		</windowTab>

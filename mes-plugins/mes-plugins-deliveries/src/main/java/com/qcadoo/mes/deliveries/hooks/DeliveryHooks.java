@@ -28,8 +28,12 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.LOCATION;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DRAFT;
+import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.materialFlow.constants.LocationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,10 +62,14 @@ public class DeliveryHooks {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void onCreate(final DataDefinition deliveryDD, final Entity delivery) {
         setInitialState(delivery);
         setDeliveryAddressDefaultValue(delivery);
         setDescriptionDefaultValue(delivery);
+        setLocationDefaultValue(deliveryDD, delivery);
     }
 
     public void onCopy(final DataDefinition deliveryDD, final Entity delivery) {
@@ -104,6 +112,28 @@ public class DeliveryHooks {
         delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_QUANTITY, pricesAndQntts.getDeliveredCumulatedQuantity());
         delivery.setField(DeliveryFields.ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE, pricesAndQntts.getOrderedTotalPrice());
         delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE, pricesAndQntts.getDeliveredTotalPrice());
+    }
+
+    public void setLocationDefaultValue(final DataDefinition deliveryDD, final Entity delivery) {
+        Entity location = delivery.getBelongsToField(LOCATION);
+
+        if (location == null) {
+            delivery.setField(LOCATION, parameterService.getParameter().getBelongsToField(LOCATION));
+        }
+    }
+
+    public boolean checkIfLocationIsWarehouse(final DataDefinition deliveryDD, final Entity delivery) {
+        Entity location = delivery.getBelongsToField(LOCATION);
+
+        if ((location != null) && !isLocationIsWarehouse(location)) {
+            delivery.addError(deliveryDD.getField(LOCATION), "delivery.validate.global.error.locationIsNotWarehouse");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isLocationIsWarehouse(final Entity location) {
+        return ((location != null) && LocationType.WAREHOUSE.getStringValue().equals(location.getStringField(TYPE)));
     }
 
 }

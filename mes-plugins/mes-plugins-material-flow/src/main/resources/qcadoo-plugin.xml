@@ -85,13 +85,13 @@
 		<menu:menu-item name="locations" category="materialFlow"
 			view="locationsList" />
 		<menu:menu-item name="materialsInLocations" category="materialFlow"
-			view="materialsInLocationsList" />
+			view="materialsInLocationsList" active="false" />
 		<menu:menu-item name="stockCorrections" category="materialFlow"
-			view="stockCorrectionsList" />
+			view="stockCorrectionsList" active="false" />
 		<menu:menu-item name="transfers" category="materialFlow"
-			view="transfersList" />
+			view="transfersList" active="false" />
 		<menu:menu-item name="transformations" category="materialFlow"
-			view="transformationsList" />
+			view="transformationsList" active="false" />
 	
 		<view:view resource="view/locationDetails.xml" />
 		<view:view resource="view/locationsList.xml" />

@@ -64,8 +64,6 @@
 		
 		<model:model model="productCatalogNumbers" resource="model/productCatalogNumbers.xml" />
 		
-		<menu:menu-category name="basic" />
-
 		<menu:menu-item name="productCatalogNumbers" category="basic"
 			view="productCatalogNumbersList" />
 

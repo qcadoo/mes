@@ -37,7 +37,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 
 @Service
-public final class AssignmentToShiftStateChangeDescriber extends AbstractStateChangeDescriber {
+public class AssignmentToShiftStateChangeDescriber extends AbstractStateChangeDescriber {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

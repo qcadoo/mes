@@ -25,13 +25,16 @@
 
 -->
 <model name="reasonTypeOfCorrectionPlan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
-	xmlns:xi="http://www.w3.org/2001/XInclude">
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
+		>
 	<fields>
 		<belongsTo name="productionPerShift" model="productionPerShift" />
 		<dictionary name="reasonType" dictionary="reasonTypeOfChangingOrderState"
-			required="true" />
+		            required="true" />
+		<datetime name="date" />
 	</fields>
-	<hooks />
+	<hooks>
+		<onSave class="com.qcadoo.mes.productionPerShift.hooks.ReasonTypeOfCorrectionPlanHooks" method="onSave" />
+	</hooks>
 </model>

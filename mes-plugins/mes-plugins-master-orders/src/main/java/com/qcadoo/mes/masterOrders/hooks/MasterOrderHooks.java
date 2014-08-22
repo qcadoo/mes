@@ -30,9 +30,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
@@ -59,6 +61,9 @@ public class MasterOrderHooks {
     public void onSave(final DataDefinition dataDefinition, final Entity masterOrder) {
         onTypeTransitionFromOneToOther(masterOrder);
         onTypeTransitionFromManyToOther(masterOrder);
+    }
+
+    public void onUpdate(final DataDefinition dataDefinition, final Entity masterOrder) {
         changedDeadlineAndInOrder(masterOrder);
     }
 
@@ -84,10 +89,7 @@ public class MasterOrderHooks {
     }
 
     protected void changedDeadlineAndInOrder(final Entity masterOrder) {
-        if (masterOrder.getId() == null) {
-            return;
-        }
-
+        Preconditions.checkArgument(masterOrder.getId() != null, "Method expects already persisted entity");
         Date deadline = masterOrder.getDateField(DEADLINE);
         Entity customer = masterOrder.getBelongsToField(COMPANY);
 
@@ -95,35 +97,29 @@ public class MasterOrderHooks {
             return;
         }
 
-        List<Entity> actualOrders = Lists.newArrayList();
         List<Entity> allOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
-
-        boolean hasChange = false;
+        boolean hasBeenChanged = false;
 
         for (Entity order : allOrders) {
             if (OrderState.of(order) != OrderState.PENDING) {
-                actualOrders.add(order);
                 continue;
             }
 
-            if (deadline != null && !order.getDateField(OrderFields.DEADLINE).equals(deadline)) {
+            if (!ObjectUtils.equals(order.getDateField(OrderFields.DEADLINE), deadline)) {
                 order.setField(OrderFields.DEADLINE, deadline);
-                hasChange = true;
+                hasBeenChanged = true;
             }
 
-            if (customer != null && !order.getBelongsToField(OrderFields.COMPANY).equals(customer)) {
+            if (!ObjectUtils.equals(order.getBelongsToField(OrderFields.COMPANY), customer)) {
                 order.setField(OrderFields.COMPANY, customer);
-                hasChange = true;
+                hasBeenChanged = true;
             }
-
-            actualOrders.add(order);
         }
 
-        if (!hasChange) {
-            return;
+        if (hasBeenChanged) {
+            masterOrder.setField(MasterOrderFields.ORDERS, allOrders);
         }
 
-        masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);
     }
 
     private void onTypeTransitionFromOneToOther(final Entity masterOrder) {

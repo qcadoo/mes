@@ -25,11 +25,11 @@
 
 -->
 <plugin plugin="technologies" group="technologies" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:custom="http://schema.qcadoo.org/modules/custom"
-	xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xsi:schemaLocation="
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
 		http://schema.qcadoo.org/plugin.xsd 
 		http://schema.qcadoo.org/modules/model 
@@ -43,157 +43,161 @@
 		http://schema.qcadoo.org/modules/custom 
 		http://schema.qcadoo.org/modules/custom.xsd">
 
-	<information>
-		<name>MES - Technologies</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-		<description>A tree of operations which defines the manufacturing process.</description>
-		<license>AGPL</license>
-	</information>
+    <information>
+        <name>MES - Technologies</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>A tree of operations which defines the manufacturing process.</description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>states</plugin>
-			<version>[1.1.7</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <plugin>states</plugin>
+            <version>[1.1.7</version>
+        </dependency>
+    </dependencies>
 
-	<modules>
-		<localization:translation path="locales" />
+    <modules>
+        <localization:translation path="locales"/>
 
-		<model:model model="productComponent" resource="model/productComponent.xml" />
-		<model:model model="operation" resource="model/operation.xml" />
-		<model:model model="operationGroup" resource="model/operationGroup.xml" />
-		<model:model model="operationProductOutComponent"
-			resource="model/operationProductOutComponent.xml" />
-		<model:model model="operationProductInComponent" resource="model/operationProductInComponent.xml" />
+        <model:model model="productComponent" resource="model/productComponent.xml"/>
+        <model:model model="operation" resource="model/operation.xml"/>
+        <model:model model="operationGroup" resource="model/operationGroup.xml"/>
+        <model:model model="operationProductOutComponent"
+                     resource="model/operationProductOutComponent.xml"/>
+        <model:model model="operationProductInComponent" resource="model/operationProductInComponent.xml"/>
 
-		<model:model model="technology" resource="model/technology.xml" />
-		<model:model model="technologyOperationComponent"
-			resource="model/technologyOperationComponent.xml" />
-		
-		<model:model model="technologyStateChange" resource="model/technologyStateChange.xml" />
-		
-		<model:model model="technologyGroup" resource="model/technologyGroup.xml" />
+        <model:model model="technology" resource="model/technology.xml"/>
+        <model:model model="technologyOperationComponent"
+                     resource="model/technologyOperationComponent.xml"/>
+        <model:model model="productStructureTreeNode" resource="model/productStructureTreeNode.xml"/>
 
-		<model:model-field plugin="states" model="message">
-		    <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange" />
-		</model:model-field>
-		
-		<model:model-field plugin="basic" model="shift">
-			<model:hasMany name="technologyStateChanges" plugin="technologies"
-				model="technologyStateChange" joinField="shift" cascade="nullify" />
-		</model:model-field>
-		
-		<model:model model="technologyAttachment" resource="model/technologyAttachment.xml" />
+        <model:model model="technologyStateChange" resource="model/technologyStateChange.xml"/>
 
-		<model:model-field plugin="basic" model="product">
-			<model:hasMany name="operationProductInComponents"
-				plugin="technologies" model="operationProductInComponent" joinField="product"
-				cascade="nullify" />
-		</model:model-field>
+        <model:model model="technologyGroup" resource="model/technologyGroup.xml"/>
 
-		<model:model-field plugin="basic" model="product">
-			<model:hasMany name="operationProductOutComponents"
-				plugin="technologies" model="operationProductOutComponent"
-				joinField="product" cascade="nullify" />
-		</model:model-field>
-		
-		<model:model-field plugin="basic" model="product">
-			<model:hasMany name="technologies" plugin="technologies"
-				model="technology" joinField="product" cascade="delete" />
-		</model:model-field>
-		
-		<model:model-field plugin="basic" model="product">
-			<model:belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
-				lazy="false" />
-		</model:model-field>
-		
-		<model:model-field plugin="basic" model="workstation">
-			<model:manyToMany name="operations" plugin="technologies"
-				model="operation" joinField="workstations" copyable="true" cascade="nullify" />
-		</model:model-field>
-	
-		<model:model-field plugin="basic" model="workstation">
-			<model:manyToMany name="operationComponents" plugin="technologies"
-    			model="technologyOperationComponent" joinField="workstations" copyable="true" cascade="nullify"/>
-		</model:model-field>
-		
-		<model:model-hook plugin="basic" model="workstation">
-			<model:onDelete
-				class="com.qcadoo.mes.technologies.hooks.WorkstationHooksT"
-				method="onDelete" />
-		</model:model-hook>
-		
-	<!--  	
-		<model:model-field plugin="basic" model="workstationType">
-			<model:manyToMany name="operations" plugin="technologies"
-				model="operation" joinField="workstationTypes" copyable="true" />
-		</model:model-field>-->
-	
-		<menu:menu-category name="technology" />
+        <model:model model="barcodeOperationComponent" resource="model/barcodeOperationComponent.xml"/>
 
-		<menu:menu-item name="technologies" category="technology"
-			view="technologiesList" />
-		<menu:menu-item name="operations" category="technology"
-			view="operationsList" />
-		<menu:menu-item name="operationGroups" category="technology"
-			view="operationGroupsList" />
-		<menu:menu-item name="technologyGroups" category="technology"
-			view="technologyGroupsList" />
-	
-		
-		<view:view resource="view/operationsList.xml" />
-		<view:view resource="view/operationDetails.xml" />
-		<view:view resource="view/operationGroupsList.xml" />
-		<view:view resource="view/operationGroupDetails.xml" />
-		<view:view resource="view/technologiesList.xml" />
-		<view:view resource="view/technologyDetails.xml" />
-		<view:view resource="view/technologyOperationComponentDetails.xml" />
-		<view:view resource="view/technologyReferenceTechnologyComponentDetails.xml" />
-		<view:view resource="view/operationProductInComponentDetails.xml" />
-		<view:view resource="view/operationProductOutComponentDetails.xml" />
-		<view:view resource="view/technologiesWithUsingProductList.xml" />
-		
-		<view:view resource="view/technologyGroupsList.xml" />
-		<view:view resource="view/technologyGroupDetails.xml" />
-		
-		<view:view resource="view/multiUpload.xml" />
-				
-		
-		<view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml" />
-		
-		<view:view-tab resource="view/tabExtensions/productDetails.xml" />
-			
-		<view:resource uri="public/**/*" />
-		
-		<view:view-listener plugin="basic" view="productDetails"
-			component="form" event="showTechnologiesWithTechnologyGroup"
-			class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
-			method="showTechnologiesWithTechnologyGroup" />
-		
-		<view:view-listener plugin="basic" view="productDetails"
-			component="form" event="showTechnologiesWithProduct"
-			class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
-			method="showTechnologiesWithProduct" />
-			
-		<view:view-listener plugin="basic" view="productDetails"
-			component="form" event="showTechnologiesWithUsingProduct"
-			class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
-			method="showTechnologiesWithUsingProduct" />
-	
-		<view:view-hook plugin="basic" view="productDetails"
-			type="beforeRender" 
-			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooksT"
-			method="updateRibbonState" />
-				
-		<custom:custom class="com.qcadoo.mes.technologies.states.module.TechnologyStateServiceRegisterModule" />
-	</modules>
-	
-	<features>
-		<end-user />
-	</features>
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="technologyStateChanges" plugin="technologies"
+                           model="technologyStateChange" joinField="shift" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model model="technologyAttachment" resource="model/technologyAttachment.xml"/>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="operationProductInComponents"
+                           plugin="technologies" model="operationProductInComponent" joinField="product"
+                           cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="operationProductOutComponents"
+                           plugin="technologies" model="operationProductOutComponent"
+                           joinField="product" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="technologies" plugin="technologies"
+                           model="technology" joinField="product" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup"
+                             lazy="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:manyToMany name="operations" plugin="technologies"
+                              model="operation" joinField="workstations" copyable="true" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:manyToMany name="operationComponents" plugin="technologies"
+                              model="technologyOperationComponent" joinField="workstations" copyable="true" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-hook plugin="basic" model="workstation">
+            <model:onDelete
+                    class="com.qcadoo.mes.technologies.hooks.WorkstationHooksT"
+                    method="onDelete"/>
+        </model:model-hook>
+
+        <!--
+            <model:model-field plugin="basic" model="workstationType">
+                <model:manyToMany name="operations" plugin="technologies"
+                    model="operation" joinField="workstationTypes" copyable="true" />
+            </model:model-field>-->
+
+        <menu:menu-category name="technology"/>
+
+        <menu:menu-item name="technologies" category="technology"
+                        view="technologiesList"/>
+        <menu:menu-item name="operations" category="technology"
+                        view="operationsList"/>
+        <menu:menu-item name="operationGroups" category="technology"
+                        view="operationGroupsList"/>
+        <menu:menu-item name="technologyGroups" category="technology"
+                        view="technologyGroupsList"/>
+
+
+        <view:view resource="view/operationsList.xml"/>
+        <view:view resource="view/operationDetails.xml"/>
+        <view:view resource="view/operationGroupsList.xml"/>
+        <view:view resource="view/operationGroupDetails.xml"/>
+        <view:view resource="view/technologiesList.xml"/>
+        <view:view resource="view/technologyDetails.xml"/>
+        <view:view resource="view/technologyOperationComponentDetails.xml"/>
+        <view:view resource="view/technologyReferenceTechnologyComponentDetails.xml"/>
+        <view:view resource="view/operationProductInComponentDetails.xml"/>
+        <view:view resource="view/operationProductOutComponentDetails.xml"/>
+        <view:view resource="view/technologiesWithUsingProductList.xml"/>
+
+        <view:view resource="view/technologyGroupsList.xml"/>
+        <view:view resource="view/technologyGroupDetails.xml"/>
+
+        <view:view resource="view/multiUpload.xml"/>
+
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
+
+        <view:view-tab resource="view/tabExtensions/productDetails.xml"/>
+
+        <view:resource uri="public/**/*"/>
+
+        <view:view-listener plugin="basic" view="productDetails"
+                            component="form" event="showTechnologiesWithTechnologyGroup"
+                            class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
+                            method="showTechnologiesWithTechnologyGroup"/>
+
+        <view:view-listener plugin="basic" view="productDetails"
+                            component="form" event="showTechnologiesWithProduct"
+                            class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
+                            method="showTechnologiesWithProduct"/>
+
+        <view:view-listener plugin="basic" view="productDetails"
+                            component="form" event="showTechnologiesWithUsingProduct"
+                            class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
+                            method="showTechnologiesWithUsingProduct"/>
+
+        <view:view-hook plugin="basic" view="productDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooksT"
+                        method="updateRibbonState"/>
+
+        <custom:custom class="com.qcadoo.mes.technologies.states.module.TechnologyStateServiceRegisterModule"/>
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
 
 </plugin>

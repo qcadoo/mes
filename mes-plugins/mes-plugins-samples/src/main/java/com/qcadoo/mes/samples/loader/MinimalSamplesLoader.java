@@ -23,14 +23,25 @@
  */
 package com.qcadoo.mes.samples.loader;
 
-import static com.qcadoo.mes.samples.constants.SamplesConstants.*;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DESCRIPTION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EMAIL;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES_DICTIONARY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES_MODEL_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_FROM;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_TO;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT_FROM;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT_TO;
 
 import java.util.Map;
 
 import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -46,7 +57,6 @@ import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
-@Transactional
 public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
 
     @Autowired

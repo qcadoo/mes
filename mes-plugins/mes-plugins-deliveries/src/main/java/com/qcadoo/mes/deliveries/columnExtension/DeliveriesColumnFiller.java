@@ -176,31 +176,11 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     }
 
     private void fillProductUnit(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
-        String productUnit = null;
-
-        if (orderedProduct == null) {
-            productUnit = "";
-        } else {
-            Entity product = orderedProduct.getBelongsToField(PRODUCT);
-
-            productUnit = product.getStringField(UNIT);
-        }
-
-        values.get(orderedProduct).put("productUnit", productUnit);
+        values.get(orderedProduct).put("productUnit", orderedProduct == null ? "" : orderedProduct.getBelongsToField(PRODUCT).getStringField(UNIT));
     }
 
     private void fillProductUnit(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
-        String productUnit = null;
-
-        if (deliveryProduct.getDeliveredProductId() == null) {
-            productUnit = "";
-        } else {
-            Entity product = deliveriesService.getProduct(deliveryProduct);
-
-            productUnit = product.getStringField(UNIT);
-        }
-
-        values.get(deliveryProduct).put("productUnit", productUnit);
+        values.get(deliveryProduct).put("productUnit", deliveryProduct == null ? "" : deliveriesService.getProduct(deliveryProduct).getStringField(UNIT));
     }
 
     private void fillSuccession(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct,
@@ -359,21 +339,17 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     }
 
     private void fillCurrency(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
-        Entity entity = null;
-        String currency = "";
-        if (deliveryProduct.getDeliveredProductId() != null) {
-            entity = dataDefinitionService
-                    .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT).get(
-                            deliveryProduct.getDeliveredProductId());
-        } else {
-
-            entity = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT)
-                    .get(deliveryProduct.getOrderedProductId());
-
+        if(deliveryProduct.getDeliveredProductId() != null) {
+            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+            values.get(deliveryProduct).put("currency", pricePerUnit(deliveredProduct) == null ? "" : deliveriesService.getCurrency(delivery(deliveredProduct)));
         }
-        Entity delivery = entity.getBelongsToField(DeliveredProductFields.DELIVERY);
-        currency = deliveriesService.getCurrency(delivery);
+    }
 
-        values.get(deliveryProduct).put("currency", currency);
+    private Entity delivery(Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+    }
+
+    private BigDecimal pricePerUnit(Entity delivery) {
+        return delivery.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
     }
 }

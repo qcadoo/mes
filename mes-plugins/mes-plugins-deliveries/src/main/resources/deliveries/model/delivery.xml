@@ -46,7 +46,9 @@
 		
 		<integer name="deliveryDateBuffer" persistent="false" />
 		<dictionary name="paymentForm" dictionary="paymentForm" persistent="false" />
-		
+
+        <belongsTo name="location" model="location"
+                         plugin="materialFlow" />
 		<belongsTo name="relatedDelivery" model="delivery" />
 		<belongsTo name="currency" model="currency" plugin="basic"/>
 		<hasMany name="relatedDeliveries" joinField="relatedDelivery" model="delivery"

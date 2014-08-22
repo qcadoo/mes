@@ -35,7 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.util.OrderHelperService;
+import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
@@ -72,6 +75,9 @@ public class WorkPlanDetailsListeners {
     @Autowired
     private OrderHelperService orderHelperService;
 
+    @Autowired
+    private BarcodeOperationComponentService barcodeOperationComponentService;
+
     @Transactional
     public void generateWorkPlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (state instanceof FormComponent) {
@@ -95,6 +101,8 @@ public class WorkPlanDetailsListeners {
                 state.addMessage("workPlans.workPlanDetails.window.workPlan.missingAssosiatedOrders", MessageType.FAILURE);
                 return;
             }
+
+            createBarcodeOCForOrders(orders);
 
             List<String> numbersOfOrdersWithoutTechnology = orderHelperService.getOrdersWithoutTechnology(orders);
 
@@ -165,6 +173,21 @@ public class WorkPlanDetailsListeners {
             redirectUrl.append(confectionProtocolId);
         }
         view.redirectTo(redirectUrl.toString(), true, false);
+    }
+
+    private void createBarcodeOCForOrders(final List<Entity> orders) {
+        for (Entity order : orders) {
+            createBarcodeOCForOrder(order);
+        }
+
+    }
+
+    private void createBarcodeOCForOrder(final Entity order) {
+        List<Entity> tocs = order.getBelongsToField(OrderFields.TECHNOLOGY)
+                .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+        for (Entity toc : tocs) {
+            barcodeOperationComponentService.createBarcodeOperationComponent(toc);
+        }
     }
 
 }

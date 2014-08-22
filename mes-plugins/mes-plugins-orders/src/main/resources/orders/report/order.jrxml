@@ -20,8 +20,8 @@
 			company.email AS email,
 			company.phone AS phone,
 			company.tax AS tax,
-			company.country.country AS country_country,
-			product.unit AS unit,		
+			country.country AS country_country,
+			product.unit AS unit,
 			parameter.additionalTextInFooter AS additional_text,
 			orders.number AS orders_order_number,
 			orders.name AS orders_order_name,
@@ -43,42 +43,43 @@
 			masterOrder.name AS masterorders_masterorder_name,
 			masterOrder.number AS masterorders_masterorder_number,
 			(
-				SELECT 
-					stateChange.worker AS startWorker 
-				FROM 
+				SELECT
+					stateChange.worker AS startWorker
+				FROM
 					orders.stateChanges AS stateChange
 				WHERE
-					stateChange.sourceState = '02accepted' 
-					AND 
-					stateChange.targetState = '03inProgress' 
-					AND 
+					stateChange.sourceState = '02accepted'
+					AND
+					stateChange.targetState = '03inProgress'
+					AND
 					stateChange.status = '03successful'
 			) AS orders_order_startworker,
 			(
-				SELECT 
-					stateChange.worker AS endWorker 
-				FROM 
+				SELECT
+					stateChange.worker AS endWorker
+				FROM
 					orders.stateChanges AS stateChange
 				WHERE
-					stateChange.targetState = '04completed' 
-					AND 
+					stateChange.targetState = '04completed'
+					AND
 					stateChange.status = '03successful'
 			) AS orders_order_endworker
-			FROM 
-			com.qcadoo.model.beans.basic.BasicCompany AS company, 
-			com.qcadoo.model.beans.basic.BasicCountry AS country,   
+			FROM
+			com.qcadoo.model.beans.basic.BasicCompany AS company,
 			com.qcadoo.model.beans.basic.BasicParameter AS parameter,
-			com.qcadoo.model.beans.orders.OrdersOrder AS orders  
+			com.qcadoo.model.beans.orders.OrdersOrder AS orders
+            LEFT OUTER JOIN
+            company.country AS country
 			LEFT OUTER JOIN
-			orders.technology AS technology 
+			orders.technology AS technology
 			LEFT OUTER JOIN
 			technology.technologyPrototype AS technologyPrototype
 			LEFT OUTER JOIN
-			orders.product AS product 
+			orders.product AS product
 			LEFT OUTER JOIN
-			orders.masterOrder AS masterOrder 
-			WHERE 
-			orders.id IN ($P{EntityIds}) AND company.id = parameter.company AND country.id = company.country]]>
+			orders.masterOrder AS masterOrder
+			WHERE
+			orders.id IN ($P{EntityIds}) AND company.id = parameter.company]]>
 	</queryString>
 	<field name="company_name" class="java.lang.String"/>
 	<field name="street" class="java.lang.String"/>
