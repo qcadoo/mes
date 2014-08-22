@@ -29,6 +29,7 @@ import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.grouping.OperationMergeService;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
@@ -41,12 +42,14 @@ import java.util.Map;
 
 public class OperationProductInGroupingContainerDecorator implements GroupingContainer {
 
+    private OperationMergeService operationMergeService;
     private GroupingContainer groupingContainer;
     private Map<Long, Entity> operationComponentIdToOrder;
     private Map<Long, Entity> operationComponentIdToOperationComponent;
     private Map<String, Long> operationNumberToOperationComponentId;
 
-    public OperationProductInGroupingContainerDecorator(GroupingContainer groupingContainer) {
+    public OperationProductInGroupingContainerDecorator(OperationMergeService operationMergeService, GroupingContainer groupingContainer) {
+        this.operationMergeService = operationMergeService;
         this.groupingContainer = groupingContainer;
         initMaps();
     }
@@ -77,9 +80,11 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                     Entity existingOperationProductInComponent = entry.getValue();
                     Entity operationProductInComponent = productNumberToOperationProductInComponent.get(entry.getKey());
                     BigDecimal quantity = quantity(operationProductInComponent);
-                    increaseQuantityBy(existingOperationProductInComponent, quantity);
+                    BigDecimal increasedQuantity = increaseQuantityBy(existingOperationProductInComponent, quantity);
                     quantity(operationProductInComponent, BigDecimal.ZERO);
                     quantityChanged = true;
+                    operationMergeService.mergeProductIn(existingOperationComponent, operationProductInComponent, increasedQuantity);
+                    operationMergeService.storeProductIn(existingOperationComponent, operationComponent, operationProductInComponent, quantity.negate());
                 }
             }
 
@@ -92,10 +97,14 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                 Entity existingOperationProductOutComponent = existingProductNumberToOperationProductOutComponent.get(entry.getKey());
                 if (existingOperationProductOutComponent == null) {
                     existingOperationProductOutComponents.add(operationProductOutComponent);
+                    operationMergeService.mergeProductOut(existingOperationComponent, operationProductOutComponent, quantity(operationProductOutComponent));
+                    operationMergeService.storeProductOut(existingOperationComponent, operationComponent, operationProductOutComponent, quantity(operationProductOutComponent));
                 }else{
                     BigDecimal quantity = quantity(operationProductOutComponent);
-                    increaseQuantityBy(existingOperationProductOutComponent, quantity);
+                    BigDecimal increasedQuantity = increaseQuantityBy(existingOperationProductOutComponent, quantity);
                     quantity(operationProductOutComponent, BigDecimal.ZERO);
+                    operationMergeService.mergeProductOut(existingOperationComponent, existingOperationProductOutComponent, increasedQuantity);
+                    operationMergeService.storeProductOut(existingOperationComponent, operationComponent, operationProductOutComponent, quantity.negate());
                 }
             }
 
@@ -152,8 +161,10 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
         return groupingContainer.getOperationComponentIdProductOutColumnToAlignment();
     }
 
-    private void increaseQuantityBy(Entity operationProductInComponent, BigDecimal quantity) {
-        quantity(operationProductInComponent, quantity(operationProductInComponent).add(quantity));
+    private BigDecimal increaseQuantityBy(Entity operationProductInComponent, BigDecimal quantity) {
+        BigDecimal increasedQuantity = quantity(operationProductInComponent).add(quantity);
+        quantity(operationProductInComponent, increasedQuantity);
+        return increasedQuantity;
     }
 
     private BigDecimal quantity(Entity operationProductInComponent) {
