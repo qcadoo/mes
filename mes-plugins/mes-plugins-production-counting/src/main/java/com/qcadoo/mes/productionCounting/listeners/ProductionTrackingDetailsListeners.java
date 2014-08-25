@@ -39,6 +39,7 @@ import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.utils.StaffTimeCalculator;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -82,7 +83,8 @@ public class ProductionTrackingDetailsListeners {
         laborTimeInput.setFieldValue(totalLabor);
     }
 
-    public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
         Long productionRecordId = productionRecordForm.getEntityId();
 
@@ -223,5 +225,25 @@ public class ProductionTrackingDetailsListeners {
         } else {
             divisionLookup.setFieldValue(division.getId());
         }
+    }
+
+    public void fillWorkstationTypeField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        LookupComponent tocLookup = (LookupComponent) view
+                .getComponentByReference("technologyOperationComponent");
+        LookupComponent workstationTypeLookup = (LookupComponent) view
+                .getComponentByReference(ProductionTrackingFields.WORKSTATION_TYPE);
+        Entity toc = tocLookup.getEntity();
+
+        if (toc == null) {
+            return;
+        }
+
+        Entity workstationType = toc.getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
+        if (workstationType == null) {
+            workstationTypeLookup.setFieldValue(null);
+        } else {
+            workstationTypeLookup.setFieldValue(workstationType.getId());
+        }
+
     }
 }
