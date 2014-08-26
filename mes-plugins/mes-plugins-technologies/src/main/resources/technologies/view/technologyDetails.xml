@@ -477,8 +477,8 @@
         </windowTab>
         <windowTab name="productStructure">
             <component type="form" name="productStructureForm" reference="productStructureForm">
-                <component type="gridLayout" name="gridsLayout" rows="1" columns="1">
-                    <layoutElement row="1" column="1">
+                <component type="gridLayout" name="gridsLayout" rows="11" columns="1">
+                    <layoutElement row="1" column="1" height="10">
                         <component type="tree" name="productStructureTree" reference="productStructureTree"
                                    field="productStructureTree">
                             <dataType name="productStructureTreeNode">
@@ -526,11 +526,11 @@
                 method="setTreeTabEditable"/>
 
         <!-- TODO hotfix for issue-1901 with restoring previous active tab state,
-            requires fixes in framework -->
+            requires fixes in framework 
         <beforeRender
                 class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
                 method="navigateToActiveTab"/>
-
+		-->
         <beforeRender
                 class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
                 method="setGridEditable"/>
