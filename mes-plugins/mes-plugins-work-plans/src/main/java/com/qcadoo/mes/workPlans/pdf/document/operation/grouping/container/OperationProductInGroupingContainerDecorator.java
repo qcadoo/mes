@@ -61,6 +61,7 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
             GroupingContainer groupingContainer, ProductQuantitiesService productQuantitiesService) {
         this.operationMergeService = operationMergeService;
         this.groupingContainer = groupingContainer;
+        this.productQuantitiesService = productQuantitiesService;
         initMaps();
     }
 
