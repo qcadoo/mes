@@ -43,9 +43,7 @@
 		<string name="flat">
 			<validatesLength max="30" />
 		</string>
-		<string name="zipCode">
-			<validatesLength max="6" />
-		</string>
+		<string name="zipCode" />
 		<string name="city" />
 		<string name="state" />
 		<belongsTo name="country" plugin="basic" model="country" />
