@@ -23,32 +23,42 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.grouping.OperationMergeService;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class OperationProductInGroupingContainerDecorator implements GroupingContainer {
 
     private OperationMergeService operationMergeService;
+
+    private ProductQuantitiesService productQuantitiesService;
+
     private GroupingContainer groupingContainer;
+
     private Map<Long, Entity> operationComponentIdToOrder;
+
     private Map<Long, Entity> operationComponentIdToOperationComponent;
+
     private Map<String, Long> operationNumberToOperationComponentId;
 
-    public OperationProductInGroupingContainerDecorator(OperationMergeService operationMergeService, GroupingContainer groupingContainer) {
+    public OperationProductInGroupingContainerDecorator(OperationMergeService operationMergeService,
+            GroupingContainer groupingContainer, ProductQuantitiesService productQuantitiesService) {
         this.operationMergeService = operationMergeService;
         this.groupingContainer = groupingContainer;
         initMaps();
@@ -64,6 +74,9 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
     public void add(Entity order, Entity operationComponent) {
         operationComponentIdToOrder.put(operationComponent.getId(), order);
         operationComponentIdToOperationComponent.put(operationComponent.getId(), operationComponent);
+        List<Entity> orders = Lists.newArrayList(order);
+        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
+                .getProductComponentQuantities(orders);
 
         String operationNumber = operationNumber(operationComponent);
         boolean quantityChanged = false;
@@ -73,38 +86,52 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
 
             List<Entity> existingOperationProductInComponents = operationProductInComponents(existingOperationComponent);
             List<Entity> operationProductInComponents = operationProductInComponents(operationComponent);
-            Map<String, Entity> existingProductNumberToOperationProductInComponent = productNumberToOperationProductComponent(existingOperationProductInComponents);
-            Map<String, Entity> productNumberToOperationProductInComponent = productNumberToOperationProductComponent(operationProductInComponents);
+            Map<String, Entity> existingProductNumberToOperationProductInComponent = productNumberToOperationProductComponent(
+                    existingOperationProductInComponents);
+            Map<String, Entity> productNumberToOperationProductInComponent = productNumberToOperationProductComponent(
+                    operationProductInComponents);
             if (containsAll(existingProductNumberToOperationProductInComponent, productNumberToOperationProductInComponent)) {
                 for (Map.Entry<String, Entity> entry : existingProductNumberToOperationProductInComponent.entrySet()) {
                     Entity existingOperationProductInComponent = entry.getValue();
                     Entity operationProductInComponent = productNumberToOperationProductInComponent.get(entry.getKey());
-                    BigDecimal quantity = quantity(operationProductInComponent);
+                    BigDecimal quantity = productQuantities.get(operationProductInComponent);
                     BigDecimal increasedQuantity = increaseQuantityBy(existingOperationProductInComponent, quantity);
                     quantity(operationProductInComponent, BigDecimal.ZERO);
                     quantityChanged = true;
-                    operationMergeService.mergeProductIn(existingOperationComponent, operationProductInComponent, increasedQuantity);
-                    operationMergeService.storeProductIn(existingOperationComponent, operationComponent, operationProductInComponent, quantity.negate());
+                    operationMergeService
+                            .mergeProductIn(existingOperationComponent, operationProductInComponent, increasedQuantity);
+                    operationMergeService
+                            .storeProductIn(existingOperationComponent, operationComponent, operationProductInComponent,
+                                    quantity.negate());
                 }
             }
 
             List<Entity> existingOperationProductOutComponents = operationProductOutComponents(existingOperationComponent);
             List<Entity> operationProductOutComponents = operationProductOutComponents(operationComponent);
-            Map<String, Entity> existingProductNumberToOperationProductOutComponent = productNumberToOperationProductComponent(existingOperationProductOutComponents);
-            Map<String, Entity> productNumberToOperationProductOutComponent = productNumberToOperationProductComponent(operationProductOutComponents);
+            Map<String, Entity> existingProductNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
+                    existingOperationProductOutComponents);
+            Map<String, Entity> productNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
+                    operationProductOutComponents);
             for (Map.Entry<String, Entity> entry : productNumberToOperationProductOutComponent.entrySet()) {
                 Entity operationProductOutComponent = entry.getValue();
-                Entity existingOperationProductOutComponent = existingProductNumberToOperationProductOutComponent.get(entry.getKey());
+                Entity existingOperationProductOutComponent = existingProductNumberToOperationProductOutComponent
+                        .get(entry.getKey());
                 if (existingOperationProductOutComponent == null) {
                     existingOperationProductOutComponents.add(operationProductOutComponent);
-                    operationMergeService.mergeProductOut(existingOperationComponent, operationProductOutComponent, quantity(operationProductOutComponent));
-                    operationMergeService.storeProductOut(existingOperationComponent, operationComponent, operationProductOutComponent, quantity(operationProductOutComponent));
-                }else{
-                    BigDecimal quantity = quantity(operationProductOutComponent);
+                    operationMergeService.mergeProductOut(existingOperationComponent, operationProductOutComponent,
+                            quantity(operationProductOutComponent));
+                    operationMergeService
+                            .storeProductOut(existingOperationComponent, operationComponent, operationProductOutComponent,
+                                    quantity(operationProductOutComponent));
+                } else {
+                    BigDecimal quantity = productQuantities.get(operationProductOutComponent);
                     BigDecimal increasedQuantity = increaseQuantityBy(existingOperationProductOutComponent, quantity);
                     quantity(operationProductOutComponent, BigDecimal.ZERO);
-                    operationMergeService.mergeProductOut(existingOperationComponent, existingOperationProductOutComponent, increasedQuantity);
-                    operationMergeService.storeProductOut(existingOperationComponent, operationComponent, operationProductOutComponent, quantity.negate());
+                    operationMergeService
+                            .mergeProductOut(existingOperationComponent, existingOperationProductOutComponent, increasedQuantity);
+                    operationMergeService
+                            .storeProductOut(existingOperationComponent, operationComponent, operationProductOutComponent,
+                                    quantity.negate());
                 }
             }
 
@@ -112,8 +139,9 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
             operationNumberToOperationComponentId.put(operationNumber, operationComponent.getId());
         }
 
-        if (quantityChanged)
+        if (quantityChanged) {
             return;
+        }
 
         groupingContainer.add(order, operationComponent);
 
