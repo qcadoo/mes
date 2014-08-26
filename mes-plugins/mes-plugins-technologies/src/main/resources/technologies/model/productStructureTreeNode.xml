@@ -38,7 +38,7 @@
 		<belongsTo name="parent" model="productStructureTreeNode" />
 		<priority name="priority" scope="parent" />
 		<string name="nodeNumber" />
-		<enum name="entityType" values="productStructureTreeNode" default="productStructureTreeNode"
+		<enum name="entityType" values="finalProduct,intermediate,component,material" default="material"
 			persistent="false" />
 	</fields>
 	<hooks>
