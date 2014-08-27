@@ -119,12 +119,13 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                 Entity existingOperationProductOutComponent = existingProductNumberToOperationProductOutComponent
                         .get(entry.getKey());
                 if (existingOperationProductOutComponent == null) {
+                    quantity(operationProductOutComponent, productQuantities.get(operationProductOutComponent));
                     existingOperationProductOutComponents.add(operationProductOutComponent);
                     operationMergeService.mergeProductOut(existingOperationComponent, operationProductOutComponent,
                             quantity(productQuantities, operationProductOutComponent));
                     operationMergeService
                             .storeProductOut(existingOperationComponent, operationComponent, operationProductOutComponent,
-                                    quantity(productQuantities, operationProductOutComponent));
+                                    null);
                 } else {
                     BigDecimal quantity = productQuantities.get(operationProductOutComponent);
                     BigDecimal increasedQuantity = increaseQuantityBy(productQuantities, existingOperationProductOutComponent,
@@ -137,9 +138,17 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                                     quantity.negate());
                 }
             }
-            operationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, existingOperationProductOutComponents);
+            existingOperationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, existingOperationProductOutComponents);
 
         } else {
+            for (Entity operationProductInComponent : operationProductInComponents(operationComponent)) {
+                quantity(operationProductInComponent, productQuantities.get(operationProductInComponent));
+            }
+
+            for (Entity operationProductOutComponent : operationProductOutComponents(operationComponent)) {
+                quantity(operationProductOutComponent, productQuantities.get(operationProductOutComponent));
+            }
+
             operationNumberToOperationComponentId.put(operationNumber, operationComponent.getId());
         }
 
