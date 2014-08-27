@@ -25,16 +25,16 @@
 
 -->
 <column>
-    <row IDENTIFIER="productNameOperationProductColumnOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.productNameOperationProductColumnOperationProductColumn"
-         DESCRIPTION="workPlans.columnForInputProducts.description.value.productNameOperationProductColumnOperationProductColumn"
+    <row IDENTIFIER="productNameOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.productNameOperationProductColumn"
+         DESCRIPTION="workPlans.columnForInputProducts.description.value.productNameOperationProductColumn"
          COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" TYPE="input"
          ACTIVE="true"/>
-    <row IDENTIFIER="plannedQuantityOperationProductColumnOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.plannedQuantityOperationProductColumnOperationProductColumn"
-         DESCRIPTION="workPlans.columnForInputProducts.description.value.plannedQuantityOperationProductColumnOperationProductColumn"
+    <row IDENTIFIER="plannedQuantityOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.plannedQuantityOperationProductColumn"
+         DESCRIPTION="workPlans.columnForInputProducts.description.value.plannedQuantityOperationProductColumn"
          COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right" TYPE="input"
          ACTIVE="true"/>
-    <row IDENTIFIER="effectiveQuantityOperationProductColumnOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.effectiveQuantityOperationProductColumnOperationProductColumn"
-         DESCRIPTION="workPlans.columnForInputProducts.description.value.effectiveQuantityOperationProductColumnOperationProductColumn"
+    <row IDENTIFIER="effectiveQuantityOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.effectiveQuantityOperationProductColumn"
+         DESCRIPTION="workPlans.columnForInputProducts.description.value.effectiveQuantityOperationProductColumn"
          COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right" TYPE="input"
          ACTIVE="true"/>
     <row IDENTIFIER="attentionOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.attentionOperationProductColumn"
