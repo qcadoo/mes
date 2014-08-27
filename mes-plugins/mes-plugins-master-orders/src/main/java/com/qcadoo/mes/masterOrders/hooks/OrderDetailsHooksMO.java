@@ -100,12 +100,12 @@ public class OrderDetailsHooksMO {
 
             String number = (String) numberField.getFieldValue();
 
-            String generatedNumber = numberGeneratorService.generateNumber(OrdersConstants.PLUGIN_IDENTIFIER,
-                    OrdersConstants.MODEL_ORDER);
+            String generatedNumber = numberGeneratorService.generateNumberWithPrefix(OrdersConstants.PLUGIN_IDENTIFIER,
+                    OrdersConstants.MODEL_ORDER, 3, masterOrderNumber + "-");
 
-            if (StringUtils.isEmpty(number) || generatedNumber.equals(number)) {
-                numberField.setFieldValue(masterOrderNumber);
-            }
+            // if (StringUtils.isEmpty(number) || generatedNumber.equals(number)) {
+            numberField.setFieldValue(generatedNumber);
+            // }
 
             if ((companyLookup.getEntity() == null) && (masterOrderCompany != null)) {
                 companyLookup.setFieldValue(masterOrderCompany.getId());
@@ -128,6 +128,9 @@ public class OrderDetailsHooksMO {
             deadlineField.requestComponentUpdateState();
             productLookup.requestComponentUpdateState();
             technologyPrototypeLookup.requestComponentUpdateState();
+
+            productLookup.performEvent(view, "onSelectedEntityChange", "");
+
         }
     }
 
