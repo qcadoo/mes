@@ -108,7 +108,7 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                 }
             }
 
-            List<Entity> existingOperationProductOutComponents = operationProductOutComponents(existingOperationComponent);
+            List<Entity> existingOperationProductOutComponents = Lists.newArrayList(operationProductOutComponents(existingOperationComponent));
             List<Entity> operationProductOutComponents = operationProductOutComponents(operationComponent);
             Map<String, Entity> existingProductNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
                     existingOperationProductOutComponents);
@@ -137,6 +137,7 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                                     quantity.negate());
                 }
             }
+            operationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, existingOperationProductOutComponents);
 
         } else {
             operationNumberToOperationComponentId.put(operationNumber, operationComponent.getId());

@@ -23,8 +23,13 @@
  */
 package com.qcadoo.mes.productionCounting.criteriaModifiers;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.grouping.OperationMergeService;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
@@ -33,17 +38,35 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 public class TechnologyOperationComponentCriteriaModifiersPC {
 
     private static final String L_ID = "id";
-
     private static final String L_TECHNOLOGY = "technology";
+    private static final String DOT = ".";
+
+
+    private OperationMergeService operationMergeService;
+
+    @Autowired
+    public TechnologyOperationComponentCriteriaModifiersPC(OperationMergeService operationMergeService) {
+        this.operationMergeService = operationMergeService;
+    }
 
     public void restrictTechnologyOperationComponentsToOrderTechnology(final SearchCriteriaBuilder scb,
             final FilterValueHolder filterValue) {
+
+    }
+
+    public void restrictRepeatedTechnologyOperationComponentsToMergedAndToOrderTechnology(final SearchCriteriaBuilder scb,
+                                                                      final FilterValueHolder filterValue) {
+
+        List<Long> mergedOperationComponentIds = operationMergeService.findMergedToOperationComponentIds();
         if (!filterValue.has(L_TECHNOLOGY)) {
             throw new IllegalArgumentException("Chain parameter is required");
         }
 
         Long technologyId = filterValue.getLong(L_TECHNOLOGY);
-        scb.createAlias(L_TECHNOLOGY, L_TECHNOLOGY).add(SearchRestrictions.eq(L_TECHNOLOGY + "." + L_ID, technologyId));
+        scb.createAlias(L_TECHNOLOGY, L_TECHNOLOGY, JoinType.LEFT)
+                .add(SearchRestrictions.eq(L_TECHNOLOGY + DOT + L_ID, technologyId))
+                .add(SearchRestrictions.not(SearchRestrictions.in(L_ID, mergedOperationComponentIds)));
+
     }
 
 }

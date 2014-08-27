@@ -68,7 +68,7 @@ public class OperationAdditionalFields {
     }
 
     private Optional<String> getImageUrlInWorkPlan(final Entity technologyOperationComponent) {
-        return Optional.of(imagePath(technologyOperationComponent));
+        return Optional.fromNullable(imagePath(technologyOperationComponent));
     }
 
     private String imagePath(Entity technologyOperationComponent) {

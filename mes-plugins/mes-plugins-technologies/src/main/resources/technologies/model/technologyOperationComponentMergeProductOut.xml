@@ -30,7 +30,7 @@
     <fields>
         <belongsTo name="operationComponent" model="technologyOperationComponent"/>
         <belongsTo name="mergedOperationComponent" model="technologyOperationComponent"/>
-        <belongsTo name="mergedOperationProductInComponent" model="operationProductOutComponent"/>
+        <belongsTo name="mergedOperationProductComponent" model="operationProductOutComponent"/>
         <decimal name="quantityChange"/>
     </fields>
     <identifier expression="#operationComponent['id']"/>
