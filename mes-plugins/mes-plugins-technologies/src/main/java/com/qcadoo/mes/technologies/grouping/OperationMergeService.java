@@ -19,6 +19,8 @@ public interface OperationMergeService {
 
     Entity findMergedByOperationComponent(Entity operationComponent);
 
+    Entity findMergedByMergedToc(Entity toc);
+
     Entity findMergedFromOperationInByOperationComponentId(Long operationComponentId);
 
     Entity findMergedFromOperationOutByOperationComponentId(Long operationComponentId);
