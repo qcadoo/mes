@@ -115,7 +115,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
                 .getStringField(LocationFieldsMFR.ALGORITHM));
         boolean enoughResources = true;
-        StringBuffer errorMessage = new StringBuffer();
+
+        StringBuilder errorMessage = new StringBuilder();
+
         List<Entity> generatedPositions = Lists.newArrayList();
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             generatedPositions.addAll(updateResources(warehouse, position, warehouseAlgorithm));
@@ -196,7 +198,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
                 .getStringField(LocationFieldsMFR.ALGORITHM));
         boolean enoughResources = true;
-        StringBuffer errorMessage = new StringBuffer();
+
+        StringBuilder errorMessage = new StringBuilder();
+
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);
             enoughResources = enoughResources && position.isValid();
