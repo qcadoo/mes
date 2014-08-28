@@ -100,8 +100,11 @@ public class DeliveryStateServiceMF {
 
     private BigDecimal price(Entity deliveredProduct, Entity currency) {
         BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
-        BigDecimal pricePerUnit = deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
-        return exRateExists(exRate) ? pricePerUnit.multiply(exRate) : pricePerUnit;
+        Optional<BigDecimal> pricePerUnit = Optional.fromNullable(deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
+        if(!pricePerUnit.isPresent()){
+            return null;
+        }
+        return exRateExists(exRate) ? pricePerUnit.get().multiply(exRate) : pricePerUnit.get();
     }
 
     private boolean exRateExists(BigDecimal exRate) {
