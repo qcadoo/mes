@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.criteriaModifiers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,15 +55,14 @@ public class TechnologyOperationComponentCriteriaModifiersPC {
     public void restrictRepeatedTechnologyOperationComponentsToMergedAndToOrderTechnology(final SearchCriteriaBuilder scb,
                                                                       final FilterValueHolder filterValue) {
 
-        List<Long> mergedOperationComponentIds = operationMergeService.findMergedToOperationComponentIds();
         if (!filterValue.has(L_TECHNOLOGY)) {
             throw new IllegalArgumentException("Chain parameter is required");
         }
 
         Long technologyId = filterValue.getLong(L_TECHNOLOGY);
         scb.createAlias(L_TECHNOLOGY, L_TECHNOLOGY, JoinType.LEFT)
-                .add(SearchRestrictions.eq(L_TECHNOLOGY + DOT + L_ID, technologyId))
-                .add(SearchRestrictions.not(SearchRestrictions.in(L_ID, mergedOperationComponentIds)));
+                .add(SearchRestrictions.eq(L_TECHNOLOGY + DOT + L_ID, technologyId));
+
 
     }
 
