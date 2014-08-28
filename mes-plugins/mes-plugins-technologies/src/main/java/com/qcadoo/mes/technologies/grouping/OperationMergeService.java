@@ -19,9 +19,19 @@ public interface OperationMergeService {
 
     Entity findMergedByOperationComponent(Entity operationComponent);
 
+    Entity findMergedFromOperationInByOperationComponentId(Long operationComponentId);
+
+    Entity findMergedFromOperationOutByOperationComponentId(Long operationComponentId);
+
+    List<Entity> findMergedToByOperationComponentId(Long operationComponentId);
+
     List<Entity> findMergedProductInComponentsByOperationComponent(Entity operationComponent);
 
-    List<Entity> findMergedProductOutComponentsByOperationComponent(Entity operationComponent);
+    List<Entity> findMergedToProductOutComponentsByOperationComponent(Entity operationComponent);
+
+    List<Entity> findMergedEntitiesByOperationComponent(Entity operationComponent);
+
+    List<Entity> findMergedEntitiesByOperationComponentId(Long operationComponentId);
 
     void adjustOperationProductComponentsDueMerge(Entity operationComponent);
 }

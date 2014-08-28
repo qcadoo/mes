@@ -74,20 +74,65 @@ public class OperationMergeServiceImpl implements OperationMergeService {
     }
 
     @Override
-    public List<Entity> findMergedProductInComponentsByOperationComponent(Entity operationComponent) {
+    public Entity findMergedFromOperationInByOperationComponentId(Long operationComponentId) {
+        Entity operationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(operationComponentId);
         return mergesProductInDD().find()
-                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentMergeProductFields.OPERATION_COMPONENT, operationComponent))
-                .add(SearchRestrictions.gt(TechnologyOperationComponentMergeProductFields.QUANTITY_CHANGE, BigDecimal.ZERO))
-                .setProjection(SearchProjections.field(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_PRODUCT_COMPONENT))
+                .add(SearchRestrictions.and(
+                        SearchRestrictions.belongsTo(TechnologyOperationComponentMergeProductFields.OPERATION_COMPONENT, operationComponent),
+                        SearchRestrictions.belongsTo(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_COMPONENT, operationComponent)))
+                .uniqueResult();
+    }
+
+    @Override
+    public Entity findMergedFromOperationOutByOperationComponentId(Long operationComponentId) {
+        return mergesProductOutDD().find()
+                .add(SearchRestrictions.and(
+                        SearchRestrictions.eq(TechnologyOperationComponentMergeProductFields.OPERATION_COMPONENT + ".id", operationComponentId),
+                        SearchRestrictions.eq(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_COMPONENT + ".id", operationComponentId)))
+                .uniqueResult();
+    }
+
+    @Override
+    public List<Entity> findMergedToByOperationComponentId(Long operationComponentId) {
+        Entity operationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(operationComponentId);
+        return mergesProductInDD().find()
+                .add(SearchRestrictions.and(
+                        SearchRestrictions.belongsTo(TechnologyOperationComponentMergeProductFields.OPERATION_COMPONENT, operationComponent),
+                        SearchRestrictions.not(
+                                SearchRestrictions.belongsTo(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_COMPONENT, operationComponent)
+                        )))
                 .list().getEntities();
     }
 
     @Override
-    public List<Entity> findMergedProductOutComponentsByOperationComponent(Entity operationComponent) {
+    public List<Entity> findMergedProductInComponentsByOperationComponent(Entity operationComponent) {
+        return mergesProductInDD().find()
+                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentMergeProductFields.OPERATION_COMPONENT, operationComponent))
+                .add(SearchRestrictions.gt(TechnologyOperationComponentMergeProductFields.QUANTITY_CHANGE, BigDecimal.ZERO))
+                .list().getEntities();
+    }
+
+    @Override
+    public List<Entity> findMergedToProductOutComponentsByOperationComponent(Entity operationComponent) {
         return mergesProductOutDD().find()
                 .add(SearchRestrictions.belongsTo(TechnologyOperationComponentMergeProductFields.OPERATION_COMPONENT, operationComponent))
                 .add(SearchRestrictions.isNotNull(TechnologyOperationComponentMergeProductFields.QUANTITY_CHANGE))
-                .setProjection(SearchProjections.field(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_PRODUCT_COMPONENT))
+                .list().getEntities();
+    }
+
+    @Override
+    public List<Entity> findMergedEntitiesByOperationComponent(Entity operationComponent) {
+        return mergesProductOutDD().find()
+                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentMergeProductFields.OPERATION_COMPONENT, operationComponent))
+                .add(SearchRestrictions.isNull(TechnologyOperationComponentMergeProductFields.QUANTITY_CHANGE))
+                .list().getEntities();
+    }
+
+    @Override
+    public List<Entity> findMergedEntitiesByOperationComponentId(Long operationComponentId) {
+        return mergesProductOutDD().find()
+                .add(SearchRestrictions.eq(TechnologyOperationComponentMergeProductFields.OPERATION_COMPONENT + ".id", operationComponentId))
+                .add(SearchRestrictions.isNull(TechnologyOperationComponentMergeProductFields.QUANTITY_CHANGE))
                 .list().getEntities();
     }
 

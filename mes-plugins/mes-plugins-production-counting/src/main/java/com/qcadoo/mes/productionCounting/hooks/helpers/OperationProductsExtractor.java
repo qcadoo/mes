@@ -95,26 +95,6 @@ public class OperationProductsExtractor {
 
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
-        if (isMerged(technologyOperationComponent) && forEach(typeOfProductionRecording) ) {
-
-            List<Entity> operationInComponents = operationMergeService.findMergedProductInComponentsByOperationComponent(technologyOperationComponent);
-            for (Entity operationInComponent : operationInComponents)
-                add(trackingOperationProductComponents, operationInComponent);
-
-            List<Entity> mergedOperationOutComponents = operationMergeService.findMergedProductOutComponentsByOperationComponent(technologyOperationComponent);
-            for (Entity mergedOperationOutComponent : mergedOperationOutComponents)
-                add(trackingOperationProductComponents, mergedOperationOutComponent);
-
-            List<Entity> operationOutComponents = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-            for (Entity operationOutComponent : operationOutComponents){
-                if(mergedOperationOutComponents.contains(operationOutComponent))
-                    continue;
-                add(trackingOperationProductComponents, operationOutComponent);
-            }
-
-            return trackingOperationProductComponents;
-        }
-
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(asList(order));
 
