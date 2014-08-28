@@ -122,7 +122,9 @@ public class DocumentDetailsHooks {
                     MaterialFlowResourcesConstants.MODEL_DOCUMENT, FORM, DocumentFields.NUMBER);
             FieldComponent date = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
             FieldComponent user = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
-            date.setFieldValue(setDateToField(new Date()));
+            if (date.getFieldValue() == null) {
+                date.setFieldValue(setDateToField(new Date()));
+            }
             user.setFieldValue(userService.getCurrentUserEntity().getId());
         } else if (DocumentState.DRAFT.equals(state)) {
             changeAcceptButtonState(window, true);

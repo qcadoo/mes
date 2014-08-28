@@ -23,7 +23,7 @@
             <option type="column" name="user" fields="user"
                     expression="#user['firstName'] + ' ' + #user['lastName']" />
 
-            <option type="order" column="number" direction="asc" />
+            <option type="order" column="number" direction="desc" />
 
             <option type="searchable"
                     value="number,time,locationFrom,locationTo,user,type,state" />

@@ -13,7 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -109,14 +115,25 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
                 .getStringField(LocationFieldsMFR.ALGORITHM));
         boolean enoughResources = true;
+        StringBuffer errorMessage = new StringBuffer();
         List<Entity> generatedPositions = Lists.newArrayList();
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             generatedPositions.addAll(updateResources(warehouse, position, warehouseAlgorithm));
             enoughResources = enoughResources && position.isValid();
+            if (!position.isValid()) {
+                Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+                errorMessage.append(product.getStringField(ProductFields.NAME));
+                errorMessage.append(" - ");
+                errorMessage.append(position.getDecimalField(QUANTITY).abs().toPlainString());
+                errorMessage.append(" ");
+                errorMessage.append(product.getStringField(ProductFields.UNIT));
+                errorMessage.append(", ");
+            }
         }
 
-        if(!enoughResources){
-            document.addGlobalError("materialFlow.error.position.quantity.notEnough");
+        if (!enoughResources) {
+            document.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false, errorMessage.toString(),
+                    warehouse.getStringField(LocationFields.NAME));
         } else {
             document.setField(DocumentFields.POSITIONS, generatedPositions);
             document.getDataDefinition().save(document);
@@ -171,7 +188,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     @Override
-   @Transactional
+    @Transactional
     public void moveResourcesForTransferDocument(Entity document) {
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
@@ -179,12 +196,24 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
                 .getStringField(LocationFieldsMFR.ALGORITHM));
         boolean enoughResources = true;
+        StringBuffer errorMessage = new StringBuffer();
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);
             enoughResources = enoughResources && position.isValid();
+            if (!position.isValid()) {
+                Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+                errorMessage.append(product.getStringField(ProductFields.NAME));
+                errorMessage.append(" - ");
+                errorMessage.append(position.getDecimalField(QUANTITY).abs().toPlainString());
+                errorMessage.append(" ");
+                errorMessage.append(product.getStringField(ProductFields.UNIT));
+                errorMessage.append(", ");
+            }
         }
-        if(!enoughResources){
-            document.addGlobalError("materialFlow.error.position.quantity.notEnough");
+
+        if (!enoughResources) {
+            document.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false, errorMessage.toString(),
+                    warehouseFrom.getStringField(LocationFields.NAME));
         }
 
     }
@@ -222,7 +251,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             }
         }
 
-        position.addError(position.getDataDefinition().getField(PositionFields.QUANTITY), "materialFlow.error.position.quantity.notEnough");
+        position.addError(position.getDataDefinition().getField(PositionFields.QUANTITY),
+                "materialFlow.error.position.quantity.notEnough");
     }
 
     private List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product,
