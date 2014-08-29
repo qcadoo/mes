@@ -461,10 +461,15 @@ public class OrderHooks {
     }
 
     public void setCommissionedPlannedQuantity(final DataDefinition orderDD, final Entity order) {
-        if (BigDecimalUtils.tryParse(order.getField(OrderFields.PLANNED_QUANTITY).toString(), LocaleContextHolder.getLocale())
-                .isRight()) {
-            order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY,
-                    numberService.setScale(order.getDecimalField(OrderFields.PLANNED_QUANTITY)));
+        if (order == null) {
+            return;
+        }
+        Object quantity = order.getField(OrderFields.PLANNED_QUANTITY);
+        if (quantity != null) {
+            if (BigDecimalUtils.tryParse(quantity.toString(), LocaleContextHolder.getLocale()).isRight()) {
+                order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY,
+                        numberService.setScale(order.getDecimalField(OrderFields.PLANNED_QUANTITY)));
+            }
         }
     }
 

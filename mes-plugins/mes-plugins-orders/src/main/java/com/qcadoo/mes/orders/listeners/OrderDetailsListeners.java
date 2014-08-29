@@ -88,7 +88,7 @@ public class OrderDetailsListeners {
         Entity product = productLookup.getEntity();
         Entity technology = technologyLookup.getEntity();
 
-        if ((technology == null) || (product == null)) {
+        if ((technology == null) || (product == null) || (nameField.getFieldValue() != null)) {
             return;
         }
 

@@ -229,7 +229,7 @@ public class TechnologyService {
 
         Entity product = productLookup.getEntity();
 
-        if (product == null) {
+        if (product == null || numberField.getFieldValue() != null) {
             return;
         }
 
@@ -251,7 +251,7 @@ public class TechnologyService {
 
         Entity product = productLookup.getEntity();
 
-        if (product == null) {
+        if (product == null || nameField.getFieldValue() != null) {
             return;
         }
 
