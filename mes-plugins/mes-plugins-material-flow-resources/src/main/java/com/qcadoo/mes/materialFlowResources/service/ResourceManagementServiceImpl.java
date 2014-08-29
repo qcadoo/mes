@@ -6,6 +6,7 @@ import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PROD
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +109,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return resourceDD.save(newResource);
     }
 
+    private BigDecimal getQuantityOfProductInWarehouse(final Entity warehouse, final Entity product) {
+        Entity resource = dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
+                .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, warehouse))
+                .add(SearchRestrictions.belongsTo(ResourceFields.PRODUCT, product)).setMaxResults(1).uniqueResult();
+        return resource != null ? resource.getDecimalField(ResourceFields.QUANTITY) : BigDecimal.ZERO;
+    }
+
     @Override
     @Transactional
     public void updateResourcesForReleaseDocuments(final Entity document) {
@@ -120,13 +129,16 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         List<Entity> generatedPositions = Lists.newArrayList();
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
+            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            BigDecimal quantityInWarehouse = getQuantityOfProductInWarehouse(warehouse, product);
             generatedPositions.addAll(updateResources(warehouse, position, warehouseAlgorithm));
             enoughResources = enoughResources && position.isValid();
             if (!position.isValid()) {
-                Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+                BigDecimal quantity = position.getDecimalField(QUANTITY);
                 errorMessage.append(product.getStringField(ProductFields.NAME));
                 errorMessage.append(" - ");
-                errorMessage.append(position.getDecimalField(QUANTITY).abs().toPlainString());
+                errorMessage.append(quantity.subtract(quantityInWarehouse).setScale(quantity.scale(), RoundingMode.HALF_UP)
+                        .toPlainString());
                 errorMessage.append(" ");
                 errorMessage.append(product.getStringField(ProductFields.UNIT));
                 errorMessage.append(", ");
@@ -202,13 +214,16 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         StringBuilder errorMessage = new StringBuilder();
 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
+            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            BigDecimal quantityInWarehouse = getQuantityOfProductInWarehouse(warehouseFrom, product);
             moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);
             enoughResources = enoughResources && position.isValid();
             if (!position.isValid()) {
-                Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+                BigDecimal quantity = position.getDecimalField(QUANTITY);
                 errorMessage.append(product.getStringField(ProductFields.NAME));
                 errorMessage.append(" - ");
-                errorMessage.append(position.getDecimalField(QUANTITY).abs().toPlainString());
+                errorMessage.append(quantity.subtract(quantityInWarehouse).setScale(quantity.scale(), RoundingMode.HALF_UP)
+                        .toPlainString());
                 errorMessage.append(" ");
                 errorMessage.append(product.getStringField(ProductFields.UNIT));
                 errorMessage.append(", ");
