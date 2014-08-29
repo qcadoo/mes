@@ -73,6 +73,8 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
 
     @Override
     public void add(Entity order, Entity operationComponent) {
+        removeAlreadyExistsMergesForOrder(order);
+
         operationComponentIdToOrder.put(operationComponent.getId(), order);
         operationComponentIdToOperationComponent.put(operationComponent.getId(), operationComponent);
         List<Entity> orders = Lists.newArrayList(order);
@@ -101,9 +103,9 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                     quantity(operationProductInComponent, BigDecimal.ZERO);
                     quantityChanged = true;
                     operationMergeService
-                            .mergeProductIn(existingToc, existingOperationProductInComponent, increasedQuantity);
+                            .mergeProductIn(order, existingToc,  existingOperationProductInComponent, increasedQuantity);
                     operationMergeService
-                            .storeProductIn(existingToc, operationComponent, operationProductInComponent,
+                            .storeProductIn(order, existingToc,  operationComponent, operationProductInComponent,
                                     quantity.negate());
                 }
 
@@ -120,10 +122,10 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                     if (existingOperationProductOutComponent == null) {
                         quantity(operationProductOutComponent, productQuantities.get(operationProductOutComponent));
                         existingOperationProductOutComponents.add(operationProductOutComponent);
-                        operationMergeService.mergeProductOut(existingToc, operationProductOutComponent,
+                        operationMergeService.mergeProductOut(order, existingToc, operationProductOutComponent,
                                 quantity(productQuantities, operationProductOutComponent));
                         operationMergeService
-                                .storeProductOut(existingToc, operationComponent, operationProductOutComponent,
+                                .storeProductOut(order, existingToc, operationComponent, operationProductOutComponent,
                                         null);
                     } else {
                         BigDecimal quantity = productQuantities.get(operationProductOutComponent);
@@ -131,9 +133,9 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                                 quantity);
                         quantity(operationProductOutComponent, BigDecimal.ZERO);
                         operationMergeService
-                                .mergeProductOut(existingToc, existingOperationProductOutComponent, increasedQuantity);
+                                .mergeProductOut(order, existingToc, existingOperationProductOutComponent, increasedQuantity);
                         operationMergeService
-                                .storeProductOut(existingToc, operationComponent, operationProductOutComponent,
+                                .storeProductOut(order, existingToc, operationComponent, operationProductOutComponent,
                                         quantity.negate());
                     }
                 }
@@ -157,6 +159,18 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
 
         groupingContainer.add(order, operationComponent);
 
+    }
+
+    private void removeAlreadyExistsMergesForOrder(Entity order) {
+        List<Entity> mergedProductInsByOrder = operationMergeService.findMergedProductInByOrder(order);
+        for (Entity entity : mergedProductInsByOrder) {
+            entity.getDataDefinition().delete(entity.getId());
+        }
+
+        List<Entity> mergedProductOutsByOrder = operationMergeService.findMergedProductOutByOrder(order);
+        for (Entity entity : mergedProductOutsByOrder) {
+            entity.getDataDefinition().delete(entity.getId());
+        }
     }
 
     private boolean sameProductsIn(Map<String, Entity> existingProductNumberToOperationProductInComponent, Map<String, Entity> productNumberToOperationProductInComponent) {

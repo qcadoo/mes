@@ -31,24 +31,35 @@ public class OperationMergeServiceImpl implements OperationMergeService {
     }
 
     @Override
-    public void mergeProductIn(Entity existingOperationComponent, Entity operationProductIn, BigDecimal quantity) {
-        mergeProduct(mergesProductInDD(), existingOperationComponent, operationProductIn, quantity);
+    public void mergeProductIn(Entity order, Entity existingOperationComponent, Entity operationProductIn, BigDecimal quantity) {
+        mergeProduct(mergesProductInDD(), order, existingOperationComponent, operationProductIn, quantity);
     }
 
     @Override
-    public void storeProductIn(Entity operationComponent, Entity mergeOperationComponent, Entity operationProductIn, BigDecimal quantity) {
-        persistMerge(mergesProductInDD(), operationComponent, mergeOperationComponent, operationProductIn, quantity);
+    public void storeProductIn(Entity order, Entity operationComponent, Entity mergeOperationComponent, Entity operationProductIn, BigDecimal quantity) {
+        persistMerge(mergesProductInDD(), order, operationComponent, mergeOperationComponent, operationProductIn, quantity);
     }
 
     @Override
-    public void mergeProductOut(Entity existingOperationComponent, Entity operationProductOut, BigDecimal quantity) {
-        mergeProduct(mergesProductOutDD(), existingOperationComponent, operationProductOut, quantity);
+    public void mergeProductOut(Entity order, Entity existingOperationComponent, Entity operationProductOut, BigDecimal quantity) {
+        mergeProduct(mergesProductOutDD(), order, existingOperationComponent, operationProductOut, quantity);
     }
 
     @Override
-    public void storeProductOut(Entity operationComponent, Entity mergeOperationComponent, Entity operationProductIn, BigDecimal quantity) {
-        persistMerge(mergesProductOutDD(), operationComponent, mergeOperationComponent, operationProductIn, quantity);
+    public void storeProductOut(Entity order, Entity operationComponent, Entity mergeOperationComponent, Entity operationProductIn, BigDecimal quantity) {
+        persistMerge(mergesProductOutDD(), order, operationComponent, mergeOperationComponent, operationProductIn, quantity);
     }
+
+    @Override
+    public List<Entity> findMergedProductInByOrder(Entity order) {
+        return mergesProductInDD().find().add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+    }
+
+    @Override
+    public List<Entity> findMergedProductOutByOrder(Entity order) {
+        return mergesProductOutDD().find().add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+    }
+
 
     @Override
     public List<Long> findMergedToOperationComponentIds() {
@@ -205,17 +216,18 @@ public class OperationMergeServiceImpl implements OperationMergeService {
         return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
     }
 
-    private void mergeProduct(DataDefinition dataDefinition, Entity existingOperationComponent, Entity operationProduct, BigDecimal quantity) {
+    private void mergeProduct(DataDefinition dataDefinition, Entity order,  Entity existingOperationComponent, Entity operationProduct, BigDecimal quantity) {
         Entity alreadyMergedProductComponentForOperation = findAlreadyMergedProductComponentForOperation(dataDefinition, existingOperationComponent, operationProduct);
         if (alreadyMergedProductComponentForOperation != null) {
             alreadyMergedProductComponentForOperation.setField(TechnologyOperationComponentMergeProductFields.QUANTITY_CHANGE, quantity);
             dataDefinition.save(alreadyMergedProductComponentForOperation);
         } else
-            persistMerge(dataDefinition, existingOperationComponent, existingOperationComponent, operationProduct, quantity);
+            persistMerge(dataDefinition, order, existingOperationComponent, existingOperationComponent, operationProduct, quantity);
     }
 
-    private void persistMerge(DataDefinition dataDefinition, Entity operationComponent, Entity mergeOperationComponent, Entity operationProduct, BigDecimal quantity) {
+    private void persistMerge(DataDefinition dataDefinition, Entity order, Entity operationComponent, Entity mergeOperationComponent, Entity operationProduct, BigDecimal quantity) {
         Entity merge = dataDefinition.create();
+        merge.setField("order", order);
         merge.setField(TechnologyOperationComponentMergeProductFields.OPERATION_COMPONENT, operationComponent);
         merge.setField(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_COMPONENT, mergeOperationComponent);
         merge.setField(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_PRODUCT_COMPONENT, operationProduct);
