@@ -90,7 +90,8 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
             Map<String, Entity> existingProductNumberToOperationProductInComponent = productNumberToOperationProductComponent(
                     existingOperationProductInComponents);
             Map<String, Entity> productNumberToOperationProductInComponent = productNumberToOperationProductComponent(operationProductInComponents);
-            if (containsAll(existingProductNumberToOperationProductInComponent, productNumberToOperationProductInComponent)) {
+            boolean sameProductsIn = sameProductsIn(existingProductNumberToOperationProductInComponent, productNumberToOperationProductInComponent);
+            if (sameProductsIn) {
                 for (Map.Entry<String, Entity> entry : existingProductNumberToOperationProductInComponent.entrySet()) {
                     Entity existingOperationProductInComponent = entry.getValue();
                     Entity operationProductInComponent = productNumberToOperationProductInComponent.get(entry.getKey());
@@ -105,58 +106,61 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                             .storeProductIn(existingToc, operationComponent, operationProductInComponent,
                                     quantity.negate());
                 }
-            }
 
-            List<Entity> existingOperationProductOutComponents = Lists.newArrayList(operationProductOutComponents(existingToc));
-            List<Entity> operationProductOutComponents = operationProductOutComponents(operationComponent);
-            Map<String, Entity> existingProductNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
-                    existingOperationProductOutComponents);
-            Map<String, Entity> productNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
-                    operationProductOutComponents);
-            for (Map.Entry<String, Entity> entry : productNumberToOperationProductOutComponent.entrySet()) {
-                Entity operationProductOutComponent = entry.getValue();
-                Entity existingOperationProductOutComponent = existingProductNumberToOperationProductOutComponent
-                        .get(entry.getKey());
-                if (existingOperationProductOutComponent == null) {
-                    quantity(operationProductOutComponent, productQuantities.get(operationProductOutComponent));
-                    existingOperationProductOutComponents.add(operationProductOutComponent);
-                    operationMergeService.mergeProductOut(existingToc, operationProductOutComponent,
-                            quantity(productQuantities, operationProductOutComponent));
-                    operationMergeService
-                            .storeProductOut(existingToc, operationComponent, operationProductOutComponent,
-                                    null);
-                } else {
-                    BigDecimal quantity = productQuantities.get(operationProductOutComponent);
-                    BigDecimal increasedQuantity = increaseQuantityBy(productQuantities, existingOperationProductOutComponent,
-                            quantity);
-                    quantity(operationProductOutComponent, BigDecimal.ZERO);
-                    operationMergeService
-                            .mergeProductOut(existingToc, existingOperationProductOutComponent, increasedQuantity);
-                    operationMergeService
-                            .storeProductOut(existingToc, operationComponent, operationProductOutComponent,
-                                    quantity.negate());
+                List<Entity> existingOperationProductOutComponents = Lists.newArrayList(operationProductOutComponents(existingToc));
+                List<Entity> operationProductOutComponents = operationProductOutComponents(operationComponent);
+                Map<String, Entity> existingProductNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
+                        existingOperationProductOutComponents);
+                Map<String, Entity> productNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
+                        operationProductOutComponents);
+                for (Map.Entry<String, Entity> entry : productNumberToOperationProductOutComponent.entrySet()) {
+                    Entity operationProductOutComponent = entry.getValue();
+                    Entity existingOperationProductOutComponent = existingProductNumberToOperationProductOutComponent
+                            .get(entry.getKey());
+                    if (existingOperationProductOutComponent == null) {
+                        quantity(operationProductOutComponent, productQuantities.get(operationProductOutComponent));
+                        existingOperationProductOutComponents.add(operationProductOutComponent);
+                        operationMergeService.mergeProductOut(existingToc, operationProductOutComponent,
+                                quantity(productQuantities, operationProductOutComponent));
+                        operationMergeService
+                                .storeProductOut(existingToc, operationComponent, operationProductOutComponent,
+                                        null);
+                    } else {
+                        BigDecimal quantity = productQuantities.get(operationProductOutComponent);
+                        BigDecimal increasedQuantity = increaseQuantityBy(productQuantities, existingOperationProductOutComponent,
+                                quantity);
+                        quantity(operationProductOutComponent, BigDecimal.ZERO);
+                        operationMergeService
+                                .mergeProductOut(existingToc, existingOperationProductOutComponent, increasedQuantity);
+                        operationMergeService
+                                .storeProductOut(existingToc, operationComponent, operationProductOutComponent,
+                                        quantity.negate());
+                    }
                 }
+                existingToc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, existingOperationProductOutComponents);
             }
-            existingToc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, existingOperationProductOutComponents);
-
-        } else {
-            for (Entity operationProductInComponent : operationProductInComponents(operationComponent)) {
-                quantity(operationProductInComponent, productQuantities.get(operationProductInComponent));
-            }
-
-            for (Entity operationProductOutComponent : operationProductOutComponents(operationComponent)) {
-                quantity(operationProductOutComponent, productQuantities.get(operationProductOutComponent));
-            }
-
-            operationNumberToOperationComponentId.put(operationNumber, operationComponent.getId());
         }
 
         if (quantityChanged) {
             return;
         }
 
+        operationNumberToOperationComponentId.put(operationNumber, operationComponent.getId());
+
+        for (Entity operationProductInComponent : operationProductInComponents(operationComponent)) {
+            quantity(operationProductInComponent, productQuantities.get(operationProductInComponent));
+        }
+
+        for (Entity operationProductOutComponent : operationProductOutComponents(operationComponent)) {
+            quantity(operationProductOutComponent, productQuantities.get(operationProductOutComponent));
+        }
+
         groupingContainer.add(order, operationComponent);
 
+    }
+
+    private boolean sameProductsIn(Map<String, Entity> existingProductNumberToOperationProductInComponent, Map<String, Entity> productNumberToOperationProductInComponent) {
+        return containsAll(existingProductNumberToOperationProductInComponent, productNumberToOperationProductInComponent);
     }
 
     private boolean containsAll(Map<String, Entity> map1, Map<String, Entity> map2) {
