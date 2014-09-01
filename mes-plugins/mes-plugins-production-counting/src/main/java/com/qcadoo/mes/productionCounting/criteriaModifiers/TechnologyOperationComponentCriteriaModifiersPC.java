@@ -50,11 +50,6 @@ public class TechnologyOperationComponentCriteriaModifiersPC {
     public void restrictTechnologyOperationComponentsToOrderTechnology(final SearchCriteriaBuilder scb,
             final FilterValueHolder filterValue) {
 
-    }
-
-    public void restrictRepeatedTechnologyOperationComponentsToMergedAndToOrderTechnology(final SearchCriteriaBuilder scb,
-                                                                      final FilterValueHolder filterValue) {
-
         if (!filterValue.has(L_TECHNOLOGY)) {
             throw new IllegalArgumentException("Chain parameter is required");
         }
@@ -62,7 +57,6 @@ public class TechnologyOperationComponentCriteriaModifiersPC {
         Long technologyId = filterValue.getLong(L_TECHNOLOGY);
         scb.createAlias(L_TECHNOLOGY, L_TECHNOLOGY, JoinType.LEFT)
                 .add(SearchRestrictions.eq(L_TECHNOLOGY + DOT + L_ID, technologyId));
-
 
     }
 
