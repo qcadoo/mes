@@ -229,7 +229,7 @@ public class TechnologyService {
 
         Entity product = productLookup.getEntity();
 
-        if (product == null || numberField.getFieldValue() != null) {
+        if (product == null || (numberField.getFieldValue() != null && !numberField.getFieldValue().equals(""))) {
             return;
         }
 
@@ -251,7 +251,7 @@ public class TechnologyService {
 
         Entity product = productLookup.getEntity();
 
-        if (product == null || nameField.getFieldValue() != null) {
+        if (product == null || (nameField.getFieldValue() != null && !nameField.getFieldValue().equals(""))) {
             return;
         }
 
