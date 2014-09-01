@@ -69,7 +69,6 @@
 					expression="#product['name']" />
 				<option type="column" name="state" fields="state" />
 				<option type="column" name="master" fields="master" />
-				<option type="column" name="technologyGroupNumber" fields="technologyGroup" expression="#technologyGroup['number']" />
 				<option type="order" column="number" direction="desc" />
 				<option type="searchable" value="name,number,productName,state" />
 				<option type="orderable" value="name,number,productName,state" />
