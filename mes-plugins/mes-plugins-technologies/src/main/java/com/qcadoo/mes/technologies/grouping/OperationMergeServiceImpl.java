@@ -91,6 +91,12 @@ public class OperationMergeServiceImpl implements OperationMergeService {
     }
 
     @Override
+    public Entity findMergedByMergedTocId(Long tocId) {
+        return mergesProductInDD().find()
+                .add(SearchRestrictions.eq(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_COMPONENT + ".id", tocId)).setMaxResults(1).uniqueResult();
+    }
+
+    @Override
     public Entity findMergedFromOperationInByOperationComponentId(Long operationComponentId) {
         Entity operationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(operationComponentId);
         return mergesProductInDD().find()
