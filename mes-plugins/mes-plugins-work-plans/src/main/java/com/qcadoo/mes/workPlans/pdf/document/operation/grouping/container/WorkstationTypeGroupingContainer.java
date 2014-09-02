@@ -23,35 +23,38 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
+import java.util.Map;
+
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
-
-import java.util.Map;
 
 public class WorkstationTypeGroupingContainer extends AbstractGroupingContainer {
 
     protected String nullWorkstationTitle;
 
     public WorkstationTypeGroupingContainer(Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
-                                            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
-                                            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-                                            String titleAppend,
-                                            String nullWorkstationTitle) {
-        super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment,operationComponentIdProductOutColumnToAlignment, titleAppend);
+            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
+            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
+            String titleAppend,
+            String nullWorkstationTitle) {
+        super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment,
+                operationComponentIdProductOutColumnToAlignment, titleAppend);
         this.nullWorkstationTitle = nullWorkstationTitle;
     }
 
     @Override
-    public void add(Entity order, Entity operationComponent) {
+    public void add(Entity order, Entity operationComponent, OperationProductComponentWithQuantityContainer productQuantities) {
         Entity workstationType = workstationType(operationComponent);
-        if(workstationType == null)
+        if (workstationType == null) {
             store(nullWorkstationTitle, order, operationComponent);
-        else
+        } else {
             store(title(workstationType), order, operationComponent);
+        }
     }
 
     private String title(Entity workstationType) {

@@ -72,14 +72,11 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
     }
 
     @Override
-    public void add(Entity order, Entity operationComponent) {
+    public void add(Entity order, Entity operationComponent, OperationProductComponentWithQuantityContainer productQuantities) {
         removeAlreadyExistsMergesForOrder(order);
 
         operationComponentIdToOrder.put(operationComponent.getId(), order);
         operationComponentIdToOperationComponent.put(operationComponent.getId(), operationComponent);
-        List<Entity> orders = Lists.newArrayList(order);
-        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
-                .getProductComponentQuantities(orders);
 
         String operationNumber = operationNumber(operationComponent);
         boolean quantityChanged = false;
@@ -91,8 +88,10 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
             List<Entity> operationProductInComponents = operationProductInComponents(operationComponent);
             Map<String, Entity> existingProductNumberToOperationProductInComponent = productNumberToOperationProductComponent(
                     existingOperationProductInComponents);
-            Map<String, Entity> productNumberToOperationProductInComponent = productNumberToOperationProductComponent(operationProductInComponents);
-            boolean sameProductsIn = sameProductsIn(existingProductNumberToOperationProductInComponent, productNumberToOperationProductInComponent);
+            Map<String, Entity> productNumberToOperationProductInComponent = productNumberToOperationProductComponent(
+                    operationProductInComponents);
+            boolean sameProductsIn = sameProductsIn(existingProductNumberToOperationProductInComponent,
+                    productNumberToOperationProductInComponent);
             if (sameProductsIn) {
                 for (Map.Entry<String, Entity> entry : existingProductNumberToOperationProductInComponent.entrySet()) {
                     Entity existingOperationProductInComponent = entry.getValue();
@@ -103,13 +102,14 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                     quantity(operationProductInComponent, BigDecimal.ZERO);
                     quantityChanged = true;
                     operationMergeService
-                            .mergeProductIn(order, existingToc,  existingOperationProductInComponent, increasedQuantity);
+                            .mergeProductIn(order, existingToc, existingOperationProductInComponent, increasedQuantity);
                     operationMergeService
-                            .storeProductIn(order, existingToc,  operationComponent, operationProductInComponent,
+                            .storeProductIn(order, existingToc, operationComponent, operationProductInComponent,
                                     quantity.negate());
                 }
 
-                List<Entity> existingOperationProductOutComponents = Lists.newArrayList(operationProductOutComponents(existingToc));
+                List<Entity> existingOperationProductOutComponents = Lists
+                        .newArrayList(operationProductOutComponents(existingToc));
                 List<Entity> operationProductOutComponents = operationProductOutComponents(operationComponent);
                 Map<String, Entity> existingProductNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
                         existingOperationProductOutComponents);
@@ -139,7 +139,8 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                                         quantity.negate());
                     }
                 }
-                existingToc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, existingOperationProductOutComponents);
+                existingToc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
+                        existingOperationProductOutComponents);
             }
         }
 
@@ -157,7 +158,7 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
             quantity(operationProductOutComponent, productQuantities.get(operationProductOutComponent));
         }
 
-        groupingContainer.add(order, operationComponent);
+        groupingContainer.add(order, operationComponent, productQuantities);
 
     }
 
@@ -173,7 +174,8 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
         }
     }
 
-    private boolean sameProductsIn(Map<String, Entity> existingProductNumberToOperationProductInComponent, Map<String, Entity> productNumberToOperationProductInComponent) {
+    private boolean sameProductsIn(Map<String, Entity> existingProductNumberToOperationProductInComponent,
+            Map<String, Entity> productNumberToOperationProductInComponent) {
         return containsAll(existingProductNumberToOperationProductInComponent, productNumberToOperationProductInComponent);
     }
 

@@ -23,12 +23,20 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
+import java.util.List;
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.pdf.document.WorkPlanPdf;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
@@ -36,11 +44,6 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.factory.Grouping
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.report.api.pdf.PdfDocumentWithWriterService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Locale;
 
 @Service
 public class WorkPlanPdfService extends PdfDocumentWithWriterService {
@@ -54,6 +57,9 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
     @Autowired
     private WorkPlanPdf workPlanPdf;
 
+    @Autowired
+    private ProductQuantitiesServiceImpl productQuantitiesServiceImpl;
+
     @Override
     public String getReportTitle(final Locale locale) {
         return translationService.translate("workPlans.workPlan.report.title", locale);
@@ -66,9 +72,13 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
         GroupingContainer groupingContainer = groupingContainerFactory.create(workPlan, locale);
 
         List<Entity> orders = orders(workPlan);
-        for (Entity order : orders)
-            for (Entity operationComponent : operationComponents(technology(order)))
-                groupingContainer.add(order, operationComponent);
+        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesServiceImpl
+                .getProductComponentQuantities(orders);
+        for (Entity order : orders) {
+            for (Entity operationComponent : operationComponents(technology(order))) {
+                groupingContainer.add(order, operationComponent, productQuantities);
+            }
+        }
 
         workPlanPdf.print(writer, groupingContainer, workPlan, document, locale);
 
@@ -85,6 +95,5 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
     private EntityList orders(Entity workPlan) {
         return workPlan.getHasManyField(WorkPlanFields.ORDERS);
     }
-
 
 }

@@ -23,24 +23,26 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
+import java.util.Map;
+
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
 
-import java.util.Map;
-
 public class NoDistinctionGroupingContainer extends AbstractGroupingContainer {
 
     public NoDistinctionGroupingContainer(Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
-                                          Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
-                                          Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-                                          String titleAppend) {
-        super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment, operationComponentIdProductOutColumnToAlignment, titleAppend);
+            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
+            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
+            String titleAppend) {
+        super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment,
+                operationComponentIdProductOutColumnToAlignment, titleAppend);
     }
 
     @Override
-    public void add(Entity order, Entity operationComponent) {
+    public void add(Entity order, Entity operationComponent, OperationProductComponentWithQuantityContainer productQuantities) {
         store(titleAppend, order, operationComponent);
     }
 
