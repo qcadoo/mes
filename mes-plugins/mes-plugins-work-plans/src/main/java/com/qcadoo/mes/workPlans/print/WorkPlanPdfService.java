@@ -36,6 +36,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.grouping.OperationMergeService;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.pdf.document.WorkPlanPdf;
@@ -58,6 +59,9 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
     private WorkPlanPdf workPlanPdf;
 
     @Autowired
+    private OperationMergeService operationMergeService;
+
+    @Autowired
     private ProductQuantitiesServiceImpl productQuantitiesServiceImpl;
 
     @Override
@@ -75,6 +79,7 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
         OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesServiceImpl
                 .getProductComponentQuantities(orders);
         for (Entity order : orders) {
+            removeAlreadyExistsMergesForOrder(order);
             for (Entity operationComponent : operationComponents(technology(order))) {
                 groupingContainer.add(order, operationComponent, productQuantities);
             }
@@ -94,6 +99,18 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
 
     private EntityList orders(Entity workPlan) {
         return workPlan.getHasManyField(WorkPlanFields.ORDERS);
+    }
+
+    private void removeAlreadyExistsMergesForOrder(Entity order) {
+        List<Entity> mergedProductInsByOrder = operationMergeService.findMergedProductInByOrder(order);
+        for (Entity entity : mergedProductInsByOrder) {
+            entity.getDataDefinition().delete(entity.getId());
+        }
+
+        List<Entity> mergedProductOutsByOrder = operationMergeService.findMergedProductOutByOrder(order);
+        for (Entity entity : mergedProductOutsByOrder) {
+            entity.getDataDefinition().delete(entity.getId());
+        }
     }
 
 }
