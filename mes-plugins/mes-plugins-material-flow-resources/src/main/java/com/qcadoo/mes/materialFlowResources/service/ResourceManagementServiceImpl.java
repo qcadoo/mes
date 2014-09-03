@@ -29,7 +29,6 @@ import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PROD
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,8 +159,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
                 errorMessage.append(product.getStringField(ProductFields.NAME));
                 errorMessage.append(" - ");
-                errorMessage.append(quantity.subtract(quantityInWarehouse).setScale(quantity.scale(), RoundingMode.HALF_UP)
-                        .toPlainString());
+                errorMessage.append(numberService.format(quantity.subtract(quantityInWarehouse)));
                 errorMessage.append(" ");
                 errorMessage.append(product.getStringField(ProductFields.UNIT));
                 errorMessage.append(", ");
@@ -245,8 +243,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
                 errorMessage.append(product.getStringField(ProductFields.NAME));
                 errorMessage.append(" - ");
-                errorMessage.append(quantity.subtract(quantityInWarehouse).setScale(quantity.scale(), RoundingMode.HALF_UP)
-                        .toPlainString());
+                errorMessage.append(numberService.format(quantity.subtract(quantityInWarehouse)));
                 errorMessage.append(" ");
                 errorMessage.append(product.getStringField(ProductFields.UNIT));
                 errorMessage.append(", ");
