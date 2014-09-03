@@ -44,6 +44,7 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.Groupi
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.factory.GroupingContainerFactory;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.pdf.PdfDocumentWithWriterService;
 
 @Service
@@ -63,6 +64,9 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
 
     @Autowired
     private ProductQuantitiesServiceImpl productQuantitiesServiceImpl;
+
+    @Autowired
+    private EntityTreeUtilsService entityTreeUtilsService;
 
     @Override
     public String getReportTitle(final Locale locale) {
@@ -89,8 +93,8 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
 
     }
 
-    private EntityList operationComponents(Entity technology) {
-        return technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+    private List<Entity> operationComponents(Entity technology) {
+        return entityTreeUtilsService.getSortedEntities(technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS));
     }
 
     private Entity technology(Entity order) {
