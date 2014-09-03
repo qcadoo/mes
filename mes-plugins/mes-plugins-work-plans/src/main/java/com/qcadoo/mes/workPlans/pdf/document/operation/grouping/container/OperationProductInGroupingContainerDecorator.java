@@ -136,7 +136,6 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                         BigDecimal quantity = productQuantities.get(operationProductOutComponent);
                         BigDecimal increasedQuantity = increaseQuantityBy(productQuantities, existingOperationProductOutComponent,
                                 quantity);
-                        quantity(operationProductInComponent, BigDecimal.ZERO);
                         quantityChanged = true;
                         operationMergeService
                                 .mergeProductIn(order, existingToc,  existingOperationProductInComponent, increasedQuantity);
