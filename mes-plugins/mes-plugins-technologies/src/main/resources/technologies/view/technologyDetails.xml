@@ -28,50 +28,50 @@
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="technologyDetails" modelName="technology">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<template name="standardFormTemplate" />
-			<group name="status">
-				<smallButton name="acceptTechnology" icon="startIcon16.png"
-				             state="disabled" action="#{form}.changeState(acceptTechnology);" />
-				<smallButton name="cancelTechnology" icon="deleteIcon16.png"
-				             state="disabled" action="#{form}.changeState(cancelTechnology);" />
-				<smallButton name="checkTechnology" icon="startIcon16.png"
-				             state="disabled" action="#{form}.changeState(checkTechnology);" />
-			</group>
-			<group name="reports">
-				<smallButton name="pdf" icon="pdfIcon16.png"
-				             action="#{form}.fireEvent(printTechnologyDetailsReport,pdf);"
-				             state="enabled" />
-				<smallButton name="xls" icon="xlsIcon16.png"
-				             action="#{form}.fireEvent(printTechnologyDetailsReport,xls);"
-				             state="enabled" />
-			</group>
-			<group name="atachments">
-				<bigButton name="downloadAtachment" icon="generateIcon24.png"
-				           state="enabled">
-					<script>
-						<![CDATA[
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="status">
+                <smallButton name="acceptTechnology" icon="startIcon16.png"
+                             state="disabled" action="#{form}.changeState(acceptTechnology);"/>
+                <smallButton name="cancelTechnology" icon="deleteIcon16.png"
+                             state="disabled" action="#{form}.changeState(cancelTechnology);"/>
+                <smallButton name="checkTechnology" icon="startIcon16.png"
+                             state="disabled" action="#{form}.changeState(checkTechnology);"/>
+            </group>
+            <group name="reports">
+                <smallButton name="pdf" icon="pdfIcon16.png"
+                             action="#{form}.fireEvent(printTechnologyDetailsReport,pdf);"
+                             state="enabled"/>
+                <smallButton name="xls" icon="xlsIcon16.png"
+                             action="#{form}.fireEvent(printTechnologyDetailsReport,xls);"
+                             state="enabled"/>
+            </group>
+            <group name="atachments">
+                <bigButton name="downloadAtachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									#{form}.performEvent('downloadAtachment', []);
 								}
 							});
 						]]>
-					</script>
-				</bigButton>
-			</group>
-			<group name="productStructure">
-				<bigButton name="generateProductStructure" icon="generateIcon24.png"
-						action="#{productStructureForm}.fireEvent(generateProductStructure);" state="disabled" />
-			</group>
-		</ribbon>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="productStructure">
+                <bigButton name="generateProductStructure" icon="generateIcon24.png"
+                           action="#{productStructureForm}.fireEvent(generateProductStructure);" state="disabled"/>
+            </group>
+        </ribbon>
 
-		<windowTab name="mainTab">
-			<component type="form" name="technology" reference="form">
-				<script>
-					<![CDATA[
+        <windowTab name="mainTab">
+            <component type="form" name="technology" reference="form">
+                <script>
+                    <![CDATA[
 						var save = #{window}.getRibbonItem("actions.save"),
 							saveBack = #{window}.getRibbonItem("actions.saveBack"),
 							saveNew = #{window}.getRibbonItem("actions.saveNew"),
@@ -115,9 +115,9 @@
 								"checkTechnology"
 						);
 					]]>
-				</script>
-				<script>
-					<![CDATA[
+                </script>
+                <script>
+                    <![CDATA[
 						this.changeState = function(eventPerformer, ribbonItemName) {
 							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
 							var newState = ribbonItem.forState;
@@ -239,300 +239,315 @@
 						}
 
 					]]>
-				</script>
+                </script>
 
-				<component type="gridLayout" name="gridsLayout" columns="3"
-				           rows="5" hasBorders="false">
-					<layoutElement column="1" row="1">
-						<component type="checkbox" name="master" field="master"
-						           reference="master" hasDescription="true" />
-					</layoutElement>
-					<layoutElement column="1" row="2">
-						<component type="input" name="number" field="number"
-						           reference="number" hasDescription="true">
-							<option type="alignment" value="right" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="3" height="2">
-						<component type="textarea" name="name" field="name"
-						           reference="name" hasDescription="true" />
-					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="lookup" name="product" field="product"
-						           reference="product">
-							<option type="column" name="name" fields="name" link="true"
-							        width="200" />
-							<option type="column" name="ean" fields="ean" />
+                <component type="gridLayout" name="gridsLayout" columns="3"
+                           rows="5" hasBorders="false">
+                    <layoutElement column="1" row="1">
+                        <component type="checkbox" name="master" field="master"
+                                   reference="master" hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="number" field="number"
+                                   reference="number" hasDescription="true">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   reference="name" hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="lookup" name="product" field="product"
+                                   reference="product">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="200"/>
+                            <option type="column" name="ean" fields="ean"/>
 
-							<option type="searchable" value="name,ean" />
-							<option type="orderable" value="name,ean" />
+                            <option type="searchable" value="name,ean"/>
+                            <option type="orderable" value="name,ean"/>
 
-							<option type="expression"
-							        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
 
-							<listener event="onSelectedEntityChange"
-							          class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyNumber" />
-							<listener event="onSelectedEntityChange"
-							          class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyName" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="2" height="2">
-						<component type="textarea" name="description" field="description" />
-					</layoutElement>
-					<layoutElement column="2" row="4">
-						<component type="lookup" name="technologyGroup" field="technologyGroup"
-						           reference="technologyGroup">
-							<option type="column" name="name" fields="name" link="true"
-							        width="200" />
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyNumber"/>
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyName"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="2" height="2">
+                        <component type="textarea" name="description" field="description"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
+                        <component type="lookup" name="technologyGroup" field="technologyGroup"
+                                   reference="technologyGroup">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="200"/>
 
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
-							<option type="expression"
-							        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-						<component type="hidden" name="externalSynchronized"
-						           field="externalSynchronized" reference="externalSynchronized" />
-					</layoutElement>
-				</component>
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                        <component type="hidden" name="externalSynchronized"
+                                   field="externalSynchronized" reference="externalSynchronized"/>
+                    </layoutElement>
+                </component>
 
-				<component type="select" name="state" field="state"
-				           reference="state" hasLabel="false" defaultVisible="false" />
+                <component type="select" name="state" field="state"
+                           reference="state" hasLabel="false" defaultVisible="false"/>
 
-				<option type="header" value="true" />
-				<option type="expression"
-				        value="#name + ' - ' + #number + ' - ' + '@technologies.technology.state.value.' + #state" />
-				<listener event="changeState"
-				          class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient"
-				          method="changeState" />
-				<listener event="printTechnologyDetailsReport"
-				          class="com.qcadoo.mes.technologies.print.TechnologiesReportService"
-				          method="printTechnologyDetailsReport" />
-				<listener event="downloadAtachment" method="downloadAtachment"
-				          class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners" />
-			</component>
-		</windowTab>
+                <option type="header" value="true"/>
+                <option type="expression"
+                        value="#name + ' - ' + #number + ' - ' + '@technologies.technology.state.value.' + #state"/>
+                <listener event="changeState"
+                          class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient"
+                          method="changeState"/>
+                <listener event="printTechnologyDetailsReport"
+                          class="com.qcadoo.mes.technologies.print.TechnologiesReportService"
+                          method="printTechnologyDetailsReport"/>
+                <listener event="downloadAtachment" method="downloadAtachment"
+                          class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"/>
+            </component>
+        </windowTab>
 
-		<windowTab name="treeTab">
-			<component type="gridLayout" name="gridsLayout" columns="2"
-			           rows="8" hasBorders="false">
-				<layoutElement column="1" row="1" height="1">
-					<component type="label" name="description">
-						<option type="labelStyle" value="text" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" height="7">
-					<component type="tree" name="technologyTree" reference="technologyTree"
-					           field="#{form}.operationComponents">
-						<dataType name="operation">
-							<option type="nodeLabelExpression"
-							        value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
-							<option type="correspondingView"
-							        value="technologies/technologyOperationComponentDetails" />
-							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="false" />
-							<option type="nodeIcon"
-							        value="/technologies/public/css/icons/operationIcon16.png" />
-							<option type="newIcon"
-							        value="/technologies/public/css/icons/newOperationIcon16.png" />
-						</dataType>
-						<dataType name="referenceTechnology">
-							<option type="nodeLabelExpression"
-							        value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + '&lt;/span&gt; ' + #referenceTechnology['name']" />
-							<option type="correspondingView"
-							        value="technologies/technologyReferenceTechnologyComponentDetails" />
-							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="true" />
-							<option type="nodeIcon"
-							        value="/technologies/public/css/icons/technologyIcon16.png" />
-							<option type="newIcon"
-							        value="/technologies/public/css/icons/newTechnologyIcon16.png" />
-							<option type="canHaveChildren" value="false" />
-						</dataType>
-						<option type="selectableWhenDisabled" value="true" />
+        <windowTab name="treeTab">
+            <component type="gridLayout" name="gridsLayout" columns="2"
+                       rows="8" hasBorders="false">
+                <layoutElement column="1" row="1" height="1">
+                    <component type="label" name="description">
+                        <option type="labelStyle" value="text"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" height="7">
+                    <component type="tree" name="technologyTree" reference="technologyTree"
+                               field="#{form}.operationComponents">
+                        <dataType name="operation">
+                            <option type="nodeLabelExpression"
+                                    value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']"/>
+                            <option type="correspondingView"
+                                    value="technologies/technologyOperationComponentDetails"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="false"/>
+                            <option type="nodeIcon"
+                                    value="/technologies/public/css/icons/operationIcon16.png"/>
+                            <option type="newIcon"
+                                    value="/technologies/public/css/icons/newOperationIcon16.png"/>
+                        </dataType>
+                        <dataType name="referenceTechnology">
+                            <option type="nodeLabelExpression"
+                                    value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + '&lt;/span&gt; ' + #referenceTechnology['name']"/>
+                            <option type="correspondingView"
+                                    value="technologies/technologyReferenceTechnologyComponentDetails"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
+                            <option type="nodeIcon"
+                                    value="/technologies/public/css/icons/technologyIcon16.png"/>
+                            <option type="newIcon"
+                                    value="/technologies/public/css/icons/newTechnologyIcon16.png"/>
+                            <option type="canHaveChildren" value="false"/>
+                        </dataType>
+                        <option type="selectableWhenDisabled" value="true"/>
 
-						<listener event="select"
-						          class="com.qcadoo.mes.technologies.TechnologyService"
-						          method="loadProductsForReferencedTechnology" />
-						<listener event="select"
-						          class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
-						          method="setGridEditable" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1" height="4">
-					<component type="grid" name="outProducts" reference="outProducts"
-					           source="#{technologyTree}.operationProductOutComponents"
-					           defaultEnabled="false">
-						<option type="column" name="number" fields="product"
-						        expression="#product['number']" link="true" width="100" />
-						<option type="column" name="name" fields="product"
-						        expression="#product['name']" link="true" width="200" />
-						<option type="column" name="quantity" fields="quantity"
-						        width="100" />
-						<option type="column" name="unit" fields="product"
-						        expression="#product['unit']" link="false" width="70" />
+                        <listener event="select"
+                                  class="com.qcadoo.mes.technologies.TechnologyService"
+                                  method="loadProductsForReferencedTechnology"/>
+                        <listener event="select"
+                                  class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                                  method="setGridEditable"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" height="4">
+                    <component type="grid" name="outProducts" reference="outProducts"
+                               source="#{technologyTree}.operationProductOutComponents"
+                               defaultEnabled="false">
+                        <option type="column" name="number" fields="product"
+                                expression="#product['number']" link="true" width="100"/>
+                        <option type="column" name="name" fields="product"
+                                expression="#product['name']" link="true" width="200"/>
+                        <option type="column" name="quantity" fields="quantity"
+                                width="100"/>
+                        <option type="column" name="unit" fields="product"
+                                expression="#product['unit']" link="false" width="70"/>
 
-						<option type="order" column="number" direction="desc" />
+                        <option type="order" column="number" direction="desc"/>
 
-						<option type="searchable" value="number,name,quantity,unit" />
-						<option type="orderable" value="number,name,quantity,unit" />
+                        <option type="searchable" value="number,name,quantity,unit"/>
+                        <option type="orderable" value="number,name,quantity,unit"/>
 
-						<option type="correspondingView"
-						        value="technologies/operationProductOutComponentDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
+                        <option type="correspondingView"
+                                value="technologies/operationProductOutComponentDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
 
-						<option type="paginable" value="false" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
+                        <option type="paginable" value="false"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
 
-						<option type="filtersDefaultVisible" value="false" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="5" height="4">
-					<component type="grid" name="inProducts" reference="inProducts"
-					           source="#{technologyTree}.operationProductInComponents"
-					           defaultEnabled="false">
-						<option type="column" name="number" fields="product"
-						        expression="#product['number']" link="true" width="100" />
-						<option type="column" name="name" fields="product"
-						        expression="#product['name']" link="true" width="200" />
-						<option type="column" name="quantity" fields="quantity"
-						        width="100" />
-						<option type="column" name="unit" fields="product"
-						        expression="#product['unit']" link="false" width="70" />
+                        <option type="filtersDefaultVisible" value="false"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="5" height="4">
+                    <component type="grid" name="inProducts" reference="inProducts"
+                               source="#{technologyTree}.operationProductInComponents"
+                               defaultEnabled="false">
+                        <option type="column" name="number" fields="product"
+                                expression="#product['number']" link="true" width="100"/>
+                        <option type="column" name="name" fields="product"
+                                expression="#product['name']" link="true" width="200"/>
+                        <option type="column" name="quantity" fields="quantity"
+                                width="100"/>
+                        <option type="column" name="unit" fields="product"
+                                expression="#product['unit']" link="false" width="70"/>
 
-						<option type="order" column="number" direction="desc" />
+                        <option type="order" column="number" direction="desc"/>
 
-						<option type="searchable" value="number,name,quantity,unit" />
-						<option type="orderable" value="number,name,quantity,unit" />
+                        <option type="searchable" value="number,name,quantity,unit"/>
+                        <option type="orderable" value="number,name,quantity,unit"/>
 
-						<option type="correspondingView"
-						        value="technologies/operationProductInComponentDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
+                        <option type="correspondingView"
+                                value="technologies/operationProductInComponentDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
 
-						<option type="paginable" value="false" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
+                        <option type="paginable" value="false"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
 
-						<option type="filtersDefaultVisible" value="false" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
+                        <option type="filtersDefaultVisible" value="false"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-		<windowTab name="history">
-			<component type="grid" name="loggings" reference="grid"
-			           source="#{form}.stateChanges">
-				<option type="column" name="dateAndTime" fields="dateAndTime" />
-				<option type="column" name="previousState" fields="sourceState" />
-				<option type="column" name="currentState" fields="targetState" />
-				<option type="column" name="shift" fields="shift"
-				        expression="#shift != null ? #shift['name'] : ''" />
-				<option type="column" name="worker" fields="worker" />
+        <windowTab name="history">
+            <component type="grid" name="loggings" reference="grid"
+                       source="#{form}.stateChanges">
+                <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                <option type="column" name="previousState" fields="sourceState"/>
+                <option type="column" name="currentState" fields="targetState"/>
+                <option type="column" name="shift" fields="shift"
+                        expression="#shift != null ? #shift['name'] : ''"/>
+                <option type="column" name="worker" fields="worker"/>
 
-				<option type="order" column="dateAndTime" direction="asc" />
+                <option type="order" column="dateAndTime" direction="asc"/>
 
-				<option type="searchable" value="dateAndTime,sourceState,targetState" />
-				<option type="orderable" value="dateAndTime,sourceState,targetState" />
-			</component>
-		</windowTab>
+                <option type="searchable" value="dateAndTime,sourceState,targetState"/>
+                <option type="orderable" value="dateAndTime,sourceState,targetState"/>
+            </component>
+        </windowTab>
 
-		<windowTab name="atachments">
-			<component type="gridLayout" name="gridsLayout" columns="3"
-			           rows="6" hasBorders="false">
-				<layoutElement column="1" row="1" height="6">
+        <windowTab name="atachments">
+            <component type="gridLayout" name="gridsLayout" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" height="6">
 
-					<component type="staticPage" name="multiUpload">
-						<option type="page" value="technologies/multiUpload.jsp" />
-					</component>
-					<component type="input" name="technologyIdForMultiUpload"
-					           reference="technologyIdForMultiUpload" defaultVisible="false">
-						<option type="alignment" value="right" />
-					</component>
-					<component type="input" name="technologyMultiUploadLocale"
-					           reference="technologyMultiUploadLocale" defaultVisible="false">
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1" width="2" height="6">
-					<component type="grid" name="technologyAttachments"
-					           reference="technologyAttachments" source="#{form}.technologyAttachments">
-						<option type="column" name="attachment" fields="name" />
-						<option type="column" name="size" fields="size" />
-						<option type="order" column="attachment" direction="desc" />
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="technologies/multiUpload.jsp"/>
+                    </component>
+                    <component type="input" name="technologyIdForMultiUpload"
+                               reference="technologyIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                    <component type="input" name="technologyMultiUploadLocale"
+                               reference="technologyMultiUploadLocale" defaultVisible="false">
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="technologyAttachments"
+                               reference="technologyAttachments" source="#{form}.technologyAttachments">
+                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
 
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-		<windowTab name="productStructure">
-			<component type="form" name="productStructureForm" reference="productStructureForm">
-				<component type="gridLayout" name="gridsLayout" rows="1" columns="1">
-					<layoutElement row="1" column="1">
-						<component type="tree" name="productStructureTree" reference="productStructureTree"
-							field="productStructureTree">
-							<dataType name="productStructureTreeNode">
-								<option type="nodeLabelExpression"
-										value="#parent != null ? 
-											(#operation.get('operation').get('id') !=  #parent['operation'].get('operation').id ? 
-												(#technology.get('id') == #parent['technology'].get('id') ?
-													'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' +  #operation.get('operation').get('name') + '&lt;/span&gt;' + '&lt;/b&gt;'
-													: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;span style=&quot;color: #68bb25&quot;&gt;&lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' + #operation.get('operation').get('name') + '&lt;/span&gt;' + ' (' + #technology.get('name') + ')' + '&lt;/b&gt;&lt;/span&gt;' 
-												)
-												: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') 
-											) 
-											: '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' + #operation.get('operation').get('name') + '&lt;/span&gt;' + '&lt;/b&gt;' " /> 
-								<option type="nodeIcon" value="/technologies/public/css/icons/operationIcon16.png" />
-								<option type="newIcon" value="/technologies/public/css/icons/newOperationIcon16.png" />
-								
-							</dataType>
-							<option type="hasNewButtons" value="false" />
-							<option type="hasDeleteButton" value="false" />
-							<option type="hasEditButton" value="false" />
-							<option type="hasMoveButton" value="false" />
-						</component>
-					</layoutElement>
-				</component>
-				<listener event="generateProductStructure"
-					class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
-						method="generateProductStructure" />
-			</component>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="productStructure">
+            <component type="form" name="productStructureForm" reference="productStructureForm">
+                <component type="gridLayout" name="gridsLayout" rows="11" columns="1">
+                    <layoutElement row="1" column="1" height="10">
+                        <component type="tree" name="productStructureTree" reference="productStructureTree"
+                                   field="productStructureTree">
+                            <dataType name="finalProduct">
+                                <option type="nodeLabelExpression"
+                                        value="'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' + #operation.get('operation').get('name') + '&lt;/span&gt;' + '&lt;/b&gt;' "/>
+                                <option type="nodeIcon" value="/technologies/public/css/icons/finalProductIcon16.png"/>
+                                <option type="newIcon" value="/technologies/public/css/icons/finalProductIcon16.png"/>
 
-		</windowTab>
-	</component>
+                            </dataType>
+                            <dataType name="intermediate">
+                                <option type="nodeLabelExpression"
+                                        value="'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' +  #operation.get('operation').get('name') + '&lt;/span&gt;' + '&lt;/b&gt;'"/>
+                                <option type="nodeIcon" value="/technologies/public/css/icons/intermediateIcon16.png"/>
+                                <option type="newIcon" value="/technologies/public/css/icons/intermediateIcon16.png"/>
 
-	<hooks>
-		<beforeRender
-				class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
-				method="setTechnologyIdForMultiUploadField" />
-		<beforeRender
-				class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
-				method="disableFieldTechnologyFormAndEnabledMaster" />
-		<beforeRender
-				class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
-				method="filterStateChangeHistory" />
-		<beforeRender
-				class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
-				method="setTreeTabEditable" />
+                            </dataType>
+                            <dataType name="component">
+                                <option type="nodeLabelExpression"
+                                        value="'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;span style=&quot;color: #68bb25&quot;&gt;&lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' + #operation.get('operation').get('name') + '&lt;/span&gt;' + ' (' + #technology.get('name') + ')' + '&lt;/b&gt;&lt;/span&gt;'"/> 
+                                <option type="nodeIcon" value="/technologies/public/css/icons/technologyIcon16.png"/>
+                                <option type="newIcon" value="/technologies/public/css/icons/technologyIcon16.png"/>
 
-		<!-- TODO hotfix for issue-1901 with restoring previous active tab state, 
-			requires fixes in framework -->
-		<beforeRender
-				class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
-				method="navigateToActiveTab" />
+                            </dataType>
+                            <dataType name="material">
+                                <option type="nodeLabelExpression"
+                                        value="'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit')"/>
+                                <option type="nodeIcon" value="/technologies/public/css/icons/materialIcon16.png"/>
+                                <option type="newIcon" value="/technologies/public/css/icons/materialIcon16.png"/>
 
-		<beforeRender
-				class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
-				method="setGridEditable" />
-	</hooks>
+                            </dataType>
+
+                            <option type="hasNewButtons" value="false"/>
+                            <option type="hasDeleteButton" value="false"/>
+                            <option type="hasEditButton" value="false"/>
+                            <option type="hasMoveButton" value="false"/>
+                        </component>
+                    </layoutElement>
+                </component>
+                <listener event="generateProductStructure"
+                          class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                          method="generateProductStructure"/>
+            </component>
+
+        </windowTab>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+                method="setTechnologyIdForMultiUploadField"/>
+        <beforeRender
+                class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+                method="disableFieldTechnologyFormAndEnabledMaster"/>
+        <beforeRender
+                class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+                method="filterStateChangeHistory"/>
+        <beforeRender
+                class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+                method="setTreeTabEditable"/>
+
+        <!-- TODO hotfix for issue-1901 with restoring previous active tab state,
+            requires fixes in framework 
+        <beforeRender
+                class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+                method="navigateToActiveTab"/>
+		-->
+        <beforeRender
+                class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                method="setGridEditable"/>
+    </hooks>
 
 </view>

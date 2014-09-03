@@ -14,9 +14,11 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class DocumentDetailsListeners {
@@ -33,6 +35,8 @@ public class DocumentDetailsListeners {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+
         FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
@@ -44,7 +48,13 @@ public class DocumentDetailsListeners {
             return;
         }
 
-        createResources(documentToCreateResourcesFor);
+        if (!documentToCreateResourcesFor.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
+            createResources(documentToCreateResourcesFor);
+        } else {
+            documentToCreateResourcesFor.setNotValid();
+            formComponent.addMessage("materialFlow.document.validate.global.error.emptyPositions", MessageType.FAILURE);
+            window.setActiveTab("positionsListTab");
+        }
 
         if (!documentToCreateResourcesFor.isValid()) {
             Entity recentlySavedDocument = documentDD.get(document.getId());

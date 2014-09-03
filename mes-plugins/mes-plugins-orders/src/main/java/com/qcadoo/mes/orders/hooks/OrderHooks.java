@@ -28,6 +28,7 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
@@ -460,8 +461,16 @@ public class OrderHooks {
     }
 
     public void setCommissionedPlannedQuantity(final DataDefinition orderDD, final Entity order) {
-        order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY,
-                numberService.setScale(order.getDecimalField(OrderFields.PLANNED_QUANTITY)));
+        if (order == null) {
+            return;
+        }
+        Object quantity = order.getField(OrderFields.PLANNED_QUANTITY);
+        if (quantity != null) {
+            if (BigDecimalUtils.tryParse(quantity.toString(), LocaleContextHolder.getLocale()).isRight()) {
+                order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY,
+                        numberService.setScale(order.getDecimalField(OrderFields.PLANNED_QUANTITY)));
+            }
+        }
     }
 
     public void setProductQuantity(final DataDefinition orderDD, final Entity order) {
@@ -518,7 +527,8 @@ public class OrderHooks {
         if (OrderType.WITH_PATTERN_TECHNOLOGY == orderType) {
             maybeTechnologyPrototype = Optional.fromNullable(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
         }
-        return Optional.fromNullable(technologyServiceO.generateNumberForTechnologyInOrder(order, maybeTechnologyPrototype.orNull()));
+        return Optional.fromNullable(technologyServiceO.generateNumberForTechnologyInOrder(order,
+                maybeTechnologyPrototype.orNull()));
     }
 
 }

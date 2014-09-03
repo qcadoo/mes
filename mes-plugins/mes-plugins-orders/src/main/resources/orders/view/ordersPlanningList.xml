@@ -227,7 +227,7 @@
 			<option type="correspondingView" value="orders/orderDetails" />
 			<option type="correspondingComponent" value="form" />
 			
-			<option type="order" column="dateFrom" direction="asc" />
+			<option type="order" column="dateFrom" direction="desc" />
 			
 			<option type="searchable" value="number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
 			<option type="orderable" value="number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />

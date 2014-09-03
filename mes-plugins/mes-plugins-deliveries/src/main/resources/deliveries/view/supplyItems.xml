@@ -51,7 +51,9 @@
 			<option type="column" name="productUnit" fields="product"
 				expression="#product['unit']" />
 			<option type="column" name="pricePerUnit" fields="pricePerUnit" />
-			<option type="column" name="supplier" fields="delivery"
+            <option type="column" name="deliveryCurrency" fields="delivery"
+                    expression="#delivery.get('currency')?.get('alphabeticCode')"/>
+            <option type="column" name="supplier" fields="delivery"
 				expression="#delivery.get('supplier')?.get('name')" />
 
 			<option type="order" column="deliveryDate" direction="asc" />

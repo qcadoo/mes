@@ -112,14 +112,15 @@ public class StaffDetailsHooksTest {
         Mockito.verify(field2).setFieldValue(currency);
     }
 
-    @Test
-    public void shouldReturnWhenWageGroupsLookupIsEmpty() throws Exception {
-        // given
-        when(view.getComponentByReference("wageGroup")).thenReturn(lookup);
-        when(field1.getFieldValue()).thenReturn(null);
-        // when
-        detailsHooks.fillFieldAboutWageGroup(view);
-    }
+    // TODO now when wage group is empty method shouldn't return, need to add proper test
+    // @Test
+    // public void shouldReturnWhenWageGroupsLookupIsEmpty() throws Exception {
+    // // given
+    // when(view.getComponentByReference("wageGroup")).thenReturn(lookup);
+    // when(field1.getFieldValue()).thenReturn(null);
+    // // when
+    // detailsHooks.fillFieldAboutWageGroup(view);
+    // }
 
     @Test
     public void shouldFillFieldValuesOfSelectedWageGroup() throws Exception {

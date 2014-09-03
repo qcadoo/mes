@@ -36,6 +36,7 @@ import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -88,6 +89,9 @@ public class ProductionTrackingDetailsHooks {
 
     @Autowired
     private ProductionTrackingService productionTrackingService;
+
+    @Autowired
+    private ProductionTrackingDetailsListeners productionTrackingDetailsListeners;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -187,6 +191,7 @@ public class ProductionTrackingDetailsHooks {
         boolean isExternalSynchronized = productionTracking.getBooleanField(ProductionTrackingFields.IS_EXTERNAL_SYNCHRONIZED);
 
         setFieldComponentsEnabledAndGridsEditable(view, isDraft && isExternalSynchronized);
+        productionTrackingDetailsListeners.checkJustOne(view, null, null);
     }
 
     private void setFieldComponentsEnabledAndGridsEditable(final ViewDefinitionState view, final boolean isEnabled) {

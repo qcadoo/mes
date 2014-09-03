@@ -98,16 +98,20 @@ public class OrderServiceImpl implements OrderService {
 
         String technologyNumber = L_EMPTY_NUMBER;
 
-        if (technology != null) {
-            technologyNumber = "tech. " + technology.getStringField(TechnologyFields.NUMBER);
-        }
-
         Calendar cal = Calendar.getInstance(locale);
         cal.setTime(new Date());
 
-        return translationService.translate("orders.order.name.default", locale, product.getStringField(OrderFields.NAME),
-                product.getStringField(ProductFields.NUMBER), technologyNumber,
-                cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
+        if (technology != null) {
+            technologyNumber = "tech. " + technology.getStringField(TechnologyFields.NUMBER);
+
+            return translationService.translate("orders.order.name.default", locale, product.getStringField(OrderFields.NAME),
+                    product.getStringField(ProductFields.NUMBER), technologyNumber,
+                    cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
+        } else {
+            return translationService.translate("orders.order.name.defaultFromProduct", locale,
+                    product.getStringField(OrderFields.NAME), product.getStringField(ProductFields.NUMBER),
+                    cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
+        }
     }
 
     // FIXME - this method doesn't have anything in common with production orders..

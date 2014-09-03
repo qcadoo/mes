@@ -23,14 +23,25 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -42,8 +53,13 @@ import com.qcadoo.view.api.components.WindowComponent;
 @Service
 public class TechnologyDetailsListeners {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TechnologyDetailsListeners.class);
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
@@ -72,20 +88,24 @@ public class TechnologyDetailsListeners {
             state.addMessage("technologies.technologyDetails.window.ribbon.atachments.nonSelectedAtachment", MessageType.INFO);
             return;
         }
-        StringBuffer redirectUrl = new StringBuffer();
-        redirectUrl.append("/rest/techologies/getAttachment.html");
-        boolean isFirstParam = true;
+        DataDefinition attachmentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);
+        List<File> atachments = Lists.newArrayList();
         for (Long confectionProtocolId : grid.getSelectedEntitiesIds()) {
-            if (isFirstParam) {
-                redirectUrl.append("?");
-                isFirstParam = false;
-            } else {
-                redirectUrl.append("&");
-            }
-            redirectUrl.append("id=");
-            redirectUrl.append(confectionProtocolId);
+            Entity attachment = attachmentDD.get(confectionProtocolId);
+            File file = new File(attachment.getStringField(TechnologyAttachmentFields.ATTACHMENT));
+            atachments.add(file);
         }
-        view.redirectTo(redirectUrl.toString(), true, false);
+
+        File zipFile = null;
+        try {
+            zipFile = fileService.compressToZipFile(atachments, true);
+        } catch (IOException e) {
+            LOG.error("Unable to compress documents to zip file.", e);
+            return;
+        }
+
+        view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
     }
 
     public void generateProductStructure(final ViewDefinitionState view, final ComponentState state, final String[] args) {

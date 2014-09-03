@@ -201,6 +201,10 @@
 							<criteriaModifier
 									class="com.qcadoo.mes.productionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersPC"
 									method="restrictTechnologyOperationComponentsToOrderTechnology" />
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                                      method="fillWorkstationTypeField" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">

@@ -39,12 +39,20 @@ public class ProductStructureTreeService {
 
     private static final String L_OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
 
-    private void addChild(final List<Entity> tree, final Entity child, final Entity parent) {
+    private static final String L_FINAL_PRODUCT = "finalProduct";
+
+    private static final String L_INTERMEDIATE = "intermediate";
+
+    private static final String L_COMPONENT = "component";
+
+    private static final String L_MATERIAL = "material";
+
+    private void addChild(final List<Entity> tree, final Entity child, final Entity parent, final String entityType) {
         child.setField("parent", parent);
         child.setId((long) tree.size() + 1);
         child.setField(L_NUMBER, child.getId());
         child.setField("priority", 1);
-        child.setField("entityType", "productStructureTreeNode");
+        child.setField("entityType", entityType);
 
         tree.add(child);
     }
@@ -132,7 +140,7 @@ public class ProductStructureTreeService {
                         child.setField(L_OPERATION, operationForTechnology);
                         child.setField(L_PRODUCT, product);
                         child.setField(L_QUANTITY, quantityForTechnology);
-                        addChild(tree, child, parent);
+                        addChild(tree, child, parent, L_COMPONENT);
                         usedTechnologies.add(subTechnology.getId());
                         generateTreeForSubproducts(operationForTechnology, subTechnology, tree, child, view, usedTechnologies);
                     } else {
@@ -141,7 +149,7 @@ public class ProductStructureTreeService {
                         child.setField(L_PRODUCT, product);
                         child.setField(L_QUANTITY, quantity);
                         child.setField(L_OPERATION, subOperation);
-                        addChild(tree, child, parent);
+                        addChild(tree, child, parent, L_INTERMEDIATE);
 
                         FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
                         productStructureForm
@@ -163,12 +171,14 @@ public class ProductStructureTreeService {
                 child.setField(L_TECHNOLOGY, technology);
                 child.setField(L_PRODUCT, product);
                 child.setField(L_QUANTITY, quantity);
-                addChild(tree, child, parent);
+
                 if (subOperation != null) {
                     child.setField(L_OPERATION, subOperation);
+                    addChild(tree, child, parent, L_INTERMEDIATE);
                     generateTreeForSubproducts(subOperation, technology, tree, child, view, usedTechnologies);
                 } else {
                     child.setField(L_OPERATION, operation);
+                    addChild(tree, child, parent, L_MATERIAL);
                 }
             }
         }
@@ -187,7 +197,7 @@ public class ProductStructureTreeService {
         root.setField(L_OPERATION, operation);
         root.setField(L_QUANTITY, quantity);
         List<Entity> productStructureList = new ArrayList<Entity>();
-        addChild(productStructureList, root, null);
+        addChild(productStructureList, root, null, L_FINAL_PRODUCT);
 
         List<Long> usedTechnologies = new ArrayList<Long>();
         usedTechnologies.add(technology.getId());

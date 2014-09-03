@@ -45,4 +45,6 @@ public final class LocationFieldsMFR {
 
     public static final String REQUIRE_EXPIRATION_DATE = "requireExpirationDate";
 
+    public static final String RESOURCES = "resources";
+
 }

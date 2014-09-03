@@ -65,13 +65,17 @@ public class StaffDetailsHooks {
     public void fillFieldAboutWageGroup(final ViewDefinitionState view) {
         LookupComponent lookup = (LookupComponent) view.getComponentByReference("wageGroup");
         Entity wageGroup = lookup.getEntity();
-        if (wageGroup == null) {
-            return;
-        }
+
         FieldComponent laborCostFromWageGroups = (FieldComponent) view.getComponentByReference("laborCostFromWageGroups");
         FieldComponent superiorWageGroups = (FieldComponent) view.getComponentByReference("superiorWageGroups");
-        laborCostFromWageGroups.setFieldValue(wageGroup.getField(LABOR_HOURLY_COST));
-        superiorWageGroups.setFieldValue(wageGroup.getStringField(SUPERIOR_WAGE_GROUP));
+
+        if (wageGroup != null) {
+            laborCostFromWageGroups.setFieldValue(wageGroup.getField(LABOR_HOURLY_COST));
+            superiorWageGroups.setFieldValue(wageGroup.getStringField(SUPERIOR_WAGE_GROUP));
+        } else {
+            laborCostFromWageGroups.setFieldValue(null);
+            superiorWageGroups.setFieldValue(null);
+        }
     }
 
 }

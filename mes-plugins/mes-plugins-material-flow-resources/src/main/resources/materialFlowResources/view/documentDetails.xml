@@ -16,7 +16,7 @@
         <windowTab name="generalTab" reference="generalTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="4">
+                           rows="6">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" reference="number"
                                    field="number" />
@@ -45,6 +45,9 @@
                             <option type="expression" value="#firstName + '  ' + #lastName" />
                             <option type="fieldCode" value="firstName" />
                         </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5" height="2">
+                        <component type="textarea" name="description" field="description" />
                     </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="lookup" name="locationFrom" field="locationFrom"

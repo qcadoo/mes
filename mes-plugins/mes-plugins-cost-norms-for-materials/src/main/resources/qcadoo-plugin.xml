@@ -72,7 +72,7 @@
 		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="technologyInstOperProductInComps"
 				plugin="costNormsForMaterials" model="technologyInstOperProductInComp"
-				joinField="order" cascade="delete" copyable="true" />
+				joinField="order" cascade="delete" copyable="false" />
 		</model:model-field>
 		
 		<model:model-hook plugin="orders" model="order">
@@ -80,7 +80,6 @@
 				class="com.qcadoo.mes.costNormsForMaterials.hooks.OrderHooksCNFM"
 				method="fillOrderOperationProductsInComponents" />
 		</model:model-hook>
-		
 		
 		<view:view resource="view/costNormsForMaterialsInOrderList.xml" />
 		<view:view resource="view/costNormsForMaterialsInOrderDetails.xml" />
