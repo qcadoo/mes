@@ -114,6 +114,7 @@ public class CompanyDetailsHooks {
         }
 
         LookupComponent countryField = (LookupComponent) view.getComponentByReference(CompanyFields.COUNTRY);
+        LookupComponent taxCountryField = (LookupComponent) view.getComponentByReference(CompanyFields.TAX_COUNTRY_CODE);
 
         Entity country = countryField.getEntity();
 
@@ -124,8 +125,9 @@ public class CompanyDetailsHooks {
                 countryField.setFieldValue(null);
             } else {
                 countryField.setFieldValue(defaultCountry.getId());
+                taxCountryField.setFieldValue(defaultCountry.getId());
             }
-
+            taxCountryField.requestComponentUpdateState();
             countryField.requestComponentUpdateState();
         }
     }
