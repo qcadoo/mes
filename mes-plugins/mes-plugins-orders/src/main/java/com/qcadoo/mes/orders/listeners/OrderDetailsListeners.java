@@ -23,12 +23,11 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,6 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.hooks.OrderDetailsHooks;
 import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -51,6 +49,8 @@ import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class OrderDetailsListeners {
+
+    private static Logger LOG = LoggerFactory.getLogger(OrderDetailsListeners.class);
 
     private static final String L_FORM = "form";
 
@@ -262,96 +262,6 @@ public class OrderDetailsListeners {
                 orderForm.addMessage("order.orderType.changeOrderType", MessageType.INFO, false);
             }
         }
-    }
-
-    public void setProductQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        if (!isValidDecimalField(view, Arrays.asList(OrderFields.DONE_QUANTITY))) {
-            return;
-        }
-
-        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        if (orderForm.getEntityId() == null) {
-            return;
-        }
-
-        Entity order = orderForm.getEntity();
-
-        FieldComponent amountOfProductProducedField = (FieldComponent) view
-                .getComponentByReference(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED);
-        FieldComponent remainingAmountOfProductToProduceField = (FieldComponent) view
-                .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
-
-        amountOfProductProducedField.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
-        amountOfProductProducedField.requestComponentUpdateState();
-
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
-                numberService.getMathContext());
-
-        if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
-            remainingAmountOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
-        } else {
-            remainingAmountOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
-        }
-
-        remainingAmountOfProductToProduceField.requestComponentUpdateState();
-    }
-
-    public void setDoneQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        if (!isValidDecimalField(view, Arrays.asList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED))) {
-            return;
-        }
-
-        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        if (orderForm.getEntityId() == null) {
-            return;
-        }
-
-        Entity order = orderForm.getEntity();
-
-        FieldComponent doneQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.DONE_QUANTITY);
-        FieldComponent remaingingAmoutOfProductToProduceField = (FieldComponent) view
-                .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
-
-        doneQuantityField.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
-        doneQuantityField.requestComponentUpdateState();
-
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
-                numberService.getMathContext());
-
-        if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
-            remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
-        } else {
-            remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
-        }
-
-        remaingingAmoutOfProductToProduceField.requestComponentUpdateState();
-    }
-
-    private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
-        boolean isValid = true;
-
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        Entity entity = orderForm.getEntity();
-
-        for (String field : fileds) {
-            try {
-                BigDecimal decimalField = entity.getDecimalField(field);
-            } catch (IllegalArgumentException e) {
-                FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(field);
-                fieldComponent.addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
-
-                isValid = false;
-            }
-        }
-
-        return isValid;
     }
 
 }

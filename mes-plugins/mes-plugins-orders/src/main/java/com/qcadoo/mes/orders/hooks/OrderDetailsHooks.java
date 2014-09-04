@@ -23,12 +23,30 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.*;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMPANY;
+import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
+import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
+import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START;
+import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -52,10 +70,12 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -63,7 +83,12 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -111,6 +136,9 @@ public class OrderDetailsHooks {
     @Autowired
     private OrderProductQuantityHooks orderProductQuantityHooks;
 
+    @Autowired
+    private NumberService numberService;
+
     public final void onBeforeRender(final ViewDefinitionState view) {
         fillProductionLine(view);
         generateOrderNumber(view);
@@ -130,6 +158,7 @@ public class OrderDetailsHooks {
         changedEnabledDescriptionFieldForSpecificOrderState(view);
         setFieldsVisibility(view);
         checkIfLockTechnologyTree(view);
+        setQuantities(view);
     }
 
     public final void fillProductionLine(final ViewDefinitionState view) {
@@ -476,6 +505,102 @@ public class OrderDetailsHooks {
             ComponentState componnet = view.getComponentByReference(fieldName);
             componnet.setVisible(selectForPatternTechnology);
         }
+    }
+
+    private void setQuantities(final ViewDefinitionState view) {
+        setProductQuantities(view);
+        setDoneQuantity(view);
+    }
+
+    private void setProductQuantities(final ViewDefinitionState view) {
+
+        if (!isValidDecimalField(view, Arrays.asList(OrderFields.DONE_QUANTITY))) {
+            return;
+        }
+
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (orderForm.getEntityId() == null) {
+            return;
+        }
+
+        Entity order = orderForm.getEntity();
+
+        FieldComponent amountOfProductProducedField = (FieldComponent) view
+                .getComponentByReference(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED);
+        FieldComponent remainingAmountOfProductToProduceField = (FieldComponent) view
+                .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
+
+        amountOfProductProducedField.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
+        amountOfProductProducedField.requestComponentUpdateState();
+
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
+                numberService.getMathContext());
+
+        if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
+            remainingAmountOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
+        } else {
+            remainingAmountOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
+        }
+
+        remainingAmountOfProductToProduceField.requestComponentUpdateState();
+    }
+
+    private void setDoneQuantity(final ViewDefinitionState view) {
+        if (!isValidDecimalField(view, Arrays.asList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED))) {
+            return;
+        }
+
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (orderForm.getEntityId() == null) {
+            return;
+        }
+
+        Entity order = orderForm.getEntity();
+
+        FieldComponent doneQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.DONE_QUANTITY);
+        FieldComponent remaingingAmoutOfProductToProduceField = (FieldComponent) view
+                .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
+
+        doneQuantityField.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
+        doneQuantityField.requestComponentUpdateState();
+
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                numberService.getMathContext());
+
+        if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
+            remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
+        } else {
+            remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
+        }
+
+        remaingingAmoutOfProductToProduceField.requestComponentUpdateState();
+    }
+
+    private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
+        boolean isValid = true;
+
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity entity = orderForm.getEntity();
+
+        for (String field : fileds) {
+            try {
+                BigDecimal decimalField = entity.getDecimalField(field);
+            } catch (IllegalArgumentException e) {
+                FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(field);
+                fieldComponent.addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
+
+                isValid = false;
+            }
+        }
+
+        return isValid;
     }
 
 }
