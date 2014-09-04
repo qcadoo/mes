@@ -14,9 +14,10 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -32,9 +33,11 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
 
     private OperationMergeService operationMergeService;
 
-    private ProductQuantitiesService productQuantitiesService;
+    private ProductionCountingService productionCountingService;
 
     private GroupingContainer groupingContainer;
+
+    private ParameterService parameterService;
 
     private Map<Long, Entity> operationComponentIdToOrder;
 
@@ -43,10 +46,12 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
     private OrderIdOperationNumberOperationComponentIdMap orderIdOperationNumberOperationComponentIdMap;
 
     public OperationProductInGroupingContainerDecorator(OperationMergeService operationMergeService,
-            GroupingContainer groupingContainer, ProductQuantitiesService productQuantitiesService) {
+            GroupingContainer groupingContainer, ProductionCountingService productionCountingService,
+            ParameterService parameterService) {
         this.operationMergeService = operationMergeService;
         this.groupingContainer = groupingContainer;
-        this.productQuantitiesService = productQuantitiesService;
+        this.productionCountingService = productionCountingService;
+        this.parameterService = parameterService;
         initMaps();
     }
 
@@ -62,6 +67,9 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
 
         operationComponentIdToOrder.put(operationComponent.getId(), order);
         operationComponentIdToOperationComponent.put(operationComponent.getId(), operationComponent);
+
+        Entity parameters = parameterService.getParameter();
+        boolean takeActualProgress = parameters.getBooleanField(ParameterFieldsWP.TAKE_ACTUAL_PROGRESS_IN_WORK_PLANS);
 
         String operationNumber = operationNumber(operationComponent);
         boolean quantityChanged = false;
@@ -135,7 +143,9 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                         Entity existingOperationProductOutComponent = existingProductNumberToOperationProductOutComponent
                                 .get(entry.getKey());
                         if (existingOperationProductOutComponent == null) {
-                            quantity(operationProductOutComponent, productQuantities.get(operationProductOutComponent));
+                            quantity(operationProductOutComponent, fillWithPlanedQuantityValueOUT(productQuantities,
+                                    operationProductOutComponent,
+                                    takeActualProgress));
                             existingOperationProductOutComponents.add(operationProductOutComponent);
                             operationMergeService.mergeProductOut(order, existingToc, operationProductOutComponent,
                                     quantity(productQuantities, operationProductOutComponent));
@@ -168,11 +178,13 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
         orderIdOperationNumberOperationComponentIdMap.put(order.getId(), operationNumber, operationComponent.getId());
 
         for (Entity operationProductInComponent : operationProductInComponents(operationComponent)) {
-            quantity(operationProductInComponent, productQuantities.get(operationProductInComponent));
+            quantity(operationProductInComponent, fillWithPlanedQuantityValueIN(productQuantities, operationProductInComponent,
+                    takeActualProgress));
         }
 
         for (Entity operationProductOutComponent : operationProductOutComponents(operationComponent)) {
-            quantity(operationProductOutComponent, productQuantities.get(operationProductOutComponent));
+            quantity(operationProductOutComponent, fillWithPlanedQuantityValueOUT(productQuantities, operationProductOutComponent,
+                    takeActualProgress));
         }
 
         groupingContainer.add(order, operationComponent, productQuantities);

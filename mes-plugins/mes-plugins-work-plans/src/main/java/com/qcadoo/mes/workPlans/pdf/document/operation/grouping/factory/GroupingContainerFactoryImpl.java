@@ -32,7 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.grouping.OperationMergeService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
@@ -58,36 +60,40 @@ public class GroupingContainerFactoryImpl implements GroupingContainerFactory {
 
     private OperationMergeService operationMergeService;
 
-    private ProductQuantitiesService productQuantitiesService;
+    private ProductionCountingService productionCountingService;
+
+    private ParameterService parameterService;
 
     @Autowired
     public GroupingContainerFactoryImpl(TranslationService translationService, WorkPlanColumnService workPlanColumnService,
-            OperationMergeService operationMergeService, ProductQuantitiesService productQuantitiesService) {
+            OperationMergeService operationMergeService, ProductionCountingService productionCountingService,
+            ParameterService parameterService) {
         this.translationService = translationService;
         this.workPlanColumnService = workPlanColumnService;
         this.operationMergeService = operationMergeService;
-        this.productQuantitiesService = productQuantitiesService;
+        this.productionCountingService = productionCountingService;
+        this.parameterService = parameterService;
     }
 
     public GroupingContainer create(Entity workPlan, Locale locale) {
         String type = workPlan.getStringField(WorkPlanFields.TYPE);
         if (WorkPlanType.NO_DISTINCTION.getStringValue().equals(type)) {
             return new OperationProductInGroupingContainerDecorator(operationMergeService, noDistinction(workPlan, locale),
-                    productQuantitiesService);
+                    productionCountingService, parameterService);
         } else if (WorkPlanType.BY_END_PRODUCT.getStringValue().equals(type)) {
             return new OperationProductInGroupingContainerDecorator(operationMergeService, byEndProduct(workPlan, locale),
-                    productQuantitiesService);
+                    productionCountingService, parameterService);
         } else if (WorkPlanType.BY_WORKSTATION_TYPE.getStringValue().equals(type)) {
             return new OperationProductInGroupingContainerDecorator(operationMergeService, byWorkstationType(workPlan, locale),
-                    productQuantitiesService);
+                    productionCountingService, parameterService);
         } else if (WorkPlanType.BY_DIVISION.getStringValue().equals(type)) {
             return new OperationProductInGroupingContainerDecorator(operationMergeService, noDistinction(workPlan, locale),
-                    productQuantitiesService);
+                    productionCountingService, parameterService);
         } else {
             LOG.warn("There is no grouping container defined for work plan type: " + type);
             LOG.warn("Returning noDistinctionGroupingContainer ...");
             return new OperationProductInGroupingContainerDecorator(operationMergeService, noDistinction(workPlan, locale),
-                    productQuantitiesService);
+                    productionCountingService, parameterService);
         }
     }
 
