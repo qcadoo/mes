@@ -58,3 +58,10 @@ CREATE TABLE technologies_technologyoperationcomponentmergeproductout
       REFERENCES technologies_technologyoperationcomponent (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
+
+-- Table: basic_parameter
+-- create: 04.09.2014
+
+ALTER TABLE basic_parameter ADD COLUMN takeactualprogressinworkplans boolean;
+
+-- end
