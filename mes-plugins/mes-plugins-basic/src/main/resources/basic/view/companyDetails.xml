@@ -166,6 +166,10 @@
 
 							<option type="expression" value="#code + ' - ' + #country" />
 							<option type="fieldCode" value="code" />
+										
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.basic.listeners.CompanyDetailsListeners"
+								method="setTaxCountryCode" />
 						</component>
 					</layoutElement>
 
