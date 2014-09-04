@@ -438,7 +438,9 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
         List<Entity> tracings =
                 getProductionTrackingDD().find()
-                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc)).list()
+                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                        .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
+                        .list()
                         .getEntities();
         for (Entity tracking : tracings) {
             Entity topIN = getTrackingOperationProductInComponentDD().find().add(SearchRestrictions.belongsTo(
@@ -465,7 +467,9 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
         List<Entity> tracings =
                 getProductionTrackingDD().find()
-                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc)).list()
+                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                        .add(SearchRestrictions
+                                .eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED)).list()
                         .getEntities();
         for (Entity tracking : tracings) {
             Entity topIN = getTrackingOperationProductOutComponentDD().find().add(SearchRestrictions.belongsTo(
