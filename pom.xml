@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
-    	<groupId>com.qcadoo.maven</groupId>
-    	<artifactId>qcadoo-super-pom</artifactId>
-    	<version>0.0.1</version>
+		<groupId>com.qcadoo.maven</groupId>
+		<artifactId>qcadoo-super-pom</artifactId>
+		<version>0.0.1</version>
 	</parent>
 
 	<groupId>com.qcadoo.mes</groupId>
@@ -33,17 +34,17 @@
 			<url>https://github.com/qcadoo/qcadoo/raw/master/licence.txt</url>
 		</license>
 	</licenses>
-	
+
 	<modules>
-    	<module>mes-plugins</module>
-    	<module>mes-application</module>
-  	</modules>	
+		<module>mes-plugins</module>
+		<module>mes-application</module>
+	</modules>
 
 	<properties>
-		<qcadoo.version>1.3</qcadoo.version>
-		<qcadoo.plugin.version>1.3</qcadoo.plugin.version>
-		<qcadoo.saas.version>1.3</qcadoo.saas.version>
-		<qcadoo.maven.plugin.version>1.3</qcadoo.maven.plugin.version>
+		<qcadoo.version>1.4-SNAPSHOT</qcadoo.version>
+		<qcadoo.plugin.version>1.4</qcadoo.plugin.version>
+		<qcadoo.saas.version>1.4-SNAPSHOT</qcadoo.saas.version>
+		<qcadoo.maven.plugin.version>1.4-SNAPSHOT</qcadoo.maven.plugin.version>
 		<profile.name>default</profile.name>
 	</properties>
 
@@ -108,17 +109,17 @@
 			<artifactId>qcadoo-commons</artifactId>
 			<version>${qcadoo.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>com.qcadoo</groupId>
-            <artifactId>qcadoo-testing</artifactId>
-            <version>${qcadoo.version}</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-testing</artifactId>
+			<version>${qcadoo.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
-	
+
 	<build>
-	    <plugins>
-	        <plugin>
+		<plugins>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
 				<version>${aspectj.maven.plugin.version}</version>
@@ -126,16 +127,16 @@
 					<source>1.6</source>
 					<target>1.6</target>
 					<aspectLibraries>
-           				<aspectLibrary>
-               				<groupId>org.springframework</groupId>
-              				<artifactId>spring-aspects</artifactId>
-            			</aspectLibrary>
-            			<aspectLibrary>
-               				<groupId>org.springframework.security</groupId>
-              				<artifactId>spring-security-aspects</artifactId>
-            			</aspectLibrary>
+						<aspectLibrary>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-aspects</artifactId>
+						</aspectLibrary>
+						<aspectLibrary>
+							<groupId>org.springframework.security</groupId>
+							<artifactId>spring-security-aspects</artifactId>
+						</aspectLibrary>
 					</aspectLibraries>
-			    	<showWeaveInfo>true</showWeaveInfo>
+					<showWeaveInfo>true</showWeaveInfo>
 				</configuration>
 				<dependencies>
 					<dependency>
@@ -153,11 +154,11 @@
 					</execution>
 				</executions>
 			</plugin>
-	    </plugins>
+		</plugins>
 	</build>
-	
+
 	<repositories>
-	    <repository>
+		<repository>
 			<id>qcadoo-releases-repository</id>
 			<url>http://nexus.qcadoo.org/content/repositories/releases</url>
 			<releases>
@@ -170,9 +171,9 @@
 			</snapshots>
 		</repository>
 		<repository>
-	      	<id>com.logdigger</id>
-	      	<url>http://maven.logdigger.com/repos</url>
-	      	<releases>
+			<id>com.logdigger</id>
+			<url>http://maven.logdigger.com/repos</url>
+			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>never</updatePolicy>
 			</releases>
@@ -180,11 +181,11 @@
 				<enabled>false</enabled>
 				<updatePolicy>never</updatePolicy>
 			</snapshots>
-	    </repository>
-	    <repository>
-	      	<id>atlassian</id>
-	      	<url>https://maven.atlassian.com/repository/public</url>
-	      	<releases>
+		</repository>
+		<repository>
+			<id>atlassian</id>
+			<url>https://maven.atlassian.com/repository/public</url>
+			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>never</updatePolicy>
 			</releases>
@@ -192,13 +193,13 @@
 				<enabled>false</enabled>
 				<updatePolicy>never</updatePolicy>
 			</snapshots>
-	    </repository>
+		</repository>
 	</repositories>
-	
+
 	<scm>
 		<connection>scm:git:ssh://github.com/qcadoo/mes.git</connection>
-   		<developerConnection>scm:git:ssh://git@github.com/qcadoo/mes.git</developerConnection>
-   		<url>http://github.com/qcadoo/mes</url>
+		<developerConnection>scm:git:ssh://git@github.com/qcadoo/mes.git</developerConnection>
+		<url>http://github.com/qcadoo/mes</url>
 	</scm>
 
 	<distributionManagement>
