@@ -40,10 +40,10 @@
   	</modules>	
 
 	<properties>
-		<qcadoo.version>1.3-SNAPSHOT</qcadoo.version>
+		<qcadoo.version>1.3</qcadoo.version>
 		<qcadoo.plugin.version>1.3</qcadoo.plugin.version>
-		<qcadoo.saas.version>1.3-SNAPSHOT</qcadoo.saas.version>
-		<qcadoo.maven.plugin.version>1.3-SNAPSHOT</qcadoo.maven.plugin.version>
+		<qcadoo.saas.version>1.3</qcadoo.saas.version>
+		<qcadoo.maven.plugin.version>1.3</qcadoo.maven.plugin.version>
 		<profile.name>default</profile.name>
 	</properties>
 
