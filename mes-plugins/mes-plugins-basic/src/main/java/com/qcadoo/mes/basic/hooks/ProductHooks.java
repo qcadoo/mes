@@ -30,7 +30,6 @@ import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -114,16 +113,6 @@ public class ProductHooks {
             return;
         }
         product.setField(EAN, null);
-    }
-
-    public boolean checkIfEanValueIsNumerical(final DataDefinition productDD, final Entity product) {
-        String eanCode = product.getStringField(EAN);
-        if (eanCode == null || StringUtils.isNumeric(eanCode)) {
-            return true;
-        } else {
-            product.addError(productDD.getField(EAN), "basic.product.ean.onlyNumericValue");
-            return false;
-        }
     }
 
     public void clearExternalIdOnCopy(final DataDefinition dataDefinition, final Entity entity) {

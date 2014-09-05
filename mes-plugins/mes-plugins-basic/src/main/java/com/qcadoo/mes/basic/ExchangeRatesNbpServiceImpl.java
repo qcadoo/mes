@@ -23,21 +23,23 @@
  */
 package com.qcadoo.mes.basic;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
@@ -61,28 +63,31 @@ public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
         try {
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader sr = inputFactory.createXMLStreamReader(inputStream);
-            sr.nextTag();  // advance to tabela_kursow
-            sr.nextTag();  // advance to numer_tabeli
+            sr.nextTag(); // advance to tabela_kursow
+            sr.nextTag(); // advance to numer_tabeli
 
             String currencyCode = "";
             BigDecimal exRate = null;
-
+            BigDecimal factor = BigDecimal.ONE;
             String exchangeRateField = nbpProperties.fieldName();
             while (sr.hasNext()) {
-                if(sr.getEventType() == XMLStreamConstants.END_DOCUMENT)
+                if (sr.getEventType() == XMLStreamConstants.END_DOCUMENT)
                     sr.close();
-                if(sr.isStartElement()) {
+                if (sr.isStartElement()) {
                     String s = sr.getLocalName();
-                    if (s.equals("kod_waluty")) {
+
+                    if (s.equals("przelicznik")) {
+                        factor = new BigDecimal(sr.getElementText().replace(',', '.'));
+                    } else if (s.equals("kod_waluty")) {
                         currencyCode = sr.getElementText();
                     } else {
                         if (s.equals(exchangeRateField)) {
-                            exRate = new BigDecimal(sr.getElementText().replace(',','.'));
+                            exRate = new BigDecimal(sr.getElementText().replace(',', '.'));
                         }
                     }
 
-                    if(exRate != null){
-                        exRates.put(currencyCode, exRate);
+                    if (exRate != null) {
+                        exRates.put(currencyCode, exRate.divide(factor, RoundingMode.HALF_UP));
                         exRate = null;
                     }
                 }
@@ -90,16 +95,17 @@ public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
             }
         } catch (XMLStreamException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             closeStream(inputStream);
         }
         return exRates;
     }
 
-    private void closeStream(Closeable s){
-        try{
-            if(s!=null)s.close();
-        }catch(IOException e){
+    private void closeStream(Closeable s) {
+        try {
+            if (s != null)
+                s.close();
+        } catch (IOException e) {
             LOG.error("Cannot close URL Stream");
         }
     }

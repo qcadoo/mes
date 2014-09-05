@@ -71,8 +71,6 @@
 			method="checkIfNotBelongsToSameFamily" />
 		<validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
 			method="checkIfParentIsFamily" />
-		<validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
-			method="checkIfEanValueIsNumerical" />
 
 		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
 			method="generateNodeNumber" />
