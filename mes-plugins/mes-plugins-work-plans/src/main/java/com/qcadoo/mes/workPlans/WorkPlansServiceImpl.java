@@ -188,6 +188,7 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         workPlan.setField(WorkPlanFields.NAME, generateNameForWorkPlan());
         workPlan.setField(WorkPlanFields.TYPE, WorkPlanType.NO_DISTINCTION.getStringValue());
         workPlan.setField(WorkPlanFields.ORDERS, orders);
+        workPlan.setField(WorkPlanFields.GENERATED, false);
 
         return workPlan.getDataDefinition().save(workPlan);
     }
@@ -215,7 +216,7 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         return orders;
     }
 
-    private String generateNameForWorkPlan() {
+    public String generateNameForWorkPlan() {
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, LocaleContextHolder.getLocale());
 
