@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
-		<version>1.3-SNAPSHOT</version>
+		<version>1.3</version>
 	</parent>
 
 	<artifactId>mes-plugins-column-extension</artifactId>
