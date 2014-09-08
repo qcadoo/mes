@@ -432,7 +432,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
     @Override
     public BigDecimal getRegisteredProductValueForOperationProductIn(final Entity operationProduct, final BigDecimal planed) {
-        BigDecimal value = new BigDecimal(0l);
+        BigDecimal value = null;
         Entity toc = operationProduct.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
         Entity product = operationProduct.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 
@@ -448,20 +448,29 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
                     .add(SearchRestrictions.belongsTo(TrackingOperationProductInComponentFields.PRODUCT, product))
                     .setMaxResults(1).uniqueResult();
             if (topIN != null) {
+                if (value == null) {
+                    value = new BigDecimal(0l);
+                }
                 value = value.add(topIN.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY),
                         numberService.getMathContext());
             }
         }
-
-        if (!value.equals(new BigDecimal(0l))) {
+        if (value != null) {
             value = planed.subtract(value, numberService.getMathContext());
+        } else {
+            return value;
         }
+
+        if (value.compareTo(new BigDecimal(0l)) == -1) {
+            value = new BigDecimal(0l);
+        }
+
         return value;
     }
 
     @Override
     public BigDecimal getRegisteredProductValueForOperationProductOut(final Entity operationProduct, final BigDecimal planed) {
-        BigDecimal value = new BigDecimal(0l);
+        BigDecimal value = null;
         Entity toc = operationProduct.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT);
         Entity product = operationProduct.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
 
@@ -477,14 +486,23 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
                     .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, product))
                     .setMaxResults(1).uniqueResult();
             if (topIN != null) {
+                if (value == null) {
+                    value = new BigDecimal(0l);
+                }
                 value = value.add(topIN.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY),
                         numberService.getMathContext());
             }
         }
-
-        if (!value.equals(new BigDecimal(0l))) {
+        if (value != null) {
             value = planed.subtract(value, numberService.getMathContext());
+        } else {
+            return value;
         }
+
+        if (value.compareTo(new BigDecimal(0l)) == -1) {
+            value = new BigDecimal(0l);
+        }
+
         return value;
     }
 }
