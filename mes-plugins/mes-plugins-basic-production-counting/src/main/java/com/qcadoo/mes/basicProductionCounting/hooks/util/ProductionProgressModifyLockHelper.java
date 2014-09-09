@@ -45,8 +45,9 @@ public class ProductionProgressModifyLockHelper {
 
         String state = order.getStringField(OrderFields.STATE);
 
-        return !(OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED
-                .equals(state)) || isLocked();
+        return (OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state)
+                || OrderStateStringValues.INTERRUPTED
+                .equals(state)) && isLocked();
     }
 
     private boolean isLocked() {
