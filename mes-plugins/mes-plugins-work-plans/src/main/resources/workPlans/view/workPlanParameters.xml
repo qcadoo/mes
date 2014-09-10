@@ -39,7 +39,7 @@
         <windowTab name="workPlansOrdersTab" reference="workPlansOrdersTab">
             <component type="form" name="workPlanParameters" reference="form">
                 <component type="gridLayout" name="workPlansOrdersGridLayout"
-                           columns="2" rows="8">
+                           columns="2" rows="9">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="hideBarcodeOperationComponentInWorkPlans"
                                    field="#{form}.hideBarcodeOperationComponentInWorkPlans"
@@ -63,7 +63,15 @@
                             <option type="align" value="left"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4" height="4">
+                    <layoutElement column="1" row="4">
+                        <component type="checkbox" name="takeActualProgressInWorkPlans"
+                                   field="#{form}.takeActualProgressInWorkPlans"
+                                   reference="takeActualProgressInWorkPlans">
+                            <option type="labelWidth" value="50"/>
+                            <option type="align" value="left"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5" height="4">
                         <component type="grid" name="columnsForOrders"
                                    source="#{form}.parameterOrderColumns" reference="columnsForOrders">
                             <option type="column" name="name" fields="columnForOrders"

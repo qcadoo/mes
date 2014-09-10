@@ -45,10 +45,13 @@ import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentEntityType;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.technologies.grouping.OperationMergeService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 
 @Service
 public class OperationProductsExtractor {
@@ -58,6 +61,9 @@ public class OperationProductsExtractor {
 
     @Autowired
     private TrackingOperationComponentBuilder trackingOperationComponentBuilder;
+
+    @Autowired
+    private OperationMergeService operationMergeService;
 
     /**
      * This method takes production tracking entity and returns all matching products wrapped in tracking operation components.
@@ -96,7 +102,7 @@ public class OperationProductsExtractor {
                 .entrySet()) {
             OperationProductComponentHolder operationProductComponentHolder = productComponentQuantity.getKey();
 
-            if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
+            if (forEach(typeOfProductionRecording)) {
                 Entity operationComponent = operationProductComponentHolder.getTechnologyOperationComponent();
 
                 if (technologyOperationComponent == null) {
@@ -108,7 +114,7 @@ public class OperationProductsExtractor {
                         continue;
                     }
                 }
-            } else if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
+            } else if (cumulated(typeOfProductionRecording)) {
                 OperationProductComponentEntityType entityType = operationProductComponentHolder.getEntityType();
                 Entity product = operationProductComponentHolder.getProduct();
 
@@ -129,13 +135,29 @@ public class OperationProductsExtractor {
                 }
             }
 
-            Entity trackingOperationProductComponent = trackingOperationComponentBuilder
-                    .fromOperationProductComponentHolder(operationProductComponentHolder);
+            Entity trackingOperationProductComponent = trackingOperationComponentBuilder.fromOperationProductComponentHolder(operationProductComponentHolder);
 
             trackingOperationProductComponents.add(trackingOperationProductComponent);
         }
 
         return trackingOperationProductComponents;
+    }
+
+    private void add(List<Entity> trackingOperationProductComponents, Entity operationComponent) {
+        Entity trackingOperationProductComponent = trackingOperationComponentBuilder.fromOperationProductComponent(operationComponent);
+        trackingOperationProductComponents.add(trackingOperationProductComponent);
+    }
+
+    private boolean isMerged(Entity technologyOperationComponent) {
+        return operationMergeService.findMergedByOperationComponent(technologyOperationComponent) != null;
+    }
+
+    private boolean cumulated(String typeOfProductionRecording) {
+        return TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording);
+    }
+
+    private boolean forEach(String typeOfProductionRecording) {
+        return TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording);
     }
 
     public static class TrackingOperationProducts {

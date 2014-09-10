@@ -146,3 +146,26 @@ INSERT INTO qcadooplugin_plugin (id, identifier, version, state, issystem)
 VALUES (nextval('hibernate_sequence'), 'deviationCausesReporting', '1.3.0', 'ENABLING', false);
 
 -- end
+-- end
+
+-- Update identifiers for columns in work plans
+
+update workplans_columnforoutputproducts set identifier='productNameOperationProductColumn' where id=1;
+update workplans_columnforoutputproducts set identifier='plannedQuantityOperationProductColumn' where id=2;
+update workplans_columnforoutputproducts set identifier='effectiveQuantityOperationProductColumn' where id=3;
+update workplans_columnforoutputproducts set identifier='attentionOperationProductColumn' where id=4;
+update workplans_columnforoutputproducts set identifier='employeeSignatureOperationProductColumn' where id=5;
+
+update workplans_columnforinputproducts set identifier='productNameOperationProductColumn' where id=1;
+update workplans_columnforinputproducts set identifier='plannedQuantityOperationProductColumn' where id=2;
+update workplans_columnforinputproducts set identifier='effectiveQuantityOperationProductColumn' where id=3;
+update workplans_columnforinputproducts set identifier='attentionOperationProductColumn' where id=4;
+update workplans_columnforinputproducts set identifier='employeeSignatureOperationProductColumn' where id=5;
+
+update workplans_columnfororders set identifier='numberOrderColumn' where id=1;
+update workplans_columnfororders set identifier='nameOrderColumn' where id=2;
+update workplans_columnfororders set identifier='productNameOrderColumn' where id=3;
+update workplans_columnfororders set identifier='plannedQuantityOrderColumn' where id=4;
+update workplans_columnfororders set identifier='plannedEndDateOrderColumn' where id=5;
+
+-- end

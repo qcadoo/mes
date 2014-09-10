@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.workPlans.util;
 
+import com.qcadoo.model.api.Entity;
+
 import java.io.Serializable;
 import java.util.Comparator;
-
-import com.qcadoo.model.api.Entity;
 
 public class OperationProductComponentComparator implements Comparator<Entity>, Serializable {
 
