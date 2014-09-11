@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,8 +42,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
+import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.constants.ShiftFields;
 import com.qcadoo.mes.basic.constants.ShiftTimetableExceptionFields;
 import com.qcadoo.mes.basic.constants.TimetableExceptionType;
@@ -100,6 +103,25 @@ public class ShiftTest {
                 shift.findWorkTimeAt(mondayMidnight.plusHours(7).toDate()));
         assertFalse(shift.findWorkTimeAt(mondayMidnight.plusDays(2).toDate()).isPresent());
         assertFalse(shift.findWorkTimeAt(mondayMidnight.plusHours(9).toDate()).isPresent());
+    }
+
+    @Test
+    public final void shouldReturnWorkingHoursForDay() {
+        // given
+        String hours = "6:00-12:00, 21:30-2:30";
+        given(shiftEntity.getStringField(ShiftFields.MONDAY_HOURS)).willReturn(hours);
+        given(shiftEntity.getBooleanField(ShiftFields.MONDAY_WORKING)).willReturn(true);
+
+        LocalDate mondayDate = new LocalDate(2013, 9, 2);
+
+        // when
+        Shift shift = new Shift(shiftEntity);
+        List<TimeRange> timeRanges = shift.findWorkTimeAt(mondayDate);
+
+        // then
+        List<TimeRange> expectedTimeRanges = ImmutableList.of(new TimeRange(new LocalTime(6, 0), new LocalTime(12, 0)),
+                new TimeRange(new LocalTime(21, 30), new LocalTime(2, 30)));
+        assertEquals(expectedTimeRanges, timeRanges);
     }
 
     private EntityList mockEntityList(final List<Entity> entities) {

@@ -25,6 +25,7 @@ package com.qcadoo.mes.basic.shift;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -38,10 +39,13 @@ import org.joda.time.LocalTime;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.commons.dateTime.TimeRange;
+import com.qcadoo.commons.functional.BiFunction;
+import com.qcadoo.commons.functional.Fold;
 import com.qcadoo.mes.basic.constants.TimetableExceptionType;
 import com.qcadoo.model.api.Entity;
 
@@ -143,14 +147,15 @@ public class Shift {
     }
 
     /**
-     * Returns date range containing given date or null. This method IS AWARE of timetable exceptions.
+     * Returns date range containing given date. This method IS AWARE of timetable exceptions.
      * 
      * <b>Be aware</b> - this method doesn't compose returned date range with the timetable exclusions/inclusions. This means that
-     * if you have a shift which is working at Monday from 8:00-16:00 and there is defined work time exclusion from 12:00-20:00
-     * and you ask for 10:00 then you will get date range from 8:00-16:00 (as in plan). But if you ask for 14:00 you will get
-     * null.
+     * if you have a shift which works at Monday from 8:00-16:00 and there is defined work time exclusion from 12:00-20:00 and you
+     * ask for 10:00 then you will get date range from 8:00-16:00 (as in plan). But if you ask for 14:00 you will get
+     * Optional.absent().
      * 
      * @param date
+     *            date with time for which work dates range you want to find.
      * @return
      */
     public Optional<DateRange> findWorkTimeAt(final Date date) {
@@ -186,12 +191,13 @@ public class Shift {
     }
 
     /**
-     * Returns date range containing given date or null. This method IS NOT AWARE of timetable exceptions.
+     * Returns date range of shift work time that occurs at given day of week and time. This method IS NOT AWARE of timetable
+     * exceptions.
      * 
      * @param dayOfWeek
      *            1 == MONDAY !
      * @param time
-     * @return
+     * @return shift work time that occurs at given day of week and time
      */
     public Optional<TimeRange> findWorkTimeAt(final int dayOfWeek, final LocalTime time) {
         for (WorkingHours workingHours : workingHoursPerDay.get(dayOfWeek)) {
@@ -201,6 +207,27 @@ public class Shift {
             }
         }
         return Optional.absent();
+    }
+
+    /**
+     * Returns a list with shift work time ranges for whole given day (of the week, to be precise). This method IS NOT AWARE of
+     * timetable exceptions, it just check if shift works at given day of week and returns working hours.
+     * 
+     * @param localDate
+     *            date to check
+     * @return shift's work time ranges for given date
+     * @since 1.4
+     */
+    public List<TimeRange> findWorkTimeAt(final LocalDate localDate) {
+        return Fold.fold(workingHoursPerDay.get(localDate.getDayOfWeek()), Lists.<TimeRange> newArrayList(),
+                new BiFunction<List<TimeRange>, WorkingHours, List<TimeRange>>() {
+
+                    @Override
+                    public List<TimeRange> apply(final List<TimeRange> acc, final WorkingHours wh) {
+                        acc.addAll(wh.getTimeRanges());
+                        return acc;
+                    }
+                });
     }
 
     /**
