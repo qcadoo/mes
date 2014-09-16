@@ -29,18 +29,16 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
@@ -53,6 +51,8 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -187,8 +187,11 @@ public class CostNormsForMaterialsService {
     }
 
     public void updateCostsForProductInOrder(Entity order, Long productId, Optional<BigDecimal> costForNumber,
-                                              Optional<BigDecimal> costForOrder) {
+            Optional<BigDecimal> costForOrder) {
         Entity technologyInstOperProductInComp = getTechnologyInstOperProductInCompFromDB(productId, order);
+        if (technologyInstOperProductInComp == null) {
+            return;
+        }
         Preconditions.checkArgument(technologyInstOperProductInComp != null, String.format(
                 "TechnologyInstanceOperationProductInComponent not found for product: %d order: %d", productId, order.getId()));
 
