@@ -32,6 +32,8 @@
 		</ribbon>
 		<component type="grid" name="productCatalogNumbersList"
 			reference="grid">
+			<option type="column" name="catalogNumber" fields="catalogNumber"
+				link="true" />
 			<option type="column" name="productNumber" fields="product"
 				link="true" expression="#product['number']" />
 			<option type="column" name="productName" fields="product"
@@ -40,8 +42,6 @@
 				link="true" expression="#company['number']" />
 			<option type="column" name="companyName" fields="company"
 				link="true" expression="#company['name']" />
-			<option type="column" name="catalogNumber" fields="catalogNumber"
-				link="true" />
 			<option type="order" column="productNumber" direction="asc" />
 			<option type="correspondingView"
 				value="productCatalogNumbers/productCatalogNumbersDetails" />
