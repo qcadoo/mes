@@ -34,15 +34,16 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import com.qcadoo.commons.functional.BiFunction;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsDataProvider;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductsCostCalculationServiceImpl implements ProductsCostCalculationService {
@@ -51,7 +52,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private OrderMaterialCostsDataProvider orderMaterialCostsDataProvider;
 
     @Autowired
     private NumberService numberService;
@@ -66,10 +67,10 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         entity.setField("totalMaterialCosts", numberService.setScale(result));
     }
 
-    public Map<Entity, BigDecimal> calculateListProductsCostForPlannedQuantity(final Entity entity,
+    private Map<Entity, BigDecimal> calculateListProductsCostForPlannedQuantity(final Entity entity,
             final String sourceOfMaterialCosts) {
         checkArgument(entity != null);
-        BigDecimal quantity = BigDecimalUtils.convertNullToZero(entity.getField("quantity"));
+        BigDecimal quantity = BigDecimalUtils.convertNullToZero(entity.getDecimalField("quantity"));
 
         String calculateMaterialCostsMode = entity.getStringField("calculateMaterialCostsMode");
 
@@ -88,16 +89,21 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         throw new IllegalStateException("sourceOfProductCosts is neither FROM_ORDER nor GLOBAL");
     }
 
+    @Override
     public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
             final String calculateMaterialCostsMode) {
-        BigDecimal cost = BigDecimalUtils.convertNullToZero(product.getField(ProductsCostFields.parseString(
+        BigDecimal cost = BigDecimalUtils.convertNullToZero(product.getField(ProductsCostFields.forMode(
                 calculateMaterialCostsMode).getStrValue()));
         BigDecimal costForNumber = BigDecimalUtils.convertNullToOne(product.getDecimalField("costForNumber"));
+        if (BigDecimalUtils.valueEquals(costForNumber, BigDecimal.ZERO)) {
+            costForNumber = BigDecimal.ONE;
+        }
         BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
 
         return costPerUnit.multiply(quantity, numberService.getMathContext());
     }
 
+    @Override
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String calculateMaterialCostsMode) {
         Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, quantity,
@@ -112,43 +118,37 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         return results;
     }
 
+    @Override
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String calculateMaterialCostsMode, final Entity order) {
         Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, quantity,
                 COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
-        Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> results = Maps.newHashMap();
 
         for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
-            product = product.getDataDefinition().get(product.getId());
-
-            Entity technologyInstOperProductInComp = dataDefinitionService
-                    .get(CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
-                            CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP).find()
-                    .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product))
-                    .uniqueResult();
-
-            BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(technologyInstOperProductInComp,
-                    productQuantity.getValue(), calculateMaterialCostsMode);
-            results.put(product, thisProductsCost);
+            for (Entity orderMaterialCosts : findOrderMaterialCosts(order, product).asSet()) {
+                BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(orderMaterialCosts,
+                        productQuantity.getValue(), calculateMaterialCostsMode);
+                results.put(product, thisProductsCost);
+            }
         }
         return results;
     }
 
+    @Override
     public Entity getAppropriateCostNormForProduct(final Entity product, final Entity order, final String sourceOfMaterialCosts) {
         if ("01currentGlobalDefinitionsInProduct".equals(sourceOfMaterialCosts)) {
             return product;
-        } else {
-            Entity productWithCostNormsFromOrder = dataDefinitionService
-                    .get(CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
-                            CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP).find()
-                    .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product))
-                    .uniqueResult();
-            if (productWithCostNormsFromOrder == null) {
-                throw new IllegalStateException("Product with number " + product.getStringField(ProductFields.NUMBER)
-                        + " doesn't exists for order with id" + order.getId());
-            }
-            return productWithCostNormsFromOrder;
         }
+        for (Entity orderMaterialCosts : findOrderMaterialCosts(order, product).asSet()) {
+            return orderMaterialCosts;
+        }
+        throw new IllegalStateException("Product with id=" + product.getStringField(ProductFields.NUMBER)
+                + " doesn't exists for order with id=" + order.getId());
+    }
+
+    private Optional<Entity> findOrderMaterialCosts(final Entity order, final Entity product) {
+        return orderMaterialCostsDataProvider.find(order.getId(), product.getId());
     }
 }

@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.costCalculation.constants;
 
+import org.apache.commons.lang.StringUtils;
+
 public enum CalculateMaterialCostsMode {
     NOMINAL("01nominal"), AVERAGE("02average"), LAST_PURCHASE("03lastPurchase"), AVERAGE_OFFER_COST("04averageOfferCost"), LAST_OFFER_COST(
             "05lastOfferCost"), COST_FOR_ORDER("06costForOrder");
@@ -37,22 +39,13 @@ public enum CalculateMaterialCostsMode {
         return calculateMaterialCostsMode;
     }
 
-    public static CalculateMaterialCostsMode parseString(final String string) {
-        if ("01nominal".equals(string)) {
-            return NOMINAL;
-        } else if ("02average".equals(string)) {
-            return AVERAGE;
-        } else if ("03lastPurchase".equals(string)) {
-            return LAST_PURCHASE;
-        } else if ("04averageOfferCost".equals(string)) {
-            return AVERAGE_OFFER_COST;
-        } else if ("05lastOfferCost".equals(string)) {
-            return LAST_OFFER_COST;
-        } else if ("06costForOrder".equals(string)) {
-            return COST_FOR_ORDER;
+    public static CalculateMaterialCostsMode parseString(final String rawStringValue) {
+        for (CalculateMaterialCostsMode calculateMaterialCostsMode : values()) {
+            if (StringUtils.equalsIgnoreCase(rawStringValue, calculateMaterialCostsMode.getStringValue())) {
+                return calculateMaterialCostsMode;
+            }
         }
-
-        throw new IllegalStateException("Unsupported calculateMaterialCostsMode: " + string);
+        throw new IllegalArgumentException(String.format("Cannot parse CalculateMaterialCostMode from '%s'", rawStringValue));
     }
 
 }

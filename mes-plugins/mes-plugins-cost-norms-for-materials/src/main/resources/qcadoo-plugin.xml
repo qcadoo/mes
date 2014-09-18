@@ -25,23 +25,17 @@
 
 -->
 <plugin plugin="costNormsForMaterials" group="basic" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
-	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd">
 
 	<information>
 		<name>MES - Cost norms for materials</name>
@@ -55,11 +49,11 @@
 	<dependencies>
 		<dependency>
 			<plugin>orders</plugin>
-			<version>[0.4.2</version>
+			<version>[1.4.0</version>
 		</dependency>
 		<dependency>
 			<plugin>costNormsForProduct</plugin>
-			<version>[0.4.2</version>
+			<version>[1.4.0</version>
 		</dependency>
 	</dependencies>
 
@@ -67,52 +61,52 @@
 		<localization:translation path="locales" />
 
 		<model:model model="technologyInstOperProductInComp"
-			resource="model/technologyInstOperProductInComp.xml" />
+		             resource="model/technologyInstOperProductInComp.xml" />
 
 		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="technologyInstOperProductInComps"
-				plugin="costNormsForMaterials" model="technologyInstOperProductInComp"
-				joinField="order" cascade="delete" copyable="false" />
+			               plugin="costNormsForMaterials" model="technologyInstOperProductInComp"
+			               joinField="order" cascade="delete" copyable="false" />
 		</model:model-field>
-		
+
 		<model:model-hook plugin="orders" model="order">
 			<model:onSave
-				class="com.qcadoo.mes.costNormsForMaterials.hooks.OrderHooksCNFM"
-				method="fillOrderOperationProductsInComponents" />
+					class="com.qcadoo.mes.costNormsForMaterials.hooks.OrderHooksCNFM"
+					method="fillOrderOperationProductsInComponents" />
 		</model:model-hook>
-		
+
 		<view:view resource="view/costNormsForMaterialsInOrderList.xml" />
 		<view:view resource="view/costNormsForMaterialsInOrderDetails.xml" />
 		<view:view resource="view/costNormsForMaterialsInTechnologyList.xml" />
-		
-		
+
+
 		<view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml" />
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
-	
-		<view:view-listener plugin="technologies" view="technologyDetails"
-			component="form" event="save"
-			class="com.qcadoo.mes.costNormsForMaterials.listeners.TechnologyDetailsListenersCNFM"
-			method="checkTechnologyProductsInNorms" />
 
 		<view:view-listener plugin="technologies" view="technologyDetails"
-			component="form" event="showInputProductsCost"
-			class="com.qcadoo.mes.costNormsForMaterials.listeners.TechnologyDetailsListenersCNFM"
-			method="showInputProductsCostInTechnology" />
+		                    component="form" event="save"
+		                    class="com.qcadoo.mes.costNormsForMaterials.listeners.TechnologyDetailsListenersCNFM"
+		                    method="checkTechnologyProductsInNorms" />
+
+		<view:view-listener plugin="technologies" view="technologyDetails"
+		                    component="form" event="showInputProductsCost"
+		                    class="com.qcadoo.mes.costNormsForMaterials.listeners.TechnologyDetailsListenersCNFM"
+		                    method="showInputProductsCostInTechnology" />
 
 		<view:view-listener plugin="orders" view="orderDetails"
-			component="form" event="showInputProductsCost"
-			class="com.qcadoo.mes.costNormsForMaterials.listeners.OrderDetailsListenersCNFM"
-			method="showInputProductsCostInOrder" />
-			
+		                    component="form" event="showInputProductsCost"
+		                    class="com.qcadoo.mes.costNormsForMaterials.listeners.OrderDetailsListenersCNFM"
+		                    method="showInputProductsCostInOrder" />
+
 		<view:view-hook plugin="orders" view="orderDetails"
-			type="beforeRender" class="com.qcadoo.mes.costNormsForMaterials.hooks.OrderDetailsHooksCNFM"
-			method="updateViewCostsButtonState" />
-			
+		                type="beforeRender" class="com.qcadoo.mes.costNormsForMaterials.hooks.OrderDetailsHooksCNFM"
+		                method="updateViewCostsButtonState" />
+
 		<view:view-hook plugin="technologies" view="technologyDetails"
-			type="beforeRender" class="com.qcadoo.mes.costNormsForMaterials.hooks.TechnologyDetailsHooksCNFM"
-			method="updateViewCostsButtonState" />
+		                type="beforeRender" class="com.qcadoo.mes.costNormsForMaterials.hooks.TechnologyDetailsHooksCNFM"
+		                method="updateViewCostsButtonState" />
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>
