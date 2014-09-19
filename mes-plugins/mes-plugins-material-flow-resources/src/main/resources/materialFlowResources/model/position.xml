@@ -42,6 +42,7 @@
         <date name="productionDate" />
         <date name="expirationDate" />
         <priority name="number" scope="document"/>
+        <belongsTo name="resource" model="resource"/>
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators" method="checkAttributesRequirement" />

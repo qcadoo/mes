@@ -43,6 +43,7 @@
 		<datetime name="time" required="true" />
         <date name="productionDate" />
         <date name="expirationDate" />
+        <hasMany name="positions" joinField="resource" model="position" />
 	</fields>
 	<hooks>
 		<validatesWith
