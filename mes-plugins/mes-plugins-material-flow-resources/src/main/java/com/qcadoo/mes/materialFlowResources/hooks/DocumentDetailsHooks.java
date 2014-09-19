@@ -31,8 +31,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,8 +55,6 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class DocumentDetailsHooks {
-
-    private static Logger log = LoggerFactory.getLogger(DocumentDetailsHooks.class);
 
     private static final String RIBBON_GROUP = "actions";
 
@@ -142,8 +138,6 @@ public class DocumentDetailsHooks {
     }
 
     public void initializeDocument(final ViewDefinitionState view) {
-
-        log.debug("DBG - INITIALIZE DOCUMENT");
         showFieldsByDocumentType(view);
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
@@ -202,7 +196,6 @@ public class DocumentDetailsHooks {
     }
 
     public void setCriteriaModifiersParameters(final ViewDefinitionState view) {
-        log.debug("DBG - SET CRITERIA MODIFIERS");
         FormComponent form = (FormComponent) view.getComponentByReference(FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);

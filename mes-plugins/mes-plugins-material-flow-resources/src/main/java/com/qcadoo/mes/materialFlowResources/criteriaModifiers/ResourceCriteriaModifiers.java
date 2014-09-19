@@ -21,11 +21,14 @@ public class ResourceCriteriaModifiers {
             return;
         }
 
-        scb.createCriteria(ResourceFields.PRODUCT, L_PRODUCT, JoinType.INNER).add(
-                SearchRestrictions.idEq(filterValue.getLong(L_PRODUCT)));
-
-        scb.createCriteria(ResourceFields.LOCATION, L_LOCATION_FROM, JoinType.INNER).add(
-                SearchRestrictions.idEq(filterValue.getLong(L_LOCATION_FROM)));
+        Long productId = filterValue.getLong(L_PRODUCT);
+        Long locationId = filterValue.getLong(L_LOCATION_FROM);
+        scb.createAlias(ResourceFields.PRODUCT, L_PRODUCT, JoinType.INNER)
+                .createAlias(ResourceFields.LOCATION, L_LOCATION_FROM, JoinType.INNER)
+                .add(SearchRestrictions.eq(L_PRODUCT + ".id", productId))
+                .add(SearchRestrictions.eq(L_LOCATION_FROM + ".id", locationId));
+        // scb.createCriteria(ResourceFields.PRODUCT, L_PRODUCT, JoinType.INNER).add(SearchRestrictions.idEq(productId));
+        // scb.createCriteria(ResourceFields.LOCATION, L_LOCATION_FROM, JoinType.INNER).add(SearchRestrictions.idEq(locationId));
     }
 
 }

@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,8 +49,6 @@ import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class DocumentDetailsListeners {
-
-    private static Logger log = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
     @Autowired
     private ResourceManagementService resourceManagementService;
@@ -141,7 +137,6 @@ public class DocumentDetailsListeners {
 
     public void showAndSetRequiredForResourceLookup(final ViewDefinitionState view) {
         boolean visible = checkIfResourceLookupShouldBeVisible(view);
-        log.debug("DBG - SHOW LOOKUP");
         showResourceLookupOrBatchInput(view, visible, false);
     }
 
@@ -163,8 +158,6 @@ public class DocumentDetailsListeners {
             if (shouldClear) {
                 resourceLookup.setFieldValue(null);
             }
-            // resourceLookup.requestComponentUpdateState();
-            // batchField.requestComponentUpdateState();
         }
     }
 
