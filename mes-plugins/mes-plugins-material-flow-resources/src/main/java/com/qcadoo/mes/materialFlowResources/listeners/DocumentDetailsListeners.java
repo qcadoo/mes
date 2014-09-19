@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,14 +33,18 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
+import com.qcadoo.mes.materialFlowResources.service.ResourceManagementServiceImpl.WarehouseAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -46,11 +52,22 @@ import com.qcadoo.view.api.components.WindowComponent;
 @Service
 public class DocumentDetailsListeners {
 
+    private static Logger log = LoggerFactory.getLogger(DocumentDetailsListeners.class);
+
     @Autowired
     private ResourceManagementService resourceManagementService;
 
     @Autowired
+    private DocumentDetailsHooks documentDetailsHooks;
+
+    @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    private static final String L_RESOURCE = "resource";
+
+    private static final String L_BATCH = "batch";
+
+    private static final String L_FORM = "form";
 
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
@@ -113,10 +130,56 @@ public class DocumentDetailsListeners {
         FieldComponent locationTo = (FieldComponent) view.getComponentByReference("locationTo");
         locationTo.setFieldValue(null);
         locationFrom.requestComponentUpdateState();
+
+        showResourceLookupOrBatchInput(view, false, true);
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         form.performEvent(view, "refresh");
+    }
+
+    public void showAndSetRequiredForResourceLookup(final ViewDefinitionState view) {
+        boolean visible = checkIfResourceLookupShouldBeVisible(view);
+        log.debug("DBG - SHOW LOOKUP");
+        showResourceLookupOrBatchInput(view, visible, false);
+    }
+
+    public void showAndSetRequiredForResourceLookup(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        showAndSetRequiredForResourceLookup(view);
+        documentDetailsHooks.setCriteriaModifiersParameters(view);
+    }
+
+    private void showResourceLookupOrBatchInput(final ViewDefinitionState view, boolean visible, boolean shouldClear) {
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        for (FormComponent positionForm : positionsADL.getFormComponents()) {
+            FieldComponent resourceLookup = positionForm.findFieldComponentByName(L_RESOURCE);
+            FieldComponent batchField = positionForm.findFieldComponentByName(L_BATCH);
+
+            resourceLookup.setVisible(visible);
+            resourceLookup.setRequired(visible);
+            batchField.setVisible(!visible);
+            if (shouldClear) {
+                resourceLookup.setFieldValue(null);
+            }
+            // resourceLookup.requestComponentUpdateState();
+            // batchField.requestComponentUpdateState();
+        }
+    }
+
+    private boolean checkIfResourceLookupShouldBeVisible(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity document = form.getPersistedEntityWithIncludedFormValues();
+        Entity locationFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+
+        if (locationFrom != null) {
+            String type = document.getStringField(DocumentFields.TYPE);
+            String algorithm = locationFrom.getStringField(LocationFieldsMFR.ALGORITHM);
+            return algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue())
+                    && (type.equalsIgnoreCase(DocumentType.RELEASE.getStringValue()) || (type
+                            .equalsIgnoreCase(DocumentType.TRANSFER.getStringValue())));
+        }
+        return false;
     }
 }

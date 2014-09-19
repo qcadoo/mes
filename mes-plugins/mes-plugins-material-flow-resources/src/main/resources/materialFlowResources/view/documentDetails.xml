@@ -86,6 +86,9 @@
                             <option type="fieldCode" value="number" />
                             <criteriaModifier class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
                                               method="showWarehousesOnly" />
+                            <listener event="onSelectedEntityChange"
+                            	class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                            	method="showAndSetRequiredForResourceLookup" />
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2">
@@ -191,6 +194,17 @@
                         <layoutElement column="6" row="1">
                             <component type="input" name="batch" field="batch" hasLabel="false">
                             </component>
+                            <component type="lookup" name="resource" field="resource" reference="resource" hasLabel="false" defaultVisible="false">
+								<option type="column" fields="time" name="time" link="true" />
+                                <option type="searchable" value="batch,time" />
+                                <option type="orderable" value="batch,time" />
+
+                                <option type="expression" value="#batch" />
+                                <option type="fieldCode" value="batch" />
+                                
+                            	<criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ResourceCriteriaModifiers"
+                                	method="showResourcesForProductInWarehouse" />
+                            </component>
                         </layoutElement>
                         <layoutElement column="7" row="1">
                             <component type="calendar" name="productionDate" field="productionDate" hasLabel="false">
@@ -239,5 +253,6 @@
     </component>
     <hooks>
         <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks" method="initializeDocument" />
+    	<beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks" method="setCriteriaModifiersParameters" />
     </hooks>
 </view>
