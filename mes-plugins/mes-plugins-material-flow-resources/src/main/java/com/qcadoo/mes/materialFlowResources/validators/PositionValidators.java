@@ -32,7 +32,6 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.service.ResourceManagementServiceImpl.WarehouseAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -55,23 +54,7 @@ public class PositionValidators {
                     warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRODUCTION_DATE),
                     warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
         }
-        if (documentState == DocumentState.ACCEPTED
-                && (documentType == DocumentType.RELEASE || documentType == DocumentType.TRANSFER)) {
-            Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-            return validateResourceAttribute(dataDefinition, position, warehouseFrom);
-        }
         return true;
-    }
-
-    private boolean validateResourceAttribute(DataDefinition dataDefinition, Entity position, Entity warehouseFrom) {
-        String algorithm = warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM);
-        boolean result = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && position
-                .getField(PositionFields.RESOURCE) != null)
-                || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
-        if (!result) {
-            position.addError(dataDefinition.getField(PositionFields.RESOURCE), "materialFlow.error.position.batch.required");
-        }
-        return result;
     }
 
     private boolean validatePositionAttributes(DataDefinition dataDefinition, Entity position, boolean requirePrice,
