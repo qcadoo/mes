@@ -26,13 +26,13 @@ package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.CurrencyFields;
-import com.qcadoo.mes.basic.constants.ParameterFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DocumentFieldsDTMF;
@@ -58,8 +58,9 @@ public class DeliveryStateServiceMF {
         final Entity delivery = stateChangeContext.getOwner();
 
         Entity location = location(delivery);
-        if (location == null)
+        if (location == null) {
             return;
+        }
 
         Entity currency = currency(delivery);
 
@@ -100,11 +101,14 @@ public class DeliveryStateServiceMF {
 
     private BigDecimal price(Entity deliveredProduct, Entity currency) {
         BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
-        Optional<BigDecimal> pricePerUnit = Optional.fromNullable(deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
-        if(!pricePerUnit.isPresent()){
+        Optional<BigDecimal> pricePerUnit = Optional
+                .fromNullable(deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
+        if (!pricePerUnit.isPresent()) {
             return null;
         }
-        return exRateExists(exRate) ? pricePerUnit.get().multiply(exRate) : pricePerUnit.get();
+        return exRateExists(exRate) ?
+                numberService.setScale(pricePerUnit.get().multiply(exRate, numberService.getMathContext())) :
+                pricePerUnit.get();
     }
 
     private boolean exRateExists(BigDecimal exRate) {
