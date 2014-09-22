@@ -24,18 +24,24 @@
 package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.CurrencyFields;
-import com.qcadoo.mes.basic.constants.ParameterFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DocumentFieldsDTMF;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -75,15 +81,10 @@ public class DeliveryStateServiceMF {
             Optional<BigDecimal> damagedQuantity = Optional.fromNullable(deliveredProduct
                     .getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY));
 
-            BigDecimal positionQuantity = quantity.subtract(damagedQuantity.or(BigDecimal.ZERO),
-                    numberService.getMathContext());
+            BigDecimal positionQuantity = quantity.subtract(damagedQuantity.or(BigDecimal.ZERO), numberService.getMathContext());
             if (positionQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                documentBuilder.addPosition(
-                        product(deliveredProduct),
-                        positionQuantity,
-                        price(deliveredProduct, currency),
-                        null, null, null
-                );
+                documentBuilder.addPosition(product(deliveredProduct), positionQuantity, price(deliveredProduct, currency),
+                        batch(deliveredProduct), expirationDate(deliveredProduct), productionDate(deliveredProduct));
             }
         }
         documentBuilder.setAccepted().build();
@@ -100,8 +101,9 @@ public class DeliveryStateServiceMF {
 
     private BigDecimal price(Entity deliveredProduct, Entity currency) {
         BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
-        Optional<BigDecimal> pricePerUnit = Optional.fromNullable(deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
-        if(!pricePerUnit.isPresent()){
+        Optional<BigDecimal> pricePerUnit = Optional.fromNullable(deliveredProduct
+                .getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
+        if (!pricePerUnit.isPresent()) {
             return null;
         }
         return exRateExists(exRate) ? pricePerUnit.get().multiply(exRate) : pricePerUnit.get();
@@ -117,5 +119,85 @@ public class DeliveryStateServiceMF {
 
     private Entity currencyFromParameter() {
         return parameterService.getParameter().getBelongsToField(ParameterFields.CURRENCY);
+    }
+
+    private String batch(Entity deliveredProduct) {
+        return deliveredProduct.getStringField(DeliveredProductFieldsDTMF.BATCH);
+    }
+
+    private Date expirationDate(Entity deliveredProduct) {
+        return deliveredProduct.getDateField(DeliveredProductFieldsDTMF.EXPIRATION_DATE);
+    }
+
+    private Date productionDate(Entity deliveredProduct) {
+        return deliveredProduct.getDateField(DeliveredProductFieldsDTMF.PRODUCTION_DATE);
+    }
+
+    private boolean isRequired(Entity location, String fieldName) {
+        return location.getBooleanField(fieldName);
+    }
+
+    private String productName(Entity deliveredProduct) {
+        return product(deliveredProduct).getStringField(ProductFields.NAME);
+    }
+
+    private String locationName(Entity location) {
+        return location.getStringField(LocationFields.NAME);
+    }
+
+    public void validateRequiredParameters(StateChangeContext stateChangeContext) {
+
+        final Entity delivery = stateChangeContext.getOwner();
+
+        Entity location = location(delivery);
+        if (location == null) {
+            return;
+        }
+        boolean isBatchRequired = isRequired(location, LocationFieldsMFR.REQUIRE_BATCH);
+        boolean isProductionDateRequired = isRequired(location, LocationFieldsMFR.REQUIRE_PRODUCTION_DATE);
+        boolean isExpirationDateRequired = isRequired(location, LocationFieldsMFR.REQUIRE_EXPIRATION_DATE);
+        boolean isPriceRequired = isRequired(location, LocationFieldsMFR.REQUIRE_PRICE);
+
+        if (isBatchRequired || isExpirationDateRequired || isPriceRequired || isProductionDateRequired) {
+            List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+            List<String> missingBatch = Lists.newArrayList();
+            List<String> missingProductionDate = Lists.newArrayList();
+            List<String> missingExpirationDate = Lists.newArrayList();
+            List<String> missingPrice = Lists.newArrayList();
+            for (Entity deliveredProduct : deliveredProducts) {
+                String productName = productName(deliveredProduct);
+                if (isBatchRequired && (batch(deliveredProduct) == null || batch(deliveredProduct).isEmpty())) {
+                    missingBatch.add(productName);
+                }
+                if (isProductionDateRequired && productionDate(deliveredProduct) == null) {
+                    missingProductionDate.add(productName);
+                }
+                if (isExpirationDateRequired && expirationDate(deliveredProduct) == null) {
+                    missingExpirationDate.add(productName);
+                }
+                if (isPriceRequired && price(deliveredProduct, currency(delivery)) == null) {
+                    missingPrice.add(productName);
+                }
+            }
+
+            String locationName = locationName(location);
+            if (missingBatch.size() != 0) {
+                stateChangeContext.addValidationError("deliveriesToMaterialFlow.deliveryStateValidator.missing.batch", false,
+                        locationName, missingBatch.toString());
+            }
+            if (missingProductionDate.size() != 0) {
+                stateChangeContext.addValidationError("deliveriesToMaterialFlow.deliveryStateValidator.missing.productionDate",
+                        false, locationName, missingProductionDate.toString());
+            }
+            if (missingExpirationDate.size() != 0) {
+                stateChangeContext.addValidationError("deliveriesToMaterialFlow.deliveryStateValidator.missing.expirationDate",
+                        false, locationName, missingExpirationDate.toString());
+            }
+            if (missingPrice.size() != 0) {
+                stateChangeContext.addValidationError("deliveriesToMaterialFlow.deliveryStateValidator.missing.price", false,
+                        locationName, missingPrice.toString());
+            }
+        }
+
     }
 }

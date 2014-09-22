@@ -53,6 +53,13 @@ public class DeliveryStateServiceMFAspect extends AbstractStateListenerAspect {
 
     }
 
+    @RunInPhase(DeliveryStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(targetState = DeliveryStateStringValues.RECEIVED)
+    @After(PHASE_EXECUTION_POINTCUT)
+    public void preValidationOnReceivedDelivery(final StateChangeContext stateChangeContext, final int phase) {
+        deliveryStateServiceMF.validateRequiredParameters(stateChangeContext);
+    }
+
     @RunInPhase(DeliveryStateChangePhase.LAST)
     @RunForStateTransition(targetState = DeliveryStateStringValues.RECEIVED)
     @After(PHASE_EXECUTION_POINTCUT)

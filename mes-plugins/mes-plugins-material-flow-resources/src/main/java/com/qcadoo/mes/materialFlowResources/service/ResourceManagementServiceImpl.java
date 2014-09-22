@@ -282,7 +282,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             if (quantity.compareTo(resourceQuantity) >= 0) {
                 quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
-
                 resource.getDataDefinition().delete(resource.getId());
 
                 createResource(warehouseTo, resource, resourceQuantity, date);

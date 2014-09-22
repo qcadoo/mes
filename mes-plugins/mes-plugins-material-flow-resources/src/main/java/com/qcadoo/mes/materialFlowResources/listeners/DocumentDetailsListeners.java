@@ -33,6 +33,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementServiceImpl.WarehouseAlgorithm;
@@ -79,6 +80,13 @@ public class DocumentDetailsListeners {
         Entity documentToCreateResourcesFor = documentDD.save(document);
 
         if (!documentToCreateResourcesFor.isValid()) {
+            documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+            formComponent.setEntity(documentToCreateResourcesFor);
+            return;
+        }
+
+        if (!validateResourceAttribute(document)) {
+            formComponent.addMessage("materialFlow.error.position.batch.required", MessageType.FAILURE);
             documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
             formComponent.setEntity(documentToCreateResourcesFor);
             return;
@@ -165,14 +173,31 @@ public class DocumentDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
         Entity locationFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-
+        DocumentState state = DocumentState.of(document);
         if (locationFrom != null) {
             String type = document.getStringField(DocumentFields.TYPE);
             String algorithm = locationFrom.getStringField(LocationFieldsMFR.ALGORITHM);
             return algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue())
                     && (type.equalsIgnoreCase(DocumentType.RELEASE.getStringValue()) || (type
-                            .equalsIgnoreCase(DocumentType.TRANSFER.getStringValue())));
+                            .equalsIgnoreCase(DocumentType.TRANSFER.getStringValue()))) && DocumentState.DRAFT.equals(state);
         }
         return false;
+    }
+
+    private boolean validateResourceAttribute(Entity document) {
+        Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+        String algorithm = warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM);
+        boolean result = true;
+        for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
+            boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && position
+                    .getField(PositionFields.RESOURCE) != null)
+                    || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
+            if (!resultForPosition) {
+                result = false;
+                position.addError(position.getDataDefinition().getField(PositionFields.RESOURCE),
+                        "materialFlow.error.position.batch.required");
+            }
+        }
+        return result;
     }
 }

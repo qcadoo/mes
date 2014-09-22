@@ -76,6 +76,20 @@
             <model:hasMany name="documents" model="document"
                            plugin="materialFlowResources" joinField="delivery" cascade="nullify" />
         </model:model-field>
+        
+        <model:model-field model="deliveredProduct" plugin="deliveries">
+        	<model:string name="batch"/>
+        </model:model-field>
+        
+        <model:model-field model="deliveredProduct" plugin="deliveries">
+        	<model:date name="productionDate"/>
+        </model:model-field>
+        
+        <model:model-field model="deliveredProduct" plugin="deliveries">
+        	<model:date name="expirationDate"/>
+        </model:model-field>
+        
+		<view:view-tab resource="view/tabExtensions/deliveredProductDetails.xml" />
 
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentsList" component="grid">
