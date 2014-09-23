@@ -185,19 +185,23 @@ public class DocumentDetailsListeners {
     }
 
     private boolean validateResourceAttribute(Entity document) {
-        Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-        String algorithm = warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM);
-        boolean result = true;
-        for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-            boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && position
-                    .getField(PositionFields.RESOURCE) != null)
-                    || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
-            if (!resultForPosition) {
-                result = false;
-                position.addError(position.getDataDefinition().getField(PositionFields.RESOURCE),
-                        "materialFlow.error.position.batch.required");
+        DocumentType type = DocumentType.of(document);
+        if (DocumentType.TRANSFER.equals(type) || DocumentType.RELEASE.equals(type)) {
+            Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+            String algorithm = warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM);
+            boolean result = true;
+            for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
+                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && position
+                        .getField(PositionFields.RESOURCE) != null)
+                        || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
+                if (!resultForPosition) {
+                    result = false;
+                    position.addError(position.getDataDefinition().getField(PositionFields.RESOURCE),
+                            "materialFlow.error.position.batch.required");
+                }
             }
+            return result;
         }
-        return result;
+        return true;
     }
 }
