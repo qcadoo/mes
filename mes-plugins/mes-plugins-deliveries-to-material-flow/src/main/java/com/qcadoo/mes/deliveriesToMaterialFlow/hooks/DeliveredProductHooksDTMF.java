@@ -14,7 +14,7 @@ public class DeliveredProductHooksDTMF {
     public boolean validateDates(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         Date productionDate = deliveredProduct.getDateField(DeliveredProductFieldsDTMF.PRODUCTION_DATE);
         Date expirationDate = deliveredProduct.getDateField(DeliveredProductFieldsDTMF.EXPIRATION_DATE);
-        if (productionDate.compareTo(expirationDate) > 1) {
+        if (productionDate.compareTo(expirationDate) > 0) {
             deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFieldsDTMF.EXPIRATION_DATE),
                     "materialFlow.error.position.expirationDate.lessThenProductionDate");
             return false;
