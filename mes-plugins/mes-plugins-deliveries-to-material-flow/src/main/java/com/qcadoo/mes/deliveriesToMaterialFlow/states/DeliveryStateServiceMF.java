@@ -85,7 +85,7 @@ public class DeliveryStateServiceMF {
             BigDecimal positionQuantity = quantity.subtract(damagedQuantity.or(BigDecimal.ZERO), numberService.getMathContext());
             if (positionQuantity.compareTo(BigDecimal.ZERO) > 0) {
                 documentBuilder.addPosition(product(deliveredProduct), positionQuantity, price(deliveredProduct, currency),
-                        batch(deliveredProduct), expirationDate(deliveredProduct), productionDate(deliveredProduct));
+                        batch(deliveredProduct), productionDate(deliveredProduct), expirationDate(deliveredProduct));
             }
         }
         documentBuilder.setAccepted().build();

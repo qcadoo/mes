@@ -196,8 +196,11 @@
                             </component>
                             <component type="lookup" name="resource" field="resource" reference="resource" hasLabel="false" defaultVisible="false">
 								<option type="column" fields="time" name="time" link="true" />
-                                <option type="searchable" value="batch,time" />
-                                <option type="orderable" value="batch,time" />
+								<option type="column" fields="quantity" name="quantity" link="true" />
+								<option type="column" fields="product" name="unit" expression="#product['unit']" />
+								
+                                <option type="searchable" value="batch,time,quantity" />
+                                <option type="orderable" value="batch,time,quantity" />
 
                                 <option type="expression" value="#batch" />
                                 <option type="fieldCode" value="batch" />
