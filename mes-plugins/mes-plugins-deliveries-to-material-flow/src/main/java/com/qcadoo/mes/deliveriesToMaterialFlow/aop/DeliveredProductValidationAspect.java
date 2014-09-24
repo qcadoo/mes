@@ -4,8 +4,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -20,8 +18,6 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 @RunIfEnabled(DeliveriesToMaterialFlowConstants.PLUGIN_IDENTIFIER)
 public class DeliveredProductValidationAspect {
 
-    private static Logger LOG = LoggerFactory.getLogger(DeliveredProductValidationAspect.class);
-
     @Autowired
     DeliveredProductValidationHelper deliveredProductValidaionHelper;
 
@@ -34,7 +30,6 @@ public class DeliveredProductValidationAspect {
     @Around("checkIfDeliveredProductExistsWithBatchParameters(deliveredProductDD, deliveredProduct)")
     public boolean aroundCheckIfDeliveredProductExistsWithBatchParameters(final ProceedingJoinPoint pjp,
             final DataDefinition deliveredProductDD, final Entity deliveredProduct) throws Throwable {
-        LOG.debug("Around checkIfDeliveredProductExistsWithBatchParameters");
         return deliveredProductValidaionHelper.checkDeliveredProductUniqueness(deliveredProductDD, deliveredProduct);
     }
 

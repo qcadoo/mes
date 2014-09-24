@@ -175,11 +175,10 @@ public class DocumentDetailsListeners {
         Entity locationFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         DocumentState state = DocumentState.of(document);
         if (locationFrom != null) {
-            String type = document.getStringField(DocumentFields.TYPE);
+            DocumentType type = DocumentType.of(document);
             String algorithm = locationFrom.getStringField(LocationFieldsMFR.ALGORITHM);
-            return algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue())
-                    && (type.equalsIgnoreCase(DocumentType.RELEASE.getStringValue()) || (type
-                            .equalsIgnoreCase(DocumentType.TRANSFER.getStringValue()))) && DocumentState.DRAFT.equals(state);
+            return algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && (DocumentType.RELEASE.equals(type))
+                    || (DocumentType.TRANSFER.equals(type)) && DocumentState.DRAFT.equals(state);
         }
         return false;
     }
