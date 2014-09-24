@@ -37,12 +37,13 @@
 			</layoutElement>
 
 			<layoutElement column="1" row="2" width="2">
-				<component type="calendar" name="expirationDate" field="#{form}.expirationDate" reference="expirationDate"/>
+				<component type="calendar" name="productionDate" field="#{form}.productionDate" reference="productionDate"/>
 			</layoutElement>
 			
 			<layoutElement column="1" row="3" width="2">
-				<component type="calendar" name="productionDate" field="#{form}.productionDate" reference="productionDate"/>
+				<component type="calendar" name="expirationDate" field="#{form}.expirationDate" reference="expirationDate"/>
 			</layoutElement>
+			
 			
 		</component>
 	</windowTab>

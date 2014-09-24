@@ -177,8 +177,9 @@ public class DocumentDetailsListeners {
         if (locationFrom != null) {
             DocumentType type = DocumentType.of(document);
             String algorithm = locationFrom.getStringField(LocationFieldsMFR.ALGORITHM);
-            return algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && (DocumentType.RELEASE.equals(type))
-                    || (DocumentType.TRANSFER.equals(type)) && DocumentState.DRAFT.equals(state);
+            return algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue())
+                    && ((DocumentType.RELEASE.equals(type)) || (DocumentType.TRANSFER.equals(type)))
+                    && DocumentState.DRAFT.equals(state);
         }
         return false;
     }
