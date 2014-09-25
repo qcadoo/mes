@@ -144,8 +144,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Transactional
     public void updateResourcesForReleaseDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse.getStringField(
-                LocationFieldsMFR.ALGORITHM));
+        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
+                .getStringField(LocationFieldsMFR.ALGORITHM));
         boolean enoughResources = true;
 
         StringBuilder errorMessage = new StringBuilder();
@@ -261,8 +261,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private void addDocumentError(final Entity document, final Entity warehouseFrom, final StringBuilder errorMessage) {
         String warehouseName = warehouseFrom.getStringField(LocationFields.NAME);
         if ((errorMessage.toString().length() + warehouseName.length()) < 255) {
-            document.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false,
-                    errorMessage.toString(), warehouseName);
+            document.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false, errorMessage.toString(),
+                    warehouseName);
         } else {
             document.addGlobalError("materialFlow.error.position.quantity.notEnoughResourcesShort", false);
         }
