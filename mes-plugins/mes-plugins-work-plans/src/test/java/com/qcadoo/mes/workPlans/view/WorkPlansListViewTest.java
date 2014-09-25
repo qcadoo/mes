@@ -24,13 +24,14 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.internal.api.ViewDefinition;
+import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class WorkPlansListViewTest {
 
     private WorkPlansListView workPlansListView;
 
     @Mock
-    private WindowComponent windowComponent;
+    private WindowComponentState windowComponent;
 
     @Mock
     private GridComponent workPlansGrid;
