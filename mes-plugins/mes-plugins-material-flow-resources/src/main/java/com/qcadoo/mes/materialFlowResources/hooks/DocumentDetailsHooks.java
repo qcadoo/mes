@@ -40,13 +40,16 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
@@ -70,6 +73,9 @@ public class DocumentDetailsHooks {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private DocumentDetailsListeners documentDetailsListeners;
 
     // fixme: refactor
     public void showFieldsByDocumentType(final ViewDefinitionState view) {
@@ -109,6 +115,7 @@ public class DocumentDetailsHooks {
             for (String fieldName : INBOUND_FIELDS) {
                 FieldComponent field = positionForm.findFieldComponentByName(fieldName);
                 field.setEnabled(enabled);
+
             }
             fillInUnit(positionForm);
         }
@@ -131,13 +138,14 @@ public class DocumentDetailsHooks {
     }
 
     public void initializeDocument(final ViewDefinitionState view) {
-
         showFieldsByDocumentType(view);
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
         Long documentId = formComponent.getEntityId();
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
         DocumentState state = DocumentState.of(document);
+
+        documentDetailsListeners.showAndSetRequiredForResourceLookup(view);
 
         if (documentId == null) {
             changeAcceptButtonState(window, false);
@@ -156,6 +164,7 @@ public class DocumentDetailsHooks {
             disableADL(view);
             disableRibbon(window);
         }
+
     }
 
     private void disableADL(ViewDefinitionState view) {
@@ -184,5 +193,25 @@ public class DocumentDetailsHooks {
 
     private Object setDateToField(final Date date) {
         return new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault()).format(date);
+    }
+
+    public void setCriteriaModifiersParameters(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(FORM);
+        Entity document = form.getPersistedEntityWithIncludedFormValues();
+        Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        for (FormComponent positionForm : positionsADL.getFormComponents()) {
+            Entity position = positionForm.getPersistedEntityWithIncludedFormValues();
+            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            LookupComponent resourcesLookup = (LookupComponent) positionForm.findFieldComponentByName(PositionFields.RESOURCE);
+            FilterValueHolder filter = resourcesLookup.getFilterValue();
+            if (warehouseFrom != null) {
+                filter.put("locationFrom", warehouseFrom.getId());
+            }
+            if (product != null) {
+                filter.put("product", product.getId());
+            }
+            resourcesLookup.setFilterValue(filter);
+        }
     }
 }

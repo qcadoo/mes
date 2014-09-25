@@ -43,6 +43,7 @@
 		<datetime name="time" required="true" />
         <date name="productionDate" />
         <date name="expirationDate" />
+        <hasMany name="positions" joinField="resource" model="position" cascade="nullify"/>
 	</fields>
 	<hooks>
 		<validatesWith
@@ -54,5 +55,6 @@
 <!-- 		<onCreate -->
 <!-- 			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" -->
 <!-- 			method="generateBatch" /> -->
+<!-- 		<onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" method="onDelete"/> -->
 	</hooks>
 </model>

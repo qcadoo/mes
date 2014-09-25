@@ -82,7 +82,7 @@
 			plugin="materialFlowResources" joinField="location" cascade="delete"/>
 		</model:model-field>
         <model:model-field plugin="materialFlow" model="location">
-            <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo" default="01fifo" />
+            <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo,05manual" default="01fifo" />
         </model:model-field>
         <model:model-field plugin="materialFlow" model="location">
             <model:boolean name="requirePrice" />
@@ -171,6 +171,11 @@
 			type="beforeRender" 
 			class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsDetailsViewHooksMFR" 
 			method="disableDateField" />
+			
+		<view:view-hook plugin="materialFlow" view="locationDetails" 
+			type="beforeRender" 
+			class="com.qcadoo.mes.materialFlowResources.hooks.LocationDetailsHooksMFR" 
+			method="setEnabledForBatchCheckbox" />
 			
 		<view:view resource="view/resourceDetails.xml" />
 		<view:view resource="view/resourcesList.xml" />

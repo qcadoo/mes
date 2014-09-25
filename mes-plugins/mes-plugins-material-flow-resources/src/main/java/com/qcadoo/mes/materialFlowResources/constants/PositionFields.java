@@ -44,4 +44,6 @@ public final class PositionFields {
     public static final String PRODUCTION_DATE = "productionDate";
 
     public static final String UNIT = "unit";
+
+    public static final String RESOURCE = "resource";
 }
