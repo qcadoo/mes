@@ -165,7 +165,7 @@ public class SimpleMaterialBalanceService {
                 deleteButton.setMessage(null);
                 deleteButton.setEnabled(true);
             } else {
-                deleteButton.setMessage("orders.ribbon.message.selectedRecordAlreadyGenerated");
+                deleteButton.setMessage("orders.ribbon.message.selectedRecordCannotBeDeleted");
                 deleteButton.setEnabled(false);
             }
         }

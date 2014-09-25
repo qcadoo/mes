@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.basic.constants.CountryFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -52,11 +53,13 @@ public class CompanyHooks {
 
     public boolean checkIfTaxIsValid(final DataDefinition companyDD, final Entity company) {
         Entity taxCountryCode = company.getBelongsToField(TAX_COUNTRY_CODE);
-        String tax = company.getStringField(TAX);
+        if (taxCountryCode != null && taxCountryCode.getStringField(CountryFields.CODE).equals(L_PL)) {
+            String tax = company.getStringField(TAX);
 
-        if (!checkIfTaxForPLIsValid(taxCountryCode, tax)) {
-            company.addError(companyDD.getField(TAX), "basic.company.tax.error.taxIsNotValid");
-            return false;
+            if (!checkIfTaxForPLIsValid(taxCountryCode, tax)) {
+                company.addError(companyDD.getField(TAX), "basic.company.tax.error.taxIsNotValid");
+                return false;
+            }
         }
 
         return true;

@@ -28,10 +28,12 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class CompanyDetailsListeners {
@@ -70,6 +72,22 @@ public class CompanyDetailsListeners {
 
         String url = "../page/orders/ordersList.html";
         view.redirectTo(url, false, true, parameters);
+
+    }
+
+    public void setTaxCountryCode(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity company = companyForm.getPersistedEntityWithIncludedFormValues();
+
+        Entity country = company.getBelongsToField(CompanyFields.COUNTRY);
+        if (country == null) {
+            return;
+        }
+
+        LookupComponent taxCodeLookup = (LookupComponent) view.getComponentByReference(CompanyFields.TAX_COUNTRY_CODE);
+        taxCodeLookup.setFieldValue(country.getId());
+        taxCodeLookup.requestComponentUpdateState();
 
     }
 }

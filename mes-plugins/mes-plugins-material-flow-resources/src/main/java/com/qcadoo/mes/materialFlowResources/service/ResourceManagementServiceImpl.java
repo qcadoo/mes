@@ -169,8 +169,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
 
         if (!enoughResources) {
-            document.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false, errorMessage.toString(),
-                    warehouse.getStringField(LocationFields.NAME));
+            addDocumentError(document, warehouse, errorMessage);
         } else {
             document.setField(DocumentFields.POSITIONS, generatedPositions);
             document.getDataDefinition().save(document);
@@ -254,10 +253,19 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
 
         if (!enoughResources) {
-            document.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false, errorMessage.toString(),
-                    warehouseFrom.getStringField(LocationFields.NAME));
+            addDocumentError(document, warehouseFrom, errorMessage);
         }
 
+    }
+
+    private void addDocumentError(final Entity document, final Entity warehouseFrom, final StringBuilder errorMessage) {
+        String warehouseName = warehouseFrom.getStringField(LocationFields.NAME);
+        if ((errorMessage.toString().length() + warehouseName.length()) < 255) {
+            document.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false, errorMessage.toString(),
+                    warehouseName);
+        } else {
+            document.addGlobalError("materialFlow.error.position.quantity.notEnoughResourcesShort", false);
+        }
     }
 
     private void moveResources(Entity warehouseFrom, Entity warehouseTo, Entity position, Object date,
