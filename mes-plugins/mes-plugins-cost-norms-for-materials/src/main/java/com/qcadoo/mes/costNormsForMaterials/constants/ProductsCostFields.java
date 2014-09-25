@@ -23,35 +23,35 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.constants;
 
+import org.apache.commons.lang.StringUtils;
+
 public enum ProductsCostFields {
-    AVERAGE("averageCost"), LAST_PURCHASE("lastPurchaseCost"), NOMINAL("nominalCost"), COST_FOR_ORDER("costForOrder"), AVERAGE_OFFER_COST(
-            "averageOfferCost"), LAST_OFFER_COST("lastOfferCost");
+    AVERAGE("02average", "averageCost"), LAST_PURCHASE("03lastPurchase", "lastPurchaseCost"), NOMINAL("01nominal", "nominalCost"), COST_FOR_ORDER("06costForOrder", "costForOrder"), AVERAGE_OFFER_COST(
+            "04averageOfferCost", "averageOfferCost"), LAST_OFFER_COST("05lastOfferCost", "lastOfferCost");
+
+    private final String mode;
 
     private final String strValue;
 
-    private ProductsCostFields(final String strValue) {
+    private ProductsCostFields(final String mode, final String strValue) {
+        this.mode = mode;
         this.strValue = strValue;
+    }
+
+    public String getMode() {
+        return mode;
     }
 
     public String getStrValue() {
         return strValue;
     }
 
-    public static ProductsCostFields parseString(final String strValue) {
-        if ("01nominal".equals(strValue)) {
-            return NOMINAL;
-        } else if ("02average".equals(strValue)) {
-            return AVERAGE;
-        } else if ("03lastPurchase".equals(strValue)) {
-            return LAST_PURCHASE;
-        } else if ("04averageOfferCost".equals(strValue)) {
-            return LAST_OFFER_COST;
-        } else if ("05lastOfferCost".equals(strValue)) {
-            return AVERAGE_OFFER_COST;
-        } else if ("06costForOrder".equals(strValue)) {
-            return COST_FOR_ORDER;
+    public static ProductsCostFields forMode(final String mode) {
+        for (ProductsCostFields productsCostFields : values()) {
+            if (StringUtils.equalsIgnoreCase(mode, productsCostFields.getMode())) {
+                return productsCostFields;
+            }
         }
-        throw new IllegalStateException("Unsupported calculateMaterialCostsMode: " + strValue);
+        throw new IllegalStateException("Unsupported calculateMaterialCostsMode: " + mode);
     }
-
 }
