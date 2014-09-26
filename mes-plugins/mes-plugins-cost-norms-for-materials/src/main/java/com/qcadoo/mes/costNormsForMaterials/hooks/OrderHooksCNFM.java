@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -41,10 +40,8 @@ public class OrderHooksCNFM {
     private OrderMaterialsCostDataGenerator orderMaterialsCostDataGenerator;
 
     public void fillOrderOperationProductsInComponents(final DataDefinition orderDD, final Entity order) {
-        if (OrderState.of(order) == OrderState.PENDING) {
-            List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
-            order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
-        }
+        List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
+        order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
     }
 
 }
