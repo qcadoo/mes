@@ -29,6 +29,7 @@ import static com.qcadoo.model.api.search.SearchRestrictions.ne;
 import static com.qcadoo.model.api.search.SearchRestrictions.not;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -86,38 +87,75 @@ public class MasterOrderValidators {
         }
 
         masterOrder.addError(fieldDefinition, "masterOrders.masterOrder.company.orderAlreadyExists");
+
         return false;
     }
 
     public boolean checkIfCanSetCompany(final Entity masterOrder, final Object fieldNewValue) {
         boolean isValid = true;
+
         List<Entity> orders = masterOrderOrdersDataProvider.findBelongingOrders(masterOrder, null, null, null);
+
         if (orders.isEmpty()) {
             return isValid;
         }
+
         Entity companyInMasterOrder = (Entity) fieldNewValue;
+
         if (companyInMasterOrder == null) {
             return isValid;
         }
+
         for (Entity order : orders) {
             Entity companyInOrder = order.getBelongsToField(OrderFields.COMPANY);
+
             if (companyInOrder == null) {
                 isValid = false;
             } else if (!companyInMasterOrder.getId().equals(companyInOrder.getId())) {
                 isValid = false;
             }
         }
-        return isValid;
 
+        return isValid;
     }
 
     public boolean checkIfCanChangeDeadline(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
             final Entity masterOrder, final Object fieldOldValue, final Object fieldNewValue) {
-        if (isNewlyCreated(masterOrder) || areSame(fieldOldValue, fieldNewValue) || doesNotHaveAnyPendingOrder(masterOrder)) {
+        if (isNewlyCreated(masterOrder) || areSame(fieldOldValue, fieldNewValue) || doesNotHaveAnyPendingOrder(masterOrder)
+                || checkIfCanSetDeadline(masterOrder, fieldNewValue)) {
             return true;
         }
+
         masterOrder.addError(fieldDefinition, "masterOrders.masterOrder.deadline.orderAlreadyExists");
+
         return false;
+    }
+
+    public boolean checkIfCanSetDeadline(final Entity masterOrder, final Object fieldNewValue) {
+        boolean isValid = true;
+        List<Entity> orders = masterOrderOrdersDataProvider.findBelongingOrders(masterOrder, null, null, null);
+
+        if (orders.isEmpty()) {
+            return isValid;
+        }
+
+        Date deadlineInMasterOrder = (Date) fieldNewValue;
+
+        if (deadlineInMasterOrder == null) {
+            return isValid;
+        }
+
+        for (Entity order : orders) {
+            Date deadlineInOrder = order.getDateField(OrderFields.DEADLINE);
+
+            if (deadlineInOrder == null) {
+                isValid = false;
+            } else if (!deadlineInMasterOrder.equals(deadlineInOrder)) {
+                isValid = false;
+            }
+        }
+
+        return isValid;
     }
 
     private boolean doesNotHaveAnyPendingOrder(final Entity masterOrder) {
