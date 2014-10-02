@@ -42,7 +42,7 @@ public class StaffWorkTimeValidators {
                 .find()
                 .add(SearchRestrictions.belongsTo(StaffWorkTimeFields.WORKER,
                         staffWorkTime.getBelongsToField(StaffWorkTimeFields.WORKER))).setMaxResults(1).uniqueResult();
-        if (existingStaffWorkTime != null && !existingStaffWorkTime.equals(staffWorkTime)) {
+        if (staffWorkTime.getId() == null && existingStaffWorkTime != null && !existingStaffWorkTime.equals(staffWorkTime)) {
             staffWorkTime.addError(staffWorkTime.getDataDefinition().getField(StaffWorkTimeFields.WORKER),
                     "productionCounting.productionTracking.productionTrackingError.duplicateWorker");
             return false;
