@@ -66,6 +66,9 @@
 		<integer name="quantityOfWorkstations" default="1" required="true">
 			<validatesRange from="1" exclusively="false" />
 		</integer>
+		
+		<hasMany name="barcodeOperationComponents" joinField="operationComponent" model="barcodeOperationComponent" 
+			cascade="delete" copyable="false"/>
 	</fields>
 	<hooks>
 		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks"
