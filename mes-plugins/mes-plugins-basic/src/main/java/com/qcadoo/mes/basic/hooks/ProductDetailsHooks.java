@@ -26,7 +26,7 @@ package com.qcadoo.mes.basic.hooks;
 import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

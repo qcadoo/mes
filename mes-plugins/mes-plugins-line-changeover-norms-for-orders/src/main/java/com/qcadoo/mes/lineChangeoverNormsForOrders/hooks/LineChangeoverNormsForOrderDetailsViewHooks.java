@@ -33,7 +33,7 @@ import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsL
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.PREVIOUS_ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

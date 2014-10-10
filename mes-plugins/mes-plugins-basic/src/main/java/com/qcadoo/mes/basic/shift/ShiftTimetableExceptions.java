@@ -26,7 +26,7 @@ package com.qcadoo.mes.basic.shift;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;

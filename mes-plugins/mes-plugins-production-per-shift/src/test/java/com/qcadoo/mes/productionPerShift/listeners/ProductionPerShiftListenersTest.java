@@ -42,7 +42,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;

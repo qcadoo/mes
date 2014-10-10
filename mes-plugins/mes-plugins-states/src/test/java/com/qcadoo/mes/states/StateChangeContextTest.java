@@ -24,7 +24,7 @@
 package com.qcadoo.mes.states;
 
 import static com.qcadoo.mes.states.constants.StateChangeStatus.FAILURE;
-import static org.apache.commons.lang.ArrayUtils.EMPTY_STRING_ARRAY;
+import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;

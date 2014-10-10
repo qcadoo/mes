@@ -53,17 +53,12 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.constants.QcadooModelConstants;
 import com.qcadoo.model.constants.UnitConversionItemFields;
 import com.qcadoo.plugins.unitConversions.GlobalUnitConversionsAggregateService;
-import com.qcadoo.security.api.SecurityRole;
-import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
 public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private SecurityRolesService securityRolesService;
 
     @Autowired
     private ParameterService parameterService;
@@ -133,13 +128,14 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         user.setField("passwordConfirmation", "123");
         user.setField("enabled", true);
 
-        SecurityRole role = securityRolesService.getRoleByIdentifier(values.get("role"));
-        user.setField("role", role.getName());
+        Entity group = dataDefinitionService.get("qcadooSecurity", "group").find().add(SearchRestrictions.eq(L_NAME, "Admin"))
+                .setMaxResults(1).uniqueResult();
+        user.setField("group", group);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test user {login=" + user.getField("userName") + ", email=" + user.getField(L_EMAIL) + ", firstName="
-                    + user.getField("firstName") + ", lastName=" + user.getField("lastName") + ", role=" + user.getField("role")
-                    + "}");
+                    + user.getField("firstName") + ", lastName=" + user.getField("lastName") + ", group="
+                    + group.getField(L_NAME) + "}");
         }
 
         user.getDataDefinition().save(user);

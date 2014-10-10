@@ -201,8 +201,8 @@
 		                class="com.qcadoo.mes.orders.hooks.ProductDetailsViewHooksO"
 		                method="updateRibbonState" />
 
-		<report:report-template name="order"
-		                        resource="report/order.jrxml" />
+		<!--<report:report-template name="order"-->
+		                        <!--resource="report/order.jrxml" />-->
 
 		<view:resource uri="public/**/*" />
 

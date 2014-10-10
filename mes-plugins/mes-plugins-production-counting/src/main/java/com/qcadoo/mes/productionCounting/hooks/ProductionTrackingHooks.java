@@ -26,8 +26,8 @@ package com.qcadoo.mes.productionCounting.hooks;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

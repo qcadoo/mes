@@ -25,8 +25,8 @@ package com.qcadoo.mes.orders.dates;
 
 import java.util.Date;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Function;
