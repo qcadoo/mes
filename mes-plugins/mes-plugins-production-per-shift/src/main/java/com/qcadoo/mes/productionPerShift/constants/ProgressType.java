@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.productionPerShift.constants;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.StringUtil;
 import org.joda.time.DateTime;
 

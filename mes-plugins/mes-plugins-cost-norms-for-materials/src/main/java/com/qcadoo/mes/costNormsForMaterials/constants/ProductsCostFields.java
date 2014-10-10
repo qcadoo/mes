@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.constants;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public enum ProductsCostFields {
     AVERAGE("02average", "averageCost"), LAST_PURCHASE("03lastPurchase", "lastPurchaseCost"), NOMINAL("01nominal", "nominalCost"), COST_FOR_ORDER("06costForOrder", "costForOrder"), AVERAGE_OFFER_COST(

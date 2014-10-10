@@ -25,8 +25,8 @@ package com.qcadoo.mes.productionPerShift.dates;
 
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 

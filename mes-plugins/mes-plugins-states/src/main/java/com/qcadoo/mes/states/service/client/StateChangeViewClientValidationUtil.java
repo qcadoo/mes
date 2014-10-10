@@ -29,14 +29,14 @@ import static com.qcadoo.mes.states.messages.util.MessagesUtil.convertViewMessag
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.isAutoClosed;
-import static org.apache.commons.lang.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.join;
 import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

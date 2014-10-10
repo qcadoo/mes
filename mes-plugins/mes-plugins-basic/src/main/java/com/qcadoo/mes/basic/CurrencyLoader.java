@@ -25,6 +25,7 @@ package com.qcadoo.mes.basic;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -105,7 +106,7 @@ public class CurrencyLoader {
         currency.setField(ALPHABETIC_CODE, values.get(ALPHABETIC_CODE.toLowerCase(Locale.ENGLISH)));
         currency.setField(ISO_CODE, Integer.valueOf(values.get(ISO_CODE.toLowerCase(Locale.ENGLISH))));
         currency.setField(MINOR_UNIT, Integer.valueOf(values.get(MINOR_UNIT.toLowerCase(Locale.ENGLISH))));
-        currency.setField(EXCHANGE_RATE, "1.0");
+        currency.setField(EXCHANGE_RATE, BigDecimal.ONE);
 
         currency = currencyDataDefinition.save(currency);
 

@@ -38,7 +38,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;

@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.constants;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.qcadoo.model.api.Entity;
 

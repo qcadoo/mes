@@ -25,7 +25,7 @@ package com.qcadoo.mes.deviationCausesReporting.constants;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.qcadoo.mes.orders.constants.CommonReasonTypeFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
