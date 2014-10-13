@@ -46,7 +46,7 @@ public class ValidationAfterSaveAspect {
     public void dataDefinitionSaveCall(final Entity entity) {
     }
 
-    @After("dataDefinitionSaveCall(entity) && cflow(within(com.qcadoo.mes.samples.api.SamplesLoader+))")
+    @After("com.qcadoo.mes.samples.aop.ValidationAfterSaveAspect.dataDefinitionSaveCall(entity) && cflow(execution(* com.qcadoo.mes.samples.api.SamplesLoader.*(..)))")
     public void afterDataDefinitionSaveCall(final Entity entity) {
         samplesValidationHelper.validateEntity(entity);
     }
