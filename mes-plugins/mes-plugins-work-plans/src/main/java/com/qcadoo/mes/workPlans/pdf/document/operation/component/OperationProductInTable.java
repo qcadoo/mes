@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -31,6 +40,8 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.workPlans.WorkPlansService;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
@@ -39,10 +50,6 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 @Component
 public class OperationProductInTable {
@@ -50,12 +57,17 @@ public class OperationProductInTable {
     private PdfHelper pdfHelper;
 
     @Autowired
+    private WorkPlansService workPlansService;
+
+    @Autowired
     public OperationProductInTable(PdfHelper pdfHelper) {
         this.pdfHelper = pdfHelper;
     }
 
-    public void print(GroupingContainer groupingContainer, Entity operationComponent, Document document, Locale locale) throws DocumentException {
-        Map<Long, Map<OperationProductColumn, ColumnAlignment>> map = groupingContainer.getOperationComponentIdProductInColumnToAlignment();
+    public void print(GroupingContainer groupingContainer, Entity operationComponent, Document document, Locale locale)
+            throws DocumentException {
+        Map<Long, Map<OperationProductColumn, ColumnAlignment>> map = groupingContainer
+                .getOperationComponentIdProductInColumnToAlignment();
         Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap = map.get(operationComponent.getId());
 
         int columnCount = operationProductColumnAlignmentMap.size();
@@ -74,6 +86,14 @@ public class OperationProductInTable {
 
         }
 
+        int additionalRows = workPlansService.getAdditionalRowsFromParameter(ParameterFieldsWP.ADDITIONAL_INPUT_ROWS);
+
+        for (int i = 0; i < additionalRows; i++) {
+            for (Map.Entry<OperationProductColumn, ColumnAlignment> e : operationProductColumnAlignmentMap.entrySet()) {
+                table.addCell("");
+            }
+        }
+
         table.setSpacingAfter(18);
         table.setSpacingBefore(9);
 
@@ -81,8 +101,7 @@ public class OperationProductInTable {
     }
 
     private EntityList operationProductOutComponents(Entity operationComponent) {
-        return operationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+        return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
     }
 
     private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
@@ -94,8 +113,8 @@ public class OperationProductInTable {
     }
 
     private void fill(Locale locale, Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap,
-                      List<String> headers, Map<String, HeaderAlignment> headerAlignments) {
-        //for optimization method fills two collections simultaneously
+            List<String> headers, Map<String, HeaderAlignment> headerAlignments) {
+        // for optimization method fills two collections simultaneously
         for (Map.Entry<OperationProductColumn, ColumnAlignment> entry : operationProductColumnAlignmentMap.entrySet()) {
             String name = entry.getKey().getName(locale, ProductDirection.IN);
             headerAlignments.put(name, headerAlignment(entry.getValue()));

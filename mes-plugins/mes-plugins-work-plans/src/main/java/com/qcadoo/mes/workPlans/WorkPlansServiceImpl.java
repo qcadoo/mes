@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
@@ -56,6 +57,9 @@ public class WorkPlansServiceImpl implements WorkPlansService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     public final Entity getWorkPlan(final Long workPlanId) {
@@ -279,6 +283,12 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         }
 
         return true;
+    }
+
+    @Override
+    public int getAdditionalRowsFromParameter(String field) {
+        Integer rows = parameterService.getParameter().getIntegerField(field);
+        return rows != null ? rows : 0;
     }
 
 }

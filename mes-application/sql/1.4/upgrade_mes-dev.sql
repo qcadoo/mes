@@ -88,3 +88,11 @@ UPDATE workplans_columnforinputproducts
  WHERE identifier='employeeSignature';
 
  -- end
+
+ -- Add parameters for additional rows in work workPlans
+ -- last touched 22.10.2014 by kama
+
+ALTER TABLE basic_parameter ADD COLUMN additionaloutputrows integer;
+ALTER TABLE basic_parameter ADD COLUMN additionalinputrows integer;
+
+ -- end

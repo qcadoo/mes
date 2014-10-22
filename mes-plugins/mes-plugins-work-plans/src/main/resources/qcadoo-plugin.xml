@@ -143,7 +143,13 @@
         
         <model:model-field model="parameter" plugin="basic">
         	<model:integer name="additionalInputRows">
-        		<model:validatesRange from="0" exclusively="true"/>
+        		<model:validatesRange from="0"/>
+        	</model:integer>
+        </model:model-field>
+        
+        <model:model-field model="parameter" plugin="basic">
+        	<model:integer name="additionalOutputRows">
+        		<model:validatesRange from="0"/>
         	</model:integer>
         </model:model-field>
 

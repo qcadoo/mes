@@ -23,12 +23,12 @@
  */
 package com.qcadoo.mes.workPlans;
 
+import java.util.List;
+import java.util.Set;
+
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
-
-import java.util.List;
-import java.util.Set;
 
 public interface WorkPlansService {
 
@@ -300,5 +300,13 @@ public interface WorkPlansService {
      * @return name for work plan
      */
     String generateNameForWorkPlan();
+
+    /**
+     * 
+     * @param field
+     *            parameter's field with additional rows number
+     * @return number of additional rows
+     */
+    int getAdditionalRowsFromParameter(final String field);
 
 }

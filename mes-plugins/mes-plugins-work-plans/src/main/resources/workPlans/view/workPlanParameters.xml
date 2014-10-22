@@ -141,7 +141,7 @@
 
         <windowTab name="workPlansProductsTab" reference="workPlansProductsTab">
             <component type="gridLayout" name="workPlansProductsGridLayout"
-                       columns="2" rows="10">
+                       columns="2" rows="11">
                 <layoutElement column="1" row="1" width="2">
                     <component type="label" name="workPlansProductsTabWelcome">
                         <option type="labelStyle" value="text"/>
@@ -154,7 +154,15 @@
                         <option type="align" value="left"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="3" height="7">
+                <layoutElement column="1" row="3">
+                	<component type="gridLayout" name="additionalInputLayout" rows="1" columns="3">
+                		<layoutElement column="1" row="1" width="2">
+                			<component type="input" name="additionalInputRows"
+                				field="#{form}.additionalInputRows" reference="additionalInputRows" hasDescription="true" />
+               			</layoutElement>
+               		</component>
+                </layoutElement>
+                <layoutElement column="1" row="4" height="7">
                     <component type="grid" name="columnsForInputProducts"
                                source="#{form}.parameterInputColumns" reference="columnsForInputProducts">
                         <option type="column" name="name" fields="columnForInputProducts"
@@ -181,7 +189,15 @@
                         <option type="align" value="left"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="2" row="3" height="7">
+                <layoutElement column="2" row="3">
+                	<component type="gridLayout" name="additionalOutputLayout" rows="1" columns="3">
+                		<layoutElement column="1" row="1" width="2">
+                			<component type="input" name="additionalOutputRows"
+                				field="#{form}.additionalOutputRows" reference="additionalOutputRows" hasDescription="true" />
+               			</layoutElement>
+               		</component>
+                </layoutElement>
+                <layoutElement column="2" row="4" height="7">
                     <component type="grid" name="columnsForOutputProducts"
                                source="#{form}.parameterOutputColumns" reference="columnsForOutputProducts">
                         <option type="column" name="name" fields="columnForOutputProducts"
