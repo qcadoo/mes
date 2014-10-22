@@ -39,7 +39,7 @@
         <windowTab name="workPlansOrdersTab" reference="workPlansOrdersTab">
             <component type="form" name="workPlanParameters" reference="form">
                 <component type="gridLayout" name="workPlansOrdersGridLayout"
-                           columns="2" rows="9">
+                           columns="2" rows="12">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="hideBarcodeOperationComponentInWorkPlans"
                                    field="#{form}.hideBarcodeOperationComponentInWorkPlans"
@@ -71,7 +71,7 @@
                             <option type="align" value="left"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5" height="4">
+                    <layoutElement column="1" row="5" height="7">
                         <component type="grid" name="columnsForOrders"
                                    source="#{form}.parameterOrderColumns" reference="columnsForOrders">
                             <option type="column" name="name" fields="columnForOrders"
@@ -141,7 +141,7 @@
 
         <windowTab name="workPlansProductsTab" reference="workPlansProductsTab">
             <component type="gridLayout" name="workPlansProductsGridLayout"
-                       columns="2" rows="7">
+                       columns="2" rows="10">
                 <layoutElement column="1" row="1" width="2">
                     <component type="label" name="workPlansProductsTabWelcome">
                         <option type="labelStyle" value="text"/>
@@ -154,7 +154,7 @@
                         <option type="align" value="left"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="3" height="4">
+                <layoutElement column="1" row="3" height="7">
                     <component type="grid" name="columnsForInputProducts"
                                source="#{form}.parameterInputColumns" reference="columnsForInputProducts">
                         <option type="column" name="name" fields="columnForInputProducts"
@@ -181,7 +181,7 @@
                         <option type="align" value="left"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="2" row="3" height="4">
+                <layoutElement column="2" row="3" height="7">
                     <component type="grid" name="columnsForOutputProducts"
                                source="#{form}.parameterOutputColumns" reference="columnsForOutputProducts">
                         <option type="column" name="name" fields="columnForOutputProducts"

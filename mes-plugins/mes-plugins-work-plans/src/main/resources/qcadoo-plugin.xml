@@ -140,6 +140,12 @@
                            model="parameterOutputColumn" joinField="parameter" cascade="delete"
                            copyable="true"/>
         </model:model-field>
+        
+        <model:model-field model="parameter" plugin="basic">
+        	<model:integer name="additionalInputRows">
+        		<model:validatesRange from="0" exclusively="true"/>
+        	</model:integer>
+        </model:model-field>
 
         <model:model-field plugin="technologies" model="operation">
             <model:boolean name="hideDescriptionInWorkPlans"/>
