@@ -90,7 +90,8 @@ public class OperationProductOutTable {
 
         for (int i = 0; i < additionalRows; i++) {
             for (Map.Entry<OperationProductColumn, ColumnAlignment> e : operationProductColumnAlignmentMap.entrySet()) {
-                table.addCell("");
+                alignColumn(defaultCell, e.getValue());
+                table.addCell(" ");
             }
         }
 
