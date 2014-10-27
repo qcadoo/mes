@@ -32,6 +32,7 @@ import java.math.BigDecimal;
 import java.util.Locale;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -104,6 +105,7 @@ public class MasterOrderDetailsHooksTest {
         given(view.getComponentByReference("masterOrderQuantityUnit")).willReturn(masterOrderQuantityUnitField);
     }
 
+    @Ignore
     @Test
     public final void shouldInvisibleFieldWhenMasterOrderTypeValueIsEmty() {
         given(masterOrderTypeField.getFieldValue()).willReturn(null);
