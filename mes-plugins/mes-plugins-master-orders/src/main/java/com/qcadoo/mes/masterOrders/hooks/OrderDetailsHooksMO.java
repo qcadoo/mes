@@ -60,6 +60,7 @@ public class OrderDetailsHooksMO {
         Entity order = orderForm.getEntity();
 
         Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+        Entity masterOrderProduct = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER_PRODUCT);
         if (order.getId() == null) {
 
             if (masterOrder != null) {
@@ -67,7 +68,7 @@ public class OrderDetailsHooksMO {
 
                 masterOrder = getMasterOrder(masterOrderId);
 
-                fillMasterOrderFields(view, masterOrder);
+                fillMasterOrderFields(view, masterOrder, masterOrderProduct);
             }
         }
         if (masterOrder != null) {
@@ -83,7 +84,7 @@ public class OrderDetailsHooksMO {
         orderTypeField.requestComponentUpdateState();
     }
 
-    private void fillMasterOrderFields(final ViewDefinitionState view, final Entity masterOrder) {
+    private void fillMasterOrderFields(final ViewDefinitionState view, final Entity masterOrder, final Entity product) {
         FieldComponent numberField = (FieldComponent) view.getComponentByReference(OrderFields.NUMBER);
         LookupComponent companyLookup = (LookupComponent) view.getComponentByReference(OrderFields.COMPANY);
         FieldComponent deadlineField = (FieldComponent) view.getComponentByReference(OrderFields.DEADLINE);
@@ -96,6 +97,10 @@ public class OrderDetailsHooksMO {
             Entity masterOrderCompany = masterOrder.getBelongsToField(MasterOrderFields.COMPANY);
             Date masterOrderDeadline = masterOrder.getDateField(MasterOrderFields.DEADLINE);
             Entity masterOrderProduct = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
+            if (product != null) {
+                masterOrderProduct = product;
+            }
+
             Entity masterOrderTechnology = masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
 
             String number = (String) numberField.getFieldValue();
