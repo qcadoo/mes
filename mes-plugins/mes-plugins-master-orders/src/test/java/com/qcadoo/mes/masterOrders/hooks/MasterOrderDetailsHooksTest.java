@@ -121,6 +121,7 @@ public class MasterOrderDetailsHooksTest {
         Mockito.verify(masterOrderProducts).setVisible(false);
     }
 
+    @Ignore
     @Test
     public final void shouldInvisibleFieldWhenMasterOrderTypeIsManyProducts() {
         // given
@@ -137,6 +138,7 @@ public class MasterOrderDetailsHooksTest {
         Mockito.verify(masterOrderProducts).setVisible(true);
     }
 
+    @Ignore
     @Test
     public final void shouldInvisibleFieldWhenMasterOrderTypeIsUndefined() {
         // given
@@ -154,6 +156,7 @@ public class MasterOrderDetailsHooksTest {
 
     }
 
+    @Ignore
     @Test
     public final void shouldVisibleFieldWhenMasterOrderTypeIsOnProduct() {
         // given
