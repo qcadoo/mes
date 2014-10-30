@@ -168,7 +168,7 @@
                     <component type="borderLayout" name="productQuantity"
                                reference="borderLayoutProductQuantity">
                         <component type="gridLayout" name="productQuantityGridLayout"
-                                   columns="4" rows="2" reference="productQuantityGridLayout"
+                                   columns="4" rows="3" reference="productQuantityGridLayout"
                                    hasBorders="false">
                             <layoutElement column="1" row="1" width="3">
                                 <component type="input" name="masterOrderQuantity"
@@ -198,6 +198,20 @@
                                     <option type="textRepresentationOnDisabled" value="true"/>
                                 </component>
                             </layoutElement>
+                            <layoutElement column="1" row="3" width="3">
+                                <component type="input" name="producedOrderQuantity"
+                                           field="#{form}.producedOrderQuantity" reference="producedOrderQuantity"
+                                           defaultVisible="false" defaultEnabled="never">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="3">
+                                <component type="input" name="producedOrderQuantityUnit"
+                                           reference="cproducedOrderQuantityUnit" hasLabel="false"
+                                           defaultVisible="false">
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
                         </component>
 
                         <option type="label" value="productQuantityLabel"/>
@@ -214,6 +228,7 @@
                                 expression="#technology['number']"/>
                         <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity"/>
                         <option type="column" name="cumulatedOrderQuantity" fields="cumulatedOrderQuantity"/>
+                        <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity"/>
                         <option type="column" name="productUnit" fields="product"
                                 expression="#product['unit']"/>
 
@@ -267,6 +282,7 @@
                 <option type="column" name="technologyNumber" fields="technology"
                         expression="#technology['number']" link="true"/>
                 <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
+                <option type="column" name="doneQuantity" fields="doneQuantity"/>
                 <option type="column" name="unit" fields="product"
                         expression="#product['unit']"/>
                 <option type="column" name="state" fields="state"/>

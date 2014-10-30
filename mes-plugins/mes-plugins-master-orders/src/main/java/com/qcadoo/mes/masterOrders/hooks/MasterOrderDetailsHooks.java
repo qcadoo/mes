@@ -99,7 +99,7 @@ public class MasterOrderDetailsHooks {
 
     public void setFieldsVisibility(final ViewDefinitionState view, final boolean visibleFields, final boolean visibleGrid) {
         for (String reference : Arrays.asList(TECHNOLOGY, PRODUCT, DEFAULT_TECHNOLOGY, MASTER_ORDER_QUANTITY,
-                CUMULATED_ORDER_QUANTITY)) {
+                CUMULATED_ORDER_QUANTITY, "producedOrderQuantity")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setVisible(visibleFields);
         }
@@ -143,7 +143,8 @@ public class MasterOrderDetailsHooks {
             unit = product.getStringField(UNIT);
         }
 
-        for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
+        for (String reference : Arrays
+                .asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit", "producedOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
             if (unit != null) {

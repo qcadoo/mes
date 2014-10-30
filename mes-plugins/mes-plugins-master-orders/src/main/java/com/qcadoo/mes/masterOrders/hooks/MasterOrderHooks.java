@@ -69,6 +69,7 @@ public class MasterOrderHooks {
 
     public void onView(final DataDefinition dataDefinition, final Entity masterOrder) {
         calculateCumulativeQuantityFromOrders(masterOrder);
+        fillRegisteredQuantity(masterOrder);
     }
 
     public void onCopy(final DataDefinition dataDefinition, final Entity masterOrder) {
@@ -86,6 +87,18 @@ public class MasterOrderHooks {
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
         BigDecimal quantitiesSum = masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, product);
         masterOrder.setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, quantitiesSum);
+    }
+
+    private void fillRegisteredQuantity(Entity masterOrder) {
+        if (masterOrder.getId() == null || MasterOrderType.of(masterOrder) != MasterOrderType.ONE_PRODUCT) {
+            return;
+        }
+        Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
+
+        BigDecimal doneQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersDoneQuantities(
+                masterOrder, product);
+        masterOrder.setField("producedOrderQuantity", doneQuantity);
+
     }
 
     protected void changedDeadlineAndInOrder(final Entity masterOrder) {

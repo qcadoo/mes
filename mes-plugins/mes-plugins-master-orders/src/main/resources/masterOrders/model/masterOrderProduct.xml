@@ -27,41 +27,47 @@
 <model name="masterOrderProduct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="product" plugin="basic" model="product"
-		           required="true">
-			<validatesWith
-					class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
-					method="checkIfCanChangeProduct" />
-		</belongsTo>
-		<belongsTo name="technology" plugin="technologies" model="technology">
-			<validatesWith
-					class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
-					method="checkIfCanChangeTechnology" />
-		</belongsTo>
+    <fields>
+        <belongsTo name="product" plugin="basic" model="product"
+                   required="true">
+            <validatesWith
+                    class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
+                    method="checkIfCanChangeProduct"/>
+        </belongsTo>
+        <belongsTo name="technology" plugin="technologies" model="technology">
+            <validatesWith
+                    class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
+                    method="checkIfCanChangeTechnology"/>
+        </belongsTo>
 
-		<belongsTo name="masterOrder" model="masterOrder" required="true" />
+        <belongsTo name="masterOrder" model="masterOrder" required="true"/>
 
-		<decimal name="masterOrderQuantity">
-			<validatesRange from="0" />
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="cumulatedOrderQuantity">
-			<validatesRange from="0" />
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
+        <decimal name="masterOrderQuantity">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="cumulatedOrderQuantity">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
 
-		<string name="defaultTechnology" persistent="false" />
-	</fields>
-	<hooks>
-		<validatesWith
-				class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
-				method="onValidate" />
-		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
-		        method="onView" />
-		<onDelete class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
-		          method="onDelete" />
-	</hooks>
+        <decimal name="producedOrderQuantity">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <string name="defaultTechnology" persistent="false"/>
+    </fields>
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
+                method="onValidate"/>
+        <onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
+                method="onView"/>
+        <onDelete class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
+                  method="onDelete"/>
+    </hooks>
 </model>

@@ -58,7 +58,8 @@ public class MasterOrderProductDetailsHooks {
         if (product != null) {
             unit = product.getStringField(UNIT);
         }
-        for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
+        for (String reference : Arrays
+                .asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit", "producedOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
