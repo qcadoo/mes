@@ -58,7 +58,7 @@ public class MasterOrderProductDetailsHooksTest {
     private FormComponent form;
 
     @Mock
-    private FieldComponent cumulatedOrderQuantityUnitField, masterOrderQuantityUnitField;
+    private FieldComponent cumulatedOrderQuantityUnitField, masterOrderQuantityUnitField, producedOrderQuantityUnitField;
 
     @Mock
     private LookupComponent productField;
@@ -75,6 +75,7 @@ public class MasterOrderProductDetailsHooksTest {
         given(view.getComponentByReference("form")).willReturn(form);
         given(view.getComponentByReference("cumulatedOrderQuantityUnit")).willReturn(cumulatedOrderQuantityUnitField);
         given(view.getComponentByReference("masterOrderQuantityUnit")).willReturn(masterOrderQuantityUnitField);
+        given(view.getComponentByReference("producedOrderQuantityUnit")).willReturn(producedOrderQuantityUnitField);
 
         given(masterOrderProductEntity.getBelongsToField(MasterOrderProductFields.MASTER_ORDER)).willReturn(masterOrder);
     }
@@ -88,6 +89,7 @@ public class MasterOrderProductDetailsHooksTest {
         // then
         verify(cumulatedOrderQuantityUnitField).setFieldValue(null);
         verify(masterOrderQuantityUnitField).setFieldValue(null);
+        verify(producedOrderQuantityUnitField).setFieldValue(null);
     }
 
     @Test
@@ -101,6 +103,7 @@ public class MasterOrderProductDetailsHooksTest {
         // then
         verify(cumulatedOrderQuantityUnitField).setFieldValue(unit);
         verify(masterOrderQuantityUnitField).setFieldValue(unit);
+        verify(producedOrderQuantityUnitField).setFieldValue(unit);
     }
 
     @Test
