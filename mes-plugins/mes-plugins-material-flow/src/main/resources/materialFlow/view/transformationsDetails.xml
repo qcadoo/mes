@@ -52,7 +52,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5" width="1" height="5">
-					<component type="borderLayout" name="transfersConsumptionBorderLayout">
+					<component type="borderLayout" name="transfersConsumptionBorderLayout" reference="transfersConsumptionBorderLayout">
 						<component type="awesomeDynamicList" name="transfersConsumption"
 							source="#{form}.transfersConsumption" reference="transfersConsumption">
 							<option type="hasBorder" value="false" />
@@ -150,7 +150,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="5" width="1" height="5">
-					<component type="borderLayout" name="transfersProductionBorderLayout">
+					<component type="borderLayout" name="transfersProductionBorderLayout" reference="transfersProductionBorderLayout">
 						<component type="awesomeDynamicList" name="transfersProduction"
 							source="#{form}.transfersProduction" reference="transfersProduction">
 							<option type="hasBorder" value="false" />

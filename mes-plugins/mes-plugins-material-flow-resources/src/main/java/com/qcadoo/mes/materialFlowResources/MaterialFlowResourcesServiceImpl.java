@@ -25,6 +25,7 @@ package com.qcadoo.mes.materialFlowResources;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATION;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
@@ -33,7 +34,6 @@ import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATC
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
-import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -42,13 +42,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
+import com.qcadoo.mes.materialFlowResources.constants.AttributeFields;
+import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.ChangeDateWhenTransferToWarehouseType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
@@ -56,6 +58,7 @@ import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
@@ -372,4 +375,50 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return (isLocationIsWarehouse(locationFrom) || isLocationIsWarehouse(locationTo));
     }
 
+    @Override
+    public List<Entity> getAttributesForPosition(Entity position, Entity warehouse) {
+        List<Entity> attributes = Lists.newArrayList();
+        List<Entity> attributesForWarehouse = getAttributesForWarehouse(warehouse);
+        if (attributesForWarehouse != null) {
+            for (Entity attributeForWarehouse : attributesForWarehouse) {
+                Entity existingValue = getExistingAttributeValueForPosition(position, attributeForWarehouse);
+                if (existingValue != null) {
+                    attributes.add(existingValue);
+                } else {
+                    attributes.add(createAttributeValue(position, attributeForWarehouse));
+                }
+            }
+        }
+        return attributes;
+    }
+
+    private Entity createAttributeValue(Entity position, Entity attribute) {
+        Entity newAttribute = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE).create();
+        newAttribute.setField(AttributeValueFields.ATTRIBUTE, attribute);
+        newAttribute.setField(AttributeValueFields.POSITION, position);
+
+        return newAttribute;
+    }
+
+    private Entity getExistingAttributeValueForPosition(final Entity position, final Entity attribute) {
+        if (position != null && position.getId() != null) {
+            return dataDefinitionService
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE)
+                    .find().createAlias(AttributeValueFields.POSITION, "position", JoinType.INNER)
+                    .add(SearchRestrictions.belongsTo(AttributeValueFields.ATTRIBUTE, attribute))
+                    .add(SearchRestrictions.eq("position.id", position.getId())).setMaxResults(1).uniqueResult();
+        }
+        return null;
+
+    }
+
+    private List<Entity> getAttributesForWarehouse(final Entity warehouse) {
+        if (warehouse != null) {
+            return dataDefinitionService
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_ATTRIBUTE).find()
+                    .add(SearchRestrictions.belongsTo(AttributeFields.LOCATION, warehouse)).list().getEntities();
+        }
+        return null;
+    }
 }

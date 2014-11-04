@@ -34,18 +34,18 @@
 		<string name="name" required="true">
 			<validatesLength max="1024" />
 		</string>
-		<datetime name="time" required="true" />
+		<date name="time" required="true" />
 		<belongsTo name="locationFrom" model="location" plugin="materialFlow"
 			required="true" />
 		<belongsTo name="locationTo" model="location" plugin="materialFlow"
 			required="true" />
 		<belongsTo name="staff" model="staff" plugin="basic" />
-		<belongsTo name="operation" model="operation" plugin="technologies"
-			persistent="false" />
+		<belongsTo name="operation" model="operation" plugin="technologies" />
 		<hasMany name="transfersConsumption" model="transfer" plugin="materialFlow"
 			joinField="transformationsConsumption" cascade="delete" copyable="true" />
 		<hasMany name="transfersProduction" model="transfer" plugin="materialFlow"
 			joinField="transformationsProduction" cascade="delete" copyable="true" />
+		
 	</fields>
 	<hooks>
 		<validatesWith

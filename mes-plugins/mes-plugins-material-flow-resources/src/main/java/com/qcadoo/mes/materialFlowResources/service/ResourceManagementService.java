@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import java.util.List;
+
+import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.model.api.Entity;
 
 public interface ResourceManagementService {
@@ -32,4 +35,7 @@ public interface ResourceManagementService {
     void updateResourcesForReleaseDocuments(final Entity document);
 
     void moveResourcesForTransferDocument(Entity document);
+
+    List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
+            WarehouseAlgorithm warehouseAlgorithm);
 }

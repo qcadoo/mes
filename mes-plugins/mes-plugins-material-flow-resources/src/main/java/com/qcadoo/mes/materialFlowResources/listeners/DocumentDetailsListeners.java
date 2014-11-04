@@ -28,15 +28,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
-import com.qcadoo.mes.materialFlowResources.service.ResourceManagementServiceImpl.WarehouseAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -59,6 +61,9 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     private static final String L_RESOURCE = "resource";
 
@@ -105,6 +110,8 @@ public class DocumentDetailsListeners {
             recentlySavedDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
             documentDD.save(recentlySavedDocument);
             documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+        } else {
+            formComponent.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
         }
         formComponent.setEntity(documentToCreateResourcesFor);
     }
@@ -136,6 +143,37 @@ public class DocumentDetailsListeners {
         locationFrom.requestComponentUpdateState();
 
         showResourceLookupOrBatchInput(view, false, true);
+
+        clearAttributes(view);
+    }
+
+    public void updateAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        clearAttributes(view);
+        createNewAttributes(view);
+    }
+
+    private void clearAttributes(final ViewDefinitionState view) {
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        for (FormComponent positionForm : positionsADL.getFormComponents()) {
+            AwesomeDynamicListComponent attributeADL = (AwesomeDynamicListComponent) positionForm
+                    .findFieldComponentByName("additionalAttributes");
+            attributeADL.setFieldValue(Lists.newArrayList());
+            attributeADL.requestComponentUpdateState();
+        }
+    }
+
+    private void createNewAttributes(final ViewDefinitionState view) {
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        Entity warehouse = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity().getBelongsToField(
+                DocumentFields.LOCATION_TO);
+        for (FormComponent positionForm : positionsADL.getFormComponents()) {
+            Entity position = positionForm.getEntity();
+            if (position.getId() != null) {
+                position.setField(PositionFields.ATRRIBUTE_VALUES,
+                        materialFlowResourcesService.getAttributesForPosition(position, warehouse));
+                positionForm.setEntity(position);
+            }
+        }
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {

@@ -26,44 +26,35 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="resourcesList" 
-	modelName="resource" 
+	name="resourceCorrectionsList" 
+	modelName="resourceCorrection" 
 	menuAccessible="true">
 
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
+			<template name="standardGridTemplate" excludeItems="actions.new,actions.copy, actions.delete" />
 		</ribbon>
 
-		<component type="grid" name="resourceGrid" reference="grid">
-			<option type="column" name="locationNumber" fields="location"
-				expression="#location['number']" link="true" />
-			<option type="column" name="locationName" fields="location"
-				expression="#location['name']" link="true" />
+		<component type="grid" name="resourceCorrectionsGrid" reference="grid">
+			<option type="column" name="number" fields="number" link="true" />
+			<option type="column" name="createDate" fields="createDate" link="true" />
 			<option type="column" name="productNumber" fields="product"
 				expression="#product['number']" link="true" />
 			<option type="column" name="productName" fields="product"
 				expression="#product['name']" link="true" />
-			<option type="column" name="quantity" fields="quantity" />
+			<option type="column" name="oldQuantity" fields="oldQuantity" />
+			<option type="column" name="newQuantity" fields="newQuantity" />
 			<option type="column" name="productUnit" fields="product" 
-				expression="#product['unit']" width="50"/>
-			<option type="column" name="price" fields="price" />
-			<option type="column" name="value" fields="value" />
-            <option type="column" name="time" fields="time" />
-            <option type="column" name="productionDate" fields="productionDate" />
-            <option type="column" name="expirationDate" fields="expirationDate" />
-            <option type="column" name="batch" fields="batch" />
-            <option type="column" name="isCorrected" fields="isCorrected"/>
+				expression="#product['unit']" />
 
-			<option type="order" column="productNumber" direction="asc" />
+			<option type="order" column="number" direction="desc" />
 
 			<option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected" />
+                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity" />
 			<option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected" />
+                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity" />
 
-			<option type="correspondingView" value="materialFlowResources/resourceDetails" />
-			<option type="correspondingViewInModal" value="true" />
+			<option type="correspondingView" value="materialFlowResources/resourceCorrectionDetails" />
 			<option type="correspondingComponent" value="form" />
 
 			<option type="fullscreen" value="true" />
