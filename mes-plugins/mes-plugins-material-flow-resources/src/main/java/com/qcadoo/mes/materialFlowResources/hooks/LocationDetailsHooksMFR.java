@@ -3,7 +3,7 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.service.ResourceManagementServiceImpl.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;

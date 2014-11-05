@@ -87,16 +87,20 @@ public class DocumentDetailsHooks {
                 || DocumentType.INTERNAL_INBOUND.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, true);
             showWarehouse(view, false, true);
+            enableAttributesADL(view, true);
         } else if (DocumentType.TRANSFER.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, true, true);
+            enableAttributesADL(view, false);
         } else if (DocumentType.RELEASE.getStringValue().equals(documentType)
                 || DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, true, false);
+            enableAttributesADL(view, false);
         } else {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, false, false);
+            enableAttributesADL(view, false);
         }
     }
 
@@ -118,7 +122,22 @@ public class DocumentDetailsHooks {
 
             }
             fillInUnit(positionForm);
+
         }
+    }
+
+    private void enableAttributesADL(final ViewDefinitionState view, final boolean enabled) {
+
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        for (FormComponent positionForm : positionsADL.getFormComponents()) {
+            AwesomeDynamicListComponent attributeADL = (AwesomeDynamicListComponent) positionForm
+                    .findFieldComponentByName("additionalAttributes");
+            for (FormComponent innerForm : attributeADL.getFormComponents()) {
+                FieldComponent value = innerForm.findFieldComponentByName("value");
+                value.setEnabled(enabled);
+            }
+        }
+
     }
 
     private void fillInUnit(FormComponent positionForm) {
@@ -171,6 +190,7 @@ public class DocumentDetailsHooks {
         AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             positionForm.setFormEnabled(false);
+            enableAttributesADL(view, false);
         }
         positionsADL.setEnabled(false);
         positionsADL.requestComponentUpdateState();
@@ -214,4 +234,5 @@ public class DocumentDetailsHooks {
             resourcesLookup.setFilterValue(filter);
         }
     }
+
 }

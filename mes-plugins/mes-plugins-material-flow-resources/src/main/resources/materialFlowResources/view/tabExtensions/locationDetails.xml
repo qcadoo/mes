@@ -25,40 +25,79 @@
 
 -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
-                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-                    plugin="materialFlow" view="locationDetails">
+	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="materialFlow" view="locationDetails">
 
-    <windowTab name="algorithmTab" reference="algorithmTab">
-        <component type="gridLayout" name="algorithmTabGridLayout" columns="3" rows="4">
-            <layoutElement column="1" row="1">
-                <component type="select" name="algorithm" field="#{form}.algorithm" reference="algorithm">
-                	<listener event="onSelectedEntityChange"
+	<windowTab name="algorithmTab" reference="algorithmTab">
+		<component type="gridLayout" name="algorithmTabGridLayout"
+			columns="3" rows="4">
+			<layoutElement column="1" row="1">
+				<component type="select" name="algorithm" field="#{form}.algorithm"
+					reference="algorithm">
+					<listener event="onSelectedEntityChange"
 						class="com.qcadoo.mes.materialFlowResources.listeners.LocationDetailsListenersMFR"
 						method="onAlgorithmChange" />
-                </component>
-            </layoutElement>
-            <layoutElement column="2" row="1" height="4">
-                <component type="borderLayout" name="attributeBorderLayout"
-                           reference="attributeBorderLayout">
-                    <option type="label" value="attributeLayoutLabel" />
-                    <component type="gridLayout" name="gridLayout" columns="1"
-                               rows="4">
-                        <layoutElement column="1" row="1">
-                            <component type="checkbox" name="requirePrice" field="#{form}.requirePrice" />
-                        </layoutElement>
-                        <layoutElement column="1" row="2">
-                            <component type="checkbox" name="requireBatch" field="#{form}.requireBatch" reference ="requireBatch"/>
-                        </layoutElement>
-                        <layoutElement column="1" row="3">
-                            <component type="checkbox" name="requireProductionDate" field="#{form}.requireProductionDate"/>
-                        </layoutElement>
-                        <layoutElement column="1" row="4">
-                            <component type="checkbox" name="requireExpirationDate" field="#{form}.requireExpirationDate" />
-                        </layoutElement>
-                    </component>
-                </component>
-            </layoutElement>
-        </component>
-    </windowTab>
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="1" height="4">
+				<component type="borderLayout" name="attributeBorderLayout"
+					reference="attributeBorderLayout">
+					<option type="label" value="attributeLayoutLabel" />
+					<component type="gridLayout" name="gridLayout" columns="1"
+						rows="4">
+						<layoutElement column="1" row="1">
+							<component type="checkbox" name="requirePrice" field="#{form}.requirePrice" />
+						</layoutElement>
+						<layoutElement column="1" row="2">
+							<component type="checkbox" name="requireBatch" field="#{form}.requireBatch"
+								reference="requireBatch" />
+						</layoutElement>
+						<layoutElement column="1" row="3">
+							<component type="checkbox" name="requireProductionDate"
+								field="#{form}.requireProductionDate" />
+						</layoutElement>
+						<layoutElement column="1" row="4">
+							<component type="checkbox" name="requireExpirationDate"
+								field="#{form}.requireExpirationDate" />
+						</layoutElement>
+					</component>
+				</component>
+			</layoutElement>
+			<layoutElement column="3" row="1">
+				<component type="borderLayout" name="additionalAttributeBorderLayout"
+					reference="additionalAttributeBorderLayout">
+					<option type="label" value="additionalAttributeLayoutLabel" />
+					<component type="awesomeDynamicList" name="additionalAttributes"
+						source="#{form}.attributes" reference="additionalAttributes">
+						<option type="hasButtons" value="true" />
+						<option type="hasBorder" value="true" />
+						<header>
+							<component type="gridLayout" name="mainGridLayout"
+								columns="5" rows="1">
+								<layoutElement column="1" row="1" width="4">
+									<component type="label" name="attributeName" />
+								</layoutElement>
+								<layoutElement column="5" row="1">
+									<component type="label" name="required" />
+								</layoutElement>
+							</component>
+						</header>
+						<components>
+							<component type="gridLayout" name="attributesGridLayout"
+								columns="5" rows="1">
+								<layoutElement column="1" row="1" width="4">
+									<component type="input" name="attributeName"
+										field="name" hasLabel="false" reference="attributeName"/>
+								</layoutElement>
+								<layoutElement column="5" row="1">
+									<component type="checkbox" name="required" field="required" hasLabel="false"/>
+								</layoutElement>
+							</component>
+						</components>
+					</component>
+				</component>
+			</layoutElement>
+		</component>
+	</windowTab>
 </windowTabExtension>

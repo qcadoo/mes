@@ -70,4 +70,6 @@ public interface MaterialFlowResourcesService {
 
     boolean areLocationsWarehouses(final Entity locationFrom, final Entity locationTo);
 
+    List<Entity> getAttributesForPosition(final Entity position, final Entity warehouse);
+
 }

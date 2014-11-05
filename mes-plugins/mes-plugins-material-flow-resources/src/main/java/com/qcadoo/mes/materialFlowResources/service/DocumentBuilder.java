@@ -90,6 +90,18 @@ public class DocumentBuilder {
     }
 
     /**
+     * Add position to document, use this method for outbound and transfer documents for locations with manual algorithm
+     * 
+     * @param product
+     * @param quantity
+     * @param resource
+     * @return DocumentBuilder.this
+     */
+    public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final Entity resource) {
+        return addPosition(product, quantity, null, null, null, null, resource);
+    }
+
+    /**
      * Add position to document, use this method for inbound documents where additional attributes are required sometimes.
      * 
      * @param product
@@ -102,9 +114,32 @@ public class DocumentBuilder {
      */
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal price,
             final String batch, final Date productionDate, final Date expirationDate) {
+        return addPosition(product, quantity, price, batch, productionDate, expirationDate, null);
+    }
+
+    public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal price,
+            final String batch, final Date productionDate, final Date expirationDate, final Entity resource) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
+        Entity position = createPosition(product, quantity, price, batch, productionDate, expirationDate, resource);
+        positions.add(position);
+        return this;
+    }
+
+    /**
+     * Creates position with given field values
+     * 
+     * @param product
+     * @param quantity
+     * @param price
+     * @param batch
+     * @param expirationDate
+     * @param productionDate
+     * @return Created position entity
+     */
+    public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal price, final String batch,
+            final Date productionDate, final Date expirationDate, final Entity resource) {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
         Entity position = positionDD.create();
@@ -115,6 +150,18 @@ public class DocumentBuilder {
         position.setField(PositionFields.BATCH, batch);
         position.setField(PositionFields.PRODUCTION_DATE, productionDate);
         position.setField(PositionFields.EXPIRATION_DATE, expirationDate);
+        position.setField(PositionFields.RESOURCE, resource);
+        return position;
+    }
+
+    /**
+     * Add previously created position to document
+     * 
+     * @param position
+     * @return DocumentBuilder.this
+     */
+    public DocumentBuilder addPosition(final Entity position) {
+        Preconditions.checkArgument(position != null, "Position argument is required.");
         positions.add(position);
         return this;
     }

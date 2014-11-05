@@ -38,11 +38,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -52,34 +54,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
-
-    public enum WarehouseAlgorithm {
-        FIFO("01fifo"), LIFO("02lifo"), FEFO("03fefo"), LEFO("04lefo"), MANUAL("05manual");
-
-        private final String value;
-
-        private WarehouseAlgorithm(final String value) {
-            this.value = value;
-        }
-
-        public String getStringValue() {
-            return this.value;
-        }
-
-        public static WarehouseAlgorithm parseString(final String type) {
-            if (LIFO.getStringValue().equalsIgnoreCase(type)) {
-                return LIFO;
-            } else if (FEFO.getStringValue().equalsIgnoreCase(type)) {
-                return FEFO;
-            } else if (LEFO.getStringValue().equalsIgnoreCase(type)) {
-                return LEFO;
-            } else if (MANUAL.getStringValue().equalsIgnoreCase(type)) {
-                return MANUAL;
-            } else {
-                return FIFO;
-            }
-        }
-    };
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -97,7 +71,28 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
     }
 
-    private Entity createResource(final Entity warehouse, final Entity position, final Object date) {
+    private void setResourceAttributesFromPosition(final Entity resource, final Entity position) {
+        List<Entity> attributes = position.getHasManyField(PositionFields.ATRRIBUTE_VALUES);
+        for (Entity attribute : attributes) {
+            attribute.setField(AttributeValueFields.RESOURCE, resource);
+        }
+        resource.setField(ResourceFields.ATRRIBUTE_VALUES, attributes);
+    }
+
+    private void setResourceAttributesFromResource(final Entity resource, final Entity baseResource) {
+        List<Entity> attributes = baseResource.getHasManyField(ResourceFields.ATRRIBUTE_VALUES);
+        List<Entity> newAttributes = Lists.newArrayList();
+        DataDefinition attributeDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE);
+        for (Entity attribute : attributes) {
+            List<Entity> newAttribute = attributeDD.copy(attribute.getId());
+            newAttribute.get(0).setField(AttributeValueFields.RESOURCE, resource);
+            newAttributes.addAll(newAttribute);
+        }
+        resource.setField(ResourceFields.ATRRIBUTE_VALUES, newAttributes);
+    }
+
+    public Entity createResource(final Entity warehouse, final Entity position, final Object date) {
 
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
@@ -111,11 +106,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.BATCH, position.getField(PositionFields.BATCH));
         resource.setField(ResourceFields.EXPIRATION_DATE, position.getField(PositionFields.EXPIRATION_DATE));
         resource.setField(ResourceFields.PRODUCTION_DATE, position.getField(PositionFields.PRODUCTION_DATE));
-
+        setResourceAttributesFromPosition(resource, position);
         return resourceDD.save(resource);
     }
 
-    private Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, Object date) {
+    public Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, Object date) {
 
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
@@ -129,7 +124,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.BATCH, resource.getField(PositionFields.BATCH));
         newResource.setField(ResourceFields.EXPIRATION_DATE, resource.getField(PositionFields.EXPIRATION_DATE));
         newResource.setField(ResourceFields.PRODUCTION_DATE, resource.getField(PositionFields.PRODUCTION_DATE));
-
+        setResourceAttributesFromResource(newResource, resource);
         return resourceDD.save(newResource);
     }
 
@@ -314,7 +309,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 "materialFlow.error.position.quantity.notEnough");
     }
 
-    private List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
+    public List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
             WarehouseAlgorithm warehouseAlgorithm) {
         List<Entity> resources = Lists.newArrayList();
         if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {

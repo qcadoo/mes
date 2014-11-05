@@ -44,6 +44,9 @@
         <date name="productionDate" />
         <date name="expirationDate" />
         <hasMany name="positions" joinField="resource" model="position" cascade="nullify"/>
+        <hasMany name="resourceCorrections" joinField="resource" model="resourceCorrection" cascade="nullify"/>
+        <boolean name="isCorrected" default="false"/>
+        <hasMany name="attributeValues" joinField="resource" model="attributeValue" cascade="nullify" />
 	</fields>
 	<hooks>
 		<validatesWith
@@ -52,9 +55,9 @@
 		<onView
 			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
 			method="onView" />
-<!-- 		<onCreate -->
-<!-- 			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" -->
-<!-- 			method="generateBatch" /> -->
+ 		<onCreate 
+ 			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" 
+ 			method="onCreate" /> 
 <!-- 		<onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" method="onDelete"/> -->
 	</hooks>
 </model>

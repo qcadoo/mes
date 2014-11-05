@@ -35,4 +35,12 @@ public interface MaterialFlowResourcesConstants {
 
     public static final String MODEL_POSITION = "position";
 
+    public static final String MODEL_RESOURCE_CORRECTION = "resourceCorrection";
+
+    public static final String MODEL_GLOBAL_ATTRIBUTE = "globalAttribute";
+
+    public static final String MODEL_ATTRIBUTE = "attribute";
+
+    public static final String MODEL_ATTRIBUTE_VALUE = "attributeValue";
+
 }

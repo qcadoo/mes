@@ -16,6 +16,83 @@ ALTER TABLE deliveries_deliveredproduct ADD COLUMN expirationdate date;
 
 -- end
 
+-- Add table for resource correction
+-- last touched 26.09.2014 by kama
+
+CREATE TABLE materialflowresources_resourcecorrection
+(
+  id bigint NOT NULL,
+  "number" character varying(255),
+  product_id bigint,
+  newquantity numeric(12,5),
+  oldquantity numeric(12,5),
+  location_id bigint,
+  "time" timestamp without time zone,
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  createuser character varying(255),
+  updateuser character varying(255),
+  batch character varying(255),
+  resource_id bigint,
+  CONSTRAINT materialflowresources_resourcecorrection_pkey PRIMARY KEY (id),
+  CONSTRAINT resourcecorrection_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT resourcecorrection_location_fkey FOREIGN KEY (location_id)
+      REFERENCES materialflow_location (id) DEFERRABLE,
+  CONSTRAINT resourcecorrection_resource_fkey FOREIGN KEY (resource_id)
+      REFERENCES materialflowresources_resource (id) DEFERRABLE
+);
+
+-- end
+
+-- Add tables for dynamic attributes
+-- last touched 03.10.2014 by kama
+
+CREATE TABLE materialflowresources_attribute
+(
+  id bigint NOT NULL,
+  name character varying(255),
+  location_id bigint,
+  required boolean DEFAULT false,
+  CONSTRAINT materialflowresources_attribute_pkey PRIMARY KEY (id),
+  CONSTRAINT attribute_location_fkey FOREIGN KEY (location_id)
+      REFERENCES materialflow_location (id) DEFERRABLE
+);
+
+CREATE TABLE materialflowresources_attributevalue
+(
+  id bigint NOT NULL,
+  attribute_id bigint,
+  value character varying(255),
+  position_id bigint,
+  resource_id bigint,
+  CONSTRAINT materialflowresources_attributevalue_pkey PRIMARY KEY (id),
+  CONSTRAINT attributevalue_position_fkey FOREIGN KEY (position_id)
+      REFERENCES materialflowresources_position (id) DEFERRABLE,
+  CONSTRAINT attributevalue_resource_fkey FOREIGN KEY (resource_id)
+      REFERENCES materialflowresources_resource (id) DEFERRABLE,
+  CONSTRAINT attributevalue_attribute_fkey FOREIGN KEY (attribute_id)
+      REFERENCES materialflowresources_attribute (id) DEFERRABLE
+);
+
+-- end
+
+-- Added column in resources
+-- last touched 03.10.2014 by kama
+
+ALTER TABLE materialflowresources_resource ADD COLUMN iscorrected BOOLEAN;
+
+-- end
+
+-- Add operation column in transformations
+-- last touched 22.10.2014 by kama
+
+ALTER TABLE materialflow_transformations ADD COLUMN operation_id bigint;
+ALTER TABLE materialflow_transformations ADD CONSTRAINT transformations_operation_fkey FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id) DEFERRABLE;
+
+-- end
+
 -- Added update scripts for workPlans translations
 -- last touched 22.10.2014 by kama
 
@@ -96,7 +173,6 @@ ALTER TABLE basic_parameter ADD COLUMN additionaloutputrows integer;
 ALTER TABLE basic_parameter ADD COLUMN additionalinputrows integer;
 
  -- end
-
 
  -- orders_order
  -- last touched 04.11.2014 by kasi

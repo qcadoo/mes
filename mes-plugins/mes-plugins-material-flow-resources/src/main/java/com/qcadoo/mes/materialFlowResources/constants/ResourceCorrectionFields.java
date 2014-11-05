@@ -23,34 +23,26 @@
  */
 package com.qcadoo.mes.materialFlowResources.constants;
 
-public final class ResourceFields {
+public class ResourceCorrectionFields {
 
-    private ResourceFields() {
+    private ResourceCorrectionFields() {
 
     }
+
+    public static final String NUMBER = "number";
 
     public static final String LOCATION = "location";
 
     public static final String PRODUCT = "product";
 
-    public static final String QUANTITY = "quantity";
+    public static final String NEW_QUANTITY = "newQuantity";
 
-    public static final String PRICE = "price";
-
-    public static final String VALUE = "value";
+    public static final String OLD_QUANTITY = "oldQuantity";
 
     public static final String BATCH = "batch";
 
     public static final String TIME = "time";
 
-    public static final String EXPIRATION_DATE = "expirationDate";
-
-    public static final String PRODUCTION_DATE = "productionDate";
-
-    public static final String RESOURCE_CORRECTIONS = "resourceCorrections";
-
-    public static final String IS_CORRECTED = "isCorrected";
-
-    public static final String ATRRIBUTE_VALUES = "attributeValues";
+    public static final String RESOURCE = "resource";
 
 }

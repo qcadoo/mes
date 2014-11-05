@@ -183,23 +183,28 @@ public class DeliveryStateServiceMF {
             }
 
             String locationName = locationName(location);
-            if (missingBatch.size() != 0) {
-                stateChangeContext.addValidationError("deliveriesToMaterialFlow.deliveryStateValidator.missing.batch", false,
-                        locationName, missingBatch.toString());
-            }
-            if (missingProductionDate.size() != 0) {
-                stateChangeContext.addValidationError("deliveriesToMaterialFlow.deliveryStateValidator.missing.productionDate",
-                        false, locationName, missingProductionDate.toString());
-            }
-            if (missingExpirationDate.size() != 0) {
-                stateChangeContext.addValidationError("deliveriesToMaterialFlow.deliveryStateValidator.missing.expirationDate",
-                        false, locationName, missingExpirationDate.toString());
-            }
-            if (missingPrice.size() != 0) {
-                stateChangeContext.addValidationError("deliveriesToMaterialFlow.deliveryStateValidator.missing.price", false,
-                        locationName, missingPrice.toString());
-            }
+            addErrorMessage(stateChangeContext, missingBatch, locationName,
+                    "deliveriesToMaterialFlow.deliveryStateValidator.missing.batch");
+            addErrorMessage(stateChangeContext, missingProductionDate, locationName,
+                    "deliveriesToMaterialFlow.deliveryStateValidator.missing.productionDate");
+            addErrorMessage(stateChangeContext, missingExpirationDate, locationName,
+                    "deliveriesToMaterialFlow.deliveryStateValidator.missing.expirationDate");
+            addErrorMessage(stateChangeContext, missingPrice, locationName,
+                    "deliveriesToMaterialFlow.deliveryStateValidator.missing.price");
+
         }
 
+    }
+
+    private void addErrorMessage(StateChangeContext stateChangeContext, List<String> message, String locationName,
+            String translationKey) {
+
+        if (message.size() != 0) {
+            if (message.toString().length() < 255) {
+                stateChangeContext.addValidationError(translationKey, false, locationName, message.toString());
+            } else {
+                stateChangeContext.addValidationError(translationKey + "Short", false, locationName);
+            }
+        }
     }
 }
