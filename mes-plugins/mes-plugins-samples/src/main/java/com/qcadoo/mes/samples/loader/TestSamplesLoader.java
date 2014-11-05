@@ -739,10 +739,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     + order.getField(L_NUMBER)
                     + ", order product="
                     + (order.getField(L_BASIC_MODEL_PRODUCT) == null ? null : ((Entity) order.getField(L_BASIC_MODEL_PRODUCT))
-                            .getField(L_NUMBER))
+                    .getField(L_NUMBER))
                     + ", technology="
                     + (order.getField(L_TECHNOLOGY_MODEL_TECHNOLOGY) == null ? null : ((Entity) order
-                            .getField(L_TECHNOLOGY_MODEL_TECHNOLOGY)).getField(L_NUMBER)) + ", dateFrom="
+                    .getField(L_TECHNOLOGY_MODEL_TECHNOLOGY)).getField(L_NUMBER)) + ", dateFrom="
                     + order.getField(L_DATE_FROM) + ", dateTo=" + order.getField(L_DATE_TO) + ", effectiveDateFrom="
                     + order.getField("effectiveDateFrom") + ", effectiveDateTo=" + order.getField("effectiveDateTo")
                     + ", doneQuantity=" + order.getField("doneQuantity") + ", plannedQuantity="
@@ -981,7 +981,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     .get(L_QUALITY_CONTROL_TYPE)))
                     && isEnabledOrEnabling(L_QUALITY_CONTROLS)
                     && ("02forUnit".equals(values.get(L_QUALITY_CONTROL_TYPE)) || "03forOrder".equals(values
-                            .get(L_QUALITY_CONTROL_TYPE)))) {
+                    .get(L_QUALITY_CONTROL_TYPE)))) {
                 technology.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITY_CONTROL_TYPE));
                 if ("02forUnit".equals(values.get(L_QUALITY_CONTROL_TYPE))) {
                     technology.setField("unitSamplingNr", values.get("unit_sampling_nr"));
@@ -1109,7 +1109,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     + ((Entity) productComponent.getField(L_BASIC_MODEL_PRODUCT)).getField(L_NUMBER)
                     + ", operation="
                     + ((Entity) ((Entity) productComponent.getField(SamplesConstants.L_OPERATION_COMPONENT))
-                            .getField(L_TECHNOLOGY_MODEL_OPERATION)).getField(L_NUMBER) + ", quantity="
+                    .getField(L_TECHNOLOGY_MODEL_OPERATION)).getField(L_NUMBER) + ", quantity="
                     + productComponent.getField(L_QUANTITY) + "}");
         }
     }
@@ -1129,7 +1129,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     + ((Entity) productComponent.getField(L_BASIC_MODEL_PRODUCT)).getField(L_NUMBER)
                     + ", operation="
                     + ((Entity) ((Entity) productComponent.getField(L_OPERATION_COMPONENT))
-                            .getField(L_TECHNOLOGY_MODEL_OPERATION)).getField(L_NUMBER) + ", quantity="
+                    .getField(L_TECHNOLOGY_MODEL_OPERATION)).getField(L_NUMBER) + ", quantity="
                     + productComponent.getField(L_QUANTITY) + "}");
         }
     }
