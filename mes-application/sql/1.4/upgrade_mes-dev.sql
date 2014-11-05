@@ -96,3 +96,12 @@ ALTER TABLE basic_parameter ADD COLUMN additionaloutputrows integer;
 ALTER TABLE basic_parameter ADD COLUMN additionalinputrows integer;
 
  -- end
+
+
+ -- orders_order
+ -- last touched 04.11.2014 by kasi
+ALTER TABLE orders_order ADD COLUMN masterorderproduct_id bigint;
+ALTER TABLE orders_order
+	ADD CONSTRAINT masterorderproduct_order_fkey FOREIGN KEY (masterorderproduct_id)
+		REFERENCES basic_product (id);
+ -- end
