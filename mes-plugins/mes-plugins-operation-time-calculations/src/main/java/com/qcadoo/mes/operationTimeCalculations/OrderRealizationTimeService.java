@@ -28,12 +28,29 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.collections.MultiMap;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
 
 public interface OrderRealizationTimeService {
 
     int MAX_REALIZATION_TIME = 99999 * 60 * 60;
+
+    int evaluateSingleOperationTime(Entity operationComponent, boolean includeTpz,
+            boolean includeAdditionalTime, Map<Long, BigDecimal> operationRuns, Entity productionLine,
+            boolean maxForWorkstation);
+
+    int evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(Entity operationComponent,
+            boolean includeTpz, boolean includeAdditionalTime, Map<Long, BigDecimal> operationRuns,
+            Entity productionLine, boolean maxForWorkstation,
+            OperationProductComponentWithQuantityContainer productComponentQuantities);
+
+    int evaluateOperationDurationOutOfCycles(BigDecimal cycles, Entity operationComponent,
+            Entity productionLine, boolean maxForWorkstation, boolean includeTpz,
+            boolean includeAdditionalTime);
 
     BigDecimal getBigDecimalFromField(final Object value, final Locale locale);
 
@@ -87,6 +104,10 @@ public interface OrderRealizationTimeService {
      */
     int estimateMaxOperationTimeConsumptionForWorkstation(EntityTreeNode operationComponent, BigDecimal plannedQuantity,
             boolean includeTpz, boolean includeAdditionalTime, Entity productionLine);
+
+    @Transactional int estimateMaxOperationTimeConsumptionForWorkstation(MultiMap map, EntityTreeNode operationComponent,
+            BigDecimal plannedQuantity, boolean includeTpz, boolean includeAdditionalTime,
+            Entity productionLine);
 
     /**
      * 
