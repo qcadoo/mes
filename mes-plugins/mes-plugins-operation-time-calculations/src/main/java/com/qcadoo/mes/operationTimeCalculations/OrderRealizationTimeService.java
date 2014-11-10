@@ -102,10 +102,7 @@ public interface OrderRealizationTimeService {
      * @return Max time consumption for workstation of an operation in seconds, including offset caused by waiting for child
      *         operations to finish.
      */
-    int estimateMaxOperationTimeConsumptionForWorkstation(EntityTreeNode operationComponent, BigDecimal plannedQuantity,
-            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine);
-
-    @Transactional int estimateMaxOperationTimeConsumptionForWorkstation(MultiMap map, EntityTreeNode operationComponent,
+    @Transactional int estimateMaxOperationTimeConsumptionForWorkstation(EntityTreeNode operationComponent,
             BigDecimal plannedQuantity, boolean includeTpz, boolean includeAdditionalTime,
             Entity productionLine);
 

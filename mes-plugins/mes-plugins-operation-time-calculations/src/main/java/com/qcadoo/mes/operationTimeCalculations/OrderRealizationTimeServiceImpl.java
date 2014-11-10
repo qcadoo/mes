@@ -31,14 +31,12 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.collections.MultiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,18 +92,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
 
-        return evaluateOperationTime(null, operationComponent, includeTpz, includeAdditionalTime,
+        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime,
                 operationRunsFromProductionQuantities, productionLine, false, productComponentQuantities);
-    }
-
-    @Override public int estimateMaxOperationTimeConsumptionForWorkstation(EntityTreeNode operationComponent,
-            BigDecimal plannedQuantity, boolean includeTpz, boolean includeAdditionalTime, Entity productionLine) {
-        return 0;
     }
 
     @Override
     @Transactional
-    public int estimateMaxOperationTimeConsumptionForWorkstation(MultiMap map, final EntityTreeNode operationComponent,
+    public int estimateMaxOperationTimeConsumptionForWorkstation(final EntityTreeNode operationComponent,
             final BigDecimal plannedQuantity, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
@@ -115,7 +108,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
 
-        return evaluateOperationTime(map, operationComponent, includeTpz, includeAdditionalTime,
+        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime,
                 operationRunsFromProductionQuantities, productionLine, true, productComponentQuantities);
     }
 
@@ -188,7 +181,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         }
     }
 
-    private int evaluateOperationTime(MultiMap map, final Entity operationComponent, final boolean includeTpz,
+    private int evaluateOperationTime(final Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
             final boolean maxForWorkstation, final OperationProductComponentWithQuantityContainer productComponentQuantities) {
         String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
@@ -198,7 +191,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                     .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
                     .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
 
-            return evaluateOperationTime(map, actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
+            return evaluateOperationTime(actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation, productComponentQuantities);
         } else if (TechnologyOperationComponentEntityType.OPERATION.getStringValue().equals(entityType)) {
             int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
@@ -206,15 +199,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             int offset = 0;
 
             List<Entity> childs = Lists.newArrayList(operationComponent.getHasManyField("children"));
-            Collection coll = (Collection) map.get(operationComponent.getId());
-            if (coll != null) {
-                for (Object obj : coll) {
-                    Entity toc = (Entity) obj;
-                    childs.add(toc);
-                }
-            }
             for (Entity child : childs) {
-                int childTime = evaluateOperationTime(map, child, includeTpz, includeAdditionalTime, operationRuns,
+                int childTime = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
                         productionLine,
                         maxForWorkstation, productComponentQuantities);
 
