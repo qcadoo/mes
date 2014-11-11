@@ -120,12 +120,8 @@ public class MasterOrderDetailsHooks {
             createOrder.requestUpdate(true);
         } else {
             LookupComponent productLookupComponent = (LookupComponent) view.getComponentByReference("product");
-            if (productLookupComponent.isVisible() && productLookupComponent.getEntity() != null) {
-                createOrder.setEnabled(true);
+            createOrder.setEnabled(true);
 
-            } else {
-                createOrder.setEnabled(false);
-            }
             createOrder.requestUpdate(true);
 
         }
