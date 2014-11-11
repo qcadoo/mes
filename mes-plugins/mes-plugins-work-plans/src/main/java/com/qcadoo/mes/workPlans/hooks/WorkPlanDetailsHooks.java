@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -37,10 +42,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class WorkPlanDetailsHooks {
@@ -110,7 +111,7 @@ public class WorkPlanDetailsHooks {
             return;
         }
         for (Entity order : orders) {
-            technologyIDs.add(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
+            technologyIDs.add(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).getId());
         }
         GridComponent atachmentsGrid = (GridComponent) view.getComponentByReference(L_ATTCHMENT_GRID);
         FilterValueHolder atachmentsGridHolder = atachmentsGrid.getFilterValue();
