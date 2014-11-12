@@ -84,9 +84,14 @@ public class TechnologyModelHooks {
     }
 
     private void setNewMasterTechnology(final DataDefinition technologyDD, final Entity technology) {
-        // if (!technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.ACCEPTED.getStringValue())
-        // || technology.getStringField(TechnologyFields.TECHNOLOGY_TYPE) != null) {
-        if (!technology.getBooleanField(MASTER)) {
+        if (technology.getStringField(TechnologyFields.STATE)
+                .equals(TechnologyState.OUTDATED.getStringValue()) && technology.getBooleanField(MASTER)) {
+            technology.setField(MASTER, false);
+            return;
+        }
+        if (!technology.getStringField(TechnologyFields.STATE)
+                .equals(TechnologyState.ACCEPTED.getStringValue())
+                || technology.getStringField(TechnologyFields.TECHNOLOGY_TYPE) != null) {
             return;
         }
         SearchCriteriaBuilder searchCriteries = technologyDD.find();
@@ -98,8 +103,8 @@ public class TechnologyModelHooks {
             return;
         }
 
-        if (defaultTechnology == null
-                && technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.ACCEPTED.getStringValue())) {
+        if (defaultTechnology == null && technology.getStringField(TechnologyFields.STATE)
+                .equals(TechnologyState.ACCEPTED.getStringValue())) {
             technology.setField(MASTER, true);
             return;
         }
