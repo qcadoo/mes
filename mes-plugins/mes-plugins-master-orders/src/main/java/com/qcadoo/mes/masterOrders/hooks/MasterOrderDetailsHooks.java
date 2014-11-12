@@ -117,7 +117,9 @@ public class MasterOrderDetailsHooks {
             } else {
                 createOrder.setEnabled(false);
             }
+            createOrder.setMessage("masterOrders.order.ribbon.message.selectOneProduct");
             createOrder.requestUpdate(true);
+            window.requestRibbonRender();
         } else {
             LookupComponent productLookupComponent = (LookupComponent) view.getComponentByReference("product");
             createOrder.setEnabled(true);
