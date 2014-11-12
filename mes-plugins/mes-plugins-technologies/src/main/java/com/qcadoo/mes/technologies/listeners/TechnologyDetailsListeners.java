@@ -99,7 +99,7 @@ public class TechnologyDetailsListeners {
 
         File zipFile = null;
         try {
-            zipFile = fileService.compressToZipFile(atachments, true);
+            zipFile = fileService.compressToZipFile(atachments, false);
         } catch (IOException e) {
             LOG.error("Unable to compress documents to zip file.", e);
             return;
