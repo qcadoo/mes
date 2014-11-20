@@ -7,6 +7,7 @@ ALTER TABLE materialflowresources_position ADD CONSTRAINT position_resource_fkey
 
 -- end
 
+
 -- Added resource related columns in deliveredProduct
 -- last touched 19.09.2014 by kama
 
@@ -15,6 +16,7 @@ ALTER TABLE deliveries_deliveredproduct ADD COLUMN productiondate date;
 ALTER TABLE deliveries_deliveredproduct ADD COLUMN expirationdate date;
 
 -- end
+
 
 -- Add table for resource correction
 -- last touched 26.09.2014 by kama
@@ -44,6 +46,7 @@ CREATE TABLE materialflowresources_resourcecorrection
 );
 
 -- end
+
 
 -- Add tables for dynamic attributes
 -- last touched 03.10.2014 by kama
@@ -77,12 +80,14 @@ CREATE TABLE materialflowresources_attributevalue
 
 -- end
 
+
 -- Added column in resources
 -- last touched 03.10.2014 by kama
 
 ALTER TABLE materialflowresources_resource ADD COLUMN iscorrected BOOLEAN;
 
 -- end
+
 
 -- Add operation column in transformations
 -- last touched 22.10.2014 by kama
@@ -92,6 +97,7 @@ ALTER TABLE materialflow_transformations ADD CONSTRAINT transformations_operatio
       REFERENCES technologies_operation (id) DEFERRABLE;
 
 -- end
+
 
 -- Added update scripts for workPlans translations
 -- last touched 22.10.2014 by kama
@@ -164,20 +170,32 @@ UPDATE workplans_columnforinputproducts
    SET identifier='employeeSignatureOperationProductColumn', name='workPlans.columnForOutputProducts.name.value.employeeSignatureOperationProductColumn', description='workPlans.columnForOutputProducts.description.value.employeeSignatureOperationProductColumn'
  WHERE identifier='employeeSignature';
 
- -- end
+-- end
 
- -- Add parameters for additional rows in work workPlans
- -- last touched 22.10.2014 by kama
+
+-- Add parameters for additional rows in work workPlans
+-- last touched 22.10.2014 by kama
 
 ALTER TABLE basic_parameter ADD COLUMN additionaloutputrows integer;
 ALTER TABLE basic_parameter ADD COLUMN additionalinputrows integer;
 
- -- end
+-- end
 
- -- orders_order
- -- last touched 04.11.2014 by kasi
+
+-- orders_order
+-- last touched 04.11.2014 by kasi
+
 ALTER TABLE orders_order ADD COLUMN masterorderproduct_id bigint;
 ALTER TABLE orders_order
 	ADD CONSTRAINT masterorderproduct_order_fkey FOREIGN KEY (masterorderproduct_id)
 		REFERENCES basic_product (id);
- -- end
+-- end
+
+
+-- materialflow_transformations
+-- last touched 20.11.2014 by lupo
+
+ALTER TABLE materialflow_transformations ALTER COLUMN time TYPE date;
+
+-- end
+
