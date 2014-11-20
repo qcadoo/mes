@@ -191,7 +191,6 @@ ALTER TABLE orders_order
 		REFERENCES basic_product (id);
 -- end
 
-
 -- materialflow_transformations
 -- last touched 20.11.2014 by lupo
 
@@ -199,3 +198,9 @@ ALTER TABLE materialflow_transformations ALTER COLUMN time TYPE date;
 
 -- end
 
+-- hide basic/dictionaries menu item from users which don't have enough privileges to access target view (QCADOOCLS-2696)
+-- last touched 20.11.2014 by maku
+
+UPDATE qcadooview_item SET authrole='ROLE_DICTIONARY_VIEW' WHERE pluginidentifier='basic' AND name = 'dictionariesInBasic';
+
+-- end
