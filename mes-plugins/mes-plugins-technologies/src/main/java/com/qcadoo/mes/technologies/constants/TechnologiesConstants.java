@@ -55,6 +55,10 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_PRODUCT_STRUCTURE_TREE_NODE = "productStructureTreeNode";
 
+    public static final String MODEL_TECHNOLOGY_OPERATION_COMPONENT_MERGE_PRODUCT_IN = "technologyOperationComponentMergeProductIn";
+
+    public static final String MODEL_TECHNOLOGY_OPERATION_COMPONENT_MERGE_PRODUCT_OUT = "technologyOperationComponentMergeProductOut";
+
     public static final String OPERATION_COMPONENTS = "operationComponents";
 
     // FIXME MAKU remove if never used (prehistoric constants..)

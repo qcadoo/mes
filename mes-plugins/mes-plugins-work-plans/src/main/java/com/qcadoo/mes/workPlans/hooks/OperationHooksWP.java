@@ -23,22 +23,16 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.workPlans.WorkPlansService;
-import com.qcadoo.mes.workPlans.constants.OperationFieldsWP;
-import com.qcadoo.mes.workPlans.constants.OperationInputColumnFields;
-import com.qcadoo.mes.workPlans.constants.OperationOutputColumnFields;
-import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
-import com.qcadoo.mes.workPlans.constants.ParameterInputColumnFields;
-import com.qcadoo.mes.workPlans.constants.ParameterOutputColumnFields;
+import com.qcadoo.mes.workPlans.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OperationHooksWP {

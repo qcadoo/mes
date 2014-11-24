@@ -23,9 +23,11 @@
  */
 package com.qcadoo.mes.qualityControls;
 
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -41,9 +43,6 @@ import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
@@ -55,6 +54,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.model.internal.api.DataAccessService;
 import com.qcadoo.security.api.SecurityService;
@@ -64,7 +64,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 
-@RunWith(PowerMockRunner.class)
 public class QualityControlServiceTest {
 
     private SecurityService securityService = null;
@@ -84,7 +83,7 @@ public class QualityControlServiceTest {
     @Before
     public void init() {
         securityService = mock(SecurityService.class);
-        dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
+        dataDefinitionService = mock(DataDefinitionService.class);
         qualityControlService = new QualityControlService();
         numberService = mock(NumberService.class);
         qualityControlForNumber = mock(QualityControlForNumberService.class);
@@ -100,7 +99,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldSetRequiredOnCommentForControlResult() {
         // given
-        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class);
 
         FieldComponent comment = mock(FieldComponent.class);
         FieldComponent controlResult = mock(FieldComponent.class);
@@ -123,7 +122,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldSetRequiredOnCommentForDefects() {
         // given
-        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class);
 
         FieldComponent comment = mock(FieldComponent.class);
         FieldComponent acceptedDefectsQuantity = mock(FieldComponent.class);
@@ -164,7 +163,7 @@ public class QualityControlServiceTest {
     public void shouldSetErrorOnCommentFieldForResultType() {
         // given
         Entity entity = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
 
         given(entity.getStringField("qualityControlType")).willReturn("qualityControlsForOrder");
         given(entity.getStringField("controlResult")).willReturn("03objection");
@@ -183,7 +182,7 @@ public class QualityControlServiceTest {
     public void shouldSetErrorOnCommentFieldForAcceptedDefectsQuantity() {
         // given
         Entity entity = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
 
         given(entity.getStringField("qualityControlType")).willReturn("qualityControlsForUnit");
         given(entity.getDecimalField("acceptedDefectsQuantity")).willReturn(new BigDecimal("1"));
@@ -201,7 +200,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldCloseQualityControlForEntityComponentState() {
         // given
-        FormComponent state = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent state = mock(FormComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         FieldComponent controlResult = mock(FieldComponent.class);
@@ -234,7 +233,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldCloseQualityControlForIGridComponentState() {
         // given
-        GridComponent state = mock(GridComponent.class, Mockito.RETURNS_DEEP_STUBS);
+        GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         Entity qualityControl = mock(Entity.class);
         DataDefinition qualityControlDD = mock(DataDefinition.class);
@@ -263,7 +262,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldAddFailureMessageOnEmptyControlResultTypeForFormComponent() {
         // given
-        FormComponent state = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent state = mock(FormComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         FieldComponent controlResult = mock(FieldComponent.class);
         Entity qualityControl = mock(Entity.class);
@@ -296,7 +295,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldAddFailureMessageOnEmptyControlResultTypeForGridComponent() {
         // given
-        GridComponent state = mock(GridComponent.class, Mockito.RETURNS_DEEP_STUBS);
+        GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         FieldComponent controlResult = mock(FieldComponent.class);
         Entity qualityControl = mock(Entity.class);
@@ -329,7 +328,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldAddFailureMessageOnNoValueForFormComponent() {
         // given
-        FormComponent state = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent state = mock(FormComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         given(state.getFieldValue()).willReturn(null);
@@ -345,7 +344,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldAddFailureMessageOnNoValueForNonFormComponent() {
         // given
-        GridComponent state = mock(GridComponent.class, Mockito.RETURNS_DEEP_STUBS);
+        GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         given(state.getFieldValue()).willReturn(null);
@@ -361,14 +360,14 @@ public class QualityControlServiceTest {
     @Test
     public void shouldGenerateQualityControlForBatch() {
         // given
-        DataDefinition genealogyDataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinition genealogyDataDefinition = mock(DataDefinition.class);
 
         List<Entity> genealogies = new ArrayList<Entity>();
         Entity genealogy = new DefaultEntity(genealogyDataDefinition);
         genealogy.setField("batch", "1");
         genealogies.add(genealogy);
 
-        GridComponent state = mock(GridComponent.class, Mockito.RETURNS_DEEP_STUBS);
+        GridComponent state = mock(GridComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         DataDefinition orderDataDefinition = mock(DataDefinition.class);
@@ -377,7 +376,7 @@ public class QualityControlServiceTest {
         Entity order = mock(Entity.class);
         Entity technology = mock(Entity.class);
 
-        SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
+        SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class);
 
         given(dataDefinitionService.get("orders", "order")).willReturn(orderDataDefinition);
         given(
@@ -389,8 +388,11 @@ public class QualityControlServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(state.getFieldValue()).willReturn(7L);
         given(dataDefinitionService.get("genealogies", "genealogy")).willReturn(genealogyDataDefinition);
-        given(genealogyDataDefinition.find().belongsTo("order", 7L)).willReturn(searchCriteria);
-        given(searchCriteria.list().getEntities()).willReturn(genealogies);
+        given(genealogyDataDefinition.find()).willReturn(searchCriteria);
+        given(searchCriteria.add(any(SearchCriterion.class))).willReturn(searchCriteria);
+        SearchResult searchResult = mock(SearchResult.class);
+        given(searchCriteria.list()).willReturn(searchResult);
+        given(searchResult.getEntities()).willReturn(genealogies);
         given(
                 qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
                         QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlForBatch")).willReturn("1");
@@ -399,13 +401,19 @@ public class QualityControlServiceTest {
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
 
         DataAccessService dataAccessService = mock(DataAccessService.class);
-        given(dataAccessService.convertToDatabaseEntity(Mockito.any(Entity.class))).willReturn(new Object());
+        given(dataAccessService.convertToDatabaseEntity(any(Entity.class))).willReturn(new Object());
 
-        DataDefinition qualityControlDD = mock(DataDefinition.class, Mockito.RETURNS_DEEP_STUBS);
+        DataDefinition qualityControlDD = mock(DataDefinition.class);
+        Entity newlyCreatedQualityControl = mockEntity(qualityControlDD);
+        given(qualityControlDD.create()).willReturn(newlyCreatedQualityControl);
         given(
                 dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
                         QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn(qualityControlDD);
-        given(qualityControlDD.find().add(Mockito.any(SearchCriterion.class)).list().getTotalNumberOfEntities()).willReturn(0);
+        SearchCriteriaBuilder scb = mock(SearchCriteriaBuilder.class);
+        given(qualityControlDD.find()).willReturn(scb);
+        given(scb.add(any(SearchCriterion.class))).willReturn(scb);
+        given(scb.list()).willReturn(searchResult);
+        given(searchResult.getTotalNumberOfEntities()).willReturn(0);
 
         SearchRestrictions searchRestrictions = new SearchRestrictions();
         ReflectionTestUtils.setField(searchRestrictions, "dataAccessService", dataAccessService);
@@ -443,13 +451,20 @@ public class QualityControlServiceTest {
         given(order.getBelongsToField("technology").getStringField("qualityControlInstruction")).willReturn("test");
 
         DataAccessService dataAccessService = mock(DataAccessService.class);
-        given(dataAccessService.convertToDatabaseEntity(Mockito.any(Entity.class))).willReturn(new Object());
+        given(dataAccessService.convertToDatabaseEntity(any(Entity.class))).willReturn(new Object());
 
-        DataDefinition qualityControlDD = mock(DataDefinition.class, Mockito.RETURNS_DEEP_STUBS);
+        DataDefinition qualityControlDD = mock(DataDefinition.class);
+        Entity newlyCreatedQualityControl = mockEntity(qualityControlDD);
+        given(qualityControlDD.create()).willReturn(newlyCreatedQualityControl);
         given(
                 dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
                         QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn(qualityControlDD);
-        given(qualityControlDD.find().add(Mockito.any(SearchCriterion.class)).list().getTotalNumberOfEntities()).willReturn(0);
+        SearchCriteriaBuilder scb = mock(SearchCriteriaBuilder.class);
+        given(qualityControlDD.find()).willReturn(scb);
+        given(scb.add(any(SearchCriterion.class))).willReturn(scb);
+        SearchResult searchResults = mock(SearchResult.class);
+        given(scb.list()).willReturn(searchResults);
+        given(searchResults.getTotalNumberOfEntities()).willReturn(0);
 
         SearchRestrictions searchRestrictions = new SearchRestrictions();
         ReflectionTestUtils.setField(searchRestrictions, "dataAccessService", dataAccessService);
@@ -482,7 +497,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldSetQuantitiesToDefaultsIfEmpty() {
         // given
-        FormComponent form = mock(FormComponent.class, Mockito.RETURNS_DEEP_STUBS);
+        FormComponent form = mock(FormComponent.class);
 
         FieldComponent takenForControl = mock(FieldComponent.class);
         FieldComponent rejectedQuantity = mock(FieldComponent.class);
@@ -548,8 +563,8 @@ public class QualityControlServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         FieldComponent state = mock(FieldComponent.class);
         FieldComponent controlInstruction = mock(FieldComponent.class);
-        DataDefinition orderDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class, RETURNS_DEEP_STUBS);
+        DataDefinition orderDD = mock(DataDefinition.class);
+        SearchCriteriaBuilder searchCriteria = mock(SearchCriteriaBuilder.class);
 
         Entity technology = mock(Entity.class);
         given(technology.getField("qualityControlInstruction")).willReturn("test");
@@ -565,9 +580,12 @@ public class QualityControlServiceTest {
 
         given(dataDefinitionService.get("orders", "order")).willReturn(orderDD);
 
-        given(orderDD.find().setMaxResults(1).add(SearchRestrictions.eq("id", Mockito.anyLong()))).willReturn(searchCriteria);
-
-        given(searchCriteria.list().getEntities()).willReturn(orders);
+        given(orderDD.find()).willReturn(searchCriteria);
+        given(searchCriteria.setMaxResults(anyInt())).willReturn(searchCriteria);
+        given(searchCriteria.add(any(SearchCriterion.class))).willReturn(searchCriteria);
+        SearchResult searchResult = mock(SearchResult.class);
+        given(searchCriteria.list()).willReturn(searchResult);
+        given(searchResult.getEntities()).willReturn(orders);
 
         // when
         qualityControlService.setQualityControlInstruction(viewDefinitionState, state, new String[] {});
@@ -615,7 +633,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldSetErrorMessageOnEmptyOperationField() {
         // given
-        DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinition qualityControlDD = mock(DataDefinition.class);
         FieldDefinition operation = mock(FieldDefinition.class);
 
         Entity qualityControl = mock(Entity.class);
@@ -636,7 +654,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldSetQuantitiesToDefaultValues() {
         // given
-        DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinition qualityControlDD = mock(DataDefinition.class);
         Entity entity = mock(Entity.class);
         given(entity.getStringField("qualityControlType")).willReturn("qualityControlsForUnit");
         given(entity.getDecimalField("controlledQuantity")).willReturn(null);
@@ -657,7 +675,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldAddErrorMessageOnTooLargeRejectedQuantity() {
         // given
-        DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinition qualityControlDD = mock(DataDefinition.class);
         Entity entity = mock(Entity.class);
         given(entity.getStringField("qualityControlType")).willReturn("qualityControlsForUnit");
         given(entity.getDecimalField("controlledQuantity")).willReturn(null);
@@ -677,7 +695,7 @@ public class QualityControlServiceTest {
     @Test
     public void shouldAddErrorMessageOnTooLargeAcceptedDefectsQuantity() {
         // given
-        DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinition qualityControlDD = mock(DataDefinition.class);
         Entity entity = mock(Entity.class);
         given(entity.getStringField("qualityControlType")).willReturn("qualityControlsForUnit");
         given(entity.getDecimalField("controlledQuantity")).willReturn(null);

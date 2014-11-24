@@ -23,7 +23,10 @@
  */
 package com.qcadoo.mes.lineChangeoverNorms;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
+import static com.qcadoo.model.api.search.SearchRestrictions.and;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
+import static com.qcadoo.model.api.search.SearchRestrictions.or;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +37,11 @@ import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchDisjunction;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchService {
@@ -72,7 +79,7 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
             final Long toTechnologyId, final Long toTechnologyGroupId) {
         SearchCriterion matchTechnologies = getPairRestriction(LineChangeoverNormsFields.FROM_TECHNOLOGY, fromTechnologyId,
                 LineChangeoverNormsFields.TO_TECHNOLOGY, toTechnologyId);
-        SearchCriterion matchTechnologyGroups = getPairRestriction(LineChangeoverNormsFields.TO_TECHNOLOGY,
+        SearchCriterion matchTechnologyGroups = getPairRestriction(LineChangeoverNormsFields.FROM_TECHNOLOGY_GROUP,
                 fromTechnologyGroupId, LineChangeoverNormsFields.TO_TECHNOLOGY_GROUP, toTechnologyGroupId);
 
         Preconditions.checkArgument(matchTechnologies != null || matchTechnologyGroups != null,

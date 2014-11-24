@@ -116,4 +116,15 @@ public class MasterOrderOrdersDataProvider {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
     }
 
+    public BigDecimal sumBelongingOrdersDoneQuantities(final Entity masterOrder, final Entity product) {
+        SearchProjection quantitiesSumProjection = list().add(alias(sum(OrderFields.DONE_QUANTITY), QUANTITIES_SUM_ALIAS))
+                .add(rowCount());
+        SearchCriterion productCriterion = belongsTo(OrderFields.PRODUCT, product);
+        List<Entity> quantitiesSumProjectionResults = findBelongingOrders(masterOrder, quantitiesSumProjection, productCriterion,
+                SearchOrders.desc(QUANTITIES_SUM_ALIAS));
+        for (Entity entity : quantitiesSumProjectionResults) {
+            return entity.getDecimalField(QUANTITIES_SUM_ALIAS);
+        }
+        return BigDecimal.ZERO;
+    }
 }

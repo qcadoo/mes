@@ -1,7 +1,7 @@
 echo Running: mvn jetty:run %*
 
 set OLD_MAVEN_OPTS=%MAVEN_OPTS%
-set MAVEN_OPTS=%MAVEN_OPTS% -javaagent:./driver/aspectjweaver-1.6.12.jar
+set MAVEN_OPTS=%MAVEN_OPTS% -javaagent:./driver/aspectjweaver-1.8.2.jar
 
 mvn jetty:run %*
 

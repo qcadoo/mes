@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
@@ -56,6 +57,9 @@ public class WorkPlansServiceImpl implements WorkPlansService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     public final Entity getWorkPlan(final Long workPlanId) {
@@ -188,6 +192,7 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         workPlan.setField(WorkPlanFields.NAME, generateNameForWorkPlan());
         workPlan.setField(WorkPlanFields.TYPE, WorkPlanType.NO_DISTINCTION.getStringValue());
         workPlan.setField(WorkPlanFields.ORDERS, orders);
+        workPlan.setField(WorkPlanFields.GENERATED, false);
 
         return workPlan.getDataDefinition().save(workPlan);
     }
@@ -215,7 +220,7 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         return orders;
     }
 
-    private String generateNameForWorkPlan() {
+    public String generateNameForWorkPlan() {
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, LocaleContextHolder.getLocale());
 
@@ -278,6 +283,12 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         }
 
         return true;
+    }
+
+    @Override
+    public int getAdditionalRowsFromParameter(String field) {
+        Integer rows = parameterService.getParameter().getIntegerField(field);
+        return rows != null ? rows : 0;
     }
 
 }

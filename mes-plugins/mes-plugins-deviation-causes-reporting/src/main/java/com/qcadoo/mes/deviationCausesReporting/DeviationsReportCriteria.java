@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.deviationCausesReporting;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;

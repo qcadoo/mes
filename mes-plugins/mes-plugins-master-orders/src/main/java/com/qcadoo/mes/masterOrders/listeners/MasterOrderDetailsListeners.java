@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
@@ -38,14 +40,22 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class MasterOrderDetailsListeners {
 
     private static final String L_FORM = "form";
 
+    private static final String L_WINDOW = "window";
+
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    private static final String L_PRODUCTS_GRID = "productsGrid";
 
     @Autowired
     private ExpressionService expressionService;
@@ -56,7 +66,24 @@ public class MasterOrderDetailsListeners {
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
-    public void hideFieldDependOnMasterOrderType(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void onProductsChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
+        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("createOrder");
+        if (masterOrderProducts.getSelectedEntities().isEmpty()) {
+            createOrder.setEnabled(false);
+        } else if (masterOrderProducts.getSelectedEntities().size() == 1) {
+            createOrder.setEnabled(true);
+        } else {
+            createOrder.setEnabled(false);
+        }
+        createOrder.requestUpdate(true);
+    }
+
+    public void hideFieldDependOnMasterOrderType(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
         masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
     }
 
@@ -102,6 +129,10 @@ public class MasterOrderDetailsListeners {
     }
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+
+        FieldComponent masterOrderType = (FieldComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_TYPE);
+        Object masterOrderTypeValue = masterOrderType.getFieldValue();
+
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity masterOrder = masterOrderForm.getEntity();
 
@@ -113,6 +144,12 @@ public class MasterOrderDetailsListeners {
 
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.masterOrder", masterOrderId);
+        if (masterOrderTypeValue.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
+            GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
+            Entity entity = masterOrderProducts.getSelectedEntities().get(0).getBelongsToField(MasterOrderProductFields.PRODUCT);
+            parameters.put("form.masterOrderProduct", entity.getId());
+
+        }
 
         parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
 

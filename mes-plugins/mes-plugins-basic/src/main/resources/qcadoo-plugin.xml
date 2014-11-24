@@ -117,7 +117,8 @@
 			view="divisionsList" />
 
 		<menu:menu-item-url name="dictionariesInBasic"
-			category="basic" url="/page/qcadooDictionaries/dictionariesList.html" />
+			category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
+			defaultAuthorizationRole="ROLE_DICTIONARY_VIEW" />
 
 		<menu:menu-item-url name="systemParameters"
 			category="administration" url="/parameters.html" />

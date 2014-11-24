@@ -294,4 +294,19 @@ public interface WorkPlansService {
     boolean checkIfColumnIsNotUsed(final DataDefinition componentDD, final Entity component, final String modelName,
             final String columnName, final String componentName);
 
+    /**
+     * Generates name for work plan based on current date
+     * 
+     * @return name for work plan
+     */
+    String generateNameForWorkPlan();
+
+    /**
+     * 
+     * @param field
+     *            parameter's field with additional rows number
+     * @return number of additional rows
+     */
+    int getAdditionalRowsFromParameter(final String field);
+
 }

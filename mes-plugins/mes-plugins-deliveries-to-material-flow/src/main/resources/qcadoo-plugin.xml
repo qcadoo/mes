@@ -76,6 +76,24 @@
             <model:hasMany name="documents" model="document"
                            plugin="materialFlowResources" joinField="delivery" cascade="nullify" />
         </model:model-field>
+        
+        <model:model-field model="deliveredProduct" plugin="deliveries">
+        	<model:string name="batch"/>
+        </model:model-field>
+        
+        <model:model-field model="deliveredProduct" plugin="deliveries">
+        	<model:date name="productionDate"/>
+        </model:model-field>
+        
+        <model:model-field model="deliveredProduct" plugin="deliveries">
+        	<model:date name="expirationDate"/>
+        </model:model-field>
+
+        <model:model-hook model="deliveredProduct" plugin="deliveries">
+			<model:validatesWith class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.DeliveredProductHooksDTMF" method="validateDates"/>
+        </model:model-hook>
+        
+		<view:view-tab resource="view/tabExtensions/deliveredProductDetails.xml" />
 
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentsList" component="grid">

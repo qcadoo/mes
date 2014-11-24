@@ -16,14 +16,11 @@ import org.mockito.MockitoAnnotations;
 
 import com.google.common.collect.ImmutableList;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.internal.api.ViewDefinition;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class WorkPlansListViewTest {
@@ -50,9 +47,9 @@ public class WorkPlansListViewTest {
     public final void shouldBuildFromViewDefinitionState() {
         // given
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("window")).willReturn((ComponentState) windowComponent);
+        given(viewDefinitionState.getComponentByReference("window")).willReturn(windowComponent);
         Ribbon ribbon = mock(Ribbon.class);
-        given(windowComponent.getRibbon()).willReturn(ribbon);
+        given((windowComponent).getRibbon()).willReturn(ribbon);
         RibbonGroup actionsRibbonGroup = mock(RibbonGroup.class);
         given(ribbon.getGroupByName("actions")).willReturn(actionsRibbonGroup);
         given(actionsRibbonGroup.getItemByName("delete")).willReturn(deleteButton);

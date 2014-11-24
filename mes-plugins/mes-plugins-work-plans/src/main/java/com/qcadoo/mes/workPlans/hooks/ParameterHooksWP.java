@@ -41,6 +41,8 @@ public class ParameterHooksWP {
         parameter.setField(ParameterFieldsWP.IMAGE_URL_IN_WORK_PLAN, false);
         parameter.setField(ParameterFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS, false);
         parameter.setField(ParameterFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS, false);
+        parameter.setField(ParameterFieldsWP.ADDITIONAL_INPUT_ROWS, 0);
+        parameter.setField(ParameterFieldsWP.ADDITIONAL_OUTPUT_ROWS, 0);
     }
 
 }

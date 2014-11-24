@@ -64,6 +64,10 @@ public class ResourceModelHooks {
         resource.setField(ResourceFields.VALUE, numberService.setScale(value));
     }
 
+    public void onCreate(final DataDefinition resourceDD, final Entity resource) {
+        resource.setField(ResourceFields.IS_CORRECTED, false);
+    }
+
     public void generateBatch(final DataDefinition resourceDD, final Entity resource) {
         if (resource.getField(BATCH) == null) {
             resource.setField(BATCH, generateBatchForResource(MODEL_RESOURCE));

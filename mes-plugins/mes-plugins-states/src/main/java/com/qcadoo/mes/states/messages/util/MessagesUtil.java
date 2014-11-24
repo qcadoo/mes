@@ -30,8 +30,8 @@ import static com.qcadoo.mes.states.messages.constants.MessageFields.TRANSLATION
 
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.qcadoo.mes.states.messages.constants.MessageFields;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;

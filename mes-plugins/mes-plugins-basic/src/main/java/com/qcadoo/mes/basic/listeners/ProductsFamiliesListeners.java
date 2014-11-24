@@ -47,6 +47,16 @@ public class ProductsFamiliesListeners {
 
     public final void generateHierarchyTree(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         productsFamiliesHooks.generateTreeWhenIdIsSet(view);
+        disableEditButtonAfterGenerating(view);
+    }
+
+    private void disableEditButtonAfterGenerating(final ViewDefinitionState view) {
+        TreeComponent tree = (TreeComponent) view.getComponentByReference(PRODUCT_FAMILY_CHILDREN_TREE);
+        boolean enabled = false;
+        if ((tree != null) && (tree.getSelectedEntityId() != null)) {
+            enabled = true;
+        }
+        setEditButtonEnabled(view, enabled);
     }
 
     public final void editSelectedProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -65,10 +75,14 @@ public class ProductsFamiliesListeners {
     }
 
     public final void enabledEditButton(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        setEditButtonEnabled(view, true);
+    }
+
+    private void setEditButtonEnabled(final ViewDefinitionState view, final boolean isEnabled) {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         RibbonGroup edit = (RibbonGroup) window.getRibbon().getGroupByName("edit");
         RibbonActionItem editSelectedProductFromTree = edit.getItemByName("editSelectedProduct");
-        editSelectedProductFromTree.setEnabled(true);
+        editSelectedProductFromTree.setEnabled(isEnabled);
         editSelectedProductFromTree.requestUpdate(true);
     }
 

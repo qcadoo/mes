@@ -449,8 +449,8 @@
 							<option type="labelWidth" value="55" />
 							<option type="alignment" value="right" />
 							
-							<listener event="onInputChange" method="setProductQuantities"
-								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
+<!-- 							<listener event="onSetValue" method="setProductQuantities" -->
+<!-- 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="8">
@@ -795,8 +795,8 @@
 										<option type="labelWidth" value="55" />
 										<option type="alignment" value="right" />
 										
-										<listener event="onInputChange" method="setDoneQuantity"
-											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
+<!-- 										<listener event="onSetValue" method="setDoneQuantity" -->
+<!-- 											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="1">

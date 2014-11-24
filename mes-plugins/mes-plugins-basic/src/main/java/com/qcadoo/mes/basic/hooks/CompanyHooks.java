@@ -107,10 +107,10 @@ public class CompanyHooks {
                 int sum = 0;
 
                 for (int i = 0; i < weights.length; i++) {
-                    sum += Integer.parseInt(taxNumbers[i + 1]) * weights[i];
+                    sum += Integer.parseInt(taxNumbers[i]) * weights[i];
                 }
 
-                return (sum % 11) == Integer.parseInt(taxNumbers[10]);
+                return (sum % 11) == Integer.parseInt(taxNumbers[9]);
             } catch (NumberFormatException e) {
                 return false;
             }

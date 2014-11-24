@@ -204,7 +204,7 @@
 					<layoutElement column="2" row="1" height="5" width="2">
 						<component type="lookup" name="order" reference="orderLookup"
 						           field="orders" defaultVisible="false" persistent="false" hasLabel="false">
-							<option type="column" name="name" fields="name" link="true"
+							<option type="column" name="name" reference="name" fields="name" link="true"
 							        width="200" />
 
 							<option type="searchable" value="number,name" />

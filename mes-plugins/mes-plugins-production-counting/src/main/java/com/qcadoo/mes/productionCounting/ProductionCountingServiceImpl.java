@@ -28,10 +28,11 @@ import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 import static com.qcadoo.model.api.search.SearchRestrictions.or;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,17 +48,23 @@ import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingReportFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.print.utils.EntityProductionTrackingComparator;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -91,6 +98,9 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Override
     public Entity getProductionTrackingReport(final Long productionTrackingReportId) {
@@ -156,7 +166,8 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
         SearchCriterion hasStateChangeFromDraftToAccepted = and(
                 eq(scAlias + "." + ProductionTrackingStateChangeFields.SOURCE_STATE, ProductionTrackingStateStringValues.DRAFT),
-                eq(scAlias + "." + ProductionTrackingStateChangeFields.TARGET_STATE, ProductionTrackingStateStringValues.ACCEPTED));
+                eq(scAlias + "." + ProductionTrackingStateChangeFields.TARGET_STATE,
+                        ProductionTrackingStateStringValues.ACCEPTED));
 
         SearchCriterion isAlreadyAccepted = and(eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED),
                 eq(scAlias + "." + ProductionTrackingStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()),
@@ -207,7 +218,8 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
             final Entity productionTrackingReportOrBalance) {
         Entity order = productionTrackingReportOrBalance.getBelongsToField(L_ORDER);
 
-        if ((order == null) || isTypeOfProductionRecordingBasic(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+        if ((order == null) || isTypeOfProductionRecordingBasic(
+                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
 
@@ -418,4 +430,79 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
         productionTrackingsGrid.setEntities(productionTrackings);
     }
 
+    @Override
+    public BigDecimal getRegisteredProductValueForOperationProductIn(final Entity operationProduct, final BigDecimal planed) {
+        BigDecimal value = null;
+        Entity toc = operationProduct.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+        Entity product = operationProduct.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+
+        List<Entity> tracings =
+                getProductionTrackingDD().find()
+                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                        .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
+                        .list()
+                        .getEntities();
+        for (Entity tracking : tracings) {
+            Entity topIN = getTrackingOperationProductInComponentDD().find().add(SearchRestrictions.belongsTo(
+                    TrackingOperationProductInComponentFields.PRODUCTION_TRACKING, tracking))
+                    .add(SearchRestrictions.belongsTo(TrackingOperationProductInComponentFields.PRODUCT, product))
+                    .setMaxResults(1).uniqueResult();
+            if (topIN != null) {
+                if (value == null) {
+                    value = new BigDecimal(0l);
+                }
+                value = value.add(topIN.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY),
+                        numberService.getMathContext());
+            }
+        }
+        if (value != null) {
+            value = planed.subtract(value, numberService.getMathContext());
+        } else {
+            return value;
+        }
+
+        if (value.compareTo(new BigDecimal(0l)) == -1) {
+            value = new BigDecimal(0l);
+        }
+
+        return value;
+    }
+
+    @Override
+    public BigDecimal getRegisteredProductValueForOperationProductOut(final Entity operationProduct, final BigDecimal planed) {
+        BigDecimal value = null;
+        Entity toc = operationProduct.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT);
+        Entity product = operationProduct.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+
+        List<Entity> tracings =
+                getProductionTrackingDD().find()
+                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                        .add(SearchRestrictions
+                                .eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED)).list()
+                        .getEntities();
+        for (Entity tracking : tracings) {
+            Entity topIN = getTrackingOperationProductOutComponentDD().find().add(SearchRestrictions.belongsTo(
+                    TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING, tracking))
+                    .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, product))
+                    .setMaxResults(1).uniqueResult();
+            if (topIN != null) {
+                if (value == null) {
+                    value = new BigDecimal(0l);
+                }
+                value = value.add(topIN.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY),
+                        numberService.getMathContext());
+            }
+        }
+        if (value != null) {
+            value = planed.subtract(value, numberService.getMathContext());
+        } else {
+            return value;
+        }
+
+        if (value.compareTo(new BigDecimal(0l)) == -1) {
+            value = new BigDecimal(0l);
+        }
+
+        return value;
+    }
 }

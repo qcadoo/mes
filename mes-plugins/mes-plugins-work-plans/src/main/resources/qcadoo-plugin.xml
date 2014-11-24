@@ -64,6 +64,10 @@
             <plugin>columnExtension</plugin>
             <version>[1.1.8</version>
         </dependency>
+        <dependency>
+            <plugin>productionCounting</plugin>
+            <version>[3.0.0</version>
+        </dependency>
     </dependencies>
 
     <modules>
@@ -85,6 +89,10 @@
                      resource="model/technologyOperationInputColumn.xml"/>
         <model:model model="technologyOperationOutputColumn"
                      resource="model/technologyOperationOutputColumn.xml"/>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="takeActualProgressInWorkPlans"/>
+        </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="dontPrintOrdersInWorkPlans"/>
@@ -131,6 +139,18 @@
             <model:hasMany name="parameterOutputColumns" plugin="workPlans"
                            model="parameterOutputColumn" joinField="parameter" cascade="delete"
                            copyable="true"/>
+        </model:model-field>
+        
+        <model:model-field model="parameter" plugin="basic">
+        	<model:integer name="additionalInputRows">
+        		<model:validatesRange from="0"/>
+        	</model:integer>
+        </model:model-field>
+        
+        <model:model-field model="parameter" plugin="basic">
+        	<model:integer name="additionalOutputRows">
+        		<model:validatesRange from="0"/>
+        	</model:integer>
         </model:model-field>
 
         <model:model-field plugin="technologies" model="operation">

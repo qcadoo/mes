@@ -26,12 +26,14 @@ package com.qcadoo.mes.masterOrders.hooks;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.math.BigDecimal;
 import java.util.Locale;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -50,6 +52,10 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class MasterOrderDetailsHooksTest {
 
@@ -60,7 +66,8 @@ public class MasterOrderDetailsHooksTest {
 
     @Mock
     private FieldComponent masterOrderTypeField, technologyField, defaultTechnologyField, cumulatedQuantityField,
-            masterOrderQuantityField, cumulatedOrderQuantityUnitField, masterOrderQuantityUnitField;
+            masterOrderQuantityField, producedOrderQuantityField, cumulatedOrderQuantityUnitField, masterOrderQuantityUnitField,
+            producedOrderQuantityUnitField;
 
     @Mock
     private FormComponent form;
@@ -98,10 +105,25 @@ public class MasterOrderDetailsHooksTest {
         given(view.getComponentByReference(MasterOrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
         given(view.getComponentByReference(MasterOrderFields.CUMULATED_ORDER_QUANTITY)).willReturn(cumulatedQuantityField);
         given(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_QUANTITY)).willReturn(masterOrderQuantityField);
+        given(view.getComponentByReference("producedOrderQuantity")).willReturn(producedOrderQuantityField);
         given(view.getComponentByReference("productsGrid")).willReturn(masterOrderProducts);
         given(view.getComponentByReference("borderLayoutProductQuantity")).willReturn(borderLayoutProductQuantity);
         given(view.getComponentByReference("cumulatedOrderQuantityUnit")).willReturn(cumulatedOrderQuantityUnitField);
         given(view.getComponentByReference("masterOrderQuantityUnit")).willReturn(masterOrderQuantityUnitField);
+        given(view.getComponentByReference("producedOrderQuantityUnit")).willReturn(producedOrderQuantityUnitField);
+
+        WindowComponentState windowComponent = mock(WindowComponentState.class);
+        mockRibbon(windowComponent);
+    }
+
+    private void mockRibbon(final WindowComponentState windowComponent) {
+        given(view.getComponentByReference("window")).willReturn(windowComponent);
+        Ribbon ribbon = mock(Ribbon.class);
+        given(windowComponent.getRibbon()).willReturn(ribbon);
+        RibbonGroup ordersRibbonGroup = mock(RibbonGroup.class);
+        given(ribbon.getGroupByName("orders")).willReturn(ordersRibbonGroup);
+        RibbonActionItem createOrderButton = mock(RibbonActionItem.class);
+        given(ordersRibbonGroup.getItemByName("createOrder")).willReturn(createOrderButton);
     }
 
     @Test

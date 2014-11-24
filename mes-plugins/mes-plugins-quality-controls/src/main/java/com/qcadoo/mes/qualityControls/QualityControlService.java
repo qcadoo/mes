@@ -803,7 +803,8 @@ public final class QualityControlService {
     private List<Entity> getGenealogiesForOrder(final Long id) {
         DataDefinition genealogyDD = dataDefinitionService.get("genealogies", "genealogy");
 
-        SearchCriteriaBuilder searchCriteria = genealogyDD.find().belongsTo(ORDER_LITERAL, id);
+        SearchCriteriaBuilder searchCriteria = genealogyDD.find().add(
+                SearchRestrictions.belongsTo(ORDER_LITERAL, "orders", "order", id));
 
         return searchCriteria.list().getEntities();
     }

@@ -76,9 +76,18 @@
 		<model:model model="reasonTypeDeviationEffectiveEnd" resource="model/reasonTypeDeviationEffectiveEnd.xml" />
 		<model:model model="reasonTypeOfChangingOrderState" resource="model/reasonTypeOfChangingOrderState.xml" />
 
+        <model:model-field plugin="technologies" model="technologyOperationComponentMergeProductIn">
+            <model:belongsTo name="order" plugin="orders" model="order" />
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technologyOperationComponentMergeProductOut">
+            <model:belongsTo name="order" plugin="orders" model="order" />
+        </model:model-field>
+
 		<model:model-field plugin="states" model="message">
 			<model:belongsTo name="orderStateChange" plugin="orders" model="orderStateChange" />
 		</model:model-field>
+
 
 		<model:model-field plugin="basic" model="shift">
 			<model:hasMany name="orderStateChanges" plugin="orders"
@@ -201,8 +210,8 @@
 		                class="com.qcadoo.mes.orders.hooks.ProductDetailsViewHooksO"
 		                method="updateRibbonState" />
 
-		<report:report-template name="order"
-		                        resource="report/order.jrxml" />
+		<!--<report:report-template name="order"-->
+		                        <!--resource="report/order.jrxml" />-->
 
 		<view:resource uri="public/**/*" />
 

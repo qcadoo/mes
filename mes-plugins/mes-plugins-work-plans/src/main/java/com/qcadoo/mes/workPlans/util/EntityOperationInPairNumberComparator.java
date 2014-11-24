@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.workPlans.util;
 
-import java.io.Serializable;
-import java.util.Comparator;
-
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.Pair;
+
+import java.io.Serializable;
+import java.util.Comparator;
 
 public class EntityOperationInPairNumberComparator implements Comparator<Pair<Entity, Entity>>, Serializable {
 

@@ -72,12 +72,17 @@
 	
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="transfer" model="transfer" plugin="materialFlow"
-				joinField="product" />
+				joinField="product" cascade="delete"/>
 		</model:model-field>
 	
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="stockCorrection" model="stockCorrection"
-				plugin="materialFlow" joinField="product" />
+				plugin="materialFlow" joinField="product" cascade="delete"/>
+		</model:model-field>
+		
+		<model:model-field model="operation" plugin="technologies">
+			<model:hasMany name="transformations" joinField="operation" 
+				model="transformations" plugin="materialFlow" cascade="delete"/>
 		</model:model-field>
 	
 		<menu:menu-category name="materialFlow" />

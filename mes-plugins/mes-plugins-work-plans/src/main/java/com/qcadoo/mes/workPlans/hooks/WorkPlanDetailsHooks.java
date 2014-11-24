@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.criteriaModifiers.WorkPlansCriteriaModifiers;
@@ -51,6 +52,9 @@ public class WorkPlanDetailsHooks {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private WorkPlansService workPlansService;
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         setFieldsState(view);
@@ -107,7 +111,7 @@ public class WorkPlanDetailsHooks {
             return;
         }
         for (Entity order : orders) {
-            technologyIDs.add(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
+            technologyIDs.add(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).getId());
         }
         GridComponent atachmentsGrid = (GridComponent) view.getComponentByReference(L_ATTCHMENT_GRID);
         FilterValueHolder atachmentsGridHolder = atachmentsGrid.getFilterValue();
@@ -124,6 +128,8 @@ public class WorkPlanDetailsHooks {
                     .getComponentByReference(WorkPlanFields.DONT_PRINT_ORDERS_IN_WORK_PLANS);
             fieldComponent.setFieldValue(parameterService.getParameter().getField(
                     ParameterFieldsWP.DONT_PRINT_ORDERS_IN_WORK_PLANS));
+            FieldComponent nameField = (FieldComponent) view.getComponentByReference("name");
+            nameField.setFieldValue(workPlansService.generateNameForWorkPlan());
         }
     }
 

@@ -81,6 +81,10 @@
 
         <model:model model="barcodeOperationComponent" resource="model/barcodeOperationComponent.xml"/>
 
+        <model:model model="technologyOperationComponentMergeProductIn" resource="model/technologyOperationComponentMergeProductIn.xml"/>
+
+        <model:model model="technologyOperationComponentMergeProductOut" resource="model/technologyOperationComponentMergeProductOut.xml"/>
+
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange"/>

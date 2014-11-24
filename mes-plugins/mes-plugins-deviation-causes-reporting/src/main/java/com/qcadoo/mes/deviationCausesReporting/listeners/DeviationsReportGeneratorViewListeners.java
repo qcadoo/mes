@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.deviationCausesReporting.listeners;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 

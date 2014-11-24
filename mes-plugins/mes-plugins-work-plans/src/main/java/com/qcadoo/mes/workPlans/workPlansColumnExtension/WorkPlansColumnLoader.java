@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.workPlans.workPlansColumnExtension;
 
+import com.qcadoo.mes.workPlans.WorkPlansColumnLoaderService;
+import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.qcadoo.mes.workPlans.WorkPlansColumnLoaderService;
-import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 
 @Component
 public class WorkPlansColumnLoader {

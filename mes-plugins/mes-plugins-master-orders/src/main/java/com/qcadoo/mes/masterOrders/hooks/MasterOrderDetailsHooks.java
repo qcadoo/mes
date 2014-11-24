@@ -24,18 +24,25 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.*;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEFAULT_TECHNOLOGY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.TECHNOLOGY;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
@@ -47,7 +54,6 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 
@@ -93,13 +99,34 @@ public class MasterOrderDetailsHooks {
 
     public void setFieldsVisibility(final ViewDefinitionState view, final boolean visibleFields, final boolean visibleGrid) {
         for (String reference : Arrays.asList(TECHNOLOGY, PRODUCT, DEFAULT_TECHNOLOGY, MASTER_ORDER_QUANTITY,
-                CUMULATED_ORDER_QUANTITY)) {
+                CUMULATED_ORDER_QUANTITY, "producedOrderQuantity")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setVisible(visibleFields);
         }
 
         GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
         masterOrderProducts.setVisible(visibleGrid);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
+        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("createOrder");
+        if (visibleGrid) {
+            if (masterOrderProducts.getSelectedEntities().isEmpty()) {
+                createOrder.setEnabled(false);
+            } else if (masterOrderProducts.getSelectedEntities().size() == 1) {
+                createOrder.setEnabled(true);
+            } else {
+                createOrder.setEnabled(false);
+            }
+            createOrder.setMessage("masterOrders.order.ribbon.message.selectOneProduct");
+            createOrder.requestUpdate(true);
+            window.requestRibbonRender();
+        } else {
+            LookupComponent productLookupComponent = (LookupComponent) view.getComponentByReference("product");
+            createOrder.setEnabled(true);
+
+            createOrder.requestUpdate(true);
+
+        }
 
         ComponentState borderLayoutProductQuantity = view.getComponentByReference("borderLayoutProductQuantity");
         borderLayoutProductQuantity.setVisible(visibleFields);
@@ -114,7 +141,8 @@ public class MasterOrderDetailsHooks {
             unit = product.getStringField(UNIT);
         }
 
-        for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
+        for (String reference : Arrays
+                .asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit", "producedOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
             if (unit != null) {
@@ -152,7 +180,8 @@ public class MasterOrderDetailsHooks {
             return;
         }
 
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
+        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
+                .equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             return;
         }
 
@@ -203,42 +232,19 @@ public class MasterOrderDetailsHooks {
         }
     }
 
-    public void changeRibbonState(final ViewDefinitionState view) {
-        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        boolean isEnabled = (masterOrderForm.getEntityId() != null);
-
-        changeButtonsState(view, isEnabled);
-    }
-
     public void setOrderLookupCriteriaModifier(final ViewDefinitionState view) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity masterOrder = masterOrderForm.getEntity();
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(L_ORDERS_LOOKUP);
-        if(masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER)){
+        if (masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER)) {
             orderCriteriaModifier.putMasterOrderNumberFilter(orderLookup, masterOrder.getStringField(NUMBER));
         } else {
             orderCriteriaModifier.clearMasterOrderNumberFilter(orderLookup);
         }
     }
 
-    private void changeButtonsState(final ViewDefinitionState view, final boolean isEnabled) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-
-        Ribbon ribbon = window.getRibbon();
-
-        RibbonGroup orders = ribbon.getGroupByName(L_ORDERS);
-
-        RibbonActionItem createOrder = orders.getItemByName(L_CREATE_ORDER);
-
-        createOrder.setEnabled(isEnabled);
-        createOrder.requestUpdate(true);
-
-        window.requestRibbonRender();
-    }
-
-    public void setProductLookupRequired(final ViewDefinitionState view){
+    public void setProductLookupRequired(final ViewDefinitionState view) {
         FieldComponent productField = (FieldComponent) view.getComponentByReference(PRODUCT);
         productField.setRequired(true);
     }

@@ -47,4 +47,10 @@ public final class ResourceFields {
 
     public static final String PRODUCTION_DATE = "productionDate";
 
+    public static final String RESOURCE_CORRECTIONS = "resourceCorrections";
+
+    public static final String IS_CORRECTED = "isCorrected";
+
+    public static final String ATRRIBUTE_VALUES = "attributeValues";
+
 }

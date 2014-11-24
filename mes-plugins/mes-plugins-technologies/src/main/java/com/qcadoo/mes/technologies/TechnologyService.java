@@ -24,19 +24,18 @@
 package com.qcadoo.mes.technologies;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
@@ -106,6 +105,9 @@ public class TechnologyService {
 
     @Autowired
     private PluginAccessor pluginAccessor;
+
+    @Autowired
+    private TechnologyNameAndNumberGenerator technologyNameAndNumberGenerator;
 
     public void copyCommentAndAttachmentFromLowerInstance(final Entity technologyOperationComponent, final String belongsToName) {
         Entity operation = technologyOperationComponent.getBelongsToField(belongsToName);
@@ -229,15 +231,10 @@ public class TechnologyService {
 
         Entity product = productLookup.getEntity();
 
-        if (product == null || (numberField.getFieldValue() != null && !numberField.getFieldValue().equals(""))) {
+        if (product == null || StringUtils.isNotEmpty(Objects.toString(numberField.getFieldValue(), ""))) {
             return;
         }
-
-        String numberPrefix = product.getField(ProductFields.NUMBER) + "-";
-        String number = numberGeneratorService.generateNumberWithPrefix(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY, 3, numberPrefix);
-
-        numberField.setFieldValue(number);
+        numberField.setFieldValue(technologyNameAndNumberGenerator.generateNumber(product));
         numberField.requestComponentUpdateState();
     }
 
@@ -251,18 +248,10 @@ public class TechnologyService {
 
         Entity product = productLookup.getEntity();
 
-        if (product == null || (nameField.getFieldValue() != null && !nameField.getFieldValue().equals(""))) {
+        if (product == null || StringUtils.isNotEmpty(Objects.toString(nameField.getFieldValue(), ""))) {
             return;
         }
-
-        Calendar calendar = Calendar.getInstance(state.getLocale());
-        calendar.setTime(new Date());
-
-        String name = translationService.translate("technologies.operation.name.default", state.getLocale(),
-                product.getStringField(ProductFields.NAME), product.getStringField(ProductFields.NUMBER),
-                calendar.get(Calendar.YEAR) + "." + (calendar.get(Calendar.MONTH) + 1));
-
-        nameField.setFieldValue(name);
+        nameField.setFieldValue(technologyNameAndNumberGenerator.generateName(product));
         nameField.requestComponentUpdateState();
     }
 

@@ -23,8 +23,8 @@
  */
 package com.qcadoo.mes.assignmentToShift.dataProviders;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.google.common.base.Optional;
 import com.qcadoo.model.api.search.SearchCriterion;

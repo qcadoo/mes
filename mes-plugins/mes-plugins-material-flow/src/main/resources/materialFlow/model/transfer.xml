@@ -28,11 +28,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" required="true" unique="true">
+		<string name="number">
 			<validatesLength max="255" />
 		</string>
 		<enum name="type" values="01transport,02consumption,03production" />
-		<datetime name="time" required="true" />
+		<datetime name="time"/>
 		<belongsTo name="locationFrom" model="location" plugin="materialFlow" />
 		<belongsTo name="locationTo" model="location" plugin="materialFlow" />
 		<belongsTo name="product" model="product" plugin="basic"

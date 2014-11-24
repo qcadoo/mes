@@ -24,18 +24,18 @@
 
 -->
 <view name="masterOrderDetails" modelName="masterOrder"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
-	<component type="window" name="window">
+    <component type="window" name="window">
 
-		<ribbon>
-			<template name="standardFormTemplate" />
-			
-			<group name="orders">
-				<bigButton name="createOrder" icon="generateIcon24.png">
-					<script>
-						<![CDATA[
+        <ribbon>
+            <template name="standardFormTemplate"/>
+
+            <group name="orders">
+                <bigButton name="createOrder" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if(window.canClose()) {
@@ -44,290 +44,310 @@
 								}
 							});	
 						]]>
-					</script>	
-				</bigButton>
-			</group>
-		</ribbon>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
 
-		<windowTab name="mainTab">
-			<component type="form" name="masterOrderDetails" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="6">
-					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number"
-							reference="number">
-							<option type="alignment" value="right" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="name" field="name"
-							reference="name" />
-					</layoutElement>
-					<layoutElement column="1" row="4" height="2">
-						<component type="textarea" name="description" field="description"
-							reference="description" />
-					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="checkbox" name="addMasterPrefixToNumber"
-							field="addMasterPrefixToNumber" reference="addMasterPrefixToNumber">
-							<option type="labelWidth" value="60" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="2">
-						<component type="lookup" name="company" reference="company"
-							field="company" hasDescription="true">
-							<option type="column" name="name" fields="name" link="true" />
+        <windowTab name="mainTab">
+            <component type="form" name="masterOrderDetails" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="6">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number"
+                                   reference="number">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   reference="name"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" height="2">
+                        <component type="textarea" name="description" field="description"
+                                   reference="description"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="checkbox" name="addMasterPrefixToNumber"
+                                   field="addMasterPrefixToNumber" reference="addMasterPrefixToNumber">
+                            <option type="labelWidth" value="60"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="2">
+                        <component type="lookup" name="company" reference="company"
+                                   field="company" hasDescription="true">
+                            <option type="column" name="name" fields="name" link="true"/>
 
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
-							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-							<option type="labelWidth" value="40" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="3">
-						<component type="calendar" name="deadline" field="deadline"
-							reference="deadline" hasDescription="true">
-							<option type="labelWidth" value="40" />
-							<option type="withTimePicker" value="true" />
-						</component>
-					</layoutElement>
-					<layoutElement column="3" row="1">
-						<component type="select" name="masterOrderState"
-							reference="masterOrderState" field="masterOrderState" />
-					</layoutElement>
-				</component>
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="3">
+                        <component type="calendar" name="deadline" field="deadline"
+                                   reference="deadline" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="1">
+                        <component type="select" name="masterOrderState"
+                                   reference="masterOrderState" field="masterOrderState"/>
+                    </layoutElement>
+                </component>
 
-				<option type="header" value="true" />
-				<option type="expression" value="#number" />
-				
-				<listener event="createOrder" 
-					class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" 
-					method="createOrder" />
-			</component>
-		</windowTab>
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
 
-		<windowTab name="productsTab">
-			<component type="gridLayout" name="gridLayout" reference="productsTabGridLayout"
-				columns="3" rows="7">
-				<layoutElement column="1" row="1">
-					<component type="select" name="masterOrderType"
-						reference="masterOrderType" field="#{form}.masterOrderType">
+                <listener event="createOrder"
+                          class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
+                          method="createOrder"/>
+            </component>
+        </windowTab>
 
-						<listener event="onSelectedEntityChange" method="hideFieldDependOnMasterOrderType"
-							class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" />
-						<listener event="onSelectedEntityChange" method="setUneditableWhenEntityHasUnsaveChanges"
-							class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="lookup" name="product" reference="product"
-						field="#{form}.product" hasDescription="true" defaultVisible="false">
-						<option type="column" name="name" fields="name" link="true"
-							width="200" />
-						<option type="column" name="ean" fields="ean" />
+        <windowTab name="productsTab">
+            <component type="gridLayout" name="gridLayout" reference="productsTabGridLayout"
+                       columns="3" rows="7">
+                <layoutElement column="1" row="1">
+                    <component type="select" name="masterOrderType"
+                               reference="masterOrderType" field="#{form}.masterOrderType">
 
-						<option type="searchable" value="name,ean" />
-						<option type="orderable" value="name,ean" />
+                        <listener event="onSelectedEntityChange" method="hideFieldDependOnMasterOrderType"
+                                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
+                        <listener event="onSelectedEntityChange" method="setUneditableWhenEntityHasUnsaveChanges"
+                                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="lookup" name="product" reference="product"
+                               field="#{form}.product" hasDescription="true" defaultVisible="false">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="200"/>
+                        <option type="column" name="ean" fields="ean"/>
 
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
+                        <option type="searchable" value="name,ean"/>
+                        <option type="orderable" value="name,ean"/>
 
-						<listener event="onSelectedEntityChange" method="fillUnitField"
-							class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" />
-						<listener event="onSelectedEntityChange" method="fillDefaultTechnology"
-							class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="3">
-					<component type="input" name="defaultTechnology"
-						reference="defaultTechnology" field="#{form}.defaultTechnology"
-						defaultEnabled="never" defaultVisible="false" />
-				</layoutElement>
-				<layoutElement column="1" row="4">
-					<component type="lookup" name="technology" reference="technology"
-						field="#{form}.technology" source="#{product}.technologies"
-						hasDescription="true" defaultVisible="false">
-						<option type="column" name="name" fields="name" link="true"
-							width="300" />
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
 
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
+                        <listener event="onSelectedEntityChange" method="fillUnitField"
+                                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
+                        <listener event="onSelectedEntityChange" method="fillDefaultTechnology"
+                                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="input" name="defaultTechnology"
+                               reference="defaultTechnology" field="#{form}.defaultTechnology"
+                               defaultEnabled="never" defaultVisible="false"/>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="lookup" name="technology" reference="technology"
+                               field="#{form}.technology" source="#{product}.technologies"
+                               hasDescription="true" defaultVisible="false">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="300"/>
 
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
-						<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers" method="showPatternTechnology" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="5" height="2">
-					<component type="borderLayout" name="productQuantity"
-						reference="borderLayoutProductQuantity">
-						<component type="gridLayout" name="productQuantityGridLayout"
-							columns="4" rows="2" reference="productQuantityGridLayout"
-							hasBorders="false">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="masterOrderQuantity"
-									field="#{form}.masterOrderQuantity" reference="masterOrderQuantity"
-									defaultVisible="false" >
-									<option type="alignment" value="right" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="masterOrderQuantityUnit"
-									reference="masterOrderQuantityUnit" hasLabel="false"
-									defaultVisible="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="3">
-								<component type="input" name="cumulatedOrderQuantity"
-									field="#{form}.cumulatedOrderQuantity" reference="cumulatedOrderQuantity"
-									defaultVisible="false" defaultEnabled="never"  >
-									<option type="alignment" value="right" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="2">
-								<component type="input" name="cumulatedOrderQuantityUnit"
-									reference="cumulatedOrderQuantityUnit" hasLabel="false"
-									defaultVisible="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
+                        <option type="searchable" value="name,number"/>
+                        <option type="orderable" value="name,number"/>
 
-						<option type="label" value="productQuantityLabel" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1" width="2" height="5">
-					<component type="grid" name="products" reference="productsGrid"
-						source="#{form}.masterOrderProducts">
-						<option type="column" name="productNumber" fields="product"
-							link="true" expression="#product['number']" />
-						<option type="column" name="productName" fields="product"
-							expression="#product['name']" />
-						<option type="column" name="technologyNumber" fields="technology"
-							expression="#technology['number']" />
-						<option type="column" name="masterOrderQuantity" fields="masterOrderQuantity" />
-						<option type="column" name="cumulatedOrderQuantity" fields="cumulatedOrderQuantity" />
-						<option type="column" name="productUnit" fields="product"
-							expression="#product['unit']" />
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+                        <criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+                                          method="showPatternTechnology"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="5" height="2">
+                    <component type="borderLayout" name="productQuantity"
+                               reference="borderLayoutProductQuantity">
+                        <component type="gridLayout" name="productQuantityGridLayout"
+                                   columns="4" rows="3" reference="productQuantityGridLayout"
+                                   hasBorders="false">
+                            <layoutElement column="1" row="1" width="3">
+                                <component type="input" name="masterOrderQuantity"
+                                           field="#{form}.masterOrderQuantity" reference="masterOrderQuantity"
+                                           defaultVisible="false">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="1">
+                                <component type="input" name="masterOrderQuantityUnit"
+                                           reference="masterOrderQuantityUnit" hasLabel="false"
+                                           defaultVisible="false">
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2" width="3">
+                                <component type="input" name="cumulatedOrderQuantity"
+                                           field="#{form}.cumulatedOrderQuantity" reference="cumulatedOrderQuantity"
+                                           defaultVisible="false" defaultEnabled="never">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="2">
+                                <component type="input" name="cumulatedOrderQuantityUnit"
+                                           reference="cumulatedOrderQuantityUnit" hasLabel="false"
+                                           defaultVisible="false">
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="3" width="3">
+                                <component type="input" name="producedOrderQuantity"
+                                           field="#{form}.producedOrderQuantity" reference="producedOrderQuantity"
+                                           defaultVisible="false" defaultEnabled="never">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="3">
+                                <component type="input" name="producedOrderQuantityUnit"
+                                           reference="cproducedOrderQuantityUnit" hasLabel="false"
+                                           defaultVisible="false">
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
+                        </component>
 
-						<option type="order" column="number" direction="asc" />
+                        <option type="label" value="productQuantityLabel"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="5">
+                    <component type="grid" name="products" reference="productsGrid"
+                               source="#{form}.masterOrderProducts">
+                        <option type="column" name="productNumber" fields="product"
+                                link="true" expression="#product['number']"/>
+                        <option type="column" name="productName" fields="product"
+                                expression="#product['name']"/>
+                        <option type="column" name="technologyNumber" fields="technology"
+                                expression="#technology['number']"/>
+                        <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity"/>
+                        <option type="column" name="cumulatedOrderQuantity" fields="cumulatedOrderQuantity"/>
+                        <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity"/>
+                        <option type="column" name="productUnit" fields="product"
+                                expression="#product['unit']"/>
 
-						<option type="searchable"
-							value="productNumber,productName,masterOrderQuantity,productUnit" />
-						<option type="orderable"
-							value="productNumber,productName,masterOrderQuantity,productUnit" />
+                        <option type="order" column="number" direction="asc"/>
 
-						<option type="correspondingView" value="masterOrders/masterOrderProductDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
+                        <option type="searchable"
+                                value="productNumber,productName,masterOrderQuantity,productUnit"/>
+                        <option type="orderable"
+                                value="productNumber,productName,masterOrderQuantity,productUnit"/>
 
-						<option type="deletable" value="true" />
-						<option type="creatable" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
+                        <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
 
-		<windowTab name="ordersTab">
-			<component type="lookup" name="ordersLookup" reference="ordersLookup"
-				field="#{form}.orders" defaultVisible="false" persistent="false"
-				hasLabel="false">
-				<option type="column" name="name" fields="name" link="true" />
+                        <option type="deletable" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="multiselect" value="true"/>
 
-				<option type="searchable" value="number,name" />
-				<option type="orderable" value="number,name" />
 
-				<option type="expression" value="#number + ' - ' + #name" />
-				<option type="fieldCode" value="number" />
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
+                                  method="onProductsChange"/>
 
-				<option type="multiselect" value="true" />
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="ordersTab">
+            <component type="lookup" name="ordersLookup" reference="ordersLookup"
+                       field="#{form}.orders" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                <option type="column" name="name" fields="name" link="true"/>
+
+                <option type="searchable" value="number,name"/>
+                <option type="orderable" value="number,name"/>
+
+                <option type="expression" value="#number + ' - ' + #name"/>
+                <option type="fieldCode" value="number"/>
+
+                <option type="multiselect" value="true"/>
                 <criteriaModifier
                         class="com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier"
                         method="filterByMasterOrderNumber"/>
-			</component>
-			<component type="grid" name="orders" reference="ordersGrid"
-				source="#{form}.orders">
-				<option type="column" name="number" fields="number" link="true" />
-				<option type="column" name="productNumber" fields="product"
-					expression="#product['number']" link="true" />
-				<option type="column" name="technologyNumber" fields="technology"
-					expression="#technology['number']" link="true" />
-				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
-				<option type="column" name="unit" fields="product"
-					expression="#product['unit']" />
-				<option type="column" name="state" fields="state" />
-				<option type="column" name="startDate" fields="startDate" />
-				<option type="column" name="finishDate" fields="finishDate" />
+            </component>
+            <component type="grid" name="orders" reference="ordersGrid"
+                       source="#{form}.orders">
+                <option type="column" name="number" fields="number" link="true"/>
+                <option type="column" name="productNumber" fields="product"
+                        expression="#product['number']" link="true"/>
+                <option type="column" name="technologyNumber" fields="technology"
+                        expression="#technology['number']" link="true"/>
+                <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
+                <option type="column" name="doneQuantity" fields="doneQuantity"/>
+                <option type="column" name="unit" fields="product"
+                        expression="#product['unit']"/>
+                <option type="column" name="state" fields="state"/>
+                <option type="column" name="startDate" fields="startDate"/>
+                <option type="column" name="finishDate" fields="finishDate"/>
 
-				<option type="order" column="number" direction="asc" />
+                <option type="order" column="number" direction="asc"/>
 
-				<option type="searchable"
-					value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate" />
-				<option type="orderable"
-					value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate" />
+                <option type="searchable"
+                        value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate"/>
+                <option type="orderable"
+                        value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate"/>
 
-				<option type="weakRelation" value="true" />
-				<option type="correspondingLookup" value="ordersLookup" />
-				
-				<option type="correspondingView" value="orders/orderDetails" />
-				<option type="correspondingComponent" value="form" />
-				<option type="correspondingViewInModal" value="false" />
-				
-				<option type="multiselect" value="true" />
-				<option type="deletable" value="true" />
-				<option type="creatable" value="true" />
-			</component>
-		</windowTab>
+                <option type="weakRelation" value="true"/>
+                <option type="correspondingLookup" value="ordersLookup"/>
 
-		<windowTab name="integrationTab">
-			<component type="gridLayout" name="gridLayoutIntegration"
-				reference="gridLayoutIntegration" columns="3" rows="6">
-				<layoutElement column="1" row="1">
-					<component type="input" name="externalNumber" field="#{form}.externalNumber"
-						reference="externalNumber" defaultEnabled="never">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
+                <option type="correspondingView" value="orders/orderDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="false"/>
 
-	</component>
+                <option type="multiselect" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="creatable" value="true"/>
+            </component>
+        </windowTab>
 
-	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-			method="hideFieldDependOnMasterOrderType" />
-		<beforeRender
-			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-			method="fillUnitField" />
-		<beforeRender
-			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-			method="fillDefaultTechnology" />
-		<beforeRender
-			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-			method="showErrorWhenCumulatedQuantity" />
-		<beforeRender
-			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-			method="disabledGridWhenMasterOrderDoesnotHaveProduct" />
-		<beforeRender
-			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-			method="setUneditableWhenEntityHasUnsaveChanges" />
-		<beforeRender
-			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-			method="changeRibbonState" />
+        <windowTab name="integrationTab">
+            <component type="gridLayout" name="gridLayoutIntegration"
+                       reference="gridLayoutIntegration" columns="3" rows="6">
+                <layoutElement column="1" row="1">
+                    <component type="input" name="externalNumber" field="#{form}.externalNumber"
+                               reference="externalNumber" defaultEnabled="never">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="setOrderLookupCriteriaModifier" />
+                method="hideFieldDependOnMasterOrderType"/>
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="setProductLookupRequired" />
+                method="fillUnitField"/>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="fillDefaultTechnology"/>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="showErrorWhenCumulatedQuantity"/>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="disabledGridWhenMasterOrderDoesnotHaveProduct"/>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="setUneditableWhenEntityHasUnsaveChanges"/>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="setOrderLookupCriteriaModifier"/>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="setProductLookupRequired"/>
     </hooks>
 
 </view>

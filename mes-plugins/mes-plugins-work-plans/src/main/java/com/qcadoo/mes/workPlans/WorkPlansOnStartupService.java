@@ -23,12 +23,11 @@
  */
 package com.qcadoo.mes.workPlans;
 
+import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnLoader;
+import com.qcadoo.plugin.api.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnLoader;
-import com.qcadoo.plugin.api.Module;
 
 @Component
 public class WorkPlansOnStartupService extends Module {

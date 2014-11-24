@@ -23,19 +23,22 @@
  */
 package com.qcadoo.mes.basic;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ExchangeRatesNbpServiceImplTest {
 
     private ExchangeRatesNbpServiceImpl service;
+
     private InputStream inputStream;
 
     @Before
@@ -50,7 +53,7 @@ public class ExchangeRatesNbpServiceImplTest {
         assertTrue(map.containsKey("USD"));
         assertTrue(map.containsKey("CAD"));
         assertTrue(map.containsKey("AUD"));
-        assertTrue(map.containsValue(new BigDecimal("3.0756")));
+        assertTrue(map.containsValue(new BigDecimal("0.3076")));
         assertTrue(map.containsValue(new BigDecimal("2.8927")));
         assertTrue(map.containsValue(new BigDecimal("2.8732")));
     }
@@ -59,7 +62,7 @@ public class ExchangeRatesNbpServiceImplTest {
     public void shouldParseAlwaysCloseInputStream() throws Exception {
         InputStream inputStreamSpied = spy(inputStream);
         service.parse(inputStreamSpied, ExchangeRatesNbpService.NbpProperties.LAST_C);
-        verify(inputStreamSpied , atLeastOnce()).close();
+        verify(inputStreamSpied, atLeastOnce()).close();
     }
 
 }

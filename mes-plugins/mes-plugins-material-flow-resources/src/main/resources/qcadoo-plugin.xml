@@ -62,11 +62,14 @@
 
 	<modules>
 		<localization:translation path="locales" />
-	
+		
 		<model:model model="resource" resource="model/resource.xml" />
         <model:model model="document" resource="model/document.xml" />
         <model:model model="position" resource="model/position.xml" />
         <model:model model="warehouseStock" resource="model/warehouseStock.xml" />
+		<model:model model="resourceCorrection" resource="model/resourceCorrection.xml" />
+		<model:model model="attribute" resource="model/attribute.xml" />
+		<model:model model="attributeValue" resource="model/attributeValue.xml" />
 
 		<model:model-field plugin="basic" model="parameter">
 			<model:enum name="changeDateWhenTransferToWarehouseType"
@@ -82,7 +85,7 @@
 			plugin="materialFlowResources" joinField="location" cascade="delete"/>
 		</model:model-field>
         <model:model-field plugin="materialFlow" model="location">
-            <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo" default="01fifo" />
+            <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo,05manual" default="01fifo" />
         </model:model-field>
         <model:model-field plugin="materialFlow" model="location">
             <model:boolean name="requirePrice" />
@@ -96,6 +99,22 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:boolean name="requireExpirationDate" />
         </model:model-field>
+        
+        <model:model-field plugin="materialFlow" model="location">
+			<model:hasMany name="resourceCorrections" model="resourceCorrection"
+			plugin="materialFlowResources" joinField="location" cascade="delete"/>
+		</model:model-field>
+		
+        <model:model-field plugin="basic" model="product">
+			<model:hasMany name="resourceCorrections" model="resourceCorrection"
+			plugin="materialFlowResources" joinField="product" cascade="delete"/>
+		</model:model-field>
+		
+		<model:model-field plugin="materialFlow" model="location">
+			<model:hasMany name="attributes" model="attribute"
+			plugin="materialFlowResources" joinField="location" cascade="delete"/>
+		</model:model-field>
+		
 			
    		<model:model-hook plugin="basic" model="parameter">
 			<model:validatesWith
@@ -152,6 +171,8 @@
 		
 		<menu:menu-item name="resources" category="materialFlow"
 			view="resourcesList" />
+		<menu:menu-item name="resourceCorrections" category="materialFlow"
+			view="resourceCorrectionsList" />
         <menu:menu-item name="documents" category="materialFlow"
                         view="documentsList" />
         <menu:menu-item name="warehouseStock" category="materialFlow"
@@ -172,12 +193,18 @@
 			class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsDetailsViewHooksMFR" 
 			method="disableDateField" />
 			
+		<view:view-hook plugin="materialFlow" view="locationDetails" 
+			type="beforeRender" 
+			class="com.qcadoo.mes.materialFlowResources.hooks.LocationDetailsHooksMFR" 
+			method="setEnabledForBatchCheckbox" />
+			
 		<view:view resource="view/resourceDetails.xml" />
 		<view:view resource="view/resourcesList.xml" />
         <view:view resource="view/documentDetails.xml" />
         <view:view resource="view/documentsList.xml" />
         <view:view resource="view/warehouseStocksList.xml" />
-
+        <view:view resource="view/resourceCorrectionsList.xml" />
+        <view:view resource="view/resourceCorrectionDetails.xml" />
 
         <view:view-tab resource="view/tabExtensions/parameters.xml" />
         <view:view-tab resource="view/tabExtensions/locationDetails.xml" />

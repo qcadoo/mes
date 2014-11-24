@@ -25,24 +25,35 @@
 
 -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="orders" view="orderDetails">
+                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="orders" view="orderDetails">
 
-	<windowTab name="masterOrderTab" reference="masterOrderTab">
-		<component type="gridLayout" name="gridLayout" columns="3"
-			rows="1">
-			<layoutElement column="1" row="1">
-				<component type="lookup" name="masterOrder" field="#{form}.masterOrder" reference="masterOrder" >
-					<option type="column" name="name" fields="name" link="true" width="200" />
-					<option type="column" name="deadline" fields="deadline"  width="100" />
-					<option type="searchable" value="number,name,deadline" />
-					<option type="orderable" value="number,name,deadline" />
-					<option type="expression" value="#number" />
-					<option type="fieldCode" value="number" />
-				</component>
-			</layoutElement>
-		</component>
-	</windowTab>
+    <windowTab name="masterOrderTab" reference="masterOrderTab">
+        <component type="gridLayout" name="gridLayout" columns="3"
+                   rows="2">
+            <layoutElement column="1" row="1">
+                <component type="lookup" name="masterOrder" field="#{form}.masterOrder" reference="masterOrder">
+                    <option type="column" name="name" fields="name" link="true" width="200"/>
+                    <option type="column" name="deadline" fields="deadline" width="100"/>
+                    <option type="searchable" value="number,name,deadline"/>
+                    <option type="orderable" value="number,name,deadline"/>
+                    <option type="expression" value="#number"/>
+                    <option type="fieldCode" value="number"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="lookup" name="masterOrderProduct" field="#{form}.masterOrderProduct"
+                           reference="masterOrderProduct" defaultVisible="false">
+                    <option type="column" name="name" fields="name" link="true" width="200"/>
+
+                    <option type="searchable" value="number,name"/>
+                    <option type="orderable" value="number,name"/>
+                    <option type="expression" value="#number"/>
+                    <option type="fieldCode" value="number"/>
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
 
 </windowTabExtension>

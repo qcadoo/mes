@@ -4,7 +4,7 @@
     <data_publikacji>2014-07-14</data_publikacji>
     <pozycja>
         <nazwa_waluty>dolar amerykański</nazwa_waluty>
-        <przelicznik>1</przelicznik>
+        <przelicznik>10</przelicznik>
         <kod_waluty>USD</kod_waluty>
         <kurs_kupna>3,0146</kurs_kupna>
         <kurs_sprzedazy>3,0756</kurs_sprzedazy>

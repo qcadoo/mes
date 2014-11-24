@@ -26,82 +26,141 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="resourceDetails" 
-	modelName="resource">
-	
+	name="resourceDetails" windowWidth="680" windowHeight="480" modelName="resource">
+
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<template name="standardFormTemplate" />
+			<group template="navigation" />
+			<group name="correct">
+				<bigButton name="correctResource" icon="saveIcon24.png"
+					action="#{form}.fireEvent(createResourceCorrection);" state="enabled" />
+			</group>
 		</ribbon>
 
-		<component type="form" name="resourceForm" reference="form">
-			<component type="gridLayout" name="resourceGridLayout"
-				hasBorders="false" columns="15" rows="6">
-				<layoutElement column="1" row="1" width="5">
-					<component type="lookup" name="location" field="location"
-						reference="location">
-						<option type="searchable" value="name" />
-						<option type="orderable" value=" name" />
-						
-						<option type="expression" value="#name" />
-						<option type="fieldCode" value="name" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" width="5">
-					<component type="lookup" name="product" field="product"
-						reference="product">
-						<option type="column" fields="name" name="name" link="true" />
-						
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-						
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-						
-						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillUnitFieldValues" />
-						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillCurrencyFieldValues" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="3" width="5">
-					<component type="input" name="quantity" field="quantity"
-						reference="quantity">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="6" row="3" width="1">
-					<component type="input" name="quantityUNIT" reference="quantityUNIT"
-						defaultEnabled="false" hasLabel="false" />
-				</layoutElement>
-				<layoutElement column="1" row="4" width="5">
-					<component type="input" name="price" field="price"
-						reference="price">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="6" row="4" width="1">
-					<component type="input" name="priceCurrency" reference="priceCurrency"
-						defaultEnabled="false" hasLabel="false" />
-				</layoutElement>
-				<layoutElement column="1" row="5" width="5">
-					<component type="input" name="batch" field="batch"
-						reference="batch">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="6" width="5">
-					<component type="calendar" name="time" field="time"
-						reference="time">
-						<option type="withTimePicker" value="true" />
-					</component>
-				</layoutElement>
-			</component>
+		<windowTab name="mainTab" reference="mainTab">
+			<component type="form" name="resourceForm" reference="form">
+				<component type="gridLayout" name="resourceGridLayout"
+					hasBorders="false" columns="11" rows="5">
+					<layoutElement column="1" row="1" width="5">
+						<component type="lookup" name="location" field="location"
+							reference="location" defaultEnabled="false">
+							<option type="searchable" value="name" />
+							<option type="orderable" value=" name" />
 
-			<option type="header" value="true" />
-		</component>
+							<option type="expression" value="#name" />
+							<option type="fieldCode" value="name" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2" width="5">
+						<component type="lookup" name="product" field="product"
+							reference="product" defaultEnabled="false">
+							<option type="column" fields="name" name="name" link="true" />
+
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
+
+							<option type="expression" value="#number + ' - ' + #name" />
+							<option type="fieldCode" value="number" />
+
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillUnitFieldValues" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillCurrencyFieldValues" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3" width="5">
+						<component type="input" name="quantity" field="quantity"
+							reference="quantity">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="6" row="3" width="1">
+						<component type="input" name="quantityUNIT" reference="quantityUNIT"
+							defaultEnabled="false" hasLabel="false">
+							<option type="textRepresentationOnDisabled" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4" width="5">
+						<component type="input" name="price" field="price"
+							reference="price" defaultEnabled="false">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="6" row="4" width="1">
+						<component type="input" name="priceCurrency" reference="priceCurrency"
+							defaultEnabled="false" hasLabel="false">
+							<option type="textRepresentationOnDisabled" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="7" row="1" width="5">
+						<component type="input" name="batch" field="batch"
+							reference="batch" defaultEnabled="false">
+						</component>
+					</layoutElement>
+					<layoutElement column="7" row="2" width="5">
+						<component type="calendar" name="time" field="time"
+							reference="time" defaultEnabled="false">
+							<option type="withTimePicker" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="7" row="3" width="5">
+						<component type="calendar" name="productionDate" field="productionDate"
+							reference="productionDate" defaultEnabled="false">
+							<option type="withTimePicker" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="7" row="4" width="5">
+						<component type="calendar" name="expirationDate" field="expirationDate"
+							reference="expirationDate" defaultEnabled="false">
+							<option type="withTimePicker" value="false" />
+						</component>
+					</layoutElement>
+				</component>
+
+				<listener event="createResourceCorrection"
+					class="com.qcadoo.mes.materialFlowResources.listeners.ResourceDetailsListeners"
+					method="createResourceCorrection" />
+				<option type="header" value="true" />
+				<option type="expression" value="#product['number'] + ' - ' + #product['name']" />
+			</component>
+		</windowTab>
+
+		<windowTab name="correctionsTab" reference="correctionsTab">
+			<component type="grid" name="resourceCorrectionsGrid"
+				reference="grid" source="#{form}.resourceCorrections">
+				<option type="column" name="number" fields="number" />
+				<option type="column" name="createDate" fields="createDate" />
+
+				<option type="column" name="oldQuantity" fields="oldQuantity" />
+				<option type="column" name="newQuantity" fields="newQuantity" />
+
+				<option type="order" column="number" direction="desc" />
+
+				<option type="searchable" value="number,createDate,oldQuantity,newQuantity" />
+				<option type="orderable" value="number,createDate,oldQuantity,newQuantity" />
+
+				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
+			</component>
+		</windowTab>
+		<windowTab name="attributesTab" reference="attributesTab">
+			<component type="grid" name="attributeValuesGrid"
+				reference="attributesGrid" source="#{form}.attributeValues">
+				<option type="column" name="name" fields="attribute" expression="#attribute['name']" />
+				<option type="column" name="value" fields="value" />
+
+				<option type="order" column="name" direction="asc" />
+
+				<option type="searchable" value="name,value" />
+				<option type="orderable" value="name,value" />
+
+				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
+			</component>
+		</windowTab>
 	</component>
-	
+
+
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 			method="fillUnitFieldValues" />

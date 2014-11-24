@@ -48,7 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang3.LocaleUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -61,7 +61,6 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
-import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
@@ -95,9 +94,6 @@ public class GeneratedSamplesLoader extends AbstractSamplesLoader {
     private static final String ORDER_GROUPS_PLUGIN_NAME = "orderGroups";
 
     private static final String ORDER_GROUPS_MODEL_ORDER_GROUP = ORDER_GROUP_LITERAL;
-
-    @Autowired
-    private SecurityRolesService securityRolesService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -570,8 +566,11 @@ public class GeneratedSamplesLoader extends AbstractSamplesLoader {
         user.setField("email", generateRandomEmail());
         user.setField("firstname", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
         user.setField("lastname", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
-        SecurityRole role = securityRolesService.getRoleByIdentifier("ROLE_USER");
-        user.setField("role", role.getName());
+
+        Entity group = dataDefinitionService.get("qcadooSecurity", "group").find().add(SearchRestrictions.eq(L_NAME, "Admin"))
+                .setMaxResults(1).uniqueResult();
+        user.setField("group", group);
+
         user.setField("password", "123");
         user.setField("passwordConfirmation", "123");
         user.setField("enabled", true);

@@ -37,31 +37,33 @@
 
 		<component type="grid" name="resourceGrid" reference="grid">
 			<option type="column" name="locationNumber" fields="location"
-				expression="#location['number']" />
+				expression="#location['number']" link="true" />
 			<option type="column" name="locationName" fields="location"
-				expression="#location['name']" />
+				expression="#location['name']" link="true" />
 			<option type="column" name="productNumber" fields="product"
-				expression="#product['number']" />
+				expression="#product['number']" link="true" />
 			<option type="column" name="productName" fields="product"
-				expression="#product['name']" />
+				expression="#product['name']" link="true" />
 			<option type="column" name="quantity" fields="quantity" />
 			<option type="column" name="productUnit" fields="product" 
-				expression="#product['unit']" />
+				expression="#product['unit']" width="50"/>
 			<option type="column" name="price" fields="price" />
 			<option type="column" name="value" fields="value" />
             <option type="column" name="time" fields="time" />
             <option type="column" name="productionDate" fields="productionDate" />
             <option type="column" name="expirationDate" fields="expirationDate" />
             <option type="column" name="batch" fields="batch" />
+            <option type="column" name="isCorrected" fields="isCorrected"/>
 
 			<option type="order" column="productNumber" direction="asc" />
 
 			<option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch" />
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected" />
 			<option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch" />
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected" />
 
 			<option type="correspondingView" value="materialFlowResources/resourceDetails" />
+			<option type="correspondingViewInModal" value="true" />
 			<option type="correspondingComponent" value="form" />
 
 			<option type="fullscreen" value="true" />

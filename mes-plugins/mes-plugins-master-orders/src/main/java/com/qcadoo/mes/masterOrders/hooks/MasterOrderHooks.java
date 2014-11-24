@@ -30,7 +30,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,6 +69,7 @@ public class MasterOrderHooks {
 
     public void onView(final DataDefinition dataDefinition, final Entity masterOrder) {
         calculateCumulativeQuantityFromOrders(masterOrder);
+        fillRegisteredQuantity(masterOrder);
     }
 
     public void onCopy(final DataDefinition dataDefinition, final Entity masterOrder) {
@@ -86,6 +87,18 @@ public class MasterOrderHooks {
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
         BigDecimal quantitiesSum = masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, product);
         masterOrder.setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, quantitiesSum);
+    }
+
+    private void fillRegisteredQuantity(Entity masterOrder) {
+        if (masterOrder.getId() == null || MasterOrderType.of(masterOrder) != MasterOrderType.ONE_PRODUCT) {
+            return;
+        }
+        Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
+
+        BigDecimal doneQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersDoneQuantities(
+                masterOrder, product);
+        masterOrder.setField("producedOrderQuantity", doneQuantity);
+
     }
 
     protected void changedDeadlineAndInOrder(final Entity masterOrder) {

@@ -34,7 +34,7 @@ import static com.qcadoo.model.api.search.SearchRestrictions.*;
 import java.util.Date;
 import java.util.Locale;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

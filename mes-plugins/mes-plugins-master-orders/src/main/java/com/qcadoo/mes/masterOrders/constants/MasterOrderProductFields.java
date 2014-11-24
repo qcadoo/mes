@@ -37,8 +37,6 @@ public final class MasterOrderProductFields {
 
     public static final String MASTER_ORDER_QUANTITY = "masterOrderQuantity";
 
-    public static final String CUMULATED_ORDER_QUANTITY = "cumulatedOrderQuantity";
-
     public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
 
 }

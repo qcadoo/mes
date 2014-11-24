@@ -25,7 +25,7 @@ package com.qcadoo.mes.avgLaborCostCalcForOrder.hooks;
 
 import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.AVERAGE_LABOR_HOURLY_COST;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.view.api.ViewDefinitionState;

@@ -64,12 +64,14 @@
 				width="300" />
 			<option type="column" name="generated" fields="generated"
 				link="false" width="100" />
+			<option type="column" name="date" fields="date" link="false" />
+			
 			<option type="column" name="worker" fields="worker" width="200" />
 
-			<option type="order" column="name" direction="asc" />
+			<option type="order" column="date" direction="desc" />
 			
-			<option type="searchable" value="name,generated,worker" />
-			<option type="orderable" value="name,generated,worker" />
+			<option type="searchable" value="name,generated,date,worker" />
+			<option type="orderable" value="name,generated,date,worker" />
 
 			<option type="correspondingView" value="workPlans/workPlanDetails" />
 			<option type="correspondingComponent" value="form" />

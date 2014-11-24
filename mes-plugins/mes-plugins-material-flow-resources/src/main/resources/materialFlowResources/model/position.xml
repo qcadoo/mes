@@ -42,8 +42,12 @@
         <date name="productionDate" />
         <date name="expirationDate" />
         <priority name="number" scope="document"/>
+        <belongsTo name="resource" model="resource"/>
+        <hasMany name="attributeValues" joinField="position" model="attributeValue" cascade="delete"/>
     </fields>
     <hooks>
+    	<onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>
+        <onSave class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onSave"/>
         <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators" method="checkAttributesRequirement" />
         <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators" method="validateDates" />
     </hooks>

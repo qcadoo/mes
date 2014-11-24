@@ -53,4 +53,10 @@ public final class ParameterFieldsWP {
 
     public static final String HIDE_BARCODE_OPERATION_COMPONENT_IN_WORK_PLAN = "hideBarcodeOperationComponentInWorkPlans";
 
+    public static final String TAKE_ACTUAL_PROGRESS_IN_WORK_PLANS = "takeActualProgressInWorkPlans";
+
+    public static final String ADDITIONAL_INPUT_ROWS = "additionalInputRows";
+
+    public static final String ADDITIONAL_OUTPUT_ROWS = "additionalOutputRows";
+
 }

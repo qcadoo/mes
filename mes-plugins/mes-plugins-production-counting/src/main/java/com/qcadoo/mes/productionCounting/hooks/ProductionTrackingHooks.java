@@ -26,8 +26,8 @@ package com.qcadoo.mes.productionCounting.hooks;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -97,8 +97,10 @@ public class ProductionTrackingHooks {
             outputs = operationProducts.getOutputComponents();
         }
 
-        productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS, inputs);
-        productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, outputs);
+        if(registerQuantityInProduct)
+            productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS, inputs);
+        if(registerQuantityOutProduct)
+            productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, outputs);
     }
 
     private boolean shouldCopyProducts(final Entity productionTracking) {
@@ -106,7 +108,7 @@ public class ProductionTrackingHooks {
             List<Entity> inputProduct = productionTracking
                     .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
             List<Entity> outputProduct = productionTracking
-                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
             return inputProduct.isEmpty() && outputProduct.isEmpty();
         }
 

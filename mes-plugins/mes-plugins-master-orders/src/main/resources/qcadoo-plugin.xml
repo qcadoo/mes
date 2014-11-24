@@ -25,12 +25,10 @@
 
 -->
 <plugin plugin="masterOrders" group="planning" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
-	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
@@ -38,86 +36,93 @@
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
+
+
        http://schema.qcadoo.org/modules/menu
        http://schema.qcadoo.org/modules/menu.xsd">
 
-	<information>
-		<name>Qcadoo MES :: Plugins :: Master orders</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-		<description>Higher level order which many production orders must fulfill. Master orders often represent actual orders for clients for many products.</description>
-		<license>AGPL</license>
-	</information>
+    <information>
+        <name>Qcadoo MES :: Plugins :: Master orders</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Higher level order which many production orders must fulfill. Master orders often represent actual orders for
+            clients for many products.
+        </description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>orders</plugin>
-			<version>[0.4.0</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <plugin>orders</plugin>
+            <version>[0.4.0</version>
+        </dependency>
+    </dependencies>
 
-	<modules>
-		<localization:translation path="locales" />
+    <modules>
+        <localization:translation path="locales"/>
 
-		<model:model model="masterOrder" resource="model/masterOrder.xml" />
-		<model:model model="masterOrderProduct" resource="model/masterOrderProduct.xml" />
-				
-		<model:dictionary name="masterOrderState" />
-		
-		<model:model-field model="order" plugin="orders">
-			<model:belongsTo name="masterOrder" model="masterOrder"
-				plugin="masterOrders" lazy="true" />
-		</model:model-field>
+        <model:model model="masterOrder" resource="model/masterOrder.xml"/>
+        <model:model model="masterOrderProduct" resource="model/masterOrderProduct.xml"/>
 
-		<model:model-hook model="order" plugin="orders">
-			<model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
-				method="checkProductAndTechnology" />
-		</model:model-hook>
-		<model:model-hook model="order" plugin="orders">
-			<model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
-				method="checkCompanyAndDeadline" />
-		</model:model-hook>
-		<model:model-hook model="order" plugin="orders">
-			<model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
-				method="checkOrderNumber" />
-		</model:model-hook>
-		
-		<menu:menu-item name="masterOrders" category="orders"
-			view="masterOrdersList" />
+        <model:dictionary name="masterOrderState"/>
 
-		<view:view resource="view/masterOrdersList.xml" />
-		<view:view resource="view/masterOrderDetails.xml" />
-		<view:view resource="view/masterOrderProductDetails.xml" />
-		
-		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
-		
-		<view:view-grid-column plugin="orders"
-			view="ordersList" component="grid">
-			<view:column name="masterOrder" fields="masterOrder"
-				orderable="true" searchable="true" expression="#masterOrder['number']"
-				width="50" />
-		</view:view-grid-column>
+        <model:model-field model="order" plugin="orders">
+            <model:belongsTo name="masterOrder" model="masterOrder"
+                             plugin="masterOrders" lazy="true"/>
+        </model:model-field>
+
+        <model:model-field model="order" plugin="orders">
+            <model:belongsTo name="masterOrderProduct" model="product"
+                             plugin="basic" lazy="true"/>
+        </model:model-field>
+
+        <model:model-hook model="order" plugin="orders">
+            <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
+                                 method="checkProductAndTechnology"/>
+        </model:model-hook>
+        <model:model-hook model="order" plugin="orders">
+            <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
+                                 method="checkCompanyAndDeadline"/>
+        </model:model-hook>
+        <model:model-hook model="order" plugin="orders">
+            <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
+                                 method="checkOrderNumber"/>
+        </model:model-hook>
+
+        <menu:menu-item name="masterOrders" category="orders"
+                        view="masterOrdersList"/>
+
+        <view:view resource="view/masterOrdersList.xml"/>
+        <view:view resource="view/masterOrderDetails.xml"/>
+        <view:view resource="view/masterOrderProductDetails.xml"/>
+
+        <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
 
         <view:view-grid-column plugin="orders"
-            view="ordersPlanningList" component="grid">
+                               view="ordersList" component="grid">
             <view:column name="masterOrder" fields="masterOrder"
-                orderable="true" searchable="true" expression="#masterOrder['number']"
-                width="50" />
+                         orderable="true" searchable="true" expression="#masterOrder['number']"
+                         width="50"/>
         </view:view-grid-column>
-		
-		<view:view-hook plugin="orders" view="orderDetails"
-			type="beforeRender" 
-			class="com.qcadoo.mes.masterOrders.hooks.OrderDetailsHooksMO"
-			method="fillMasterOrderFields" />
-			
-	</modules>
-	
-	<features>
-		<end-user />
-	</features>
+
+        <view:view-grid-column plugin="orders"
+                               view="ordersPlanningList" component="grid">
+            <view:column name="masterOrder" fields="masterOrder"
+                         orderable="true" searchable="true" expression="#masterOrder['number']"
+                         width="50"/>
+        </view:view-grid-column>
+
+        <view:view-hook plugin="orders" view="orderDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.masterOrders.hooks.OrderDetailsHooksMO"
+                        method="fillMasterOrderFields"/>
+
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
 
 </plugin>
