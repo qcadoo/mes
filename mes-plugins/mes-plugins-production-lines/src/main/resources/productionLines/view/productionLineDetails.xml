@@ -25,139 +25,139 @@
 
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="productionLineDetails" 
-	modelName="productionLine">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="productionLineDetails"
+      modelName="productionLine">
 
-	<component type="window" name="window">
-		<ribbon>
-			<template name="standardFormTemplate" />
-		</ribbon>
-		<windowTab name="mainTab">
-			<component type="form" name="productionLine" reference="form">
-				<component type="gridLayout" name="mainTabGridLayout" columns="3"
-					rows="5">
-					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number" reference="number" />
-					</layoutElement>
-					<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="name" field="name" />
-					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="lookup" name="division" field="division">
-							<option type="column" name="name" fields="name" link="true"
-								width="200" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="5">
-						<component type="select" name="place" field="place"
-							reference="productionLinePlaces" hasDescription="true" />
-					</layoutElement>
-					<layoutElement column="2" row="1" height="2">
-						<component type="textarea" name="description" field="description" />
-					</layoutElement>
-					<layoutElement column="2" row="3">
-						<component type="file" name="documentation" field="documentation" />
-					</layoutElement>
-				</component>
-				<option type="header" value="true" />
-				<option type="expression" value="#name" />
-			</component>
-		</windowTab>
-		
-		<windowTab name="workstationTypesTab">
-			<component type="gridLayout" name="workstationsTabGridLayout"
-				columns="2" rows="5">
-				<layoutElement column="1" row="1" height="5">
-					<component type="grid" name="workstationTypeComponentGrid"
-						reference="grid" source="#{form}.workstationTypeComponents">
-						<option type="column" name="workstationTypeNumber" fields="workstationType"
-							expression="#workstationType['number']" link="true" width="50" />
-						<option type="column" name="workstationTypeName" fields="workstationType"
-							expression="#workstationType['name']" link="true" width="100" />
-						<option type="column" name="quantity" fields="quantity"
-							link="true" width="50" />
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardFormTemplate"/>
+        </ribbon>
+        <windowTab name="mainTab">
+            <component type="form" name="productionLine" reference="form">
+                <component type="gridLayout" name="mainTabGridLayout" columns="3"
+                           rows="5">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number" reference="number"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="lookup" name="division" field="division">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="200"/>
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="select" name="place" field="place"
+                                   reference="productionLinePlaces" hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1" height="2">
+                        <component type="textarea" name="description" field="description"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="3">
+                        <component type="file" name="documentation" field="documentation"/>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="#name"/>
+            </component>
+        </windowTab>
 
-						<option type="order" column="workstationTypeNumber"
-							direction="desc" />
+        <windowTab name="workstationTypesTab">
+            <component type="gridLayout" name="workstationsTabGridLayout"
+                       columns="2" rows="5">
+                <layoutElement column="1" row="1" height="5">
+                    <component type="grid" name="workstationTypeComponentGrid"
+                               reference="grid" source="#{form}.workstationTypeComponents">
+                        <option type="column" name="workstationTypeNumber" fields="workstationType"
+                                expression="#workstationType['number']" link="true" width="50"/>
+                        <option type="column" name="workstationTypeName" fields="workstationType"
+                                expression="#workstationType['name']" link="true" width="100"/>
+                        <option type="column" name="quantity" fields="quantity"
+                                link="true" width="50"/>
 
-						<option type="searchable"
-							value="workstationTypeNumber,workstationTypeName,quantity" />
+                        <option type="order" column="workstationTypeNumber"
+                                direction="desc"/>
 
-						<option type="correspondingView"
-							value="productionLines/workstationTypeComponentDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
+                        <option type="searchable"
+                                value="workstationTypeNumber,workstationTypeName,quantity"/>
 
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1">
-					<component type="input" name="quantityForOtherWorkstationTypes"
-						field="#{form}.quantityForOtherWorkstationTypes" reference="quantityForOtherWorkstationTypes">
-						<option type="labelWidth" value="60" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-		
-		<windowTab name="workstationsTab">
-			<component type="gridLayout" name="workstationsGridLayout"
-				columns="2" rows="1">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="workstationsLookup" reference="workstationsLookup"
-						field="#{form}.workstations" defaultVisible="false" persistent="false"
-						hasLabel="false">
-						<option type="column" name="name" fields="name" link="true"
-							width="100" />
+                        <option type="correspondingView"
+                                value="productionLines/workstationTypeComponentDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
 
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1">
+                    <component type="input" name="quantityForOtherWorkstationTypes"
+                               field="#{form}.quantityForOtherWorkstationTypes" reference="quantityForOtherWorkstationTypes">
+                        <option type="labelWidth" value="60"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
+        <windowTab name="workstationsTab">
+            <component type="gridLayout" name="workstationsGridLayout"
+                       columns="2" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="lookup" name="workstationsLookup" reference="workstationsLookup"
+                               field="#{form}.workstations" defaultVisible="false" persistent="false"
+                               hasLabel="false">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="100"/>
 
-						<option type="multiselect" value="true" />
-						<criteriaModifier
-							class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
-							method="showWorkstationsWithoutProductionLineOnly" />	
-					</component>
-					<component type="grid" name="workstations" reference="workstations"
-						source="#{form}.workstations">
-						<option type="column" name="number" fields="number" width="50" />
-						<option type="column" name="name" fields="name" width="100" />
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
 
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
 
-						<option type="order" column="number" direction="desc" />
+                        <option type="multiselect" value="true"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
+                                method="showWorkstationsWithoutProductionLineOnly"/>
+                    </component>
+                    <component type="grid" name="workstations" reference="workstations"
+                               source="#{form}.workstations">
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name" width="100"/>
 
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
 
-						<option type="weakRelation" value="true" />
-						<option type="correspondingLookup" value="workstationsLookup" />
-						
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-		
-	</component>
-	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
-			method="generateProductionLineNumber" />
-	</hooks>
+                        <option type="order" column="number" direction="desc"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="workstationsLookup"/>
+
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+    </component>
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
+                method="generateProductionLineNumber"/>
+    </hooks>
 </view>
