@@ -105,6 +105,12 @@
 		<view:view resource="view/workstationTypeComponentDetails.xml" />
 		
 		<view:view-tab resource="view/tabExtensions/divisionDetails.xml"/>
+		<view:view-tab resource="view/tabExtensions/workstationDetails.xml"/>
+		
+		<view:view-grid-column view="workstationsList" component="grid" plugin="basic">
+			<view:column name="productionLine" fields="productionLine" expression="#productionLine['name']" orderable="true"
+                         searchable="true" />
+		</view:view-grid-column>
 
 	</modules>
 	
