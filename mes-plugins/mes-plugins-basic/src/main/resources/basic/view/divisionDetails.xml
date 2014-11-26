@@ -66,7 +66,7 @@
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>
-		
+		<!-- 
 		<windowTab name="workstations">
 			<component type="gridLayout" name="workstationsGridLayout" columns="2"
 					rows="8">
@@ -139,7 +139,7 @@
 				</layoutElement>
 			</component>					
 		</windowTab>
-
+  -->
 	</component>
 
 </view>
