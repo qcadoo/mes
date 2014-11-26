@@ -55,9 +55,7 @@ public class ResourceModelHooks {
 
         BigDecimal value = null;
 
-        if (price == null) {
-            value = quantity;
-        } else {
+        if (price != null) {
             value = quantity.multiply(price, numberService.getMathContext());
         }
 
