@@ -53,4 +53,6 @@ public final class ProductionLineFields {
 
     public static final String QUANTITY_FOR_OTHER_WORKSTATION_TYPES = "quantityForOtherWorkstationTypes";
 
+    public static final String WORKSTATIONS = "workstations";
+
 }
