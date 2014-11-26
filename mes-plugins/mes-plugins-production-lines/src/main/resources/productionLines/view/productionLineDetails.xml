@@ -190,6 +190,52 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
+		<windowTab name="workstationsTab">
+			<component type="gridLayout" name="workstationsGridLayout"
+				columns="2" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="lookup" name="workstationsLookup" reference="workstationsLookup"
+						field="#{form}.workstations" defaultVisible="false" persistent="false"
+						hasLabel="false">
+						<option type="column" name="name" fields="name" link="true"
+							width="100" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+
+						<option type="multiselect" value="true" />
+						<criteriaModifier
+							class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
+							method="showWorkstationsWithoutProductionLineOnly" />	
+					</component>
+					<component type="grid" name="workstations" reference="workstations"
+						source="#{form}.workstations">
+						<option type="column" name="number" fields="number" width="50" />
+						<option type="column" name="name" fields="name" width="100" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="order" column="number" direction="desc" />
+
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+
+						<option type="weakRelation" value="true" />
+						<option type="correspondingLookup" value="workstationsLookup" />
+						
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+		
 	</component>
 	<hooks>
 		<beforeRender

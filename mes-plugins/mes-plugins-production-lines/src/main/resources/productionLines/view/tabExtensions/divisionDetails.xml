@@ -46,7 +46,7 @@
 						
 						<option type="multiselect" value="true" />
 						<criteriaModifier
-							class="com.qcadoo.mes.productionLines.criteriaModifiers.DivisionDetailsCriteriaModifiers"
+							class="com.qcadoo.mes.productionLines.criteriaModifiers.ProductionLineCriteriaModifiers"
 							method="showProductionLinesWithoutDivisionOnly" />
 					</component>
 					<component type="grid" name="productionLines" reference="productionLines"
@@ -85,7 +85,7 @@
 						<option type="multiselect" value="true" />
 
 						<criteriaModifier
-							class="com.qcadoo.mes.productionLines.criteriaModifiers.DivisionDetailsCriteriaModifiers"
+							class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
 							method="showWorkstationsWithoutProductionLineOnly" />						
 					</component>
 					<component type="grid" name="workstations" reference="workstations"
