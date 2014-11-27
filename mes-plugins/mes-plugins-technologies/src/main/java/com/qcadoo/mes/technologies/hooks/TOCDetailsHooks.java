@@ -81,7 +81,8 @@ public class TOCDetailsHooks {
         }
     }
 
-    private void changeEnabledLookups(final ViewDefinitionState view, final List<String> fields, final List<String> enabledFields) {
+    private void changeEnabledLookups(final ViewDefinitionState view, final List<String> fields,
+            final List<String> enabledFields) {
         for (String field : fields) {
             LookupComponent lookup = (LookupComponent) view.getComponentByReference(field);
             lookup.setEnabled(enabledFields.contains(field));

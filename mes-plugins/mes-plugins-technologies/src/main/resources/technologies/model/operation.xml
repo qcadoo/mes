@@ -24,58 +24,59 @@
     ***************************************************************************
 
 -->
-<model name="operation" activable="true" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true" unique="true">
-			<validatesLength max="1024" />
-		</string>
-		<string name="comment">
-			<validatesLength max="2048" />
-		</string>
-		
-		<file name="attachment" />
-		<boolean name="areProductQuantitiesDivisible" default="false" />
-		<boolean name="isTjDivisible" default="false"/>
-		
-		<belongsTo name="operationGroup" model="operationGroup" />
-		
-		<hasMany name="operationComponents" model="technologyOperationComponent"
-			joinField="operation" cascade="nullify" />
-			
-		<hasMany name="productInComponents" model="productComponent"
-			joinField="operationIn" cascade="delete" copyable="true" />
-		<hasMany name="productOutComponents" model="productComponent"
-			joinField="operationOut" cascade="delete" copyable="true" />
-		
-		<manyToMany name="workstations" plugin="basic" model="workstation"
-			joinField="operations" cascade="nullify" copyable="true" />
-			
-		<!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
-			joinField="operations" />-->
-			
-		<enum name="assignedToOperation" values="01workstations,02workstationTypes,03division,04productionLine" default="02workstationTypes" required="true"/>
-		
-		<belongsTo name="workstationType" plugin="basic" model="workstationType"/>
-		<belongsTo name="division" plugin="basic" model="division"/>
-		<belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
-		
-		<integer name="quantityOfWorkstations" default="1" required="true">
-			<validatesRange from="1" exclusively="false" />
-		</integer>
-		
-	</fields>
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.technologies.hooks.OperationModelValidators"
-			method="checkIfProductsInProductComponentsAreDistinct" />
-			
-		<onView class="com.qcadoo.mes.technologies.hooks.OperationModelHooks" method="onView"/>
-		
-		<onSave class="com.qcadoo.mes.technologies.hooks.OperationModelHooks" method="onSave"/>
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
+<model name="operation" activable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name" required="true" unique="true">
+            <validatesLength max="1024"/>
+        </string>
+        <string name="comment">
+            <validatesLength max="2048"/>
+        </string>
+
+        <file name="attachment"/>
+        <boolean name="areProductQuantitiesDivisible" default="false"/>
+        <boolean name="isTjDivisible" default="false"/>
+
+        <belongsTo name="operationGroup" model="operationGroup"/>
+
+        <hasMany name="operationComponents" model="technologyOperationComponent"
+                 joinField="operation" cascade="nullify"/>
+
+        <hasMany name="productInComponents" model="productComponent"
+                 joinField="operationIn" cascade="delete" copyable="true"/>
+        <hasMany name="productOutComponents" model="productComponent"
+                 joinField="operationOut" cascade="delete" copyable="true"/>
+
+        <manyToMany name="workstations" plugin="basic" model="workstation"
+                    joinField="operations" cascade="nullify" copyable="true"/>
+
+        <!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
+            joinField="operations" />-->
+
+        <enum name="assignedToOperation" values="01workstations,02workstationTypes,03division,04productionLine"
+              default="02workstationTypes" required="true"/>
+
+        <belongsTo name="workstationType" plugin="basic" model="workstationType"/>
+        <belongsTo name="division" plugin="basic" model="division"/>
+        <belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
+
+        <integer name="quantityOfWorkstations" default="1" required="true">
+            <validatesRange from="1" exclusively="false"/>
+        </integer>
+
+    </fields>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.technologies.hooks.OperationModelValidators"
+                       method="checkIfProductsInProductComponentsAreDistinct"/>
+
+        <onView class="com.qcadoo.mes.technologies.hooks.OperationModelHooks" method="onView"/>
+
+        <onSave class="com.qcadoo.mes.technologies.hooks.OperationModelHooks" method="onSave"/>
+    </hooks>
+    <identifier expression="#number + ' - ' + #name"/>
 </model>

@@ -57,16 +57,19 @@ public class OperationDetailsHooks {
     private void disableWorkstationsTabFieldsIfOperationIsNotSaved(ViewDefinitionState view) {
         FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
         GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
+        LookupComponent division = (LookupComponent) view.getComponentByReference(OperationFields.DIVISION);
 
         if (operationForm.getEntityId() == null) {
             changedEnabledFields(view, L_WORKSTATIONS_TAB_FIELDS, false);
             changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, Lists.newArrayList(""));
             workstations.setEnabled(false);
+            division.setEnabled(false);
 
         } else {
             changedEnabledFields(view, L_WORKSTATIONS_TAB_FIELDS, true);
             changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, L_WORKSTATIONS_TAB_LOOKUPS);
             workstations.setEnabled(true);
+            division.setEnabled(true);
             setWorkstationsTabFields(view);
         }
     }
@@ -100,10 +103,10 @@ public class OperationDetailsHooks {
             workstations.setEnabled(false);
             enableRibbonItem(view, false);
         }
-
     }
 
-    private void changeEnabledLookups(final ViewDefinitionState view, final List<String> fields, final List<String> enabledFields) {
+    private void changeEnabledLookups(final ViewDefinitionState view, final List<String> fields,
+            final List<String> enabledFields) {
         for (String field : fields) {
             LookupComponent lookup = (LookupComponent) view.getComponentByReference(field);
             lookup.setEnabled(enabledFields.contains(field));

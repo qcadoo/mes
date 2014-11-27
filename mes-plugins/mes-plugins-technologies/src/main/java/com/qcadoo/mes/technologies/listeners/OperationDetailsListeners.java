@@ -48,7 +48,8 @@ public class OperationDetailsListeners {
     @Autowired
     private OperationDetailsHooks operationDetailsHooks;
 
-    public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
         operationDetailsHooks.setWorkstationsTabFields(view);
         FieldComponent assignedToOperation = (FieldComponent) view.getComponentByReference(OperationFields.ASSIGNED_TO_OPERATION);
         String assignedToOperationValue = (String) assignedToOperation.getFieldValue();

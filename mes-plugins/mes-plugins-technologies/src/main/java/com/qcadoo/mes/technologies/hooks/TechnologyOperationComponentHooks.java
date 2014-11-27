@@ -74,6 +74,7 @@ public class TechnologyOperationComponentHooks {
                     operation.getBelongsToField(OperationFields.DIVISION));
             technologyOperationComponent.setField(TechnologyOperationComponentFields.PRODUCTION_LINE,
                     operation.getBelongsToField(OperationFields.PRODUCTION_LINE));
+
         }
     }
 
@@ -184,7 +185,8 @@ public class TechnologyOperationComponentHooks {
         return copy;
     }
 
-    private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology, final boolean copy) {
+    private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology,
+            final boolean copy) {
         if (!copy && technologies.contains(referencedTechnology.getId())) {
             return true;
         }

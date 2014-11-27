@@ -24,164 +24,166 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="technologyOperationComponentDetails"
-	modelName="technologyOperationComponent"
-	windowHeight="495">
-	
-	<component type="window" name="window">
-		<ribbon>
-			<template name="standardFormTemplate" excludeItems="actions.copy, actions.delete, actions.saveNew" />
-			<group name="workstations">
-				<bigButton name="addUpTheNumberOfWorktations" icon="generateIcon24.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="technologyOperationComponentDetails"
+      modelName="technologyOperationComponent"
+      windowHeight="495">
+
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy, actions.delete, actions.saveNew"/>
+            <group name="workstations">
+                <bigButton name="addUpTheNumberOfWorktations" icon="generateIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									#{form}.performEvent('addUpTheNumberOfWorktations', []);
 								}
 							});
 						]]>
-					</script>
-				</bigButton>
-			</group>
-		</ribbon>
-		<windowTab name="mainTab">
-		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="4">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="operation" field="operation"
-						reference="operation">
-						<option type="column" name="name" fields="name" width="300" link="true"/>
-						<option type="searchable" value="name" />
-						<option type="orderable" value="name" />
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
-						<option type="required" value="true" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="comment" field="comment" />
-				</layoutElement>
-				<layoutElement column="1" row="4">
-					<component type="file" name="attachment" field="attachment" />
-				</layoutElement>
-			</component>
-			<option type="header" value="true" />
-			<option type="expression" value="#operation['name']" />
-			
-			<listener event="addUpTheNumberOfWorktations" method="addUpTheNumberOfWorktations"
-				class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners" />
-					
-		</component>
-		</windowTab>
-		
-		<windowTab name="workstationsTab" reference="workstationsTab">
-			<component type="gridLayout" name="workstationsTabGridLayout"
-				columns="3" rows="10">
-				<layoutElement column="1" row="1">
-					<component type="select" name="assignedToOperation"
-						field="#{form}.assignedToOperation" reference="assignedToOperation">
-						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners"
-							method="setWorkstationsTabFields" />
-					</component>
-				</layoutElement>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+        <windowTab name="mainTab">
+            <component type="form" name="form" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="4">
+                    <layoutElement column="1" row="1">
+                        <component type="lookup" name="operation" field="operation"
+                                   reference="operation">
+                            <option type="column" name="name" fields="name" width="300" link="true"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                            <option type="required" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="comment" field="comment"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="file" name="attachment" field="attachment"/>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="#operation['name']"/>
 
-				<layoutElement column="1" row="2">
-					<component type="input" name="quantityOfWorkstations"
-						field="#{form}.quantityOfWorkstations" reference="quantityOfWorkstations"
-						hasDescription="true">
-						<option type="labelWidth" value="60" />
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="3">
-					<component type="lookup" name="workstationType" field="#{form}.workstationType"
-						reference="workstationType">
-						<option type="column" name="name" fields="name" link="true" />
+                <listener event="addUpTheNumberOfWorktations" method="addUpTheNumberOfWorktations"
+                          class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners"/>
 
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
+            </component>
+        </windowTab>
 
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-					</component>
-				</layoutElement>
-				
-				<layoutElement column="1" row="4">
-					<component type="lookup" name="productionLine" field="#{form}.productionLine"
-						reference="productionLine">
-						<option type="column" name="name" fields="name" link="true" />
+        <windowTab name="workstationsTab" reference="workstationsTab">
+            <component type="gridLayout" name="workstationsTabGridLayout"
+                       columns="3" rows="10">
+                <layoutElement column="1" row="1">
+                    <component type="select" name="assignedToOperation"
+                               field="#{form}.assignedToOperation" reference="assignedToOperation">
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners"
+                                  method="setWorkstationsTabFields"/>
+                    </component>
+                </layoutElement>
 
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
+                <layoutElement column="1" row="2">
+                    <component type="input" name="quantityOfWorkstations"
+                               field="#{form}.quantityOfWorkstations" reference="quantityOfWorkstations"
+                               hasDescription="true">
+                        <option type="labelWidth" value="60"/>
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="lookup" name="workstationType" field="#{form}.workstationType"
+                               reference="workstationType">
+                        <option type="column" name="name" fields="name" link="true"/>
 
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-					</component>
-				</layoutElement>
-				
-				<layoutElement column="1" row="5">
-					<component type="lookup" name="division" field="#{form}.division"
-						reference="division">
-						<option type="column" name="name" fields="name" link="true" />
+                        <option type="searchable" value="name,number"/>
+                        <option type="orderable" value="name,number"/>
 
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
+                        <option type="expression" value="#number + ' - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="lookup" name="productionLine" field="#{form}.productionLine"
+                               reference="productionLine">
+                        <option type="column" name="name" fields="name" link="true"/>
 
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="6" width="3" height="5">
-					<component type="lookup" name="workstationLookup"
-						reference="workstationLookup" field="#{form}.workstations"
-						defaultVisible="false" persistent="false" hasLabel="false">
+                        <option type="searchable" value="name,number"/>
+                        <option type="orderable" value="name,number"/>
 
-						<option type="column" name="name" fields="name" link="true"
-							width="100" />
-						<option type="column" name="workstationType" fields="workstationType"
-							expression="#workstationType['name']" link="true" width="100" />
+                        <option type="expression" value="#number + ' - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+                    </component>
+                </layoutElement>
 
-						<option type="searchable" value="number,name,workstationType" />
-						<option type="orderable" value="number,name,workstationType" />
+                <layoutElement column="1" row="5">
 
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
+                    <component type="lookup" name="division" field="#{form}.division"
+                               reference="division">
+                        <option type="column" name="name" fields="name" link="true"/>
 
-						<option type="multiselect" value="true" />
-					</component>
-					<component type="grid" name="workstations" reference="workstations"
-						source="#{form}.workstations">
-						<option type="column" name="number" fields="number" width="50" />
-						<option type="column" name="name" fields="name" width="100" />
+                        <option type="searchable" value="name,number"/>
+                        <option type="orderable" value="name,number"/>
 
-						<option type="order" column="number" direction="desc" />
+                        <option type="expression" value="#number + ' - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="6" width="3" height="5">
 
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
+                    <component type="lookup" name="workstationLookup"
+                               reference="workstationLookup" field="#{form}.workstations"
+                               defaultVisible="false" persistent="false" hasLabel="false">
 
-						<option type="weakRelation" value="true" />
-						<option type="correspondingLookup" value="workstationLookup" />
+                        <option type="column" name="name" fields="name" link="true"
+                                width="100"/>
+                        <option type="column" name="workstationType" fields="workstationType"
+                                expression="#workstationType['name']" link="true" width="100"/>
 
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-		
-	</component>
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.technologies.TechnologyService" method="setLookupDisableInTechnologyOperationComponent" />
-		<beforeRender class="com.qcadoo.mes.technologies.hooks.TOCDetailsHooks"
-			method="onBeforeRender" />
-	</hooks>
+                        <option type="searchable" value="number,name,workstationType"/>
+                        <option type="orderable" value="number,name,workstationType"/>
+
+                        <option type="expression" value="#number + ' - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <option type="multiselect" value="true"/>
+                    </component>
+                    <component type="grid" name="workstations" reference="workstations"
+                               source="#{form}.workstations">
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name" width="100"/>
+
+                        <option type="order" column="number" direction="desc"/>
+
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
+
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="workstationLookup"/>
+
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+    </component>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.TechnologyService"
+                      method="setLookupDisableInTechnologyOperationComponent"/>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.TOCDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 </view>

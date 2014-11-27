@@ -48,7 +48,8 @@ public class TOCDetailsListeners {
     @Autowired
     private TOCDetailsHooks tOCDetailsHooks;
 
-    public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
         tOCDetailsHooks.setWorkstationsTabFields(view);
         FieldComponent assignedToOperation = (FieldComponent) view
                 .getComponentByReference(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION);
