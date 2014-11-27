@@ -54,16 +54,19 @@ public class OperationDetailsHooks {
         FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
         LookupComponent workstationType = (LookupComponent) view.getComponentByReference(OperationFields.WORKSTATION_TYPE);
         GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
+        LookupComponent division = (LookupComponent) view.getComponentByReference(OperationFields.DIVISION);
 
         if (operationForm.getEntityId() == null) {
             changedEnabledFields(view, L_WORKSTATIONS_TAB_FIELDS, false);
             workstationType.setEnabled(false);
             workstations.setEnabled(false);
+            division.setEnabled(false);
 
         } else {
             changedEnabledFields(view, L_WORKSTATIONS_TAB_FIELDS, true);
             workstationType.setEnabled(true);
             workstations.setEnabled(true);
+            division.setEnabled(true);
             setWorkstationsTabFields(view);
         }
     }
@@ -78,24 +81,27 @@ public class OperationDetailsHooks {
     public void setWorkstationsTabFields(final ViewDefinitionState view) {
         FieldComponent assignedToOperation = (FieldComponent) view.getComponentByReference(OperationFields.ASSIGNED_TO_OPERATION);
         String assignedToOperationValue = (String) assignedToOperation.getFieldValue();
-        LookupComponent workstationType = (LookupComponent) view.getComponentByReference(OperationFields.WORKSTATION_TYPE);
         GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
 
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
-            workstationType.setEnabled(false);
-            workstations.setEnabled(true);
-            if (!workstations.getEntities().isEmpty()) {
-                enableRibbonItem(view, true);
-            } else {
-                enableRibbonItem(view, false);
-            }
-
-        } else {
-            workstations.setEnabled(false);
-            workstationType.setEnabled(true);
-            enableRibbonItem(view, false);
-
+            enableWorkstationsTabFields(view, true, false, false, !workstations.getEntities().isEmpty());
+        } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
+            enableWorkstationsTabFields(view, false, true, false, false);
+        } else if (AssignedToOperation.DIVISION.getStringValue().equals(assignedToOperationValue)) {
+            enableWorkstationsTabFields(view, false, false, true, false);
         }
+
+    }
+
+    private void enableWorkstationsTabFields(final ViewDefinitionState view, final boolean workstationsEnabled,
+            final boolean workstationTypeEnabled, final boolean divisionEnabled, final boolean ribbonEnabled) {
+        LookupComponent workstationType = (LookupComponent) view.getComponentByReference(OperationFields.WORKSTATION_TYPE);
+        LookupComponent division = (LookupComponent) view.getComponentByReference(OperationFields.DIVISION);
+        GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
+        workstations.setEnabled(workstationsEnabled);
+        workstationType.setEnabled(workstationTypeEnabled);
+        enableRibbonItem(view, ribbonEnabled);
+        division.setEnabled(divisionEnabled);
 
     }
 

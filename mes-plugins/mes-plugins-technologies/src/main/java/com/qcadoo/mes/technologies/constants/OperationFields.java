@@ -59,4 +59,6 @@ public final class OperationFields {
 
     public static final String QUANTITY_OF_WORKSTATIONS = "quantityOfWorkstations";
 
+    public static final String DIVISION = "division";
+
 }
