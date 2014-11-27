@@ -53,9 +53,14 @@ public class OperationDetailsListeners {
         FieldComponent assignedToOperation = (FieldComponent) view.getComponentByReference(OperationFields.ASSIGNED_TO_OPERATION);
         String assignedToOperationValue = (String) assignedToOperation.getFieldValue();
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
-            clearWorkstationsTypeField(view);
-        } else {
+            clearLookupField(view, OperationFields.WORKSTATION_TYPE);
+            clearLookupField(view, OperationFields.DIVISION);
+        } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
             clearWorkstationsField(view);
+            clearLookupField(view, OperationFields.DIVISION);
+        } else if (AssignedToOperation.DIVISION.getStringValue().equals(assignedToOperationValue)) {
+            clearWorkstationsField(view);
+            clearLookupField(view, OperationFields.WORKSTATION_TYPE);
         }
 
     }
@@ -67,10 +72,10 @@ public class OperationDetailsListeners {
         workstations.setFieldValue(null);
     }
 
-    private void clearWorkstationsTypeField(final ViewDefinitionState view) {
-        LookupComponent workstationType = (LookupComponent) view.getComponentByReference(OperationFields.WORKSTATION_TYPE);
-        workstationType.setFieldValue(null);
-        workstationType.requestComponentUpdateState();
+    private void clearLookupField(final ViewDefinitionState view, String fieldName) {
+        LookupComponent lookup = (LookupComponent) view.getComponentByReference(fieldName);
+        lookup.setFieldValue(null);
+        lookup.requestComponentUpdateState();
     }
 
     public void addUpTheNumberOfWorktations(final ViewDefinitionState view, final ComponentState componentState,

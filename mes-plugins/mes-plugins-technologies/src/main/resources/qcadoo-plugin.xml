@@ -140,7 +140,21 @@
                 <model:manyToMany name="operations" plugin="technologies"
                     model="operation" joinField="workstationTypes" copyable="true" />
             </model:model-field>-->
-
+		<model:model-field plugin="basic" model="workstationType">
+                <model:hasMany name="operations" plugin="technologies"
+                    model="operation" joinField="workstationType" cascade="nullify"/>
+        </model:model-field>
+        
+		<model:model-field plugin="basic" model="division">
+                <model:hasMany name="operations" plugin="technologies"
+                    model="operation" joinField="division" cascade="nullify"/>
+        </model:model-field>
+        
+		<model:model-field plugin="basic" model="division">
+                <model:hasMany name="technologyOperationComponents" plugin="technologies"
+                    model="technologyOperationComponent" joinField="division" cascade="nullify"/>
+        </model:model-field>
+            
         <menu:menu-category name="technology"/>
 
         <menu:menu-item name="technologies" category="technology"

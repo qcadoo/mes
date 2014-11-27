@@ -82,7 +82,7 @@
 		
 		<windowTab name="workstationsTab" reference="workstationsTab">
 			<component type="gridLayout" name="workstationsTabGridLayout"
-				columns="3" rows="8">
+				columns="3" rows="9">
 				<layoutElement column="1" row="1">
 					<component type="select" name="assignedToOperation"
 						field="#{form}.assignedToOperation" reference="assignedToOperation">
@@ -112,7 +112,19 @@
 						<option type="fieldCode" value="number" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="4" width="3" height="5">
+				<layoutElement column="1" row="4">
+					<component type="lookup" name="division" field="#{form}.division"
+						reference="division">
+						<option type="column" name="name" fields="name" link="true" />
+
+						<option type="searchable" value="name,number" />
+						<option type="orderable" value="name,number" />
+
+						<option type="expression" value="#number + ' - ' + #name" />
+						<option type="fieldCode" value="number" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="5" width="3" height="5">
 					<component type="lookup" name="workstationLookup"
 						reference="workstationLookup" field="#{form}.workstations"
 						defaultVisible="false" persistent="false" hasLabel="false">
