@@ -54,9 +54,14 @@ public class TOCDetailsListeners {
                 .getComponentByReference(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION);
         String assignedToOperationValue = (String) assignedToOperation.getFieldValue();
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
-            clearWorkstationsTypeField(view);
-        } else {
+            clearLookupField(view, TechnologyOperationComponentFields.WORKSTATION_TYPE);
+            clearLookupField(view, TechnologyOperationComponentFields.DIVISION);
+        } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
             clearWorkstationsField(view);
+            clearLookupField(view, TechnologyOperationComponentFields.DIVISION);
+        } else if (AssignedToOperation.DIVISION.getStringValue().equals(assignedToOperationValue)) {
+            clearWorkstationsField(view);
+            clearLookupField(view, TechnologyOperationComponentFields.WORKSTATION_TYPE);
         }
 
     }
@@ -69,11 +74,10 @@ public class TOCDetailsListeners {
         workstations.setFieldValue(null);
     }
 
-    private void clearWorkstationsTypeField(final ViewDefinitionState view) {
-        LookupComponent workstationType = (LookupComponent) view
-                .getComponentByReference(TechnologyOperationComponentFields.WORKSTATION_TYPE);
-        workstationType.setFieldValue(null);
-        workstationType.requestComponentUpdateState();
+    private void clearLookupField(final ViewDefinitionState view, String fieldName) {
+        LookupComponent lookup = (LookupComponent) view.getComponentByReference(fieldName);
+        lookup.setFieldValue(null);
+        lookup.requestComponentUpdateState();
     }
 
     public void addUpTheNumberOfWorktations(final ViewDefinitionState view, final ComponentState componentState,

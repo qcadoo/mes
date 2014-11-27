@@ -59,9 +59,11 @@
 		<!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
 			joinField="operations" />-->
 			
-		<enum name="assignedToOperation" values="01workstations,02workstationTypes" default="02workstationTypes" required="true" copyable="true"/>
+		<enum name="assignedToOperation" values="01workstations,02workstationTypes,03division" default="02workstationTypes" required="true" copyable="true"/>
 		
 		<belongsTo name="workstationType" plugin="basic" model="workstationType"/>
+
+		<belongsTo name="division" model="division" plugin="basic"/>
 
 		<integer name="quantityOfWorkstations" default="1" required="true">
 			<validatesRange from="1" exclusively="false" />
