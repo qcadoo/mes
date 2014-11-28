@@ -57,19 +57,16 @@ public class OperationDetailsHooks {
     private void disableWorkstationsTabFieldsIfOperationIsNotSaved(ViewDefinitionState view) {
         FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
         GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
-        LookupComponent division = (LookupComponent) view.getComponentByReference(OperationFields.DIVISION);
 
         if (operationForm.getEntityId() == null) {
             changedEnabledFields(view, L_WORKSTATIONS_TAB_FIELDS, false);
             changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, Lists.newArrayList(""));
             workstations.setEnabled(false);
-            division.setEnabled(false);
 
         } else {
             changedEnabledFields(view, L_WORKSTATIONS_TAB_FIELDS, true);
             changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, L_WORKSTATIONS_TAB_LOOKUPS);
             workstations.setEnabled(true);
-            division.setEnabled(true);
             setWorkstationsTabFields(view);
         }
     }

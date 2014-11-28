@@ -170,7 +170,6 @@
             <model:hasMany name="technologyOperationComponents" plugin="technologies"
                            model="technologyOperationComponent" joinField="productionLine" cascade="nullify"/>
         </model:model-field>
-
         <menu:menu-category name="technology"/>
 
         <menu:menu-item name="technologies" category="technology"

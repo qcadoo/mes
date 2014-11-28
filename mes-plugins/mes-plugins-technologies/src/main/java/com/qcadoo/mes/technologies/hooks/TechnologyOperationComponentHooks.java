@@ -74,7 +74,6 @@ public class TechnologyOperationComponentHooks {
                     operation.getBelongsToField(OperationFields.DIVISION));
             technologyOperationComponent.setField(TechnologyOperationComponentFields.PRODUCTION_LINE,
                     operation.getBelongsToField(OperationFields.PRODUCTION_LINE));
-
         }
     }
 
