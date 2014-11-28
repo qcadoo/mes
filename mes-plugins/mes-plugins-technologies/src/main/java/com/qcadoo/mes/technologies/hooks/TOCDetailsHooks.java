@@ -28,8 +28,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
-import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -48,29 +48,28 @@ public class TOCDetailsHooks {
             .asList(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION,
                     TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS);
 
+    private static final List<String> L_WORKSTATIONS_TAB_LOOKUPS = Arrays.asList(
+            TechnologyOperationComponentFields.PRODUCTION_LINE, TechnologyOperationComponentFields.DIVISION,
+            TechnologyOperationComponentFields.WORKSTATION_TYPE);
+
     public final void onBeforeRender(final ViewDefinitionState view) {
         disableWorkstationsTabFieldsIfOperationIsNotSaved(view);
     }
 
     private void disableWorkstationsTabFieldsIfOperationIsNotSaved(ViewDefinitionState view) {
         FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
-        LookupComponent workstationType = (LookupComponent) view
-                .getComponentByReference(TechnologyOperationComponentFields.WORKSTATION_TYPE);
-        LookupComponent division = (LookupComponent) view.getComponentByReference(TechnologyOperationComponentFields.DIVISION);
         GridComponent workstations = (GridComponent) view
                 .getComponentByReference(TechnologyOperationComponentFields.WORKSTATIONS);
 
         if (operationForm.getEntityId() == null) {
             changedEnabledFields(view, L_WORKSTATIONS_TAB_FIELDS, false);
-            workstationType.setEnabled(false);
+            changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, Lists.newArrayList(""));
             workstations.setEnabled(false);
-            division.setEnabled(false);
 
         } else {
             changedEnabledFields(view, L_WORKSTATIONS_TAB_FIELDS, true);
-            workstationType.setEnabled(true);
+            changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, L_WORKSTATIONS_TAB_LOOKUPS);
             workstations.setEnabled(true);
-            division.setEnabled(true);
             setWorkstationsTabFields(view);
         }
     }
@@ -82,34 +81,40 @@ public class TOCDetailsHooks {
         }
     }
 
+    private void changeEnabledLookups(final ViewDefinitionState view, final List<String> fields, final List<String> enabledFields) {
+        for (String field : fields) {
+            LookupComponent lookup = (LookupComponent) view.getComponentByReference(field);
+            lookup.setEnabled(enabledFields.contains(field));
+        }
+    }
+
     public void setWorkstationsTabFields(final ViewDefinitionState view) {
         FieldComponent assignedToOperation = (FieldComponent) view
                 .getComponentByReference(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION);
         String assignedToOperationValue = (String) assignedToOperation.getFieldValue();
-        GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
-
-        if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
-            enableWorkstationsTabFields(view, true, false, false, !workstations.getEntities().isEmpty());
-        } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
-            enableWorkstationsTabFields(view, false, true, false, false);
-        } else if (AssignedToOperation.DIVISION.getStringValue().equals(assignedToOperationValue)) {
-            enableWorkstationsTabFields(view, false, false, true, false);
-        }
-
-    }
-
-    private void enableWorkstationsTabFields(final ViewDefinitionState view, final boolean workstationsEnabled,
-            final boolean workstationTypeEnabled, final boolean divisionEnabled, final boolean ribbonEnabled) {
-        LookupComponent workstationType = (LookupComponent) view
-                .getComponentByReference(TechnologyOperationComponentFields.WORKSTATION_TYPE);
-        LookupComponent division = (LookupComponent) view.getComponentByReference(TechnologyOperationComponentFields.DIVISION);
         GridComponent workstations = (GridComponent) view
                 .getComponentByReference(TechnologyOperationComponentFields.WORKSTATIONS);
-        workstations.setEnabled(workstationsEnabled);
-        workstationType.setEnabled(workstationTypeEnabled);
-        enableRibbonItem(view, ribbonEnabled);
-        division.setEnabled(divisionEnabled);
 
+        if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
+            changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, Lists.newArrayList(""));
+            workstations.setEnabled(true);
+            enableRibbonItem(view, !workstations.getEntities().isEmpty());
+        } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
+            changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS,
+                    Lists.newArrayList(TechnologyOperationComponentFields.WORKSTATION_TYPE));
+            workstations.setEnabled(false);
+            enableRibbonItem(view, false);
+        } else if (AssignedToOperation.DIVISION.getStringValue().equals(assignedToOperationValue)) {
+            changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS,
+                    Lists.newArrayList(TechnologyOperationComponentFields.DIVISION));
+            workstations.setEnabled(false);
+            enableRibbonItem(view, false);
+        } else if (AssignedToOperation.PRODUCTION_LINE.getStringValue().equals(assignedToOperationValue)) {
+            changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS,
+                    Lists.newArrayList(TechnologyOperationComponentFields.PRODUCTION_LINE));
+            workstations.setEnabled(false);
+            enableRibbonItem(view, false);
+        }
     }
 
     private void enableRibbonItem(final ViewDefinitionState view, final boolean enable) {
