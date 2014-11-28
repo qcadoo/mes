@@ -72,6 +72,8 @@ public class TechnologyOperationComponentHooks {
                     operation.getManyToManyField(OperationFields.WORKSTATIONS));
             technologyOperationComponent.setField(TechnologyOperationComponentFields.DIVISION,
                     operation.getBelongsToField(OperationFields.DIVISION));
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.PRODUCTION_LINE,
+                    operation.getBelongsToField(OperationFields.PRODUCTION_LINE));
         }
     }
 
