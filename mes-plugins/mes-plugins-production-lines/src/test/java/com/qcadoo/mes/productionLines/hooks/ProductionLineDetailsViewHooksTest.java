@@ -23,14 +23,9 @@
  */
 package com.qcadoo.mes.productionLines.hooks;
 
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTS_ALL_TECHNOLOGIES;
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -60,36 +55,6 @@ public class ProductionLineDetailsViewHooksTest {
         productionLinesViewHooks = new ProductionLineDetailsViewHooks();
 
         given(view.getComponentByReference(L_FORM)).willReturn(productionLineForm);
-        given(view.getComponentByReference(SUPPORTS_ALL_TECHNOLOGIES)).willReturn(supportsAllTechnologies);
-        given(view.getComponentByReference(TECHNOLOGIES)).willReturn(technologiesGrid);
-        given(view.getComponentByReference(GROUPS)).willReturn(groupsGrid);
     }
 
-    @Test
-    public void shouldDisableBothGridsIfTheCheckboxSupportAllTechnoogiesIsSet() {
-        // given
-        given(productionLineForm.getEntityId()).willReturn(null);
-        given(supportsAllTechnologies.getFieldValue()).willReturn("1");
-
-        // when
-        productionLinesViewHooks.disableSupportedTechnologiesGrids(view, null, null);
-
-        // then
-        verify(technologiesGrid).setEnabled(false);
-        verify(groupsGrid).setEnabled(false);
-    }
-
-    @Test
-    public void shouldEnableBothGridsIfTheCheckboxSupportAllTechnoogiesIsntSet() {
-        // given
-        given(productionLineForm.getEntityId()).willReturn(1L);
-        given(supportsAllTechnologies.getFieldValue()).willReturn("0");
-
-        // when
-        productionLinesViewHooks.disableSupportedTechnologiesGrids(view, null, null);
-
-        // then
-        verify(technologiesGrid).setEnabled(true);
-        verify(groupsGrid).setEnabled(true);
-    }
 }
