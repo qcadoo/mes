@@ -58,7 +58,6 @@
             <plugin>states</plugin>
             <version>[1.1.7</version>
         </dependency>
-
         <dependency>
             <plugin>productionLines</plugin>
             <version>[1.4.0</version>
