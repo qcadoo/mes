@@ -39,13 +39,7 @@ public final class ProductionLineFields {
 
     public static final String DESCRIPTION = "description";
 
-    public static final String SUPPORTS_ALL_TECHNOLOGIES = "supportsAllTechnologies";
-
     public static final String DOCUMENTATION = "documentation";
-
-    public static final String GROUPS = "groups";
-
-    public static final String TECHNOLOGIES = "technologies";
 
     public static final String WORKSTATION_TYPE_COMPONENTS = "workstationTypeComponents";
 
