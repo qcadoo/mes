@@ -69,89 +69,7 @@
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>
-		<windowTab name="supportedTechnologiesTab">
-			<component type="checkbox" name="supportsAllTechnologies"
-				field="#{form}.supportsAllTechnologies" reference="supportsAllTechnologies">
-				<listener event="onChange"
-					class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
-					method="disableSupportedTechnologiesGrids" />
-			</component>
-			<component type="gridLayout" name="supportedTechnologiesTabGridLayout"
-				columns="2" rows="1">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="groupsLookup" reference="groupsLookup"
-						field="#{form}.groups" defaultVisible="false" persistent="false"
-						hasLabel="false">
-						<option type="column" name="name" fields="name" link="true"
-							width="100" />
-
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
-
-						<option type="multiselect" value="true" />
-					</component>
-					<component type="grid" name="groups" reference="groups"
-						source="#{form}.groups">
-						<option type="column" name="number" fields="number" width="50" />
-						<option type="column" name="name" fields="name" width="100" />
-
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-
-						<option type="order" column="number" direction="desc" />
-
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-
-						<option type="weakRelation" value="true" />
-						<option type="correspondingLookup" value="groupsLookup" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1">
-					<component type="lookup" name="technologiesLookup"
-						reference="technologiesLookup" field="#{form}.technologies"
-						defaultVisible="false" persistent="false" hasLabel="false">
-						<option type="column" name="name" fields="name" link="true"
-							width="100" />
-
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
-
-						<option type="multiselect" value="true" />
-						<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers" method="showPatternTechnology" />
-					</component>
-					<component type="grid" name="technologies" reference="technologies"
-						source="#{form}.technologies">
-						<option type="column" name="number" fields="number" width="50" />
-						<option type="column" name="name" fields="name" width="100" />
-
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-
-						<option type="order" column="number" direction="desc" />
-
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-
-						<option type="weakRelation" value="true" />
-						<option type="correspondingLookup" value="technologiesLookup" />
-						
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
+		
 		<windowTab name="workstationTypesTab">
 			<component type="gridLayout" name="workstationsTabGridLayout"
 				columns="2" rows="5">
@@ -238,9 +156,6 @@
 		
 	</component>
 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
-			method="disableSupportedTechnologiesGrids" />
 		<beforeRender
 			class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
 			method="generateProductionLineNumber" />

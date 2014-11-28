@@ -40,12 +40,7 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		<boolean name="supportsAllTechnologies" default="true" />
 		<file name="documentation" />
-		<manyToMany name="groups" joinField="productionLines"
-			model="technologyGroup" plugin="technologies" copyable="true" />
-		<manyToMany name="technologies" joinField="productionLines"
-			model="technology" plugin="technologies" copyable="true" />
 
 		<hasMany name="workstationTypeComponents" model="workstationTypeComponent"
 			joinField="productionLine" cascade="delete" />
