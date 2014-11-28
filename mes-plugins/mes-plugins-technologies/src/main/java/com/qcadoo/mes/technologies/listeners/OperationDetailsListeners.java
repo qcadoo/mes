@@ -55,12 +55,19 @@ public class OperationDetailsListeners {
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
             clearLookupField(view, OperationFields.WORKSTATION_TYPE);
             clearLookupField(view, OperationFields.DIVISION);
+            clearLookupField(view, OperationFields.PRODUCTION_LINE);
         } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
             clearWorkstationsField(view);
             clearLookupField(view, OperationFields.DIVISION);
+            clearLookupField(view, OperationFields.PRODUCTION_LINE);
         } else if (AssignedToOperation.DIVISION.getStringValue().equals(assignedToOperationValue)) {
             clearWorkstationsField(view);
             clearLookupField(view, OperationFields.WORKSTATION_TYPE);
+            clearLookupField(view, OperationFields.PRODUCTION_LINE);
+        } else if (AssignedToOperation.PRODUCTION_LINE.getStringValue().equals(assignedToOperationValue)) {
+            clearWorkstationsField(view);
+            clearLookupField(view, OperationFields.WORKSTATION_TYPE);
+            clearLookupField(view, OperationFields.DIVISION);
         }
 
     }

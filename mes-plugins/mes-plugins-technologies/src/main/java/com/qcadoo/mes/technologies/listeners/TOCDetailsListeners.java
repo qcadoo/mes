@@ -56,12 +56,19 @@ public class TOCDetailsListeners {
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
             clearLookupField(view, TechnologyOperationComponentFields.WORKSTATION_TYPE);
             clearLookupField(view, TechnologyOperationComponentFields.DIVISION);
+            clearLookupField(view, TechnologyOperationComponentFields.PRODUCTION_LINE);
         } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
             clearWorkstationsField(view);
             clearLookupField(view, TechnologyOperationComponentFields.DIVISION);
+            clearLookupField(view, TechnologyOperationComponentFields.PRODUCTION_LINE);
         } else if (AssignedToOperation.DIVISION.getStringValue().equals(assignedToOperationValue)) {
             clearWorkstationsField(view);
             clearLookupField(view, TechnologyOperationComponentFields.WORKSTATION_TYPE);
+            clearLookupField(view, TechnologyOperationComponentFields.PRODUCTION_LINE);
+        } else if (AssignedToOperation.PRODUCTION_LINE.getStringValue().equals(assignedToOperationValue)) {
+            clearWorkstationsField(view);
+            clearLookupField(view, TechnologyOperationComponentFields.WORKSTATION_TYPE);
+            clearLookupField(view, TechnologyOperationComponentFields.DIVISION);
         }
 
     }
