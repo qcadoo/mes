@@ -33,7 +33,7 @@
 		<belongsTo name="product" plugin="basic" model="product" persistent="false"/>
 		<belongsTo name="operation" model="technologyOperationComponent" persistent="false"/>
 		<decimal name="quantity" persistent="false" />
-		
+		<belongsTo name="division" model="division" plugin="basic" persistent="false" />
 		<hasMany name="children" model="productStructureTreeNode" joinField="parent" cascade="delete" />
 		<belongsTo name="parent" model="productStructureTreeNode" />
 		<priority name="priority" scope="parent" />

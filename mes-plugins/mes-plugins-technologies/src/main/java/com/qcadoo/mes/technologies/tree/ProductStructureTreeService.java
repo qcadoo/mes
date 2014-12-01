@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -69,6 +70,8 @@ public class ProductStructureTreeService {
     private static final String L_COMPONENT = "component";
 
     private static final String L_MATERIAL = "material";
+
+    private static final String L_DIVISION = "division";
 
     private void addChild(final List<Entity> tree, final Entity child, final Entity parent, final String entityType) {
         child.setField("parent", parent);
@@ -163,6 +166,8 @@ public class ProductStructureTreeService {
                         child.setField(L_OPERATION, operationForTechnology);
                         child.setField(L_PRODUCT, product);
                         child.setField(L_QUANTITY, quantityForTechnology);
+                        child.setField(L_DIVISION,
+                                operationForTechnology.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
                         addChild(tree, child, parent, L_COMPONENT);
                         usedTechnologies.add(subTechnology.getId());
                         generateTreeForSubproducts(operationForTechnology, subTechnology, tree, child, view, usedTechnologies);
@@ -172,6 +177,8 @@ public class ProductStructureTreeService {
                         child.setField(L_PRODUCT, product);
                         child.setField(L_QUANTITY, quantity);
                         child.setField(L_OPERATION, subOperation);
+                        child.setField(L_DIVISION, subOperation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
+
                         addChild(tree, child, parent, L_INTERMEDIATE);
 
                         FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
@@ -197,10 +204,14 @@ public class ProductStructureTreeService {
 
                 if (subOperation != null) {
                     child.setField(L_OPERATION, subOperation);
+                    child.setField(L_DIVISION, subOperation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
+
                     addChild(tree, child, parent, L_INTERMEDIATE);
                     generateTreeForSubproducts(subOperation, technology, tree, child, view, usedTechnologies);
                 } else {
                     child.setField(L_OPERATION, operation);
+                    child.setField(L_DIVISION, operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
+
                     addChild(tree, child, parent, L_MATERIAL);
                 }
             }
@@ -219,6 +230,8 @@ public class ProductStructureTreeService {
         root.setField(L_PRODUCT, product);
         root.setField(L_OPERATION, operation);
         root.setField(L_QUANTITY, quantity);
+        root.setField(L_DIVISION, operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
+
         List<Entity> productStructureList = new ArrayList<Entity>();
         addChild(productStructureList, root, null, L_FINAL_PRODUCT);
 
