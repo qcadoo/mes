@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionPerShift.hooks;
 
 import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
 import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBooleanField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
 import static org.mockito.BDDMockito.given;
@@ -54,6 +55,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.PpsDetailsViewAwareTest;
+import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
@@ -410,6 +412,53 @@ public class ProductionPerShiftDetailsHooksTest extends PpsDetailsViewAwareTest 
         verify(secondPfdFirstDailyForm).setFormEnabled(expectToBeEnabled);
         verify(secondPfdDailyAdl).setEnabled(expectToBeEnabled);
         verify(secondPfdForm).setFormEnabled(expectToBeEnabled);
+    }
+
+    @Test
+    public void shouldDisableDailyProgressRowsForLockedEntities() {
+        // given
+        FormComponent firstPfdFirstDailyForm = mockForm(mockEntity());
+
+        FormComponent firstPfdSecondDailyForm = mockForm(mockLockedEntity());
+
+        AwesomeDynamicListComponent firstPfdDailyAdl = mock(AwesomeDynamicListComponent.class);
+        given(firstPfdDailyAdl.getFormComponents()).willReturn(
+                Lists.newArrayList(firstPfdFirstDailyForm, firstPfdSecondDailyForm));
+
+        FormComponent firstPfdForm = mockForm(mockEntity());
+        stubFormComponent(firstPfdForm, DAILY_PROGRESS_ADL_REF, firstPfdDailyAdl);
+
+        FormComponent secondPfdFirstDailyForm = mockForm(mockEntity());
+        AwesomeDynamicListComponent secondPfdDailyAdl = mock(AwesomeDynamicListComponent.class);
+        given(secondPfdDailyAdl.getFormComponents()).willReturn(Lists.newArrayList(secondPfdFirstDailyForm));
+
+        FormComponent secondPfdForm = mockForm(mockEntity());
+        stubFormComponent(secondPfdForm, DAILY_PROGRESS_ADL_REF, secondPfdDailyAdl);
+
+        AwesomeDynamicListComponent progressForDaysAdl = mock(AwesomeDynamicListComponent.class);
+        stubViewComponent("progressForDays", progressForDaysAdl);
+        given(progressForDaysAdl.getFormComponents()).willReturn(Lists.newArrayList(firstPfdForm, secondPfdForm));
+
+        // when
+        productionPerShiftDetailsHooks.disableComponents(progressForDaysAdl, ProgressType.PLANNED, OrderState.PENDING);
+
+        // then
+        verify(progressForDaysAdl).setEnabled(true);
+
+        verify(firstPfdFirstDailyForm).setFormEnabled(true);
+        verify(firstPfdSecondDailyForm).setFormEnabled(false);
+        verify(firstPfdDailyAdl).setEnabled(true);
+        verify(firstPfdForm).setFormEnabled(true);
+
+        verify(secondPfdFirstDailyForm).setFormEnabled(true);
+        verify(secondPfdDailyAdl).setEnabled(true);
+        verify(secondPfdForm).setFormEnabled(true);
+    }
+
+    private Entity mockLockedEntity() {
+        Entity entity = mockEntity();
+        stubBooleanField(entity, DailyProgressFields.LOCKED, true);
+        return entity;
     }
 
     @Test
