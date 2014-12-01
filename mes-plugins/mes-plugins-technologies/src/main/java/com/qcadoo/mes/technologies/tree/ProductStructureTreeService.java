@@ -178,7 +178,6 @@ public class ProductStructureTreeService {
                         child.setField(L_QUANTITY, quantity);
                         child.setField(L_OPERATION, subOperation);
                         child.setField(L_DIVISION, subOperation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
-
                         addChild(tree, child, parent, L_INTERMEDIATE);
                         if (view != null) {
                             FormComponent productStructureForm = (FormComponent) view
