@@ -31,7 +31,7 @@
     	<string name="name" required="true"/>
         <belongsTo name="location" model="location" plugin="materialFlow"/>
         <hasMany name="values" joinField="attribute" model="attributeValue" cascade="delete"/>
-        <boolean name="required" default="false"/>
+        <boolean name="defaultValue" default="false"/>
     </fields>
     <hooks>
     	

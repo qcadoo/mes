@@ -250,12 +250,6 @@
 									<component type="gridLayout" name="attributesGridLayout"
 										columns="2" rows="1">
 										<layoutElement column="1" row="1">
-<!-- 											<component type="input" name="attributeName" field="name" -->
-<!-- 												hasLabel="false" reference="attributeName"> -->
-
-<!-- 												<option type="textRepresentationOnDisabled" value="true" /> -->
-<!-- 												<option type="alignment" value="right" /> -->
-<!-- 											</component> -->
 											<component type="lookup" name="attributeName" field="attribute"
 												reference="attributeName" hasLabel="false" defaultEnabled="never">
 				
@@ -265,7 +259,7 @@
 											</component>
 										</layoutElement>
 										<layoutElement column="2" row="1">
-											<component type="input" name="value" field="value"
+											<component type="checkbox" name="value" field="value"
 												hasLabel="false" />
 										</layoutElement>
 									</component>

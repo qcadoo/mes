@@ -91,7 +91,7 @@
 										field="name" hasLabel="false" reference="attributeName"/>
 								</layoutElement>
 								<layoutElement column="5" row="1">
-									<component type="checkbox" name="required" field="required" hasLabel="false"/>
+									<component type="checkbox" name="defaultValue" field="defaultValue" hasLabel="false"/>
 								</layoutElement>
 							</component>
 						</components>
