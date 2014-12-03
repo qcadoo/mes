@@ -53,7 +53,7 @@
             <option type="column" name="productionDate" fields="productionDate" />
             <option type="column" name="expirationDate" fields="expirationDate" />
             <option type="column" name="batch" fields="batch" />
-            <option type="column" name="isCorrected" fields="isCorrected"/>
+            <option type="column" name="isCorrected" fields="isCorrected" />
 
 			<option type="order" column="productNumber" direction="asc" />
 
