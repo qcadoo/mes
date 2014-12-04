@@ -63,6 +63,8 @@
 	<modules>
 		<localization:translation path="locales" />
 		
+		<model:dictionary name="storageLocations"/>
+		
 		<model:model model="resource" resource="model/resource.xml" />
         <model:model model="document" resource="model/document.xml" />
         <model:model model="position" resource="model/position.xml" />

@@ -53,4 +53,6 @@ public final class ResourceFields {
 
     public static final String ATRRIBUTE_VALUES = "attributeValues";
 
+    public static final String STORAGE_LOCATION = "storageLocation";
+
 }

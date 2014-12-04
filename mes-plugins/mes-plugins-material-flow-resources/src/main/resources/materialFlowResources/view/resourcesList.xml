@@ -53,14 +53,15 @@
             <option type="column" name="productionDate" fields="productionDate" />
             <option type="column" name="expirationDate" fields="expirationDate" />
             <option type="column" name="batch" fields="batch" />
+            <option type="column" name="storageLocation" fields="storageLocation" />
             <option type="column" name="isCorrected" fields="isCorrected" />
 
 			<option type="order" column="productNumber" direction="asc" />
 
 			<option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected" />
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation" />
 			<option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected" />
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation" />
 
 			<option type="correspondingView" value="materialFlowResources/resourceDetails" />
 			<option type="correspondingViewInModal" value="true" />

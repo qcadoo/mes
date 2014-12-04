@@ -36,7 +36,7 @@
 		<component type="form" name="resourceCorrectionForm"
 			reference="form">
 			<component type="gridLayout" name="correctionGridLayout"
-				columns="3" rows="7">
+				columns="3" rows="9">
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" field="number"
 						reference="number" defaultEnabled="false" />
@@ -50,11 +50,11 @@
 						reference="createUser" defaultEnabled="false" />
 				</layoutElement>
 
-				<layoutElement column="2" row="1" height="7">
+				<layoutElement column="2" row="1" height="9">
 					<component type="borderLayout" name="correctedResourceLayout">
 						<option type="label" value="correctedResource" />
 						<component type="gridLayout" name="resourceLayout"
-							columns="7" rows="7" hasBorders="false">
+							columns="7" rows="8" hasBorders="false">
 							<layoutElement column="1" row="1" width="6">
 								<component type="lookup" name="product" field="product"
 									reference="product" defaultEnabled="false">
@@ -119,6 +119,17 @@
 							</layoutElement>
 
 							<layoutElement column="1" row="6" width="6">
+								<component type="select" name="oldStorageLocation" field="oldStorageLocation"
+									reference="oldStorageLocation" defaultEnabled="false">
+								</component>
+							</layoutElement>
+							
+							<layoutElement column="1" row="7" width="6">
+								<component type="select" name="newStorageLocation" field="newStorageLocation"
+									reference="newStorageLocation" defaultEnabled="false">
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="8" width="6">
 								<component type="calendar" name="time" field="time"
 									reference="time" defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
