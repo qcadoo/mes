@@ -4,5 +4,5 @@ import java.math.BigDecimal;
 
 public interface ResourceCorrectionService {
 
-    boolean createCorrectionForResource(final Long resourceId, final BigDecimal newQuantity);
+    boolean createCorrectionForResource(final Long resourceId, final BigDecimal newQuantity, final String newStorageLocation);
 }

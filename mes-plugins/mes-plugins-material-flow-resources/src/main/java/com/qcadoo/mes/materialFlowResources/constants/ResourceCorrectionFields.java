@@ -39,6 +39,10 @@ public class ResourceCorrectionFields {
 
     public static final String OLD_QUANTITY = "oldQuantity";
 
+    public static final String NEW_STORAGE_LOCATION = "newStorageLocation";
+
+    public static final String OLD_STORAGE_LOCATION = "oldStorageLocation";
+
     public static final String BATCH = "batch";
 
     public static final String TIME = "time";
