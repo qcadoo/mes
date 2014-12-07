@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productionPerShift.dates;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -62,6 +65,9 @@ public class OrderRealizationDaysResolverTest extends ShiftMockingAwareTest {
 
     private OrderRealizationDaysResolver orderRealizationDaysResolver;
 
+    // shift1 -> 22:00 - 06:00
+    // shift2 -> 06:00 - 14:00
+    // shift3 -> 14:00 - 22:00
     private Shift shift1, shift2, shift3;
 
     @Before
@@ -77,9 +83,9 @@ public class OrderRealizationDaysResolverTest extends ShiftMockingAwareTest {
 
     private void assertRealizationDayState(final OrderRealizationDay realizationDay, final int numOfDay, final LocalDate date,
             final List<Shift> workingShifts) {
-        Assert.assertEquals(workingShifts, realizationDay.getWorkingShifts());
-        Assert.assertEquals(numOfDay, realizationDay.getRealizationDayNumber());
         Assert.assertEquals(date, realizationDay.getDate());
+        Assert.assertEquals(numOfDay, realizationDay.getRealizationDayNumber());
+        Assert.assertEquals(workingShifts, realizationDay.getWorkingShifts());
     }
 
     @Test
@@ -202,6 +208,21 @@ public class OrderRealizationDaysResolverTest extends ShiftMockingAwareTest {
 
         // then
         assertRealizationDayState(realizationDay, 1, startDate.toLocalDate(), ImmutableList.<Shift> of());
+    }
+
+    @Test
+    public final void shouldProduceStreamWithCorrectFirstDayDate() {
+        // given
+        DateTime startDate = new DateTime(2014, 12, 4, 23, 0, 0);
+        List<Shift> shifts = ImmutableList.of(shift1, shift2, shift3);
+
+        // when
+        LazyStream<OrderRealizationDay> stream = orderRealizationDaysResolver.asStreamFrom(startDate, shifts);
+
+        // then
+        Optional<OrderRealizationDay> firstRealizationDay = FluentIterable.from(stream).limit(1).first();
+        assertTrue(firstRealizationDay.isPresent());
+        assertRealizationDayState(firstRealizationDay.get(), 1, startDate.toLocalDate(), ImmutableList.of(shift1));
     }
 
     @Test
