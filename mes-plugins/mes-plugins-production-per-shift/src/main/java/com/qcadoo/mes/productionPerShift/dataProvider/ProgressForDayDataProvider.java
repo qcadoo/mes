@@ -30,7 +30,9 @@ import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +45,9 @@ import com.qcadoo.mes.orders.constants.TechnologyFieldsO;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.tree.domain.TechnologyOperationId;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -61,13 +65,8 @@ public class ProgressForDayDataProvider {
     private static final List<String> MODEL_PATH_TO_ORDER = ImmutableList.of(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT,
             TechnologyOperationComponentFields.TECHNOLOGY, TechnologyFieldsO.ORDERS);
 
-    private static final BiFunction<SearchCriteriaBuilder, String, SearchCriteriaBuilder> CREATE_SUB_QUERY = new BiFunction<SearchCriteriaBuilder, String, SearchCriteriaBuilder>() {
-
-        @Override
-        public SearchCriteriaBuilder apply(final SearchCriteriaBuilder acc, final String fieldName) {
-            return acc.createCriteria(fieldName, fieldName + "_alias", JoinType.INNER);
-        }
-    };
+    private static final BiFunction<SearchCriteriaBuilder, String, SearchCriteriaBuilder> CREATE_SUB_QUERY = (acc, fieldName) -> acc
+            .createCriteria(fieldName, fieldName + "_alias", JoinType.INNER);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -90,6 +89,17 @@ public class ProgressForDayDataProvider {
                 and(eq(ProgressForDayFields.CORRECTED, hasCorrections),
                         belongsTo(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperation)),
                 ProgressForDayDataProvider.DEFAULT_SEARCH_ORDER);
+    }
+
+    public Optional<Entity> findForOperationAndActualDate(final TechnologyOperationId tocId, final ProgressType progressType,
+            final LocalDate day) {
+        SearchCriteriaBuilder pfdCriteriaBuilder = getPfdDataDefinition().find();
+        pfdCriteriaBuilder.add(eq(ProgressForDayFields.CORRECTED, progressType == ProgressType.CORRECTED));
+        pfdCriteriaBuilder
+                .add(belongsTo(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT, TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT, tocId.get()));
+        pfdCriteriaBuilder.add(eq(ProgressForDayFields.ACTUAL_DATE_OF_DAY, day.toDate()));
+        return Optional.ofNullable(pfdCriteriaBuilder.setMaxResults(1).uniqueResult());
     }
 
     public List<Entity> find(final SearchCriterion criteria, final SearchOrder... searchOrders) {

@@ -45,13 +45,8 @@ public class OrderRealizationDaysResolver {
 
     public LazyStream<OrderRealizationDay> asStreamFrom(final DateTime orderStartDateTime, final List<Shift> shifts) {
         OrderRealizationDay firstDay = find(orderStartDateTime, 1, true, shifts);
-        return LazyStream.create(firstDay, new Function<OrderRealizationDay, OrderRealizationDay>() {
-
-            @Override
-            public OrderRealizationDay apply(final OrderRealizationDay prevElement) {
-                return find(orderStartDateTime, prevElement.getRealizationDayNumber() + 1, false, shifts);
-            }
-        });
+        return LazyStream.create(firstDay,
+                prevElement -> find(orderStartDateTime, prevElement.getRealizationDayNumber() + 1, false, shifts));
     }
 
     public OrderRealizationDay find(final DateTime orderStartDateTime, final int startingFrom, final boolean isFirstDay,
