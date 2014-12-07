@@ -44,6 +44,7 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
 import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
@@ -311,7 +312,9 @@ public class ProductionPerShiftDetailsHooks {
             AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) progressForDaysForm
                     .findFieldComponentByName(DAILY_PROGRESS_ADL_REF);
             for (FormComponent dailyProgressForm : dailyProgressADL.getFormComponents()) {
-                dailyProgressForm.setFormEnabled(isEnabled);
+                Entity dpEntity = dailyProgressForm.getPersistedEntityWithIncludedFormValues();
+                boolean isLocked = dpEntity.getBooleanField(DailyProgressFields.LOCKED);
+                dailyProgressForm.setFormEnabled(isEnabled && !isLocked);
             }
             dailyProgressADL.setEnabled(isEnabled);
         }

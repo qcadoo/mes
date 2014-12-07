@@ -34,6 +34,9 @@
 		<decimal name="quantity" required="true">
 			<validatesRange from="0" exclusively="false" />
 		</decimal>
+
+		<!-- set to true if this progress' plan should not be editable by the user via PPS view -->
+		<boolean name="locked" default="false" />
 	</fields>
 	<hooks>
 		<validatesWith

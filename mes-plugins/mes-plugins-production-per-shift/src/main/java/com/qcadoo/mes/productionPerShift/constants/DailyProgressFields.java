@@ -35,4 +35,6 @@ public final class DailyProgressFields {
 
     public static final String QUANTITY = "quantity";
 
+    public static final String LOCKED = "locked";
+
 }
