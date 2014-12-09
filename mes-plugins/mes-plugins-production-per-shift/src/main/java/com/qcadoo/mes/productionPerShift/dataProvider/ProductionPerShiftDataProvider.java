@@ -140,7 +140,7 @@ public class ProductionPerShiftDataProvider {
 
         Entity projection = scb.setMaxResults(1).uniqueResult();
         BigDecimal quantitiesSum = projection.getDecimalField(QUANTITY_SUM_PROJECTION);
-        return (BigDecimal) ObjectUtils.defaultIfNull(quantitiesSum, BigDecimal.ZERO);
+        return ObjectUtils.defaultIfNull(quantitiesSum, BigDecimal.ZERO);
     }
 
     /**

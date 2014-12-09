@@ -33,10 +33,10 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.TimeRange;
+import com.qcadoo.commons.functional.FluentOptional;
 import com.qcadoo.commons.functional.LazyStream;
 import com.qcadoo.mes.basic.shift.Shift;
 
@@ -45,47 +45,53 @@ public class OrderRealizationDaysResolver {
 
     public LazyStream<OrderRealizationDay> asStreamFrom(final DateTime orderStartDateTime, final List<Shift> shifts) {
         OrderRealizationDay firstDay = find(orderStartDateTime, 1, true, shifts);
-        return LazyStream.create(firstDay, new Function<OrderRealizationDay, OrderRealizationDay>() {
-
-            @Override
-            public OrderRealizationDay apply(final OrderRealizationDay prevElement) {
-                return find(orderStartDateTime, prevElement.getRealizationDayNumber() + 1, false, shifts);
-            }
-        });
+        return LazyStream.create(firstDay,
+                prevElement -> find(orderStartDateTime, prevElement.getRealizationDayNumber() + 1, false, shifts));
     }
 
     public OrderRealizationDay find(final DateTime orderStartDateTime, final int startingFrom, final boolean isFirstDay,
             final List<Shift> shifts) {
-        LocalDate orderStartDate = orderStartDateTime.toLocalDate();
-        LocalTime orderStartTime = orderStartDateTime.toLocalTime();
-        OrderRealizationDay firstWorkingDay = findFirstWorkingDayFrom(orderStartDate, startingFrom, shifts);
-        Optional<Shift> shiftStartingOrder = firstWorkingDay.findShiftWorkingAt(orderStartDateTime.toLocalTime());
-        if (isFirstDay && startingShiftIsWorkingSincePrevDay(shiftStartingOrder, firstWorkingDay, orderStartTime)) {
-            return new OrderRealizationDay(orderStartDate, firstWorkingDay.getRealizationDayNumber() - 1,
-                    Lists.newArrayList(shiftStartingOrder.asSet()));
+        OrderRealizationDay firstWorkingDay = findFirstWorkingDayFrom(orderStartDateTime.toLocalDate(), startingFrom, shifts);
+        if (isFirstDay) {
+            return tryResolveFirstDay(firstWorkingDay, orderStartDateTime).or(firstWorkingDay);
         }
         return firstWorkingDay;
     }
 
-    private boolean startingShiftIsWorkingSincePrevDay(final Optional<Shift> maybeShift,
-            final OrderRealizationDay firstWorkingDay, final LocalTime orderStartTime) {
-        return maybeShift.transform(new Function<Shift, Boolean>() {
+    private Optional<OrderRealizationDay> tryResolveFirstDay(final OrderRealizationDay firstWorkingDay,
+            final DateTime orderStartDateTime) {
+        LocalDate orderStartDate = orderStartDateTime.toLocalDate();
+        LocalTime orderStartTime = orderStartDateTime.toLocalTime();
 
-            @Override
-            public Boolean apply(final Shift shift) {
-                int prevDayOfWeek = firstWorkingDay.getDate().minusDays(1).getDayOfWeek();
-                return shift.findWorkTimeAt(prevDayOfWeek, orderStartTime).transform(TIME_RANGE_STARTS_PREV_DAY).or(false);
-            }
-        }).or(false);
+        Optional<Shift> shiftStartingOrder = firstWorkingDay.findShiftWorkingAt(orderStartTime);
+        Optional<TimeRange> workTimeRange = FluentOptional.wrap(shiftStartingOrder).flatMap(shift -> {
+            int prevDayOfWeek = firstWorkingDay.getDate().minusDays(1).getDayOfWeek();
+            return shift.findWorkTimeAt(prevDayOfWeek, orderStartTime);
+        }).toOpt();
+
+        if (shiftWorkTimeMatchPredicate(shiftStartingOrder, workTimeRange, startsDayBefore(orderStartTime))) {
+            return Optional.of(new OrderRealizationDay(orderStartDate, firstWorkingDay.getRealizationDayNumber() - 1, Lists
+                    .newArrayList(shiftStartingOrder.asSet())));
+        }
+        if (shiftWorkTimeMatchPredicate(shiftStartingOrder, workTimeRange, endsNextDay(orderStartTime))) {
+            return Optional.of(new OrderRealizationDay(firstWorkingDay.getDate(), firstWorkingDay.getRealizationDayNumber(),
+                    Lists.newArrayList(shiftStartingOrder.asSet())));
+        }
+        return Optional.absent();
     }
 
-    private static final Function<TimeRange, Boolean> TIME_RANGE_STARTS_PREV_DAY = new Function<TimeRange, Boolean>() {
+    private boolean shiftWorkTimeMatchPredicate(final Optional<Shift> maybeShift, final Optional<TimeRange> workTime,
+            final Function<TimeRange, Boolean> workTimePredicate) {
+        return maybeShift.transform(shift -> workTime.transform(workTimePredicate).or(false)).or(false);
+    }
 
-        @Override
-        public Boolean apply(final TimeRange timeRange) {
-            return timeRange.startsDayBefore();
-        }
-    };
+    private Function<TimeRange, Boolean> endsNextDay(final LocalTime orderStartTime) {
+        return timeRange -> timeRange.startsDayBefore() && !orderStartTime.isBefore(timeRange.getFrom());
+    }
+
+    private Function<TimeRange, Boolean> startsDayBefore(final LocalTime orderStartTime) {
+        return timeRange -> timeRange.startsDayBefore() && !orderStartTime.isAfter(timeRange.getTo());
+    }
 
     private static final int DAYS_IN_YEAR = 365;
 
@@ -103,13 +109,7 @@ public class OrderRealizationDaysResolver {
     }
 
     private List<Shift> getShiftsWorkingAt(final int dayOfWeek, final List<Shift> shifts) {
-        return FluentIterable.from(shifts).filter(new Predicate<Shift>() {
-
-            @Override
-            public boolean apply(final Shift shift) {
-                return shift.worksAt(dayOfWeek);
-            }
-        }).toList();
+        return FluentIterable.from(shifts).filter(shift -> shift.worksAt(dayOfWeek)).toList();
     }
 
 }
