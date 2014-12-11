@@ -79,6 +79,20 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.ATRRIBUTE_VALUES, attributes);
     }
 
+    private void setPositionAttributesFromResource(final Entity position, final Entity resource) {
+        List<Entity> attributes = resource.getHasManyField(ResourceFields.ATRRIBUTE_VALUES);
+        List<Entity> newAttributes = Lists.newArrayList();
+        DataDefinition attributeDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE);
+        for (Entity attribute : attributes) {
+            List<Entity> newAttribute = attributeDD.copy(attribute.getId());
+            newAttribute.get(0).setField(AttributeValueFields.POSITION, position);
+            newAttribute.get(0).setField(AttributeValueFields.RESOURCE, null);
+            newAttributes.addAll(newAttribute);
+        }
+        position.setField(PositionFields.ATRRIBUTE_VALUES, newAttributes);
+    }
+
     private void setResourceAttributesFromResource(final Entity resource, final Entity baseResource) {
         List<Entity> attributes = baseResource.getHasManyField(ResourceFields.ATRRIBUTE_VALUES);
         List<Entity> newAttributes = Lists.newArrayList();
@@ -202,7 +216,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             newPosition.setField(PositionFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
             newPosition.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
             newPosition.setField(PositionFields.RESOURCE, resource);
-
+            newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
+            setPositionAttributesFromResource(newPosition, resource);
             if (quantity.compareTo(resourceQuantity) >= 0) {
                 quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
 
