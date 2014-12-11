@@ -206,7 +206,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             final Set<OperationProductComponentHolder> nonComponents) {
         OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = new OperationProductComponentWithQuantityContainer();
 
-        EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+        EntityTree operationComponents = getOperationComponentsFromTechnology(technology);
         Entity root = operationComponents.getRoot();
 
         if (root != null) {
@@ -217,6 +217,10 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
 
         return operationProductComponentWithQuantityContainer;
+    }
+
+    private EntityTree getOperationComponentsFromTechnology(final Entity technology) {
+        return technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
     }
 
     private OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesForOrders(final List<Entity> orders,
@@ -269,7 +273,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return operationProductComponentWithQuantityContainer;
     }
 
-    private void preloadProductQuantitiesAndOperationRuns(final EntityTree operationComponents,
+    @Override
+    public void preloadProductQuantitiesAndOperationRuns(final EntityTree operationComponents,
             final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
             final Map<Long, BigDecimal> operationRuns) {
         for (Entity operationComponent : operationComponents) {
@@ -295,7 +300,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
     }
 
-    private void preloadOperationProductComponentQuantity(final List<Entity> operationProductComponents,
+    @Override
+    public void preloadOperationProductComponentQuantity(final List<Entity> operationProductComponents,
             final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer) {
         for (Entity operationProductComponent : operationProductComponents) {
             BigDecimal neededQuantity = operationProductComponent.getDecimalField(L_QUANTITY);
@@ -304,7 +310,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
     }
 
-    private void traverseProductQuantitiesAndOperationRuns(final Entity technology, final BigDecimal givenQuantity,
+    @Override
+    public void traverseProductQuantitiesAndOperationRuns(final Entity technology, final BigDecimal givenQuantity,
             final Entity operationComponent, final Entity previousOperationComponent,
             final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
             final Set<OperationProductComponentHolder> nonComponents, final Map<Long, BigDecimal> operationRuns) {
@@ -436,7 +443,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return orders;
     }
 
-    private Map<Long, BigDecimal> getProductWithQuantities(
+    @Override
+    public Map<Long, BigDecimal> getProductWithQuantities(
             final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
             final Set<OperationProductComponentHolder> nonComponents, final MrpAlgorithm mrpAlgorithm,
             final String operationProductComponentModelName) {

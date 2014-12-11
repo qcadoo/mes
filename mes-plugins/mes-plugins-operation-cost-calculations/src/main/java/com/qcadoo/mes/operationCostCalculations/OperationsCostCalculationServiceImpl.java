@@ -194,8 +194,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyFromOrder.getId());
         }
 
-        ProductQuantitiesHolder productQuantitiesAndOperationRuns = productQuantitiesService.getProductComponentQuantities(
-                technology, quantity);
+        ProductQuantitiesHolder productQuantitiesAndOperationRuns = getProductQuantitiesAndOperationRuns(technology, quantity,
+                newCostCalculationOrProductionBalance);
 
         if (CalculateOperationCostMode.PIECEWORK.equals(calculateOperationCostMode)) {
             if (calculationOperationComponents.isEmpty()) {
@@ -235,6 +235,11 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
 
         costCalculationOrProductionBalance.setField(L_CALCULATION_OPERATION_COMPONENTS, calculationOperationComponents);
+    }
+
+    private ProductQuantitiesHolder getProductQuantitiesAndOperationRuns(final Entity technology, final BigDecimal quantity,
+            final Entity costCalculationOrProductionBalance) {
+        return productQuantitiesService.getProductComponentQuantities(technology, quantity);
     }
 
     @Override
