@@ -180,22 +180,26 @@ public class ProductStructureTreeService {
                         child.setField(L_DIVISION, subOperation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
 
                         addChild(tree, child, parent, L_INTERMEDIATE);
-
-                        FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
-                        productStructureForm
-                                .addMessage(
-                                        "technologies.technologyDetails.window.productStructure.productStructureForm.technologyAndOperationExists",
-                                        MessageType.INFO, false,
-                                        product.getStringField("number") + " " + product.getStringField("name"));
+                        if (view != null) {
+                            FormComponent productStructureForm = (FormComponent) view
+                                    .getComponentByReference("productStructureForm");
+                            productStructureForm
+                                    .addMessage(
+                                            "technologies.technologyDetails.window.productStructure.productStructureForm.technologyAndOperationExists",
+                                            MessageType.INFO, false,
+                                            product.getStringField("number") + " " + product.getStringField("name"));
+                        }
                         generateTreeForSubproducts(subOperation, technology, tree, child, view, usedTechnologies);
                     }
                 } else {
-                    FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
-                    productStructureForm
-                            .addMessage(
-                                    "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
-                                    MessageType.INFO, false,
-                                    product.getStringField("number") + " " + product.getStringField("name"));
+                    if (view != null) {
+                        FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
+                        productStructureForm
+                                .addMessage(
+                                        "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
+                                        MessageType.INFO, false,
+                                        product.getStringField("number") + " " + product.getStringField("name"));
+                    }
                 }
             } else {
                 child.setField(L_TECHNOLOGY, technology);
