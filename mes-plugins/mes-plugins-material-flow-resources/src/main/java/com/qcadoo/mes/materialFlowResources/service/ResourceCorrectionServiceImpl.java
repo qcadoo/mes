@@ -52,8 +52,13 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     }
 
     private boolean isCorrectionNeeded(final Entity resource, final BigDecimal newQuantity, final String newStorageLocation) {
-        return (newQuantity.compareTo(oldQuantity(resource)) != 0)
-                || (newStorageLocation.compareTo(oldStorageLocation(resource)) != 0);
+        String oldStorageLocation = oldStorageLocation(resource);
+        boolean quantityChanged = newQuantity.compareTo(oldQuantity(resource)) != 0;
+
+        boolean storageLocationChanged = (newStorageLocation != null && oldStorageLocation != null) ? (newStorageLocation
+                .compareTo(oldStorageLocation) != 0)
+                : !(((newStorageLocation != null && newStorageLocation.isEmpty()) || newStorageLocation == null) && oldStorageLocation == null);
+        return quantityChanged || storageLocationChanged;
     }
 
     private Entity product(final Entity resource) {
