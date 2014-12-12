@@ -47,6 +47,7 @@
         <hasMany name="resourceCorrections" joinField="resource" model="resourceCorrection" cascade="nullify"/>
         <boolean name="isCorrected" default="false"/>
         <hasMany name="attributeValues" joinField="resource" model="attributeValue" cascade="nullify" />
+		<dictionary name="storageLocation" dictionary="storageLocations" />
 	</fields>
 	<hooks>
 		<validatesWith

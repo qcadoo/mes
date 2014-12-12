@@ -130,7 +130,7 @@
 				<option type="hasBorder" value="true" />
 				<header>
 					<component type="gridLayout" name="mainGridLayout"
-						columns="10" rows="1">
+						columns="11" rows="1">
 						<layoutElement column="1" row="1">
 							<component type="label" name="numberLabel" />
 						</layoutElement>
@@ -157,7 +157,11 @@
 							<component type="label" name="expirationDateLabel"
 								refrence="expirationDateLabel" />
 						</layoutElement>
-						<layoutElement column="9" row="1" width="2">
+						<layoutElement column="9" row="1">
+							<component type="label" name="storageLocationLabel"
+								refrence="storageLocationLabel" />
+						</layoutElement>
+						<layoutElement column="10" row="1" width="2">
 							<component type="label" name="additionalAttributesLabel"
 								refrence="additionalAttributesLabel" />
 						</layoutElement>
@@ -165,7 +169,7 @@
 				</header>
 				<components>
 					<component type="gridLayout" name="productLayout"
-						columns="10" rows="1">
+						columns="11" rows="1">
 						<layoutElement column="1" row="1">
 							<component type="input" name="number" field="number"
 								hasLabel="false" persistent="false">
@@ -240,7 +244,11 @@
 							</component>
 						</layoutElement>
 
-						<layoutElement column="9" row="1" width="2">
+						<layoutElement column="9" row="1">
+							<component type="select" name="storageLocation" field="storageLocation" hasLabel="false" />
+						</layoutElement>
+						
+						<layoutElement column="10" row="1" width="2">
 							<component type="awesomeDynamicList" name="additionalAttributes"
 								source="attributeValues" reference="additionalAttributes">
 								<option type="hasButtons" value="false" />
@@ -250,12 +258,6 @@
 									<component type="gridLayout" name="attributesGridLayout"
 										columns="2" rows="1">
 										<layoutElement column="1" row="1">
-<!-- 											<component type="input" name="attributeName" field="name" -->
-<!-- 												hasLabel="false" reference="attributeName"> -->
-
-<!-- 												<option type="textRepresentationOnDisabled" value="true" /> -->
-<!-- 												<option type="alignment" value="right" /> -->
-<!-- 											</component> -->
 											<component type="lookup" name="attributeName" field="attribute"
 												reference="attributeName" hasLabel="false" defaultEnabled="never">
 				
@@ -265,7 +267,7 @@
 											</component>
 										</layoutElement>
 										<layoutElement column="2" row="1">
-											<component type="input" name="value" field="value"
+											<component type="checkbox" name="value" field="value"
 												hasLabel="false" />
 										</layoutElement>
 									</component>

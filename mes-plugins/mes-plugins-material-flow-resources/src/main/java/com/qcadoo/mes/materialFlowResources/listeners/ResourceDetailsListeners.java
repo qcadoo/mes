@@ -35,6 +35,8 @@ public class ResourceDetailsListeners {
         FieldComponent quantityInput = (FieldComponent) view.getComponentByReference(ResourceFields.QUANTITY);
         String newQuantity = (String) quantityInput.getFieldValue();
 
+        FieldComponent storageLocationSelect = (FieldComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
+        String newStorageLocation = (String) storageLocationSelect.getFieldValue();
         Either<Exception, Optional<BigDecimal>> quantity = BigDecimalUtils.tryParse(newQuantity, view.getLocale());
 
         if (quantity.isRight() && quantity.getRight().isPresent()) {
@@ -48,7 +50,8 @@ public class ResourceDetailsListeners {
             Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
             BigDecimal correctQuantity = quantity.getRight().get();
             if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                boolean corrected = resourceCorrectionService.createCorrectionForResource(resource.getId(), correctQuantity);
+                boolean corrected = resourceCorrectionService.createCorrectionForResource(resource.getId(), correctQuantity,
+                        newStorageLocation);
                 if (!corrected) {
                     resourceForm.addMessage("materialFlow.info.correction.resourceNotChanged", MessageType.INFO);
                 } else {

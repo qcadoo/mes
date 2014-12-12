@@ -29,7 +29,7 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
         <belongsTo name="attribute" model="attribute" />
-        <string name="value" />
+        <boolean name="value" />
         <belongsTo name="position" model="position" />
         <belongsTo name="resource" model="resource"/>
     </fields>
