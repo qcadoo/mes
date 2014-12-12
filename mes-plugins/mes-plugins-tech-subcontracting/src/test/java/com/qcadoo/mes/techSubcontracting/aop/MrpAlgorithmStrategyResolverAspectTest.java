@@ -47,7 +47,7 @@ public class MrpAlgorithmStrategyResolverAspectTest {
         final Method method = clazz.getDeclaredMethod("getProductWithQuantities",
                 OperationProductComponentWithQuantityContainer.class, Set.class, MrpAlgorithm.class, String.class);
         assertNotNull(method);
-        assertTrue(Modifier.isPrivate(method.getModifiers()));
+        assertTrue(Modifier.isPublic(method.getModifiers()));
         assertEquals(Map.class, method.getReturnType());
     }
 
