@@ -165,19 +165,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         DataDefinition costCalculationOrProductionBalanceDD = costCalculationOrProductionBalance.getDataDefinition();
 
-        Entity copyCostCalculationOrProductionBalance = operationCostCalculationTreeBuilder
-                .copyTechnologyTree(costCalculationOrProductionBalance);
-
-        Entity yetAnotherCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
-                .save(copyCostCalculationOrProductionBalance);
-        Entity newCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
-                .get(yetAnotherCostCalculationOrProductionBalance.getId());
-
-        EntityTree calculationOperationComponents = newCostCalculationOrProductionBalance
-                .getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
-
-        checkArgument(calculationOperationComponents != null, "given operation components is null");
-
         Entity order = costCalculationOrProductionBalance.getBelongsToField(L_ORDER);
         Entity technology = costCalculationOrProductionBalance.getBelongsToField(L_TECHNOLOGY);
         BigDecimal quantity = BigDecimalUtils.convertNullToZero(costCalculationOrProductionBalance.getDecimalField(L_QUANTITY));
@@ -195,7 +182,20 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
 
         ProductQuantitiesHolder productQuantitiesAndOperationRuns = getProductQuantitiesAndOperationRuns(technology, quantity,
-                newCostCalculationOrProductionBalance);
+                costCalculationOrProductionBalance);
+
+        Entity copyCostCalculationOrProductionBalance = operationCostCalculationTreeBuilder
+                .copyTechnologyTree(costCalculationOrProductionBalance);
+
+        Entity yetAnotherCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
+                .save(copyCostCalculationOrProductionBalance);
+        Entity newCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
+                .get(yetAnotherCostCalculationOrProductionBalance.getId());
+
+        EntityTree calculationOperationComponents = newCostCalculationOrProductionBalance
+                .getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
+
+        checkArgument(calculationOperationComponents != null, "given operation components is null");
 
         if (CalculateOperationCostMode.PIECEWORK.equals(calculateOperationCostMode)) {
             if (calculationOperationComponents.isEmpty()) {
