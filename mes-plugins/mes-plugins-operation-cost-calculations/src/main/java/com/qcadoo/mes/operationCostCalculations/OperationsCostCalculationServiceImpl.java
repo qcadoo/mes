@@ -164,7 +164,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         if (order != null) {
             order.setField(L_TECHNOLOGY, technology);
         }
-
         Entity copyCostCalculationOrProductionBalance = operationCostCalculationTreeBuilder
                 .copyTechnologyTree(costCalculationOrProductionBalance);
 
