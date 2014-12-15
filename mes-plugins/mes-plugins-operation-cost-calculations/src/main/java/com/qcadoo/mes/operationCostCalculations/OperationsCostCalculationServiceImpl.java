@@ -184,6 +184,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         ProductQuantitiesHolder productQuantitiesAndOperationRuns = getProductQuantitiesAndOperationRuns(technology, quantity,
                 costCalculationOrProductionBalance);
 
+        if (order != null) {
+            order.setField(L_TECHNOLOGY, technology);
+        }
+
         Entity copyCostCalculationOrProductionBalance = operationCostCalculationTreeBuilder
                 .copyTechnologyTree(costCalculationOrProductionBalance);
 
