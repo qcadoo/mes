@@ -23,10 +23,30 @@
  */
 package com.qcadoo.mes.basic.constants;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+
 public enum ProductFamilyElementType {
     PARTICULAR_PRODUCT("01particularProduct"), PRODUCTS_FAMILY("02productsFamily");
 
     private final String productFamilyElementType;
+
+    public static ProductFamilyElementType from(final Entity entity) {
+        if (isBasicProduct(entity)) {
+            return parseString(entity.getStringField(ProductFields.ENTITY_TYPE));
+        }
+        throw new IllegalArgumentException(String.format("Expected basic_product, but got %s", entity));
+    }
+
+    private static boolean isBasicProduct(final Entity entity) {
+        DataDefinition dataDefinition = entity.getDataDefinition();
+        String pluginIdentifier = dataDefinition.getPluginIdentifier();
+        String modelName = dataDefinition.getName();
+        return StringUtils.equalsIgnoreCase(pluginIdentifier, BasicConstants.PLUGIN_IDENTIFIER)
+                && StringUtils.equalsIgnoreCase(modelName, BasicConstants.MODEL_PRODUCT);
+    }
 
     private ProductFamilyElementType(final String type) {
         this.productFamilyElementType = type;
