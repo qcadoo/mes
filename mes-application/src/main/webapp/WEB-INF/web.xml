@@ -62,6 +62,11 @@
 
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/rest/*</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>*.html</url-pattern>
 	</filter-mapping>
 
@@ -167,6 +172,11 @@
 	<servlet-mapping>
 		<servlet-name>Qcadoo MES</servlet-name>
 		<url-pattern>/files/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Qcadoo MES</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
