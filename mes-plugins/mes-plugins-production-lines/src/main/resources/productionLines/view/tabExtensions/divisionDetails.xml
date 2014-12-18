@@ -28,7 +28,6 @@
                     xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
                     plugin="basic" view="divisionDetails">
-
     <windowTab name="productionLines">
         <component type="gridLayout" name="productionLinesLayout" columns="2"
                    rows="8">
@@ -110,6 +109,4 @@
             </layoutElement>
         </component>
     </windowTab>
-
-
 </windowTabExtension>
