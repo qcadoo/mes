@@ -81,15 +81,6 @@
             <model:belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
         </model:model-field>
 
-        <model:model-field model="division" plugin="basic">
-            <model:hasMany name="productionLines" joinField="division" model="productionLine" cascade="nullify"
-                           plugin="productionLines"/>
-        </model:model-field>
-
-        <model:model-field model="workstation" plugin="basic">
-            <model:belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
-        </model:model-field>
-
         <model:model-hook model="parameter" plugin="basic">
             <model:onCreate
                     class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter"/>

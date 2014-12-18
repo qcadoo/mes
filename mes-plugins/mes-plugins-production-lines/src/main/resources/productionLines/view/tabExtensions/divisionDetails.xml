@@ -29,7 +29,6 @@
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
                     plugin="basic" view="divisionDetails">
 
-<<<<<<< HEAD
     <windowTab name="productionLines">
         <component type="gridLayout" name="productionLinesLayout" columns="2"
                    rows="8">
@@ -47,7 +46,7 @@
 
                     <option type="multiselect" value="true"/>
                     <criteriaModifier
-                            class="com.qcadoo.mes.productionLines.criteriaModifiers.DivisionDetailsCriteriaModifiers"
+                            class="com.qcadoo.mes.productionLines.criteriaModifiers.ProductionLineCriteriaModifiers"
                             method="showProductionLinesWithoutDivisionOnly"/>
                 </component>
                 <component type="grid" name="productionLines" reference="productionLines"
@@ -86,18 +85,8 @@
                     <option type="multiselect" value="true"/>
 
                     <criteriaModifier
-                    <
-                    <
-                    <
-                    <
-                    <
-                    <
-                    < HEAD
                             class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
-                    =======
-                    class="com.qcadoo.mes.productionLines.criteriaModifiers.DivisionDetailsCriteriaModifiers"
-                    >>>>>>> SC# QCADOOCLS-2918 added tab with production lines to division
-                    method="showWorkstationsWithoutProductionLineOnly" />
+                            method="showWorkstationsWithoutProductionLineOnly"/>
                 </component>
                 <component type="grid" name="workstations" reference="workstations"
                            source="#{productionLines}.workstations">
@@ -121,89 +110,6 @@
             </layoutElement>
         </component>
     </windowTab>
-=======
-		<windowTab name="productionLines">
-			<component type="gridLayout" name="productionLinesLayout" columns="2"
-					rows="8">
-				<layoutElement column="1" row="1" height="8">
-					<component type="lookup" name="productionLinesLookup" reference="productionLinesLookup"
-						field="#{form}.productionLines" defaultVisible="false" persistent="false"
-						hasLabel="false">
-						<option type="column" name="name" fields="name" link="true" />
-						
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-						
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-						
-						<option type="multiselect" value="true" />
-						<criteriaModifier
-							class="com.qcadoo.mes.productionLines.criteriaModifiers.ProductionLineCriteriaModifiers"
-							method="showProductionLinesWithoutDivisionOnly" />
-					</component>
-					<component type="grid" name="productionLines" reference="productionLines"
-							source="#{form}.productionLines">
-						<option type="column" name="number" fields="number" />
-						<option type="column" name="name" fields="name" />
-
-						<option type="order" column="number" direction="asc" />
-
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-
-						<option type="weakRelation" value="true" />
-						<option type="correspondingLookup" value="productionLinesLookup" />
-						
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="false" />
-						<option type="paginable" value="false" />
-					</component>
-				</layoutElement>
-
-				<layoutElement column="2" row="1" height="8">
-					<component type="lookup" name="workstationsForLineLookup" reference="workstationsForLineLookup"
-						field="#{productionLines}.workstations" defaultVisible="false" persistent="false"
-						hasLabel="false">
-						<option type="column" name="name" fields="name" link="true" />
-						
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-						
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-						
-						<option type="multiselect" value="true" />
-
-						<criteriaModifier
-							class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
-							method="showWorkstationsWithoutProductionLineOnly" />						
-					</component>
-					<component type="grid" name="workstations" reference="workstations"
-							source="#{productionLines}.workstations">
-						<option type="column" name="number" fields="number" />
-						<option type="column" name="name" fields="name" />
-
-						<option type="order" column="number" direction="asc" />
-
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-
-						<option type="weakRelation" value="true" />
-						<option type="correspondingLookup" value="workstationsForLineLookup" />
-						
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-						<option type="paginable" value="false" />
-					</component> 
-				</layoutElement>
-			</component>					
-		</windowTab>
->>>>>>> SC# QCADOOCLS-2920 added workstations to production line
 
 
 </windowTabExtension>
