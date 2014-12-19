@@ -484,7 +484,7 @@
                             <dataType name="finalProduct">
                                 <option type="nodeLabelExpression"
                                         value="
-                                        (#division != null ? #division.get('name') + ' - ' : '') + 
+                                        (#division != null ? '&lt;i&gt;' + #division.get('name') + '&lt;/i&gt;' +' - ' : '') + 
                                         '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' + #operation.get('operation').get('name') + '&lt;/span&gt;' + '&lt;/b&gt;' "/>
                                 <option type="nodeIcon" value="/technologies/public/css/icons/finalProductIcon16.png"/>
                                 <option type="newIcon" value="/technologies/public/css/icons/finalProductIcon16.png"/>
@@ -493,7 +493,7 @@
                             <dataType name="intermediate">
                                 <option type="nodeLabelExpression"
                                         value="
-                                        (#division != null ? #division.get('name') + ' - ' : '') + 
+                                        (#division != null ? '&lt;i&gt;' + #division.get('name') + '&lt;/i&gt;' +' - ' : '') + 
                                         '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' +  #operation.get('operation').get('name') + '&lt;/span&gt;' + '&lt;/b&gt;'"/>
                                 <option type="nodeIcon" value="/technologies/public/css/icons/intermediateIcon16.png"/>
                                 <option type="newIcon" value="/technologies/public/css/icons/intermediateIcon16.png"/>
@@ -502,7 +502,7 @@
                             <dataType name="component">
                                 <option type="nodeLabelExpression"
                                         value="
-                                        (#division != null ? #division.get('name') + ' - ' : '') + 
+                                        (#division != null ? '&lt;i&gt;' + #division.get('name') + '&lt;/i&gt;' +' - ' : '') + 
                                         '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;span style=&quot;color: #68bb25&quot;&gt;&lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' + #operation.get('operation').get('name') + '&lt;/span&gt;' + ' (' + #technology.get('name') + ')' + '&lt;/b&gt;&lt;/span&gt;'"/> 
                                 <option type="nodeIcon" value="/technologies/public/css/icons/technologyIcon16.png"/>
                                 <option type="newIcon" value="/technologies/public/css/icons/technologyIcon16.png"/>

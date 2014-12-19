@@ -25,8 +25,7 @@ package com.qcadoo.mes.technologies.constants;
 
 public enum AssignedToOperation {
 
-    WORKSTATIONS("01workstations"), WORKSTATIONS_TYPE("02workstationTypes"), DIVISION("03division"), PRODUCTION_LINE(
-            "04productionLine");
+    WORKSTATIONS("01workstations"), WORKSTATIONS_TYPE("02workstationTypes");
 
     private final String value;
 
@@ -43,10 +42,6 @@ public enum AssignedToOperation {
             return WORKSTATIONS;
         } else if ("02workstationTypes".equals(string)) {
             return WORKSTATIONS_TYPE;
-        } else if ("03division".equals(string)) {
-            return DIVISION;
-        } else if ("04productionLine".equals(string)) {
-            return PRODUCTION_LINE;
         }
 
         throw new IllegalStateException("Unsupported assignedToOperation attribute: " + string);

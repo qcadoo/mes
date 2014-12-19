@@ -59,7 +59,7 @@
         <!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
             joinField="operations" />-->
 
-        <enum name="assignedToOperation" values="01workstations,02workstationTypes,03division,04productionLine"
+        <enum name="assignedToOperation" values="01workstations,02workstationTypes"
               default="02workstationTypes" required="true" copyable="true"/>
 
 

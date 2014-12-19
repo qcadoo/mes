@@ -23,22 +23,16 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.hooks.TOCDetailsHooks;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class TOCDetailsListeners {
@@ -48,44 +42,29 @@ public class TOCDetailsListeners {
     @Autowired
     private TOCDetailsHooks tOCDetailsHooks;
 
-    public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+    public void setProductionLineLookup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        tOCDetailsHooks.setProductionLineLookup(view);
+    }
+
+    public void setWorkstationsLookup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        tOCDetailsHooks.setWorkstationsLookup(view);
+    }
+
+    public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         tOCDetailsHooks.setWorkstationsTabFields(view);
         FieldComponent assignedToOperation = (FieldComponent) view
                 .getComponentByReference(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION);
         String assignedToOperationValue = (String) assignedToOperation.getFieldValue();
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
-            clearLookupField(view, TechnologyOperationComponentFields.WORKSTATION_TYPE);
-            clearLookupField(view, TechnologyOperationComponentFields.DIVISION);
-            clearLookupField(view, TechnologyOperationComponentFields.PRODUCTION_LINE);
+            tOCDetailsHooks.clearLookupField(view, TechnologyOperationComponentFields.WORKSTATION_TYPE);
+            tOCDetailsHooks.clearLookupField(view, TechnologyOperationComponentFields.DIVISION);
+            tOCDetailsHooks.clearLookupField(view, TechnologyOperationComponentFields.PRODUCTION_LINE);
         } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
-            clearWorkstationsField(view);
-            clearLookupField(view, TechnologyOperationComponentFields.DIVISION);
-            clearLookupField(view, TechnologyOperationComponentFields.PRODUCTION_LINE);
-        } else if (AssignedToOperation.DIVISION.getStringValue().equals(assignedToOperationValue)) {
-            clearWorkstationsField(view);
-            clearLookupField(view, TechnologyOperationComponentFields.WORKSTATION_TYPE);
-            clearLookupField(view, TechnologyOperationComponentFields.PRODUCTION_LINE);
-        } else if (AssignedToOperation.PRODUCTION_LINE.getStringValue().equals(assignedToOperationValue)) {
-            clearWorkstationsField(view);
-            clearLookupField(view, TechnologyOperationComponentFields.WORKSTATION_TYPE);
-            clearLookupField(view, TechnologyOperationComponentFields.DIVISION);
+            tOCDetailsHooks.clearWorkstationsField(view);
+            tOCDetailsHooks.clearLookupField(view, TechnologyOperationComponentFields.DIVISION);
+            tOCDetailsHooks.clearLookupField(view, TechnologyOperationComponentFields.PRODUCTION_LINE);
         }
 
-    }
-
-    private void clearWorkstationsField(final ViewDefinitionState view) {
-        GridComponent workstations = (GridComponent) view
-                .getComponentByReference(TechnologyOperationComponentFields.WORKSTATIONS);
-        List<Entity> entities = Lists.newArrayList();
-        workstations.setEntities(entities);
-        workstations.setFieldValue(null);
-    }
-
-    private void clearLookupField(final ViewDefinitionState view, String fieldName) {
-        LookupComponent lookup = (LookupComponent) view.getComponentByReference(fieldName);
-        lookup.setFieldValue(null);
-        lookup.requestComponentUpdateState();
     }
 
     public void addUpTheNumberOfWorktations(final ViewDefinitionState view, final ComponentState componentState,

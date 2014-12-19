@@ -31,16 +31,20 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class OperationDetailsHooks {
+
+    private static final String L_WORKSTATION_LOOKUP = "workstationLookup";
 
     public static final String L_FORM = "form";
 
@@ -52,6 +56,66 @@ public class OperationDetailsHooks {
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         disableWorkstationsTabFieldsIfOperationIsNotSaved(view);
+        setProductionLineCriteriaModifiers(view);
+        setWorkstationsCriteriaModifiers(view);
+    }
+
+    private void setProductionLineCriteriaModifiers(final ViewDefinitionState view) {
+
+        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OperationFields.PRODUCTION_LINE);
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OperationFields.DIVISION);
+        Entity division = divisionLookup.getEntity();
+        FilterValueHolder filter = productionLineLookup.getFilterValue();
+        if (division != null) {
+            filter.put(OperationFields.DIVISION, division.getId());
+        } else {
+            filter.remove(OperationFields.DIVISION);
+        }
+        productionLineLookup.setFilterValue(filter);
+    }
+
+    public void setProductionLineLookup(final ViewDefinitionState view) {
+
+        clearLookupField(view, OperationFields.PRODUCTION_LINE);
+        clearWorkstationsField(view);
+        setProductionLineCriteriaModifiers(view);
+    }
+
+    private void setWorkstationsCriteriaModifiers(final ViewDefinitionState view) {
+        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OperationFields.PRODUCTION_LINE);
+        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(L_WORKSTATION_LOOKUP);
+        Entity productionLine = productionLineLookup.getEntity();
+        FilterValueHolder filter = workstationLookup.getFilterValue();
+        if (productionLine != null) {
+            filter.put(OperationFields.PRODUCTION_LINE, productionLine.getId());
+        } else {
+            filter.remove(OperationFields.PRODUCTION_LINE);
+        }
+        workstationLookup.setFilterValue(filter);
+
+    }
+
+    public void setWorkstationsLookup(final ViewDefinitionState view) {
+        clearWorkstationsField(view);
+        setWorkstationsCriteriaModifiers(view);
+    }
+
+    public void clearWorkstationsField(final ViewDefinitionState view) {
+        GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
+        FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity operation = operationForm.getEntity();
+        List<Entity> entities = Lists.newArrayList();
+        workstations.setEntities(entities);
+        workstations.setFieldValue(null);
+        operation.setField(OperationFields.WORKSTATIONS, null);
+        Entity savedOperation = operation.getDataDefinition().save(operation);
+        operationForm.setEntity(savedOperation);
+    }
+
+    public void clearLookupField(final ViewDefinitionState view, String fieldName) {
+        LookupComponent lookup = (LookupComponent) view.getComponentByReference(fieldName);
+        lookup.setFieldValue(null);
+        lookup.requestComponentUpdateState();
     }
 
     private void disableWorkstationsTabFieldsIfOperationIsNotSaved(ViewDefinitionState view) {
@@ -84,26 +148,18 @@ public class OperationDetailsHooks {
         GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
 
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
-            changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, Lists.newArrayList(""));
+            changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS,
+                    Lists.newArrayList(OperationFields.DIVISION, OperationFields.PRODUCTION_LINE));
             workstations.setEnabled(true);
             enableRibbonItem(view, !workstations.getEntities().isEmpty());
         } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
             changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, Lists.newArrayList(OperationFields.WORKSTATION_TYPE));
             workstations.setEnabled(false);
             enableRibbonItem(view, false);
-        } else if (AssignedToOperation.DIVISION.getStringValue().equals(assignedToOperationValue)) {
-            changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, Lists.newArrayList(OperationFields.DIVISION));
-            workstations.setEnabled(false);
-            enableRibbonItem(view, false);
-        } else if (AssignedToOperation.PRODUCTION_LINE.getStringValue().equals(assignedToOperationValue)) {
-            changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS, Lists.newArrayList(OperationFields.PRODUCTION_LINE));
-            workstations.setEnabled(false);
-            enableRibbonItem(view, false);
         }
     }
 
-    private void changeEnabledLookups(final ViewDefinitionState view, final List<String> fields,
-            final List<String> enabledFields) {
+    private void changeEnabledLookups(final ViewDefinitionState view, final List<String> fields, final List<String> enabledFields) {
         for (String field : fields) {
             LookupComponent lookup = (LookupComponent) view.getComponentByReference(field);
             lookup.setEnabled(enabledFields.contains(field));
