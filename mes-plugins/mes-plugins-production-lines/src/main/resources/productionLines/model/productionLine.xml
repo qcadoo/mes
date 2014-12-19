@@ -54,6 +54,8 @@
 			<validatesRange from="0" exclusively="true" />
 		</integer>
 	</fields>
-	<hooks />
+	<hooks>
+		<onDelete class="com.qcadoo.mes.productionLines.hooks.ProductionLineHooks" method="onDelete"/>
+	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

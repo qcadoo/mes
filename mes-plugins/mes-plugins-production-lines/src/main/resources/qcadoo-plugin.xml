@@ -84,6 +84,10 @@
                     class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter"/>
         </model:model-hook>
 
+		<model:model-hook model="workstation" plugin="basic">
+			<model:onDelete class="com.qcadoo.mes.productionLines.hooks.WorkstationHooksPL" method="onDelete"/>
+		</model:model-hook>
+
         <menu:menu-item name="productionLines" category="basic"
                         view="productionLinesList"/>
 

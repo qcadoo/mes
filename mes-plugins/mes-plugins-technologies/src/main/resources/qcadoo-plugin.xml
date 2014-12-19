@@ -172,6 +172,9 @@
                            model="technologyOperationComponent" joinField="productionLine" cascade="nullify"/>
         </model:model-field>
 
+		<model:model-hook model="division" plugin="basic">
+			<model:onDelete class="com.qcadoo.mes.technologies.hooks.DivisionHooksT" method="onDelete"/>
+		</model:model-hook>
         <menu:menu-category name="technology"/>
 
         <menu:menu-item name="technologies" category="technology"
