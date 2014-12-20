@@ -51,4 +51,6 @@ public final class PositionFields {
 
     public static final String STORAGE_LOCATION = "storageLocation";
 
+    public static final String EXTERNAL_NUMBER = "externalNumber";
+
 }
