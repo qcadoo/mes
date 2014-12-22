@@ -31,7 +31,7 @@
 
 	<windowTab name="workPlansProductsTab" reference="workPlansProductsTab">
 		<component type="gridLayout" name="workPlansProductsGridLayout"
-			columns="2" rows="3">
+			columns="2" rows="4">
 			<layoutElement column="1" row="1" width="2">
 				<component type="label" name="workPlansProductsTabWelcome">
 					<option type="labelStyle" value="text" />
@@ -45,6 +45,13 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
+				<component type="checkbox" name="manualOrderForProducts"
+					field="#{form}.manualOrderForProducts" reference="manualOrderForProducts">
+					<option type="labelWidth" value="50" />
+					<option type="align" value="left" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="4">
 				<component type="grid" name="columnsForInputProducts"
 					source="#{form}.technologyOperationInputColumns" reference="columnsForInputProducts">
 					<option type="column" name="name" fields="columnForInputProducts"
@@ -73,7 +80,7 @@
 					<option type="align" value="left" />
 				</component>
 			</layoutElement>
-			<layoutElement column="2" row="3">
+			<layoutElement column="2" row="4">
 				<component type="grid" name="columnsForOutputProducts"
 					source="#{form}.technologyOperationOutputColumns" reference="columnsForOutputProducts">
 					<option type="column" name="name" fields="columnForOutputProducts"
