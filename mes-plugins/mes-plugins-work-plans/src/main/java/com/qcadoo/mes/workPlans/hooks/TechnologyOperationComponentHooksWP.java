@@ -53,7 +53,7 @@ public class TechnologyOperationComponentHooksWP {
 
     public void onCreate(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         copyColumnForProducts(technologyOperationComponent);
-        copyManualOrderForProductsParameter(technologyOperationComponent);
+        // copyManualOrderForProductsParameter(technologyOperationComponent);
     }
 
     private void copyColumnForProducts(final Entity technologyOperationComponent) {
@@ -107,16 +107,16 @@ public class TechnologyOperationComponentHooksWP {
                         .getField(TechnologyOperationComponentFieldsWP.TECHNOLOGY_OPERATION_OUTPUT_COLUMNS) == null);
     }
 
-    private void copyManualOrderForProductsParameter(final Entity technologyOperationComponent) {
-
-        Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-
-        if (operation == null) {
-            return;
-        }
-        technologyOperationComponent.setField(TechnologyOperationComponentFieldsWP.MANUAL_ORDER_FOR_PRODUCTS,
-                operation.getField(OperationFieldsWP.MANUAL_ORDER_FOR_PRODUCTS));
-    }
+    // private void copyManualOrderForProductsParameter(final Entity technologyOperationComponent) {
+    //
+    // Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+    //
+    // if (operation == null) {
+    // return;
+    // }
+    // technologyOperationComponent.setField(TechnologyOperationComponentFieldsWP.MANUAL_ORDER_FOR_PRODUCTS,
+    // operation.getField(OperationFieldsWP.MANUAL_ORDER_FOR_PRODUCTS));
+    // }
 
     private List<Entity> getOperationHasManyField(final Long operationId, final String fieldName) {
         List<Entity> hasManyFieldValue = null;
