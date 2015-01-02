@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
@@ -187,30 +186,38 @@ public class CostNormsForMaterialsService {
         grid.setEntities(inputProducts);
     }
 
+    // TODO dev_team - temporary removed 'or' function to avoid silent transaction rollback in production counting
     public void updateCostsForProductInOrder(final Entity order, final Long productId, final Optional<BigDecimal> newQuantity,
             final Optional<BigDecimal> costForOrder) {
-        Entity orderMaterialCosts = orderMaterialCostsDataProvider.find(order.getId(), productId).or(new Supplier<Entity>() {
+        Optional<Entity> orderMaterialCostsOpt = orderMaterialCostsDataProvider.find(order.getId(), productId);
+        /*
+         * .or(new Supplier<Entity>() {
+         * @Override public Entity get() { throw new IllegalArgumentException(String.format(
+         * "TechnologyInstanceOperationProductInComponent (order material costs entity) not found for " + "product: %d order: %d",
+         * productId, order.getId())); } });
+         */
 
-            @Override
-            public Entity get() {
-                throw new IllegalArgumentException(String.format(
+        if (orderMaterialCostsOpt.isPresent()) {
+            Entity orderMaterialCosts = orderMaterialCostsOpt.get();
+            orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_ORDER,
+                    numberService.setScale(costForOrder.or(BigDecimal.ZERO)));
+            BigDecimal oldQuantity = orderMaterialCosts.getDecimalField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER);
+
+            if (oldQuantity == null) {
+                LOG.debug(String.format(
+                        "There are no costs in TechnologyInstanceOperationProductInComponent (id: %d ) to recalculate.",
+                        orderMaterialCosts.getId()));
+            } else {
+                updateCosts(zeroToOne(newQuantity.or(BigDecimal.ONE)), orderMaterialCosts, zeroToOne(oldQuantity));
+            }
+            orderMaterialCosts.getDataDefinition().save(orderMaterialCosts);
+        } else {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(String.format(
                         "TechnologyInstanceOperationProductInComponent (order material costs entity) not found for "
                                 + "product: %d order: %d", productId, order.getId()));
             }
-        });
-
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_ORDER,
-                numberService.setScale(costForOrder.or(BigDecimal.ZERO)));
-        BigDecimal oldQuantity = orderMaterialCosts.getDecimalField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER);
-
-        if (oldQuantity == null) {
-            LOG.debug(String.format(
-                    "There are no costs in TechnologyInstanceOperationProductInComponent (id: %d ) to recalculate.",
-                    orderMaterialCosts.getId()));
-        } else {
-            updateCosts(zeroToOne(newQuantity.or(BigDecimal.ONE)), orderMaterialCosts, zeroToOne(oldQuantity));
         }
-        orderMaterialCosts.getDataDefinition().save(orderMaterialCosts);
     }
 
     private BigDecimal zeroToOne(final BigDecimal bigDecimal) {
