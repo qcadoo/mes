@@ -77,6 +77,19 @@ public class DocumentBuilder {
         return this;
     }
 
+    public DocumentBuilder transfer(Entity locationTo, Entity locationFrom) {
+        document.setField(DocumentFields.LOCATION_TO, locationTo);
+        document.setField(DocumentFields.LOCATION_FROM, locationFrom);
+        document.setField(DocumentFields.TYPE, DocumentType.TRANSFER.getStringValue());
+        return this;
+    }
+
+    public DocumentBuilder release(Entity locationFrom) {
+        document.setField(DocumentFields.LOCATION_FROM, locationFrom);
+        document.setField(DocumentFields.TYPE, DocumentType.RELEASE.getStringValue());
+        return this;
+    }
+
     /**
      * Add position to document, use this method for outbound and transfer documents where additional attributes should not been
      * set.
