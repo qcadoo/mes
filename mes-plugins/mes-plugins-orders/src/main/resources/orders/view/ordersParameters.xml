@@ -34,7 +34,7 @@
 			<group name="actions" hasLabel="false">
 				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
 			</group>
-			<group name="dictionary">
+			<group name="dictionary" defaultAuthorizationRole="ROLE_DICTIONARY_VIEW">
 				<bigButton name="deviationsDictionary" icon="calendarIcon24.png" action="">
 					<script>
 						<![CDATA[
