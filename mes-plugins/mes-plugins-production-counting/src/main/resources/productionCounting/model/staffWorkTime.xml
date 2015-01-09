@@ -32,9 +32,5 @@
         <belongsTo name="worker" model="staff" plugin="basic" required="true" />
         <integer name="laborTime" copyable="false" default="0" />
     </fields>
-    <hooks> 
-		<validatesWith
-			class="com.qcadoo.mes.productionCounting.validators.StaffWorkTimeValidators"
-			method="validatesWith" />
-    </hooks>
+    <hooks />
 </model>
