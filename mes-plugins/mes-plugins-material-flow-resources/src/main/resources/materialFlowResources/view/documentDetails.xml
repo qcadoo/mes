@@ -215,20 +215,23 @@
                                        source="attributeValues" reference="additionalAttributes">
                                 <option type="hasButtons" value="false"/>
                                 <option type="hasBorder" value="false"/>
-
+                                
                                 <components>
-                                    <component type="borderLayout" name="attributesBorderLayout">
-                                            <layoutElement width="5">
-                                                <component type="lookup" name="attributeName" field="attribute"
-                                                           reference="attributeName" hasLabel="false"
-                                                           defaultEnabled="never">
+                                    <component type="gridLayout" name="positionsLayout"
+                                               columns="20" rows="1" hasBorders="false">
+                                        <layoutElement column="1" row="1">
+                                            <component type="lookup" name="attributeName" field="attribute"
+                                                       reference="attributeName" hasLabel="false"
+                                                       defaultEnabled="never">
 
-                                                    <option type="expression" value="#name"/>
-                                                    <option type="fieldCode" value="name"/>
-                                                    <option type="textRepresentationOnDisabled" value="true"/>
-                                                </component>
-                                                <component type="checkbox" name="value" field="value" hasLabel="false"/>
-                                            </layoutElement>
+                                                <option type="expression" value="#name"/>
+                                                <option type="fieldCode" value="name"/>
+                                                <option type="textRepresentationOnDisabled" value="true"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="2" row="1">
+                                            <component type="checkbox" name="value" field="value" hasLabel="false"/>
+                                        </layoutElement>
                                     </component>
                                 </components>
                             </component>
