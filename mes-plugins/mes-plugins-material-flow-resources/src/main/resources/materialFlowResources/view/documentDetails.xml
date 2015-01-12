@@ -142,7 +142,7 @@
                 <option type="hasButtons" value="true"/>
                 <components>
                     <component type="gridLayout" name="positionsLayout"
-                               columns="4" rows="3">
+                               columns="5" rows="3">
 
                         <layoutElement column="1" row="1">
                             <component type="input" name="numberLabel"
@@ -151,7 +151,7 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="2" row="1">
+                        <layoutElement column="2" row="1" width="2">
                             <component type="lookup" name="product" field="product"
                                        reference="product">
                                 <option type="column" fields="name" name="name" link="true"/>
@@ -167,7 +167,7 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="3" row="1">
+                        <layoutElement column="4" row="1">
                             <component type="gridLayout" name="quantityLayout"
                                        columns="4" rows="1" hasBorders="false">
 
@@ -183,7 +183,7 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="4" row="1">
+                        <layoutElement column="5" row="1">
                             <component type="input" name="price" field="price"/>
                         </layoutElement>
 
@@ -213,11 +213,11 @@
                             <component type="calendar" name="productionDate" field="productionDate"/>
                         </layoutElement>
 
-                        <layoutElement column="3" row="2">
+                        <layoutElement column="4" row="2">
                             <component type="calendar" name="expirationDate" field="expirationDate"/>
                         </layoutElement>
 
-                        <layoutElement column="4" row="2">
+                        <layoutElement column="5" row="2">
                             <component type="select" name="storageLocation" field="storageLocation"
                                        reference="storageLocation"/>
                         </layoutElement>
