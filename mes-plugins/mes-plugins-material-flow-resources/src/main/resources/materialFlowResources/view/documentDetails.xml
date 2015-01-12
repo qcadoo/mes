@@ -110,6 +110,18 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="3">
+                        <component type="lookup" name="company" field="company"
+                                   reference="company">
+                            <option type="column" fields="name" name="name" link="true"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
                         <component type="select" name="state" field="state"
                                    reference="state" defaultEnabled="false">
                         </component>
@@ -211,29 +223,41 @@
                         </layoutElement>
 
                         <layoutElement column="1" row="3" width="4">
-                            <component type="awesomeDynamicList" name="additionalAttributes"
-                                       source="attributeValues" reference="additionalAttributes">
-                                <option type="hasButtons" value="false"/>
-                                <option type="hasBorder" value="false"/>
+                            <component type="gridLayout" name="attributesGridLayout"
+                                       columns="4" rows="1" hasBorders="false">
+                                <layoutElement column="1" row="1">
 
-                                <components>
-                                    <component type="gridLayout" name="attributesLayout"
-                                               columns="10" rows="1" hasBorders="false">
-                                        <layoutElement column="1" row="1">
-                                            <component type="lookup" name="attributeName" field="attribute"
-                                                       reference="attributeName" hasLabel="false"
-                                                       defaultEnabled="never">
+                                    <component type="borderLayout" name="attributesBorderLayout">
+                                        <option type="label" value="attributesBorderLayoutLabel" />
+                                        <component type="awesomeDynamicList" name="additionalAttributes"
+                                                   source="attributeValues" reference="additionalAttributes">
+                                            <option type="hasButtons" value="false"/>
+                                            <option type="hasBorder" value="false"/>
 
-                                                <option type="expression" value="#name"/>
-                                                <option type="fieldCode" value="name"/>
-                                                <option type="textRepresentationOnDisabled" value="true"/>
-                                            </component>
-                                        </layoutElement>
-                                        <layoutElement column="2" row="1">
-                                            <component type="checkbox" name="value" field="value" hasLabel="false"/>
-                                        </layoutElement>
+                                            <components>
+
+                                                <component type="gridLayout" name="attributesLayout"
+                                                           columns="2" rows="1" hasBorders="false">
+                                                    <layoutElement column="1" row="1">
+                                                        <component type="lookup" name="attributeName" field="attribute"
+                                                                   reference="attributeName" hasLabel="false"
+                                                                   defaultEnabled="never">
+
+                                                            <option type="expression" value="#name"/>
+                                                            <option type="fieldCode" value="name"/>
+                                                            <option type="textRepresentationOnDisabled" value="true"/>
+                                                        </component>
+                                                    </layoutElement>
+                                                    <layoutElement column="2" row="1">
+                                                        <component type="checkbox" name="value" field="value"
+                                                                   hasLabel="false"/>
+                                                    </layoutElement>
+
+                                                </component>
+                                            </components>
+                                        </component>
                                     </component>
-                                </components>
+                                </layoutElement>
                             </component>
                         </layoutElement>
 
