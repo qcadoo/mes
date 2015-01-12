@@ -23,8 +23,11 @@
  */
 package com.qcadoo.mes.productionCounting.validators;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -34,19 +37,29 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class StaffWorkTimeValidators {
 
-    public boolean validatesWith(final DataDefinition staffWorkTimeDD, final Entity staffWorkTime) {
-        Entity productionTracking = staffWorkTime.getBelongsToField(StaffWorkTimeFields.PRODUCTION_RECORD);
+    @Autowired
+    private ParameterService parameterService;
 
-        Entity existingStaffWorkTime = productionTracking
-                .getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES)
-                .find()
-                .add(SearchRestrictions.belongsTo(StaffWorkTimeFields.WORKER,
-                        staffWorkTime.getBelongsToField(StaffWorkTimeFields.WORKER))).setMaxResults(1).uniqueResult();
-        if (staffWorkTime.getId() == null && existingStaffWorkTime != null && !existingStaffWorkTime.equals(staffWorkTime)) {
-            staffWorkTime.addError(staffWorkTime.getDataDefinition().getField(StaffWorkTimeFields.WORKER),
-                    "productionCounting.productionTracking.productionTrackingError.duplicateWorker");
-            return false;
+    public boolean validatesWith(final DataDefinition staffWorkTimeDD, final Entity staffWorkTime) {
+        Entity parameter = parameterService.getParameter();
+
+        if (!parameter.getBooleanField(ParameterFieldsPC.ALLOW_MULTIPLE_REGISTERING_TIME_FOR_WORKER)) {
+            Entity productionTracking = staffWorkTime.getBelongsToField(StaffWorkTimeFields.PRODUCTION_RECORD);
+
+            Entity existingStaffWorkTime = productionTracking
+                    .getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES)
+                    .find()
+                    .add(SearchRestrictions.belongsTo(StaffWorkTimeFields.WORKER,
+                            staffWorkTime.getBelongsToField(StaffWorkTimeFields.WORKER))).setMaxResults(1).uniqueResult();
+            if (staffWorkTime.getId() == null && existingStaffWorkTime != null && !existingStaffWorkTime.equals(staffWorkTime)) {
+                staffWorkTime.addError(staffWorkTime.getDataDefinition().getField(StaffWorkTimeFields.WORKER),
+                        "productionCounting.productionTracking.productionTrackingError.duplicateWorker");
+
+                return false;
+            }
         }
+
         return true;
     }
+
 }
