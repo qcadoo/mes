@@ -49,4 +49,6 @@ public final class ParameterFieldsPC {
 
     public static final String VALIDATE_PRODUCTION_RECORD_TIMES = "validateProductionRecordTimes";
 
+    public static final String ALLOW_MULTIPLE_REGISTERING_TIME_FOR_WORKER = "allowMultipleRegisteringTimeForWorker";
+
 }

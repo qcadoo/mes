@@ -13,3 +13,12 @@ ALTER TABLE materialflowresources_resourcecorrection ADD COLUMN oldstoragelocati
 ALTER TABLE materialflowresources_resourcecorrection ADD COLUMN newstoragelocation character varying(255);
 
 -- end
+
+
+-- Table: basic_parameter
+-- last touched: 10.01.2015 by lupo
+
+ALTER TABLE basic_parameter ADD COLUMN allowmultipleregisteringtimeforworker boolean;
+ALTER TABLE basic_parameter ALTER COLUMN allowmultipleregisteringtimeforworker SET DEFAULT false;
+
+-- end
