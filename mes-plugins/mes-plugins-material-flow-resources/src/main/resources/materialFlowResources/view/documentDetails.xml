@@ -209,7 +209,7 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="2" row="2">
+                        <layoutElement column="2" row="2" width="2">
                             <component type="calendar" name="productionDate" field="productionDate"/>
                         </layoutElement>
 
