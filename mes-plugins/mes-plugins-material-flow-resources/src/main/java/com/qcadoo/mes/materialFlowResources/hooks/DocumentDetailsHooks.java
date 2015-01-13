@@ -87,19 +87,23 @@ public class DocumentDetailsHooks {
                 || DocumentType.INTERNAL_INBOUND.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, true);
             showWarehouse(view, false, true);
+            showCompany(view, true);
             enableAttributesADL(view, true);
         } else if (DocumentType.TRANSFER.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, true, true);
+            showCompany(view, false);
             enableAttributesADL(view, false);
         } else if (DocumentType.RELEASE.getStringValue().equals(documentType)
                 || DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, true, false);
+            showCompany(view, true);
             enableAttributesADL(view, false);
         } else {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, false, false);
+            showCompany(view, false);
             enableAttributesADL(view, false);
         }
     }
@@ -110,6 +114,11 @@ public class DocumentDetailsHooks {
 
         FieldComponent locationTo = (FieldComponent) view.getComponentByReference("locationTo");
         locationTo.setEnabled(to);
+    }
+
+    private void showCompany(final ViewDefinitionState view, boolean visible) {
+        FieldComponent company = (FieldComponent) view.getComponentByReference("company");
+        company.setEnabled(visible);
     }
 
     private void enableInboundDocumentPositionsAttributesAndFillInUnit(final ViewDefinitionState view, final boolean enabled) {
