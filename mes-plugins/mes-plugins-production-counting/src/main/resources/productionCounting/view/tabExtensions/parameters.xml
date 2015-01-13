@@ -97,6 +97,12 @@
                     <option type="labelWidth" value="80" />
                 </component>
 			</layoutElement>
+			<layoutElement column="3" row="5">
+				<component type="checkbox" name="allowMultipleRegisteringTimeForWorker"
+					   reference="allowMultipleRegisteringTimeForWorker" field="#{form}.allowMultipleRegisteringTimeForWorker">
+					<option type="labelWidth" value="80" />
+				</component>
+			</layoutElement>
 		</component>
 	</windowTab>
 	

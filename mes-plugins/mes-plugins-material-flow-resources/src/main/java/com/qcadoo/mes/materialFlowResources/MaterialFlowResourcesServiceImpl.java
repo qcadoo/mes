@@ -397,6 +397,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE).create();
         newAttribute.setField(AttributeValueFields.ATTRIBUTE, attribute);
         newAttribute.setField(AttributeValueFields.POSITION, position);
+        newAttribute.setField(AttributeValueFields.VALUE, attribute.getField(AttributeFields.DEFAULT_VALUE));
 
         return newAttribute;
     }

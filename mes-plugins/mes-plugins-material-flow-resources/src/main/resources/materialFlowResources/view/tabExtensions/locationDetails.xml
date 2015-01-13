@@ -75,10 +75,10 @@
 						<header>
 							<component type="gridLayout" name="mainGridLayout"
 								columns="5" rows="1">
-								<layoutElement column="1" row="1" width="4">
+								<layoutElement column="1" row="1" width="3">
 									<component type="label" name="attributeName" />
 								</layoutElement>
-								<layoutElement column="5" row="1">
+								<layoutElement column="4" row="1" width="2">
 									<component type="label" name="required" />
 								</layoutElement>
 							</component>
@@ -86,12 +86,12 @@
 						<components>
 							<component type="gridLayout" name="attributesGridLayout"
 								columns="5" rows="1">
-								<layoutElement column="1" row="1" width="4">
+								<layoutElement column="1" row="1" width="3">
 									<component type="input" name="attributeName"
 										field="name" hasLabel="false" reference="attributeName"/>
 								</layoutElement>
-								<layoutElement column="5" row="1">
-									<component type="checkbox" name="required" field="required" hasLabel="false"/>
+								<layoutElement column="4" row="1" width="2">
+									<component type="checkbox" name="defaultValue" field="defaultValue" hasLabel="false"/>
 								</layoutElement>
 							</component>
 						</components>

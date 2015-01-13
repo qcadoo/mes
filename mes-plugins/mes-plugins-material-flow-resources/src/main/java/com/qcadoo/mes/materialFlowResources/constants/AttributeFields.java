@@ -12,4 +12,6 @@ public final class AttributeFields {
     public static final String REQUIRED = "required";
 
     public static final String NAME = "name";
+
+    public static final String DEFAULT_VALUE = "defaultValue";
 }

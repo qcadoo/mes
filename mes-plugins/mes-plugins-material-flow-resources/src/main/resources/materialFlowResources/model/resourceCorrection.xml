@@ -36,6 +36,8 @@
 		<datetime name="time" />
 		<string name="batch" />
 		<belongsTo name="resource" model="resource"/>
+		<dictionary name="oldStorageLocation" dictionary="storageLocations" />
+		<dictionary name="newStorageLocation" dictionary="storageLocations" />
 	</fields>
 	<hooks/>
 </model>
