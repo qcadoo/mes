@@ -148,6 +148,7 @@
                             <component type="input" name="numberLabel"
                                        field="number" defaultEnabled="false">
                                 <option type="labelWidth" value="60"/>
+                                <option type="alignment" value="right"/>
                             </component>
                         </layoutElement>
 
@@ -172,7 +173,9 @@
                                        columns="4" rows="1" hasBorders="false">
 
                                 <layoutElement column="1" row="1" width="3">
-                                    <component type="input" name="quantity" field="quantity"/>
+                                    <component type="input" name="quantity" field="quantity">
+                                        <option type="alignment" value="right"/>
+                                    </component>
                                 </layoutElement>
                                 <layoutElement column="4" row="1">
                                     <component type="input" name="unit" field="unit"
@@ -184,7 +187,9 @@
                         </layoutElement>
 
                         <layoutElement column="5" row="1">
-                            <component type="input" name="price" field="price"/>
+                            <component type="input" name="price" field="price">
+                                <option type="alignment" value="right"/>
+                            </component>
                         </layoutElement>
 
                         <layoutElement column="1" row="2">
