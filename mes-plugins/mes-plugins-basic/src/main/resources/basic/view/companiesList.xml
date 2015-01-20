@@ -38,15 +38,15 @@
 			<option type="column" name="number" fields="number" link="true"
 				width="50" />
 			<option type="column" name="name" fields="name" link="true"
-				width="100" />
+				width="200" />
 			<option type="column" name="city" fields="city" link="true"
-				width="100" />
+				width="120" />
 			<option type="column" name="state" fields="state" link="true"
-				width="150" />
+				width="70" />
 			<option type="column" name="country" fields="country"
-				expression="#country['country']" link="true" width="100" />
+				expression="#country['country']" link="true" width="50" />
 			<option type="column" name="tax" fields="tax" link="true"
-				width="100" />
+				width="70" />
 
 			<option type="order" column="number" direction="asc" />
 
