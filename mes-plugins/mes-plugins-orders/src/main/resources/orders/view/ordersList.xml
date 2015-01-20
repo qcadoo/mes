@@ -220,15 +220,15 @@
 				]]>
 			</script>
 			<option type="column" name="number" fields="number" link="true"
-				width="30" />
-			<option type="column" name="name" fields="name" link="true"
 				width="60" />
-			<option type="column" name="state" fields="state" width="35" />
+			<option type="column" name="name" fields="name" link="true"
+				width="100" />
+			<option type="column" name="state" fields="state" width="30" />
 			<option type="column" name="deadline" fields="deadline" width="50" />
 			<option type="column" name="technologyNumber" fields="technology"
-				expression="#technology['number']" width="30" />
+				expression="#technology['number']" width="60" />
 			<option type="column" name="productNumber" fields="product"
-				expression="#product['number']" width="30" />
+				expression="#product['number']" width="60" />
 			<option type="column" name="plannedQuantity" fields="plannedQuantity"
 				width="35" />
 			<option type="column" name="unit" fields="product" expression="#product['unit']"
