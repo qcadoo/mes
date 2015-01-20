@@ -37,24 +37,24 @@
 
 		<component type="grid" name="resourceGrid" reference="grid">
 			<option type="column" name="locationNumber" fields="location"
-				expression="#location['number']" link="true" />
+				expression="#location['number']" link="true" width="40" />
 			<option type="column" name="locationName" fields="location"
 				expression="#location['name']" link="true" />
 			<option type="column" name="productNumber" fields="product"
-				expression="#product['number']" link="true" />
+				expression="#product['number']" link="true" width="100" />
 			<option type="column" name="productName" fields="product"
-				expression="#product['name']" link="true" />
-			<option type="column" name="quantity" fields="quantity" />
+				expression="#product['name']" link="true" width="110" />
+			<option type="column" name="quantity" fields="quantity" width="30" />
 			<option type="column" name="productUnit" fields="product" 
 				expression="#product['unit']" width="50"/>
-			<option type="column" name="price" fields="price" />
-			<option type="column" name="value" fields="value" />
+			<option type="column" name="price" fields="price" width="60" />
+			<option type="column" name="value" fields="value" width="60" />
             <option type="column" name="time" fields="time" />
             <option type="column" name="productionDate" fields="productionDate" />
             <option type="column" name="expirationDate" fields="expirationDate" />
             <option type="column" name="batch" fields="batch" />
             <option type="column" name="storageLocation" fields="storageLocation" />
-            <option type="column" name="isCorrected" fields="isCorrected" />
+            <option type="column" name="isCorrected" fields="isCorrected" width="50" />
 
 			<option type="order" column="productNumber" direction="asc" />
 

@@ -37,15 +37,15 @@
 
 		<component type="grid" name="resourceCorrectionsGrid" reference="grid">
 			<option type="column" name="number" fields="number" link="true" />
-			<option type="column" name="createDate" fields="createDate" link="true" />
+			<option type="column" name="createDate" fields="createDate" link="true" width="100"/>
 			<option type="column" name="productNumber" fields="product"
-				expression="#product['number']" link="true" />
+				expression="#product['number']" link="true" width="150" />
 			<option type="column" name="productName" fields="product"
-				expression="#product['name']" link="true" />
-			<option type="column" name="oldQuantity" fields="oldQuantity" />
-			<option type="column" name="newQuantity" fields="newQuantity" />
+				expression="#product['name']" link="true" width="250" />
+			<option type="column" name="oldQuantity" fields="oldQuantity" width="80" />
+			<option type="column" name="newQuantity" fields="newQuantity" width="80" />
 			<option type="column" name="productUnit" fields="product" 
-				expression="#product['unit']" />
+				expression="#product['unit']" width="40"  />
 
 			<option type="order" column="number" direction="desc" />
 
