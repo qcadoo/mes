@@ -228,13 +228,13 @@
 			          method="changeState" />
 
 			<option type="column" name="number" fields="number" link="true"
-			        width="50" />
-			<option type="column" name="name" fields="name" link="true" />
+			        width="100" />
+			<option type="column" name="name" fields="name" link="true" width="150" />
 			<option type="column" name="productName" fields="product"
-			        expression="#product['name']" />
-			<option type="column" name="state" fields="state" />
-			<option type="column" name="master" fields="master" />
-			<option type="column" name="technologyGroupNumber" fields="technologyGroup" expression="#technologyGroup['number']" />
+			        expression="#product['name']" width="150" />
+			<option type="column" name="state" fields="state" width="55"/>
+			<option type="column" name="master" fields="master" width="35" />
+			<option type="column" name="technologyGroupNumber" fields="technologyGroup" expression="#technologyGroup['number']" width="45"/>
 			<option type="column" name="externalSynchronized" fields="externalSynchronized" hidden="true" />
 			<option type="order" column="number" direction="desc" />
 			<option type="searchable" value="name,number,productName,state,technologyGroupNumber" />
