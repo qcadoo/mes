@@ -59,7 +59,7 @@
             joinField="operations" />-->
 
         <enum name="assignedToOperation" values="01workstations,02workstationTypes"
-              default="02workstationTypes" required="true"/>
+              default="01workstations" required="true"/>
 
         <belongsTo name="workstationType" plugin="basic" model="workstationType"/>
         <belongsTo name="division" plugin="basic" model="division"/>
