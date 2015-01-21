@@ -31,6 +31,7 @@
         xmlns:menu="http://schema.qcadoo.org/modules/menu"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xmlns:security="http://schema.qcadoo.org/modules/security"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
 		http://schema.qcadoo.org/plugin.xsd
 		http://schema.qcadoo.org/modules/model 
@@ -38,142 +39,149 @@
 		http://schema.qcadoo.org/modules/view 
 		http://schema.qcadoo.org/modules/view.xsd 
 		http://schema.qcadoo.org/modules/localization 
-		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/localization.xsd
+		       http://schema.qcadoo.org/modules/security
+       http://schema.qcadoo.org/modules/security.xsd
 		http://schema.qcadoo.org/modules/menu 
 		http://schema.qcadoo.org/modules/menu.xsd
 		http://schema.qcadoo.org/modules/custom
 		http://schema.qcadoo.org/modules/custom.xsd">
 
     <information>
-		<name>MES - Basic</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-		<description>Basic data like products, people, shifts, companies, etc.</description>
-		<license>AGPL</license>
-	</information>
+        <name>MES - Basic</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Basic data like products, people, shifts, companies, etc.</description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>qcadooDictionaries</plugin>
-			<version>[1.1.8</version>
-		</dependency>
-		<dependency>
-			<plugin>qcadooUnitConversions</plugin>
-			<version>[1.1.8</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <plugin>qcadooDictionaries</plugin>
+            <version>[1.1.8</version>
+        </dependency>
+        <dependency>
+            <plugin>qcadooUnitConversions</plugin>
+            <version>[1.1.8</version>
+        </dependency>
+    </dependencies>
 
-	<modules>
-		<localization:translation-group name="dashboard"
-			prefix="basic.dashboard" />
+    <modules>
+        <localization:translation-group name="dashboard"
+                                        prefix="basic.dashboard"/>
 
-		<localization:translation path="locales"
-			basename="basic" />
+        <localization:translation path="locales"
+                                  basename="basic"/>
 
-		<model:model model="company" resource="model/company.xml" />
-		<model:model model="staff" resource="model/staff.xml" />
-		<model:model model="shift" resource="model/shift.xml" />
-		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
-		<model:model model="product" resource="model/product.xml" />
-		<model:model model="substitute" resource="model/substitute.xml" />
-		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
-		<model:model model="workstationType" resource="model/workstationType.xml" />
-		<model:model model="division" resource="model/division.xml" />
+        <model:model model="company" resource="model/company.xml"/>
+        <model:model model="staff" resource="model/staff.xml"/>
+        <model:model model="shift" resource="model/shift.xml"/>
+        <model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml"/>
+        <model:model model="product" resource="model/product.xml"/>
+        <model:model model="substitute" resource="model/substitute.xml"/>
+        <model:model model="substituteComponent" resource="model/substituteComponent.xml"/>
+        <model:model model="workstationType" resource="model/workstationType.xml"/>
+        <model:model model="division" resource="model/division.xml"/>
 
-		<model:model model="parameter" resource="model/parameter.xml" />
+        <model:model model="parameter" resource="model/parameter.xml"/>
 
-		<model:model model="country" resource="model/country.xml" />
-		<model:model model="currency" resource="model/currency.xml" />
+        <model:model model="country" resource="model/country.xml"/>
+        <model:model model="currency" resource="model/currency.xml"/>
 
-		<model:model model="reportColumnWidth" resource="model/reportColumnWidth.xml" />
+        <model:model model="reportColumnWidth" resource="model/reportColumnWidth.xml"/>
 
-		<model:model model="workstation" resource="model/workstation.xml" />
+        <model:model model="workstation" resource="model/workstation.xml"/>
 
-		<model:dictionary name="categories" />
-		<model:dictionary name="posts" />
-		<model:dictionary name="reasonTypeOfChangingOrderState" />
+        <model:dictionary name="categories"/>
+        <model:dictionary name="posts"/>
+        <model:dictionary name="reasonTypeOfChangingOrderState"/>
 
-		<menu:menu-category name="basic" />
+        <menu:menu-category name="basic"/>
 
-		<menu:menu-item-url name="home" category="home"
-			url="/dashboard.html" />
+        <menu:menu-item-url name="home" category="home"
+                            url="/dashboard.html" defaultAuthorizationRole="ROLE_MENU_HOME"/>
 
-		<menu:menu-item name="companies" category="basic"
-			view="companiesList" />
+        <menu:menu-item name="companies" category="basic"
+                        view="companiesList"/>
 
-		<menu:menu-item name="countries" category="administration"
-			view="countriesList" />
+        <menu:menu-item name="countries" category="administration"
+                        view="countriesList"/>
 
-		<menu:menu-item name="staff" category="basic" view="staffsList" />
-		<menu:menu-item name="shifts" category="basic" view="shiftsList" />
-		<menu:menu-item name="products" category="basic" view="productsList" />
-		<menu:menu-item name="productsFamilies" category="basic"
-			view="productsFamilies" />
-		<menu:menu-item name="workstationTypes" category="basic"
-			view="workstationTypesList" />
-		<menu:menu-item name="divisions" category="basic"
-			view="divisionsList" />
+        <menu:menu-item name="staff" category="basic" view="staffsList"/>
+        <menu:menu-item name="shifts" category="basic" view="shiftsList"/>
+        <menu:menu-item name="products" category="basic" view="productsList"/>
+        <menu:menu-item name="productsFamilies" category="basic"
+                        view="productsFamilies"/>
+        <menu:menu-item name="workstationTypes" category="basic"
+                        view="workstationTypesList"/>
+        <menu:menu-item name="divisions" category="basic"
+                        view="divisionsList"/>
 
-		<menu:menu-item-url name="dictionariesInBasic"
-			category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
-			defaultAuthorizationRole="ROLE_DICTIONARY_VIEW" />
+        <menu:menu-item-url name="dictionariesInBasic"
+                            category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
+                            defaultAuthorizationRole="ROLE_DICTIONARY_VIEW"/>
 
-		<menu:menu-item-url name="systemParameters"
-			category="administration" url="/parameters.html" />
+        <menu:menu-item-url name="systemParameters"
+                            category="administration" url="/parameters.html"/>
 
-		<menu:menu-item-url name="conversion" category="basic"
-			url="/unitConversions.html" />
+        <menu:menu-item-url name="conversion" category="basic"
+                            url="/unitConversions.html"/>
 
-		<menu:menu-item name="workstations" category="basic"
-			view="workstationsList" />
+        <menu:menu-item name="workstations" category="basic"
+                        view="workstationsList"/>
 
-		<view:view resource="view/reportColumnWidthDetails.xml" />
-		<view:view resource="view/companiesList.xml" />
-		<view:view resource="view/companyDetails.xml" />
-		<view:view resource="view/countriesList.xml" />
-		<view:view resource="view/countryDetails.xml" />
-		<view:view resource="view/staffsList.xml" />
-		<view:view resource="view/staffDetails.xml" />
-		<view:view resource="view/shiftsList.xml" />
-		<view:view resource="view/shiftDetails.xml" />
-		<view:view resource="view/shiftTimetableExceptionDetails.xml" />
-		<view:view resource="view/productsList.xml" />
-		<view:view resource="view/productDetails.xml" />
-		<view:view resource="view/productSubstituteDetails.xml" />
-		<view:view resource="view/productSubstituteComponentDetails.xml" />
-		<view:view resource="view/productsFamilies.xml" />
-		<view:view resource="view/productFamiliesAddProduct.xml" />
+        <view:view resource="view/reportColumnWidthDetails.xml"/>
+        <view:view resource="view/companiesList.xml"/>
+        <view:view resource="view/companyDetails.xml"/>
+        <view:view resource="view/countriesList.xml"/>
+        <view:view resource="view/countryDetails.xml"/>
+        <view:view resource="view/staffsList.xml"/>
+        <view:view resource="view/staffDetails.xml"/>
+        <view:view resource="view/shiftsList.xml"/>
+        <view:view resource="view/shiftDetails.xml"/>
+        <view:view resource="view/shiftTimetableExceptionDetails.xml"/>
+        <view:view resource="view/productsList.xml"/>
+        <view:view resource="view/productDetails.xml"/>
+        <view:view resource="view/productSubstituteDetails.xml"/>
+        <view:view resource="view/productSubstituteComponentDetails.xml"/>
+        <view:view resource="view/productsFamilies.xml"/>
+        <view:view resource="view/productFamiliesAddProduct.xml"/>
 
-		<view:view resource="view/workstationTypesList.xml" />
-		<view:view resource="view/workstationTypeDetails.xml" />
+        <view:view resource="view/workstationTypesList.xml"/>
+        <view:view resource="view/workstationTypeDetails.xml"/>
 
-		<view:view resource="view/divisionsList.xml" />
-		<view:view resource="view/divisionDetails.xml" />
+        <view:view resource="view/divisionsList.xml"/>
+        <view:view resource="view/divisionDetails.xml"/>
 
-		<view:view resource="view/parameters.xml" />
+        <view:view resource="view/parameters.xml"/>
 
-		<view:view resource="view/workstationsList.xml" />
-		<view:view resource="view/workstationDetails.xml" />
+        <view:view resource="view/workstationsList.xml"/>
+        <view:view resource="view/workstationDetails.xml"/>
 
-		<model:model-field model="unitConversionItem"
-			plugin="qcadooModel">
-			<model:belongsTo name="product" model="product"
-				plugin="basic" />
-		</model:model-field>
+        <model:model-field model="unitConversionItem"
+                           plugin="qcadooModel">
+            <model:belongsTo name="product" model="product"
+                             plugin="basic"/>
+        </model:model-field>
 
-		<model:model-hook model="unitConversionItem" plugin="qcadooModel">
-			<model:validatesWith
-				class="com.qcadoo.mes.basic.hooks.UnitConversionItemValidatorsB"
-				method="validateUnitOnConversionWithProduct" />
-		</model:model-hook>
+        <model:model-hook model="unitConversionItem" plugin="qcadooModel">
+            <model:validatesWith
+                    class="com.qcadoo.mes.basic.hooks.UnitConversionItemValidatorsB"
+                    method="validateUnitOnConversionWithProduct"/>
+        </model:model-hook>
 
-		<custom:custom class="com.qcadoo.mes.basic.BasicOnStartupService" />
-	</modules>
+        <custom:custom class="com.qcadoo.mes.basic.BasicOnStartupService"/>
 
-	<features>
-		<end-user />
-	</features>
+
+        <security:role identifier="ROLE_MENU_HOME"/>
+        <security:user-group name="Menu home user"
+                             identifier="USER_MENU_HOME" roles="ROLE_MENU_HOME"/>
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
 
 </plugin>

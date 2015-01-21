@@ -35,7 +35,7 @@
 			</ribbon>
 						
 			<component type="grid" name="stoppage" reference="grid">
-				<option type="column" name="order" fields="order" expression="#order['name']" link="true" width="40" />
+				<option type="column" name="order" fields="order" expression="#order['name']" link="true" width="65" />
 				<option type="column" name="duration" fields="duration" link="true" width="20" />
 				<option type="column" name="reason" fields="reason" link="true" />
 

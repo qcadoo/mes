@@ -56,7 +56,7 @@ import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
-@RequestMapping("/rest/techologies")
+@RequestMapping("/techologies")
 public class TechnologyMultiUploadController {
 
     private static final Logger logger = LoggerFactory.getLogger(TechnologyMultiUploadController.class);

@@ -72,10 +72,10 @@
 				width="150" />
 			<option type="column" name="name" fields="name" link="true"
 				width="300" />
-			<option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" />
+			<option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" width="85"/>
 			<option type="column" name="parent" fields="parent"
-				expression="#parent['number'] + ' - ' + #parent['name']" />
-			<option type="column" name="ean" fields="ean" />
+				expression="#parent['number'] + ' - ' + #parent['name']" width="200"/>
+			<option type="column" name="ean" fields="ean" width="85"/>
 			<option type="column" name="externalNumber" fields="externalNumber"
 				hidden="true" />
 				

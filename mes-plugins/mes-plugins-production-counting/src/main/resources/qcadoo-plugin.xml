@@ -120,6 +120,10 @@
 		<model:model-field model="parameter" plugin="basic">
  			<model:boolean name="validateProductionRecordTimes" />
  		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="allowMultipleRegisteringTimeForWorker" />
+		</model:model-field>
+
 		<model:model-field model="staff" plugin="basic">
 			<model:hasMany name="productionTrackings" model="productionTracking"
 				joinField="staff" plugin="productionCounting" />

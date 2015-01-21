@@ -50,7 +50,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Controller
-@RequestMapping("/rest/workplans")
+@RequestMapping("/workplans")
 public class WorkPlansController {
 
     private static final Logger LOG = LoggerFactory.getLogger(PdfDocumentService.class);

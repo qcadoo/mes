@@ -35,13 +35,13 @@
 			<option type="column" name="catalogNumber" fields="catalogNumber"
 				link="true" />
 			<option type="column" name="productNumber" fields="product"
-				link="true" expression="#product['number']" />
+				link="true" expression="#product['number']" width="100"/>
 			<option type="column" name="productName" fields="product"
-				link="true" expression="#product['name']" />
+				link="true" expression="#product['name']" width="300" />
 			<option type="column" name="companyNumber" fields="company"
-				link="true" expression="#company['number']" />
+				link="true" expression="#company['number']" width="100" />
 			<option type="column" name="companyName" fields="company"
-				link="true" expression="#company['name']" />
+				link="true" expression="#company['name']" width="300" />
 			<option type="order" column="productNumber" direction="asc" />
 			<option type="correspondingView"
 				value="productCatalogNumbers/productCatalogNumbersDetails" />

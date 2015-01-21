@@ -43,10 +43,10 @@
             <option type="column" name="productNumber" fields="product"
                     expression="#product['number']" />
             <option type="column" name="productName" fields="product"
-                    expression="#product['name']"/>
-            <option type="column" name="quantity" fields="quantity"/>
+                    expression="#product['name']" width="250"/>
+            <option type="column" name="quantity" fields="quantity" width="100" />
             <option type="column" name="unit" fields="product"
-                    expression="#product['unit']" />
+                    expression="#product['unit']" width="100" />
 
             <option type="order" column="locationName" direction="asc" />
 

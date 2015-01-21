@@ -39,8 +39,8 @@
 			<option type="column" name="name" fields="name" link="true"
 				width="250" />
 			<option type="column" name="deadline" fields="deadline" />
-			<option type="column" name="company" fields="company" expression="#company['name']" />
-			<option type="column" name="masterOrderState" fields="masterOrderState" />
+			<option type="column" name="company" fields="company" expression="#company['name']" width="150"/>
+			<option type="column" name="masterOrderState" fields="masterOrderState" width="100" />
 			
 			<option type="order" column="name" direction="asc" />
 			

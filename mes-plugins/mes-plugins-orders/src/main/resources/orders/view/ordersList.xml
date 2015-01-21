@@ -25,29 +25,29 @@
 
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="ordersList" modelName="order" menuAccessible="true">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="ordersList" modelName="order" menuAccessible="true">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<group name="orderListActions">
-				<bigButton name="new" icon="newIcon24.png" state="enabled"
-					action="#{grid}.performNew;" />
-				<smallButton name="copy" icon="copyIcon16.png" action="#{grid}.performCopy;"
-					state="disabled" />
-				<smallButton name="delete" icon="deleteIcon16.png"
-					action="#{grid}.performDelete;" state="disabled" />
-				<bigButton name="refresh" icon="updateIcon24.png" state="enabled"
-					action="#{window}.performRefresh;" />
-			</group>
+        <ribbon>
+            <group name="orderListActions">
+                <bigButton name="new" icon="newIcon24.png" state="enabled"
+                           action="#{grid}.performNew;"/>
+                <smallButton name="copy" icon="copyIcon16.png" action="#{grid}.performCopy;"
+                             state="disabled"/>
+                <smallButton name="delete" icon="deleteIcon16.png"
+                             action="#{grid}.performDelete;" state="disabled"/>
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled"
+                           action="#{window}.performRefresh;"/>
+            </group>
 
-			<template name="standardGridTemplate" excludeGroups="actions" />
+            <template name="standardGridTemplate" excludeGroups="actions"/>
 
-			<group name="status">
-				<smallButton name="acceptOrder" icon="startIcon16.png"
-					state="disabled">
-					<script>
+            <group name="status">
+                <smallButton name="acceptOrder" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
@@ -71,11 +71,11 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="declineOrder" icon="deleteIcon16.png"
-					state="disabled">
-					<script>
+                    </script>
+                </smallButton>
+                <smallButton name="declineOrder" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
@@ -91,11 +91,11 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="interruptOrder" icon="pauseIcon16.png"
-					state="disabled">
-					<script>
+                    </script>
+                </smallButton>
+                <smallButton name="interruptOrder" icon="pauseIcon16.png"
+                             state="disabled">
+                    <script>
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
@@ -105,14 +105,14 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-			</group>
-		</ribbon>
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
 
-		<component type="grid" name="orders" reference="grid">
-			<script>
- 				<![CDATA[
+        <component type="grid" name="orders" reference="grid">
+            <script>
+                <![CDATA[
 					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
 					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
@@ -218,49 +218,49 @@
 					
 					this.addOnChangeListener(listener);
 				]]>
-			</script>
-			<option type="column" name="number" fields="number" link="true"
-				width="50" />
-			<option type="column" name="name" fields="name" link="true"
-				width="60" />
-			<option type="column" name="state" fields="state" width="35" />
-			<option type="column" name="deadline" fields="deadline" width="50" />
-			<option type="column" name="technologyNumber" fields="technology"
-				expression="#technology['number']" width="30" />
-			<option type="column" name="productNumber" fields="product"
-				expression="#product['number']" width="30" />
-			<option type="column" name="plannedQuantity" fields="plannedQuantity"
-				width="35" />
-			<option type="column" name="unit" fields="product" expression="#product['unit']"
-				width="30" />
-			<option type="column" name="companyName" fields="company"
-				expression="#company['name']" width="50" />
+            </script>
+            <option type="column" name="number" fields="number" link="true"
+                    width="60"/>
+            <option type="column" name="name" fields="name" link="true"
+                    width="100"/>
+            <option type="column" name="state" fields="state" width="30"/>
+            <option type="column" name="deadline" fields="deadline" width="50"/>
+            <option type="column" name="technologyNumber" fields="technology"
+                    expression="#technology['number']" width="60"/>
+            <option type="column" name="productNumber" fields="product"
+                    expression="#product['number']" width="60"/>
+            <option type="column" name="plannedQuantity" fields="plannedQuantity"
+                    width="35"/>
+            <option type="column" name="unit" fields="product" expression="#product['unit']"
+                    width="30"/>
+            <option type="column" name="companyName" fields="company"
+                    expression="#company['name']" width="50"/>
 
-			<option type="column" name="externalNumber" fields="externalNumber"
-				hidden="true" />
-			<option type="column" name="externalSynchronized" fields="externalSynchronized"
-				expression="#externalSynchronized?'1':'0'" hidden="true" />
+            <option type="column" name="externalNumber" fields="externalNumber"
+                    hidden="true"/>
+            <option type="column" name="externalSynchronized" fields="externalSynchronized"
+                    expression="#externalSynchronized?'1':'0'" hidden="true"/>
 
-			<option type="correspondingView" value="orders/orderDetails" />
-			<option type="correspondingComponent" value="form" />
+            <option type="correspondingView" value="orders/orderDetails"/>
+            <option type="correspondingComponent" value="form"/>
 
-			<option type="order" column="deadline" direction="desc" />
+            <option type="order" column="deadline" direction="desc"/>
 
-			<option type="searchable"
-			        value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName" />
-			<option type="orderable"
-			        value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName" />
+            <option type="searchable"
+                    value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName"/>
+            <option type="orderable"
+                    value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName"/>
 
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
 
-			<listener event="changeState"
-				class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient"
-				method="changeState" />
-		</component>
+            <listener event="changeState"
+                      class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient"
+                      method="changeState"/>
+        </component>
 
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-	</component>
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
 
 </view>

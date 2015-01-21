@@ -25,118 +25,120 @@
 
 -->
 <model name="order" activable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="1024" />
-		</string>
-		<string name="description">
-			<validatesLength max="2048" />
-		</string>
-		<string name="defaultTechnology" persistent="false" />
-		<string name="commentReasonTypeCorrectionDateFrom" />
-		<string name="commentReasonTypeCorrectionDateTo" />
-		<string name="commentReasonDeviationEffectiveStart" />
-		<string name="commentReasonDeviationEffectiveEnd" />
-		<string name="externalNumber" unique="true"/>
-		<string name="commentReasonTypeDeviationsQuantity" />
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name" required="true">
+            <validatesLength max="1024"/>
+        </string>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
+        <string name="defaultTechnology" persistent="false"/>
+        <string name="commentReasonTypeCorrectionDateFrom"/>
+        <string name="commentReasonTypeCorrectionDateTo"/>
+        <string name="commentReasonDeviationEffectiveStart"/>
+        <string name="commentReasonDeviationEffectiveEnd"/>
+        <string name="externalNumber" unique="true"/>
+        <string name="commentReasonTypeDeviationsQuantity"/>
 
-		<datetime name="dateFrom" />
-		<datetime name="dateTo" />
-		<datetime name="effectiveDateFrom" />
-		<datetime name="effectiveDateTo" />
-		<datetime name="deadline" />
-		<datetime name="correctedDateFrom" />
-		<datetime name="correctedDateTo" />
-		<datetime name="startDate" />
-		<datetime name="finishDate" />
+        <datetime name="dateFrom"/>
+        <datetime name="dateTo"/>
+        <datetime name="effectiveDateFrom"/>
+        <datetime name="effectiveDateTo"/>
+        <datetime name="deadline"/>
+        <datetime name="correctedDateFrom"/>
+        <datetime name="correctedDateTo"/>
+        <datetime name="startDate"/>
+        <datetime name="finishDate"/>
 
-		<enum name="state"
-			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
-			required="true" />
-			
-		<enum name="orderType"
-			values="01withPatternTechnology,02withOwnTechnology"
-			default="01withPatternTechnology" required="true" />
-			
-		<belongsTo name="company" plugin="basic" model="company" />
-		<belongsTo name="product" plugin="basic" model="product"
-			required="true" />
-			
-		<belongsTo name="technology" plugin="technologies" model="technology" />
-		
-		<belongsTo name="technologyPrototype" plugin="technologies" model="technology" />
-		
-		<belongsTo name="productionLine" plugin="productionLines"
-			model="productionLine" required="true" />
+        <enum name="state"
+              values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
+              required="true"/>
 
-		<decimal name="plannedQuantity" required="true">
-			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="7" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="doneQuantity">
-			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="7" />
-			<validatesScale max="5" />
-		</decimal>
+        <enum name="orderType"
+              values="01withPatternTechnology,02withOwnTechnology"
+              default="01withPatternTechnology" required="true"/>
 
-		<boolean name="externalSynchronized" default="true" />
+        <belongsTo name="company" plugin="basic" model="company"/>
+        <belongsTo name="product" plugin="basic" model="product"
+                   required="true"/>
 
-		<hasMany name="stateChanges" joinField="order" model="orderStateChange"
-			cascade="delete" />
+        <belongsTo name="technology" plugin="technologies" model="technology"/>
 
-		<decimal name="commissionedPlannedQuantity">
-			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="7" />
-			<validatesScale max="5" />
-		</decimal>
-		
-		<decimal name="commissionedCorrectedQuantity">
-			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="7" />
-			<validatesScale max="5" />
-		</decimal>
-		
-		<decimal name="amountOfProductProduced">
-			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="7" />
-			<validatesScale max="5" />
-		</decimal>
-		
-		<decimal name="remainingAmountOfProductToProduce">
-			<validatesRange from="0" exclusively="false" />
-			<validatesUnscaledValue max="7" />
-			<validatesScale max="5" />
-		</decimal>
+        <belongsTo name="technologyPrototype" plugin="technologies" model="technology"/>
 
-		<hasMany name="typeOfCorrectionCauses" joinField="order" model="typeOfCorrectionCauses"
-			cascade="delete" />
-		<hasMany name="reasonTypesCorrectionDateFrom" model="reasonTypeCorrectionDateFrom"
-			joinField="order" cascade="delete" />
-		<hasMany name="reasonTypesCorrectionDateTo" model="reasonTypeCorrectionDateTo"
-			joinField="order" cascade="delete" />
-		<hasMany name="reasonTypesDeviationsOfEffectiveStart" model="reasonTypeDeviationEffectiveStart"
-			joinField="order" cascade="delete" />
-		<hasMany name="reasonTypesDeviationsOfEffectiveEnd" model="reasonTypeDeviationEffectiveEnd"
-			 joinField="order" cascade="delete" />
-	</fields>
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="validatesWith" />
-		
-		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="onCreate" />
-		
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="onSave" />
-			
-		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="onCopy" />
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
+        <belongsTo name="productionLine" plugin="productionLines"
+                   model="productionLine" required="true"/>
+
+        <decimal name="plannedQuantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="doneQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <boolean name="externalSynchronized" default="true"/>
+
+        <hasMany name="stateChanges" joinField="order" model="orderStateChange"
+                 cascade="delete"/>
+
+        <decimal name="commissionedPlannedQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="commissionedCorrectedQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="amountOfProductProduced">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="remainingAmountOfProductToProduce">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <hasMany name="typeOfCorrectionCauses" joinField="order" model="typeOfCorrectionCauses"
+                 cascade="delete"/>
+        <hasMany name="reasonTypesCorrectionDateFrom" model="reasonTypeCorrectionDateFrom"
+                 joinField="order" cascade="delete"/>
+        <hasMany name="reasonTypesCorrectionDateTo" model="reasonTypeCorrectionDateTo"
+                 joinField="order" cascade="delete"/>
+        <hasMany name="reasonTypesDeviationsOfEffectiveStart" model="reasonTypeDeviationEffectiveStart"
+                 joinField="order" cascade="delete"/>
+        <hasMany name="reasonTypesDeviationsOfEffectiveEnd" model="reasonTypeDeviationEffectiveEnd"
+                 joinField="order" cascade="delete"/>
+    </fields>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
+                       method="validatesWith"/>
+
+        <onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
+                  method="onCreate"/>
+
+        <onSave class="com.qcadoo.mes.orders.hooks.OrderHooks"
+                method="onSave"/>
+
+        <onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks"
+                method="onCopy"/>
+
+        <onDelete class="com.qcadoo.mes.orders.hooks.OrderHooks" method="onDelete"/>
+    </hooks>
+    <identifier expression="#number + ' - ' + #name"/>
 </model>

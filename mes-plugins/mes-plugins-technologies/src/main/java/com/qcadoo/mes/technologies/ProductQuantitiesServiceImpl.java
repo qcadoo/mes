@@ -411,7 +411,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent);
             BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
 
-            operationProductComponentWithQuantityContainer.put(operationProductComponent, quantity);
+            operationProductComponentWithQuantityContainer.put(operationProductComponent,
+                    quantity.setScale(5, RoundingMode.CEILING));
         }
     }
 

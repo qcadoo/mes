@@ -60,6 +60,8 @@ public class OrderHooks {
 
     public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
+    public static final String BACKUP_TECHNOLOGY_PREFIX = "B_";
+
     public static final long SECOND_MILLIS = 1000;
 
     @Autowired
@@ -132,6 +134,17 @@ public class OrderHooks {
         setCopyOfTechnology(order);
     }
 
+    public void onDelete(final DataDefinition orderDD, final Entity order) {
+        backupTechnology(orderDD, order);
+    }
+
+    private void backupTechnology(final DataDefinition orderDD, final Entity order) {
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        technology
+                .setField(TechnologyFields.NUMBER, BACKUP_TECHNOLOGY_PREFIX + technology.getStringField(TechnologyFields.NUMBER));
+        technology.getDataDefinition().save(technology);
+    }
+
     public void setInitialState(final DataDefinition orderDD, final Entity order) {
         stateChangeEntityBuilder.buildInitial(orderStateChangeDescriber, order, OrderState.PENDING);
     }
@@ -197,13 +210,13 @@ public class OrderHooks {
     protected boolean checkReasonOfStartDateCorrection(final Entity parameter, final Entity order) {
         return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM)
                 || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_FROM, OrderFields.REASON_TYPES_CORRECTION_DATE_FROM,
-                        "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
+                "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
     }
 
     protected boolean checkReasonOfEndDateCorrection(final Entity parameter, final Entity order) {
         return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO)
                 || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_TO, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
-                        "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
+                "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
     }
 
     private boolean checkReasonNeeded(final Entity order, final String dateFieldName, final String reasonTypeFieldName,
@@ -242,7 +255,8 @@ public class OrderHooks {
         }
 
         // EFFECTIVE_DATE_TO
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && differenceForDateTo > 0L) {
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO)
+                && differenceForDateTo > 0L) {
             final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
                     .abs(differenceForDateTo)));
 
@@ -250,7 +264,8 @@ public class OrderHooks {
                     OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
                     "orders.order.reasonNeededWhenDelayedEffectiveDateTo.isRequired", differenceAsString);
         }
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO) && differenceForDateTo < 0L) {
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO)
+                && differenceForDateTo < 0L) {
             final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
                     .abs(differenceForDateTo)));
             checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
@@ -295,7 +310,8 @@ public class OrderHooks {
         if (OrderState.PENDING.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
             order.setField(OrderFields.DATE_FROM, startDate);
         }
-        if ((OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.COMPLETED.getStringValue().equals(state) || OrderState.ABANDONED
+        if ((OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.COMPLETED.getStringValue().equals(state)
+                || OrderState.ABANDONED
                 .getStringValue().equals(state)) && !startDate.equals(startDateDB)) {
             order.setField(OrderFields.EFFECTIVE_DATE_FROM, startDate);
         }
@@ -414,7 +430,8 @@ public class OrderHooks {
         String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
 
         if (StringUtils.isEmpty(typeOfProductionRecording)) {
-            if (BigDecimalUtils.convertNullToZero(doneQuantity).compareTo(BigDecimalUtils.convertNullToZero(doneQuantityFromDB)) != 0) {
+            if (BigDecimalUtils.convertNullToZero(doneQuantity).compareTo(BigDecimalUtils.convertNullToZero(doneQuantityFromDB))
+                    != 0) {
                 order.setField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, numberService.setScale(doneQuantity));
             } else if (BigDecimalUtils.convertNullToZero(amountOfProductProduced).compareTo(
                     BigDecimalUtils.convertNullToZero(amountOfProductProducedFromDB)) != 0) {
