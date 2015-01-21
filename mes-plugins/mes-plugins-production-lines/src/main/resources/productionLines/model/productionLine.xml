@@ -25,37 +25,37 @@
 
 -->
 <model name="productionLine" activable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="2048" />
-		</string>
-		<belongsTo name="division" plugin="basic" model="division" />
-		<dictionary name="place" dictionary="productionLinePlaces"
-			required="false" />
-		<string name="description">
-			<validatesLength max="2048" />
-		</string>
-		<file name="documentation" />
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name" required="true">
+            <validatesLength max="2048"/>
+        </string>
+        <belongsTo name="division" plugin="basic" model="division"/>
+        <dictionary name="place" dictionary="productionLinePlaces"
+                    required="false"/>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
+        <file name="documentation"/>
 
-		<hasMany name="workstationTypeComponents" model="workstationTypeComponent"
-			joinField="productionLine" cascade="delete" />
+        <hasMany name="workstationTypeComponents" model="workstationTypeComponent"
+                 joinField="productionLine" cascade="delete"/>
 
-		<hasMany name="workstations" joinField="productionLine" model="workstation" cascade="nullify" plugin="basic"/>
-		
-		<boolean name="supportsOtherTechnologiesWorkstationTypes"
-			default="true" />
-		<integer name="quantityForOtherWorkstationTypes" default="1"
-			required="true">
-			<validatesRange from="0" exclusively="true" />
-		</integer>
-	</fields>
-	<hooks>
-		<onDelete class="com.qcadoo.mes.productionLines.hooks.ProductionLineHooks" method="onDelete"/>
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
+        <hasMany name="workstations" joinField="productionLine" model="workstation" cascade="nullify" plugin="basic"/>
+
+        <boolean name="supportsOtherTechnologiesWorkstationTypes"
+                 default="true"/>
+        <integer name="quantityForOtherWorkstationTypes" default="1"
+                 required="true">
+            <validatesRange from="0" exclusively="true"/>
+        </integer>
+    </fields>
+    <hooks>
+
+    </hooks>
+    <identifier expression="#number + ' - ' + #name"/>
 </model>
