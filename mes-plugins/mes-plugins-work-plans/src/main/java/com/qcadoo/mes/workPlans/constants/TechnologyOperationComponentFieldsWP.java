@@ -45,4 +45,5 @@ public final class TechnologyOperationComponentFieldsWP {
 
     public static final String TECHNOLOGY_OPERATION_OUTPUT_COLUMNS = "technologyOperationOutputColumns";
 
+    public static final String MANUAL_ORDER_FOR_PRODUCTS = "manualOrderForProducts";
 }

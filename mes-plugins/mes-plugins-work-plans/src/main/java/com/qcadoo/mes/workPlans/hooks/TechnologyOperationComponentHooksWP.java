@@ -23,18 +23,24 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.workPlans.WorkPlansService;
-import com.qcadoo.mes.workPlans.constants.*;
+import com.qcadoo.mes.workPlans.constants.OperationFieldsWP;
+import com.qcadoo.mes.workPlans.constants.OperationInputColumnFields;
+import com.qcadoo.mes.workPlans.constants.OperationOutputColumnFields;
+import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
+import com.qcadoo.mes.workPlans.constants.TechnologyOperationInputColumnFields;
+import com.qcadoo.mes.workPlans.constants.TechnologyOperationOutputColumnFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class TechnologyOperationComponentHooksWP {
@@ -47,6 +53,7 @@ public class TechnologyOperationComponentHooksWP {
 
     public void onCreate(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         copyColumnForProducts(technologyOperationComponent);
+        // copyManualOrderForProductsParameter(technologyOperationComponent);
     }
 
     private void copyColumnForProducts(final Entity technologyOperationComponent) {
@@ -99,6 +106,17 @@ public class TechnologyOperationComponentHooksWP {
                 && (technologyOperationComponent
                         .getField(TechnologyOperationComponentFieldsWP.TECHNOLOGY_OPERATION_OUTPUT_COLUMNS) == null);
     }
+
+    // private void copyManualOrderForProductsParameter(final Entity technologyOperationComponent) {
+    //
+    // Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+    //
+    // if (operation == null) {
+    // return;
+    // }
+    // technologyOperationComponent.setField(TechnologyOperationComponentFieldsWP.MANUAL_ORDER_FOR_PRODUCTS,
+    // operation.getField(OperationFieldsWP.MANUAL_ORDER_FOR_PRODUCTS));
+    // }
 
     private List<Entity> getOperationHasManyField(final Long operationId, final String fieldName) {
         List<Entity> hasManyFieldValue = null;

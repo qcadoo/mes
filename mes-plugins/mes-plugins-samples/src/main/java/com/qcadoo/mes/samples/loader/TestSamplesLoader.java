@@ -88,6 +88,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         readDataFromXML(dataset, L_SHIFTS, locale);
         readDataFromXML(dataset, "divisions", locale);
 
+        if (isEnabledOrEnabling(L_MATERIAL_FLOW)) {
+            readDataFromXML(dataset, L_LOCATION, locale);
+
+        }
+
         if (isEnabledOrEnabling(L_TECHNOLOGIES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, "operations", locale);
             readDataFromXML(dataset, L_TECHNOLOGIES_PLUGIN_IDENTIFIER, locale);
@@ -110,7 +115,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         if (isEnabledOrEnabling(L_MATERIAL_FLOW)) {
-            readDataFromXML(dataset, L_LOCATION, locale);
+
             readDataFromXML(dataset, L_RESOURCE, locale);
             readDataFromXML(dataset, L_TRANSFORMATIONS, locale);
             readDataFromXML(dataset, L_TRANSFER, locale);
@@ -1101,6 +1106,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productComponent.setField("batchRequired", false);
         productComponent.setField("productBatchRequired", false);
 
+        if (isEnabledOrEnabling("productFlowThruDivision")) {
+            productComponent.setField("componentsLocation", getLocationByNumber("9"));
+        }
+
         productComponent = dataDefinitionService.get(L_TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent").save(
                 productComponent);
 
@@ -1121,6 +1130,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productComponent.setField(L_QUANTITY, values.get(L_QUANTITY));
         productComponent.setField(L_BASIC_MODEL_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
 
+        if (isEnabledOrEnabling("productFlowThruDivision")) {
+            productComponent.setField("productsInputLocation", getLocationByNumber("10"));
+        }
         productComponent = dataDefinitionService.get(L_TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductOutComponent").save(
                 productComponent);
 

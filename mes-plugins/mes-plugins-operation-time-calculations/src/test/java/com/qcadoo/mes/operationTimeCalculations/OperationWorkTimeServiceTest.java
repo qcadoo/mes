@@ -255,7 +255,7 @@ public class OperationWorkTimeServiceTest {
                 neededNumberOfCycles2, true, true, workstations2);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
-        assertBigDecimalEquals(new BigDecimal(3000), abstractOperationWorkTime);
+        assertBigDecimalEquals(new BigDecimal(1800), abstractOperationWorkTime);
     }
 
     @Test
@@ -285,7 +285,7 @@ public class OperationWorkTimeServiceTest {
                 neededNumberOfCycles2, true, false, workstations2);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
-        assertBigDecimalEquals(new BigDecimal(2400), abstractOperationWorkTime);
+        assertBigDecimalEquals(new BigDecimal(1500), abstractOperationWorkTime);
     }
 
     @Test
@@ -315,8 +315,8 @@ public class OperationWorkTimeServiceTest {
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp2, neededNumberOfCycles2, true, true,
                 workstations2, false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1800));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(4800));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1080));
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(2880));
     }
 
     @Test
@@ -346,8 +346,8 @@ public class OperationWorkTimeServiceTest {
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp2, neededNumberOfCycles2, false, true,
                 workstations2, false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(720));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(1920));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(540));
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(1440));
     }
 
     @Test
@@ -377,8 +377,8 @@ public class OperationWorkTimeServiceTest {
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp2, neededNumberOfCycles2, true, false,
                 workstations2, false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1440));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(3840));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(900));
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(2400));
     }
 
     @Test
@@ -434,8 +434,8 @@ public class OperationWorkTimeServiceTest {
         assertEquals(new Integer(6600), operationDurations.get(operComp1).getLaborWorkTime());
         assertEquals(new Integer(600), operationDurations.get(operComp1).getMachineWorkTime());
 
-        assertEquals(new Integer(1710), operationDurations.get(operComp2).getLaborWorkTime());
-        assertEquals(new Integer(4560), operationDurations.get(operComp2).getMachineWorkTime());
+        assertEquals(new Integer(990), operationDurations.get(operComp2).getLaborWorkTime());
+        assertEquals(new Integer(2640), operationDurations.get(operComp2).getMachineWorkTime());
 
         assertEquals(new Integer(2160), operationDurations.get(operComp3).getLaborWorkTime());
         assertEquals(new Integer(1890), operationDurations.get(operComp3).getMachineWorkTime());
@@ -453,8 +453,8 @@ public class OperationWorkTimeServiceTest {
         assertEquals(new Integer(5280), operationDurations.get(operComp1).getLaborWorkTime());
         assertEquals(new Integer(480), operationDurations.get(operComp1).getMachineWorkTime());
 
-        assertEquals(new Integer(1350), operationDurations.get(operComp2).getLaborWorkTime());
-        assertEquals(new Integer(3600), operationDurations.get(operComp2).getMachineWorkTime());
+        assertEquals(new Integer(810), operationDurations.get(operComp2).getLaborWorkTime());
+        assertEquals(new Integer(2160), operationDurations.get(operComp2).getMachineWorkTime());
 
         assertEquals(new Integer(1800), operationDurations.get(operComp3).getLaborWorkTime());
         assertEquals(new Integer(1575), operationDurations.get(operComp3).getMachineWorkTime());
@@ -472,8 +472,8 @@ public class OperationWorkTimeServiceTest {
         assertEquals(new Integer(5280), operationDurations.get(operComp1).getLaborWorkTime());
         assertEquals(new Integer(480), operationDurations.get(operComp1).getMachineWorkTime());
 
-        assertEquals(new Integer(630), operationDurations.get(operComp2).getLaborWorkTime());
-        assertEquals(new Integer(1680), operationDurations.get(operComp2).getMachineWorkTime());
+        assertEquals(new Integer(450), operationDurations.get(operComp2).getLaborWorkTime());
+        assertEquals(new Integer(1200), operationDurations.get(operComp2).getMachineWorkTime());
 
         assertEquals(new Integer(1200), operationDurations.get(operComp3).getLaborWorkTime());
         assertEquals(new Integer(1050), operationDurations.get(operComp3).getMachineWorkTime());
@@ -488,8 +488,8 @@ public class OperationWorkTimeServiceTest {
         operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationRuns, true, true,
                 workstationsMap, false);
         // then
-        assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(10470));
-        assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(7050));
+        assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(9750));
+        assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(5130));
     }
 
     @Test
@@ -501,8 +501,8 @@ public class OperationWorkTimeServiceTest {
         operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationRuns, true, false,
                 workstationsMap, false);
         // then
-        assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(8430));
-        assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(5655));
+        assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(7890));
+        assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(4215));
     }
 
     @Test
@@ -514,8 +514,8 @@ public class OperationWorkTimeServiceTest {
         operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationRuns, false, true,
                 workstationsMap, false);
         // // then
-        assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(7110));
-        assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(3210));
+        assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(6930));
+        assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(2730));
     }
 
 }

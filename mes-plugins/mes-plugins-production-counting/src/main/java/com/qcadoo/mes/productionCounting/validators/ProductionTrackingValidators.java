@@ -46,7 +46,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 public class ProductionTrackingValidators {
 
     private static final Set<String> L_ORDER_STARTED_STATES_SET = Sets.newHashSet(OrderStateStringValues.IN_PROGRESS,
-            OrderStateStringValues.COMPLETED, OrderStateStringValues.INTERRUPTED);
+            OrderStateStringValues.INTERRUPTED);
 
     @Autowired
     private ProductionCountingService productionCountingService;

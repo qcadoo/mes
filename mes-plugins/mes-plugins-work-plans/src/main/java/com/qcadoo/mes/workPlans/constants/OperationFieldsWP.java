@@ -45,4 +45,5 @@ public final class OperationFieldsWP {
 
     public static final String OPERATION_OUTPUT_COLUMNS = "operationOutputColumns";
 
+    public static final String MANUAL_ORDER_FOR_PRODUCTS = "manualOrderForProducts";
 }

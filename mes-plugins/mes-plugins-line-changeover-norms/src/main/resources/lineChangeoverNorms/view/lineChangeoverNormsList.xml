@@ -31,19 +31,19 @@
 		</ribbon>
 		<component type="grid" name="lineChangeoverNormsList" reference="grid">
 			<option type="column" name="number" fields="number" link="true"
-				width="150" />
+				width="200" />
 			<option type="column" name="fromTechnology" fields="fromTechnology" link="true"
-				width="300" expression="#fromTechnology['number']" />
+				width="350" expression="#fromTechnology['number']" />
 			<option type="column" name="toTechnology" fields="toTechnology" link="true"
-				width="300" expression="#toTechnology['number']" />
+				width="350" expression="#toTechnology['number']" />
 			<option type="column" name="fromTechnologyGroup" fields="fromTechnologyGroup" link="true"
 				width="300" expression="#fromTechnologyGroup['number']" />
 			<option type="column" name="toTechnologyGroup" fields="toTechnologyGroup" link="true"
 				width="300" expression="#toTechnologyGroup['number']" />
 			<option type="column" name="productionLine" fields="productionLine"
-				width="300" expression="#productionLine['number']" />
+				width="250" expression="#productionLine['number']" />
 			<option type="column" name="duration" fields="duration" 
-				width="300" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" />
+				width="200" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" />
 			<option type="order" column="name" direction="asc" />
 			<option type="correspondingView" value="lineChangeoverNorms/lineChangeoverNormsDetails" />
 			<option type="correspondingComponent" value="form" />

@@ -67,4 +67,8 @@ public final class TechnologyOperationComponentFields {
 
     public static final String QUANTITY_OF_WORKSTATIONS = "quantityOfWorkstations";
 
+    public static final String DIVISION = "division";
+
+    public static final String PRODUCTION_LINE = "productionLine";
+
 }

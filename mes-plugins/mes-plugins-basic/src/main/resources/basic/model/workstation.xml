@@ -38,11 +38,11 @@
 			<validatesLength max="2048" />
 		</string>
 		<belongsTo name="workstationType" model="workstationType" required="true"/>
-		<belongsTo name="division" model="division">
+		<!-- <belongsTo name="division" model="division">
 			<validatesWith
 				class="com.qcadoo.mes.basic.validators.WorkstationValidators"
 				method="checkIfDevisionChanged" />
-		</belongsTo>
+		</belongsTo> -->
 	</fields>
 
 	<hooks />

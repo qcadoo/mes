@@ -46,7 +46,6 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.Groupi
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -55,6 +54,8 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 public class OperationProductInTable {
 
     private PdfHelper pdfHelper;
+
+    private static final String L_PRIORITY = "priority";
 
     @Autowired
     private WorkPlansService workPlansService;
@@ -78,7 +79,7 @@ public class OperationProductInTable {
 
         PdfPTable table = pdfHelper.createTableWithHeader(columnCount, headers, false, headerAlignments);
         PdfPCell defaultCell = table.getDefaultCell();
-        for (Entity operationProduct : operationProductOutComponents(operationComponent)) {
+        for (Entity operationProduct : operationProductInComponents(operationComponent)) {
             for (Map.Entry<OperationProductColumn, ColumnAlignment> e : operationProductColumnAlignmentMap.entrySet()) {
                 alignColumn(defaultCell, e.getValue());
                 table.addCell(operationProductPhrase(operationProduct, e.getKey()));
@@ -101,8 +102,19 @@ public class OperationProductInTable {
         document.add(table);
     }
 
-    private EntityList operationProductOutComponents(Entity operationComponent) {
-        return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+    private List<Entity> operationProductInComponents(Entity operationComponent) {
+        List<Entity> productOutComponents = operationComponent
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+        /*
+         * TODO kama - it's unnecessary for now boolean sortProducts =
+         * operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.MANUAL_ORDER_FOR_PRODUCTS); if (sortProducts) {
+         * List<Entity> sortedProducts = new ArrayList<Entity>(productOutComponents); sortedProducts.sort(new Comparator<Entity>()
+         * {
+         * @Override public int compare(Entity product1, Entity product2) { return
+         * product1.getIntegerField(L_PRIORITY).compareTo(product2.getIntegerField(L_PRIORITY)); } }); productOutComponents =
+         * sortedProducts; }
+         */
+        return productOutComponents;
     }
 
     private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {

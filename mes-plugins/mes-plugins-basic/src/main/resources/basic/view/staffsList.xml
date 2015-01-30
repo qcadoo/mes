@@ -43,11 +43,11 @@
 			<option type="column" name="shift" fields="shift" expression="#shift['name']"
 				link="true" />
 			<option type="column" name="division_number" fields="division"
-				expression="#division['number']" link="true" />	
+				expression="#division['number']" link="true" width="120" />
 			<option type="column" name="division_name" fields="division"
-				expression="#division['name']" link="true" />
+				expression="#division['name']" link="true" width="120" />
 			<option type="column" name="workFor" fields="workFor"
-				expression="#workFor['name']" />
+				expression="#workFor['name']" width="250"/>
 				
 			<option type="order" column="number" direction="desc" />
 			

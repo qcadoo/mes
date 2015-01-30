@@ -25,60 +25,66 @@
 
 -->
 <model name="technologyOperationComponent" auditable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="technology" model="technology" required="true" />
-		<belongsTo name="operation" model="operation" required="true"/>
-		<belongsTo name="parent" model="technologyOperationComponent" />
-		<hasMany name="children" model="technologyOperationComponent"
-			joinField="parent" cascade="delete" copyable="true" />
-		<enum name="entityType" values="operation,referenceTechnology"
-			required="true" />
-		<priority name="priority" scope="parent" />
-		<string name="nodeNumber" />
-		<belongsTo name="referenceTechnology" model="technology" />
-		<enum name="referenceMode" values="01reference,02copy" default="02copy"
-			persistent="false" />
-			
-		<string name="comment">
-			<validatesLength max="2048" />
-		</string>
-		<file name="attachment" />
-		<boolean name="areProductQuantitiesDivisible" default="false" />
-		<boolean name="isTjDivisible" default="false"/>
-			
-		<hasMany name="operationProductInComponents" model="operationProductInComponent"
-			joinField="operationComponent" cascade="delete" copyable="true" />
-		<hasMany name="operationProductOutComponents" model="operationProductOutComponent"
-			joinField="operationComponent" cascade="delete" copyable="true" />
-			
-		<manyToMany name="workstations" plugin="basic" model="workstation"
-			joinField="operationComponents" cascade="nullify" copyable="true" />
-			
-		<!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
-			joinField="operations" />-->
-			
-		<enum name="assignedToOperation" values="01workstations,02workstationTypes" default="02workstationTypes" required="true" copyable="true"/>
-		
-		<belongsTo name="workstationType" plugin="basic" model="workstationType"/>
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="technology" model="technology" required="true"/>
+        <belongsTo name="operation" model="operation" required="true"/>
+        <belongsTo name="parent" model="technologyOperationComponent"/>
+        <hasMany name="children" model="technologyOperationComponent"
+                 joinField="parent" cascade="delete" copyable="true"/>
+        <enum name="entityType" values="operation,referenceTechnology"
+              required="true"/>
+        <priority name="priority" scope="parent"/>
+        <string name="nodeNumber"/>
+        <belongsTo name="referenceTechnology" model="technology"/>
+        <enum name="referenceMode" values="01reference,02copy" default="02copy"
+              persistent="false"/>
 
-		<integer name="quantityOfWorkstations" default="1" required="true">
-			<validatesRange from="1" exclusively="false" />
-		</integer>
-		
-		<hasMany name="barcodeOperationComponents" joinField="operationComponent" model="barcodeOperationComponent" 
-			cascade="delete" copyable="false"/>
-	</fields>
-	<hooks>
-		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks"
-			method="onCreate" />
-		<onSave class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks" method="onSave"/>
-		
-		<!-- 		TODO DEV_TEAM when we add reference -->
-		<!-- 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyOperationComponentValidators" -->
-		<!-- 			method="validateEntityTypeOfTechnologyOperationComponent" /> -->
-		<!-- 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators" -->
-		<!-- 			method="invalidateIfBelongsToAcceptedTechnology" /> -->
-	</hooks>
+        <string name="comment">
+            <validatesLength max="2048"/>
+        </string>
+        <file name="attachment"/>
+        <boolean name="areProductQuantitiesDivisible" default="false"/>
+        <boolean name="isTjDivisible" default="false"/>
+
+        <hasMany name="operationProductInComponents" model="operationProductInComponent"
+                 joinField="operationComponent" cascade="delete" copyable="true"/>
+        <hasMany name="operationProductOutComponents" model="operationProductOutComponent"
+                 joinField="operationComponent" cascade="delete" copyable="true"/>
+
+        <manyToMany name="workstations" plugin="basic" model="workstation"
+                    joinField="operationComponents" cascade="nullify" copyable="true"/>
+
+        <!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
+            joinField="operations" />-->
+
+        <enum name="assignedToOperation" values="01workstations,02workstationTypes"
+              default="01workstations" required="true" copyable="true"/>
+
+
+        <belongsTo name="workstationType" plugin="basic" model="workstationType"/>
+
+        <belongsTo name="division" model="division" plugin="basic"/>
+
+        <belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
+
+        <integer name="quantityOfWorkstations" default="1" required="true">
+            <validatesRange from="1" exclusively="false"/>
+        </integer>
+
+        <hasMany name="barcodeOperationComponents" joinField="operationComponent" model="barcodeOperationComponent"
+                 cascade="delete" copyable="false"/>
+    </fields>
+    <hooks>
+        <onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks"
+                  method="onCreate"/>
+        <onSave class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks" method="onSave"/>
+
+        <!-- 		TODO DEV_TEAM when we add reference -->
+        <!-- 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyOperationComponentValidators" -->
+        <!-- 			method="validateEntityTypeOfTechnologyOperationComponent" /> -->
+        <!-- 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators" -->
+        <!-- 			method="invalidateIfBelongsToAcceptedTechnology" /> -->
+    </hooks>
 </model>

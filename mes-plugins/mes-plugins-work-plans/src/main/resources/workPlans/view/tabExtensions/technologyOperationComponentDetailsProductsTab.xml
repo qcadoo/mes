@@ -44,6 +44,13 @@
 					<option type="align" value="left" />
 				</component>
 			</layoutElement>
+<!-- 			<layoutElement column="1" row="3"> -->
+<!-- 				<component type="checkbox" name="manualOrderForProducts" -->
+<!-- 					field="#{form}.manualOrderForProducts" reference="manualOrderForProducts"> -->
+<!-- 					<option type="labelWidth" value="50" /> -->
+<!-- 					<option type="align" value="left" /> -->
+<!-- 				</component> -->
+<!-- 			</layoutElement> -->
 			<layoutElement column="1" row="3">
 				<component type="grid" name="columnsForInputProducts"
 					source="#{form}.technologyOperationInputColumns" reference="columnsForInputProducts">

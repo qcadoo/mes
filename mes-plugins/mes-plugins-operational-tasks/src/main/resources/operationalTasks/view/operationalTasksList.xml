@@ -74,7 +74,7 @@
 						<option type="column" name="productionLine" fields="productionLine"
 							expression="#productionLine['name']" />
 
-						<option type="order" column="name" direction="asc" />
+						<option type="order" column="name" direction="asc" width="150" />
 
 						<option type="searchable" value="name,number,startDate,finishDate,productionLine" />
 						<option type="orderable" value="name,number,startDate,finishDate,productionLine" />

@@ -34,6 +34,7 @@ import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
 
 public interface ProductQuantitiesService {
 
@@ -258,5 +259,21 @@ public interface ProductQuantitiesService {
      */
     Map<Entity, BigDecimal> convertOperationsRunsFromProductQuantities(
             final Map<Long, BigDecimal> operationRunsFromProductionQuantities);
+
+    void traverseProductQuantitiesAndOperationRuns(Entity technology, BigDecimal givenQuantity, Entity operationComponent,
+            Entity previousOperationComponent,
+            OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
+            Set<OperationProductComponentHolder> nonComponents, Map<Long, BigDecimal> operationRuns);
+
+    void preloadOperationProductComponentQuantity(List<Entity> operationProductComponents,
+            OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer);
+
+    void preloadProductQuantitiesAndOperationRuns(EntityTree operationComponents,
+            OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
+            Map<Long, BigDecimal> operationRuns);
+
+    Map<Long, BigDecimal> getProductWithQuantities(OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            Set<OperationProductComponentHolder> nonComponents, MrpAlgorithm mrpAlgorithm,
+            String operationProductComponentModelName);
 
 }

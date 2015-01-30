@@ -21,30 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-/**
- * ***************************************************************************
 
- * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
- * Version: 1.2.0
- *
- * This file is part of Qcadoo.
- *
- * Qcadoo is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * ***************************************************************************
- */
 package com.qcadoo.mes.operationCostCalculations;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -165,19 +142,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         DataDefinition costCalculationOrProductionBalanceDD = costCalculationOrProductionBalance.getDataDefinition();
 
-        Entity copyCostCalculationOrProductionBalance = operationCostCalculationTreeBuilder
-                .copyTechnologyTree(costCalculationOrProductionBalance);
-
-        Entity yetAnotherCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
-                .save(copyCostCalculationOrProductionBalance);
-        Entity newCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
-                .get(yetAnotherCostCalculationOrProductionBalance.getId());
-
-        EntityTree calculationOperationComponents = newCostCalculationOrProductionBalance
-                .getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
-
-        checkArgument(calculationOperationComponents != null, "given operation components is null");
-
         Entity order = costCalculationOrProductionBalance.getBelongsToField(L_ORDER);
         Entity technology = costCalculationOrProductionBalance.getBelongsToField(L_TECHNOLOGY);
         BigDecimal quantity = BigDecimalUtils.convertNullToZero(costCalculationOrProductionBalance.getDecimalField(L_QUANTITY));
@@ -194,8 +158,24 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyFromOrder.getId());
         }
 
-        ProductQuantitiesHolder productQuantitiesAndOperationRuns = productQuantitiesService.getProductComponentQuantities(
-                technology, quantity);
+        ProductQuantitiesHolder productQuantitiesAndOperationRuns = getProductQuantitiesAndOperationRuns(technology, quantity,
+                costCalculationOrProductionBalance);
+
+        if (order != null) {
+            order.setField(L_TECHNOLOGY, technology);
+        }
+        Entity copyCostCalculationOrProductionBalance = operationCostCalculationTreeBuilder
+                .copyTechnologyTree(costCalculationOrProductionBalance);
+
+        Entity yetAnotherCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
+                .save(copyCostCalculationOrProductionBalance);
+        Entity newCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
+                .get(yetAnotherCostCalculationOrProductionBalance.getId());
+
+        EntityTree calculationOperationComponents = newCostCalculationOrProductionBalance
+                .getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
+
+        checkArgument(calculationOperationComponents != null, "given operation components is null");
 
         if (CalculateOperationCostMode.PIECEWORK.equals(calculateOperationCostMode)) {
             if (calculationOperationComponents.isEmpty()) {
@@ -235,6 +215,11 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         }
 
         costCalculationOrProductionBalance.setField(L_CALCULATION_OPERATION_COMPONENTS, calculationOperationComponents);
+    }
+
+    private ProductQuantitiesHolder getProductQuantitiesAndOperationRuns(final Entity technology, final BigDecimal quantity,
+            final Entity costCalculationOrProductionBalance) {
+        return productQuantitiesService.getProductComponentQuantities(technology, quantity);
     }
 
     @Override

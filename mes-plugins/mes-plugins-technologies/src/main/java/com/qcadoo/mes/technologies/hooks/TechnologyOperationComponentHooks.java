@@ -70,6 +70,10 @@ public class TechnologyOperationComponentHooks {
                     operation.getBelongsToField(OperationFields.WORKSTATION_TYPE));
             technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS,
                     operation.getManyToManyField(OperationFields.WORKSTATIONS));
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.DIVISION,
+                    operation.getBelongsToField(OperationFields.DIVISION));
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.PRODUCTION_LINE,
+                    operation.getBelongsToField(OperationFields.PRODUCTION_LINE));
         }
     }
 
@@ -180,7 +184,8 @@ public class TechnologyOperationComponentHooks {
         return copy;
     }
 
-    private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology, final boolean copy) {
+    private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology,
+            final boolean copy) {
         if (!copy && technologies.contains(referencedTechnology.getId())) {
             return true;
         }
@@ -209,7 +214,8 @@ public class TechnologyOperationComponentHooks {
     }
 
     private void clearField(final Entity technologyOperationComponent) {
-        String assignedToOperation = technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION);
+        String assignedToOperation = technologyOperationComponent
+                .getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION);
         if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperation)) {
             technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
         }

@@ -170,18 +170,18 @@
 			<option type="column" name="number" fields="number" link="true"
 			        width="150" />
 			<option type="column" name="orderNumber" fields="order" link="true"
-			        width="250" expression="#order['number']" />
+			        width="350" expression="#order['number']" />
 			<option type="column" name="technologyOperationComponentNumber"
-			        fields="technologyOperationComponent" link="true" width="250"
+			        fields="technologyOperationComponent" link="true" width="180"
 			        expression="(#technologyOperationComponent != null) ? #technologyOperationComponent['nodeNumber'] + ' ' + #technologyOperationComponent['operation']['name'] : ''" />
 			<option type="column" name="shift" fields="shift" link="true"
-			        width="100" expression="#shift['name']" />
+			        width="105" expression="#shift['name']" />
 			<option type="column" name="worker" fields="createUser" link="true"
-			        width="200" />
+			        width="150" />
 			<option type="column" name="state" fields="state" reference="state"
 			        width="150" />
 			<option type="column" name="createDate" fields="createDate"
-			        link="true" width="250" />
+			        link="true" width="150" />
 			<option type="column" name="orderState" fields="order" hidden="true"
 			        expression="(#order == null) ? '' : #order['state']" />
 			<option type="column" name="lastTracking" fields="lastTracking"

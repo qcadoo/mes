@@ -66,11 +66,11 @@
 
 			<option type="column" name="name" fields="name" link="true" />
 			<option type="column" name="order" fields="order" link="true"
-				width="250" expression="#order['name']" />
+				width="350" expression="#order['name']" />
 			<option type="column" name="product" fields="product" link="true"
 				width="250" expression="#product['name']" />
 			<option type="column" name="generated" fields="generated"
-				width="150" />
+				width="100" />
 			<option type="column" name="date" fields="date" width="175" />
 			<option type="column" name="worker" fields="worker" width="150" />
 

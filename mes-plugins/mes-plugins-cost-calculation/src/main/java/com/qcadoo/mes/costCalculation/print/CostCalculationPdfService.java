@@ -379,7 +379,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         BigDecimal quantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
 
-        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, quantity,
+        Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(costCalculation, technology, quantity,
                 MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
 
         // TODO LUPO fix comparator
@@ -446,6 +446,11 @@ public class CostCalculationPdfService extends PdfDocumentService {
         materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 
         return materialsTable;
+    }
+
+    private Map<Long, BigDecimal> getNeededProductQuantities(final Entity costCalculationOrProductionBalance,
+            final Entity technology, final BigDecimal quantity, final MrpAlgorithm algorithm) {
+        return productQuantitiesService.getNeededProductQuantities(technology, quantity, algorithm);
     }
 
     private PdfPTable addHourlyCostsTable(final Entity costCalculation, final Locale locale) {

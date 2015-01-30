@@ -30,6 +30,7 @@
 	<fields>
 		<belongsTo name="operationComponent" model="technologyOperationComponent"
 			required="true" />
+		<priority name="priority" scope="operationComponent"/>
 		<belongsTo name="product" plugin="basic" model="product"
 			required="true" />
 		<decimal name="quantity" required="true">
@@ -37,6 +38,7 @@
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
+		
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"

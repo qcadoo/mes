@@ -26,27 +26,26 @@ package com.qcadoo.mes.productionLines.helper;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.id;
 import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-import static com.qcadoo.model.api.search.SearchRestrictions.or;
 
 import java.util.List;
 import java.util.Set;
 
-import com.qcadoo.mes.productionLines.ProductionLinesSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
-import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.mes.productionLines.ProductionLinesSearchService;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 
 @Service
 public class ProductionLinesSearchServiceImpl implements ProductionLinesSearchService {
+
+    // TODO DEV_TEAM - remove this class if unused or add methods supporting new changes to divisions
 
     private static final String ID_ALIAS = "id";
 
@@ -62,12 +61,12 @@ public class ProductionLinesSearchServiceImpl implements ProductionLinesSearchSe
 
     @Override
     public Set<Long> findLinesSupportingTechnology(final Long technologyId) {
-        return findByTechOrTechGroup(LineSearchMode.SUPPORTS_TECHNOLOGY, technologyId);
+        return findByTechOrTechGroup(LineSearchMode.ALL, technologyId);
     }
 
     @Override
     public Set<Long> findLinesSupportingTechnologyGroup(final Long technologyGroupId) {
-        return findByTechOrTechGroup(LineSearchMode.SUPPORTS_TECHNOLOGY_GROUP, technologyGroupId);
+        return findByTechOrTechGroup(LineSearchMode.ALL, technologyGroupId);
     }
 
     private Set<Long> findByTechOrTechGroup(final LineSearchMode searchMode, final Long techOrTechGroupId) {
@@ -102,25 +101,7 @@ public class ProductionLinesSearchServiceImpl implements ProductionLinesSearchSe
             public void appendCriteria(final SearchCriteriaBuilder scb, final Long id) {
                 // DO NOTHING
             }
-        },
-        SUPPORTS_TECHNOLOGY {
-
-            @Override
-            public void appendCriteria(final SearchCriteriaBuilder scb, final Long id) {
-                scb.createAlias(ProductionLineFields.TECHNOLOGIES, ProductionLineFields.TECHNOLOGIES, JoinType.LEFT);
-                scb.add(or(SUPPORTS_ALL_CRITERION, matchesId(ProductionLineFields.TECHNOLOGIES, id)));
-            }
-        },
-        SUPPORTS_TECHNOLOGY_GROUP {
-
-            @Override
-            public void appendCriteria(final SearchCriteriaBuilder scb, final Long id) {
-                scb.createAlias(ProductionLineFields.GROUPS, ProductionLineFields.GROUPS, JoinType.LEFT);
-                scb.add(or(SUPPORTS_ALL_CRITERION, matchesId(ProductionLineFields.GROUPS, id)));
-            }
         };
-
-        protected final SearchCriterion SUPPORTS_ALL_CRITERION = eq(ProductionLineFields.SUPPORTS_ALL_TECHNOLOGIES, true);
 
         protected SearchCriterion matchesId(final String fieldName, final Long id) {
             return eq(fieldName + DOT_ID, id);

@@ -241,6 +241,16 @@
             <model:hasMany name="workPlan" plugin="workPlans" model="workPlan"
                            joinField="inputProductColumnToSortBy" cascade="nullify"/>
         </model:model-field>
+		
+<!--         <model:model-field plugin="technologies" -->
+<!--                            model="technologyOperationComponent"> -->
+<!--             <model:boolean name="manualOrderForProducts"/> -->
+<!--         </model:model-field> -->
+        
+<!--         <model:model-field plugin="technologies" -->
+<!--                            model="operation"> -->
+<!--             <model:boolean name="manualOrderForProducts"/> -->
+<!--         </model:model-field> -->
 
         <model:model-hook plugin="workPlans" model="workPlan">
             <model:onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanHooks"

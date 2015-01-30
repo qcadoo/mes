@@ -36,11 +36,11 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.qcadoo.commons.functional.BiFunction;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsDataProvider;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -83,7 +83,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         if ("02fromOrdersMaterialCosts".equals(sourceOfMaterialCosts)) {
             return getProductWithCostForPlannedQuantities(technology, quantity, calculateMaterialCostsMode, order);
         } else if ("01currentGlobalDefinitionsInProduct".equals(sourceOfMaterialCosts)) {
-            return getProductWithCostForPlannedQuantities(technology, quantity, calculateMaterialCostsMode);
+            return getProductWithCostForPlannedQuantities(entity, technology, quantity, calculateMaterialCostsMode);
         }
 
         throw new IllegalStateException("sourceOfProductCosts is neither FROM_ORDER nor GLOBAL");
@@ -106,7 +106,12 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     @Override
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String calculateMaterialCostsMode) {
-        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, quantity,
+        return getProductWithCostForPlannedQuantities(null, technology, quantity, calculateMaterialCostsMode);
+    }
+
+    public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity entity, final Entity technology,
+            final BigDecimal quantity, final String calculateMaterialCostsMode) {
+        Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(entity, technology, quantity,
                 COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
         Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
         for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
@@ -116,6 +121,11 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
             results.put(product, thisProductsCost);
         }
         return results;
+    }
+
+    private Map<Long, BigDecimal> getNeededProductQuantities(final Entity entity, final Entity technology,
+            final BigDecimal quantity, final MrpAlgorithm algorithm) {
+        return productQuantitiesService.getNeededProductQuantities(technology, quantity, algorithm);
     }
 
     @Override

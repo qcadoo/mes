@@ -35,10 +35,10 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.grouping.OperationMergeService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.DivisionGroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.EndProductGroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.NoDistinctionGroupingContainer;
@@ -87,7 +87,7 @@ public class GroupingContainerFactoryImpl implements GroupingContainerFactory {
             return new OperationProductInGroupingContainerDecorator(operationMergeService, byWorkstationType(workPlan, locale),
                     productionCountingService, parameterService);
         } else if (WorkPlanType.BY_DIVISION.getStringValue().equals(type)) {
-            return new OperationProductInGroupingContainerDecorator(operationMergeService, noDistinction(workPlan, locale),
+            return new OperationProductInGroupingContainerDecorator(operationMergeService, byDivision(workPlan, locale),
                     productionCountingService, parameterService);
         } else {
             LOG.warn("There is no grouping container defined for work plan type: " + type);
@@ -126,6 +126,13 @@ public class GroupingContainerFactoryImpl implements GroupingContainerFactory {
         String nullWorkstationTitle = translationService.translate("workPlans.workPlan.report.title.noWorkstationType", locale);
         return new WorkstationTypeGroupingContainer(orderColumns(workPlan), operationProductsIn(workPlan),
                 operationProductsOut(workPlan), titleAppend, nullWorkstationTitle);
+    }
+
+    private GroupingContainer byDivision(Entity workPlan, Locale locale) {
+        String titleAppend = translationService.translate("workPlans.workPlan.report.title.byDivision", locale);
+        String nullDivision = translationService.translate("workPlans.workPlan.report.title.noDivision", locale);
+        return new DivisionGroupingContainer(orderColumns(workPlan), operationProductsIn(workPlan),
+                operationProductsOut(workPlan), titleAppend, nullDivision);
     }
 
 }
