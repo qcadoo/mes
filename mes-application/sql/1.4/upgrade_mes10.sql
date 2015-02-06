@@ -1,9 +1,10 @@
+-- last touched 03.02.2015 by lupo
 
 ALTER TABLE basic_division ADD COLUMN productionline_id bigint;
 ALTER TABLE basic_division ADD CONSTRAINT division_productionline_fkey FOREIGN KEY (productionline_id)
      REFERENCES productionlines_productionline (id) DEFERRABLE;
 
-ALTER TABLE basic_workstation DROP CONSTRAINT workstation_division_fkey;
+-- ALTER TABLE basic_workstation DROP CONSTRAINT workstation_division_fkey;
 ALTER TABLE basic_workstation DROP COLUMN division_id;
 
 DROP TABLE jointable_division_workstationtype;
