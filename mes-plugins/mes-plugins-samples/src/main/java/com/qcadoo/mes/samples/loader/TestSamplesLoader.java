@@ -1003,6 +1003,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             if (isEnabledOrEnabling(SamplesConstants.L_PRODUCT_FLOW_THRU_DIVISION)) {
                 technology.setField("range", "02manyDivisions");
             }
+            if (isEnabledOrEnabling("nblsport")) {
+                technology.setField("constructionAndTechnologyAccepted", true);
+                technology.setField("graphicsAccepted", true);
+            }
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getField(L_NAME) + ", "
                         + L_NUMBER + "=" + technology.getField(L_NUMBER) + ", technology product="
