@@ -27,6 +27,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
 import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +44,7 @@ import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrder;
@@ -108,6 +110,34 @@ public class ProductService {
             final PossibleUnitConversions conversions = unitConversionService.getPossibleConversions(productUnit);
             product.setField(CONVERSION_ITEMS, conversions.asEntities(UnitConversionItemFieldsB.PRODUCT, product));
         }
+    }
+
+    public BigDecimal convertQuantityFromProductUnit(final Entity product, final BigDecimal quantity, final String targetUnit) {
+        String productUnit = product.getStringField(ProductFields.UNIT);
+        PossibleUnitConversions possibleUnitConversions = findPossibleUnitConversions(targetUnit, product);
+
+        BigDecimal convertedQuantity = possibleUnitConversions.convertTo(quantity, productUnit);
+
+        return convertedQuantity;
+    }
+
+    private PossibleUnitConversions findPossibleUnitConversions(final String unitName, final Entity productEntity) {
+        CustomRestriction belongsToProductRestriction = new CustomRestriction() {
+
+            @Override
+            public void addRestriction(final SearchCriteriaBuilder scb) {
+                scb.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, productEntity));
+            }
+        };
+
+        PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unitName,
+                belongsToProductRestriction);
+
+        if (possibleUnitConversions == null) {
+            possibleUnitConversions = unitConversionService.getPossibleConversions(unitName);
+        }
+
+        return possibleUnitConversions;
     }
 
     public boolean hasUnitChangedOnUpdate(final Entity product) {
