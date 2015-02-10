@@ -53,4 +53,6 @@ public final class ParameterFieldsPCWC {
 
     public static final String ADDITIONAL_OVERHEAD_PB = "additionalOverheadPB";
 
+    public static final String PRICE_BASED_ON = "priceBasedOn";
+
 }

@@ -443,6 +443,12 @@
 			</model:decimal>
 		</model:model-field>
 
+		
+		<model:model-field model="parameter" plugin="basic">
+			<model:enum name="priceBasedOn" values="01nominalProductCost,02realProductionCost"
+				required="true" default="01nominalProductCost" />
+		</model:model-field>
+
 		<model:model-hook model="productionBalance" plugin="productionCounting">
 			<model:validatesWith
 				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceValidatorsPCWC"
