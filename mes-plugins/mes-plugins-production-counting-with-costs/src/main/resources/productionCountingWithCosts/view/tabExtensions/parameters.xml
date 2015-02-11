@@ -65,6 +65,9 @@
 							<option type="label" value="parameters" />
 						</component>
 					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="select" name="priceBasedOn" reference="priceBasedOn" field="#{form}.priceBasedOn" />
+					</layoutElement>
 				</component>
 			</layoutElement>
 
