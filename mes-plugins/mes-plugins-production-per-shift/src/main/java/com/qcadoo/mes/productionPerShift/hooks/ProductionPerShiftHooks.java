@@ -27,8 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
-import com.qcadoo.mes.productionPerShift.dates.ProgressDatesService;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
+import com.qcadoo.mes.productionPerShift.dates.ProgressDatesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -44,4 +44,5 @@ public class ProductionPerShiftHooks {
             progressDatesService.setUpDatesFor(order);
         }
     }
+
 }

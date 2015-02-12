@@ -27,9 +27,11 @@ import static com.qcadoo.model.api.search.SearchRestrictions.and;
 import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
 import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,17 +45,24 @@ import com.qcadoo.commons.functional.FluentOptional;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.dates.OrderDates;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
 import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
+import com.qcadoo.mes.productionPerShift.dataProvider.ProductionPerShiftDataProvider;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.tree.MainTocOutputProductProvider;
 import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyOperationDataProvider;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.utils.EntityUtils;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.CheckBoxComponent;
@@ -105,6 +114,12 @@ public class ProductionPerShiftDetailsHooks {
 
     private static final String QUANTITY_FIELD_REF = "quantity";
 
+    @Autowired
+    private ProductionPerShiftDataProvider productionPerShiftDataProvider;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     private static final Function<LookupComponent, Optional<Entity>> GET_LOOKUP_ENTITY = new Function<LookupComponent, Optional<Entity>>() {
 
         @Override
@@ -150,8 +165,46 @@ public class ProductionPerShiftDetailsHooks {
 
         changeButtonState(view, progressType, orderState);
         setupHasBeenCorrectedCheckbox(view, technology);
-
+        checkOrderDates(view, order);
         markViewAsInitialized(view);
+
+    }
+
+    private void checkOrderDates(final ViewDefinitionState view, final Entity order) {
+        Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
+        Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(technologyId);
+        DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
+                ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
+        Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
+        boolean areDatesCorrect = true;
+        if (maybeOrderDates.isPresent()) {
+            OrderDates orderDates = maybeOrderDates.get();
+            Date orderStart = removeTime(orderDates.getStart().effectiveWithFallback().toDate());
+            Date orderEnd = removeTime(orderDates.getEnd().effectiveWithFallback().toDate());
+            for (Long id : progressForDayIds) {
+                Entity progressForDay = progressForDayDD.get(id);
+                Date progressDate = progressForDay.getDateField(ProgressForDayFields.ACTUAL_DATE_OF_DAY);
+                if (progressDate == null) {
+                    progressDate = progressForDay.getDateField(ProgressForDayFields.DATE_OF_DAY);
+                }
+                if (progressDate.before(orderStart) || progressDate.after(orderEnd)) {
+                    areDatesCorrect = false;
+                }
+            }
+        }
+        if (!areDatesCorrect) {
+            view.addMessage("productionPerShift.info.invalidDates", MessageType.INFO, false);
+        }
+    }
+
+    private static Date removeTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
     }
 
     private Optional<Entity> getMainOutProductFor(final Optional<Entity> maybeTechnologyOperation) {
