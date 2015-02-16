@@ -49,6 +49,12 @@ public final class OrdersConstants {
 
     public static final String MODEL_TYPE_OF_CORRECTION_CAUSES = "typeOfCorrectionCauses";
 
+    public static final String MODEL_RECIPE = "recipe";
+
+    public static final String MODEL_MATERIAL = "material";
+
+    public static final String MODEL_MBR_STATE_CHANGE = "mbrStateChange";
+
     // VIEW
 
     public static final String VIEW_ORDER_DETAILS = "orderDetails";
