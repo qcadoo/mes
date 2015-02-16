@@ -48,4 +48,22 @@ public final class OrderStateChangeFields {
 
     public static final String REASON_TYPES = "reasonTypes";
 
+    public static final String SOURCE_CORRECTED_DATE_FROM = "sourceCorrectedDateFrom";
+
+    public static final String SOURCE_CORRECTED_DATE_TO = "sourceCorrectedDateTo";
+
+    public static final String SOURCE_START_DATE = "sourceStartDate";
+
+    public static final String SOURCE_FINISH_DATE = "sourceFinishDate";
+
+    public static final String TARGET_CORRECTED_DATE_FROM = "targetCorrectedDateFrom";
+
+    public static final String TARGET_CORRECTED_DATE_TO = "targetCorrectedDateTo";
+
+    public static final String TARGET_START_DATE = "targetStartDate";
+
+    public static final String TARGET_FINISH_DATE = "targetFinishDate";
+
+    public static final String DATES_CHANGED = "datesChanged";
+
 }

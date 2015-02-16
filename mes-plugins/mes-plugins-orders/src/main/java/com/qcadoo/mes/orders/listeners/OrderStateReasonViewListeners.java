@@ -26,15 +26,20 @@ package com.qcadoo.mes.orders.listeners;
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.REASON_REQUIRED;
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.REASON_TYPES;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
+import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -45,6 +50,10 @@ import com.qcadoo.view.api.components.FormComponent;
 public class OrderStateReasonViewListeners {
 
     private static final String L_FORM = "form";
+
+    private static final ArrayList<String> DATE_FIELDS = Lists.newArrayList("sourceCorrectedDateFrom", "sourceCorrectedDateTo",
+            "sourceStartDate", "sourceFinishDate", "targetCorrectedDateFrom", "targetCorrectedDateTo", "targetStartDate",
+            "targetFinishDate");
 
     @Autowired
     private OrderStateChangeAspect orderStateChangeService;
@@ -95,6 +104,17 @@ public class OrderStateReasonViewListeners {
         final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         final FieldComponent reasonTypeField = (FieldComponent) view.getComponentByReference(REASON_TYPES);
         reasonTypeField.setRequired(form.getEntity().getBooleanField(REASON_REQUIRED));
+        Entity orderStateChange = form.getPersistedEntityWithIncludedFormValues();
+        boolean visible = orderStateChange.getBooleanField(OrderStateChangeFields.DATES_CHANGED);
+        for (String fieldName : DATE_FIELDS) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(fieldName);
+            field.setVisible(visible);
+        }
     }
 
+    public void onOrderStateChangeCreate(final DataDefinition dataDefinition, final Entity orderStateChange) {
+        if (orderStateChange.getField(OrderStateChangeFields.DATES_CHANGED) == null) {
+            orderStateChange.setField(OrderStateChangeFields.DATES_CHANGED, false);
+        }
+    }
 }

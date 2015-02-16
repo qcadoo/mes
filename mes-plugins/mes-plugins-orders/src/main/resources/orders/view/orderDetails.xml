@@ -877,13 +877,14 @@
 					link="true" />
 				<option type="column" name="previousState" fields="sourceState" />
 				<option type="column" name="currentState" fields="targetState" />
+				<option type="column" name="datesChanged" fields="datesChanged" width="30"/>
 				<option type="column" name="worker" fields="worker" />
 				<option type="column" name="comment" fields="comment" />
 
 				<option type="order" column="dateAndTime" direction="asc" />
 
-				<option type="searchable" value="dateAndTime,previousState,currentState" />
-				<option type="orderable" value="dateAndTime,previousState,currentState" />
+				<option type="searchable" value="dateAndTime,previousState,currentState,datesChanged" />
+				<option type="orderable" value="dateAndTime,previousState,currentState,datesChanged" />
 
 				<option type="correspondingView" value="orders/orderStateChangeDetails" />
 				<option type="correspondingComponent" value="form" />

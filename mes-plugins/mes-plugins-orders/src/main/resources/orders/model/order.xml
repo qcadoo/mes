@@ -50,10 +50,18 @@
         <datetime name="effectiveDateFrom"/>
         <datetime name="effectiveDateTo"/>
         <datetime name="deadline"/>
-        <datetime name="correctedDateFrom"/>
-        <datetime name="correctedDateTo"/>
-        <datetime name="startDate"/>
-        <datetime name="finishDate"/>
+        <datetime name="correctedDateFrom"> 
+        	<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
+        </datetime>
+        <datetime name="correctedDateTo">
+        	<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
+        </datetime>
+        <datetime name="startDate">
+        	<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
+        </datetime>
+        <datetime name="finishDate">
+        	<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
+        </datetime>
 
         <enum name="state"
               values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
@@ -124,6 +132,15 @@
                  joinField="order" cascade="delete"/>
         <hasMany name="reasonTypesDeviationsOfEffectiveEnd" model="reasonTypeDeviationEffectiveEnd"
                  joinField="order" cascade="delete"/>
+                 
+		<!-- dates audit fields -->
+        <boolean name="datesChanged" default="false"/>
+        
+        <datetime name="sourceCorrectedDateFrom"/>
+        <datetime name="sourceCorrectedDateTo"/>
+        <datetime name="sourceStartDate"/>
+        <datetime name="sourceFinishDate"/>
+        
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
@@ -139,6 +156,7 @@
                 method="onCopy"/>
 
         <onDelete class="com.qcadoo.mes.orders.hooks.OrderHooks" method="onDelete"/>
+        
     </hooks>
     <identifier expression="#number + ' - ' + #name"/>
 </model>

@@ -109,4 +109,14 @@ public final class OrderFields {
 
     public static final String ACTIVE = "active";
 
+    public static final String DATES_CHANGED = "datesChanged";
+
+    public static final String SOURCE_CORRECTED_DATE_FROM = "sourceCorrectedDateFrom";
+
+    public static final String SOURCE_CORRECTED_DATE_TO = "sourceCorrectedDateTo";
+
+    public static final String SOURCE_START_DATE = "sourceStartDate";
+
+    public static final String SOURCE_FINISH_DATE = "sourceFinishDate";
+
 }

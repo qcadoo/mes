@@ -63,7 +63,7 @@
 				</script>
 			
 				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="6" hasBorders="false">
+					rows="10" hasBorders="false">
 					<layoutElement column="1" row="1">
 						<component type="input" name="dateAndTime" field="#{form}.dateAndTime"
 							reference="dateAndTime" defaultEnabled="false" />
@@ -114,6 +114,51 @@
 							reference="comment" />
 						<component type="checkbox" name="reasonRequired" reference="reasonRequired"
 							field="#{form}.reasonRequired" defaultEnabled="false" defaultVisible="false" />
+					</layoutElement>
+					<layoutElement row="7" column="1" width="2" height="4">
+						<component type="gridLayout" name="datesGridLayout" reference="datesGridLayout" rows="4" columns="2"
+							hasBorders="false">
+							<layoutElement row="1" column="1">
+								<component type="input" name="sourceStartDate" field="#{form}.sourceStartDate"
+									reference="sourceStartDate" defaultEnabled="false" />
+							</layoutElement>
+							
+							<layoutElement row="1" column="2">
+								<component type="input" name="targetStartDate" field="#{form}.targetStartDate"
+									reference="targetStartDate" defaultEnabled="false" />
+							</layoutElement>
+							
+							<layoutElement row="2" column="1">
+								<component type="input" name="sourceFinishDate" field="#{form}.sourceFinishDate"
+									reference="sourceFinishDate" defaultEnabled="false" />
+							</layoutElement>
+							
+							<layoutElement row="2" column="2">
+								<component type="input" name="targetFinishDate" field="#{form}.targetFinishDate"
+									reference="targetFinishDate" defaultEnabled="false" />
+							</layoutElement>
+							
+							<layoutElement row="3" column="1">
+								<component type="input" name="sourceCorrectedDateFrom" field="#{form}.sourceCorrectedDateFrom"
+									reference="sourceCorrectedDateFrom" defaultEnabled="false" />
+							</layoutElement>
+							
+							<layoutElement row="3" column="2">
+								<component type="input" name="targetCorrectedDateFrom" field="#{form}.targetCorrectedDateFrom"
+									reference="targetCorrectedDateFrom" defaultEnabled="false" />
+							</layoutElement>
+							
+							<layoutElement row="4" column="1">
+								<component type="input" name="sourceCorrectedDateTo" field="#{form}.sourceCorrectedDateTo"
+									reference="sourceCorrectedDateTo" defaultEnabled="false" />
+							</layoutElement>
+							
+							<layoutElement row="4" column="2">
+								<component type="input" name="targetCorrectedDateTo" field="#{form}.targetCorrectedDateTo"
+									reference="targetCorrectedDateTo" defaultEnabled="false" />
+							</layoutElement>
+						</component>
+					
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
