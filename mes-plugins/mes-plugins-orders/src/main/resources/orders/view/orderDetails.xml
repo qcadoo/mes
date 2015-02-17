@@ -432,6 +432,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + ' ' + #product['number'] + '&lt;/b&gt; - ' + #product['name']" />
 							<option type="fieldCode" value="number" />
+							<criteriaModifier
+									class="com.qcadoo.mes.orders.criteriaModifires.TechnologyCriteriaModifiersO"
+									method="showAcceptedRecipes" />
 						</component>
 					</layoutElement>
 

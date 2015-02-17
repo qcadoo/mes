@@ -38,4 +38,7 @@ public class TechnologyCriteriaModifiersO {
         scb.add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED));
     }
 
+    public void showAcceptedRecipes(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.eq("state", "03accepted"));
+    }
 }

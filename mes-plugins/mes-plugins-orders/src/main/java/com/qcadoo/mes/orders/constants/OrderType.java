@@ -30,7 +30,7 @@ import com.qcadoo.model.api.Entity;
 
 public enum OrderType {
 
-    WITH_PATTERN_TECHNOLOGY("01withPatternTechnology"), WITH_OWN_TECHNOLOGY("02withOwnTechnology");
+    WITH_PATTERN_TECHNOLOGY("01withPatternTechnology"), WITH_OWN_TECHNOLOGY("02withOwnTechnology"), OTHER("other");
 
     private final String state;
 
@@ -55,7 +55,7 @@ public enum OrderType {
             }
         }
 
-        throw new IllegalStateException("Unsupported orderType: " + orderType);
+        return OTHER;
     }
 
 }
