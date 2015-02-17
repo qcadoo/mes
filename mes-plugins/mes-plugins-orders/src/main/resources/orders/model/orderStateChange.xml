@@ -60,7 +60,7 @@
         <datetime name="targetStartDate"/>
         <datetime name="targetFinishDate"/>
         
-        <boolean name="datesChanged" default="false" required="true"/>
+        <boolean name="datesChanged" default="false"/>
 		
 	</fields>
 	<hooks>
