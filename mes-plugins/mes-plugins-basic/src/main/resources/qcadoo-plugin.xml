@@ -31,7 +31,6 @@
         xmlns:menu="http://schema.qcadoo.org/modules/menu"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xmlns:custom="http://schema.qcadoo.org/modules/custom"
-        xmlns:security="http://schema.qcadoo.org/modules/security"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
 		http://schema.qcadoo.org/plugin.xsd
 		http://schema.qcadoo.org/modules/model 
@@ -40,8 +39,8 @@
 		http://schema.qcadoo.org/modules/view.xsd 
 		http://schema.qcadoo.org/modules/localization 
 		http://schema.qcadoo.org/modules/localization.xsd
-		       http://schema.qcadoo.org/modules/security
-       http://schema.qcadoo.org/modules/security.xsd
+
+
 		http://schema.qcadoo.org/modules/menu 
 		http://schema.qcadoo.org/modules/menu.xsd
 		http://schema.qcadoo.org/modules/custom
@@ -160,19 +159,19 @@
         <view:view resource="view/workstationsList.xml"/>
         <view:view resource="view/workstationDetails.xml"/>
 
-        <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml" />
+        <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
 
         <model:model-field plugin="qcadooSecurity" model="user">
-            <model:belongsTo model="staff" plugin="basic" name="staff" />
+            <model:belongsTo model="staff" plugin="basic" name="staff"/>
         </model:model-field>
         <!-- For constraints sake -->
         <model:model-field plugin="basic" model="staff">
             <model:hasMany plugin="qcadooSecurity" model="user"
-                           joinField="staff" name="users" cascade="nullify" />
+                           joinField="staff" name="users" cascade="nullify"/>
         </model:model-field>
         <model:model-hook plugin="qcadooSecurity" model="user">
             <model:validatesWith
-                    class="com.qcadoo.mes.basic.validators.UserValidators" method="onValidate" />
+                    class="com.qcadoo.mes.basic.validators.UserValidators" method="onValidate"/>
         </model:model-hook>
 
         <model:model-field model="unitConversionItem"
@@ -190,9 +189,6 @@
         <custom:custom class="com.qcadoo.mes.basic.BasicOnStartupService"/>
 
 
-        <security:role identifier="ROLE_MENU_HOME"/>
-        <security:user-group name="Menu home user"
-                             identifier="USER_MENU_HOME" roles="ROLE_MENU_HOME"/>
     </modules>
 
     <features>
