@@ -96,6 +96,10 @@
             <model:hasMany name="material" model="material" joinField="materials" plugin="orders"/>
         </model:model-field>
 
+        <model:model-field model="product" plugin="basic">
+            <model:hasMany name="recipes" model="recipe" joinField="product" plugin="orders"/>
+        </model:model-field>
+
         <model:model-field model="workstation" plugin="basic">
             <model:manyToMany name="instruction" model="instruction" joinField="workstations" plugin="orders"/>
         </model:model-field>

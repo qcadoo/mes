@@ -420,18 +420,18 @@
 					
 					<layoutElement column="2" row="4">
 						<component type="lookup" name="recipe"
-							reference="recipe" field="recipe">
+							reference="recipe" field="recipe" source="#{product}.recipes">
 							<option type="column" name="productNumber" fields="product" link="true"
 								expression="#product['number']"/>
 							<option type="column" name="productName" fields="product" link="true"
 								expression="#product['name']"/>
 
-							<option type="searchable" value="number,productNumber,productName" />
-							<option type="orderable" value="number,productNumber,productName" />
+							<option type="searchable" value="name,productNumber,productName" />
+							<option type="orderable" value="name,productNumber,productName" />
 
 							<option type="expression"
-								value="'&lt;b&gt;' + #number + ' ' + #product['number'] + '&lt;/b&gt; - ' + #product['name']" />
-							<option type="fieldCode" value="number" />
+								value="'&lt;b&gt;' + #name + ' ' + #product['number'] + '&lt;/b&gt; - ' + #product['name']" />
+							<option type="fieldCode" value="name" />
 							<criteriaModifier
 									class="com.qcadoo.mes.orders.criteriaModifires.TechnologyCriteriaModifiersO"
 									method="showAcceptedRecipes" />
