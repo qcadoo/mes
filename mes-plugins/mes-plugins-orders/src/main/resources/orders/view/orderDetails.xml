@@ -421,16 +421,13 @@
 					<layoutElement column="2" row="4">
 						<component type="lookup" name="recipe"
 							reference="recipe" field="recipe" source="#{product}.recipes">
-							<option type="column" name="productNumber" fields="product" link="true"
-								expression="#product['number']"/>
-							<option type="column" name="productName" fields="product" link="true"
-								expression="#product['name']"/>
+							<option type="column" name="version" fields="version" link="true" />
+							<option type="column" name="isDefault" fields="isDefault" link="true" />
 
-							<option type="searchable" value="name,productNumber,productName" />
-							<option type="orderable" value="name,productNumber,productName" />
+							<option type="searchable" value="name,version,isDefault" />
+							<option type="orderable" value="name,version,isDefault" />
 
-							<option type="expression"
-								value="'&lt;b&gt;' + #name + ' ' + #product['number'] + '&lt;/b&gt; - ' + #product['name']" />
+							<option type="expression" value="#name" />
 							<option type="fieldCode" value="name" />
 							<criteriaModifier
 									class="com.qcadoo.mes.orders.criteriaModifires.TechnologyCriteriaModifiersO"
