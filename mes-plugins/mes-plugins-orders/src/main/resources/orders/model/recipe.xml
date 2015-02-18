@@ -14,19 +14,24 @@
         <string name="strenght" required="true">
             <validatesLength max="255"/>
         </string>
-        <integer name="batchQuantity"/>
+        <decimal name="batchQuantity">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
         <dictionary name="batchSize" dictionary="units" required="true"/>
         <string name="description">
             <validatesLength max="2048"/>
         </string>
 
-        <manyToMany name="workstations" joinField="recipe" model="workstation" cascade="nullify" plugin="basic" copyable="true"/>
+        <manyToMany name="workstations" joinField="recipe" model="workstation" cascade="nullify" plugin="basic"
+                    copyable="true"/>
 
-        <hasMany name="materials" joinField="recipe" model="material" cascade="nullify" plugin="orders" copyable="true"/>
+        <hasMany name="materials" joinField="recipe" model="material" cascade="nullify" plugin="orders"
+                 copyable="true"/>
 
         <enum name="state" values="01draft,02inReview,03accepted,04cancelled" default="01draft" required="true"/>
 
-        <hasMany name="stateChanges" joinField="recipe" model="mbrStateChange" cascade="delete" />
+        <hasMany name="stateChanges" joinField="recipe" model="mbrStateChange" cascade="delete"/>
 
         <hasMany name="instructions" joinField="recipe" model="instruction" cascade="nullify" copyable="true"/>
 

@@ -9,21 +9,32 @@
             <validatesLength max="1024"/>
         </string>
 
-        <decimal name="rangeFrom" required="true"/>
+        <decimal name="rangeFrom" required="true">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
 
-        <decimal name="rangeTo" required="true"/>
+        <decimal name="rangeTo" required="true">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
 
         <dictionary name="rangeUnit" dictionary="units" required="true"/>
 
-        <decimal name="targetValue" required="true"/>
+        <decimal name="targetValue" required="true">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
 
         <boolean name="verificationRequired"/>
 
-        <manyToMany name="workstations" joinField="instruction" model="workstation" cascade="nullify" plugin="basic" copyable="true"/>
+        <manyToMany name="workstations" joinField="instruction" model="workstation" cascade="nullify" plugin="basic"
+                    copyable="true"/>
 
-        <hasMany name="materials" joinField="instruction" model="material" cascade="nullify" plugin="orders" copyable="true"/>
-		
-		<belongsTo name="recipe" model="recipe" plugin="orders" copyable="true"/>
+        <hasMany name="materials" joinField="instruction" model="material" cascade="nullify" plugin="orders"
+                 copyable="true"/>
+
+        <belongsTo name="recipe" model="recipe" plugin="orders" copyable="true"/>
 
     </fields>
 
