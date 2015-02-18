@@ -9,21 +9,21 @@
             <validatesLength max="1024"/>
         </string>
 
-        <integer name="rangeFrom" required="true"/>
+        <decimal name="rangeFrom" required="true"/>
 
-        <integer name="rangeTo" required="true"/>
+        <decimal name="rangeTo" required="true"/>
 
-        <dictionary name="rangeUnit" dictionary="units"/>
+        <dictionary name="rangeUnit" dictionary="units" required="true"/>
 
-        <integer name="targetValue" required="true"/>
+        <decimal name="targetValue" required="true"/>
 
         <boolean name="verificationRequired"/>
 
-        <manyToMany name="workstations" joinField="instruction" model="workstation" cascade="nullify" plugin="basic"/>
+        <manyToMany name="workstations" joinField="instruction" model="workstation" cascade="nullify" plugin="basic" copyable="true"/>
 
-        <hasMany name="materials" joinField="instruction" model="material" cascade="nullify" plugin="orders"/>
+        <hasMany name="materials" joinField="instruction" model="material" cascade="nullify" plugin="orders" copyable="true"/>
 		
-		<belongsTo name="recipe" model="recipe" plugin="orders"/>
+		<belongsTo name="recipe" model="recipe" plugin="orders" copyable="true"/>
 
     </fields>
 
