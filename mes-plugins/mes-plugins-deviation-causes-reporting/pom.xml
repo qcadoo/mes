@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
-		<version>1.4-SNAPSHOT-DEV</version>
+		<version>1.4-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mes-plugins-deviation-causes-reporting</artifactId>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-production-per-shift</artifactId>
-			<version>1.4-SNAPSHOT-DEV</version>
+			<version>1.4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

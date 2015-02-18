@@ -31,7 +31,8 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardFormTemplate" includeItems="navigation.back, actions.save, actions.saveBack" />
+            <template name="standardFormTemplate"
+                      includeItems="navigation.back, actions.save, actions.saveBack, actions.saveNew"/>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -43,12 +44,12 @@
                         <component type="lookup" name="worker" field="worker"
                                    reference="worker">
 
-                            <option type="column" name="surname" fields="surname" />
-                            <option type="searchable" value="name, surame" />
-                            <option type="orderable" value="name, surame" />
+                            <option type="column" name="surname" fields="surname"/>
+                            <option type="searchable" value="name, surame"/>
+                            <option type="orderable" value="name, surame"/>
                             <option type="expression"
-                                    value="'&lt;b&gt;' + #name + '&lt;/b&gt; ' + #surname" />
-                            <option type="fieldCode" value="name" />
+                                    value="'&lt;b&gt;' + #name + '&lt;/b&gt; ' + #surname"/>
+                            <option type="fieldCode" value="name"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
@@ -58,7 +59,7 @@
                         </component>
                     </layoutElement>
                 </component>
-                <option type="header" value="false" />
+                <option type="header" value="false"/>
             </component>
         </windowTab>
 

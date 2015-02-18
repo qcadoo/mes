@@ -157,8 +157,8 @@ public class OrderHooks {
 
     public boolean setDateChanged(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity order,
             final Object fieldOldValue, final Object fieldNewValue) {
-
-        if (fieldOldValue != null && fieldNewValue != null) {
+        OrderState orderState = OrderState.of(order);
+        if (fieldOldValue != null && fieldNewValue != null && !orderState.equals(OrderState.PENDING)) {
 
             Date oldDate = DateUtils.parseDate(fieldOldValue);
             Date newDate = DateUtils.parseDate(fieldNewValue);
