@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +34,17 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.dates.OrderDates;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
+import com.qcadoo.mes.productionPerShift.dataProvider.ProductionPerShiftDataProvider;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class OrderDetailsHooksPPS {
@@ -48,11 +60,59 @@ public class OrderDetailsHooksPPS {
     @Autowired
     private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
 
+    @Autowired
+    private ProductionPerShiftDataProvider productionPerShiftDataProvider;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         Predicate<Entity> predicate = Predicates.and(HAS_DEFINED_PLANNED_START_DATE,
                 OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
         orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", predicate,
                 Optional.of("orders.ribbon.message.mustChangeTechnologyState"));
+
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() != null) {
+            checkOrderDates(view, form.getPersistedEntityWithIncludedFormValues());
+        }
+    }
+
+    private void checkOrderDates(final ViewDefinitionState view, final Entity order) {
+        Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
+        Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(technologyId);
+        DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
+                ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
+        Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
+        boolean areDatesCorrect = true;
+        if (maybeOrderDates.isPresent()) {
+            OrderDates orderDates = maybeOrderDates.get();
+            Date orderStart = removeTime(orderDates.getStart().effectiveWithFallback().toDate());
+            Date orderEnd = removeTime(orderDates.getEnd().effectiveWithFallback().toDate());
+            for (Long id : progressForDayIds) {
+                Entity progressForDay = progressForDayDD.get(id);
+                Date progressDate = progressForDay.getDateField(ProgressForDayFields.ACTUAL_DATE_OF_DAY);
+                if (progressDate == null) {
+                    progressDate = progressForDay.getDateField(ProgressForDayFields.DATE_OF_DAY);
+                }
+                if (progressDate.before(orderStart) || progressDate.after(orderEnd)) {
+                    areDatesCorrect = false;
+                }
+            }
+        }
+        if (!areDatesCorrect) {
+            view.addMessage("productionPerShift.info.invalidDates", MessageType.INFO, false);
+        }
+    }
+
+    private static Date removeTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
     }
 
 }

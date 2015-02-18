@@ -46,6 +46,24 @@
 		<belongsTo name="order" model="order" /> <!-- owner -->
 		<belongsTo name="shift" model="shift" plugin="basic" />
 		<string name="additionalInformation" />
+		
+		<!-- end -->
+		<!-- date audit fields -->
+		
+        <datetime name="sourceCorrectedDateFrom"/>
+        <datetime name="sourceCorrectedDateTo"/>
+        <datetime name="sourceStartDate"/>
+        <datetime name="sourceFinishDate"/>
+        
+        <datetime name="targetCorrectedDateFrom"/>
+        <datetime name="targetCorrectedDateTo"/>
+        <datetime name="targetStartDate"/>
+        <datetime name="targetFinishDate"/>
+        
+        <boolean name="datesChanged" default="false" required="true"/>
+		
 	</fields>
-	<hooks />
+	<hooks>
+		<onCreate class="com.qcadoo.mes.orders.listeners.OrderStateReasonViewListeners" method="onOrderStateChangeCreate"/>
+	</hooks>
 </model>

@@ -1,3 +1,6 @@
+package com.qcadoo.mes.productionCountingWithCosts.constants;
+
+
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
@@ -21,28 +24,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionPerShift.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.base.Optional;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
-import com.qcadoo.mes.productionPerShift.dates.ProgressDatesService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+public enum PriceBasedOn {
 
-@Service
-public class ProductionPerShiftHooks {
+    NOMINAL_PRODUCT_COST("01nominalProductCost"), REAL_PRODUCTION_COST("02realProductionCost");
 
-    @Autowired
-    private ProgressDatesService progressDatesService;
+    private final String value;
 
-    public void onSave(final DataDefinition dataDefinition, final Entity pps) {
-        Optional<Entity> maybeOrder = Optional.fromNullable(pps.getBelongsToField(ProductionPerShiftFields.ORDER));
-        for (Entity order : maybeOrder.asSet()) {
-            progressDatesService.setUpDatesFor(order);
-        }
+    private PriceBasedOn(final String value) {
+        this.value = value;
     }
 
+    public String getStringValue() {
+        return this.value;
+    }
+
+    public static PriceBasedOn parseString(final String type) {
+        for (PriceBasedOn priceType : values()) {
+            if (StringUtils.equalsIgnoreCase(type, priceType.getStringValue())) {
+                return priceType;
+            }
+        }
+        throw new IllegalArgumentException("Couldn't parse PriceBasedOn from string '" + type + "'");
+    }
 }
