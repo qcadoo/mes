@@ -199,8 +199,8 @@ public class DocumentDetailsHooks {
         AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             positionForm.setFormEnabled(false);
-            enableAttributesADL(view, false);
         }
+        enableAttributesADL(view, false);
         positionsADL.setEnabled(false);
         positionsADL.requestComponentUpdateState();
     }
