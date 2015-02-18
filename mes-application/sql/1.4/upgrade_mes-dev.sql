@@ -87,6 +87,7 @@ CREATE TABLE orders_material
   createuser character varying(255),
   updateuser character varying(255),
   materials_id bigint,
+  "number" character varying(255),
   CONSTRAINT orders_material_pkey PRIMARY KEY (id),
   CONSTRAINT material_recipe_fkey FOREIGN KEY (recipe_id)
       REFERENCES orders_recipe (id) DEFERRABLE,

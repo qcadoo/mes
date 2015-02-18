@@ -121,4 +121,6 @@ public final class OrderFields {
 
     public static final String RECIPE = "recipe";
 
+    public static final String BATCH_NUMBER = "batchNumber";
+
 }
