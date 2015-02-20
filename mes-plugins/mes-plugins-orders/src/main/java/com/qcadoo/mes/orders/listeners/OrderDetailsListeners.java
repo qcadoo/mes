@@ -243,6 +243,10 @@ public class OrderDetailsListeners {
                 }
             }
         }
+
+        LookupComponent recipeLookup = (LookupComponent) view.getComponentByReference(OrderFields.RECIPE);
+        recipeLookup.setFieldValue(null);
+
     }
 
     public void onOrderTypeChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {

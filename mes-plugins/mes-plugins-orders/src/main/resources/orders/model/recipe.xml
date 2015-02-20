@@ -1,0 +1,48 @@
+<model name="recipe" auditable="true" activable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+
+        <belongsTo name="product" model="product" plugin="basic" required="true"/>
+        <string name="name" required="true">
+            <validatesLength max="1024"/>
+        </string>
+        <string name="version">
+            <validatesLength max="255"/>
+        </string>
+        <boolean name="isDefault"/>
+        <string name="strenght" required="true">
+            <validatesLength max="255"/>
+        </string>
+        <decimal name="batchQuantity">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <dictionary name="batchSize" dictionary="units" required="true"/>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
+
+        <manyToMany name="workstations" joinField="recipe" model="workstation" cascade="nullify" plugin="basic"
+                    copyable="true"/>
+
+        <hasMany name="materials" joinField="recipe" model="material" cascade="nullify" plugin="orders"
+                 copyable="true"/>
+
+        <enum name="state" values="01draft,02inReview,03accepted,04cancelled" default="01draft" required="true"/>
+
+        <hasMany name="stateChanges" joinField="recipe" model="mbrStateChange" cascade="delete"/>
+
+        <hasMany name="instructions" joinField="recipe" model="instruction" cascade="nullify" copyable="true"/>
+
+        <hasMany name="orders" joinField="recipe" model="order" cascade="nullify"/>
+    </fields>
+
+    <hooks>
+        <onCreate class="com.qcadoo.mes.mbr.hooks.MbrModelHooks" method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.mbr.hooks.MbrModelHooks" method="onCopy"/>
+    </hooks>
+
+    <identifier expression="#name"/>
+
+</model>

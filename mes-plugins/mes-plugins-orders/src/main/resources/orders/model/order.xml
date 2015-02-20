@@ -141,6 +141,8 @@
         <datetime name="sourceStartDate"/>
         <datetime name="sourceFinishDate"/>
         
+        <belongsTo name="recipe" plugin="orders" model="recipe" />
+        
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"

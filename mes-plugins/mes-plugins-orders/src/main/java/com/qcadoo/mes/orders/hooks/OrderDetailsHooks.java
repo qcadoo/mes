@@ -159,6 +159,11 @@ public class OrderDetailsHooks {
         setFieldsVisibility(view);
         checkIfLockTechnologyTree(view);
         setQuantities(view);
+
+    }
+
+    public void fillRecipeFilterValue(final ViewDefinitionState view) {
+
     }
 
     public final void fillProductionLine(final ViewDefinitionState view) {
