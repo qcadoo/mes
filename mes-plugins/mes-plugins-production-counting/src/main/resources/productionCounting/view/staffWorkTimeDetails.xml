@@ -39,7 +39,7 @@
             <component type="form" name="staffWorkTimeDetails"
                        reference="form">
                 <component type="gridLayout" name="gridLayout" columns="1"
-                           rows="2" hasBorders="false">
+                           rows="4" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="worker" field="worker"
                                    reference="worker">
@@ -53,6 +53,24 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
+                        <component type="calendar" name="effectiveExecutionTimeStart" field="effectiveExecutionTimeStart"
+                                   reference="effectiveExecutionTimeStart">
+                            <option type="withTimePicker" value="true"/>
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.productionCounting.listeners.StaffWorkTimeDetailsListeners"
+                                      method="calculateLaborTime"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="calendar" name="effectiveExecutionTimeEnd" field="effectiveExecutionTimeEnd"
+                                   reference="effectiveExecutionTimeEnd">
+                            <option type="withTimePicker" value="true"/>
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.productionCounting.listeners.StaffWorkTimeDetailsListeners"
+                                      method="calculateLaborTime"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
                         <component type="time" name="laborTime" reference="laborTime"
                                    field="laborTime">
                             <option type="noHours" value="3"/>
