@@ -420,7 +420,7 @@
 					
 					<layoutElement column="2" row="4">
 						<component type="lookup" name="recipe"
-							reference="recipe" field="recipe" source="#{product}.recipes">
+							reference="recipe" field="recipe" source="#{product}.recipes" defaultVisible="false">
 							<option type="column" name="version" fields="version" link="true" />
 							<option type="column" name="isDefault" fields="isDefault" link="true" />
 
