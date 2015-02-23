@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productionCounting.validators;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,11 @@ public class StaffWorkTimeValidators {
     private ParameterService parameterService;
 
     public boolean validatesWith(final DataDefinition staffWorkTimeDD, final Entity staffWorkTime) {
+
+        if (!checkOperatorWorkTime(staffWorkTimeDD, staffWorkTime)) {
+            return false;
+        }
+
         Entity parameter = parameterService.getParameter();
 
         if (!parameter.getBooleanField(ParameterFieldsPC.ALLOW_MULTIPLE_REGISTERING_TIME_FOR_WORKER)) {
@@ -60,6 +67,18 @@ public class StaffWorkTimeValidators {
         }
 
         return true;
+    }
+
+    private boolean checkOperatorWorkTime(final DataDefinition staffWorkTimeDD, final Entity staffWorkTime) {
+        Date dateFrom = staffWorkTime.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START);
+        Date dateTo = staffWorkTime.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END);
+
+        if (dateFrom == null || dateTo == null || dateTo.after(dateFrom)) {
+            return true;
+        }
+        staffWorkTime.addError(staffWorkTimeDD.getField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END),
+                "productionCounting.productionTracking.productionTrackingError.effectiveExecutionTimeEndBeforeEffectiveExecutionTimeStart");
+        return false;
     }
 
 }
