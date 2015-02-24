@@ -45,15 +45,17 @@
                     expression="#locationFrom['name']" />
             <option type="column" name="locationTo" fields="locationTo"
                     expression="#locationTo['name']" />
+            <option type="column" name="company" fields="company"
+                    expression="#company['name']" />
             <option type="column" name="user" fields="user"
                     expression="#user['firstName'] + ' ' + #user['lastName']" width="150" />
 
             <option type="order" column="number" direction="desc" width="200" />
 
             <option type="searchable"
-                    value="number,time,locationFrom,locationTo,user,type,state" />
+                    value="number,time,locationFrom,locationTo,user,type,state,company" />
             <option type="orderable"
-                    value="number,time,locationFrom,locationTo,user,type,state" />
+                    value="number,time,locationFrom,locationTo,user,type,state,company" />
 
             <option type="correspondingView" value="materialFlowResources/documentDetails" />
             <option type="correspondingComponent" value="form" />
