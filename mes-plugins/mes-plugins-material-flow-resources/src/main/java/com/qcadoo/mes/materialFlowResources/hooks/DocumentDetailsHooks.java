@@ -77,6 +77,11 @@ public class DocumentDetailsHooks {
     @Autowired
     private DocumentDetailsListeners documentDetailsListeners;
 
+    public void onBeforeRender(final ViewDefinitionState view) {
+        initializeDocument(view);
+        // setCriteriaModifiersParameters(view);
+    }
+
     // fixme: refactor
     public void showFieldsByDocumentType(final ViewDefinitionState view) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
@@ -88,23 +93,23 @@ public class DocumentDetailsHooks {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, true);
             showWarehouse(view, false, true);
             showCompany(view, true);
-            enableAttributesADL(view, true);
+            // enableAttributesADL(view, true);
         } else if (DocumentType.TRANSFER.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, true, true);
             showCompany(view, false);
-            enableAttributesADL(view, false);
+            // enableAttributesADL(view, false);
         } else if (DocumentType.RELEASE.getStringValue().equals(documentType)
                 || DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, true, false);
             showCompany(view, true);
-            enableAttributesADL(view, false);
+            // enableAttributesADL(view, false);
         } else {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             showWarehouse(view, false, false);
             showCompany(view, false);
-            enableAttributesADL(view, false);
+            // enableAttributesADL(view, false);
         }
     }
 
@@ -200,7 +205,7 @@ public class DocumentDetailsHooks {
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             positionForm.setFormEnabled(false);
         }
-        enableAttributesADL(view, false);
+        // enableAttributesADL(view, false);
         positionsADL.setEnabled(false);
         positionsADL.requestComponentUpdateState();
     }
@@ -227,20 +232,23 @@ public class DocumentDetailsHooks {
     public void setCriteriaModifiersParameters(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
-        Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
-        for (FormComponent positionForm : positionsADL.getFormComponents()) {
-            Entity position = positionForm.getPersistedEntityWithIncludedFormValues();
-            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-            LookupComponent resourcesLookup = (LookupComponent) positionForm.findFieldComponentByName(PositionFields.RESOURCE);
-            FilterValueHolder filter = resourcesLookup.getFilterValue();
-            if (warehouseFrom != null) {
-                filter.put("locationFrom", warehouseFrom.getId());
+        if (!DocumentState.of(document).equals(DocumentState.ACCEPTED)) {
+            Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+            AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+            for (FormComponent positionForm : positionsADL.getFormComponents()) {
+                Entity position = positionForm.getPersistedEntityWithIncludedFormValues();
+                Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+                LookupComponent resourcesLookup = (LookupComponent) positionForm
+                        .findFieldComponentByName(PositionFields.RESOURCE);
+                FilterValueHolder filter = resourcesLookup.getFilterValue();
+                if (warehouseFrom != null) {
+                    filter.put("locationFrom", warehouseFrom.getId());
+                }
+                if (product != null) {
+                    filter.put("product", product.getId());
+                }
+                resourcesLookup.setFilterValue(filter);
             }
-            if (product != null) {
-                filter.put("product", product.getId());
-            }
-            resourcesLookup.setFilterValue(filter);
         }
     }
 
