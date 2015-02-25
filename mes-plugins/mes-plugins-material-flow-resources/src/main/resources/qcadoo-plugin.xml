@@ -179,6 +179,9 @@
                         view="documentsList" />
         <menu:menu-item name="warehouseStock" category="materialFlow"
                         view="warehouseStocksList" />
+        
+        <menu:menu-item name="documentPositions" category="materialFlow"
+                        view="documentPositionsList" />
 				
 		<view:view-listener plugin="materialFlow" view="transferDetails" 
 			component="locationFrom" event="onSelectedEntityChange" 
@@ -207,6 +210,7 @@
         <view:view resource="view/warehouseStocksList.xml" />
         <view:view resource="view/resourceCorrectionsList.xml" />
         <view:view resource="view/resourceCorrectionDetails.xml" />
+        <view:view resource="view/documentPositionsList.xml" />
 
         <view:view-tab resource="view/tabExtensions/parameters.xml" />
         <view:view-tab resource="view/tabExtensions/locationDetails.xml" />

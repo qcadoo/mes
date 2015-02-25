@@ -53,4 +53,7 @@ public final class PositionFields {
 
     public static final String EXTERNAL_NUMBER = "externalNumber";
 
+    public static final String TYPE = "type";
+
+    public static final String STATE = "state";
 }
