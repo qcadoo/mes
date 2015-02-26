@@ -31,91 +31,91 @@ ALTER TABLE orders_orderstatechange ALTER COLUMN dateschanged SET DEFAULT false;
 -- end
 
 -- Added MBR models to orders
--- last touched 16.02.2015 by kama
+-- last touched 26.02.2015 by rawa
 
-CREATE TABLE orders_recipe
-(
-  id bigint NOT NULL,
-  "number" character varying(255),
-  product_id bigint,
-  name character varying(1024),
-  version character varying(255),
-  isdefault boolean,
-  strenght character varying(255),
-  batchquantity integer,
-  batchsize character varying(255),
-  description character varying(2048),
-  state character varying(255) DEFAULT '01draft'::character varying,
-  createdate timestamp without time zone,
-  updatedate timestamp without time zone,
-  createuser character varying(255),
-  updateuser character varying(255),
-  CONSTRAINT orders_recipe_pkey PRIMARY KEY (id),
-  CONSTRAINT recipe_product_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE
+CREATE TABLE "orders_instruction" (
+  "id" int8 NOT NULL,
+  "orderid" int4,
+  "description" varchar(1024) COLLATE "default",
+  "rangefrom" numeric(19,5),
+  "rangeto" numeric(19,5),
+  "rangeunit" varchar(255) COLLATE "default",
+  "targetvalue" numeric(19,5),
+  "verificationrequired" bool,
+  "recipe_id" int8,
+  "state" varchar(255) DEFAULT '01draft'::character varying COLLATE "default",
+  "result" varchar(255) COLLATE "default",
+  "comments" varchar(255) COLLATE "default",
+  "createdate" timestamp(6) NULL,
+  "updatedate" timestamp(6) NULL,
+  "createuser" varchar(255) COLLATE "default",
+  "updateuser" varchar(255) COLLATE "default",
+  CONSTRAINT order_instructionions_orders_recipe_fkey FOREIGN KEY ("recipe_id")
+  REFERENCES "orders_recipe" ("id") DEFERRABLE
 );
 
-CREATE TABLE orders_instruction
-(
-  id bigint NOT NULL,
-  orderid integer,
-  description character varying(1024),
-  rangefrom integer,
-  rangeto integer,
-  rangeunit character varying(255),
-  targetvalue integer,
-  verificationrequired boolean,
-  recipe_id bigint,
-  createdate timestamp without time zone,
-  updatedate timestamp without time zone,
-  createuser character varying(255),
-  updateuser character varying(255),
-  CONSTRAINT orders_instruction_pkey PRIMARY KEY (id),
-  CONSTRAINT instruction_recipe_fkey FOREIGN KEY (recipe_id)
-      REFERENCES orders_recipe (id) DEFERRABLE
-);
 
-CREATE TABLE orders_material
-(
-  id bigint NOT NULL,
-  product_id bigint,
-  quantity numeric(12,5),
-  recipe_id bigint,
-  instruction_id bigint,
-  createdate timestamp without time zone,
-  updatedate timestamp without time zone,
-  createuser character varying(255),
-  updateuser character varying(255),
-  materials_id bigint,
-  "number" character varying(255),
+CREATE TABLE "orders_material" (
+  "id" int8 NOT NULL,
+  "number" varchar(255) COLLATE "default",
+  "product_id" int8,
+  "quantity" numeric(12,5),
+  "recipe_id" int8,
+  "instruction_id" int8,
+  "createdate" timestamp(6) NULL,
+  "updatedate" timestamp(6) NULL,
+  "createuser" varchar(255) COLLATE "default",
+  "updateuser" varchar(255) COLLATE "default",
+  "materials_id" int8,
   CONSTRAINT orders_material_pkey PRIMARY KEY (id),
-  CONSTRAINT material_recipe_fkey FOREIGN KEY (recipe_id)
-      REFERENCES orders_recipe (id) DEFERRABLE,
-  CONSTRAINT material_instruction_fkey FOREIGN KEY (instruction_id)
-      REFERENCES orders_instruction (id) DEFERRABLE,
-  CONSTRAINT material_product_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE,
-  CONSTRAINT material_materials_fkey FOREIGN KEY (materials_id)
-      REFERENCES basic_product (id) DEFERRABLE
+  CONSTRAINT orders_material_orders_recipe_fkey FOREIGN KEY ("recipe_id")
+  REFERENCES "orders_recipe" ("id") DEFERRABLE,
+  CONSTRAINT orders_material_basic_product_fkey FOREIGN KEY ("product_id")
+  REFERENCES "basic_product" ("id") DEFERRABLE,
+  CONSTRAINT orders_material_basic_product_materials_fkey FOREIGN KEY ("materials_id")
+  REFERENCES "basic_product" ("id") DEFERRABLE,
+  CONSTRAINT orders_material_orders_instruction_fkey FOREIGN KEY ("instruction_id")
+  REFERENCES "orders_instruction" ("id") DEFERRABLE,
 );
 
-CREATE TABLE orders_mbrstatechange
-(
-  id bigint NOT NULL,
-  dateandtime timestamp without time zone,
-  sourcestate character varying(255),
-  targetstate character varying(255),
-  status character varying(255),
-  phase integer,
-  worker character varying(255),
-  recipe_id bigint,
-  shift_id bigint,
+
+CREATE TABLE "orders_mbrstatechange" (
+  "id" int8 NOT NULL,
+  "dateandtime" timestamp(6) NULL,
+  "sourcestate" varchar(255) COLLATE "default",
+  "targetstate" varchar(255) COLLATE "default",
+  "status" varchar(255) COLLATE "default",
+  "phase" int4,
+  "worker" varchar(255) COLLATE "default",
+  "recipe_id" int8,
+  "shift_id" int8,
   CONSTRAINT orders_mbrstatechange_pkey PRIMARY KEY (id),
-  CONSTRAINT mbrstatechange_recipe_fkey FOREIGN KEY (recipe_id)
-      REFERENCES orders_recipe (id) DEFERRABLE,
-  CONSTRAINT mbrstatechange_shift_fkey FOREIGN KEY (shift_id)
-      REFERENCES basic_shift (id) DEFERRABLE
+  CONSTRAINT orders_mbrstatechange_orders_recipe_fkey FOREIGN KEY ("recipe_id")
+  REFERENCES "orders_recipe" ("id") DEFERRABLE,
+  CONSTRAINT orders_mbrstatechange_basic_shift_fkey FOREIGN KEY ("shift_id")
+  REFERENCES "basic_shift" ("id") DEFERRABLE
 );
+
+
+CREATE TABLE "orders_recipe" (
+  "id" int8 NOT NULL,
+  "product_id" int8,
+  "name" varchar(1024) COLLATE "default",
+  "version" varchar(255) COLLATE "default",
+  "isdefault" bool,
+  "strenght" varchar(255) COLLATE "default",
+  "batchquantity" numeric(19,5),
+  "batchsize" varchar(255) COLLATE "default",
+  "description" varchar(2048) COLLATE "default",
+  "state" varchar(255) DEFAULT '01draft'::character varying COLLATE "default",
+  "active" bool DEFAULT true,
+  "createdate" timestamp(6) NULL,
+  "updatedate" timestamp(6) NULL,
+  "createuser" varchar(255) COLLATE "default",
+  "updateuser" varchar(255) COLLATE "default",
+  CONSTRAINT orders_recipe_pkey PRIMARY KEY (id)
+);
+
 
 ALTER TABLE orders_order ADD COLUMN recipe_id bigint;
 ALTER TABLE orders_order
