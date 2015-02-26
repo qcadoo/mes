@@ -1,0 +1,43 @@
+<model name="instruction" auditable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+
+        <integer name="orderId" required="true"/>
+
+        <string name="description">
+            <validatesLength max="1024"/>
+        </string>
+
+        <decimal name="rangeFrom">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="rangeTo">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <dictionary name="rangeUnit" dictionary="units"/>
+
+        <decimal name="targetValue">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <boolean name="verificationRequired"/>
+
+        <manyToMany name="workstations" joinField="instruction" model="workstation" cascade="nullify" plugin="basic"
+                    copyable="true"/>
+
+        <hasMany name="materials" joinField="instruction" model="material" cascade="nullify" plugin="orders"
+                 copyable="true"/>
+
+        <belongsTo name="recipe" model="recipe" plugin="orders" copyable="true"/>
+
+    </fields>
+
+    <hooks/>
+
+</model>

@@ -46,7 +46,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 public class ProductionTrackingValidators {
 
     private static final Set<String> L_ORDER_STARTED_STATES_SET = Sets.newHashSet(OrderStateStringValues.IN_PROGRESS,
-            OrderStateStringValues.INTERRUPTED);
+            OrderStateStringValues.INTERRUPTED, OrderStateStringValues.COMPLETED);
 
     @Autowired
     private ProductionCountingService productionCountingService;
@@ -80,7 +80,8 @@ public class ProductionTrackingValidators {
 
     }
 
-    private boolean checkTimeRange(final DataDefinition productionTrackingDD, final Entity productionTracking, final Entity order) {
+    private boolean checkTimeRange(final DataDefinition productionTrackingDD, final Entity productionTracking,
+            final Entity order) {
         Date timeRangeFrom = productionTracking.getDateField(ProductionTrackingFields.TIME_RANGE_FROM);
         Date timeRangeTo = productionTracking.getDateField(ProductionTrackingFields.TIME_RANGE_TO);
 

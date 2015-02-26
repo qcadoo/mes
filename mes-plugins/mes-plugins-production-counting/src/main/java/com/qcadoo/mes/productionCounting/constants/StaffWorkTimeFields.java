@@ -34,4 +34,8 @@ public final class StaffWorkTimeFields {
 
     public static final String LABOR_TIME = "laborTime";
 
+    public static final String EFFECTIVE_EXECUTION_TIME_START = "effectiveExecutionTimeStart";
+
+    public static final String EFFECTIVE_EXECUTION_TIME_END = "effectiveExecutionTimeEnd";
+
 }

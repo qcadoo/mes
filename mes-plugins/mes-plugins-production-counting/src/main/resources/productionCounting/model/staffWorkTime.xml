@@ -31,6 +31,8 @@
         <belongsTo name="productionRecord" model="productionTracking" required="true" />
         <belongsTo name="worker" model="staff" plugin="basic" required="true" />
         <integer name="laborTime" copyable="false" default="0" />
+        <datetime name="effectiveExecutionTimeStart"/>
+        <datetime name="effectiveExecutionTimeEnd"/>
     </fields>
     <hooks>
         <validatesWith

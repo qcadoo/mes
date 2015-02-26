@@ -417,8 +417,25 @@
 							<option type="label" value="predefinedTechnologyLabel" />
 						</component>
 					</layoutElement>
-
+					
 					<layoutElement column="2" row="4">
+						<component type="lookup" name="recipe"
+							reference="recipe" field="recipe" source="#{product}.recipes" defaultVisible="false">
+							<option type="column" name="version" fields="version" link="true" />
+							<option type="column" name="isDefault" fields="isDefault" link="true" />
+
+							<option type="searchable" value="name,version,isDefault" />
+							<option type="orderable" value="name,version,isDefault" />
+
+							<option type="expression" value="#name" />
+							<option type="fieldCode" value="name" />
+							<criteriaModifier
+									class="com.qcadoo.mes.orders.criteriaModifires.TechnologyCriteriaModifiersO"
+									method="showAcceptedRecipes" />
+						</component>
+					</layoutElement>
+
+					<layoutElement column="2" row="5">
 						<component type="lookup" name="productionLine"
 							reference="productionLine" field="productionLine">
 							<option type="column" name="name" fields="name" link="true"
@@ -432,18 +449,18 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="5">
+					<layoutElement column="2" row="6">
 						<component type="select" name="state" field="state"
 							reference="state" defaultVisible="false" />
 					</layoutElement>
-					<layoutElement column="2" row="6">
+					<layoutElement column="2" row="7">
 						<component type="input" name="plannedQuantity"
 							reference="plannedQuantity" field="plannedQuantity">
 							<option type="labelWidth" value="55" />
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="7">
+					<layoutElement column="2" row="8">
 						<component type="input" name="doneQuantity" field="doneQuantity"
 							reference="doneQuantity" hasDescription="true">
 							<option type="labelWidth" value="55" />
@@ -453,7 +470,7 @@
 <!-- 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="8">
+					<layoutElement column="2" row="9">
 						<component type="input" name="unit" reference="unit"
 							defaultEnabled="false">
 							<option type="labelWidth" value="55" />

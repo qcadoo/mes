@@ -41,6 +41,7 @@ import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DocumentFieldsDTMF;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
@@ -75,7 +76,7 @@ public class DeliveryStateServiceMF {
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
         documentBuilder.receipt(location);
         documentBuilder.setField(DocumentFieldsDTMF.DELIVERY, delivery);
-
+        documentBuilder.setField(DocumentFields.COMPANY, delivery.getField(DeliveryFields.SUPPLIER));
         for (Entity deliveredProduct : deliveredProducts) {
 
             BigDecimal quantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
