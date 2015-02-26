@@ -25,14 +25,11 @@
 
 -->
 <plugin plugin="materialFlowResources" group="flow" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
-	xsi:schemaLocation="
-	   http://schema.qcadoo.org/modules/report 
-	   http://schema.qcadoo.org/modules/report.xsd 
-		http://schema.qcadoo.org/plugin 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+		xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+		xmlns:menu="http://schema.qcadoo.org/modules/menu"
+		xmlns:localization="http://schema.qcadoo.org/modules/localization"
+		xsi:schemaLocation="http://schema.qcadoo.org/plugin
 		http://schema.qcadoo.org/plugin.xsd 
 		http://schema.qcadoo.org/modules/model 
 		http://schema.qcadoo.org/modules/model.xsd 

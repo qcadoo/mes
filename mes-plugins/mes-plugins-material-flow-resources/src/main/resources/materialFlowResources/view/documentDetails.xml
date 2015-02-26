@@ -31,6 +31,10 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="print">
+				<bigButton name="printPdf" icon="pdfIcon24.png"
+					action="#{form}.fireEvent(printDocument,pdf);" state="enabled" />
+			</group>
             <group name="state">
                 <smallButton name="accept" icon="startIcon16.png"
                              action="#{form}.fireEvent(createResourcesForDocuments);" state="enabled">
@@ -132,6 +136,10 @@
                 <listener event="createResourcesForDocuments"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="createResourcesForDocuments"/>
+                
+                <listener event="printDocument"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                          method="printDocument"/>
             </component>
         </windowTab>
 
