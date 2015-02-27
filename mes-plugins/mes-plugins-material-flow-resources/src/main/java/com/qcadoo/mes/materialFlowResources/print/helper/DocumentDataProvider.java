@@ -46,7 +46,8 @@ public class DocumentDataProvider {
     }
 
     public static String description(final Entity document) {
-        return document.getStringField(DocumentFields.DESCRIPTION);
+        return document.getStringField(DocumentFields.DESCRIPTION) != null ? document.getStringField(DocumentFields.DESCRIPTION)
+                : StringUtils.EMPTY;
     }
 
 }
