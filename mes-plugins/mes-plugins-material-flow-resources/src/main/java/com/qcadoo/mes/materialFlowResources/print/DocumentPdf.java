@@ -71,7 +71,8 @@ public class DocumentPdf extends ReportPdfView {
         }
         HeaderPair description = documentPdfHelper.getDescription(documentEntity, locale);
 
-        Phrase label = new Phrase(description.getLabel(), FontUtils.getDejavuBold8Dark());
+        Phrase label = new Phrase(description.getValue().isEmpty() ? StringUtils.EMPTY : description.getLabel(),
+                FontUtils.getDejavuBold8Dark());
         PdfPCell descriptionLabelCell = new PdfPCell(label);
         descriptionLabelCell.setColspan(2);
         descriptionLabelCell.setBorder(PdfPCell.NO_BORDER);
