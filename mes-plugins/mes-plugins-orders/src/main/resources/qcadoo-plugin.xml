@@ -27,10 +27,10 @@
 <plugin plugin="orders" group="planning" version="${qcadoo.plugin.version}"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-        xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-        xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
-        xsi:schemaLocation="
-		http://schema.qcadoo.org/plugin 
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
 		http://schema.qcadoo.org/plugin.xsd 
 		http://schema.qcadoo.org/modules/model 
 		http://schema.qcadoo.org/modules/model.xsd 
@@ -38,62 +38,62 @@
 		http://schema.qcadoo.org/modules/view.xsd
 		http://schema.qcadoo.org/modules/localization 
 		http://schema.qcadoo.org/modules/localization.xsd 
-		http://schema.qcadoo.org/modules/report 
-		http://schema.qcadoo.org/modules/report.xsd 
+
+
 		http://schema.qcadoo.org/modules/menu 
 		http://schema.qcadoo.org/modules/menu.xsd
 		http://schema.qcadoo.org/modules/custom 
 		http://schema.qcadoo.org/modules/custom.xsd">
 
-	<information>
-		<name>MES - Orders</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-		<description>Production orders and the general production plan.</description>
-		<license>AGPL</license>
-	</information>
+    <information>
+        <name>MES - Orders</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Production orders and the general production plan.</description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>technologies</plugin>
-			<version>[1.4.0</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <plugin>technologies</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+    </dependencies>
 
-	<modules>
-		<localization:translation path="locales" />
+    <modules>
+        <localization:translation path="locales"/>
 
-		<model:model model="order" resource="model/order.xml" />
-		<model:model model="orderStateChange" resource="model/orderStateChange.xml" />
+        <model:model model="order" resource="model/order.xml"/>
+        <model:model model="orderStateChange" resource="model/orderStateChange.xml"/>
 
-		<model:model model="typeOfCorrectionCauses" resource="model/typeOfCorrectionCauses.xml" />
+        <model:model model="typeOfCorrectionCauses" resource="model/typeOfCorrectionCauses.xml"/>
 
-		<model:model model="reasonTypeCorrectionDateFrom" resource="model/reasonTypeCorrectionDateFrom.xml" />
-		<model:model model="reasonTypeCorrectionDateTo" resource="model/reasonTypeCorrectionDateTo.xml" />
-		<model:model model="reasonTypeDeviationEffectiveStart" resource="model/reasonTypeDeviationEffectiveStart.xml" />
-		<model:model model="reasonTypeDeviationEffectiveEnd" resource="model/reasonTypeDeviationEffectiveEnd.xml" />
-		<model:model model="reasonTypeOfChangingOrderState" resource="model/reasonTypeOfChangingOrderState.xml" />
+        <model:model model="reasonTypeCorrectionDateFrom" resource="model/reasonTypeCorrectionDateFrom.xml"/>
+        <model:model model="reasonTypeCorrectionDateTo" resource="model/reasonTypeCorrectionDateTo.xml"/>
+        <model:model model="reasonTypeDeviationEffectiveStart" resource="model/reasonTypeDeviationEffectiveStart.xml"/>
+        <model:model model="reasonTypeDeviationEffectiveEnd" resource="model/reasonTypeDeviationEffectiveEnd.xml"/>
+        <model:model model="reasonTypeOfChangingOrderState" resource="model/reasonTypeOfChangingOrderState.xml"/>
 
-		<!-- MBR -->
-		
+        <!-- MBR -->
+
         <model:model model="recipe" resource="model/recipe.xml"/>
         <model:model model="material" resource="model/material.xml"/>
         <model:model model="instruction" resource="model/instruction.xml"/>
         <model:model model="mbrStateChange" resource="model/mbrStateChange.xml"/>
-        
-        
+
+
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="mbrStateChange" plugin="orders" model="mbrStateChange"/>
         </model:model-field>
-        
-               <model:model-field model="workstation" plugin="basic">
+
+        <model:model-field model="workstation" plugin="basic">
             <model:manyToMany name="recipe" model="recipe" joinField="workstations" plugin="orders"/>
         </model:model-field>
 
         <model:model-field model="product" plugin="basic">
-            <model:hasMany name="material" model="material" joinField="materials" plugin="orders"/>
+            <model:hasMany name="materials" model="material" joinField="product" plugin="orders" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field model="product" plugin="basic">
@@ -105,152 +105,152 @@
         </model:model-field>
 
         <!-- end -->
-		
+
 
         <model:model-field plugin="technologies" model="technologyOperationComponentMergeProductIn">
-            <model:belongsTo name="order" plugin="orders" model="order" />
+            <model:belongsTo name="order" plugin="orders" model="order"/>
         </model:model-field>
 
         <model:model-field plugin="technologies" model="technologyOperationComponentMergeProductOut">
-            <model:belongsTo name="order" plugin="orders" model="order" />
+            <model:belongsTo name="order" plugin="orders" model="order"/>
         </model:model-field>
 
-		<model:model-field plugin="states" model="message">
-			<model:belongsTo name="orderStateChange" plugin="orders" model="orderStateChange" />
-		</model:model-field>
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="orderStateChange" plugin="orders" model="orderStateChange"/>
+        </model:model-field>
 
 
-		<model:model-field plugin="basic" model="shift">
-			<model:hasMany name="orderStateChanges" plugin="orders"
-			               model="orderStateChange" joinField="shift" cascade="nullify" />
-		</model:model-field>
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="orderStateChanges" plugin="orders"
+                           model="orderStateChange" joinField="shift" cascade="nullify"/>
+        </model:model-field>
 
-		<model:model-field plugin="basic" model="product">
-			<model:hasMany name="orders" plugin="orders" model="order"
-			               joinField="product" cascade="nullify" />
-		</model:model-field>
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="orders" plugin="orders" model="order"
+                           joinField="product" cascade="nullify"/>
+        </model:model-field>
 
-		<model:model-field plugin="technologies" model="technology">
-			<model:hasMany name="orders" plugin="orders" model="order"
-			               joinField="technology" cascade="nullify" />
-		</model:model-field>
+        <model:model-field plugin="technologies" model="technology">
+            <model:hasMany name="orders" plugin="orders" model="order"
+                           joinField="technology" cascade="nullify"/>
+        </model:model-field>
 
-		<model:model-field plugin="technologies" model="technology">
-			<model:hasMany name="ordersUsingPrototype" plugin="orders" model="order"
-			               joinField="technologyPrototype" cascade="nullify" />
-		</model:model-field>
+        <model:model-field plugin="technologies" model="technology">
+            <model:hasMany name="ordersUsingPrototype" plugin="orders" model="order"
+                           joinField="technologyPrototype" cascade="nullify"/>
+        </model:model-field>
 
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="reasonNeededWhenCorrectingDateFrom" default="false" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="reasonNeededWhenCorrectingDateTo" default="false" />
-		</model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="reasonNeededWhenCorrectingDateFrom" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="reasonNeededWhenCorrectingDateTo" default="false"/>
+        </model:model-field>
 
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="reasonNeededWhenChangingStateToDeclined" default="false" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="reasonNeededWhenChangingStateToInterrupted" default="false" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="reasonNeededWhenChangingStateToAbandoned" default="false" />
-		</model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="reasonNeededWhenChangingStateToDeclined" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="reasonNeededWhenChangingStateToInterrupted" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="reasonNeededWhenChangingStateToAbandoned" default="false"/>
+        </model:model-field>
 
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="reasonNeededWhenDelayedEffectiveDateFrom" default="false" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="reasonNeededWhenEarlierEffectiveDateFrom" default="false" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="reasonNeededWhenDelayedEffectiveDateTo" default="false" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="reasonNeededWhenEarlierEffectiveDateTo" default="false" />
-		</model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="reasonNeededWhenDelayedEffectiveDateFrom" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="reasonNeededWhenEarlierEffectiveDateFrom" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="reasonNeededWhenDelayedEffectiveDateTo" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="reasonNeededWhenEarlierEffectiveDateTo" default="false"/>
+        </model:model-field>
 
-		<model:model-field plugin="basic" model="parameter">
-			<model:integer name="delayedEffectiveDateFromTime" default="900" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:integer name="earlierEffectiveDateFromTime" default="900" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:integer name="delayedEffectiveDateToTime" default="900" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:integer name="earlierEffectiveDateToTime" default="900" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="blockAbilityToChangeApprovalOrder" default="false" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="lockTechnologyTree" default="false" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="reasonNeededWhenCorrectingTheRequestedVolume" default="false" />
-		</model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:integer name="delayedEffectiveDateFromTime" default="900"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:integer name="earlierEffectiveDateFromTime" default="900"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:integer name="delayedEffectiveDateToTime" default="900"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:integer name="earlierEffectiveDateToTime" default="900"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="blockAbilityToChangeApprovalOrder" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="lockTechnologyTree" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="reasonNeededWhenCorrectingTheRequestedVolume" default="false"/>
+        </model:model-field>
 
-		<model:model-hook plugin="technologies" model="technology">
-			<model:validatesWith
-					class="com.qcadoo.mes.orders.OrdersTechnologyExtensionService"
-					method="checkExistingOrders" />
-		</model:model-hook>
+        <model:model-hook plugin="technologies" model="technology">
+            <model:validatesWith
+                    class="com.qcadoo.mes.orders.OrdersTechnologyExtensionService"
+                    method="checkExistingOrders"/>
+        </model:model-hook>
 
-		<menu:menu-category name="orders" />
-		<menu:menu-category name="ordersTracking" />
+        <menu:menu-category name="orders"/>
+        <menu:menu-category name="ordersTracking"/>
 
-		<menu:menu-item name="productionOrders" category="orders"
-		                view="ordersList" />
-		<menu:menu-item name="productionOrdersPlanning" category="orders"
-		                view="ordersPlanningList" />
+        <menu:menu-item name="productionOrders" category="orders"
+                        view="ordersList"/>
+        <menu:menu-item name="productionOrdersPlanning" category="orders"
+                        view="ordersPlanningList"/>
 
-		<view:view resource="view/ordersList.xml" />
-		<view:view resource="view/ordersPlanningList.xml" />
-		<view:view resource="view/orderDetails.xml" />
+        <view:view resource="view/ordersList.xml"/>
+        <view:view resource="view/ordersPlanningList.xml"/>
+        <view:view resource="view/orderDetails.xml"/>
 
-		<view:view resource="view/ordersParameters.xml" />
+        <view:view resource="view/ordersParameters.xml"/>
 
-		<view:view resource="view/orderStateChangeDetails.xml" />
+        <view:view resource="view/orderStateChangeDetails.xml"/>
 
-		<view:view resource="view/orderStateChangeReasonDialog.xml" />
+        <view:view resource="view/orderStateChangeReasonDialog.xml"/>
 
-		<view:view resource="view/copyOfTechnologyDetails.xml" />
+        <view:view resource="view/copyOfTechnologyDetails.xml"/>
 
-		<view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml" />
-		<view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml" />
+        <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>
 
-		<view:view-listener plugin="basic" view="parameters"
-		                    component="form" event="redirectToOrdersParameters"
-		                    class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
-		                    method="redirectToOrdersParameters" />
+        <view:view-listener plugin="basic" view="parameters"
+                            component="form" event="redirectToOrdersParameters"
+                            class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                            method="redirectToOrdersParameters"/>
 
-		<view:view-listener plugin="basic" view="productDetails"
-		                    component="form" event="showOrdersWithProductMain"
-		                    class="com.qcadoo.mes.orders.listeners.ProductDetailsListenersO"
-		                    method="showOrdersWithProductMain" />
+        <view:view-listener plugin="basic" view="productDetails"
+                            component="form" event="showOrdersWithProductMain"
+                            class="com.qcadoo.mes.orders.listeners.ProductDetailsListenersO"
+                            method="showOrdersWithProductMain"/>
 
-		<view:view-listener plugin="basic" view="productDetails"
-		                    component="form" event="showOrdersWithProductPlanned"
-		                    class="com.qcadoo.mes.orders.listeners.ProductDetailsListenersO"
-		                    method="showOrdersWithProductPlanned" />
+        <view:view-listener plugin="basic" view="productDetails"
+                            component="form" event="showOrdersWithProductPlanned"
+                            class="com.qcadoo.mes.orders.listeners.ProductDetailsListenersO"
+                            method="showOrdersWithProductPlanned"/>
 
-		<view:view-hook plugin="basic" view="productDetails"
-		                type="beforeRender"
-		                class="com.qcadoo.mes.orders.hooks.ProductDetailsViewHooksO"
-		                method="updateRibbonState" />
+        <view:view-hook plugin="basic" view="productDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.orders.hooks.ProductDetailsViewHooksO"
+                        method="updateRibbonState"/>
 
-		<!--<report:report-template name="order"-->
-		                        <!--resource="report/order.jrxml" />-->
+        <!--<report:report-template name="order"-->
+        <!--resource="report/order.jrxml" />-->
 
-		<view:resource uri="public/**/*" />
+        <view:resource uri="public/**/*"/>
 
-		<custom:custom class="com.qcadoo.mes.orders.states.module.OrderStateServiceRegisterModule" />
-	</modules>
+        <custom:custom class="com.qcadoo.mes.orders.states.module.OrderStateServiceRegisterModule"/>
+    </modules>
 
-	<features>
-		<end-user />
-	</features>
+    <features>
+        <end-user/>
+    </features>
 
 </plugin>
