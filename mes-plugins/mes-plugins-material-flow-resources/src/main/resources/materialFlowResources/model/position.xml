@@ -45,6 +45,9 @@
         <belongsTo name="resource" model="resource"/>
         <hasMany name="attributeValues" joinField="position" model="attributeValue" cascade="delete"/>
     	<dictionary name="storageLocation" dictionary="storageLocations" />
+    	
+    	<enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
+    	<enum name="state" values="01draft,02accepted" default="01draft"/>
     </fields>
     <hooks>
     	<onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>
