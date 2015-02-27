@@ -32,9 +32,9 @@
         <ribbon>
             <template name="standardFormTemplate"/>
             <group name="print">
-				<bigButton name="printPdf" icon="pdfIcon24.png"
-					action="#{form}.fireEvent(printDocument,pdf);" state="enabled" />
-			</group>
+                <bigButton name="printPdf" icon="pdfIcon24.png"
+                           action="#{form}.fireEvent(printDocument,pdf);" state="enabled"/>
+            </group>
             <group name="state">
                 <smallButton name="accept" icon="startIcon16.png"
                              action="#{form}.fireEvent(createResourcesForDocuments);" state="enabled">
@@ -108,9 +108,9 @@
                             <criteriaModifier
                                     class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
                                     method="showWarehousesOnly"/>
-<!--                             <listener event="onSelectedEntityChange" -->
-<!--                                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners" -->
-<!--                                       method="updateAttributes"/> -->
+                            <!--                             <listener event="onSelectedEntityChange" -->
+                            <!--                                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners" -->
+                            <!--                                       method="updateAttributes"/> -->
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="3">
@@ -136,7 +136,7 @@
                 <listener event="createResourcesForDocuments"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="createResourcesForDocuments"/>
-                
+
                 <listener event="printDocument"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="printDocument"/>
@@ -150,7 +150,7 @@
                 <option type="hasButtons" value="true"/>
                 <components>
                     <component type="gridLayout" name="positionsLayout"
-                               columns="5" rows="3">
+                               columns="5" rows="2">
 
                         <layoutElement column="1" row="1">
                             <component type="input" name="numberLabel"
@@ -235,40 +235,40 @@
                                        reference="storageLocation"/>
                         </layoutElement>
 
-<!--                         <layoutElement column="1" row="3" width="4"> -->
-<!--                             <component type="gridLayout" name="attributesGridLayout" -->
-<!--                                        columns="4" rows="1" hasBorders="false"> -->
-<!--                                 <layoutElement column="1" row="1"> -->
+                        <!--                         <layoutElement column="1" row="3" width="4"> -->
+                        <!--                             <component type="gridLayout" name="attributesGridLayout" -->
+                        <!--                                        columns="4" rows="1" hasBorders="false"> -->
+                        <!--                                 <layoutElement column="1" row="1"> -->
 
-<!--                                     <component type="awesomeDynamicList" name="additionalAttributes" -->
-<!--                                                source="attributeValues" reference="additionalAttributes"> -->
-<!--                                         <option type="hasButtons" value="false"/> -->
-<!--                                         <option type="hasBorder" value="false"/> -->
+                        <!--                                     <component type="awesomeDynamicList" name="additionalAttributes" -->
+                        <!--                                                source="attributeValues" reference="additionalAttributes"> -->
+                        <!--                                         <option type="hasButtons" value="false"/> -->
+                        <!--                                         <option type="hasBorder" value="false"/> -->
 
-<!--                                         <components> -->
-<!--                                             <component type="gridLayout" name="attributesLayout" -->
-<!--                                                        columns="2" rows="1" hasBorders="false"> -->
-<!--                                                 <layoutElement column="1" row="1"> -->
-<!--                                                     <component type="lookup" name="attributeName" field="attribute" -->
-<!--                                                                reference="attributeName" hasLabel="false" -->
-<!--                                                                defaultEnabled="never"> -->
+                        <!--                                         <components> -->
+                        <!--                                             <component type="gridLayout" name="attributesLayout" -->
+                        <!--                                                        columns="2" rows="1" hasBorders="false"> -->
+                        <!--                                                 <layoutElement column="1" row="1"> -->
+                        <!--                                                     <component type="lookup" name="attributeName" field="attribute" -->
+                        <!--                                                                reference="attributeName" hasLabel="false" -->
+                        <!--                                                                defaultEnabled="never"> -->
 
-<!--                                                         <option type="expression" value="#name"/> -->
-<!--                                                         <option type="fieldCode" value="name"/> -->
-<!--                                                         <option type="textRepresentationOnDisabled" value="true"/> -->
-<!--                                                     </component> -->
-<!--                                                 </layoutElement> -->
-<!--                                                 <layoutElement column="2" row="1"> -->
-<!--                                                     <component type="checkbox" name="value" field="value" -->
-<!--                                                                hasLabel="false"/> -->
-<!--                                                 </layoutElement> -->
+                        <!--                                                         <option type="expression" value="#name"/> -->
+                        <!--                                                         <option type="fieldCode" value="name"/> -->
+                        <!--                                                         <option type="textRepresentationOnDisabled" value="true"/> -->
+                        <!--                                                     </component> -->
+                        <!--                                                 </layoutElement> -->
+                        <!--                                                 <layoutElement column="2" row="1"> -->
+                        <!--                                                     <component type="checkbox" name="value" field="value" -->
+                        <!--                                                                hasLabel="false"/> -->
+                        <!--                                                 </layoutElement> -->
 
-<!--                                             </component> -->
-<!--                                         </components> -->
-<!--                                     </component> -->
-<!--                                 </layoutElement> -->
-<!--                             </component> -->
-<!--                         </layoutElement> -->
+                        <!--                                             </component> -->
+                        <!--                                         </components> -->
+                        <!--                                     </component> -->
+                        <!--                                 </layoutElement> -->
+                        <!--                             </component> -->
+                        <!--                         </layoutElement> -->
 
                     </component>
 
@@ -311,16 +311,16 @@
         </windowTab>
     </component>
     <hooks>
-    
+
         <beforeRender
                 class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
                 method="onBeforeRender"/>
-<!--         <beforeRender -->
-<!--                 class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks" -->
-<!--                 method="initializeDocument"/> -->
-<!--         <beforeRender -->
-<!--                 class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks" -->
-<!--                 method="setCriteriaModifiersParameters"/> -->
+        <!--         <beforeRender -->
+        <!--                 class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks" -->
+        <!--                 method="initializeDocument"/> -->
+        <!--         <beforeRender -->
+        <!--                 class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks" -->
+        <!--                 method="setCriteriaModifiersParameters"/> -->
 
     </hooks>
 </view>

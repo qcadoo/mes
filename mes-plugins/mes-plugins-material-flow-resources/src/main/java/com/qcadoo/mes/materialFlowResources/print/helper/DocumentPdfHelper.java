@@ -2,17 +2,20 @@ package com.qcadoo.mes.materialFlowResources.print.helper;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 
 @Service
 public class DocumentPdfHelper {
@@ -39,6 +42,28 @@ public class DocumentPdfHelper {
 
     private static final String L_STATE_VALUE = "materialFlowResources.document.state.value.";
 
+    private static final String L_POSITION_HEADER__INDEX = "materialFlowResources.report.positionsHeader.index";
+
+    private static final String L_POSITION_HEADER__NUMBER = "materialFlowResources.report.positionsHeader.number";
+
+    private static final String L_POSITION_HEADER__QUANTITY = "materialFlowResources.report.positionsHeader.quantity";
+
+    private static final String L_POSITION_HEADER__UNIT = "materialFlowResources.report.positionsHeader.unit";
+
+    private static final String L_POSITION_HEADER__PRICE = "materialFlowResources.report.positionsHeader.price";
+
+    private static final String L_POSITION_HEADER__BATCH = "materialFlowResources.report.positionsHeader.batch";
+
+    private static final String L_POSITION_HEADER__PRODUCTION_DATE = "materialFlowResources.report.positionsHeader.productionDate";
+
+    private static final String L_POSITION_HEADER__VALUE = "materialFlowResources.report.positionsHeader.value";
+
+    private static final String L_TABLE_HEADER = "materialFlowResources.report.tableHeader";
+
+    private static final String L_TOTAL_VALUE = "materialFlowResources.report.tableHeader.totalValue";
+
+    private static final String L_TOTAL = "materialFlowResources.report.tableHeader.total";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -62,6 +87,17 @@ public class DocumentPdfHelper {
     }
 
     /**
+     * Returns translated products table header
+     *
+     * 
+     * @param locale
+     * @return translated short document type
+     */
+    public String getTableHeader(final Locale locale) {
+        return translationService.translate(L_TABLE_HEADER, locale);
+    }
+
+    /**
      * Returns translated document report file name (with document type and number)
      * 
      * @param documentEntity
@@ -82,6 +118,26 @@ public class DocumentPdfHelper {
      */
     public String getDocumentHeader(final Entity documentEntity, final Locale locale) {
         return translationService.translate(L_HEADER, locale, getDocumentType(documentEntity, locale));
+    }
+
+    /**
+     * Returns total value label
+     * 
+     * @param locale
+     * @return
+     */
+    public String getTotalValueLabel(final Locale locale) {
+        return translationService.translate(L_TOTAL_VALUE, locale);
+    }
+
+    /**
+     * Returns total row label
+     * 
+     * @param locale
+     * @return
+     */
+    public String getTotaLabel(final Locale locale) {
+        return translationService.translate(L_TOTAL, locale);
     }
 
     /**
@@ -117,6 +173,26 @@ public class DocumentPdfHelper {
     public HeaderPair getDescription(final Entity documentEntity, final Locale locale) {
         return new HeaderPair(translationService.translate(L_DESCRIPTION, locale),
                 DocumentDataProvider.description(documentEntity));
+    }
+
+    /**
+     * Returns map of translated positions' table headers and alignments
+     * 
+     * @param locale
+     * @return
+     */
+    public Map<String, HeaderAlignment> getPositionsTableHeaderLabels(final Locale locale) {
+        Map<String, HeaderAlignment> headerLabels = Maps.newLinkedHashMap();
+
+        headerLabels.put(translationService.translate(L_POSITION_HEADER__INDEX, locale), HeaderAlignment.LEFT);
+        headerLabels.put(translationService.translate(L_POSITION_HEADER__NUMBER, locale), HeaderAlignment.LEFT);
+        headerLabels.put(translationService.translate(L_POSITION_HEADER__QUANTITY, locale), HeaderAlignment.RIGHT);
+        headerLabels.put(translationService.translate(L_POSITION_HEADER__UNIT, locale), HeaderAlignment.LEFT);
+        headerLabels.put(translationService.translate(L_POSITION_HEADER__PRICE, locale), HeaderAlignment.RIGHT);
+        headerLabels.put(translationService.translate(L_POSITION_HEADER__BATCH, locale), HeaderAlignment.LEFT);
+        headerLabels.put(translationService.translate(L_POSITION_HEADER__PRODUCTION_DATE, locale), HeaderAlignment.LEFT);
+        headerLabels.put(translationService.translate(L_POSITION_HEADER__VALUE, locale), HeaderAlignment.RIGHT);
+        return headerLabels;
     }
 
     public class HeaderPair {
