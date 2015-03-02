@@ -232,7 +232,7 @@ public class DocumentBuilder {
         }
     }
 
-    private Entity createDocument(UserService userService, NumberGeneratorService numberGeneratorService) {
+    public Entity createDocument(UserService userService, NumberGeneratorService numberGeneratorService) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
         Entity document = documentDD.create();

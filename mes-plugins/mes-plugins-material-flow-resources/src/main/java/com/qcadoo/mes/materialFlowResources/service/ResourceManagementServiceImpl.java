@@ -144,7 +144,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return resourceDD.save(newResource);
     }
 
-    private BigDecimal getQuantityOfProductInWarehouse(final Entity warehouse, final Entity product, Entity position) {
+    public BigDecimal getQuantityOfProductInWarehouse(final Entity warehouse, final Entity product, Entity position) {
         BigDecimal quantity = BigDecimal.ZERO;
         String algorithm = warehouse.getStringField(LocationFieldsMFR.ALGORITHM);
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
