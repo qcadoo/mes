@@ -36,7 +36,9 @@
             <validatesUnscaledValue max="9" />
             <validatesScale max="5" />
         </decimal>
-        <decimal name="price" default="0" />
+        <decimal name="price" default="0" >
+            <validatesRange from="0" exclusively="true" />
+        </decimal>
         <string name="batch" />
         <string name="unit" persistent="false"/>
         <date name="productionDate" />
