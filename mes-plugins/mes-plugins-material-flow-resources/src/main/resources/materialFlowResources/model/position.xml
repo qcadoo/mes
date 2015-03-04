@@ -37,7 +37,7 @@
             <validatesScale max="5" />
         </decimal>
         <decimal name="price" default="0" >
-            <validatesRange from="0" exclusively="true" />
+            <validatesRange from="0" />
         </decimal>
         <string name="batch" />
         <string name="unit" persistent="false"/>
