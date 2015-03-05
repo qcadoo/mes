@@ -25,6 +25,7 @@ package com.qcadoo.mes.orders.constants;
 
 public final class OrdersConstants {
 
+
     private OrdersConstants() {
 
     }
@@ -65,4 +66,5 @@ public final class OrdersConstants {
 
     public static final String FIELD_GRID = "grid";
 
+    public static final String MODEL_INSTRUCTION = "instruction";
 }
