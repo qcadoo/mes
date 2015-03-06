@@ -1,0 +1,21 @@
+<model name="formula" auditable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+
+        <decimal name="value">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <belongsTo name="instruction" model="instruction" plugin="ebr" copyable="true"/>
+
+        <enum name="operator" values="01addition,02subtraction,03division,04multiplication" required="true"/>
+
+        <belongsTo name="recipe" model="recipe" plugin="orders" copyable="true"/>
+
+    </fields>
+
+    <hooks/>
+
+</model>

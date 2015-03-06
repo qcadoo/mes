@@ -12,7 +12,7 @@ public class RecipeFields {
 
     public static final String VERSION = "version";
 
-    public static final String STRENGHT = "strenght";
+    public static final String STRENGTH = "strength";
 
     public static final String PRODUCT = "product";
 

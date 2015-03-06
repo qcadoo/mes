@@ -81,8 +81,8 @@
         <model:model model="recipe" resource="model/recipe.xml"/>
         <model:model model="material" resource="model/material.xml"/>
         <model:model model="instruction" resource="model/instruction.xml"/>
+        <model:model model="formula" resource="model/formula.xml"/>
         <model:model model="mbrStateChange" resource="model/mbrStateChange.xml"/>
-
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="mbrStateChange" plugin="orders" model="mbrStateChange"/>
