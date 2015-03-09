@@ -12,7 +12,7 @@
 
         <belongsTo name="chosenInstruction" model="instruction" />
 
-        <enum name="operator" values="01addition,02subtraction,03division,04multiplication" required="true"/>
+        <enum name="operator" values="01addition,02subtraction,03division,04multiplication"/>
 
     </fields>
 
