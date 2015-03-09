@@ -37,6 +37,9 @@
         <hasMany name="formulas" joinField="instruction" model="formula" cascade="nullify" plugin="orders"
                  copyable="true"/>
 
+        <hasMany name="chosenInstructionFormulas" joinField="chosenInstruction" model="formula" cascade="nullify" plugin="orders"
+                 copyable="true"/>
+
         <belongsTo name="recipe" model="recipe" plugin="orders" copyable="true"/>
 
     </fields>
