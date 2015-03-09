@@ -21,4 +21,7 @@ public final class InstructionFields {
     public static final String WORKSTATIONS = "workstations";
 
     public static final String MATERIALS = "materials";
+
+    public static final String FORMULAS = "formulas";
+
 }

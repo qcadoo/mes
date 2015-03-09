@@ -8,11 +8,11 @@
             <validatesScale max="5"/>
         </decimal>
 
-        <belongsTo name="instruction" model="instruction" plugin="ebr" copyable="true"/>
+        <belongsTo name="instruction" model="instruction" />
+
+        <belongsTo name="chosenInstruction" model="instruction" />
 
         <enum name="operator" values="01addition,02subtraction,03division,04multiplication" required="true"/>
-
-        <belongsTo name="recipe" model="recipe" plugin="orders" copyable="true"/>
 
     </fields>
 

@@ -56,6 +56,8 @@ public final class OrdersConstants {
 
     public static final String MODEL_MBR_STATE_CHANGE = "mbrStateChange";
 
+    public static final String MODEL_FORMULA = "formula";
+
     // VIEW
 
     public static final String VIEW_ORDER_DETAILS = "orderDetails";
