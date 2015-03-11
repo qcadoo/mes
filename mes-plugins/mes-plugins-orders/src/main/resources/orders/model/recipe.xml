@@ -11,7 +11,7 @@
             <validatesLength max="255"/>
         </string>
         <boolean name="isDefault"/>
-        <string name="strenght" required="true">
+        <string name="strength" required="true">
             <validatesLength max="255"/>
         </string>
         <decimal name="batchQuantity">

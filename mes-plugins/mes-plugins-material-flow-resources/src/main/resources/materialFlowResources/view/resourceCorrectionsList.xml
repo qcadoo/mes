@@ -46,13 +46,15 @@
 			<option type="column" name="newQuantity" fields="newQuantity" width="80" />
 			<option type="column" name="productUnit" fields="product" 
 				expression="#product['unit']" width="40"  />
+			<option type="column" name="oldStorageLocation" fields="oldStorageLocation" width="110" />
+			<option type="column" name="newStorageLocation" fields="newStorageLocation" width="110" />
 
 			<option type="order" column="number" direction="desc" />
 
 			<option type="searchable"
-                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity" />
+                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation" />
 			<option type="orderable"
-                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity" />
+                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation" />
 
 			<option type="correspondingView" value="materialFlowResources/resourceCorrectionDetails" />
 			<option type="correspondingComponent" value="form" />

@@ -13,7 +13,7 @@ CREATE TABLE orders_recipe
  name character varying(1024),
  version character varying(255),
  isdefault boolean,
- strenght character varying(255),
+ strength character varying(255),
  batchquantity numeric(19,5),
  batchsize character varying(255),
  description character varying(2048),

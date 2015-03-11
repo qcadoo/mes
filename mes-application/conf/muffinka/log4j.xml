@@ -141,6 +141,11 @@
 		<level value="debug" />
 		<appender-ref ref="connector-log" />
 	</logger>
+
+    <logger name="com.qcadoo.view.internal.JsonMapperHttpMessageConverter">
+        <level value="debug" />
+        <appender-ref ref="connector-log" />
+    </logger>
 	
 	<logger name="com.qcadoo.model">
 		<level value="info" />

@@ -139,10 +139,13 @@
 				<option type="column" name="oldQuantity" fields="oldQuantity" />
 				<option type="column" name="newQuantity" fields="newQuantity" />
 
+				<option type="column" name="oldStorageLocation" fields="oldStorageLocation" />
+				<option type="column" name="newStorageLocation" fields="newStorageLocation" />
+
 				<option type="order" column="number" direction="desc" />
 
-				<option type="searchable" value="number,createDate,oldQuantity,newQuantity" />
-				<option type="orderable" value="number,createDate,oldQuantity,newQuantity" />
+				<option type="searchable" value="number,createDate,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation" />
+				<option type="orderable" value="number,createDate,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation" />
 
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />

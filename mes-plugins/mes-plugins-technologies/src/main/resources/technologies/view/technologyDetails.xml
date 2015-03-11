@@ -218,6 +218,7 @@
 								cancelState.disable();
 								generateProductStructure.disable();
 								toggleEditable(false);
+								deleteItem.enable();
 							} else if ( state == "05checked"){
 								cancelState.enable();
 								checkState.enable();

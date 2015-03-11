@@ -181,6 +181,11 @@
 		<level value="debug" />
 		<appender-ref ref="connector-log" />
 	</logger>
+
+    <logger name="com.qcadoo.view.internal.JsonMapperHttpMessageConverter">
+        <level value="debug" />
+        <appender-ref ref="connector-log" />
+    </logger>
 	
 	<logger name="org.hibernate.SQL" additivity="false">
 		<level value="debug" />

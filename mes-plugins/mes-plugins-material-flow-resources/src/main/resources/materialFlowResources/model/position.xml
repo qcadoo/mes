@@ -36,7 +36,9 @@
             <validatesUnscaledValue max="9" />
             <validatesScale max="5" />
         </decimal>
-        <decimal name="price" default="0" />
+        <decimal name="price" default="0" >
+            <validatesRange from="0" />
+        </decimal>
         <string name="batch" />
         <string name="unit" persistent="false"/>
         <date name="productionDate" />
@@ -45,6 +47,9 @@
         <belongsTo name="resource" model="resource"/>
         <hasMany name="attributeValues" joinField="position" model="attributeValue" cascade="delete"/>
     	<dictionary name="storageLocation" dictionary="storageLocations" />
+    	
+    	<enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
+    	<enum name="state" values="01draft,02accepted" default="01draft"/>
     </fields>
     <hooks>
     	<onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>
