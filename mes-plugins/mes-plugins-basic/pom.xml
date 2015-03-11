@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
-		<version>1.4-SNAPSHOT</version>
+		<version>1.4-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-basic</artifactId>
 	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Basic</name>
-		
+
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo</groupId>
@@ -30,17 +30,17 @@
 			<version>3.0.2</version>
 		</dependency>
 		<dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-rest-java-client</artifactId>
-            <version>0.6-m9</version>
-            <exclusions>
-            	<exclusion>
-            		<groupId>com.sun.xml.bind</groupId>
-            		<artifactId>jaxb-impl</artifactId>
-            	</exclusion>
-            </exclusions>
-        </dependency>
-	</dependencies>	
+			<groupId>com.atlassian.jira</groupId>
+			<artifactId>jira-rest-java-client</artifactId>
+			<version>0.6-m9</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.xml.bind</groupId>
+					<artifactId>jaxb-impl</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -52,7 +52,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 </project>
-
-

@@ -4,22 +4,22 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-	    <artifactId>mes-plugins</artifactId>
-	    <groupId>com.qcadoo.mes</groupId>
-	    <version>1.4-SNAPSHOT</version>
+		<groupId>com.qcadoo.mes</groupId>
+		<artifactId>mes-plugins</artifactId>
+		<version>1.4-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-stoppage</artifactId>
 	<packaging>qcadoo-plugin</packaging>
-	
+
 	<name>Qcadoo MES :: Plugins :: Stoppage</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-orders</artifactId>
-			<version>1.4-SNAPSHOT</version>
-		</dependency>		
+			<version>1.4-SNAPSHOT-DEV</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -34,4 +34,3 @@
 	</build>
 
 </project>
-

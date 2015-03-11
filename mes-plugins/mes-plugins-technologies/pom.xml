@@ -6,11 +6,10 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
-		<version>1.4-SNAPSHOT</version>
+		<version>1.4-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-technologies</artifactId>
-
 	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Technologies</name>
@@ -19,12 +18,12 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-states</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.4-SNAPSHOT-DEV</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-basic</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.4-SNAPSHOT-DEV</version>
 		</dependency>
 	</dependencies>
 
@@ -40,4 +39,3 @@
 	</build>
 
 </project>
-

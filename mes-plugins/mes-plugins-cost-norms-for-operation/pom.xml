@@ -5,23 +5,22 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
-		<version>1.4-SNAPSHOT</version>
+		<version>1.4-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-cost-norms-for-operation</artifactId>
 	<packaging>qcadoo-plugin</packaging>
-	
-	
+
 	<name>Qcadoo MES :: Plugins :: Cost norms for operation</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-    		<artifactId>mes-plugins-technologies</artifactId>
-    		<version>1.4-SNAPSHOT</version>
+			<artifactId>mes-plugins-technologies</artifactId>
+			<version>1.4-SNAPSHOT-DEV</version>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -32,5 +31,5 @@
 			</plugin>
 		</plugins>
 	</build>
-</project>
 
+</project>

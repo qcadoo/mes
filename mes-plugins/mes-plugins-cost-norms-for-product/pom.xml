@@ -4,15 +4,23 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-	    <artifactId>mes-plugins</artifactId>
-	    <groupId>com.qcadoo.mes</groupId>
-	    <version>1.4-SNAPSHOT</version>
+		<groupId>com.qcadoo.mes</groupId>
+		<artifactId>mes-plugins</artifactId>
+		<version>1.4-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-cost-norms-for-product</artifactId>
 	<packaging>qcadoo-plugin</packaging>
-	
+
 	<name>Qcadoo MES :: Plugins :: Cost norms for product</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-basic</artifactId>
+			<version>1.4-SNAPSHOT-DEV</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -25,13 +33,4 @@
 		</plugins>
 	</build>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-    		<artifactId>mes-plugins-basic</artifactId>
-    		<version>1.4-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
-
 </project>
-

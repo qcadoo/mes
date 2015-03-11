@@ -4,25 +4,26 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>mes-plugins</artifactId>
 		<groupId>com.qcadoo.mes</groupId>
-		<version>1.4-SNAPSHOT</version>
+		<artifactId>mes-plugins</artifactId>
+		<version>1.4-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-operation-time-calculations</artifactId>
 	<packaging>qcadoo-plugin</packaging>
+
 	<name>Qcadoo MES :: Plugins :: Operation time calculations</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-time-norms-for-operations</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.4-SNAPSHOT-DEV</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-production-lines</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.4-SNAPSHOT-DEV</version>
 		</dependency>
 	</dependencies>
 
@@ -36,6 +37,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
 
 </project>
