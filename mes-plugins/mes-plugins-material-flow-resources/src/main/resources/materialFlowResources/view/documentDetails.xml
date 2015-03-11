@@ -84,7 +84,7 @@
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
                                     method="showWarehousesOnly"/>
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
@@ -102,7 +102,7 @@
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
                                     method="showWarehousesOnly"/>
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
