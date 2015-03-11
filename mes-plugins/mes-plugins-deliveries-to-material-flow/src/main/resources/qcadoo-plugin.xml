@@ -100,6 +100,12 @@
             <view:column name="delivery" fields="delivery" expression="#delivery['number']" orderable="true"
                          searchable="true" width="45" />
         </view:view-grid-column>
+        
+        <view:view-grid-column plugin="materialFlowResources"
+                               view="documentPositionsList" component="grid">
+            <view:column name="delivery" fields="document" expression="#document['delivery']?.get('number')" orderable="true"
+                         searchable="true"/>
+        </view:view-grid-column>
 	</modules>
 
 	<features>

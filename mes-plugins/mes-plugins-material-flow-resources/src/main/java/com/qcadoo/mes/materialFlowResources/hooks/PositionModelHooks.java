@@ -24,6 +24,12 @@ public class PositionModelHooks {
             position.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
             position.setField(PositionFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
         }
+
+        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
+        if (document != null) {
+            position.setField(PositionFields.TYPE, document.getField(DocumentFields.TYPE));
+            position.setField(PositionFields.STATE, document.getField(DocumentFields.STATE));
+        }
     }
 
     public void onCreate(final DataDefinition positionDD, final Entity position) {

@@ -71,6 +71,14 @@ public class DocumentDetailsListeners {
 
     private static final String L_FORM = "form";
 
+    public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity document = form.getEntity();
+
+        view.redirectTo("/materialFlowResources/document." + args[0] + "?id=" + document.getId(), true, false);
+
+    }
+
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
 

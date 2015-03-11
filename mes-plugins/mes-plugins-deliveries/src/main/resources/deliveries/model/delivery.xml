@@ -37,8 +37,7 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		<belongsTo name="supplier" model="company" plugin="basic"
-			required="true" />
+		<belongsTo name="supplier" model="company" plugin="basic" />
 		<datetime name="deliveryDate" />
 		<string name="deliveryAddress">
 			<validatesLength max="2048" />

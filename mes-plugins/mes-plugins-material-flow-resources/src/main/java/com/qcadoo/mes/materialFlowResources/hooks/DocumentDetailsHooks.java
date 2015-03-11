@@ -64,6 +64,10 @@ public class DocumentDetailsHooks {
 
     private static final String ACCEPT_ITEM = "accept";
 
+    private static final String PRINT_GROUP = "print";
+
+    private static final String PRINT_PDF_ITEM = "printPdf";
+
     private static final List<String> INBOUND_FIELDS = Arrays.asList("price", "batch", "productionDate", "expirationDate");
 
     public static final String FORM = "form";
@@ -91,22 +95,26 @@ public class DocumentDetailsHooks {
         if (DocumentType.RECEIPT.getStringValue().equals(documentType)
                 || DocumentType.INTERNAL_INBOUND.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, true);
+            enableStorageLocation(view, true);
             showWarehouse(view, false, true);
             showCompany(view, true);
             // enableAttributesADL(view, true);
         } else if (DocumentType.TRANSFER.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
+            enableStorageLocation(view, true);
             showWarehouse(view, true, true);
             showCompany(view, false);
             // enableAttributesADL(view, false);
         } else if (DocumentType.RELEASE.getStringValue().equals(documentType)
                 || DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
+            enableStorageLocation(view, false);
             showWarehouse(view, true, false);
             showCompany(view, true);
             // enableAttributesADL(view, false);
         } else {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
+            enableStorageLocation(view, true);
             showWarehouse(view, false, false);
             showCompany(view, false);
             // enableAttributesADL(view, false);
@@ -124,6 +132,15 @@ public class DocumentDetailsHooks {
     private void showCompany(final ViewDefinitionState view, boolean visible) {
         FieldComponent company = (FieldComponent) view.getComponentByReference("company");
         company.setEnabled(visible);
+    }
+
+    private void enableStorageLocation(final ViewDefinitionState view, boolean enabled) {
+    	AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        for (FormComponent positionForm : positionsADL.getFormComponents()) {
+            FieldComponent storageLocation = positionForm.findFieldComponentByName(PositionFields.STORAGE_LOCATION);
+
+            storageLocation.setEnabled(enabled);
+        }
     }
 
     private void enableInboundDocumentPositionsAttributesAndFillInUnit(final ViewDefinitionState view, final boolean enabled) {
@@ -182,6 +199,7 @@ public class DocumentDetailsHooks {
 
         if (documentId == null) {
             changeAcceptButtonState(window, false);
+            changePrintButtonState(window, false);
             numberGeneratorService.generateAndInsertNumber(view, MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowResourcesConstants.MODEL_DOCUMENT, FORM, DocumentFields.NUMBER);
             FieldComponent date = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
@@ -192,10 +210,12 @@ public class DocumentDetailsHooks {
             user.setFieldValue(userService.getCurrentUserEntity().getId());
         } else if (DocumentState.DRAFT.equals(state)) {
             changeAcceptButtonState(window, true);
+            changePrintButtonState(window, true);
         } else if (DocumentState.ACCEPTED.equals(state)) {
             formComponent.setFormEnabled(false);
             disableADL(view);
             disableRibbon(window);
+            changePrintButtonState(window, true);
         }
 
     }
@@ -221,6 +241,13 @@ public class DocumentDetailsHooks {
     private void changeAcceptButtonState(WindowComponent window, final boolean enable) {
         RibbonActionItem actionItem = (RibbonActionItem) window.getRibbon().getGroupByName(STATE_GROUP)
                 .getItemByName(ACCEPT_ITEM);
+        actionItem.setEnabled(enable);
+        actionItem.requestUpdate(true);
+    }
+
+    private void changePrintButtonState(WindowComponent window, final boolean enable) {
+        RibbonActionItem actionItem = (RibbonActionItem) window.getRibbon().getGroupByName(PRINT_GROUP)
+                .getItemByName(PRINT_PDF_ITEM);
         actionItem.setEnabled(enable);
         actionItem.requestUpdate(true);
     }
