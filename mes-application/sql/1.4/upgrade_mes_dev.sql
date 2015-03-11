@@ -7,3 +7,11 @@ ALTER TABLE materialflowresources_position ALTER COLUMN state SET DEFAULT '01dra
 ALTER TABLE materialflowresources_position ADD COLUMN type character varying(255);
 
 -- end
+
+
+-- table: basic_parameter
+-- last touched 11.03.2015 by lupo
+
+UPDATE basic_parameter SET pricebasedon = '01nominalProductCost' WHERE pricebasedon IS NULL;
+
+--
