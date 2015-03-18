@@ -31,13 +31,15 @@
         <manyToMany name="workstations" joinField="instruction" model="workstation" cascade="nullify" plugin="basic"
                     copyable="true"/>
 
-        <hasMany name="materials" joinField="instruction" model="material" cascade="nullify" plugin="orders"
+        <hasMany name="materialsForInstruction" joinField="instruction" model="materialForInstruction" cascade="delete"
+                 plugin="orders"
                  copyable="true"/>
 
         <hasMany name="formulas" joinField="instruction" model="formula" cascade="nullify" plugin="orders"
                  copyable="false"/>
 
-        <hasMany name="chosenInstructionFormulas" joinField="chosenInstruction" model="formula" cascade="nullify" plugin="orders"
+        <hasMany name="chosenInstructionFormulas" joinField="chosenInstruction" model="formula" cascade="nullify"
+                 plugin="orders"
                  copyable="false"/>
 
         <belongsTo name="recipe" model="recipe" plugin="orders" copyable="true"/>

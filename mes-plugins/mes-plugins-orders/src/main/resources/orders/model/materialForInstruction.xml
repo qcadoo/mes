@@ -1,14 +1,11 @@
-<model name="material" auditable="true"
+<model name="materialForInstruction"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <string name="number"/>
+        <belongsTo name="material" model="material" plugin="orders" required="true"/>
         <belongsTo name="product" model="product" plugin="basic" required="true"/>
         <decimal name="quantity" required="true"/>
-
-        <belongsTo name="recipe" model="recipe" plugin="orders"/>
-        <hasMany name="materialsForInstruction" model="materialForInstruction" joinField="material" plugin="orders"
-                 copyable="false" cascade="delete"/>
+        <belongsTo name="instruction" model="instruction" plugin="orders"/>
     </fields>
 
     <hooks>
