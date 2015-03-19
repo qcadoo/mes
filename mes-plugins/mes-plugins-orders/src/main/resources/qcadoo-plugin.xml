@@ -125,6 +125,10 @@
             <model:belongsTo name="orderStateChange" plugin="orders" model="orderStateChange"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="mbrStateChanges" plugin="orders"
+                           model="mbrStateChange" joinField="shift" cascade="nullify"/>
+        </model:model-field>
 
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="orderStateChanges" plugin="orders"

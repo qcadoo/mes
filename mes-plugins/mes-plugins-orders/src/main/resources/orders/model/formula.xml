@@ -8,12 +8,15 @@
             <validatesScale max="5"/>
         </decimal>
 
-        <belongsTo name="instruction" model="instruction" />
+        <belongsTo name="instruction" model="instruction"/>
 
-        <belongsTo name="chosenInstruction" model="instruction" />
+        <belongsTo name="chosenInstruction" model="instruction"/>
 
         <enum name="operator" values="01addition,02subtraction,03division,04multiplication"/>
 
+        <enum name="prefix" values="01leftBracket"/>
+
+        <enum name="suffix" values="01rightBracket"/>
     </fields>
 
     <hooks/>

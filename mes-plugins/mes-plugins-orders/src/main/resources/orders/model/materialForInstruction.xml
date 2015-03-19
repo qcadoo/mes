@@ -3,7 +3,6 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
         <belongsTo name="material" model="material" plugin="orders" required="true"/>
-        <belongsTo name="product" model="product" plugin="basic" required="true"/>
         <decimal name="quantity" required="true"/>
         <belongsTo name="instruction" model="instruction" plugin="orders"/>
     </fields>

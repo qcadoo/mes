@@ -42,7 +42,7 @@
                  plugin="orders"
                  copyable="false"/>
 
-        <belongsTo name="recipe" model="recipe" plugin="orders" copyable="true"/>
+        <belongsTo name="recipe" model="recipe" plugin="orders"/>
 
     </fields>
 
