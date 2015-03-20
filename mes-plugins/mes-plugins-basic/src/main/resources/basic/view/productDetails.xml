@@ -38,7 +38,7 @@
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if(window.canClose() && window.confirm("#{translate(basic.productDetails.window.ribbon.conversions.getDefaultConversions.confirm)}")) {
 										#{form}.performEvent('getDefaultConversions', []);
 									}
 								}
