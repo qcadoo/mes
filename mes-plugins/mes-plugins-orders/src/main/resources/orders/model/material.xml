@@ -2,17 +2,18 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-    	<string name="number"/>
+        <string name="number"/>
         <belongsTo name="product" model="product" plugin="basic" required="true"/>
         <decimal name="quantity" required="true"/>
-        
+
         <belongsTo name="recipe" model="recipe" plugin="orders"/>
-        <belongsTo name="instruction" model="instruction" plugin="orders"/>
+        <hasMany name="materialsForInstruction" model="materialForInstruction" joinField="material" plugin="orders"
+                 copyable="false" cascade="delete"/>
     </fields>
 
     <hooks>
     </hooks>
 
-    <identifier expression="#product['name'] + ' - ' + #quantity"  />
+    <identifier expression="#product['name'] + ' - ' + #quantity"/>
 
 </model>

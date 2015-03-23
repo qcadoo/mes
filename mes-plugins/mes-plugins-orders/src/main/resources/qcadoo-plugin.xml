@@ -83,6 +83,7 @@
         <model:model model="instruction" resource="model/instruction.xml"/>
         <model:model model="formula" resource="model/formula.xml"/>
         <model:model model="mbrStateChange" resource="model/mbrStateChange.xml"/>
+        <model:model model="materialForInstruction" resource="model/materialForInstruction.xml"/>
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="mbrStateChange" plugin="orders" model="mbrStateChange"/>
@@ -94,6 +95,11 @@
 
         <model:model-field model="product" plugin="basic">
             <model:hasMany name="materials" model="material" joinField="product" plugin="orders" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field model="product" plugin="basic">
+            <model:hasMany name="materialsForInstruction" model="materialForInstruction" joinField="product"
+                           plugin="orders" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field model="product" plugin="basic">
@@ -119,6 +125,10 @@
             <model:belongsTo name="orderStateChange" plugin="orders" model="orderStateChange"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="mbrStateChanges" plugin="orders"
+                           model="mbrStateChange" joinField="shift" cascade="nullify"/>
+        </model:model-field>
 
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="orderStateChanges" plugin="orders"

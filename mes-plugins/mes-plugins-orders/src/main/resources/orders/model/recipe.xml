@@ -35,7 +35,7 @@
 
         <hasMany name="instructions" joinField="recipe" model="instruction" cascade="nullify" copyable="true"/>
 
-        <hasMany name="orders" joinField="recipe" model="order" cascade="nullify"/>
+        <hasMany name="orders" joinField="recipe" model="order" cascade="nullify" copyable="false"/>
     </fields>
 
     <hooks>
