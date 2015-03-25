@@ -97,10 +97,10 @@
             <model:hasMany name="materials" model="material" joinField="product" plugin="orders" cascade="nullify"/>
         </model:model-field>
 
-        <model:model-field model="product" plugin="basic">
+        <!--model:model-field model="product" plugin="basic">
             <model:hasMany name="materialsForInstruction" model="materialForInstruction" joinField="product"
                            plugin="orders" cascade="nullify"/>
-        </model:model-field>
+        </model:model-field-->
 
         <model:model-field model="product" plugin="basic">
             <model:hasMany name="recipes" model="recipe" joinField="product" plugin="orders"/>

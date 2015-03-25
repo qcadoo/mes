@@ -10,6 +10,6 @@
     <hooks>
     </hooks>
 
-    <identifier expression="#product['name'] + ' - ' + #quantity"/>
+    <identifier expression="#material['number'] + ' - ' + #quantity"/>
 
 </model>
