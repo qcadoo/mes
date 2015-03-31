@@ -39,19 +39,12 @@ import com.qcadoo.model.api.EntityTree;
 public interface ProductQuantitiesService {
 
     /**
-     * 
-     * @param technology
-     *            Given technology
-     * 
-     * @param givenQuantity
-     *            How many products, that are outcomes of this technology, we want.
-     * 
-     * @param operationRuns
-     *            Method takes an empty map and puts here info on how many certain operations (operationComponents) have to be
-     *            run.
-     * 
+     * @param technology    Given technology
+     * @param givenQuantity How many products, that are outcomes of this technology, we want.
+     * @param operationRuns Method takes an empty map and puts here info on how many certain operations (operationComponents) have to be
+     *                      run.
      * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
-     *         products that are the same, but are related to different operations are here as different entries.
+     * products that are the same, but are related to different operations are here as different entries.
      */
     OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity technology,
             final BigDecimal givenQuantity, Map<Long, BigDecimal> operationRuns);
@@ -59,161 +52,109 @@ public interface ProductQuantitiesService {
     ProductQuantitiesHolder getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity);
 
     /**
-     * 
-     * @param orders
-     *            List of orders
-     * 
+     * @param orders List of orders
      * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
-     *         products that are the same, but are related to different operations are here as different entries.
+     * products that are the same, but are related to different operations are here as different entries.
      */
     OperationProductComponentWithQuantityContainer getProductComponentQuantities(final List<Entity> orders);
 
     /**
-     * 
-     * @param orders
-     *            List of orders
-     * 
-     * @param operationRuns
-     *            Method takes an empty map and puts here info on how many certain operations (operationComponents) have to be
-     *            run.
-     * 
+     * @param orders        List of orders
+     * @param operationRuns Method takes an empty map and puts here info on how many certain operations (operationComponents) have to be
+     *                      run.
      * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
-     *         products that are the same, but are related to different operations are here as different entries.
+     * products that are the same, but are related to different operations are here as different entries.
      */
     OperationProductComponentWithQuantityContainer getProductComponentQuantities(final List<Entity> orders,
             Map<Long, BigDecimal> operationRuns);
 
     /**
-     * 
-     * @param orders
-     *            Given list of orders
-     * 
+     * @param orders Given list of orders
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
-     *         aggregated)
+     * aggregated)
+     */
+    OperationProductComponentWithQuantityContainer getProductComponentQuantitiesWithoutNonComponents(final List<Entity> orders,
+            final boolean onTheFly);
+
+    /**
+     * @param orders Given list of orders
+     * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
+     * aggregated)
      */
     OperationProductComponentWithQuantityContainer getProductComponentQuantitiesWithoutNonComponents(final List<Entity> orders);
 
     /**
-     * 
-     * @param technology
-     *            Given technology
-     * 
-     * @param givenQuantity
-     *            How many products, that are outcomes of this technology, we want.
-     * 
-     * @param mrpAlgorithm
-     *            MRP Algorithm
-     * 
+     * @param technology    Given technology
+     * @param givenQuantity How many products, that are outcomes of this technology, we want.
+     * @param mrpAlgorithm  MRP Algorithm
      * @return Map with product as the key and its quantity as the value. This time keys are products, so they are aggregated.
      */
     Map<Long, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQuantity,
             final MrpAlgorithm mrpAlgorithm);
 
     /**
-     * 
-     * @param orders
-     *            Given list of orders
-     * 
-     * @param mrpAlgorithm
-     *            MRP Algorithm
-     * 
+     * @param orders       Given list of orders
+     * @param mrpAlgorithm MRP Algorithm
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
-     *         aggregated)
+     * aggregated)
      */
     Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm);
 
     /**
-     * 
-     * @param orders
-     *            Given list of orders
-     * 
-     * @param mrpAlgorithm
-     *            MRP Algorithm
-     * 
-     * @param onTheFly
-     *            onTheFly
-     * 
+     * @param orders       Given list of orders
+     * @param mrpAlgorithm MRP Algorithm
+     * @param onTheFly     onTheFly
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
-     *         aggregated)
+     * aggregated)
      */
     Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm,
             final boolean onTheFly);
 
     /**
-     * 
-     * @param orders
-     *            Given list of orders
-     * 
-     * @param mrpAlgorithm
-     *            MRP Algorithm
-     * 
-     * @param operationRuns
-     *            Method takes an empty map and puts here info on how many times certain operation (operationComponent) has to be
-     *            run.
-     * 
+     * @param orders        Given list of orders
+     * @param mrpAlgorithm  MRP Algorithm
+     * @param operationRuns Method takes an empty map and puts here info on how many times certain operation (operationComponent) has to be
+     *                      run.
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
-     *         aggregated)
+     * aggregated)
      */
     Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, MrpAlgorithm mrpAlgorithm,
             Map<Long, BigDecimal> operationRuns);
 
     /**
-     * 
-     * @param components
-     *            List of components that have order as belongsTo relation
-     * 
-     * @param mrpAlgorithm
-     *            MRP Algorithm
-     * 
+     * @param components   List of components that have order as belongsTo relation
+     * @param mrpAlgorithm MRP Algorithm
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
-     *         aggregated)
+     * aggregated)
      */
     Map<Long, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components, final MrpAlgorithm mrpAlgorithm);
 
     /**
-     * 
-     * @param orders
-     *            orders
-     * 
-     * @param operationRuns
-     *            Method takes an empty map and puts here info on how many times certain operation (operationComponent) has to be
-     *            run.
-     * 
-     * @param nonComponents
-     *            non components
-     * 
+     * @param orders        orders
+     * @param operationRuns Method takes an empty map and puts here info on how many times certain operation (operationComponent) has to be
+     *                      run.
+     * @param nonComponents non components
      * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
-     *         products that are the same, but are related to different operations are here as different entries.
-     * 
+     * products that are the same, but are related to different operations are here as different entries.
      */
     OperationProductComponentWithQuantityContainer getProductComponentWithQuantities(final List<Entity> orders,
             final Map<Long, BigDecimal> operationRuns, final Set<OperationProductComponentHolder> nonComponents);
 
     /**
-     * 
-     * @param productComponentQuantity
-     *            Product Component Quantity
-     * 
-     * @param productQuantities
-     *            Product Quantities
+     * @param productComponentQuantity Product Component Quantity
+     * @param productQuantities        Product Quantities
      */
     void addProductQuantitiesToList(final Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity,
             final Map<Long, BigDecimal> productQuantities);
 
     /**
-     * 
-     * @param operationComponent
-     *            Operation Component
-     * 
+     * @param operationComponent Operation Component
      * @return
-     * 
      * @deprecated use com.qcadoo.mes.technologies.tree.traversing.MainOutputProductCriteriaBuilder
      */
-    @Deprecated
-    Entity getOutputProductsFromOperationComponent(final Entity operationComponent);
+    @Deprecated Entity getOutputProductsFromOperationComponent(final Entity operationComponent);
 
     /**
-     * 
      * @param technology
      * @param givenQuantity
      * @param operationRuns
@@ -225,7 +166,6 @@ public interface ProductQuantitiesService {
             final Set<OperationProductComponentHolder> nonComponents);
 
     /**
-     * 
      * @param productComponentWithQuantitiesForOrders
      * @return
      */
@@ -234,27 +174,24 @@ public interface ProductQuantitiesService {
 
     /**
      * Gets technology operation component
-     * 
+     *
      * @param technologyOperationComponentId
-     * 
      * @return technology operation component
      */
     Entity getTechnologyOperationComponent(final Long technologyOperationComponentId);
 
     /**
      * Gets product
-     * 
+     *
      * @param productId
-     * 
      * @return product
      */
     Entity getProduct(final Long productId);
 
     /**
      * Covers operations runs from product quantities
-     * 
+     *
      * @param operationRunsFromProductionQuantities
-     * 
      * @return operations runs
      */
     Map<Entity, BigDecimal> convertOperationsRunsFromProductQuantities(
