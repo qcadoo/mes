@@ -39,8 +39,6 @@
     </fields>
 
     <hooks>
-        <onCreate class="com.qcadoo.mes.mbr.hooks.MbrModelHooks" method="onCreate"/>
-        <onCopy class="com.qcadoo.mes.mbr.hooks.MbrModelHooks" method="onCopy"/>
     </hooks>
 
     <identifier expression="#name"/>
