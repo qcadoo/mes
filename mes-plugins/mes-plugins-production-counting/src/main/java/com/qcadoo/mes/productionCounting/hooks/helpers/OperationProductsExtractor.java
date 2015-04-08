@@ -126,14 +126,19 @@ public class OperationProductsExtractor {
                         if (entityTypeWithAlreadyAddedProducts.containsKey(entityType)) {
                             continue;
                         } else {
-                            entityTypeWithAlreadyAddedProducts.put(entityType, Sets.newHashSet(product));
+                            entityTypeWithAlreadyAddedProducts.put(entityType, Sets.newHashSet());
+                            continue;
                         }
                     } else {
-                        Set<Entity> alreadAddedProducts = entityTypeWithAlreadyAddedProducts.get(entityType);
+                        if (entityTypeWithAlreadyAddedProducts.containsKey(entityType)) {
+                            Set<Entity> alreadAddedProducts = entityTypeWithAlreadyAddedProducts.get(entityType);
 
-                        alreadAddedProducts.add(product);
+                            alreadAddedProducts.add(product);
 
-                        entityTypeWithAlreadyAddedProducts.put(entityType, alreadAddedProducts);
+                            entityTypeWithAlreadyAddedProducts.put(entityType, alreadAddedProducts);
+                        } else {
+                            entityTypeWithAlreadyAddedProducts.put(entityType, Sets.newHashSet(product));
+                        }
 
                     }
 
@@ -173,8 +178,8 @@ public class OperationProductsExtractor {
         OperationProductComponentEntityType entityType = operationProductComponentHolder.getEntityType();
         Entity product = operationProductComponentHolder.getProduct();
 
-        return !entityTypeWithAlreadyAddedProducts.containsKey(entityType)
-                || entityTypeWithAlreadyAddedProducts.get(entityType).contains(product);
+        return entityTypeWithAlreadyAddedProducts.containsKey(entityType)
+                && entityTypeWithAlreadyAddedProducts.get(entityType).contains(product);
     }
 
     private void add(List<Entity> trackingOperationProductComponents, Entity operationComponent) {
