@@ -1,4 +1,4 @@
--- Uodated materials in MBR, added brackets to formula
+-- Updated materials in MBR, added brackets to formula
 -- last touched 19.03.2015 by kama
 
 ALTER TABLE orders_material DROP CONSTRAINT orders_material_orders_instruction;
@@ -19,5 +19,13 @@ CREATE TABLE orders_materialforinstruction
 
 ALTER TABLE orders_formula ADD COLUMN prefix character varying(255);
 ALTER TABLE orders_formula ADD COLUMN suffix character varying(255);
+
+-- end
+
+
+-- table: technologies_operationproductincomponent
+-- last touched 14.04.2015 by lupo
+
+ALTER TABLE technologies_operationproductincomponent ADD COLUMN value numeric(14,5);
 
 -- end
