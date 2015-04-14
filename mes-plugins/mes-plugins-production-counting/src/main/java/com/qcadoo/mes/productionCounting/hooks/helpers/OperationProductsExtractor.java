@@ -50,6 +50,7 @@ import com.qcadoo.mes.technologies.dto.OperationProductComponentEntityType;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.grouping.OperationMergeService;
+import com.qcadoo.mes.technologies.tree.builder.api.OperationProductComponent;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 
@@ -119,23 +120,50 @@ public class OperationProductsExtractor {
                 Entity product = operationProductComponentHolder.getProduct();
 
                 if ((product != null) && (entityType != null)) {
-                    if (entityTypeWithAlreadyAddedProducts.containsKey(entityType)) {
-                        if (entityTypeWithAlreadyAddedProducts.get(entityType).contains(product)) {
+                    if (shouldSkipAddingProduct(operationProductComponentHolder, entityTypeWithAlreadyAddedProducts,
+                            typeOfProductionRecording)) {
+
+                        if (entityTypeWithAlreadyAddedProducts.containsKey(entityType)) {
                             continue;
                         } else {
+                            entityTypeWithAlreadyAddedProducts.put(entityType, Sets.newHashSet());
+                            continue;
+                        }
+                    } else {
+                        if (entityTypeWithAlreadyAddedProducts.containsKey(entityType)) {
                             Set<Entity> alreadAddedProducts = entityTypeWithAlreadyAddedProducts.get(entityType);
 
                             alreadAddedProducts.add(product);
 
                             entityTypeWithAlreadyAddedProducts.put(entityType, alreadAddedProducts);
+                        } else {
+                            entityTypeWithAlreadyAddedProducts.put(entityType, Sets.newHashSet(product));
                         }
-                    } else {
-                        entityTypeWithAlreadyAddedProducts.put(entityType, Sets.newHashSet(product));
+
                     }
+
                 }
+
+                // if ((product != null) && (entityType != null)) {
+                // if (entityTypeWithAlreadyAddedProducts.containsKey(entityType)) {
+                // if (shouldSkipAddingProduct(operationProductComponentHolder, entityTypeWithAlreadyAddedProducts,
+                // typeOfProductionRecording)) {
+                // continue;
+                // } else {
+                // Set<Entity> alreadAddedProducts = entityTypeWithAlreadyAddedProducts.get(entityType);
+                //
+                // alreadAddedProducts.add(product);
+                //
+                // entityTypeWithAlreadyAddedProducts.put(entityType, alreadAddedProducts);
+                // }
+                // } else {
+                // entityTypeWithAlreadyAddedProducts.put(entityType, Sets.newHashSet(product));
+                // }
+                // }
             }
 
-            Entity trackingOperationProductComponent = trackingOperationComponentBuilder.fromOperationProductComponentHolder(operationProductComponentHolder);
+            Entity trackingOperationProductComponent = trackingOperationComponentBuilder
+                    .fromOperationProductComponentHolder(operationProductComponentHolder);
 
             trackingOperationProductComponents.add(trackingOperationProductComponent);
         }
@@ -143,8 +171,20 @@ public class OperationProductsExtractor {
         return trackingOperationProductComponents;
     }
 
+    private boolean shouldSkipAddingProduct(OperationProductComponentHolder operationProductComponentHolder,
+            Map<OperationProductComponentEntityType, Set<Entity>> entityTypeWithAlreadyAddedProducts,
+            String typeOfProductionRecording) {
+
+        OperationProductComponentEntityType entityType = operationProductComponentHolder.getEntityType();
+        Entity product = operationProductComponentHolder.getProduct();
+
+        return entityTypeWithAlreadyAddedProducts.containsKey(entityType)
+                && entityTypeWithAlreadyAddedProducts.get(entityType).contains(product);
+    }
+
     private void add(List<Entity> trackingOperationProductComponents, Entity operationComponent) {
-        Entity trackingOperationProductComponent = trackingOperationComponentBuilder.fromOperationProductComponent(operationComponent);
+        Entity trackingOperationProductComponent = trackingOperationComponentBuilder
+                .fromOperationProductComponent(operationComponent);
         trackingOperationProductComponents.add(trackingOperationProductComponent);
     }
 

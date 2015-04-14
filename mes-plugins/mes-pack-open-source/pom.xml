@@ -11,6 +11,7 @@
 
 	<artifactId>mes-pack-open-source</artifactId>
 	<packaging>qcadoo-plugin</packaging>
+
 	<name>Qcadoo MES :: Pack :: Open source</name>
 
 	<build>
@@ -23,6 +24,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	
 
 </project>

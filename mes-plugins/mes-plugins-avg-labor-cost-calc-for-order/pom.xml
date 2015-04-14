@@ -4,26 +4,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>mes-plugins</artifactId>
 		<groupId>com.qcadoo.mes</groupId>
+		<artifactId>mes-plugins</artifactId>
 		<version>1.4-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mes-plugins-avg-labor-cost-calc-for-order</artifactId>
 	<packaging>qcadoo-plugin</packaging>
+
 	<name>Qcadoo MES :: Plugins :: Average labor hourly calculator for order</name>
-
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.qcadoo</groupId>
-				<artifactId>qcadoo-maven-plugin</artifactId>
-				<version>${qcadoo.maven.plugin.version}</version>
-				<extensions>true</extensions>
-			</plugin>
-		</plugins>
-	</build>
 
 	<dependencies>
 		<dependency>
@@ -42,5 +31,16 @@
 			<version>1.4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.qcadoo</groupId>
+				<artifactId>qcadoo-maven-plugin</artifactId>
+				<version>${qcadoo.maven.plugin.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

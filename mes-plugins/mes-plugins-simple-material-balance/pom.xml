@@ -10,18 +10,8 @@
 
 	<artifactId>mes-plugins-simple-material-balance</artifactId>
 	<packaging>qcadoo-plugin</packaging>
-	<name>Qcadoo MES :: Plugins :: Simple material balance</name>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.qcadoo</groupId>
-				<artifactId>qcadoo-maven-plugin</artifactId>
-				<version>${qcadoo.maven.plugin.version}</version>
-				<extensions>true</extensions>
-			</plugin>
-		</plugins>
-	</build>
+	<name>Qcadoo MES :: Plugins :: Simple material balance</name>
 
 	<dependencies>
 		<dependency>
@@ -35,5 +25,16 @@
 			<version>1.4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.qcadoo</groupId>
+				<artifactId>qcadoo-maven-plugin</artifactId>
+				<version>${qcadoo.maven.plugin.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

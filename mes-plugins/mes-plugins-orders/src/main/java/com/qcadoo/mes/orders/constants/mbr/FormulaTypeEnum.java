@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders.constants;
+package com.qcadoo.mes.orders.constants.mbr;
 
 import org.apache.commons.lang3.StringUtils;
 

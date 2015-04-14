@@ -10,7 +10,6 @@
 	</parent>
 
 	<artifactId>mes-plugins-technologies</artifactId>
-
 	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Technologies</name>
@@ -40,4 +39,3 @@
 	</build>
 
 </project>
-

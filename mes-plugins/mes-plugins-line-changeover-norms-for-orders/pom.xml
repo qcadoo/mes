@@ -4,25 +4,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>mes-plugins</artifactId>
 		<groupId>com.qcadoo.mes</groupId>
+		<artifactId>mes-plugins</artifactId>
 		<version>1.4-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mes-plugins-line-changeover-norms-for-orders</artifactId>
 	<packaging>qcadoo-plugin</packaging>
-	<name>Qcadoo MES :: Plugins :: Line changeover norms for orders</name>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.qcadoo</groupId>
-				<artifactId>qcadoo-maven-plugin</artifactId>
-				<version>${qcadoo.maven.plugin.version}</version>
-				<extensions>true</extensions>
-			</plugin>
-		</plugins>
-	</build>
+	<name>Qcadoo MES :: Plugins :: Line changeover norms for orders</name>
 
 	<dependencies>
 		<dependency>
@@ -36,5 +26,16 @@
 			<version>1.4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.qcadoo</groupId>
+				<artifactId>qcadoo-maven-plugin</artifactId>
+				<version>${qcadoo.maven.plugin.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

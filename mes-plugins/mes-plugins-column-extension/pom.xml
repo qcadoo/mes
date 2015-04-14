@@ -10,7 +10,6 @@
 	</parent>
 
 	<artifactId>mes-plugins-column-extension</artifactId>
-
 	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Column Extension</name>
@@ -27,4 +26,3 @@
 	</build>
 
 </project>
-

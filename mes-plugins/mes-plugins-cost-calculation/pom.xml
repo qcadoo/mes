@@ -10,6 +10,7 @@
 
 	<artifactId>mes-plugins-cost-calculation</artifactId>
 	<packaging>qcadoo-plugin</packaging>
+
 	<name>Qcadoo MES :: Plugins :: Cost calculation</name>
 
 	<dependencies>
@@ -24,7 +25,6 @@
 			<version>1.4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-
 
 	<build>
 		<plugins>

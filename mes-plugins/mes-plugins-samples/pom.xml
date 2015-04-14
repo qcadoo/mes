@@ -10,7 +10,6 @@
 	</parent>
 
 	<artifactId>mes-plugins-samples</artifactId>
-
 	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Samples</name>
@@ -35,4 +34,3 @@
 	</build>
 
 </project>
-

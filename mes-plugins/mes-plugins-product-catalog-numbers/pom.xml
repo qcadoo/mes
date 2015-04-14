@@ -9,9 +9,9 @@
 		<version>1.4-SNAPSHOT</version>
 	</parent>
 
-
 	<artifactId>mes-plugins-product-catalog-numbers</artifactId>
 	<packaging>qcadoo-plugin</packaging>
+
 	<name>Qcadoo MES :: Plugins :: Product catalog numbers</name>
 
 	<dependencies>

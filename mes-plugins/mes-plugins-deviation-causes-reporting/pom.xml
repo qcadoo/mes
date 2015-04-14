@@ -10,7 +10,6 @@
 	</parent>
 
 	<artifactId>mes-plugins-deviation-causes-reporting</artifactId>
-
 	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Deviation Causes Reporting</name>
@@ -35,4 +34,3 @@
 	</build>
 
 </project>
-

@@ -4,16 +4,16 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-	    <artifactId>mes-plugins</artifactId>
-	    <groupId>com.qcadoo.mes</groupId>
-	    <version>1.4-SNAPSHOT</version>
+		<groupId>com.qcadoo.mes</groupId>
+		<artifactId>mes-plugins</artifactId>
+		<version>1.4-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mes-plugins-production-scheduling</artifactId>
 	<packaging>qcadoo-plugin</packaging>
-	
+
 	<name>Qcadoo MES :: Plugins :: Production Scheduling</name>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
@@ -26,7 +26,6 @@
 			<version>1.4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-
 
 	<build>
 		<plugins>

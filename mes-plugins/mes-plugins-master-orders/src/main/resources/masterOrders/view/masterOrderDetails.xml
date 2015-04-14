@@ -160,8 +160,9 @@
                         <option type="expression"
                                 value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                         <option type="fieldCode" value="number"/>
-                        <criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-                                          method="showPatternTechnology"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+                                method="showPatternTechnology"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="5" height="2">
@@ -207,7 +208,7 @@
                             </layoutElement>
                             <layoutElement column="4" row="3">
                                 <component type="input" name="producedOrderQuantityUnit"
-                                           reference="cproducedOrderQuantityUnit" hasLabel="false"
+                                           reference="producedOrderQuantityUnit" hasLabel="false"
                                            defaultVisible="false">
                                     <option type="textRepresentationOnDisabled" value="true"/>
                                 </component>
