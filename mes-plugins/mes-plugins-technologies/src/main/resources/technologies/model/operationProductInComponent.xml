@@ -24,26 +24,33 @@
     ***************************************************************************
 
 -->
-<model name="operationProductInComponent" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="operationComponent" model="technologyOperationComponent"
-			required="true" />
-		<priority name="priority" scope="operationComponent"/>
-		<belongsTo name="product" plugin="basic" model="product"
-			required="true" />
-		<decimal name="quantity" required="true">
-			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
-		
-	</fields>
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
-			method="invalidateIfBelongsToAcceptedTechnology" />
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
-			method="invalidateIfAllreadyInTheSameOperation" />
-	</hooks>
+<model name="operationProductInComponent"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="operationComponent" model="technologyOperationComponent"
+                   required="true"/>
+        <priority name="priority" scope="operationComponent"/>
+        <belongsTo name="product" plugin="basic" model="product"
+                   required="true"/>
+        <decimal name="quantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="givenQuantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <dictionary name="givenUnit" dictionary="units" required="true"/>
+
+    </fields>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
+                       method="invalidateIfBelongsToAcceptedTechnology"/>
+        <validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
+                       method="invalidateIfAllreadyInTheSameOperation"/>
+    </hooks>
 </model>
