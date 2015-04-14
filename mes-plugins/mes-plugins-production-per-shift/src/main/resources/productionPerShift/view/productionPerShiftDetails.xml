@@ -239,7 +239,7 @@
 
 														<components>
 															<component type="gridLayout" name="dailyProgressGridLayout"
-															           columns="5" rows="1">
+															           columns="6" rows="1">
 																<layoutElement column="1" row="1" width="2">
 																	<component type="lookup" name="shift" field="shift"
 																	           reference="shift">
@@ -257,6 +257,13 @@
 																	           reference="unit" hasLabel="false">
 																		<option type="textRepresentationOnDisabled"
 																		        value="true" />
+																	</component>
+																</layoutElement>
+																<layoutElement column="6" row="1">
+																	<component type="input" name="efficiency"
+																	           field="efficiency" reference="efficiency"
+																	           hasLabel="false" defaultVisible="false"
+																	           defaultEnabled="never">
 																	</component>
 																</layoutElement>
 															</component>
