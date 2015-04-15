@@ -37,13 +37,6 @@
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
-
-        <decimal name="givenQuantity">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <dictionary name="givenUnit" dictionary="units"/>
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"

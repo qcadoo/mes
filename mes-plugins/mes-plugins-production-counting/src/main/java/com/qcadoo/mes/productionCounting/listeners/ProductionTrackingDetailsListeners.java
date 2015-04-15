@@ -83,8 +83,7 @@ public class ProductionTrackingDetailsListeners {
         laborTimeInput.setFieldValue(totalLabor);
     }
 
-    public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
         Long productionRecordId = productionRecordForm.getEntityId();
 
@@ -105,6 +104,8 @@ public class ProductionTrackingDetailsListeners {
             BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(recordOperationProductComponent
                     .getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY));
             recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY,
+                    numberService.setScale(plannedQuantity));
+            recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
                     numberService.setScale(plannedQuantity));
             recordOperationProductComponent.getDataDefinition().save(recordOperationProductComponent);
         }
@@ -228,8 +229,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void fillWorkstationTypeField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
-        LookupComponent tocLookup = (LookupComponent) view
-                .getComponentByReference("technologyOperationComponent");
+        LookupComponent tocLookup = (LookupComponent) view.getComponentByReference("technologyOperationComponent");
         LookupComponent workstationTypeLookup = (LookupComponent) view
                 .getComponentByReference(ProductionTrackingFields.WORKSTATION_TYPE);
         Entity toc = tocLookup.getEntity();

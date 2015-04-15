@@ -37,7 +37,7 @@
 
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
-			           columns="6" rows="4" hasBorders="false">
+			           columns="6" rows="5" hasBorders="false">
 				<layoutElement column="1" row="1" width="5">
 					<component type="input" name="number" reference="number"
 					           defaultEnabled="false">
@@ -59,7 +59,7 @@
 					           reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
 				</layoutElement>
 				<layoutElement column="1" row="4" width="5">
-					<component type="input" name="usedQuantity" reference="usedQuantity" field="usedQuantity">
+					<component type="input" name="usedQuantity" reference="usedQuantity" field="usedQuantity" defaultEnabled="false">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
@@ -67,6 +67,21 @@
 					<component type="input" name="usedQuantityUNIT"
 					           reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
 				</layoutElement>
+
+                <layoutElement column="1" row="5" width="5">
+                    <component type="input" name="givenQuantity" field="givenQuantity" reference="givenQuantity">
+                        <option type="alignment" value="right"/>
+                        <listener event="onInputChange" method="calculateQuantity"
+                                  class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="6" row="5">
+                    <component type="select" name="givenUnit" reference="givenUnit"
+                               hasLabel="false" field="givenUnit">
+                        <listener event="onSelectedEntityChange" method="calculateQuantity"
+                                  class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"/>
+                    </component>
+                </layoutElement>
 			</component>
 
 			<option type="header" value="true" />
