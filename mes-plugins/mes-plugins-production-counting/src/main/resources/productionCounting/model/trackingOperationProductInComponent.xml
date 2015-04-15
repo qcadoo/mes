@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="trackingOperationProductInComponent" 
+<model name="trackingOperationProductInComponent"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
@@ -43,6 +43,13 @@
 			<validatesUnscaledValue max="9" />
 			<validatesScale max="5" />
 		</decimal>
+
+        <decimal name="givenQuantity">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <dictionary name="givenUnit" dictionary="units"/>
 	</fields>
 	<hooks>
 		<onView

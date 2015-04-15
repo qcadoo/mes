@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -135,7 +136,7 @@ public class DocumentDetailsHooks {
     }
 
     private void enableStorageLocation(final ViewDefinitionState view, boolean enabled) {
-    	AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             FieldComponent storageLocation = positionForm.findFieldComponentByName(PositionFields.STORAGE_LOCATION);
 
@@ -152,6 +153,10 @@ public class DocumentDetailsHooks {
                 field.setEnabled(enabled);
 
             }
+            FieldComponent givenQuantity = positionForm.findFieldComponentByName(PositionFields.GIVEN_QUANTITY);
+            FieldComponent givenUnit = positionForm.findFieldComponentByName(PositionFields.GIVEN_UNIT);
+            givenQuantity.setRequired(true);
+            givenUnit.setRequired(true);
             fillInUnit(positionForm);
 
         }
@@ -182,6 +187,10 @@ public class DocumentDetailsHooks {
         }
 
         String unit = product.getStringField(UNIT);
+        String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
+        if (StringUtils.isEmpty(givenUnit)) {
+            position.setField(PositionFields.GIVEN_UNIT, unit);
+        }
 
         position.setField(PositionFields.UNIT, unit);
         positionForm.setEntity(position);
