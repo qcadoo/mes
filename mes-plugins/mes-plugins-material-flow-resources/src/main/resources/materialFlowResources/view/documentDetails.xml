@@ -150,17 +150,16 @@
                 <option type="hasButtons" value="true"/>
                 <components>
                     <component type="gridLayout" name="positionsLayout"
-                               columns="5" rows="2">
+                               columns="10" rows="2">
 
                         <layoutElement column="1" row="1">
                             <component type="input" name="numberLabel"
                                        field="number" defaultEnabled="false">
-                                <option type="labelWidth" value="60"/>
                                 <option type="alignment" value="right"/>
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="2" row="1" width="2">
+                        <layoutElement column="2" row="1" width="3">
                             <component type="lookup" name="product" field="product"
                                        reference="product">
                                 <option type="column" fields="name" name="name" link="true"/>
@@ -176,16 +175,16 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="4" row="1">
+                        <layoutElement column="5" row="1" width="2">
                             <component type="gridLayout" name="quantityLayout"
-                                       columns="4" rows="1" hasBorders="false">
+                                       columns="5" rows="1" hasBorders="false">
 
-                                <layoutElement column="1" row="1" width="3">
-                                    <component type="input" name="quantity" field="quantity">
+                                <layoutElement column="1" row="1" width="4">
+                                    <component type="input" name="quantity" field="quantity" defaultEnabled="never">
                                         <option type="alignment" value="right"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="4" row="1">
+                                <layoutElement column="5" row="1">
                                     <component type="input" name="unit" field="unit"
                                                hasLabel="false" persistent="false">
                                         <option type="textRepresentationOnDisabled" value="true"/>
@@ -194,13 +193,30 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="5" row="1">
+                        <layoutElement column="7" row="1" width="2">
+                            <component type="input" name="givenQuantity" field="givenQuantity">
+                                <option type="alignment" value="right"/>
+
+                                <listener event="onInputChange" method="calculateQuantity"
+                                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"/>
+                            </component>
+                        </layoutElement>
+
+                        <layoutElement column="9" row="1" width="2">
+                            <component type="select" name="givenUnit" field="givenUnit">
+
+                                <listener event="onSelectedEntityChange" method="calculateQuantity"
+                                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"/>
+                            </component>
+                        </layoutElement>
+
+                        <layoutElement column="1" row="2">
                             <component type="input" name="price" field="price">
                                 <option type="alignment" value="right"/>
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="1" row="2">
+                        <layoutElement column="2" row="2" width="3">
                             <component type="input" name="batch" field="batch"/>
                             <component type="lookup" name="resource" field="resource"
                                        reference="resource" hasLabel="false" defaultVisible="false">
@@ -222,15 +238,15 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="2" row="2" width="2">
+                        <layoutElement column="5" row="2" width="2">
                             <component type="calendar" name="productionDate" field="productionDate"/>
                         </layoutElement>
 
-                        <layoutElement column="4" row="2">
+                        <layoutElement column="7" row="2" width="2">
                             <component type="calendar" name="expirationDate" field="expirationDate"/>
                         </layoutElement>
 
-                        <layoutElement column="5" row="2">
+                        <layoutElement column="9" row="2" width="2">
                             <component type="select" name="storageLocation" field="storageLocation"
                                        reference="storageLocation"/>
                         </layoutElement>

@@ -211,6 +211,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             Entity newPosition = positionDD.create();
             newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
+            newPosition.setField(PositionFields.GIVEN_QUANTITY, position.getDecimalField(PositionFields.GIVEN_QUANTITY));
+            newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
             newPosition.setField(PositionFields.PRICE, resource.getField(ResourceFields.PRICE));
             newPosition.setField(PositionFields.BATCH, resource.getField(ResourceFields.BATCH));
             newPosition.setField(PositionFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));

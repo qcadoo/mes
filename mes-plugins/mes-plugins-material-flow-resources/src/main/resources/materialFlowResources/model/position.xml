@@ -36,18 +36,25 @@
             <validatesUnscaledValue max="9" />
             <validatesScale max="5" />
         </decimal>
+        <decimal name="givenQuantity">
+            <validatesRange from="0" exclusively="true" />
+            <validatesUnscaledValue max="9" />
+            <validatesScale max="5" />
+        </decimal>
         <decimal name="price" default="0" >
             <validatesRange from="0" />
         </decimal>
         <string name="batch" />
         <string name="unit" persistent="false"/>
+        <dictionary name="givenUnit" dictionary="units"/>
+
         <date name="productionDate" />
         <date name="expirationDate" />
         <priority name="number" scope="document"/>
         <belongsTo name="resource" model="resource"/>
         <hasMany name="attributeValues" joinField="position" model="attributeValue" cascade="delete"/>
     	<dictionary name="storageLocation" dictionary="storageLocations" />
-    	
+
     	<enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
     	<enum name="state" values="01draft,02accepted" default="01draft"/>
     </fields>
