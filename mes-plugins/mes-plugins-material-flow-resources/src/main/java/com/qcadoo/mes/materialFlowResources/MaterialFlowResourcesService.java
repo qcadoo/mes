@@ -37,6 +37,8 @@ public interface MaterialFlowResourcesService {
 
     BigDecimal getResourcesQuantityForLocationAndProduct(final Entity location, final Entity product);
 
+    Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location);
+
     void manageResources(final Entity transfer);
 
     void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,

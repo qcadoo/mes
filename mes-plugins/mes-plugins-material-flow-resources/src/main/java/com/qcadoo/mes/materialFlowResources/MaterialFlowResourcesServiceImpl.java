@@ -41,12 +41,14 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.AttributeFields;
@@ -55,11 +57,14 @@ import com.qcadoo.mes.materialFlowResources.constants.ChangeDateWhenTransferToWa
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -250,6 +255,32 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 .addOrder(SearchOrders.asc(TIME)).list().getEntities();
 
         return resources;
+    }
+
+    @Override
+    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location) {
+
+        DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("select p.id as product, sum(r.quantity) as quantity ");
+        sb.append("from #materialFlowResources_resource as r ");
+        sb.append("join r.product as p ");
+        sb.append("join r.location as l ");
+        sb.append("group by p.id, l.id ");
+        sb.append("having p.id in (:productIds) ");
+        sb.append("and l.id = :locationId ");
+
+        SearchQueryBuilder sqb = resourceDD.find(sb.toString());
+        sqb.setParameter("locationId", location.getId());
+        sqb.setParameterList("productIds", products.stream().map(product -> product.getId()).collect(Collectors.toList()));
+        List<Entity> productsAndQuantities = sqb.list().getEntities();
+
+        Map<Long, BigDecimal> quantities = Maps.newHashMap();
+        productsAndQuantities.stream().forEach(
+                productAndQuantity -> quantities.put((Long) productAndQuantity.getField("product"),
+                        productAndQuantity.getDecimalField("quantity")));
+        return quantities;
     }
 
     @Override
