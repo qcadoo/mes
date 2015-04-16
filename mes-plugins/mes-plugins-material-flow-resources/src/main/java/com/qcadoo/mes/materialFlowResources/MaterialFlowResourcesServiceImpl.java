@@ -259,27 +259,28 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location) {
-
-        DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_RESOURCE);
-        StringBuilder sb = new StringBuilder();
-        sb.append("select p.id as product, sum(r.quantity) as quantity ");
-        sb.append("from #materialFlowResources_resource as r ");
-        sb.append("join r.product as p ");
-        sb.append("join r.location as l ");
-        sb.append("group by p.id, l.id ");
-        sb.append("having p.id in (:productIds) ");
-        sb.append("and l.id = :locationId ");
-
-        SearchQueryBuilder sqb = resourceDD.find(sb.toString());
-        sqb.setParameter("locationId", location.getId());
-        sqb.setParameterList("productIds", products.stream().map(product -> product.getId()).collect(Collectors.toList()));
-        List<Entity> productsAndQuantities = sqb.list().getEntities();
-
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
-        productsAndQuantities.stream().forEach(
-                productAndQuantity -> quantities.put((Long) productAndQuantity.getField("product"),
-                        productAndQuantity.getDecimalField("quantity")));
+        if (products.size() > 0) {
+            DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                    MaterialFlowResourcesConstants.MODEL_RESOURCE);
+            StringBuilder sb = new StringBuilder();
+            sb.append("select p.id as product, sum(r.quantity) as quantity ");
+            sb.append("from #materialFlowResources_resource as r ");
+            sb.append("join r.product as p ");
+            sb.append("join r.location as l ");
+            sb.append("group by p.id, l.id ");
+            sb.append("having p.id in (:productIds) ");
+            sb.append("and l.id = :locationId ");
+
+            SearchQueryBuilder sqb = resourceDD.find(sb.toString());
+            sqb.setParameter("locationId", location.getId());
+            sqb.setParameterList("productIds", products.stream().map(product -> product.getId()).collect(Collectors.toList()));
+            List<Entity> productsAndQuantities = sqb.list().getEntities();
+
+            productsAndQuantities.stream().forEach(
+                    productAndQuantity -> quantities.put((Long) productAndQuantity.getField("product"),
+                            productAndQuantity.getDecimalField("quantity")));
+        }
         return quantities;
     }
 
