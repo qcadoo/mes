@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
@@ -107,6 +108,9 @@ public class ProductionTrackingDetailsListeners {
                     numberService.setScale(plannedQuantity));
             recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
                     numberService.setScale(plannedQuantity));
+            recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT,
+                    recordOperationProductComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)
+                            .getStringField(ProductFields.UNIT));
             recordOperationProductComponent.getDataDefinition().save(recordOperationProductComponent);
         }
     }
