@@ -65,9 +65,13 @@ public class OPICDetailsListeners {
                         opic.setField(OperationProductInComponentFields.QUANTITY, null);
                     }
                 }
-                form.setEntity(opic);
-            }
-        }
 
+            } else {
+                opic.setField(OperationProductInComponentFields.QUANTITY, null);
+            }
+        } else {
+            opic.setField(OperationProductInComponentFields.QUANTITY, null);
+        }
+        form.setEntity(opic);
     }
 }

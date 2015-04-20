@@ -299,9 +299,13 @@ public class DocumentDetailsListeners {
                             position.setField(PositionFields.QUANTITY, null);
                         }
                     }
-                    positionForm.setEntity(position);
+                } else {
+                    position.setField(PositionFields.QUANTITY, null);
                 }
+            } else {
+                position.setField(PositionFields.QUANTITY, null);
             }
+            positionForm.setEntity(position);
         }
 
     }

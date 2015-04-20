@@ -130,9 +130,14 @@ public class RecordOperationProductComponentListeners {
                         productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, null);
                     }
                 }
-                form.setEntity(productComponent);
+
+            } else {
+                productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, null);
             }
+        } else {
+            productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, null);
         }
+        form.setEntity(productComponent);
 
     }
 
