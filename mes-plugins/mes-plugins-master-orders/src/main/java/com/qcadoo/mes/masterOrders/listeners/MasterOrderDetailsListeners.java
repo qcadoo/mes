@@ -129,7 +129,6 @@ public class MasterOrderDetailsListeners {
     }
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-
         FieldComponent masterOrderType = (FieldComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_TYPE);
         Object masterOrderTypeValue = masterOrderType.getFieldValue();
 
@@ -144,11 +143,11 @@ public class MasterOrderDetailsListeners {
 
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.masterOrder", masterOrderId);
+
         if (masterOrderTypeValue.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
             GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
             Entity entity = masterOrderProducts.getSelectedEntities().get(0).getBelongsToField(MasterOrderProductFields.PRODUCT);
             parameters.put("form.masterOrderProduct", entity.getId());
-
         }
 
         parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
@@ -156,4 +155,5 @@ public class MasterOrderDetailsListeners {
         String url = "../page/orders/orderDetails.html";
         view.redirectTo(url, false, true, parameters);
     }
+
 }

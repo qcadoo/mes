@@ -106,9 +106,11 @@ public class MasterOrderDetailsHooks {
 
         GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
         masterOrderProducts.setVisible(visibleGrid);
+
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
-        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("createOrder");
+        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName(L_ORDERS);
+        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName(L_CREATE_ORDER);
+
         if (visibleGrid) {
             if (masterOrderProducts.getSelectedEntities().isEmpty()) {
                 createOrder.setEnabled(false);
@@ -141,13 +143,15 @@ public class MasterOrderDetailsHooks {
             unit = product.getStringField(UNIT);
         }
 
-        for (String reference : Arrays
-                .asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit", "producedOrderQuantityUnit")) {
+        for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
+                "producedOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
+
             if (unit != null) {
                 field.setVisible(true);
             }
+
             field.requestComponentUpdateState();
         }
     }
@@ -180,8 +184,7 @@ public class MasterOrderDetailsHooks {
             return;
         }
 
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
-                .equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
+        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             return;
         }
 
@@ -248,4 +251,5 @@ public class MasterOrderDetailsHooks {
         FieldComponent productField = (FieldComponent) view.getComponentByReference(PRODUCT);
         productField.setRequired(true);
     }
+
 }

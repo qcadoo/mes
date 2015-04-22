@@ -23,18 +23,18 @@
  */
 package com.qcadoo.mes.masterOrders.constants;
 
-public final class MasterOrdersConstants {
+public final class MasterOrderDefinitionFields {
 
-    private MasterOrdersConstants() {
+    private MasterOrderDefinitionFields() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "masterOrders";
+    public static final String NUMBER = "number";
 
-    public static final String MODEL_MASTER_ORDER = "masterOrder";
+    public static final String NAME = "name";
 
-    public static final String MODEL_MASTER_ORDER_DEFINITION = "masterOrderDefinition";
+    public static final String PARAMETER = "parameter";
 
-    public static final String MODEL_MASTER_ORDER_PRODUCT = "masterOrderProduct";
+    public static final String MASTER_ORDERS = "masterOrders";
 
 }
