@@ -59,4 +59,15 @@
 
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+          
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+          destroy-method="close">
+        <property name="driverClass" value="${dbDriverClass}"/>
+        <property name="jdbcUrl" value="${dbJdbcUrl}"/>
+        <property name="user" value="${dbUsername}"/>
+        <property name="password" value="${dbPassword}"/>
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate"
+          c:dataSource-ref="dataSource"/>          
 </beans>
