@@ -38,6 +38,24 @@ String ctx = request.getContextPath();
 
     <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
 
-<table id="grid"></table>
-<div id="jqGridPager"></div>
+
+<div class="windowContainer" style="background:#9b9b9b;">
+
+    <div class="windowContainerRibbon tabWindowRibbon">
+        <div id="window_windowContainerRibbon">
+            <div id="q_row3_out_container">
+                    <div id="q_menu_row3"></div>
+            </div>
+            <div id="q_row4_out"></div>
+        </div>
+    </div>
+
+            <div class="windowContent" style="margin:50px;position:absolute;top:90px;">
+                <table id="grid"></table>
+                <div id="jqGridPager"></div>
+            </div>
+</div>
+
+

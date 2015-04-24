@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface ProductRepository {
 
-   List<Map<String, Object>> findAll();
+   List<Map<String, Object>> findAll(String sidx, String sord);
 
     void delete(Long id);
 

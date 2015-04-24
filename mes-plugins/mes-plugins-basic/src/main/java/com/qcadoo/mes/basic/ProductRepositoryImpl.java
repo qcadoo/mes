@@ -20,9 +20,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
-    public List<Map<String, Object>> findAll() {
+    public List<Map<String, Object>> findAll(String sidx, String sord) {
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM basic_product");
+        query.append("SELECT * FROM basic_product ORDER BY " + sidx + " " + sord);
         List<Map<String, Object>> list = jdbcTemplate.queryForList(query.toString(), Collections.EMPTY_MAP);
         return list;
 

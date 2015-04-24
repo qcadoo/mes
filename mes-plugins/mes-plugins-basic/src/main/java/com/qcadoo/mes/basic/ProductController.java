@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -21,11 +22,12 @@ public class ProductController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findAll() {
-        return productRepository.findAll();
+    public List<Map<String, Object>> findAll(@RequestParam String sidx, @RequestParam String sord) {
+        return productRepository.findAll(sidx, sord);
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void create(@RequestBody ProductVO productVO) {
         productRepository.create(productVO);
     }
