@@ -106,7 +106,7 @@ public class MasterOrderDetailsHooksTest {
         given(view.getComponentByReference(MasterOrderFields.CUMULATED_ORDER_QUANTITY)).willReturn(cumulatedQuantityField);
         given(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_QUANTITY)).willReturn(masterOrderQuantityField);
         given(view.getComponentByReference("producedOrderQuantity")).willReturn(producedOrderQuantityField);
-        given(view.getComponentByReference("productsGrid")).willReturn(masterOrderProducts);
+        given(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS)).willReturn(masterOrderProducts);
         given(view.getComponentByReference("borderLayoutProductQuantity")).willReturn(borderLayoutProductQuantity);
         given(view.getComponentByReference("cumulatedOrderQuantityUnit")).willReturn(cumulatedOrderQuantityUnitField);
         given(view.getComponentByReference("masterOrderQuantityUnit")).willReturn(masterOrderQuantityUnitField);

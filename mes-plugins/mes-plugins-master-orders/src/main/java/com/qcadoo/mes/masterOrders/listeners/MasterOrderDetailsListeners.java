@@ -55,8 +55,6 @@ public class MasterOrderDetailsListeners {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
-    private static final String L_PRODUCTS_GRID = "productsGrid";
-
     @Autowired
     private ExpressionService expressionService;
 
@@ -67,14 +65,14 @@ public class MasterOrderDetailsListeners {
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
     public void onProductsChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
+        GridComponent masterOrderProductsGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
         RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("createOrder");
-        if (masterOrderProducts.getSelectedEntities().isEmpty()) {
+        if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
             createOrder.setEnabled(false);
-        } else if (masterOrderProducts.getSelectedEntities().size() == 1) {
+        } else if (masterOrderProductsGrid.getSelectedEntities().size() == 1) {
             createOrder.setEnabled(true);
         } else {
             createOrder.setEnabled(false);
@@ -145,8 +143,8 @@ public class MasterOrderDetailsListeners {
         parameters.put("form.masterOrder", masterOrderId);
 
         if (masterOrderTypeValue.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
-            GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
-            Entity entity = masterOrderProducts.getSelectedEntities().get(0).getBelongsToField(MasterOrderProductFields.PRODUCT);
+            GridComponent masterOrderProductsGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+            Entity entity = masterOrderProductsGrid.getSelectedEntities().get(0).getBelongsToField(MasterOrderProductFields.PRODUCT);
             parameters.put("form.masterOrderProduct", entity.getId());
         }
 
