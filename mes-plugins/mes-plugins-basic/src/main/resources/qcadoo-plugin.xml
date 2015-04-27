@@ -93,6 +93,8 @@
 
         <model:model model="workstation" resource="model/workstation.xml"/>
 
+        <model:model model="factory" resource="model/factory.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
@@ -131,6 +133,9 @@
         <menu:menu-item name="workstations" category="basic"
                         view="workstationsList"/>
 
+        <menu:menu-item name="factories" category="basic"
+                        view="factoriesList"/>
+
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
         <view:view resource="view/companyDetails.xml"/>
@@ -158,6 +163,9 @@
 
         <view:view resource="view/workstationsList.xml"/>
         <view:view resource="view/workstationDetails.xml"/>
+
+        <view:view resource="view/factoriesList.xml"/>
+        <view:view resource="view/factoryDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
 
