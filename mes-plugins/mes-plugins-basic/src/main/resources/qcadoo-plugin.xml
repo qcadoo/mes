@@ -92,6 +92,7 @@
         <model:model model="reportColumnWidth" resource="model/reportColumnWidth.xml"/>
 
         <model:model model="workstation" resource="model/workstation.xml"/>
+        <model:model model="workstationAttachment" resource="model/workstationAttachment.xml"/>
 
         <model:model model="factory" resource="model/factory.xml"/>
 
@@ -196,7 +197,7 @@
 
         <custom:custom class="com.qcadoo.mes.basic.BasicOnStartupService"/>
 
-
+        <view:resource uri="public/**/*"/>
     </modules>
 
     <features>

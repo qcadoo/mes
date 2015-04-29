@@ -38,4 +38,7 @@ public final class WorkstationFields {
     public static final String WORKSTATION_TYPE = "workstationType";
 
     public static final String DIVISION = "division";
+
+    public static final String ATTACHMENT = "attachment";
+
 }

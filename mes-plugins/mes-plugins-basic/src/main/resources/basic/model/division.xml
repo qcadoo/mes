@@ -38,7 +38,7 @@
         <belongsTo name="factory" model="factory"/>
         <!-- <manyToMany name="workstationTypes" model="workstationType"
             joinField="divisions" /> -->
-        <!-- <hasMany name="workstations" model="workstation" joinField="division" /> -->
+        <hasMany name="workstations" model="workstation" joinField="division" cascade="nullify"/>
     </fields>
 
     <hooks/>

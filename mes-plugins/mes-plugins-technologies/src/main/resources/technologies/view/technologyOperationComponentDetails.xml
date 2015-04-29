@@ -122,13 +122,14 @@
 
                         <option type="expression" value="#number + ' - ' + #name"/>
                         <option type="fieldCode" value="number"/>
-                        <listener event="onSelectedEntityChange"
-                                  class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners"
-                                  method="setProductionLineLookup"/>
+                        <!--<listener event="onSelectedEntityChange"-->
+                        <!--class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners"-->
+                        <!--method="setProductionLineLookup"/>-->
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="5">
                     <component type="lookup" name="productionLine" field="#{form}.productionLine"
+                               source="#{division}.productionLines"
                                reference="productionLine">
                         <option type="column" name="name" fields="name" link="true"/>
 
@@ -137,13 +138,13 @@
 
                         <option type="expression" value="#number + ' - ' + #name"/>
                         <option type="fieldCode" value="number"/>
-                        
+
                         <listener event="onSelectedEntityChange"
                                   class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners"
                                   method="setWorkstationsLookup"/>
-                        <criteriaModifier 
-                        	class="com.qcadoo.mes.technologies.criteriaModifiers.TOCDetailsCriteriaModifiers"
-                        	method="showProductionLinesForDivision" />
+                        <!--<criteriaModifier-->
+                        <!--class="com.qcadoo.mes.technologies.criteriaModifiers.TOCDetailsCriteriaModifiers"-->
+                        <!--method="showProductionLinesForDivision"/>-->
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="6" width="3" height="5">
@@ -164,9 +165,9 @@
                         <option type="fieldCode" value="number"/>
 
                         <option type="multiselect" value="true"/>
-                        <criteriaModifier 
-                        	class="com.qcadoo.mes.technologies.criteriaModifiers.TOCDetailsCriteriaModifiers"
-                        	method="showWorkstationsForProductionLine" />
+                        <criteriaModifier
+                                class="com.qcadoo.mes.technologies.criteriaModifiers.TOCDetailsCriteriaModifiers"
+                                method="showWorkstationsForProductionLine"/>
                     </component>
                     <component type="grid" name="workstations" reference="workstations"
                                source="#{form}.workstations">

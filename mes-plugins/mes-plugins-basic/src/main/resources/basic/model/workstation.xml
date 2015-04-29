@@ -25,27 +25,36 @@
 
 -->
 <model name="workstation" activable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="1024" />
-		</string>
-		<string name="description">
-			<validatesLength max="2048" />
-		</string>
-		<belongsTo name="workstationType" model="workstationType" required="true"/>
-		<!-- <belongsTo name="division" model="division">
-			<validatesWith
-				class="com.qcadoo.mes.basic.validators.WorkstationValidators"
-				method="checkIfDevisionChanged" />
-		</belongsTo> -->
-	</fields>
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name" required="true">
+            <validatesLength max="1024"/>
+        </string>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
+        <belongsTo name="workstationType" model="workstationType" required="true"/>
+        <belongsTo name="division" model="division">
+            <!--<validatesWith-->
+            <!--class="com.qcadoo.mes.basic.validators.WorkstationValidators"-->
+            <!--method="checkIfDevisionChanged" />-->
+        </belongsTo>
 
-	<hooks />
+        <string name="serialNumber"/>
+        <string name="udtNumber"/>
+        <string name="series"/>
+        <string name="producer"/>
+        <date name="productionDate"/>
+        <string name="wnkNumber"/>
+        <manyToMany name="companies" model="company" joinField="workstations" cascade="nullify"/>
+        <hasMany name="attachments" model="workstationAttachment" joinField="workstation" cascade="delete"/>
+    </fields>
 
-	<identifier expression="#number + ' - ' + #name" />
+    <hooks/>
+
+    <identifier expression="#number + ' - ' + #name"/>
 </model>
