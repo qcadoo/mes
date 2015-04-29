@@ -10,7 +10,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 public class ProductionLineCriteriaModifiers {
 
     public void showProductionLinesWithoutDivisionOnly(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(ProductionLineFields.DIVISION));
+        // scb.add(SearchRestrictions.isNull(ProductionLineFields.DIVISION));
     }
 
 }

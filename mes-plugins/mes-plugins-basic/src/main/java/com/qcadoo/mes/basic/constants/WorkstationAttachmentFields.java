@@ -21,32 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionLines.constants;
+package com.qcadoo.mes.basic.constants;
 
-public final class ProductionLineFields {
+public final class WorkstationAttachmentFields {
 
-    private ProductionLineFields() {
+    private WorkstationAttachmentFields() {
 
     }
 
-    public static final String NUMBER = "number";
-
     public static final String NAME = "name";
 
-    public static final String DIVISIONS = "divisions";
+    public static final String WORKSTATION = "workstation";
 
-    public static final String PLACE = "place";
+    public static final String ATTACHMENT = "attachment";
 
-    public static final String DESCRIPTION = "description";
+    public static final String SIZE = "size";
 
-    public static final String DOCUMENTATION = "documentation";
-
-    public static final String WORKSTATION_TYPE_COMPONENTS = "workstationTypeComponents";
-
-    public static final String SUPPORTS_OTHER_TECHNOLOGIES_WORKSTATIONTYPES = "supportsOtherTechnologiesWorkstationTypes";
-
-    public static final String QUANTITY_FOR_OTHER_WORKSTATION_TYPES = "quantityForOtherWorkstationTypes";
-
-    public static final String WORKSTATIONS = "workstations";
+    public static final String EXT = "ext";
 
 }

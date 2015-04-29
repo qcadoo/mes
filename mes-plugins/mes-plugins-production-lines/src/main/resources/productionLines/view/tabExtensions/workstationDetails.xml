@@ -29,25 +29,38 @@
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
                     plugin="basic" view="workstationDetails">
 
-		<windowTab name="productionLines">
-			<component type="gridLayout" name="productionLinesLayout" columns="3"
-					rows="1">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="productionLinesLookup" reference="productionLinesLookup"
-						field="#{form}.productionLine">
-						<option type="column" name="name" fields="name" link="true" />
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-						
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-						
-						<option type="multiselect" value="true" />
+    <windowTab name="productionLines">
+        <component type="gridLayout" name="productionLinesLayout" columns="3"
+                   rows="2">
+            <layoutElement column="1" row="1">
+                <component type="lookup" name="division" reference="division"
+                           field="#{form}.division">
+                    <option type=" column" name="name" fields="name" link="true"
+                            width="200"/>
+                    <option type="searchable" value="name,number"/>
+                    <option type="orderable" value="name,number"/>
+                    <option type="multiselect" value="true"/>
+                    <option type="expression"
+                            value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                    <option type="fieldCode" value="number"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="lookup" name="productionLinesLookup" reference="productionLinesLookup"
+                           field="#{form}.productionLine" source="#{division}.productionLines">
+                    <option type="column" name="name" fields="name" link="true"/>
+                    <option type="searchable" value="number,name"/>
+                    <option type="orderable" value="number,name"/>
 
-					</component>
-				</layoutElement>
-			</component>					
-		</windowTab>
+                    <option type="expression" value="#number + ' - ' + #name"/>
+                    <option type="fieldCode" value="number"/>
+
+                    <option type="multiselect" value="true"/>
+
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
 
 
 </windowTabExtension>

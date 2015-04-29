@@ -51,6 +51,8 @@
 		<string name="website" />
 		<string name="phone" />
 		<string name="externalNumber" unique="true" />
+
+        <manyToMany name="workstations" model="workstation" joinField="companies" cascade="nullify"/>
 	</fields>
 	
 	<hooks>

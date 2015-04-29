@@ -61,6 +61,8 @@ public final class BasicConstants {
 
     public static final String SHIFT_TIMETABLE_EXCEPTION = "shiftTimetableException";
 
+    public static final String MODEL_WORKSTATION_ATTACHMENT = "workstationAttachment";
+
     // VIEW
 
     public static final String VIEW_MACHINE_DETAILS = "machineDetails";
@@ -84,5 +86,6 @@ public final class BasicConstants {
     public static final String VIEW_COMPANY_DETAILS = "companyInAdministrationDetails";
 
     public static final String ROLE_TERMINAL_USER = "05terminalUser";
+
 
 }

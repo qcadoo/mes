@@ -27,7 +27,8 @@
 <plugin plugin="productionLines" group="basic" version="${qcadoo.plugin.version}"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-        xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -71,8 +72,10 @@
         </model:model-field>
 
         <model:model-field model="division" plugin="basic">
-            <model:hasMany name="productionLines" joinField="division" model="productionLine" cascade="nullify"
-                           plugin="productionLines"/>
+            <!--<model:hasMany name="productionLines" joinField="division" model="productionLine" cascade="nullify"-->
+            <!--plugin="productionLines"/>-->
+            <model:manyToMany name="productionLines" joinField="divisions" model="productionLine"
+                              plugin="productionLines" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field model="workstation" plugin="basic">
@@ -84,9 +87,9 @@
                     class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter"/>
         </model:model-hook>
 
-		<model:model-hook model="workstation" plugin="basic">
-			<model:onDelete class="com.qcadoo.mes.productionLines.hooks.WorkstationHooksPL" method="onDelete"/>
-		</model:model-hook>
+        <model:model-hook model="workstation" plugin="basic">
+            <model:onDelete class="com.qcadoo.mes.productionLines.hooks.WorkstationHooksPL" method="onDelete"/>
+        </model:model-hook>
 
         <menu:menu-item name="productionLines" category="basic"
                         view="productionLinesList"/>
@@ -100,9 +103,14 @@
         <view:view-tab resource="view/tabExtensions/workstationDetails.xml"/>
 
         <view:view-grid-column view="workstationsList" component="grid" plugin="basic">
-            <view:column name="productionLine" fields="productionLine" expression="#productionLine['name']" orderable="true"
+            <view:column name="productionLine" fields="productionLine" expression="#productionLine['name']"
+                         orderable="true"
                          searchable="true"/>
         </view:view-grid-column>
+
+        <view:view-hook plugin="basic" view="divisionDetails" type="beforeRender"
+                        class="com.qcadoo.mes.productionLines.hooks.DivisionDetailsHooksPL"
+                        method="fillCriteriaModifiers"/>
 
     </modules>
     <features>
