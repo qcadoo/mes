@@ -34,6 +34,8 @@
 		</ribbon>
 		
 		<component type="grid" name="masterOrdersList" reference="grid">
+			<option type="column" name="masterOrderDefinitionNumber" fields="masterOrderDefinition" link="true"
+					expression="#masterOrderDefinition['number']" width="50" />
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
 			<option type="column" name="name" fields="name" link="true"
@@ -44,8 +46,8 @@
 			
 			<option type="order" column="name" direction="asc" />
 			
-			<option type="searchable" value="name,number,deadline,company,masterOrderState" />
-			<option type="orderable" value="name,number,deadline,company,masterOrderState" />
+			<option type="searchable" value="masterOrderDefinitionNumber,name,number,deadline,company,masterOrderState" />
+			<option type="orderable" value="masterOrderDefinitionNumber,name,number,deadline,company,masterOrderState" />
 			
 			<option type="correspondingView" value="masterOrders/masterOrderDetails" />
 			<option type="correspondingComponent" value="form" />

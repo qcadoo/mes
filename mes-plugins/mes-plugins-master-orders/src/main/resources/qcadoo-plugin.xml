@@ -27,7 +27,8 @@
 <plugin plugin="masterOrders" group="planning" version="${qcadoo.plugin.version}"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-        xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -36,8 +37,6 @@
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
-
-
        http://schema.qcadoo.org/modules/menu
        http://schema.qcadoo.org/modules/menu.xsd">
 
@@ -47,7 +46,8 @@
             <name>Qcadoo Limited</name>
             <url>http://www.qcadoo.com/</url>
         </vendor>
-        <description>Higher level order which many production orders must fulfill. Master orders often represent actual orders for
+        <description>Higher level order which many production orders must fulfill. Master orders often represent actual
+            orders for
             clients for many products.
         </description>
         <license>AGPL</license>
@@ -64,6 +64,7 @@
         <localization:translation path="locales"/>
 
         <model:model model="masterOrder" resource="model/masterOrder.xml"/>
+        <model:model model="masterOrderDefinition" resource="model/masterOrderDefinition.xml"/>
         <model:model model="masterOrderProduct" resource="model/masterOrderProduct.xml"/>
 
         <model:dictionary name="masterOrderState"/>
@@ -76,6 +77,11 @@
         <model:model-field model="order" plugin="orders">
             <model:belongsTo name="masterOrderProduct" model="product"
                              plugin="basic" lazy="true"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:hasMany name="masterOrderDefinitions" model="masterOrderDefinition" plugin="masterOrders"
+                           joinField="parameter" cascade="nullify"/>
         </model:model-field>
 
         <model:model-hook model="order" plugin="orders">
@@ -98,19 +104,34 @@
         <view:view resource="view/masterOrderDetails.xml"/>
         <view:view resource="view/masterOrderProductDetails.xml"/>
 
+        <view:view resource="view/masterOrderDefinitionDetails.xml"/>
+
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>
 
         <view:view-grid-column plugin="orders"
                                view="ordersList" component="grid">
-            <view:column name="masterOrder" fields="masterOrder"
+            <view:column name="masterOrderNumber" fields="masterOrder"
                          orderable="true" searchable="true" expression="#masterOrder['number']"
+                         width="50"/>
+        </view:view-grid-column>
+        <view:view-grid-column plugin="orders"
+                               view="ordersList" component="grid">
+            <view:column name="masterOrderDefinitionNumber" fields="masterOrder"
+                         orderable="true" searchable="true" expression="#masterOrder['masterOrderDefinition']?.get('number')"
                          width="50"/>
         </view:view-grid-column>
 
         <view:view-grid-column plugin="orders"
                                view="ordersPlanningList" component="grid">
-            <view:column name="masterOrder" fields="masterOrder"
+            <view:column name="masterOrderNumber" fields="masterOrder"
                          orderable="true" searchable="true" expression="#masterOrder['number']"
+                         width="50"/>
+        </view:view-grid-column>
+        <view:view-grid-column plugin="orders"
+                               view="ordersPlanningList" component="grid">
+            <view:column name="masterOrderDefinitionNumber" fields="masterOrder"
+                         orderable="true" searchable="true" expression="#masterOrder['masterOrderDefinition']?.get('number')"
                          width="50"/>
         </view:view-grid-column>
 
