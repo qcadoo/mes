@@ -35,4 +35,10 @@ public final class OperationProductInComponentFields {
 
     public static final String QUANTITY = "quantity";
 
+    public static final String GIVEN_QUANTITY = "givenQuantity";
+
+    public static final String GIVEN_UNIT = "givenUnit";
+
+    public static final String UNIT = "unit";
+
 }

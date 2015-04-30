@@ -33,6 +33,8 @@ public final class MasterOrdersConstants {
 
     public static final String MODEL_MASTER_ORDER = "masterOrder";
 
+    public static final String MODEL_MASTER_ORDER_DEFINITION = "masterOrderDefinition";
+
     public static final String MODEL_MASTER_ORDER_PRODUCT = "masterOrderProduct";
 
 }

@@ -55,12 +55,14 @@ public class OrderDatesTest {
     private Entity mockOrder(final Date plannedStart, final Date correctedStart, final Date effectiveStart,
             final Date plannedEnd, final Date correctedEnd, final Date effectiveEnd) {
         Entity order = mockEntity();
+
         stubDateField(order, OrderFields.DATE_FROM, plannedStart);
         stubDateField(order, OrderFields.CORRECTED_DATE_FROM, correctedStart);
         stubDateField(order, OrderFields.EFFECTIVE_DATE_FROM, effectiveStart);
         stubDateField(order, OrderFields.DATE_TO, plannedEnd);
         stubDateField(order, OrderFields.CORRECTED_DATE_TO, correctedEnd);
         stubDateField(order, OrderFields.EFFECTIVE_DATE_TO, effectiveEnd);
+
         return order;
     }
 

@@ -23,11 +23,13 @@
  */
 package com.qcadoo.mes.basic.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -57,6 +59,21 @@ public class UnitService {
             Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
                     (Long) productState.getFieldValue());
             unitState.setFieldValue(product.getStringField("unit"));
+        }
+    }
+
+    public void fillProductUnitBeforeRenderIfEmpty(final ViewDefinitionState state, final String unitField) {
+        FieldComponent productState = (FieldComponent) state.getComponentByReference("product");
+        FieldComponent unitState = (FieldComponent) state.getComponentByReference(unitField);
+        unitState.requestComponentUpdateState();
+        if (StringUtils.isEmpty((String) unitState.getFieldValue())) {
+            if (productState.getFieldValue() == null) {
+                unitState.setFieldValue("");
+            } else {
+                Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                        (Long) productState.getFieldValue());
+                unitState.setFieldValue(product.getStringField(ProductFields.UNIT));
+            }
         }
     }
 

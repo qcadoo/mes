@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialFlowResources.constants;
 
 public final class PositionFields {
 
-
     private PositionFields() {
 
     }
@@ -59,4 +58,8 @@ public final class PositionFields {
     public static final String STATE = "state";
 
     public static final String NUMBER = "number";
+
+    public static final String GIVEN_QUANTITY = "givenQuantity";
+
+    public static final String GIVEN_UNIT = "givenUnit";
 }

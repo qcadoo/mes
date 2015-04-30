@@ -23,12 +23,18 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.qcadoo.commons.functional.Either;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
@@ -39,9 +45,13 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -64,6 +74,9 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     private static final String L_RESOURCE = "resource";
 
@@ -250,4 +263,51 @@ public class DocumentDetailsListeners {
         }
         return true;
     }
+
+    public void calculateQuantity(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        for (FormComponent positionForm : positionsADL.getFormComponents()) {
+            Entity position = positionForm.getPersistedEntityWithIncludedFormValues();
+
+            String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
+            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+
+            FieldComponent givenQuantityField = positionForm.findFieldComponentByName(PositionFields.GIVEN_QUANTITY);
+            if (product == null || givenUnit == null || givenUnit.isEmpty() || givenQuantityField.getFieldValue() == null) {
+                return;
+            }
+
+            Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse(
+                    (String) givenQuantityField.getFieldValue(), view.getLocale());
+            if (maybeQuantity.isRight()) {
+                if (maybeQuantity.getRight().isPresent()) {
+                    BigDecimal givenQuantity = maybeQuantity.getRight().get();
+                    String baseUnit = product.getStringField(ProductFields.UNIT);
+                    if (baseUnit.equals(givenUnit)) {
+                        position.setField(PositionFields.QUANTITY, givenQuantity);
+                    } else {
+                        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
+                                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                                        UnitConversionItemFieldsB.PRODUCT, product)));
+                        if (unitConversions.isDefinedFor(baseUnit)) {
+                            BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
+                            position.setField(PositionFields.QUANTITY, convertedQuantity);
+                        } else {
+                            position.addError(position.getDataDefinition().getField(PositionFields.GIVEN_QUANTITY),
+                                    "materialFlowResources.position.validate.error.missingUnitConversion");
+                            position.setField(PositionFields.QUANTITY, null);
+                        }
+                    }
+                } else {
+                    position.setField(PositionFields.QUANTITY, null);
+                }
+            } else {
+                position.setField(PositionFields.QUANTITY, null);
+            }
+            positionForm.setEntity(position);
+        }
+
+    }
+
 }

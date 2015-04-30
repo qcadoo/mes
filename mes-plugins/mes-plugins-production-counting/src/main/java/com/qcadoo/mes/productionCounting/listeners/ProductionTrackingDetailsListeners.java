@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
@@ -83,8 +84,7 @@ public class ProductionTrackingDetailsListeners {
         laborTimeInput.setFieldValue(totalLabor);
     }
 
-    public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
         Long productionRecordId = productionRecordForm.getEntityId();
 
@@ -106,6 +106,11 @@ public class ProductionTrackingDetailsListeners {
                     .getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY));
             recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY,
                     numberService.setScale(plannedQuantity));
+            recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
+                    numberService.setScale(plannedQuantity));
+            recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT,
+                    recordOperationProductComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)
+                            .getStringField(ProductFields.UNIT));
             recordOperationProductComponent.getDataDefinition().save(recordOperationProductComponent);
         }
     }
@@ -228,8 +233,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void fillWorkstationTypeField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
-        LookupComponent tocLookup = (LookupComponent) view
-                .getComponentByReference("technologyOperationComponent");
+        LookupComponent tocLookup = (LookupComponent) view.getComponentByReference("technologyOperationComponent");
         LookupComponent workstationTypeLookup = (LookupComponent) view
                 .getComponentByReference(ProductionTrackingFields.WORKSTATION_TYPE);
         Entity toc = tocLookup.getEntity();

@@ -24,49 +24,64 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="operationProductInComponentDetails"
-	modelName="operationProductInComponent">
-	
-	<component type="window" name="window">
-		<ribbon>
-			<template name="standardFormTemplate" excludeItems="actions.copy"/>
-		</ribbon>
-		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="1"
-				rows="4">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="product" field="product"
-						reference="product">
-						<option type="column" name="name" fields="name" link="true"
-							width="200" />
-						<option type="column" name="ean" fields="ean" />
-						<option type="searchable" value="name,ean" />
-						<option type="orderable" value="name,ean" />
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
-						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="input" name="quantity" field="quantity">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="3">
-					<component type="input" name="unit" reference="unit"
-						defaultEnabled="false" />
-				</layoutElement>
-			</component>
-			<option type="header" value="true" />
-			<option type="expression" value="#product['name'] + ' x ' + #quantity" />
-		</component>
-	</component>
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
-			method="fillProductUnitBeforeRender" />
-	</hooks>
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="operationProductInComponentDetails"
+      modelName="operationProductInComponent">
+
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy"/>
+        </ribbon>
+        <component type="form" name="form" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="6"
+                       rows="4">
+                <layoutElement column="1" row="1" width="5">
+                    <component type="lookup" name="product" field="product"
+                               reference="product">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="200"/>
+                        <option type="column" name="ean" fields="ean"/>
+                        <option type="searchable" value="name,ean"/>
+                        <option type="orderable" value="name,ean"/>
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="5">
+                    <component type="input" name="quantity" field="quantity" defaultEnabled="false"
+                               reference="quantity">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="6" row="2">
+                    <component type="input" name="unit" reference="unit"
+                               defaultEnabled="false" hasLabel="false"/>
+                </layoutElement>
+                <layoutElement column="1" row="3" width="5">
+                    <component type="input" name="givenQuantity" field="givenQuantity" reference="givenQuantity">
+                        <option type="alignment" value="right"/>
+                        <listener event="onInputChange" method="calculateQuantity"
+                                  class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="6" row="3">
+                    <component type="select" name="givenUnit" reference="givenUnit"
+                               hasLabel="false" field="givenUnit">
+                        <listener event="onSelectedEntityChange" method="calculateQuantity"
+                                  class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners"/>
+                    </component>
+                </layoutElement>
+            </component>
+            <option type="header" value="true"/>
+            <option type="expression" value="#product['name'] + ' x ' + #quantity"/>
+        </component>
+    </component>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.OPICDetailsHooks"
+                      method="fillUnitBeforeRender"/>
+    </hooks>
 </view>

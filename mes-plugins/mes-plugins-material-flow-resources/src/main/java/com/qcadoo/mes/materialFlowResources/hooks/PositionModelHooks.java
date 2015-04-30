@@ -30,6 +30,7 @@ public class PositionModelHooks {
             position.setField(PositionFields.TYPE, document.getField(DocumentFields.TYPE));
             position.setField(PositionFields.STATE, document.getField(DocumentFields.STATE));
         }
+
     }
 
     public void onCreate(final DataDefinition positionDD, final Entity position) {
