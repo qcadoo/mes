@@ -130,4 +130,8 @@ CREATE TABLE basic_subassemblyattachment
 
 ALTER TABLE basic_workstationtype ADD COLUMN subassembly boolean;
 
+ALTER TABLE basic_division ADD COLUMN active boolean;
+ALTER TABLE basic_division ALTER COLUMN active SET DEFAULT true;
+ALTER TABLE basic_division ADD COLUMN comment character varying(2048);
+
 -- end

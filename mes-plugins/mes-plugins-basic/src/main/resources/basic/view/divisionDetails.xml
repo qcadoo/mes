@@ -73,6 +73,9 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="2" row="1" height="4">
+                        <component type="textarea" name="comment" field="comment" reference="comment"/>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
