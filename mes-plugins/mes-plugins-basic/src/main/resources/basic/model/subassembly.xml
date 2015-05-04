@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="company" activable="true"
+<model name="subassembly" activable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
@@ -32,37 +32,21 @@
             <validatesLength max="255"/>
         </string>
         <string name="name" required="true">
-            <validatesLength max="255"/>
+            <validatesLength max="1024"/>
         </string>
-        <belongsTo name="taxCountryCode" plugin="basic" model="country"/>
-        <string name="tax"/>
-        <string name="street"/>
-        <string name="house">
-            <validatesLength max="30"/>
-        </string>
-        <string name="flat">
-            <validatesLength max="30"/>
-        </string>
-        <string name="zipCode"/>
-        <string name="city"/>
-        <string name="state"/>
-        <belongsTo name="country" plugin="basic" model="country"/>
-        <string name="email"/>
-        <string name="website"/>
-        <string name="phone"/>
-        <string name="externalNumber" unique="true"/>
+        <belongsTo name="workstationType" model="workstationType" required="true"/>
+        <belongsTo name="workstation" model="workstation"/>
 
-        <manyToMany name="workstations" model="workstation" joinField="companies" cascade="nullify"/>
-        <manyToMany name="subassemblies" model="subassembly" joinField="companies" cascade="nullify"/>
+        <string name="serialNumber"/>
+        <string name="series"/>
+        <string name="producer"/>
+        <date name="productionDate"/>
+        <date name="lastRepairsDate"/>
+        <manyToMany name="companies" model="company" joinField="subassemblies" cascade="nullify"/>
+        <hasMany name="attachments" model="subassemblyAttachment" joinField="subassembly" cascade="delete"/>
     </fields>
 
-    <hooks>
-        <validatesWith class="com.qcadoo.mes.basic.hooks.CompanyHooks"
-                       method="validatesWith"/>
-        <onCreate class="com.qcadoo.mes.basic.hooks.CompanyHooks"
-                  method="onCreate"/>
-        <onCopy method="onCopy" class="com.qcadoo.mes.basic.hooks.CompanyHooks"/>
-    </hooks>
+    <hooks/>
 
     <identifier expression="#number + ' - ' + #name"/>
 </model>

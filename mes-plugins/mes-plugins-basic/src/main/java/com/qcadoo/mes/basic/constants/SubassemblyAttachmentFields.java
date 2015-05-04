@@ -23,20 +23,20 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public final class WorkstationTypeFields {
+public final class SubassemblyAttachmentFields {
 
-    private WorkstationTypeFields() {
+    private SubassemblyAttachmentFields() {
 
     }
 
-    public static final String NUMBER = "number";
-
     public static final String NAME = "name";
 
-    public static final String DESCRIPTION = "description";
-
-    public static final String DIVISIONS = "divisions";
-
     public static final String SUBASSEMBLY = "subassembly";
+
+    public static final String ATTACHMENT = "attachment";
+
+    public static final String SIZE = "size";
+
+    public static final String EXT = "ext";
 
 }

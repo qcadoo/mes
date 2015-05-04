@@ -25,6 +25,7 @@ package com.qcadoo.mes.basic.constants;
 
 public final class BasicConstants {
 
+
     private BasicConstants() {
 
     }
@@ -62,6 +63,10 @@ public final class BasicConstants {
     public static final String SHIFT_TIMETABLE_EXCEPTION = "shiftTimetableException";
 
     public static final String MODEL_WORKSTATION_ATTACHMENT = "workstationAttachment";
+
+    public static final String MODEL_SUBASSEMBLY = "subassembly";
+
+    public static final String MODEL_SUBASSEMBLY_ATTACHMENT = "subassemblyAttachment";
 
     // VIEW
 

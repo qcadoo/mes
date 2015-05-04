@@ -26,7 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="workstationDetails" modelName="workstation">
+      name="subassemblyDetails" modelName="subassembly">
 
     <component type="window" name="window">
 
@@ -49,9 +49,9 @@
             </group>
         </ribbon>
         <windowTab name="mainTab" reference="mainTab">
-            <component type="form" name="workstation" reference="form">
+            <component type="form" name="subassembly" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="6">
+                           rows="5">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number">
                             <option type="alignment" value="right"/>
@@ -60,12 +60,9 @@
                     <layoutElement column="1" row="2" height="2">
                         <component type="textarea" name="name" field="name"/>
                     </layoutElement>
-                    <layoutElement column="1" row="4" height="2">
-                        <component type="textarea" name="description" field="description"/>
-                    </layoutElement>
-                    <layoutElement column="1" row="6">
-                        <component type="lookup" name="workstationType" field="workstationType"
-                                   reference="workstationType">
+                    <layoutElement column="1" row="4">
+                        <component type="lookup" name="workstation" field="workstation"
+                                   reference="workstation">
                             <option type="column" name="name" fields="name" link="true"/>
 
                             <option type="searchable" value="name,number"/>
@@ -75,25 +72,34 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="lookup" name="workstationType" field="workstationType"
+                                   reference="workstationType">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.basic.criteriaModifiers.SubassemblyCriteriaModifiers"
+                                    method="showWorkstationTypesWithSubassembly"/>
+                        </component>
+                    </layoutElement>
 
                     <layoutElement column="2" row="1">
                         <component type="input" name="serialNumber" field="serialNumber" reference="serialNumber"/>
                     </layoutElement>
                     <layoutElement column="2" row="2">
-                        <component type="input" name="udtNumber" field="udtNumber" reference="udtNumber"/>
-                    </layoutElement>
-                    <layoutElement column="2" row="3">
                         <component type="input" name="series" field="series" reference="series"/>
                     </layoutElement>
-                    <layoutElement column="2" row="4">
+                    <layoutElement column="2" row="3">
                         <component type="input" name="producer" field="producer" reference="producer"/>
                     </layoutElement>
-                    <layoutElement column="2" row="5">
+                    <layoutElement column="2" row="4">
                         <component type="calendar" name="productionDate" field="productionDate"
                                    reference="productionDate"/>
-                    </layoutElement>
-                    <layoutElement column="2" row="6">
-                        <component type="input" name="wnkNumber" field="wnkNumber" reference="wnkNumber"/>
                     </layoutElement>
                 </component>
 
@@ -101,7 +107,7 @@
                 <option type="expression" value="#name"/>
 
                 <listener event="downloadAtachment" method="downloadAtachment"
-                          class="com.qcadoo.mes.basic.listeners.WorkstationDetailsListeners"/>
+                          class="com.qcadoo.mes.basic.listeners.SubassemblyDetailsListeners"/>
             </component>
         </windowTab>
         <windowTab name="companiesTab" reference="companiesTab">
@@ -154,14 +160,14 @@
                 <layoutElement column="1" row="1" height="6">
 
                     <component type="staticPage" name="multiUpload">
-                        <option type="page" value="basic/multiUpload.jsp"/>
+                        <option type="page" value="basic/multiUploadForSubassembly.jsp"/>
                     </component>
-                    <component type="input" name="workstationIdForMultiUpload"
-                               reference="workstationIdForMultiUpload" defaultVisible="false">
+                    <component type="input" name="subassemblyIdForMultiUpload"
+                               reference="subassemblyIdForMultiUpload" defaultVisible="false">
                         <option type="alignment" value="right"/>
                     </component>
-                    <component type="input" name="workstationMultiUploadLocale"
-                               reference="workstationMultiUploadLocale" defaultVisible="false">
+                    <component type="input" name="subassemblyMultiUploadLocale"
+                               reference="subassemblyMultiUploadLocale" defaultVisible="false">
                     </component>
                 </layoutElement>
                 <layoutElement column="2" row="1" width="2" height="6">
@@ -178,55 +184,11 @@
                 </layoutElement>
             </component>
         </windowTab>
-        <windowTab name="subassembliesTab" reference="subassembliesTab">
-            <component type="gridLayout" name="subassembliesGridLayout"
-                       columns="2" rows="1">
-                <layoutElement column="1" row="1">
-                    <component type="lookup" name="subassembliesLookup" reference="subassembliesLookup"
-                               field="#{form}.subassemblies" defaultVisible="false" persistent="false"
-                               hasLabel="false">
-                        <option type="column" name="name" fields="name" link="true"
-                                />
-                        <option type="column" name="workstationType" fields="workstationType" link="true"
-                                expression="#workstationType?.get('number')"/>
-
-                        <option type="searchable" value="number,name,workstationType"/>
-                        <option type="orderable" value="number,name,workstationType"/>
-
-                        <option type="expression"
-                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-                        <option type="fieldCode" value="number"/>
-
-                        <option type="multiselect" value="true"/>
-                    </component>
-                    <component type="grid" name="subassemblies" reference="subassemblies"
-                               source="#{form}.subassemblies">
-                        <option type="column" name="number" fields="number" width="50"/>
-                        <option type="column" name="name" fields="name" width="100"/>
-                        <option type="column" name="workstationType" fields="workstationType" link="true"
-                                expression="#workstationType?.get('number')"/>
-                        <option type="searchable" value="number,name,workstationType"/>
-                        <option type="orderable" value="number,name,workstationType"/>
-
-                        <option type="order" column="number" direction="asc"/>
-
-                        <option type="fullscreen" value="true"/>
-                        <option type="multiselect" value="true"/>
-                        <option type="creatable" value="true"/>
-                        <option type="deletable" value="true"/>
-
-                        <option type="weakRelation" value="true"/>
-                        <option type="correspondingLookup" value="subassembliesLookup"/>
-
-                    </component>
-                </layoutElement>
-            </component>
-        </windowTab>
     </component>
     <hooks>
         <beforeRender
-                class="com.qcadoo.mes.basic.hooks.WorkstationDetailsHooks"
-                method="setWorkstationIdForMultiUploadField"/>
+                class="com.qcadoo.mes.basic.hooks.SubassemblyDetailsHooks"
+                method="setSubassemblyIdForMultiUploadField"/>
     </hooks>
 
 </view>
