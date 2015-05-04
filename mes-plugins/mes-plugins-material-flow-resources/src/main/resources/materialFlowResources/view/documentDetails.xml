@@ -143,7 +143,7 @@
             </component>
         </windowTab>
 
-        <windowTab name="positionsListTab">
+        <windowTab name="positionsListTab" reference="positionsListTab">
             <component type="awesomeDynamicList" name="positions"
                        source="#{form}.positions" reference="positions">
                 <option type="hasBorder" value="true"/>
