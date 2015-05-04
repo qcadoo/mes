@@ -25,7 +25,6 @@ package com.qcadoo.mes.basic.constants;
 
 public final class BasicConstants {
 
-
     private BasicConstants() {
 
     }
@@ -91,6 +90,5 @@ public final class BasicConstants {
     public static final String VIEW_COMPANY_DETAILS = "companyInAdministrationDetails";
 
     public static final String ROLE_TERMINAL_USER = "05terminalUser";
-
 
 }
