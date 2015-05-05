@@ -35,8 +35,8 @@
         <belongsTo name="parent" model="factoryStructureElement"/>
         <priority name="priority" scope="parent"/>
         <string name="nodeNumber"/>
-        <enum name="entityType" values="factory,division,productionLine,workstation,subassembly"
-              default="factory"/>
+        <enum name="entityType" values="company,factory,division,productionLine,workstation,subassembly"
+              default="company"/>
         <belongsTo name="workstation" model="workstation" plugin="basic"/>
     </fields>
     <hooks>
