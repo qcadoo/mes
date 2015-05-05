@@ -69,7 +69,7 @@
         <component type="flowLayout" name="factoryStructureLayout">
             <component type="tree" name="factoryStructure" reference="factoryStructure"
                        field="#{form}.factoryStructure">
-                <dataType name="factory">
+                <dataType name="company">
                     <option type="nodeLabelExpression"
                             value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt;' + #name"/>
                     <option type="nodeIcon"
