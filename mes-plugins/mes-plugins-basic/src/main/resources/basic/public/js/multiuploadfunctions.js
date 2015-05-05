@@ -111,13 +111,13 @@ $(function() {
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
-						var filetype = /(\.|\/)(gif|jpe?g|png|pdf)$/i;
+						var filetype = /(\.|\/)(jpe?g|png|pdf|docx?|odt|xlsx?|ods)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
 							"workstationMultiUploadLocale")
 								.getValue().content.value;
 						$.each(data.files, function(index, file) {
-							/*if (!filetype.test(file.name)) {
+							if (!filetype.test(file.name)) {
 								if(locale === "pl"){
 								showMessage("failure",
 										"Pominięto wgranie pliku",
@@ -130,7 +130,7 @@ $(function() {
 													+ file.name);
 								}
 								return false;
-							}*/
+							}
 
 						});
 					});

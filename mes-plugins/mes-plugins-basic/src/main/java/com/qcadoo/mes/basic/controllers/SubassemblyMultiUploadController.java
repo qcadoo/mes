@@ -79,7 +79,8 @@ public class SubassemblyMultiUploadController {
 
     private static final Integer L_SCALE = 2;
 
-    private static final List<String> exts = Lists.newArrayList("GIF", "JPG", "JPEG", "PNG", "PDF");
+    private static final List<String> exts = Lists.newArrayList("JPG", "JPEG", "PNG", "PDF", "DOC", "DOCX", "ODT", "XLS", "XLSX",
+            "ODS");
 
     @ResponseBody
     @RequestMapping(value = "/multiUploadFilesForSubassembly", method = RequestMethod.POST)
@@ -103,18 +104,18 @@ public class SubassemblyMultiUploadController {
             } catch (IOException e) {
                 logger.error("Unable to upload attachment.", e);
             }
-            // if (exts.contains(Files.getFileExtension(path).toUpperCase())) {
-            Entity atchment = attachmentDD.create();
-            atchment.setField(SubassemblyAttachmentFields.ATTACHMENT, path);
-            atchment.setField(SubassemblyAttachmentFields.NAME, mpf.getOriginalFilename());
-            atchment.setField(SubassemblyAttachmentFields.SUBASSEMBLY, subassembly);
-            atchment.setField(SubassemblyAttachmentFields.EXT, Files.getFileExtension(path));
-            BigDecimal fileSize = new BigDecimal(mpf.getSize(), numberService.getMathContext());
-            BigDecimal divider = new BigDecimal(1024, numberService.getMathContext());
-            BigDecimal size = fileSize.divide(divider, L_SCALE, BigDecimal.ROUND_HALF_UP);
-            atchment.setField(SubassemblyAttachmentFields.SIZE, size);
-            attachmentDD.save(atchment);
-            // }
+            if (exts.contains(Files.getFileExtension(path).toUpperCase())) {
+                Entity atchment = attachmentDD.create();
+                atchment.setField(SubassemblyAttachmentFields.ATTACHMENT, path);
+                atchment.setField(SubassemblyAttachmentFields.NAME, mpf.getOriginalFilename());
+                atchment.setField(SubassemblyAttachmentFields.SUBASSEMBLY, subassembly);
+                atchment.setField(SubassemblyAttachmentFields.EXT, Files.getFileExtension(path));
+                BigDecimal fileSize = new BigDecimal(mpf.getSize(), numberService.getMathContext());
+                BigDecimal divider = new BigDecimal(1024, numberService.getMathContext());
+                BigDecimal size = fileSize.divide(divider, L_SCALE, BigDecimal.ROUND_HALF_UP);
+                atchment.setField(SubassemblyAttachmentFields.SIZE, size);
+                attachmentDD.save(atchment);
+            }
         }
     }
 
