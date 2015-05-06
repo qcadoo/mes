@@ -11,6 +11,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.TreeComponent;
 
 @Service
 public class WorkstationDetailsListenersPL {
@@ -24,6 +25,7 @@ public class WorkstationDetailsListenersPL {
         EntityTree structure = factoryStructureGenerationService.generateFactoryStructureForWorkstation(workstation);
         workstation.setField(WorkstationFieldsPL.FACTORY_STRUCTURE, structure);
         form.setEntity(workstation);
+
     }
 
     public void clearProductionLine(final ViewDefinitionState view, final ComponentState state, final String[] args) {

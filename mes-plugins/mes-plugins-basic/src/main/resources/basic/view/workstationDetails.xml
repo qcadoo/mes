@@ -129,7 +129,7 @@
                                source="#{form}.companies">
                         <option type="column" name="number" fields="number" width="50"/>
                         <option type="column" name="name" fields="name" width="100"/>
-                        <option type="column" name="city" fields="city" link="true"
+                        <option type="column" name="city" fields="city"
                                 width="100"/>
                         <option type="searchable" value="number,name,city"/>
                         <option type="orderable" value="number,name,city"/>
