@@ -24,23 +24,13 @@
     ***************************************************************************
 
 -->
-<model name="factoryStructureElement" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns="http://schema.qcadoo.org/model"
-       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-    <fields>
-        <string name="number"/>
-        <string name="name"/>
-        <boolean name="current" default="false"/>
-        <hasMany name="children" model="factoryStructureElement" joinField="parent" cascade="delete"/>
-        <belongsTo name="parent" model="factoryStructureElement"/>
-        <priority name="priority" scope="parent"/>
-        <string name="nodeNumber"/>
-        <enum name="entityType" values="company,factory,division,productionLine,workstation,subassembly"
-              default="company"/>
-        <belongsTo name="workstation" model="workstation" plugin="basic"/>
-        <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
-    </fields>
-    <hooks>
-    </hooks>
-    <identifier expression="#nodeNumber"/>
-</model>
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
+                 xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
+                 plugin="basic"
+                 view="subassemblyDetails">
+    <group name="factoryStructure">
+        <bigButton name="generate" icon="generateIcon24.png"
+                   action="#{form}.fireEvent(generateFactoryStructure);" state="enabled"/>
+    </group>
+</ribbonExtension>

@@ -54,6 +54,30 @@ public class FactoryStructureGenerationService {
         return factoryStructure;
     }
 
+    public EntityTree generateFactoryStructureForSubassembly(final Entity subassemblyEntity) {
+        Entity subassembly = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBASSEMBLY).get(
+                subassemblyEntity.getId());
+        Entity workstation = subassembly.getBelongsToField(SubassemblyFields.WORKSTATION);
+        if (subassembly.getId() == null || workstation == null) {
+            return null;
+        }
+        Entity division = workstation.getBelongsToField(WorkstationFields.DIVISION);
+        if (division == null) {
+            return null;
+        }
+        Entity factory = division.getBelongsToField(DivisionFields.FACTORY);
+        if (factory == null) {
+            return null;
+        }
+
+        List<Entity> factoryStructureList = Lists.newArrayList();
+        Entity root = addRoot(factoryStructureList, subassembly, FactoryStructureElementFields.SUBASSEMBLY);
+        generateFactoryStructure(factoryStructureList, root, subassembly, FactoryStructureElementFields.SUBASSEMBLY);
+        EntityTree factoryStructure = EntityTreeUtilsService.getDetachedEntityTree(factoryStructureList);
+
+        return factoryStructure;
+    }
+
     private void generateFactoryStructure(List<Entity> tree, final Entity root, final Entity belongsToEntity,
             final String belongsToField) {
         List<Entity> factories = getFactories();

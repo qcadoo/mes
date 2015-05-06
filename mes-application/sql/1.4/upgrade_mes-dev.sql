@@ -134,4 +134,25 @@ ALTER TABLE basic_division ADD COLUMN active boolean;
 ALTER TABLE basic_division ALTER COLUMN active SET DEFAULT true;
 ALTER TABLE basic_division ADD COLUMN comment character varying(2048);
 
+CREATE TABLE productionlines_factorystructureelement
+(
+  id bigint NOT NULL,
+  "number" character varying(255),
+  name character varying(255),
+  parent_id bigint,
+  priority integer,
+  nodenumber character varying(255),
+  entitytype character varying(255) DEFAULT 'factory'::character varying,
+  current boolean DEFAULT false,
+  subassembly_id bigint,
+  workstation_id bigint,
+  CONSTRAINT productionlines_factorystructureelement_pkey PRIMARY KEY (id),
+  CONSTRAINT factorystructureelement_workstation_fkey FOREIGN KEY (workstation_id)
+      REFERENCES basic_workstation (id) DEFERRABLE,
+  CONSTRAINT factorystructureelement_parent_fkey FOREIGN KEY (parent_id)
+      REFERENCES productionlines_factorystructureelement (id) DEFERRABLE,
+  CONSTRAINT factorystructureelement_subassembly_fkey FOREIGN KEY (subassembly_id)
+      REFERENCES basic_subassembly (id) DEFERRABLE
+);
+
 -- end

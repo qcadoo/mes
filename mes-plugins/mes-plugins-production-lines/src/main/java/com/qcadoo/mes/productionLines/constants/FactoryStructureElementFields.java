@@ -10,6 +10,7 @@ public class FactoryStructureElementFields {
     public static final String NODE_NUMBER = "nodeNumber";
     public static final String PRIORITY = "priority";
     public static final String CURRENT = "current";
+    public static final String SUBASSEMBLY = "subassembly";
 
     private FactoryStructureElementFields() {
     }
