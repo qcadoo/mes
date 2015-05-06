@@ -79,9 +79,14 @@ public class FactoryStructureGenerationService {
                     List<Entity> workstations = getWorkstationsForProductionLine(productionLine);
 
                     for (Entity workstation : workstations) {
+
                         Entity workstationNode = createNode(belongsToEntity, belongsToField,
                                 workstation.getStringField(WorkstationFields.NUMBER),
                                 workstation.getStringField(WorkstationFields.NAME), FactoryStructureElementType.WORKSTATION);
+                        if (areEntitiesEqual(workstation, belongsToEntity)) {
+                            workstationNode.setField(FactoryStructureElementFields.CURRENT, true);
+                        }
+
                         addChild(tree, workstationNode, productionLineNode);
 
                         List<Entity> subassemblies = getSubassembliesForWorkstation(workstation);
@@ -89,6 +94,10 @@ public class FactoryStructureGenerationService {
                             Entity subassemblyNode = createNode(belongsToEntity, belongsToField,
                                     subassembly.getStringField(SubassemblyFields.NUMBER),
                                     subassembly.getStringField(SubassemblyFields.NAME), FactoryStructureElementType.SUBASSEMBLY);
+                            if (areEntitiesEqual(subassembly, belongsToEntity)) {
+                                subassemblyNode.setField(FactoryStructureElementFields.CURRENT, true);
+                            }
+
                             addChild(tree, subassemblyNode, workstationNode);
 
                         }
@@ -129,6 +138,7 @@ public class FactoryStructureGenerationService {
         node.setField(FactoryStructureElementFields.NUMBER, number);
         node.setField(FactoryStructureElementFields.NAME, name);
         node.setField(FactoryStructureElementFields.ENTITY_TYPE, entityType.getStringValue());
+        node.setField(FactoryStructureElementFields.CURRENT, false);
         return node;
     }
 
@@ -151,5 +161,12 @@ public class FactoryStructureGenerationService {
 
     private List<Entity> getSubassembliesForWorkstation(final Entity workstation) {
         return workstation.getHasManyField(WorkstationFields.SUBASSEMBLIES);
+    }
+
+    private boolean areEntitiesEqual(final Entity firstEntity, final Entity secondEntity) {
+        return firstEntity.getDataDefinition().getName().equals(secondEntity.getDataDefinition().getName())
+                && firstEntity.getDataDefinition().getPluginIdentifier()
+                        .equals(secondEntity.getDataDefinition().getPluginIdentifier())
+                && firstEntity.getId().equals(secondEntity.getId());
     }
 }

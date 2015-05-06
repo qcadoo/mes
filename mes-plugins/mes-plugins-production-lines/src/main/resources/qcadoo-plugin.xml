@@ -109,7 +109,7 @@
         <view:view-tab resource="view/tabExtensions/workstationDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/workstationDetails.xml"/>
-        
+
         <view:view-grid-column view="workstationsList" component="grid" plugin="basic">
             <view:column name="productionLine" fields="productionLine" expression="#productionLine['name']"
                          orderable="true"
@@ -123,6 +123,9 @@
         <view:view-listener plugin="basic" view="workstationDetails" component="form" event="generateFactoryStructure"
                             class="com.qcadoo.mes.productionLines.listeners.WorkstationDetailsListenersPL"
                             method="generateFactoryStructure"/>
+
+        <view:resource uri="public/**/*"/>
+
     </modules>
     <features>
         <end-user/>

@@ -9,6 +9,7 @@ public class FactoryStructureElementFields {
     public static final String PARENT = "parent";
     public static final String NODE_NUMBER = "nodeNumber";
     public static final String PRIORITY = "priority";
+    public static final String CURRENT = "current";
 
     private FactoryStructureElementFields() {
     }

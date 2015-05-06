@@ -30,7 +30,7 @@
     <fields>
         <string name="number"/>
         <string name="name"/>
-        <integer name="relatedEntityId"/>
+        <boolean name="current" default="false"/>
         <hasMany name="children" model="factoryStructureElement" joinField="parent" cascade="delete"/>
         <belongsTo name="parent" model="factoryStructureElement"/>
         <priority name="priority" scope="parent"/>
