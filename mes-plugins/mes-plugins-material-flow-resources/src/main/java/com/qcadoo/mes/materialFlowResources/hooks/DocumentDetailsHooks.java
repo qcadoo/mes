@@ -84,6 +84,7 @@ public class DocumentDetailsHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         initializeDocument(view);
+        documentDetailsListeners.calculateQuantity(view, null, new String[0]);
         // setCriteriaModifiersParameters(view);
     }
 

@@ -172,6 +172,7 @@
                                 <listener event="onSelectedEntityChange"
                                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                                           method="refreshView"/>
+
                             </component>
                         </layoutElement>
 
