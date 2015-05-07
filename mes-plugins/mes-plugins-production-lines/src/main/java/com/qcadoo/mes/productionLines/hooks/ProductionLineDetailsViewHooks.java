@@ -57,5 +57,6 @@ public class ProductionLineDetailsViewHooks {
             filter.put("productionLine", form.getEntityId());
             workstations.setFilterValue(filter);
         }
+        workstations.reloadEntities();
     }
 }

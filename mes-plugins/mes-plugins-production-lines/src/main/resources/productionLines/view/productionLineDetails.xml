@@ -169,6 +169,7 @@
                         <criteriaModifier
                                 class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
                                 method="showWorkstationsWithoutProductionLineOnly"/>
+
                     </component>
                     <component type="grid" name="workstations" reference="workstations"
                                source="#{divisions}.workstations" field="#{form}.workstations">

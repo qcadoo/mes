@@ -20,5 +20,6 @@ public class DivisionDetailsHooksPL {
             filter.put("division", form.getEntityId());
             workstations.setFilterValue(filter);
         }
+        workstations.reloadEntities();
     }
 }
