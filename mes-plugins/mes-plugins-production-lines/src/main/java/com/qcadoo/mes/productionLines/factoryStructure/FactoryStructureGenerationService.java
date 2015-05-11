@@ -23,6 +23,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 
 @Service
@@ -82,12 +83,18 @@ public class FactoryStructureGenerationService {
             final String belongsToField) {
         List<Entity> factories = getFactories();
         for (Entity factory : factories) {
+            if (!factory.isActive()) {
+                continue;
+            }
             Entity factoryNode = createNode(belongsToEntity, belongsToField, factory.getStringField(FactoryFields.NUMBER),
                     factory.getStringField(FactoryFields.NAME), FactoryStructureElementType.FACTORY);
             addChild(tree, factoryNode, root);
 
             List<Entity> divisions = getDivisionsForFactory(factory);
             for (Entity division : divisions) {
+                if (!division.isActive()) {
+                    continue;
+                }
                 Entity divisionNode = createNode(belongsToEntity, belongsToField, division.getStringField(DivisionFields.NUMBER),
                         division.getStringField(DivisionFields.NAME), FactoryStructureElementType.DIVISION);
                 addChild(tree, divisionNode, factoryNode);
@@ -95,15 +102,20 @@ public class FactoryStructureGenerationService {
                 List<Entity> productionLines = getProductionLinesForDivision(division);
 
                 for (Entity productionLine : productionLines) {
+                    if (!productionLine.isActive()) {
+                        continue;
+                    }
                     Entity productionLineNode = createNode(belongsToEntity, belongsToField,
                             productionLine.getStringField(ProductionLineFields.NUMBER),
                             productionLine.getStringField(ProductionLineFields.NAME), FactoryStructureElementType.PRODUCTION_LINE);
                     addChild(tree, productionLineNode, divisionNode);
 
-                    List<Entity> workstations = getWorkstationsForProductionLine(productionLine);
+                    List<Entity> workstations = getWorkstationsForProductionLineAndDivision(productionLine, division);
 
                     for (Entity workstation : workstations) {
-
+                        if (!workstation.isActive()) {
+                            continue;
+                        }
                         Entity workstationNode = createNode(belongsToEntity, belongsToField,
                                 workstation.getStringField(WorkstationFields.NUMBER),
                                 workstation.getStringField(WorkstationFields.NAME), FactoryStructureElementType.WORKSTATION);
@@ -115,6 +127,9 @@ public class FactoryStructureGenerationService {
 
                         List<Entity> subassemblies = getSubassembliesForWorkstation(workstation);
                         for (Entity subassembly : subassemblies) {
+                            if (subassembly.isActive()) {
+                                continue;
+                            }
                             Entity subassemblyNode = createNode(belongsToEntity, belongsToField,
                                     subassembly.getStringField(SubassemblyFields.NUMBER),
                                     subassembly.getStringField(SubassemblyFields.NAME), FactoryStructureElementType.SUBASSEMBLY);
@@ -179,8 +194,9 @@ public class FactoryStructureGenerationService {
         return division.getManyToManyField(DivisionFieldsPL.PRODUCTION_LINES);
     }
 
-    private List<Entity> getWorkstationsForProductionLine(final Entity productionLine) {
-        return productionLine.getHasManyField(ProductionLineFields.WORKSTATIONS);
+    private List<Entity> getWorkstationsForProductionLineAndDivision(final Entity productionLine, final Entity division) {
+        return productionLine.getHasManyField(ProductionLineFields.WORKSTATIONS).find()
+                .add(SearchRestrictions.belongsTo(WorkstationFields.DIVISION, division)).list().getEntities();
     }
 
     private List<Entity> getSubassembliesForWorkstation(final Entity workstation) {
