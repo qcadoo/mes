@@ -34,7 +34,8 @@
         <string name="name" required="true">
             <validatesLength max="2048"/>
         </string>
-        <belongsTo name="division" plugin="basic" model="division"/>
+        <!--<belongsTo name="division" plugin="basic" model="division"/>-->
+        <manyToMany name="divisions" model="division" plugin="basic" cascade="nullify" joinField="productionLines"/>
         <dictionary name="place" dictionary="productionLinePlaces"
                     required="false"/>
         <string name="description">
