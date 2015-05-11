@@ -4,6 +4,8 @@ package com.qcadoo.mes.basic.constants;
 public final class SubassemblyFields {
 
 
+    public static final String WORKSTATION_TYPE = "workstationType";
+
     private SubassemblyFields() {
     }
 

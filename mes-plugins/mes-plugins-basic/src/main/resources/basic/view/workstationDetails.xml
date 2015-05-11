@@ -73,6 +73,9 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.basic.criteriaModifiers.WorkstationTypeCriteriaModifiers"
+                                    method="showWorkstationTypesWithoutSubassembly"/>
                         </component>
                     </layoutElement>
 
@@ -198,6 +201,10 @@
                         <option type="fieldCode" value="number"/>
 
                         <option type="multiselect" value="true"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.basic.criteriaModifiers.SubassemblyCriteriaModifiers"
+                                method="showSubassembliesWithoutWorkstation"/>
                     </component>
                     <component type="grid" name="subassemblies" reference="subassemblies"
                                source="#{form}.subassemblies">

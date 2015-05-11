@@ -85,4 +85,9 @@
 
     </component>
 
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.basic.hooks.WorkstationTypeDetailsHooks"
+                method="disableSubassemblyCheckbox"/>
+    </hooks>
 </view>

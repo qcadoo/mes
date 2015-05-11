@@ -39,4 +39,6 @@ public final class WorkstationTypeFields {
 
     public static final String SUBASSEMBLY = "subassembly";
 
+    public static final String SUBASSEMBLIES = "subassemblies";
+
 }

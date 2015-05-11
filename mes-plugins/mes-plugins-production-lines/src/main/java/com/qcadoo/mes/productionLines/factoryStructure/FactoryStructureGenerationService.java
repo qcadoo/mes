@@ -127,7 +127,7 @@ public class FactoryStructureGenerationService {
 
                         List<Entity> subassemblies = getSubassembliesForWorkstation(workstation);
                         for (Entity subassembly : subassemblies) {
-                            if (subassembly.isActive()) {
+                            if (!subassembly.isActive()) {
                                 continue;
                             }
                             Entity subassemblyNode = createNode(belongsToEntity, belongsToField,
