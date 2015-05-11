@@ -62,13 +62,17 @@ public class DivisionDetailsListenersPL {
     public void onRemoveSelectedProductionLines(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent productionLinesGrid = (GridComponent) view.getComponentByReference("productionLines");
         List<Entity> productionLinesToDelete = productionLinesGrid.getSelectedEntities();
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Long divisionId = form.getEntityId();
         for (Entity productionLine : productionLinesToDelete) {
             List<Entity> workstations = productionLine.getHasManyField(ProductionLineFields.WORKSTATIONS);
-            for (Entity workstation : workstations) {
-                workstation.setField(WorkstationFieldsPL.PRODUCTION_LINE, null);
-                workstation.setField(WorkstationFields.DIVISION, null);
-                workstation.getDataDefinition().save(workstation);
-            }
+            workstations.stream()
+                    .filter(workstation -> workstation.getBelongsToField(WorkstationFields.DIVISION).getId().equals(divisionId))
+                    .forEach(workstation -> {
+                        workstation.setField(WorkstationFieldsPL.PRODUCTION_LINE, null);
+                        workstation.setField(WorkstationFields.DIVISION, null);
+                        workstation.getDataDefinition().save(workstation);
+                    });
         }
     }
 }
