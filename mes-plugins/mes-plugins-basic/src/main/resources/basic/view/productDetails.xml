@@ -25,17 +25,17 @@
 
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="productDetails" modelName="product">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="productDetails" modelName="product">
 
-	<component type="window" name="window" reference="window">
-	
-		<ribbon>
-			<template name="standardFormTemplate" />
-			<group name="conversions">
-				<bigButton name="getDefaultConversions" icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="conversions">
+                <bigButton name="getDefaultConversions" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if(window.canClose() && window.confirm("#{translate(basic.productDetails.window.ribbon.conversions.getDefaultConversions.confirm)}")) {
@@ -44,15 +44,15 @@
 								}
 							});		
 						]]>
-					</script>
-				</bigButton>
-			</group>
-		</ribbon>
-		
-		<windowTab name="mainTab">
-			<component type="form" name="product" reference="form">
-				<script>
-					<![CDATA[
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="product" reference="form">
+                <script>
+                    <![CDATA[
 						var save = #{window}.getRibbonItem("actions.save");
 						var saveBack = #{window}.getRibbonItem("actions.saveBack");
 						var saveNew = #{window}.getRibbonItem("actions.saveNew");
@@ -98,161 +98,142 @@
 
 						
 					]]>
-				</script>
-				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="5">
-					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number"
-							reference="number">
-							<option type="alignment" value="right" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="name" field="name"
-							hasDescription="true" />
-					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="select" name="globalTypeOfMaterial"
-							field="globalTypeOfMaterial" hasDescription="true" />
-					</layoutElement>
-					<layoutElement column="1" row="5">
-						<component type="select" name="unit" field="unit"
-							reference="unit" hasDescription="true" />
-					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="input" name="ean" field="ean" />
-					</layoutElement>
-					<layoutElement column="2" row="2">
-						<component type="select" name="category" field="category" />
-					</layoutElement>
-					<layoutElement column="2" row="3" height="2">
-						<component type="textarea" name="description" field="description" />
-					</layoutElement>
-				</component>
-				
-				<option type="header" value="true" />
-				<option type="expression" value="#name" />
+                </script>
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="5">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number"
+                                   reference="number">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="select" name="globalTypeOfMaterial"
+                                   field="globalTypeOfMaterial" hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="select" name="unit" field="unit"
+                                   reference="unit" hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="input" name="ean" field="ean"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="2">
+                        <component type="select" name="category" field="category"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="3" height="2">
+                        <component type="textarea" name="description" field="description"/>
+                    </layoutElement>
+                </component>
 
-				<listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
-					method="getDefaultConversions" />
-			</component>
-		</windowTab>
-		
-		<windowTab name="productFamily">
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="2">
-				<layoutElement column="1" row="1">
-					<component type="select" name="entityType" field="#{form}.entityType"
-						reference="entityType" />
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="lookup" name="parent" field="#{form}.parent"
-						reference="parent">
-						<option type="column" name="name" fields="name" link="true" />
-						<option type="column" name="parent" fields="parent"
-							expression="(#parent == null) ? '' : #parent['number'] + ' - ' + #parent['name']" />
-						
-						<option type="searchable" value="name" />
-						<option type="orderable" value="name" />
-						
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
+                <option type="header" value="true"/>
+                <option type="expression" value="#name"/>
 
-						<criteriaModifier
-							class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
-							method="showProductFamilyOnly" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-		
-		<windowTab name="auditTab">
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="4">
-				<layoutElement column="1" row="1" height="4">
-					<component type="borderLayout" name="auditBorderLayout"
-						reference="auditBorderLayout">
-						<option type="label" value="auditLayoutLabel" />
-						<component type="gridLayout" name="gridLayout" columns="1"
-							rows="4">
-							<layoutElement column="1" row="1">
-								<component type="input" name="createDate" field="#{form}.createDate"
-									defaultEnabled="never" />
-							</layoutElement>
-							<layoutElement column="1" row="2">
-								<component type="input" name="createUser" field="#{form}.createUser"
-									defaultEnabled="never" />
-							</layoutElement>
-							<layoutElement column="1" row="3">
-								<component type="input" name="updateDate" field="#{form}.updateDate"
-									defaultEnabled="never" />
-							</layoutElement>
-							<layoutElement column="1" row="4">
-								<component type="input" name="updateUser" field="#{form}.updateUser"
-									defaultEnabled="never" />
-							</layoutElement>
-						</component>
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-		
-		<windowTab name="substitutesTab">
-			<component type="gridLayout" name="gridsLayout" columns="5"
-				rows="6" hasBorders="false">
-				<layoutElement column="1" row="1" width="2" height="6">
-					<component type="grid" name="substitutes" reference="substitutes"
-						source="#{form}.substitutes">
-						<option type="column" name="number" fields="number" link="true"
-							width="50" />
-						<option type="column" name="name" fields="name" link="true"
-							width="100" />
-							
-						<option type="order" column="priority" direction="asc" />
-						
-						<option type="correspondingView" value="basic/productSubstituteDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
-						
-						<option type="paginable" value="false" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
-				<layoutElement column="3" row="1" width="3" height="6">
-					<component type="grid" name="substituteComponents"
-						source="#{substitutes}.components">
-						<option type="column" name="number" fields="product"
-							expression="#product['number']" link="true" width="50" />
-						<option type="column" name="name" fields="product"
-							expression="#product['name']" link="true" width="100" />
-						<option type="column" name="quantity" fields="quantity"
-							width="40" />
-						<option type="column" name="unit" fields="product"
-							expression="#product['unit']" link="false" width="30" />
-							
-						<option type="order" column="number" direction="desc" />
-						
-						<option type="correspondingView" value="basic/productSubstituteComponentDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
-						
-						<option type="paginable" value="false" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-		
-		<windowTab name="integrationTab">
-			<script>
-					<![CDATA[
+                <listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
+                          method="getDefaultConversions"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="productFamily">
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="2">
+                <layoutElement column="1" row="1">
+                    <component type="select" name="entityType" field="#{form}.entityType"
+                               reference="entityType"/>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="lookup" name="parent" field="#{form}.parent"
+                               reference="parent">
+                        <option type="column" name="name" fields="name" link="true"/>
+                        <option type="column" name="parent" fields="parent"
+                                expression="(#parent == null) ? '' : #parent['number'] + ' - ' + #parent['name']"/>
+
+                        <option type="searchable" value="name"/>
+                        <option type="orderable" value="name"/>
+
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+                                method="showProductFamilyOnly"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="auditTab">
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="4">
+                <layoutElement column="1" row="1" height="4">
+                    <component type="borderLayout" name="auditBorderLayout"
+                               reference="auditBorderLayout">
+                        <option type="label" value="auditLayoutLabel"/>
+                        <component type="gridLayout" name="gridLayout" columns="1"
+                                   rows="4">
+                            <layoutElement column="1" row="1">
+                                <component type="input" name="createDate" field="#{form}.createDate"
+                                           defaultEnabled="never"/>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="input" name="createUser" field="#{form}.createUser"
+                                           defaultEnabled="never"/>
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
+                                <component type="input" name="updateDate" field="#{form}.updateDate"
+                                           defaultEnabled="never"/>
+                            </layoutElement>
+                            <layoutElement column="1" row="4">
+                                <component type="input" name="updateUser" field="#{form}.updateUser"
+                                           defaultEnabled="never"/>
+                            </layoutElement>
+                        </component>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="substitutesTab">
+            <component type="gridLayout" name="gridsLayout" columns="5"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" width="3" height="6">
+                    <component type="grid" name="substituteComponents"
+                               source="#{form}.substituteComponents">
+                        <option type="column" name="number" fields="product"
+                                expression="#product['number']" link="true" width="50"/>
+                        <option type="column" name="name" fields="product"
+                                expression="#product['name']" link="true" width="100"/>
+                        <option type="column" name="quantity" fields="quantity"
+                                width="40"/>
+                        <option type="column" name="unit" fields="product"
+                                expression="#product['unit']" link="false" width="30"/>
+
+                        <option type="order" column="number" direction="desc"/>
+
+                        <option type="correspondingView" value="basic/productSubstituteComponentDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+                        <option type="orderable" value="number,name,quantity"/>
+                        <option type="searchable" value="number,name,quantity"/>
+
+                        <option type="paginable" value="false"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="integrationTab">
+            <script>
+                <![CDATA[
 						var del = #{window}.getRibbonItem("actions.delete");
 						var externalNumberListener = {
 							onSetValue: function(value) {
@@ -266,74 +247,74 @@
 						};
 						#{form}.addOnChangeListener(externalNumberListener);
 					]]>
-			</script>
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="1">
-				<layoutElement column="1" row="1">
-					<component type="input" name="externalNumber" field="#{form}.externalNumber"
-						reference="externalNumber" defaultEnabled="never" />
-				</layoutElement>
-			</component>
-		</windowTab>
-		
-		<windowTab name="conversionTab">
-			<component type="gridLayout" name="conversionGridLayout"
-				columns="3" rows="1">
-				<layoutElement column="1" row="1" width="2">
-					<component type="borderLayout" name="conversionBorderLayout">
-						<component type="awesomeDynamicList" name="conversionItems"
-							source="#{form}.conversionItems" reference="conversionItems">
-							<option type="hasBorder" value="false" />
-							<option type="hasButtons" value="true" />
+            </script>
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="input" name="externalNumber" field="#{form}.externalNumber"
+                               reference="externalNumber" defaultEnabled="never"/>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-							<components>
-								<component type="gridLayout" name="conversionGridLayout"
-									columns="4" rows="1">
-									<layoutElement column="1" row="1">
-										<component type="input" name="quantityFrom" field="quantityFrom"
-											reference="quantityFrom" hasLabel="false">
-											<option type="alignment" value="right" />
-										</component>
-									</layoutElement>
-									<layoutElement column="2" row="1">
-										<component type="select" name="unitFrom" field="unitFrom"
-											reference="unitFrom" hasLabel="false">
-											<option type="labelWidth" value="10" />
-										</component>
-									</layoutElement>
-									<layoutElement column="3" row="1">
-										<component type="input" name="quantityTo" field="quantityTo"
-											reference="quantityTo">
-											<option type="alignment" value="right" />
-										</component>
-									</layoutElement>
-									<layoutElement column="4" row="1">
-										<component type="select" name="unitTo" field="unitTo"
-											reference="unitTo" hasLabel="false" />
-									</layoutElement>
-								</component>
+        <windowTab name="conversionTab">
+            <component type="gridLayout" name="conversionGridLayout"
+                       columns="3" rows="1">
+                <layoutElement column="1" row="1" width="2">
+                    <component type="borderLayout" name="conversionBorderLayout">
+                        <component type="awesomeDynamicList" name="conversionItems"
+                                   source="#{form}.conversionItems" reference="conversionItems">
+                            <option type="hasBorder" value="false"/>
+                            <option type="hasButtons" value="true"/>
 
-							</components>
-						</component>
-						
-						<option type="label" value="conversionItems" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-		
-	</component>
-	
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-			method="generateProductNumber" />
-		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-			method="fillUnit" />
-		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-			method="disableProductFormForExternalItems" />
-		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-			method="disableUnitFromWhenFormIsSaved" />
-		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-			method="updateRibbonState" />
-	</hooks>
+                            <components>
+                                <component type="gridLayout" name="conversionGridLayout"
+                                           columns="4" rows="1">
+                                    <layoutElement column="1" row="1">
+                                        <component type="input" name="quantityFrom" field="quantityFrom"
+                                                   reference="quantityFrom" hasLabel="false">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="2" row="1">
+                                        <component type="select" name="unitFrom" field="unitFrom"
+                                                   reference="unitFrom" hasLabel="false">
+                                            <option type="labelWidth" value="10"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="3" row="1">
+                                        <component type="input" name="quantityTo" field="quantityTo"
+                                                   reference="quantityTo">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="4" row="1">
+                                        <component type="select" name="unitTo" field="unitTo"
+                                                   reference="unitTo" hasLabel="false"/>
+                                    </layoutElement>
+                                </component>
+
+                            </components>
+                        </component>
+
+                        <option type="label" value="conversionItems"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+                      method="generateProductNumber"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+                      method="fillUnit"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+                      method="disableProductFormForExternalItems"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+                      method="disableUnitFromWhenFormIsSaved"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+                      method="updateRibbonState"/>
+    </hooks>
 </view>

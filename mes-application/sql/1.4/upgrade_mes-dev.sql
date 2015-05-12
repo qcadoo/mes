@@ -156,3 +156,11 @@ CREATE TABLE productionlines_factorystructureelement
 );
 
 -- end
+
+-- Changes in substitutes
+-- last touched 12.05.2015 by kama
+
+ALTER TABLE basic_substitutecomponent ADD COLUMN baseproduct_id bigint;
+ALTER TABLE basic_substitutecomponent
+  ADD CONSTRAINT substitutecomponent_baseproduct_fkey FOREIGN KEY (baseproduct_id)
+      REFERENCES basic_product (id) DEFERRABLE;

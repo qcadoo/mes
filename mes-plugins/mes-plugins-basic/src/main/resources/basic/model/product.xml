@@ -25,69 +25,72 @@
 
 -->
 <model name="product" activable="true" auditable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="1024" />
-		</string>
-		<enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste" />
-		<string name="ean">
-			<validatesWith class="com.qcadoo.mes.basic.validators.ProductValidators"
-				method="checkEanUniqueness" />
-		</string>
-		<dictionary name="category" dictionary="categories" />
-		<dictionary name="unit" dictionary="units" required="true" />
-		<hasMany name="substitutes" model="substitute" joinField="product"
-			cascade="delete" copyable="true" />
-		<hasMany name="substituteComponents" model="substituteComponent"
-			joinField="product" cascade="nullify" />
-		<string name="externalNumber" unique="true" />
-		<string name="description">
-			<validatesLength max="2048" />
-		</string>
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name" required="true">
+            <validatesLength max="1024"/>
+        </string>
+        <enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"/>
+        <string name="ean">
+            <validatesWith class="com.qcadoo.mes.basic.validators.ProductValidators"
+                           method="checkEanUniqueness"/>
+        </string>
+        <dictionary name="category" dictionary="categories"/>
+        <dictionary name="unit" dictionary="units" required="true"/>
+        <hasMany name="substitutes" model="substitute" joinField="product"
+                 cascade="delete" copyable="true"/>
+        <hasMany name="substituteComponents" model="substituteComponent"
+                 joinField="baseProduct" cascade="delete"/>
+        <hasMany name="productsToSubstitute" model="substituteComponent"
+                 joinField="product" cascade="nullify"/>
 
-		<hasMany name="conversionItems" joinField="product" model="unitConversionItem"
-			plugin="qcadooModel" cascade="delete" />
+        <string name="externalNumber" unique="true"/>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
 
-		<!-- PRODUCTS FAMILY TREE -->
-		<belongsTo name="parent" model="product" />
-		<belongsTo name="child" model="product" persistent="false" />
-		<hasMany name="productFamilyChildrens" joinField="parent"
-			model="product" />
-		<tree name="productFamilyChildrenTree" joinField="parent" model="product"
-			cascade="nullify" persistent="false" />
-		<integer name="priority" persistent="false" />
-		<string name="nodeNumber" />
-		<enum name="entityType" values="01particularProduct,02productsFamily"
-			default="01particularProduct" required="true" />
-	</fields>
+        <hasMany name="conversionItems" joinField="product" model="unitConversionItem"
+                 plugin="qcadooModel" cascade="delete"/>
 
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
-			method="checkIfNotBelongsToSameFamily" />
-		<validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
-			method="checkIfParentIsFamily" />
+        <!-- PRODUCTS FAMILY TREE -->
+        <belongsTo name="parent" model="product"/>
+        <belongsTo name="child" model="product" persistent="false"/>
+        <hasMany name="productFamilyChildrens" joinField="parent"
+                 model="product"/>
+        <tree name="productFamilyChildrenTree" joinField="parent" model="product"
+              cascade="nullify" persistent="false"/>
+        <integer name="priority" persistent="false"/>
+        <string name="nodeNumber"/>
+        <enum name="entityType" values="01particularProduct,02productsFamily"
+              default="01particularProduct" required="true"/>
+    </fields>
 
-		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
-			method="generateNodeNumber" />
-		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
-		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
-			method="calculateConversionOnCreate" />
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
+                       method="checkIfNotBelongsToSameFamily"/>
+        <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
+                       method="checkIfParentIsFamily"/>
 
-		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="updateNodeNumber" />
-		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged" />
+        <onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
+                  method="generateNodeNumber"/>
+        <onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit"/>
+        <onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
+                  method="calculateConversionOnCreate"/>
 
-		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
-		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearExternalIdOnCopy" />
-		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearEanOnCopy" />
+        <onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="updateNodeNumber"/>
+        <onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged"/>
 
-		<onUpdate class="com.qcadoo.mes.basic.hooks.ProductHooks"
-			method="calculateConversionIfUnitChanged" />
-	</hooks>
+        <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber"/>
+        <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearExternalIdOnCopy"/>
+        <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearEanOnCopy"/>
 
-	<identifier expression="#number + ' - ' + #name" />
+        <onUpdate class="com.qcadoo.mes.basic.hooks.ProductHooks"
+                  method="calculateConversionIfUnitChanged"/>
+    </hooks>
+
+    <identifier expression="#number + ' - ' + #name"/>
 </model>
