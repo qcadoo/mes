@@ -37,6 +37,7 @@
 			default="01freeTime" />
 		<belongsTo name="shift" model="shift" plugin="basic" lazy="false"
 			required="true" />
+		<boolean name="relatesToPrevDay" default="false"/>
 	</fields>
 
 	<hooks>

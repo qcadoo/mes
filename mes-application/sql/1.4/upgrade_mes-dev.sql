@@ -155,4 +155,10 @@ CREATE TABLE productionlines_factorystructureelement
       REFERENCES basic_subassembly (id) DEFERRABLE
 );
 
+-- Table: basic_shifttimetableexception
+-- last touched 13.05.2015 by pako
+
+ALTER TABLE basic_shifttimetableexception ADD COLUMN relatestoprevday boolean;
+ALTER TABLE basic_shifttimetableexception ALTER COLUMN relatestoprevday SET DEFAULT false;
+
 -- end
