@@ -107,7 +107,7 @@
             <model:onDelete class="com.qcadoo.mes.productionLines.hooks.DivisionModelHooksPL" method="onDelete"/>
         </model:model-hook>
 
-        <menu:menu-item name="productionLines" category="basic"
+        <menu:menu-item name="productionLines" category="companyStructure"
                         view="productionLinesList"/>
 
         <view:view resource="view/productionLinesList.xml"/>

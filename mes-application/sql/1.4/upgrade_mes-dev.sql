@@ -164,3 +164,58 @@ ALTER TABLE basic_substitutecomponent ADD COLUMN baseproduct_id bigint;
 ALTER TABLE basic_substitutecomponent
   ADD CONSTRAINT substitutecomponent_baseproduct_fkey FOREIGN KEY (baseproduct_id)
       REFERENCES basic_product (id) DEFERRABLE;
+
+-- end
+
+-- Reworked menu, added category Company structure, added missing views to basic
+-- last touched 13.05.2015 by kama
+
+INSERT INTO qcadooview_category(
+            id, pluginidentifier, name, succession)
+    VALUES (nextval('hibernate_sequence'), 'basic', 'companyStructure', (
+  SELECT succession FROM qcadooview_category WHERE name='basic'
+    )+1);
+ 
+INSERT INTO qcadooview_view(id,pluginidentifier, name, view) 
+  VALUES (nextval('hibernate_sequence'),'basic','factoriesList','factoriesList');
+INSERT INTO qcadooview_view(id,pluginidentifier, name, view) 
+  VALUES (nextval('hibernate_sequence'),'basic','subassembliesList','subassembliesList');
+
+INSERT INTO qcadooview_item(
+            id, pluginidentifier, name, active, category_id, view_id, succession)
+    VALUES (nextval('hibernate_sequence'), 'basic', 'subassemblies', TRUE, 
+  (SELECT id FROM qcadooview_category WHERE name='companyStructure'), 
+  (SELECT id FROM qcadooview_view WHERE name='subassembliesList'),6);
+
+INSERT INTO qcadooview_item(
+            id, pluginidentifier, name, active, category_id, view_id, succession)
+    VALUES (nextval('hibernate_sequence'), 'basic', 'factories', TRUE, 
+  (SELECT id FROM qcadooview_category WHERE name='companyStructure'), 
+  (SELECT id FROM qcadooview_view WHERE name='factoriesList'), 1);
+
+
+UPDATE qcadooview_item
+   SET category_id= (
+  SELECT id FROM qcadooview_category WHERE name='companyStructure'
+   ),succession=2
+ WHERE name='divisions';
+
+UPDATE qcadooview_item
+   SET category_id= (
+  SELECT id FROM qcadooview_category WHERE name='companyStructure'
+   ),succession=3
+ WHERE name='productionLines';
+
+ UPDATE qcadooview_item
+   SET category_id= (
+  SELECT id FROM qcadooview_category WHERE name='companyStructure'
+   ),succession=4
+ WHERE name='workstationTypes';
+ 
+ UPDATE qcadooview_item
+   SET category_id= (
+  SELECT id FROM qcadooview_category WHERE name='companyStructure'
+   ),succession=5
+ WHERE name='workstations';
+
+ -- end
