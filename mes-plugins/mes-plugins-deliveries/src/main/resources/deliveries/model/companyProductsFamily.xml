@@ -25,21 +25,25 @@
 
 -->
 <model name="companyProductsFamily" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="company" plugin="basic" model="company"
-			required="true" />
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="company" plugin="basic" model="company"
+                   required="true"/>
 
-		<belongsTo name="product" plugin="basic" model="product"
-			required="true" />
-	</fields>
-	<hooks>
-		<validatesWith 
-			class="com.qcadoo.mes.deliveries.hooks.CompanyProductsFamilyHooks"
-			method="checkIfProductIsProductsFamily" />
-		<validatesWith 
-			class="com.qcadoo.mes.deliveries.hooks.CompanyProductsFamilyHooks"
-			method="checkIfProductsFamilyIsNotAlreadyUsed" />
-	</hooks>
+        <belongsTo name="product" plugin="basic" model="product"
+                   required="true"/>
+        <boolean name="isDefault" default="false" required="true"/>
+    </fields>
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.deliveries.hooks.CompanyProductsFamilyHooks"
+                method="checkIfProductIsProductsFamily"/>
+        <validatesWith
+                class="com.qcadoo.mes.deliveries.hooks.CompanyProductsFamilyHooks"
+                method="checkIfProductsFamilyIsNotAlreadyUsed"/>
+        <validatesWith
+                class="com.qcadoo.mes.deliveries.hooks.CompanyProductsFamilyHooks"
+                method="checkIfProductHasDefaultSupplier"/>
+    </hooks>
 </model>

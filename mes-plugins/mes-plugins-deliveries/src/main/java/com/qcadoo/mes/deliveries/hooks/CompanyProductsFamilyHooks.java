@@ -25,6 +25,7 @@ package com.qcadoo.mes.deliveries.hooks;
 
 import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PRODUCTS_FAMILY;
 import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.PRODUCTS_FAMILIES;
+import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.IS_DEFAULT;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.COMPANY;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.PRODUCT;
 
@@ -68,4 +69,13 @@ public class CompanyProductsFamilyHooks {
         return true;
     }
 
+    public boolean checkIfProductHasDefaultSupplier(final DataDefinition companyProductDD, final Entity companyProduct) {
+        if (companyProductService.checkIfDefaultExistsForFamily(companyProduct)) {
+            companyProduct.addError(companyProductDD.getField(IS_DEFAULT),
+                    "basic.company.message.defaultAlreadyExistsForProductFamily");
+            return false;
+        }
+
+        return true;
+    }
 }

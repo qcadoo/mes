@@ -219,3 +219,14 @@ UPDATE qcadooview_item
  WHERE name='workstations';
 
  -- end
+
+ -- Added 'is default' field to delivered products in company
+ -- last touched 14.05.2015 by kama
+
+
+ALTER TABLE deliveries_companyproduct ADD COLUMN isdefault boolean;
+ALTER TABLE deliveries_companyproduct ALTER COLUMN isdefault SET DEFAULT false;
+ALTER TABLE deliveries_companyproductsfamily ADD COLUMN isdefault boolean;
+ALTER TABLE deliveries_companyproductsfamily ALTER COLUMN isdefault SET DEFAULT false;
+
+-- end

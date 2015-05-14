@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries;
 
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 public interface CompanyProductService {
@@ -48,4 +49,7 @@ public interface CompanyProductService {
     boolean checkIfProductIsNotUsed(final Entity companyProduct, final String belongsToProductName,
             final String belongsToCompanyName, final String hasManyName);
 
+    boolean checkIfDefaultAlreadyExists(final Entity companyProduct);
+
+    boolean checkIfDefaultExistsForFamily(final Entity companyProduct);
 }
