@@ -296,8 +296,11 @@ public class DocumentDetailsListeners {
                             BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
                             position.setField(PositionFields.QUANTITY, convertedQuantity);
                         } else {
-                            position.addError(position.getDataDefinition().getField(PositionFields.GIVEN_QUANTITY),
-                                    "materialFlowResources.position.validate.error.missingUnitConversion");
+
+                            if (!givenQuantityField.isHasError()) {
+                                position.addError(position.getDataDefinition().getField(PositionFields.GIVEN_QUANTITY),
+                                        "materialFlowResources.position.validate.error.missingUnitConversion");
+                            }
                             position.setField(PositionFields.QUANTITY, null);
                         }
                     }
