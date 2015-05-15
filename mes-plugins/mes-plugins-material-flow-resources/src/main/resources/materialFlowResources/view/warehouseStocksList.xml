@@ -57,6 +57,9 @@
 
             <option type="fullscreen" value="true" />
             <option type="multiselect" value="true" />
+            <rowStyleResolver
+                    class="com.qcadoo.mes.materialFlowResources.rowStyleResolvers.WarehouseStocksListResolver"
+                    method="fillRowStyles" />
         </component>
 
         <option type="fixedHeight" value="true" />
