@@ -37,6 +37,10 @@ public class TechnologyCriteriaModifiers {
         scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
     }
 
+    public void showPatternTechnologyFromOperationProductInComponent(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.isNull("technology_a."+TechnologyFields.TECHNOLOGY_TYPE));
+    }
+
     public void showAcceptedPatternTechnology(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
         scb.add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED));
