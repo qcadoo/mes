@@ -25,11 +25,12 @@
 
 -->
 <plugin plugin="deliveries" group="supplies" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:custom="http://schema.qcadoo.org/modules/custom"
-	xsi:schemaLocation="
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -43,188 +44,192 @@
        http://schema.qcadoo.org/modules/custom
        http://schema.qcadoo.org/modules/custom.xsd">
 
-	<information>
-		<name>MES - Deliveries</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-		<description>Define when and what products will arrive from you suppliers.</description>
-		<license>AGPL</license>
-	</information>
+    <information>
+        <name>MES - Deliveries</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Define when and what products will arrive from you suppliers.</description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>basic</plugin>
-			<version>[1.1.7</version>
-		</dependency>
-		<dependency>
-			<plugin>states</plugin>
-			<version>[1.1.7</version>
-		</dependency>
-		<dependency>
-			<plugin>columnExtension</plugin>
-			<version>[1.1.8</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <plugin>basic</plugin>
+            <version>[1.1.7</version>
+        </dependency>
+        <dependency>
+            <plugin>states</plugin>
+            <version>[1.1.7</version>
+        </dependency>
+        <dependency>
+            <plugin>columnExtension</plugin>
+            <version>[1.1.8</version>
+        </dependency>
         <dependency>
             <plugin>materialFlow</plugin>
             <version>[1.2.1</version>
         </dependency>
-	</dependencies>
+    </dependencies>
 
-	<modules>
-		<localization:translation path="locales" />
-	
-		<model:dictionary name="paymentForm" />
-			
-		<model:model model="companyProduct" resource="model/companyProduct.xml" />
-		<model:model model="companyProductsFamily" resource="model/companyProductsFamily.xml" />
-		<model:model model="columnForDeliveries" resource="model/columnForDeliveries.xml" />
-		<model:model model="columnForOrders" resource="model/columnForOrders.xml" />
-		<model:model model="delivery" resource="model/delivery.xml" />
-		<model:model model="deliveredProduct" resource="model/deliveredProduct.xml" />
-		<model:model model="orderedProduct" resource="model/orderedProduct.xml" />
-		<model:model model="deliveryStateChange" resource="model/deliveryStateChange.xml" />
-		<model:model model="parameterDeliveryOrderColumn" resource="model/parameterDeliveryOrderColumn.xml" />
-		
-		<model:model-field plugin="states" model="message">
-			<model:belongsTo name="deliveryStateChange" plugin="deliveries"
-				model="deliveryStateChange" />
-		</model:model-field>
-		
-		<model:model-field plugin="basic" model="shift">
-			<model:hasMany name="deliveryStateChanges" plugin="deliveries"
-				model="deliveryStateChange" joinField="shift" cascade="nullify" />
-		</model:model-field>
-		
-		<model:model-field plugin="basic" model="parameter">
-			<model:string name="defaultDescription">
-				<model:validatesLength max="2048" />
-			</model:string>
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:string name="otherAddress">
-				<model:validatesLength max="2048" />
-			</model:string>
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:enum name="defaultAddress" values="01companyAddress,02other" default="01companyAddress"/>
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:hasMany name="columnsForOrders" plugin="deliveries"
-				model="columnForOrders" joinField="parameter" cascade="delete"
-				copyable="true" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="hideEmptyColumnsForOrders" default="false"/>
-		</model:model-field>
-		
-		<model:model-field plugin="basic" model="parameter">
-			<model:hasMany name="parameterDeliveryOrderColumns" plugin="deliveries"
-				model="parameterDeliveryOrderColumn" joinField="parameter" cascade="delete"
-				copyable="true" />
-		</model:model-field>
+    <modules>
+        <localization:translation path="locales"/>
+
+        <model:dictionary name="paymentForm"/>
+
+        <model:model model="companyProduct" resource="model/companyProduct.xml"/>
+        <model:model model="companyProductsFamily" resource="model/companyProductsFamily.xml"/>
+        <model:model model="columnForDeliveries" resource="model/columnForDeliveries.xml"/>
+        <model:model model="columnForOrders" resource="model/columnForOrders.xml"/>
+        <model:model model="delivery" resource="model/delivery.xml"/>
+        <model:model model="deliveredProduct" resource="model/deliveredProduct.xml"/>
+        <model:model model="orderedProduct" resource="model/orderedProduct.xml"/>
+        <model:model model="deliveryStateChange" resource="model/deliveryStateChange.xml"/>
+        <model:model model="parameterDeliveryOrderColumn" resource="model/parameterDeliveryOrderColumn.xml"/>
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="deliveryStateChange" plugin="deliveries"
+                             model="deliveryStateChange"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="deliveryStateChanges" plugin="deliveries"
+                           model="deliveryStateChange" joinField="shift" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:string name="defaultDescription">
+                <model:validatesLength max="2048"/>
+            </model:string>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:string name="otherAddress">
+                <model:validatesLength max="2048"/>
+            </model:string>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="defaultAddress" values="01companyAddress,02other" default="01companyAddress"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:hasMany name="columnsForOrders" plugin="deliveries"
+                           model="columnForOrders" joinField="parameter" cascade="delete"
+                           copyable="true"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="hideEmptyColumnsForOrders" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:hasMany name="parameterDeliveryOrderColumns" plugin="deliveries"
+                           model="parameterDeliveryOrderColumn" joinField="parameter" cascade="delete"
+                           copyable="true"/>
+        </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
             <model:belongsTo name="location" model="location"
-                             plugin="materialFlow" />
+                             plugin="materialFlow"/>
         </model:model-field>
 
         <model:model-hook plugin="basic" model="parameter">
             <model:validatesWith
                     class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
-                    method="checkIfLocationIsWarehouse" />
+                    method="checkIfLocationIsWarehouse"/>
         </model:model-hook>
 
-		<model:model-field plugin="basic" model="company">
-			<model:hasMany name="products" joinField="company"
-				plugin="deliveries" model="companyProduct" cascade="delete" copyable="true" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="company">
-			<model:hasMany name="productsFamilies" joinField="company"
-				plugin="deliveries" model="companyProductsFamily" cascade="delete"
-				copyable="true" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="company">
-			<model:integer name="buffer" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="company">
-			<model:dictionary name="paymentForm" dictionary="paymentForm" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="company">
-			<model:hasMany name="deliveries" joinField="supplier"
-				plugin="deliveries" model="delivery" cascade="nullify" />
-		</model:model-field>
-	
-		<model:model-field plugin="basic" model="product">
-			<model:hasMany name="productCompanies" joinField="product"
-				plugin="deliveries" model="companyProduct" cascade="delete" />
-		</model:model-field>
-		<model:model-field plugin="basic" model="product">
-			<model:hasMany name="productsFamilyCompanies" joinField="product"
-				plugin="deliveries" model="companyProductsFamily" cascade="delete" />
-		</model:model-field>
+        <model:model-field plugin="basic" model="company">
+            <model:hasMany name="products" joinField="company"
+                           plugin="deliveries" model="companyProduct" cascade="delete" copyable="true"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="company">
+            <model:hasMany name="productsFamilies" joinField="company"
+                           plugin="deliveries" model="companyProductsFamily" cascade="delete"
+                           copyable="true"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="company">
+            <model:integer name="buffer"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="company">
+            <model:dictionary name="paymentForm" dictionary="paymentForm"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="company">
+            <model:hasMany name="deliveries" joinField="supplier"
+                           plugin="deliveries" model="delivery" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="productCompanies" joinField="product"
+                           plugin="deliveries" model="companyProduct" cascade="delete"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="productsFamilyCompanies" joinField="product"
+                           plugin="deliveries" model="companyProductsFamily" cascade="delete"/>
+        </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="deliveries" joinField="location"
-                model="delivery" plugin="deliveries" cascade="nullify" />
+                           model="delivery" plugin="deliveries" cascade="nullify"/>
         </model:model-field>
-		
-		<model:model-hook plugin="basic" model="company">
-			<model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
-				method="onDelete" />
-		</model:model-hook>
 
-		<menu:menu-category name="requirements" />
+        <model:model-hook plugin="basic" model="company">
+            <model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
+                            method="onDelete"/>
+        </model:model-hook>
 
-		<menu:menu-item name="deliveries" category="requirements"
-			view="deliveriesList" />
-		<menu:menu-item name="supplyItems" category="requirements"
-			view="supplyItems" />
+        <menu:menu-category name="requirements"/>
 
-		<view:view resource="view/companyProductDetails.xml" />
-		<view:view resource="view/companyProductsFamilyDetails.xml" />
-		<view:view resource="view/deliveriesList.xml" />
-		<view:view resource="view/deliveryDetails.xml" />
-		<view:view resource="view/deliveredProductDetails.xml" />
-		<view:view resource="view/orderedProductDetails.xml" />
-		<view:view resource="view/supplyItems.xml" />
-		<view:view resource="view/supplyParameters.xml" />
-		<view:view resource="view/parameterOrderColumnDetails.xml" />
-		
-		<view:view-tab resource="view/tabExtensions/companyDetails.xml" />
-		<view:view-tab resource="view/tabExtensions/companyDetailsBuffer.xml" />
-		
-		<view:view-ribbon-group resource="view/ribbonExtensions/companyDetails.xml" />
-		<view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml" />
-	
-		<view:view-listener plugin="basic" view="companyDetails"
-			component="form" event="redirectToFilteredDeliveriesList"
-			class="com.qcadoo.mes.deliveries.listeners.CompanyDetailsListenersD"
-			method="redirectToFilteredDeliveriesList" />
-			
-		<view:view-listener plugin="basic" view="parameters"
-			component="form" event="redirectToSupplyParameters"
-			class="com.qcadoo.mes.deliveries.listeners.ParametersListenersD"
-			method="redirectToSupplyParameters" />	
-	
-		<view:view-hook plugin="basic" view="companyDetails"
-			type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
-			method="updateRibbonState" />
-	
-		<view:view-hook plugin="basic" view="companyDetails"
-			type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
-			method="disabledGridWhenCompanyIsOwner" />
-			
-		<view:view-hook plugin="basic" view="companyDetails"
-			type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
-			method="disableBufferWhenCompanyIsOwner" />
+        <menu:menu-item name="deliveries" category="requirements"
+                        view="deliveriesList"/>
+        <menu:menu-item name="supplyItems" category="requirements"
+                        view="supplyItems"/>
 
-		<custom:custom class="com.qcadoo.mes.deliveries.DeliveriesOnStartupService" />
-	</modules>
-	
-	<features>
-		<end-user />
-	</features>
+        <view:view resource="view/companyProductDetails.xml"/>
+        <view:view resource="view/companyProductsFamilyDetails.xml"/>
+        <view:view resource="view/deliveriesList.xml"/>
+        <view:view resource="view/deliveryDetails.xml"/>
+        <view:view resource="view/deliveredProductDetails.xml"/>
+        <view:view resource="view/orderedProductDetails.xml"/>
+        <view:view resource="view/supplyItems.xml"/>
+        <view:view resource="view/supplyParameters.xml"/>
+        <view:view resource="view/parameterOrderColumnDetails.xml"/>
+
+        <view:view-tab resource="view/tabExtensions/companyDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/companyDetailsBuffer.xml"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/companyDetails.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>
+
+        <view:view-listener plugin="basic" view="companyDetails"
+                            component="form" event="redirectToFilteredDeliveriesList"
+                            class="com.qcadoo.mes.deliveries.listeners.CompanyDetailsListenersD"
+                            method="redirectToFilteredDeliveriesList"/>
+
+        <view:view-listener plugin="basic" view="parameters"
+                            component="form" event="redirectToSupplyParameters"
+                            class="com.qcadoo.mes.deliveries.listeners.ParametersListenersD"
+                            method="redirectToSupplyParameters"/>
+
+        <view:view-listener plugin="basic" view="productDetails" component="entityType" event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
+                            method="updateCompanyProducts"/>
+
+        <view:view-hook plugin="basic" view="companyDetails"
+                        type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
+                        method="updateRibbonState"/>
+
+        <view:view-hook plugin="basic" view="companyDetails"
+                        type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
+                        method="disabledGridWhenCompanyIsOwner"/>
+
+        <view:view-hook plugin="basic" view="companyDetails"
+                        type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
+                        method="disableBufferWhenCompanyIsOwner"/>
+
+        <custom:custom class="com.qcadoo.mes.deliveries.DeliveriesOnStartupService"/>
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
 
 </plugin>
