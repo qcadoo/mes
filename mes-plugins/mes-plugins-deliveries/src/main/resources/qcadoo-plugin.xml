@@ -176,6 +176,12 @@
                             method="onDelete"/>
         </model:model-hook>
 
+
+        <model:model-hook plugin="basic" model="product">
+            <model:onSave class="com.qcadoo.mes.deliveries.hooks.ProductHooksD"
+                          method="onSave"/>
+        </model:model-hook>
+
         <menu:menu-category name="requirements"/>
 
         <menu:menu-item name="deliveries" category="requirements"
