@@ -30,29 +30,29 @@
 
     <component name="window" type="window" reference="window">
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <template name="standardFormTemplate" excludeItems="actions.copy"/>
         </ribbon>
 
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
-                <script>
-                    <![CDATA[
-						var listener = {
-					    	onSetValue: function() {
-								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
-								
-								if (isSaved) { 
-									#{product}.setEnabled(false, true);
-								} else {
-									#{product}.setEnabled(true, true);
-								}
-							}
-						};
-						
-						#{form}.addOnChangeListener(listener);
-					]]>
-                     
-                </script>
+                <!--<script>-->
+                <!--<![CDATA[-->
+                <!--var listener = {-->
+                <!--    	onSetValue: function() {-->
+                <!--var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);-->
+                <!---->
+                <!--if (isSaved) { -->
+                <!--#{product}.setEnabled(false, true);-->
+                <!--} else {-->
+                <!--#{product}.setEnabled(true, true);-->
+                <!--}-->
+                <!--}-->
+                <!--};-->
+                <!---->
+                <!--#{form}.addOnChangeListener(listener);-->
+                <!--]]>-->
+                <!-- -->
+                <!--</script>-->
                 <component type="gridLayout" name="companyProductGridLayout"
                            columns="4" rows="2" hasBorders="false">
                     <layoutElement column="1" row="1" width="3">
