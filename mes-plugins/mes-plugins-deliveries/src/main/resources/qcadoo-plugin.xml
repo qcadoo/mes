@@ -182,6 +182,11 @@
                           method="onSave"/>
         </model:model-hook>
 
+        <model:model-hook plugin="basic" model="product">
+            <model:validatesWith class="com.qcadoo.mes.deliveries.hooks.ProductHooksD"
+                                 method="checkIfDefaultSupplierIsUnique"/>
+        </model:model-hook>
+
         <menu:menu-category name="requirements"/>
 
         <menu:menu-item name="deliveries" category="requirements"
@@ -215,9 +220,9 @@
                             class="com.qcadoo.mes.deliveries.listeners.ParametersListenersD"
                             method="redirectToSupplyParameters"/>
 
-        <view:view-listener plugin="basic" view="productDetails" component="entityType" event="onSelectedEntityChange"
+        <view:view-listener plugin="basic" view="productDetails" component="parent" event="onSelectedEntityChange"
                             class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
-                            method="updateCompanyProducts"/>
+                            method="checkIfDefaultSupplierIsUnique"/>
 
         <view:view-hook plugin="basic" view="companyDetails"
                         type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"

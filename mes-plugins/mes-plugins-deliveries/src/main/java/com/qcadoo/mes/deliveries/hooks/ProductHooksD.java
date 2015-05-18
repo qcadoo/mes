@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.CompanyProductService;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -20,6 +22,9 @@ import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class ProductHooksD {
+
+    @Autowired
+    private CompanyProductService companyProductService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -80,5 +85,28 @@ public class ProductHooksD {
             companyProductDD.save(companyProduct);
             companyProductsFamilyDD.delete(productFamilyCompany.getId());
         }
+    }
+
+    public boolean checkIfDefaultSupplierIsUnique(final DataDefinition productDD, final Entity product) {
+        Entity parent = product.getBelongsToField(ProductFields.PARENT);
+        if (parent != null) {
+            boolean familyHasDefault = companyProductService.checkIfDefaultExistsForProductFamily(parent);
+            boolean productHasDefault;
+            if (familyHasDefault) {
+                ProductFamilyElementType productType = ProductFamilyElementType.from(product);
+                if (productType.compareTo(ProductFamilyElementType.PARTICULAR_PRODUCT) == 0) {
+                    productHasDefault = companyProductService.checkIfDefaultExistsForParticularProduct(product);
+                } else {
+                    productHasDefault = companyProductService.checkIfDefaultExistsForProductFamily(product);
+                }
+                if (productHasDefault) {
+                    product.addError(productDD.getField(ProductFields.PARENT),
+                            "basic.company.message.defaultAlreadyExistsForProductAndFamily");
+                    return false;
+                }
+            }
+
+        }
+        return true;
     }
 }

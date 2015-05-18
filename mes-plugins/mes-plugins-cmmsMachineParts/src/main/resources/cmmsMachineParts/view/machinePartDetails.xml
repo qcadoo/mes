@@ -156,6 +156,9 @@
                         <criteriaModifier
                                 class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
                                 method="showProductFamilyOnly"/>
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
+                                  method="checkIfDefaultSupplierIsUnique"/>
                     </component>
                 </layoutElement>
             </component>
