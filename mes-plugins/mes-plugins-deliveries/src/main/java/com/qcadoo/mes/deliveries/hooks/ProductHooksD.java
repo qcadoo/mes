@@ -25,15 +25,17 @@ public class ProductHooksD {
     private DataDefinitionService dataDefinitionService;
 
     public void onSave(final DataDefinition dataDefinition, final Entity product) {
-        Entity productFromDB = dataDefinition.get(product.getId());
-        ProductFamilyElementType oldProductType = ProductFamilyElementType.from(productFromDB);
-        ProductFamilyElementType newProductType = ProductFamilyElementType.from(product);
+        if (product.getId() != null) {
+            Entity productFromDB = dataDefinition.get(product.getId());
+            ProductFamilyElementType oldProductType = ProductFamilyElementType.from(productFromDB);
+            ProductFamilyElementType newProductType = ProductFamilyElementType.from(product);
 
-        if (oldProductType.compareTo(newProductType) != 0) {
-            if (ProductFamilyElementType.PARTICULAR_PRODUCT.compareTo(newProductType) == 0) {
-                moveCompanyProductFamiliesToCompanyProducts(product);
-            } else if (ProductFamilyElementType.PRODUCTS_FAMILY.compareTo(newProductType) == 0) {
-                moveCompanyProductsToCompanyProductFamilies(product);
+            if (oldProductType.compareTo(newProductType) != 0) {
+                if (ProductFamilyElementType.PARTICULAR_PRODUCT.compareTo(newProductType) == 0) {
+                    moveCompanyProductFamiliesToCompanyProducts(product);
+                } else if (ProductFamilyElementType.PRODUCTS_FAMILY.compareTo(newProductType) == 0) {
+                    moveCompanyProductsToCompanyProductFamilies(product);
+                }
             }
         }
     }

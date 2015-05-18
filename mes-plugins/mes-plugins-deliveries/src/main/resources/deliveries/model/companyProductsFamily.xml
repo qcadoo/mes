@@ -33,7 +33,7 @@
 
         <belongsTo name="product" plugin="basic" model="product"
                    required="true"/>
-        <boolean name="isDefault" default="false" required="true"/>
+        <boolean name="isDefault" default="false"/>
     </fields>
     <hooks>
         <!--<validatesWith-->
