@@ -43,6 +43,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 
@@ -108,8 +109,10 @@ public class TechnologyDetailsViewHooks {
     public void disableFieldTechnologyFormAndEnabledMaster(final ViewDefinitionState view) {
         FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent master = (FieldComponent) view.getComponentByReference(TechnologyFields.MASTER);
+        LookupComponent technologyGroup = (LookupComponent) view.getComponentByReference(TechnologyFields.TECHNOLOGY_GROUP);
         boolean disabled = false;
         boolean masterDisabled = false;
+        boolean technologyGroupEnabled = false;
         if (technology.getEntityId() != null) {
             Entity entity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technology.getEntityId());
@@ -124,9 +127,16 @@ public class TechnologyDetailsViewHooks {
                 masterDisabled = true;
             }
 
+            if (TechnologyState.ACCEPTED.getStringValue().equals(state) || TechnologyState.CHECKED.getStringValue().equals(state)
+                    || TechnologyState.DRAFT.getStringValue().equals(state)) {
+                technologyGroupEnabled = true;
+            }
+
         }
 
         technology.setFormEnabled(!disabled);
+        technologyGroup.setEnabled(technologyGroupEnabled);
+        technologyGroup.requestComponentUpdateState();
         master.setEnabled(masterDisabled);
         master.requestComponentUpdateState();
     }
