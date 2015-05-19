@@ -440,8 +440,8 @@
 
                         <option type="order" column="number" direction="desc"/>
 
-                        <option type="searchable" value="number,name,plannedQuantity,usedQuantity,unit"/>
-                        <option type="orderable" value="number,name,plannedQuantity,usedQuantity,unit"/>
+                        <option type="searchable" value="number,name,usedQuantity,unit"/>
+                        <option type="orderable" value="number,name,usedQuantity,unit"/>
 
                         <option type="creatable" value="false"/>
                         <option type="deletable" value="false"/>
@@ -474,8 +474,8 @@
 
                         <option type="order" column="number" direction="desc"/>
 
-                        <option type="searchable" value="number,name,plannedQuantity,usedQuantity,unit"/>
-                        <option type="orderable" value="number,name,plannedQuantity,usedQuantity,unit"/>
+                        <option type="searchable" value="number,name,usedQuantity,unit"/>
+                        <option type="orderable" value="number,name,usedQuantity,unit"/>
 
                         <option type="creatable" value="false"/>
                         <option type="deletable" value="false"/>
