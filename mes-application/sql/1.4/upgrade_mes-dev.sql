@@ -162,3 +162,18 @@ ALTER TABLE basic_shifttimetableexception ADD COLUMN relatestoprevday boolean;
 ALTER TABLE basic_shifttimetableexception ALTER COLUMN relatestoprevday SET DEFAULT false;
 
 -- end
+
+-- ALTER TABLE technologies_technology
+-- last touched 21.05.2015 by kasi
+ALTER TABLE technologies_technology ADD COLUMN typeofproductionrecording character varying(255);
+ALTER TABLE technologies_technology ADD COLUMN justone boolean;
+ALTER TABLE technologies_technology ADD COLUMN generateproductionrecordnumberfromordernumber boolean;
+ALTER TABLE technologies_technology ADD COLUMN allowtoclose boolean;
+ALTER TABLE technologies_technology ADD COLUMN registerquantityoutproduct boolean;
+ALTER TABLE technologies_technology ADD COLUMN autocloseorder boolean;
+ALTER TABLE technologies_technology ADD COLUMN registerpiecework boolean;
+ALTER TABLE technologies_technology ADD COLUMN registerquantityinproduct boolean;
+ALTER TABLE technologies_technology ADD COLUMN registerproductiontime boolean;
+
+--end
+
