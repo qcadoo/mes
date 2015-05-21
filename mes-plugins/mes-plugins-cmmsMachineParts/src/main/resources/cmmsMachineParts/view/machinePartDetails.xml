@@ -300,43 +300,6 @@
             </component>
         </windowTab>
 
-        <windowTab name="locationMinimumStateTab">
-            <component type="gridLayout" name="locationMinimumStateGridLayout" columns="1"
-                       rows="1">
-                <layoutElement column="1" row="1">
-                    <component type="grid" name="locationMinimumStates" reference="locationMinimumStates"
-                               source="#{form}.locationMinimumStates">
-
-                        <option type="column" name="locationNumber" fields="location"
-                                expression="#location['number']" link="true"/>
-                        <option type="column" name="locationName" fields="location"
-                                expression="#location['name']" link="true"/>
-
-                        <option type="column" name="minimumState" fields="minimumState"
-                                link="true"/>
-                        <option type="column" name="optimalOrderQuantity" fields="optimalOrderQuantity"
-                                link="true"/>
-
-                        <option type="column" name="unit" fields="product"
-                                expression="#product['unit']" width="40"/>
-
-                        <option type="order" column="locationName" direction="asc"/>
-
-                        <option type="correspondingView" value="cmmsMachineParts/locationMinimumStateDetails"/>
-                        <option type="correspondingComponent" value="form"/>
-                        <option type="correspondingViewInModal" value="true"/>
-
-                        <option type="creatable" value="true"/>
-                        <option type="deletable" value="true"/>
-                        <option type="searchable"
-                                value="locationName,locationNumber,minimumState,optimalOrderQuantity"/>
-                        <option type="orderable" value="locationName,locationNumber,minimumState,optimalOrderQuantity"/>
-                    </component>
-                </layoutElement>
-
-            </component>
-        </windowTab>
-
         <windowTab name="suppliersTab">
             <component type="gridLayout" name="suppliersGridLayout" columns="5"
                        rows="6" hasBorders="false">

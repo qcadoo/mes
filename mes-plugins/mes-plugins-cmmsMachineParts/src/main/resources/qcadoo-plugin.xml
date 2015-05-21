@@ -63,6 +63,10 @@
             <plugin>materialFlowResources</plugin>
             <version>[1.4.0</version>
         </dependency>
+        <dependency>
+            <plugin>warehouseMinimalState</plugin>
+            <version>[1.4.0</version>
+        </dependency>
     </dependencies>
 
 
@@ -72,8 +76,6 @@
         <!-- view -->
         <view:view resource="view/machinePartsList.xml"/>
         <view:view resource="view/machinePartDetails.xml"/>
-
-        <view:view resource="view/locationMinimumStateDetails.xml"/>
 
         <view:view resource="view/companyProductDetails.xml"/>
         <view:view resource="view/companyProductsFamilyDetails.xml"/>
@@ -85,7 +87,6 @@
 
 
         <!-- model -->
-        <model:model model="locationMinimumState" resource="model/locationMinimumState.xml"/>
 
         <!-- model extensions -->
         <model:model-field plugin="basic" model="product">
@@ -106,18 +107,6 @@
         <model:model-field plugin="basic" model="product">
             <model:boolean name="machinePart"/>
         </model:model-field>
-
-        <model:model-field plugin="basic" model="product">
-            <model:hasMany name="locationMinimumStates" model="locationMinimumState" plugin="cmmsMachineParts"
-                           joinField="product"
-                           cascade="delete" copyable="false"/>
-        </model:model-field>
-
-        <view:view-grid-column plugin="materialFlowResources"
-                               view="warehouseStocksList" component="grid">
-            <view:column name="minimumState" fields="minimumState" orderable="true"
-                         searchable="true"/>
-        </view:view-grid-column>
 
         <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"
                             component="form" event="redirectToWarehouseStateList"

@@ -81,6 +81,13 @@
         <model:model model="warehouseMinimumStateMulti" resource="model/warehouseMinimumStateMulti.xml"/>
         <!-- model extensions -->
 
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="warehouseMinimumState" model="warehouseMinimumState" plugin="warehouseMinimalState"
+                           joinField="product"
+                           cascade="delete" copyable="false"/>
+        </model:model-field>
+
         <model:model-field model="product" plugin="basic">
             <model:manyToMany name="warehouseMinimumStateMulti" model="warehouseMinimumStateMulti" joinField="products" plugin="warehouseMinimalState"/>
         </model:model-field>

@@ -106,14 +106,15 @@
                         <component type="grid" name="products" reference="products"
                                    source="#{form}.products">
                             <option type="column" name="number" fields="number"/>
+                            <option type="column" name="name" fields="name"/>
 
 
                             <option type="order" column="number" direction="asc"/>
 
                             <option type="searchable"
-                                    value="number"/>
+                                    value="number, name"/>
                             <option type="orderable"
-                                    value="number"/>
+                                    value="number, name"/>
 
                             <option type="weakRelation" value="true"/>
                             <option type="correspondingLookup" value="productsLookup"/>

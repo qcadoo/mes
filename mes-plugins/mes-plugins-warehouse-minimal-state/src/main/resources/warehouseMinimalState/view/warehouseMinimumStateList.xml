@@ -68,7 +68,7 @@
             <option type="correspondingComponent" value="form"/>
             <option type="correspondingViewInModal" value="true"/>
 
-            <option type="creatable" value="true"/>
+            <option type="creatable" value="false"/>
             <option type="deletable" value="true"/>
             <option type="searchable" value="locationName,locationNumber,minimumState,optimalOrderQuantity"/>
             <option type="orderable" value="locationName,locationNumber,minimumState,optimalOrderQuantity"/>
