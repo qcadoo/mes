@@ -1,0 +1,24 @@
+<model name="warehouseMinimumState" auditable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="product" plugin="basic" model="product"
+                   required="true"/>
+        <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
+        <decimal name="minimumState">
+            <validatesRange from="0" exclusively="false" />
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="optimalOrderQuantity">
+            <validatesRange from="0" exclusively="true" />
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+    </fields>
+
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.warehouseMinimalState.hooks.WarehouseMinimumStateHooks" method="validatesWith"/>
+    </hooks>        
+
+</model>

@@ -66,6 +66,7 @@
 		<module>mes-plugins-cat-numbers-in-deliveries</module>
 		<module>mes-plugins-master-orders</module>
 		<module>mes-pack-open-source</module>
+		<module>mes-plugins-warehouse-minimal-state</module>
 	</modules>
 
 </project>
