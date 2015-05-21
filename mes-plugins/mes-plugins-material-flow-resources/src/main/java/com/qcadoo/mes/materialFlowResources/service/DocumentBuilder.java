@@ -31,6 +31,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -141,7 +142,7 @@ public class DocumentBuilder {
     }
 
     /**
-     * Creates position with given field values
+     * Creates position with given field values (with the same base and given unit)
      * 
      * @param product
      * @param quantity
@@ -149,6 +150,7 @@ public class DocumentBuilder {
      * @param batch
      * @param expirationDate
      * @param productionDate
+     * @param resource
      * @return Created position entity
      */
     public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal price, final String batch,
@@ -159,11 +161,36 @@ public class DocumentBuilder {
 
         position.setField(PositionFields.PRODUCT, product);
         position.setField(PositionFields.QUANTITY, quantity);
+        position.setField(PositionFields.GIVEN_QUANTITY, quantity);
+        position.setField(PositionFields.GIVEN_UNIT, product.getStringField(ProductFields.UNIT));
         position.setField(PositionFields.PRICE, price);
         position.setField(PositionFields.BATCH, batch);
         position.setField(PositionFields.PRODUCTION_DATE, productionDate);
         position.setField(PositionFields.EXPIRATION_DATE, expirationDate);
         position.setField(PositionFields.RESOURCE, resource);
+        return position;
+    }
+
+    /**
+     * Creates position with given field values (with different base unit and given unit)
+     *
+     * @param product
+     * @param quantity
+     * @param givenQuantity
+     * @param givenUnit
+     * @param price
+     * @param batch
+     * @param expirationDate
+     * @param productionDate
+     * @param resource
+     * @return Created position entity
+     */
+    public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
+            final String givenUnit, final BigDecimal price, final String batch, final Date productionDate,
+            final Date expirationDate, final Entity resource) {
+        Entity position = createPosition(product, quantity, price, batch, productionDate, expirationDate, resource);
+        position.setField(PositionFields.GIVEN_QUANTITY, quantity);
+        position.setField(PositionFields.GIVEN_UNIT, givenUnit);
         return position;
     }
 

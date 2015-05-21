@@ -41,4 +41,5 @@ public class PositionModelHooks {
                     materialFlowResourceService.getAttributesForPosition(position, warehouse));
         }
     }
+
 }

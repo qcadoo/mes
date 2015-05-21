@@ -28,40 +28,44 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <belongsTo name="document" model="document" />
+        <belongsTo name="document" model="document"/>
         <belongsTo name="product" model="product" plugin="basic"
-                   required="true" />
-        <decimal name="quantity" required="true" >
-            <validatesRange from="0" exclusively="true" />
-            <validatesUnscaledValue max="9" />
-            <validatesScale max="5" />
+                   required="true"/>
+        <decimal name="quantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
         </decimal>
         <decimal name="givenQuantity">
-            <validatesRange from="0" exclusively="true" />
-            <validatesUnscaledValue max="9" />
-            <validatesScale max="5" />
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
         </decimal>
-        <decimal name="price" default="0" >
-            <validatesRange from="0" />
+        <decimal name="price" default="0">
+            <validatesRange from="0"/>
         </decimal>
-        <string name="batch" />
+        <string name="batch"/>
         <string name="unit" persistent="false"/>
         <dictionary name="givenUnit" dictionary="units"/>
 
-        <date name="productionDate" />
-        <date name="expirationDate" />
+        <date name="productionDate"/>
+        <date name="expirationDate"/>
         <priority name="number" scope="document"/>
         <belongsTo name="resource" model="resource"/>
         <hasMany name="attributeValues" joinField="position" model="attributeValue" cascade="delete"/>
-    	<dictionary name="storageLocation" dictionary="storageLocations" />
+        <dictionary name="storageLocation" dictionary="storageLocations"/>
 
-    	<enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
-    	<enum name="state" values="01draft,02accepted" default="01draft"/>
+        <enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
+        <enum name="state" values="01draft,02accepted" default="01draft"/>
     </fields>
     <hooks>
-    	<onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>
+        <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>
         <onSave class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onSave"/>
-        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators" method="checkAttributesRequirement" />
-        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators" method="validateDates" />
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators"
+                       method="checkAttributesRequirement"/>
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators"
+                       method="validateDates"/>
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators"
+                       method="validateResources"/>
     </hooks>
 </model>

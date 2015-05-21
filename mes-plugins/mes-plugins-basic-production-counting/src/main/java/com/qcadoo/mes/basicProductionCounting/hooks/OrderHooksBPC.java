@@ -45,6 +45,7 @@ public class OrderHooksBPC {
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
         updateProductionCountingQuantitiesAndOperationRuns(order);
+        updateProducedQuantity(order);
     }
 
     private void updateProductionCountingQuantitiesAndOperationRuns(final Entity order) {
@@ -62,6 +63,15 @@ public class OrderHooksBPC {
                     basicProductionCountingService.associateProductionCountingQuantitiesWithBasicProductionCountings(order);
                 }
             }
+        }
+    }
+
+    private void updateProducedQuantity(Entity order) {
+        String state = order.getStringField(OrderFields.STATE);
+
+        if (OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state)
+                || OrderStateStringValues.INTERRUPTED.equals(state)) {
+            basicProductionCountingService.updateProducedQuantity(order);
         }
     }
 
