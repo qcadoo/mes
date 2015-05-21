@@ -190,14 +190,54 @@
 				joinField="order" plugin="productionCounting" cascade="delete" />
 		</model:model-field>
 
+		<model:model-field model="technology" plugin="technologies">
+			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:boolean name="registerProductionTime" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:boolean name="registerPiecework" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:boolean name="registerQuantityInProduct" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:boolean name="registerQuantityOutProduct" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:boolean name="justOne" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:boolean name="allowToClose" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:boolean name="autoCloseOrder" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:boolean name="generateProductionRecordNumberFromOrderNumber" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:hasMany name="productionTrackings" model="productionTracking"
+						   joinField="order" plugin="productionCounting" cascade="delete" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:hasMany name="productionBalances" model="productionBalance"
+						   joinField="order" plugin="productionCounting" cascade="delete" />
+		</model:model-field>
+		<model:model-field model="technology" plugin="technologies">
+			<model:hasMany name="productionTrackingReports" model="productionTrackingReport"
+						   joinField="order" plugin="productionCounting" cascade="delete" />
+		</model:model-field>
+
 		<model:model-hook model="parameter" plugin="basic">
 			<model:onCreate
 				class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
 				method="onCreate" />
 		</model:model-hook>
 
-		<model:model-hook model="order" plugin="orders">
-			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC"
+		<model:model-hook model="technology" plugin="technologies">
+			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.TechnologyHookPC"
 				method="onCreate" />
 		</model:model-hook>
 
@@ -226,6 +266,8 @@
 		<view:view resource="view/staffWorkTimeDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
+
 		<view:resource uri="public/**/*" />
 
 		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
@@ -243,6 +285,27 @@
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
 			method="changeDoneQuantityAndAmountOfProducedQuantityFieldState" />
+
+		<view:view-hook plugin="technologies" view="technologyDetails"
+						type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
+						method="setOrderDefaultValues" />
+		<view:view-hook plugin="technologies" view="technologyDetails"
+						type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
+						method="checkTypeOfProductionRecording" />
+		<view:view-hook plugin="technologies" view="technologyDetails"
+						type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
+						method="changeDoneQuantityAndAmountOfProducedQuantityFieldState" />
+
+		<view:view-listener plugin="orders" view="orderDetails"
+							component="technologyPrototype"
+							event="onSelectedEntityChange"
+							class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
+							method="fillPCParameters"/>
+		<view:view-listener plugin="orders" view="orderDetails"
+							component="product"
+							event="onSelectedEntityChange"
+							class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
+							method="fillPCParameters"/>
 
 		<custom:custom
 			class="com.qcadoo.mes.productionCounting.states.module.ProductionTrackingStateServiceRegisterModule" />
