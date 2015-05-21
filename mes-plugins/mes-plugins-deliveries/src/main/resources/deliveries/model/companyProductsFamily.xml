@@ -33,12 +33,12 @@
 
         <belongsTo name="product" plugin="basic" model="product"
                    required="true"/>
-        <boolean name="isDefault" default="false" required="true"/>
+        <boolean name="isDefault" default="false"/>
     </fields>
     <hooks>
-        <validatesWith
-                class="com.qcadoo.mes.deliveries.hooks.CompanyProductsFamilyHooks"
-                method="checkIfProductIsProductsFamily"/>
+        <!--<validatesWith-->
+        <!--class="com.qcadoo.mes.deliveries.hooks.CompanyProductsFamilyHooks"-->
+        <!--method="checkIfProductIsProductsFamily"/>-->
         <validatesWith
                 class="com.qcadoo.mes.deliveries.hooks.CompanyProductsFamilyHooks"
                 method="checkIfProductsFamilyIsNotAlreadyUsed"/>

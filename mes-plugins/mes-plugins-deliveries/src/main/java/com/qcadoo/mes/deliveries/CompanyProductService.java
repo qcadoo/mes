@@ -52,4 +52,8 @@ public interface CompanyProductService {
     boolean checkIfDefaultAlreadyExists(final Entity companyProduct);
 
     boolean checkIfDefaultExistsForFamily(final Entity companyProduct);
+
+    boolean checkIfDefaultExistsForParticularProduct(final Entity product);
+
+    boolean checkIfDefaultExistsForProductFamily(final Entity product);
 }

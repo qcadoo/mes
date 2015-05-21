@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.3
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="productSubstituteComponentDetails" modelName="substituteComponent" modelPlugin="basic">
+
+    <component type="window" name="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew"/>
+        </ribbon>
+
+        <component type="form" name="substituteComponent" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="1"
+                       rows="3">
+                <layoutElement column="1" row="1">
+                    <component type="lookup" name="product" field="product"
+                               reference="product">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="200"/>
+                        <option type="column" name="ean" fields="ean"/>
+
+                        <option type="searchable" value="name,ean"/>
+                        <option type="orderable" value="name,ean"/>
+
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.util.UnitService"
+                                  method="fillProductUnit"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP"
+                                method="showMachinePartsWithoutGivenProduct"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="input" name="quantity" field="quantity">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="input" name="unit" reference="unit"
+                               defaultEnabled="false"/>
+                </layoutElement>
+            </component>
+
+            <option type="header" value="true"/>
+            <option type="expression" value="#product['name'] + ' x ' + #quantity"/>
+        </component>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.basic.util.UnitService"
+                      method="fillProductUnitBeforeRender"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductSubstituteComponentDetailsHooks"
+                      method="fillFilterValues"/>
+    </hooks>
+</view>

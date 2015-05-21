@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view name="companyProductsFamilyDetails" modelName="companyProductsFamily"
+<view name="companyProductsFamilyDetails" modelName="companyProductsFamily" modelPlugin="deliveries"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -42,9 +42,9 @@
                 <!--var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);-->
                 <!---->
                 <!--if (isSaved) { -->
-                <!--#{product}.setEnabled(false, true);-->
+                <!--#{company}.setEnabled(false, true);-->
                 <!--} else {-->
-                <!--#{product}.setEnabled(true, true);-->
+                <!--#{company}.setEnabled(true, true);-->
                 <!--}-->
                 <!--}-->
                 <!--};-->
@@ -56,8 +56,8 @@
                 <component type="gridLayout" name="companyProductsFamilyGridLayout"
                            columns="4" rows="2" hasBorders="false">
                     <layoutElement column="1" row="1" width="3">
-                        <component type="lookup" name="product" field="product"
-                                   reference="product">
+                        <component type="lookup" name="company" field="company"
+                                   reference="company">
                             <option type="column" name="name" fields="name" link="true"/>
 
                             <option type="searchable" value="number,name"/>
@@ -65,8 +65,9 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
-                            <criteriaModifier class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
-                                              method="showProductFamilyOnly"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.CompanyCriteriaModifiersCMP"
+                                    method="hideOwnerCompany"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">

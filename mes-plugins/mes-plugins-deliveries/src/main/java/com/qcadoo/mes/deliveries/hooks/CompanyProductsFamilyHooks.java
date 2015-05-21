@@ -62,7 +62,8 @@ public class CompanyProductsFamilyHooks {
         if (!companyProductService.checkIfProductIsNotUsed(companyProductsFamily, PRODUCT, COMPANY, PRODUCTS_FAMILIES)) {
             companyProductsFamily.addError(companyProductsFamilyDD.getField(PRODUCT),
                     "basic.company.message.productsFamilyIsAlreadyUsed");
-
+            companyProductsFamily.addError(companyProductsFamilyDD.getField(COMPANY),
+                    "basic.company.message.companyIsAlreadyUsed");
             return false;
         }
 
