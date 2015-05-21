@@ -230,3 +230,53 @@ ALTER TABLE deliveries_companyproductsfamily ADD COLUMN isdefault boolean;
 ALTER TABLE deliveries_companyproductsfamily ALTER COLUMN isdefault SET DEFAULT false;
 
 -- end
+
+-- Table: warehouseminimalstate_warehouseminimumstate
+
+-- DROP TABLE warehouseminimalstate_warehouseminimumstate;
+
+CREATE TABLE warehouseminimalstate_warehouseminimumstate
+(
+  id bigint NOT NULL,
+  product_id bigint,
+  location_id bigint,
+  minimumstate numeric(12,5),
+  optimalorderquantity numeric(12,5),
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  createuser character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT warehouseminimalstate_warehouseminimumstate_pkey PRIMARY KEY (id),
+  CONSTRAINT warehouseminimumstate_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT warehouseminimumstate_location_fkey FOREIGN KEY (location_id)
+      REFERENCES materialflow_location (id) DEFERRABLE
+);
+
+CREATE TABLE warehouseminimalstate_warehouseminimumstatemulti
+(
+  id bigint NOT NULL,
+  location_id bigint,
+  minimumstate numeric(12,5),
+  optimalorderquantity numeric(12,5),
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  createuser character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT warehouseminimalstate_warehouseminimumstatemulti_pkey PRIMARY KEY (id),
+  CONSTRAINT warehouseminimumstatemulti_location_fkey FOREIGN KEY (location_id)
+      REFERENCES materialflow_location (id) DEFERRABLE
+);
+
+CREATE TABLE jointable_product_warehouseminimumstatemulti
+(
+  product_id bigint NOT NULL,
+  warehouseminimumstatemulti_id bigint NOT NULL,
+  CONSTRAINT jointable_product_warehouseminimumstatemulti_pkey PRIMARY KEY (warehouseminimumstatemulti_id, product_id),
+  CONSTRAINT warehouseminimalstate_warehouseminimumstatemulti_product_fkey FOREIGN KEY (warehouseminimumstatemulti_id)
+      REFERENCES warehouseminimalstate_warehouseminimumstatemulti (id) DEFERRABLE,
+  CONSTRAINT basic_product_warehouseminimumstatemulti_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE
+);
+
+-- end
