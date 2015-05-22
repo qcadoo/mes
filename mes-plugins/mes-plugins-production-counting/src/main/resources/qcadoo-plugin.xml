@@ -241,6 +241,11 @@
 				method="onCreate" />
 		</model:model-hook>
 
+		<model:model-hook model="order" plugin="orders">
+			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC"
+							method="onCreate" />
+		</model:model-hook>
+
 		<model:model-hook model="productionCountingQuantity"
 			plugin="basicProductionCounting">
 			<model:onView
