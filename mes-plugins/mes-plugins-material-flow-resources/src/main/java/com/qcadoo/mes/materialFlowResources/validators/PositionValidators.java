@@ -87,6 +87,9 @@ public class PositionValidators {
 
     public boolean validateResources(final DataDefinition positionDD, final Entity position) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
+        if (DocumentState.of(document).compareTo(DocumentState.ACCEPTED) == 0) {
+            return true;
+        }
         DocumentType type = DocumentType.of(document);
         if (DocumentType.TRANSFER.equals(type) || DocumentType.RELEASE.equals(type)
                 || DocumentType.INTERNAL_OUTBOUND.equals(type)) {
