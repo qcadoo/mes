@@ -66,6 +66,28 @@
 
         <windowTab name="mainTab">
             <component type="form" name="product" reference="form">
+                <script>
+                    <![CDATA[
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								var warehouseState = #{window}.getRibbonItem("warehouseState.warehouseState");
+
+								if (! value.content.entityId) {
+									warehouseState.disable();
+									return;
+								} else {
+									warehouseState.enable();
+
+							    }
+							    }
+						    });
+
+					]]>
+                </script>
+
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="7">
                     <layoutElement column="1" row="1">
