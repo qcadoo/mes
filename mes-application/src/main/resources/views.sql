@@ -33,11 +33,3 @@ CREATE OR REPLACE FUNCTION createWarehouseStockView () RETURNS boolean AS 'BEGIN
 SELECT createWarehouseStockView();
 
 DROP FUNCTION createWarehouseStockView ();
-
--- Create sequences for existing tables
-CREATE OR REPLACE FUNCTION update_sequence () RETURNS VOID AS 'DECLARE row record; BEGIN FOR row IN SELECT tablename FROM pg_tables p INNER JOIN information_schema.columns c on p.tablename = c.table_name WHERE c.table_schema = ''public'' and p.schemaname = ''public''  and c.column_name = ''id'' and data_type = ''bigint'' LOOP EXECUTE ''ALTER TABLE '' || quote_ident(row.tablename) || '' OWNER TO postgres;''; EXECUTE ''CREATE SEQUENCE '' || quote_ident(row.tablename) || ''_id_seq;''; EXECUTE ''ALTER TABLE '' || quote_ident(row.tablename) || '' ALTER COLUMN id SET DEFAULT nextval('''''' || quote_ident(row.tablename) || ''_id_seq'''');''; EXECUTE ''ALTER SEQUENCE '' || quote_ident(row.tablename) || ''_id_seq OWNED BY '' || quote_ident(row.tablename) || ''.id''; EXECUTE ''WITH mx AS (SELECT max(id) AS mx FROM '' || quote_ident(row.tablename) || '') SELECT setval( '''''' || quote_ident(row.tablename) || ''_id_seq'''' , mx.mx) FROM mx''; END LOOP; END;' LANGUAGE 'plpgsql';
-
-SELECT * FROM update_sequence();
-
-DROP FUNCTION update_sequence ();
--- end
