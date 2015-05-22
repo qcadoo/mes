@@ -58,7 +58,7 @@
             <component type="form" name="product" reference="form">
 
                 <component type="gridLayout" name="gridLayout" columns="1"
-                           rows="6" hasBorders="false">
+                           rows="4" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="location" reference="location"
                                    field="location">
