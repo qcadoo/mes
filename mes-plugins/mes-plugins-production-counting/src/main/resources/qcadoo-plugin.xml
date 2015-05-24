@@ -297,9 +297,6 @@
 		<view:view-hook plugin="technologies" view="technologyDetails"
 						type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
 						method="checkTypeOfProductionRecording" />
-		<view:view-hook plugin="technologies" view="technologyDetails"
-						type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
-						method="changeDoneQuantityAndAmountOfProducedQuantityFieldState" />
 
 		<view:view-listener plugin="orders" view="orderDetails"
 							component="technologyPrototype"

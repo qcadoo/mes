@@ -106,8 +106,4 @@ public class TechnologyDetailsHooksPC {
         fieldComponent.setFieldValue(value);
     }
 
-    public void changeDoneQuantityAndAmountOfProducedQuantityFieldState(final ViewDefinitionState view) {
-        productionCountingService.changeDoneQuantityAndAmountOfProducedQuantityFieldState(view);
-    }
-
 }

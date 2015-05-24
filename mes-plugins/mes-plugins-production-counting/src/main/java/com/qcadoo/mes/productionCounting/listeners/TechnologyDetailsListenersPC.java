@@ -55,8 +55,6 @@ public class TechnologyDetailsListenersPC {
                 || productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
             productionCountingService.setComponentsState(view, L_ORDER_FIELD_NAMES, true, true);
         }
-
-        productionCountingService.changeDoneQuantityAndAmountOfProducedQuantityFieldState(view);
     }
 
 }
