@@ -25,47 +25,215 @@
 
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="workstationDetails" modelName="workstation">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="workstationDetails" modelName="workstation">
 
-	<component type="window" name="window">
+    <component type="window" name="window">
 
-		<ribbon>
-			<template name="standardFormTemplate" />
-		</ribbon>
+        <ribbon>
+            <template name="standardFormTemplate"/>
 
-		<component type="form" name="workstation" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="6">
-				<layoutElement column="1" row="1">
-					<component type="input" name="number" field="number">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" height="2">
-					<component type="textarea" name="name" field="name" />
-				</layoutElement>
-				<layoutElement column="1" row="4" height="2">
-					<component type="textarea" name="description" field="description" />
-				</layoutElement>
-				<layoutElement column="1" row="6">
-					<component type="lookup" name="workstationType" field="workstationType"
-						reference="workstationType">
-						<option type="column" name="name" fields="name" link="true" />
+            <group name="atachments">
+                <bigButton name="downloadAtachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAtachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="form" name="workstation" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="6">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" height="2">
+                        <component type="textarea" name="description" field="description"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="lookup" name="workstationType" field="workstationType"
+                                   reference="workstationType">
+                            <option type="column" name="name" fields="name" link="true"/>
 
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-					</component>
-				</layoutElement>
-			</component>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.basic.criteriaModifiers.WorkstationTypeCriteriaModifiers"
+                                    method="showWorkstationTypesWithoutSubassembly"/>
+                        </component>
+                    </layoutElement>
 
-			<option type="header" value="true" />
-			<option type="expression" value="#name" />
-		</component>
+                    <layoutElement column="2" row="1">
+                        <component type="input" name="serialNumber" field="serialNumber" reference="serialNumber"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="2">
+                        <component type="input" name="udtNumber" field="udtNumber" reference="udtNumber"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="3">
+                        <component type="input" name="series" field="series" reference="series"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
+                        <component type="input" name="producer" field="producer" reference="producer"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="5">
+                        <component type="calendar" name="productionDate" field="productionDate"
+                                   reference="productionDate"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="6">
+                        <component type="input" name="wnkNumber" field="wnkNumber" reference="wnkNumber"/>
+                    </layoutElement>
+                </component>
 
-	</component>
+                <option type="header" value="true"/>
+                <option type="expression" value="#name"/>
+
+                <listener event="downloadAtachment" method="downloadAtachment"
+                          class="com.qcadoo.mes.basic.listeners.WorkstationDetailsListeners"/>
+            </component>
+        </windowTab>
+        <windowTab name="companiesTab" reference="companiesTab">
+            <component type="gridLayout" name="companiesGridLayout"
+                       columns="2" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="lookup" name="companiesLookup" reference="companiesLookup"
+                               field="#{form}.companies" defaultVisible="false" persistent="false"
+                               hasLabel="false">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="100"/>
+                        <option type="column" name="city" fields="city" link="true"
+                                width="100"/>
+
+                        <option type="searchable" value="number,name,city"/>
+                        <option type="orderable" value="number,name,city"/>
+
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <option type="multiselect" value="true"/>
+                    </component>
+                    <component type="grid" name="companies" reference="companies"
+                               source="#{form}.companies">
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name" width="100"/>
+                        <option type="column" name="city" fields="city"
+                                width="100"/>
+                        <option type="searchable" value="number,name,city"/>
+                        <option type="orderable" value="number,name,city"/>
+
+                        <option type="order" column="number" direction="asc"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="companiesLookup"/>
+
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="atachments">
+            <component type="gridLayout" name="gridsLayout" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" height="6">
+
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="basic/multiUpload.jsp"/>
+                    </component>
+                    <component type="input" name="workstationIdForMultiUpload"
+                               reference="workstationIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                    <component type="input" name="workstationMultiUploadLocale"
+                               reference="workstationMultiUploadLocale" defaultVisible="false">
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="attachments"
+                               reference="attachments" source="#{form}.attachments">
+                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="subassembliesTab" reference="subassembliesTab">
+            <component type="gridLayout" name="subassembliesGridLayout"
+                       columns="2" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="lookup" name="subassembliesLookup" reference="subassembliesLookup"
+                               field="#{form}.subassemblies" defaultVisible="false" persistent="false"
+                               hasLabel="false">
+                        <option type="column" name="name" fields="name" link="true"
+                                />
+                        <option type="column" name="workstationType" fields="workstationType" link="true"
+                                expression="#workstationType?.get('number')"/>
+
+                        <option type="searchable" value="number,name,workstationType"/>
+                        <option type="orderable" value="number,name,workstationType"/>
+
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <option type="multiselect" value="true"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.basic.criteriaModifiers.SubassemblyCriteriaModifiers"
+                                method="showSubassembliesWithoutWorkstation"/>
+                    </component>
+                    <component type="grid" name="subassemblies" reference="subassemblies"
+                               source="#{form}.subassemblies">
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name" width="100"/>
+                        <option type="column" name="workstationType" fields="workstationType" link="true"
+                                expression="#workstationType?.get('number')"/>
+                        <option type="searchable" value="number,name,workstationType"/>
+                        <option type="orderable" value="number,name,workstationType"/>
+
+                        <option type="order" column="number" direction="asc"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="subassembliesLookup"/>
+
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+    </component>
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.basic.hooks.WorkstationDetailsHooks"
+                method="setWorkstationIdForMultiUploadField"/>
+    </hooks>
 
 </view>

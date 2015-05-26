@@ -156,6 +156,8 @@
 							width="200" />
 						<option type="column" name="type" fields="type" link="false"
 							width="200" />
+						<option type="column" name="relatesToPrevDay" fields="relatesToPrevDay" link="false"
+							width="200" />
 							
 						<option type="order" column="fromDate" direction="desc" />
 						

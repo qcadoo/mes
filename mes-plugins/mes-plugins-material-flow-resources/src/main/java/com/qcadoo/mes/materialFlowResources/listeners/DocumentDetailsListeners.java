@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -294,8 +296,11 @@ public class DocumentDetailsListeners {
                             BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
                             position.setField(PositionFields.QUANTITY, convertedQuantity);
                         } else {
-                            position.addError(position.getDataDefinition().getField(PositionFields.GIVEN_QUANTITY),
-                                    "materialFlowResources.position.validate.error.missingUnitConversion");
+
+                            if (!givenQuantityField.isHasError()) {
+                                position.addError(position.getDataDefinition().getField(PositionFields.GIVEN_QUANTITY),
+                                        "materialFlowResources.position.validate.error.missingUnitConversion");
+                            }
                             position.setField(PositionFields.QUANTITY, null);
                         }
                     }
@@ -305,6 +310,8 @@ public class DocumentDetailsListeners {
             } else {
                 position.setField(PositionFields.QUANTITY, null);
             }
+            String unit = product.getStringField(UNIT);
+            position.setField(PositionFields.UNIT, unit);
             positionForm.setEntity(position);
         }
 

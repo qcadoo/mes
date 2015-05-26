@@ -310,19 +310,20 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
         String state = order.getStringField(OrderFields.STATE);
 
-        if (OrderStateStringValues.PENDING.equals(state) || OrderStateStringValues.ACCEPTED.equals(state)) {
-            doneQuantityField.setEnabled(false);
-            amountOfProductProducedField.setEnabled(false);
-        } else {
+        if(OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED.equals(state)){
             String typeOfProductionRecording = (String) typeOfProductionRecordingField.getFieldValue();
 
             if (checkIfTypeOfProductionRecordingIsEmptyOrBasic(typeOfProductionRecording)) {
                 doneQuantityField.setEnabled(true);
-                amountOfProductProducedField.setEnabled(true);
+                amountOfProductProducedField.setEnabled(false);
             } else {
                 doneQuantityField.setEnabled(false);
                 amountOfProductProducedField.setEnabled(false);
             }
+
+        } else {
+            doneQuantityField.setEnabled(false);
+            amountOfProductProducedField.setEnabled(false);
         }
     }
 

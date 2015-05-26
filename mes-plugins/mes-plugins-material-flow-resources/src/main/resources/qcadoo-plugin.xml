@@ -25,11 +25,11 @@
 
 -->
 <plugin plugin="materialFlowResources" group="flow" version="${qcadoo.plugin.version}"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-		xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-		xmlns:menu="http://schema.qcadoo.org/modules/menu"
-		xmlns:localization="http://schema.qcadoo.org/modules/localization"
-		xsi:schemaLocation="http://schema.qcadoo.org/plugin
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
 		http://schema.qcadoo.org/plugin.xsd 
 		http://schema.qcadoo.org/modules/model 
 		http://schema.qcadoo.org/modules/model.xsd 
@@ -40,183 +40,188 @@
 		http://schema.qcadoo.org/modules/localization 
 		http://schema.qcadoo.org/modules/localization.xsd">
 
-	<information>
-		<name>MES - Material Flow Resources Module</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com</url>
-		</vendor>
-		<description>Adds the warehouse location type which can handle resource management.</description>
-		<license>AGPL</license>
-	</information>
+    <information>
+        <name>MES - Material Flow Resources Module</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com</url>
+        </vendor>
+        <description>Adds the warehouse location type which can handle resource management.</description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>materialFlow</plugin>
-			<version>[1.1.7</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <plugin>materialFlow</plugin>
+            <version>[1.1.7</version>
+        </dependency>
+    </dependencies>
 
-	<modules>
-		<localization:translation path="locales" />
-		
-		<model:dictionary name="storageLocations"/>
-		
-		<model:model model="resource" resource="model/resource.xml" />
-        <model:model model="document" resource="model/document.xml" />
-        <model:model model="position" resource="model/position.xml" />
-        <model:model model="warehouseStock" resource="model/warehouseStock.xml" />
-		<model:model model="resourceCorrection" resource="model/resourceCorrection.xml" />
-		<model:model model="attribute" resource="model/attribute.xml" />
-		<model:model model="attributeValue" resource="model/attributeValue.xml" />
+    <modules>
+        <localization:translation path="locales"/>
 
-		<model:model-field plugin="basic" model="parameter">
-			<model:enum name="changeDateWhenTransferToWarehouseType"
-				values="01never,02validateWithResources" default="01never" />
-		</model:model-field>
-		
-		<model:model-field plugin="materialFlow" model="transfer">
-			<model:decimal name="price" default="0" />
-		</model:model-field>
-		
-		<model:model-field plugin="materialFlow" model="location">
-			<model:hasMany name="resources" model="resource"
-			plugin="materialFlowResources" joinField="location" cascade="delete"/>
-		</model:model-field>
+        <model:dictionary name="storageLocations"/>
+
+        <model:model model="resource" resource="model/resource.xml"/>
+        <model:model model="document" resource="model/document.xml"/>
+        <model:model model="position" resource="model/position.xml"/>
+        <model:model model="warehouseStock" resource="model/warehouseStock.xml"/>
+        <model:model model="resourceCorrection" resource="model/resourceCorrection.xml"/>
+        <model:model model="attribute" resource="model/attribute.xml"/>
+        <model:model model="attributeValue" resource="model/attributeValue.xml"/>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="changeDateWhenTransferToWarehouseType"
+                        values="01never,02validateWithResources" default="01never"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="transfer">
+            <model:decimal name="price" default="0"/>
+        </model:model-field>
+
         <model:model-field plugin="materialFlow" model="location">
-            <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo,05manual" default="01fifo" />
+            <model:hasMany name="resources" model="resource"
+                           plugin="materialFlowResources" joinField="location" cascade="delete"/>
         </model:model-field>
         <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requirePrice" />
+            <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo,05manual" default="01fifo"/>
         </model:model-field>
         <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requireBatch" />
+            <model:boolean name="requirePrice"/>
         </model:model-field>
         <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requireProductionDate" />
+            <model:boolean name="requireBatch"/>
         </model:model-field>
         <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requireExpirationDate" />
+            <model:boolean name="requireProductionDate"/>
         </model:model-field>
-        
         <model:model-field plugin="materialFlow" model="location">
-			<model:hasMany name="resourceCorrections" model="resourceCorrection"
-			plugin="materialFlowResources" joinField="location" cascade="delete"/>
-		</model:model-field>
-		
+            <model:boolean name="requireExpirationDate"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="resourceCorrections" model="resourceCorrection"
+                           plugin="materialFlowResources" joinField="location" cascade="delete"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
-			<model:hasMany name="resourceCorrections" model="resourceCorrection"
-			plugin="materialFlowResources" joinField="product" cascade="delete"/>
-		</model:model-field>
-		
-		<model:model-field plugin="materialFlow" model="location">
-			<model:hasMany name="attributes" model="attribute"
-			plugin="materialFlowResources" joinField="location" cascade="delete"/>
-		</model:model-field>
-		
-			
-   		<model:model-hook plugin="basic" model="parameter">
-			<model:validatesWith
-				class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
-				method="checkIfChangeDateWhenTransferToWarehouseTypeIsSelected" />
-		</model:model-hook>
-		
-   		<model:model-hook plugin="basic" model="parameter">
-			<model:onCreate
-				class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
-				method="setChangeDateWhenTransferToWarehouseTypeDefaultValue" />
-		</model:model-hook>
-		
-   		<model:model-hook plugin="materialFlow" model="transfer">
-			<model:validatesWith
-				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
-				method="validateTransferDate" />
-		</model:model-hook>
-		
-		<model:model-hook plugin="materialFlow" model="transfer">
-			<model:validatesWith
-				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
-				method="validateTransferResources" />
-		</model:model-hook>
-		
-		<model:model-hook plugin="materialFlow" model="transfer">
-			<model:onCreate
-				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
-				method="updateDate" />
-		</model:model-hook>
-		
-		<model:model-hook plugin="materialFlow" model="transfer">
-			<model:onSave
-				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
-				method="manageResources" />
-		</model:model-hook>
-		
-		<model:model-hook plugin="materialFlow" model="transformations">
-			<model:validatesWith
-				class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
-				method="checkIfTransformationsDateIsValid" />
-		</model:model-hook>
-		
-		<model:model-hook plugin="materialFlow" model="transformations">
-			<model:validatesWith
-				class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
-				method="checkIfTransfersResourcesAreValid" />
-		</model:model-hook>
+            <model:hasMany name="resourceCorrections" model="resourceCorrection"
+                           plugin="materialFlowResources" joinField="product" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="resources" model="resource"
+                           plugin="materialFlowResources" joinField="product" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="attributes" model="attribute"
+                           plugin="materialFlowResources" joinField="location" cascade="delete"/>
+        </model:model-field>
+
+
+        <model:model-hook plugin="basic" model="parameter">
+            <model:validatesWith
+                    class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
+                    method="checkIfChangeDateWhenTransferToWarehouseTypeIsSelected"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basic" model="parameter">
+            <model:onCreate
+                    class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
+                    method="setChangeDateWhenTransferToWarehouseTypeDefaultValue"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="materialFlow" model="transfer">
+            <model:validatesWith
+                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
+                    method="validateTransferDate"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="materialFlow" model="transfer">
+            <model:validatesWith
+                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
+                    method="validateTransferResources"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="materialFlow" model="transfer">
+            <model:onCreate
+                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
+                    method="updateDate"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="materialFlow" model="transfer">
+            <model:onSave
+                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
+                    method="manageResources"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="materialFlow" model="transformations">
+            <model:validatesWith
+                    class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
+                    method="checkIfTransformationsDateIsValid"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="materialFlow" model="transformations">
+            <model:validatesWith
+                    class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
+                    method="checkIfTransfersResourcesAreValid"/>
+        </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="location">
             <model:validatesWith class="com.qcadoo.mes.materialFlowResources.validators.LocationValidators"
-                method="hasAlgorithm" />
+                                 method="hasAlgorithm"/>
         </model:model-hook>
-		
-		<menu:menu-item name="resources" category="materialFlow"
-			view="resourcesList" />
-		<menu:menu-item name="resourceCorrections" category="materialFlow"
-			view="resourceCorrectionsList" />
+
+        <menu:menu-item name="resources" category="materialFlow"
+                        view="resourcesList"/>
+        <menu:menu-item name="resourceCorrections" category="materialFlow"
+                        view="resourceCorrectionsList"/>
         <menu:menu-item name="documents" category="materialFlow"
-                        view="documentsList" />
+                        view="documentsList"/>
         <menu:menu-item name="warehouseStock" category="materialFlow"
-                        view="warehouseStocksList" />
-        
+                        view="warehouseStocksList"/>
+
         <menu:menu-item name="documentPositions" category="materialFlow"
-                        view="documentPositionsList" />
-				
-		<view:view-listener plugin="materialFlow" view="transferDetails" 
-			component="locationFrom" event="onSelectedEntityChange" 
-			class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR" 
-			method="disableDateField" />
-		
-		<view:view-listener plugin="materialFlow" view="transferDetails" 
-			component="locationTo" event="onSelectedEntityChange" 
-			class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR" 
-			method="disableDateField" />
-			
-		<view:view-hook plugin="materialFlow" view="transformationsDetails" 
-			type="beforeRender" 
-			class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsDetailsViewHooksMFR" 
-			method="disableDateField" />
-			
-		<view:view-hook plugin="materialFlow" view="locationDetails" 
-			type="beforeRender" 
-			class="com.qcadoo.mes.materialFlowResources.hooks.LocationDetailsHooksMFR" 
-			method="setEnabledForBatchCheckbox" />
-			
-		<view:view resource="view/resourceDetails.xml" />
-		<view:view resource="view/resourcesList.xml" />
-        <view:view resource="view/documentDetails.xml" />
-        <view:view resource="view/documentsList.xml" />
-        <view:view resource="view/warehouseStocksList.xml" />
-        <view:view resource="view/resourceCorrectionsList.xml" />
-        <view:view resource="view/resourceCorrectionDetails.xml" />
-        <view:view resource="view/documentPositionsList.xml" />
+                        view="documentPositionsList"/>
 
-        <view:view-tab resource="view/tabExtensions/parameters.xml" />
-        <view:view-tab resource="view/tabExtensions/locationDetails.xml" />
+        <view:view-listener plugin="materialFlow" view="transferDetails"
+                            component="locationFrom" event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
+                            method="disableDateField"/>
 
-		<view:resource uri="public/**/*" />
-	</modules>
-	
-	<features>
-		<end-user />
-	</features>
-	
+        <view:view-listener plugin="materialFlow" view="transferDetails"
+                            component="locationTo" event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
+                            method="disableDateField"/>
+
+        <view:view-hook plugin="materialFlow" view="transformationsDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsDetailsViewHooksMFR"
+                        method="disableDateField"/>
+
+        <view:view-hook plugin="materialFlow" view="locationDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.materialFlowResources.hooks.LocationDetailsHooksMFR"
+                        method="setEnabledForBatchCheckbox"/>
+
+        <view:view resource="view/resourceDetails.xml"/>
+        <view:view resource="view/resourcesList.xml"/>
+        <view:view resource="view/documentDetails.xml"/>
+        <view:view resource="view/documentsList.xml"/>
+        <view:view resource="view/warehouseStocksList.xml"/>
+        <view:view resource="view/resourceCorrectionsList.xml"/>
+        <view:view resource="view/resourceCorrectionDetails.xml"/>
+        <view:view resource="view/documentPositionsList.xml"/>
+
+        <view:view-tab resource="view/tabExtensions/parameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
+
+        <view:resource uri="public/**/*"/>
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
+
 </plugin>

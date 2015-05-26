@@ -77,7 +77,7 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
     }
 
     private List<Entity> findExistingOrderMaterialCosts(final Entity order, final Collection<Long> productIds) {
-        if (order.getId() == null) {
+        if (order.getId() == null || productIds.isEmpty()) {
             return Collections.emptyList();
         }
         OrderMaterialCostsCriteria criteria = OrderMaterialCostsCriteria.forOrder(order.getId());

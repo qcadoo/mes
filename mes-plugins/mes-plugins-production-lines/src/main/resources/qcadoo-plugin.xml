@@ -27,7 +27,8 @@
 <plugin plugin="productionLines" group="basic" version="${qcadoo.plugin.version}"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-        xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -63,6 +64,7 @@
         <model:dictionary name="productionLinePlaces"/>
 
         <model:model model="productionLine" resource="model/productionLine.xml"/>
+        <model:model model="factoryStructureElement" resource="model/factoryStructureElement.xml"/>
         <model:model model="workstationTypeComponent" resource="model/workstationTypeComponent.xml"/>
 
         <model:model-field plugin="basic" model="parameter">
@@ -71,12 +73,25 @@
         </model:model-field>
 
         <model:model-field model="division" plugin="basic">
-            <model:hasMany name="productionLines" joinField="division" model="productionLine" cascade="nullify"
-                           plugin="productionLines"/>
+            <!--<model:hasMany name="productionLines" joinField="division" model="productionLine" cascade="nullify"-->
+            <!--plugin="productionLines"/>-->
+            <model:manyToMany name="productionLines" joinField="divisions" model="productionLine"
+                              plugin="productionLines" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field model="workstation" plugin="basic">
             <model:belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
+        </model:model-field>
+
+        <model:model-field model="workstation" plugin="basic">
+            <model:tree name="factoryStructure" model="factoryStructureElement"
+                        joinField="workstation" cascade="delete" plugin="productionLines"/>
+        </model:model-field>
+
+
+        <model:model-field model="subassembly" plugin="basic">
+            <model:tree name="factoryStructure" model="factoryStructureElement"
+                        joinField="subassembly" cascade="delete" plugin="productionLines"/>
         </model:model-field>
 
         <model:model-hook model="parameter" plugin="basic">
@@ -84,9 +99,9 @@
                     class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter"/>
         </model:model-hook>
 
-		<model:model-hook model="workstation" plugin="basic">
-			<model:onDelete class="com.qcadoo.mes.productionLines.hooks.WorkstationHooksPL" method="onDelete"/>
-		</model:model-hook>
+        <model:model-hook model="workstation" plugin="basic">
+            <model:onDelete class="com.qcadoo.mes.productionLines.hooks.WorkstationHooksPL" method="onDelete"/>
+        </model:model-hook>
 
         <menu:menu-item name="productionLines" category="basic"
                         view="productionLinesList"/>
@@ -98,11 +113,30 @@
 
         <view:view-tab resource="view/tabExtensions/divisionDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/workstationDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/subassemblyDetails.xml"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/workstationDetails.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/subassemblyDetails.xml"/>
 
         <view:view-grid-column view="workstationsList" component="grid" plugin="basic">
-            <view:column name="productionLine" fields="productionLine" expression="#productionLine['name']" orderable="true"
+            <view:column name="productionLine" fields="productionLine" expression="#productionLine['name']"
+                         orderable="true"
                          searchable="true"/>
         </view:view-grid-column>
+
+        <view:view-hook plugin="basic" view="divisionDetails" type="beforeRender"
+                        class="com.qcadoo.mes.productionLines.hooks.DivisionDetailsHooksPL"
+                        method="fillCriteriaModifiers"/>
+
+        <view:view-listener plugin="basic" view="workstationDetails" component="form" event="generateFactoryStructure"
+                            class="com.qcadoo.mes.productionLines.listeners.WorkstationDetailsListenersPL"
+                            method="generateFactoryStructure"/>
+
+        <view:view-listener plugin="basic" view="subassemblyDetails" component="form" event="generateFactoryStructure"
+                            class="com.qcadoo.mes.productionLines.listeners.SubassemblyDetailsListenersPL"
+                            method="generateFactoryStructure"/>
+
+        <view:resource uri="public/**/*"/>
 
     </modules>
     <features>

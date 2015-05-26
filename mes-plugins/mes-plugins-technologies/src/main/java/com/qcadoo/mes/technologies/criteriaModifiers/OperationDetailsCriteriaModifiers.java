@@ -14,8 +14,8 @@ public class OperationDetailsCriteriaModifiers {
     public void showProductionLinesForDivision(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(OperationFields.DIVISION)) {
             Long divisionId = filterValue.getLong(OperationFields.DIVISION);
-            scb.createAlias(OperationFields.DIVISION, OperationFields.DIVISION, JoinType.INNER).add(
-                    SearchRestrictions.eq(OperationFields.DIVISION + ".id", divisionId));
+            // scb.createAlias(OperationFields.DIVISION, OperationFields.DIVISION, JoinType.INNER).add(
+            // SearchRestrictions.eq(OperationFields.DIVISION + ".id", divisionId));
         }
     }
 

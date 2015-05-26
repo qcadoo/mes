@@ -62,9 +62,9 @@
 					<component type="lookup" name="product" field="product"
 						reference="product">
 						<option type="column" name="name" fields="name" link="true" />
-
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
+                        <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+						<option type="searchable" value="name,number,globalTypeOfMaterial" />
+						<option type="orderable" value="name,number,globalTypeOfMaterial" />
 
 						<option type="expression" value="#number + ' - ' + #name" />
 						<option type="fieldCode" value="number" />
@@ -100,7 +100,7 @@
 				<layoutElement column="1" row="5">
 					<component type="select" name="typeOfMaterial" field="typeOfMaterial"
 						reference="typeOfMaterial">
-						
+
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.basicProductionCounting.listeners.ProductionCountingQuantityDetailsListeners"
 							method="setTechnologyOperationComponentFieldRequired" />
