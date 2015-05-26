@@ -92,6 +92,11 @@
         <model:model model="reportColumnWidth" resource="model/reportColumnWidth.xml"/>
 
         <model:model model="workstation" resource="model/workstation.xml"/>
+        <model:model model="workstationAttachment" resource="model/workstationAttachment.xml"/>
+
+        <model:model model="factory" resource="model/factory.xml"/>
+        <model:model model="subassembly" resource="model/subassembly.xml"/>
+        <model:model model="subassemblyAttachment" resource="model/subassemblyAttachment.xml"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
@@ -131,6 +136,12 @@
         <menu:menu-item name="workstations" category="basic"
                         view="workstationsList"/>
 
+        <menu:menu-item name="factories" category="basic"
+                        view="factoriesList"/>
+
+        <menu:menu-item name="subassemblies" category="basic"
+                        view="subassembliesList"/>
+
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
         <view:view resource="view/companyDetails.xml"/>
@@ -158,6 +169,12 @@
 
         <view:view resource="view/workstationsList.xml"/>
         <view:view resource="view/workstationDetails.xml"/>
+
+        <view:view resource="view/factoriesList.xml"/>
+        <view:view resource="view/factoryDetails.xml"/>
+
+        <view:view resource="view/subassembliesList.xml"/>
+        <view:view resource="view/subassemblyDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
 
@@ -188,7 +205,7 @@
 
         <custom:custom class="com.qcadoo.mes.basic.BasicOnStartupService"/>
 
-
+        <view:resource uri="public/**/*"/>
     </modules>
 
     <features>

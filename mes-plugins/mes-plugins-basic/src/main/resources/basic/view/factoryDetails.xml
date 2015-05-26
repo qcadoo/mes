@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.3
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="factoryDetails" modelName="factory">
+
+    <component type="window" name="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+        </ribbon>
+        <windowTab name="mainTab">
+
+            <component type="form" name="form" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="10">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" height="1">
+                        <component type="input" name="city" field="city"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="5" height="6">
+                        <component type="lookup" name="divisionsLookup" reference="divisionsLookup"
+                                   field="#{form}.divisions" defaultVisible="false" persistent="false"
+                                   hasLabel="false">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <option type="multiselect" value="true"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.basic.criteriaModifiers.BasicDivisionCriteriaModifiers"
+                                    method="showDivisionWithoutFactory"/>
+                        </component>
+                        <component type="grid" name="divisions" reference="divisions"
+                                   source="#{form}.divisions">
+                            <option type="column" name="number" fields="number"/>
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="order" column="number" direction="asc"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="weakRelation" value="true"/>
+                            <option type="correspondingLookup" value="divisionsLookup"/>
+
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+                            <option type="fullscreen" value="true"/>
+                            <option type="multiselect" value="true"/>
+                            <option type="paginable" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#name"/>
+            </component>
+        </windowTab>
+    </component>
+
+</view>

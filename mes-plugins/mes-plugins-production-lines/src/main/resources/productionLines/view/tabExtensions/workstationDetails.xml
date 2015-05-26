@@ -29,25 +29,130 @@
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
                     plugin="basic" view="workstationDetails">
 
-		<windowTab name="productionLines">
-			<component type="gridLayout" name="productionLinesLayout" columns="3"
-					rows="1">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="productionLinesLookup" reference="productionLinesLookup"
-						field="#{form}.productionLine">
-						<option type="column" name="name" fields="name" link="true" />
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-						
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-						
-						<option type="multiselect" value="true" />
+    <windowTab name="productionLines">
+        <component type="gridLayout" name="productionLinesLayout" columns="3"
+                   rows="2">
+            <layoutElement column="1" row="1">
+                <component type="lookup" name="division" reference="division"
+                           field="#{form}.division">
+                    <option type=" column" name="name" fields="name" link="true"
+                            width="200"/>
+                    <option type="searchable" value="name,number"/>
+                    <option type="orderable" value="name,number"/>
+                    <option type="multiselect" value="true"/>
+                    <option type="expression"
+                            value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                    <option type="fieldCode" value="number"/>
+                    <listener event="onSelectedEntityChange"
+                              method="clearProductionLine"
+                              class="com.qcadoo.mes.productionLines.listeners.WorkstationDetailsListenersPL"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="lookup" name="productionLinesLookup" reference="productionLinesLookup"
+                           field="#{form}.productionLine" source="#{division}.productionLines">
+                    <option type="column" name="name" fields="name" link="true"/>
+                    <option type="searchable" value="number,name"/>
+                    <option type="orderable" value="number,name"/>
 
-					</component>
-				</layoutElement>
-			</component>					
-		</windowTab>
+                    <option type="expression" value="#number + ' - ' + #name"/>
+                    <option type="fieldCode" value="number"/>
+
+                    <option type="multiselect" value="true"/>
+
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
+
+    <windowTab name="factoryStructureTab">
+        <component type="gridLayout" name="factoryStructureLayout" rows="8" columns="1">
+            <layoutElement column="1" row="1" height="8">
+                <component type="tree" name="factoryStructure" reference="factoryStructure"
+                           field="#{form}.factoryStructure">
+                    <script>
+                        <![CDATA[
+
+                            this.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    var currentElement = $(".currentNode");
+                                    if (!currentElement) {
+                                        return;
+                                    }
+                                    var nodeElement = currentElement.parent().parent();
+                                    if (!nodeElement) {
+                                        return;
+                                    }
+                                    var currentElementId = nodeElement.attr("id");
+                                    if (!currentElementId) {
+                                        return;
+                                    }
+                                    var splittedId = currentElementId.split("_");
+                                    this.collapseTree();
+                                    this.expandParents(splittedId[2]);
+                                }
+                            })
+                        ]]>
+                    </script>
+                    <dataType name="company">
+                        <option type="nodeLabelExpression"
+                                value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                        <option type="nodeIcon"
+                                value="/productionLines/public/css/icons/companyIcon16.png"/>
+                        <option type="newIcon"
+                                value="/productionLines/public/css/icons/companyIcon16.png"/>
+                    </dataType>
+                    <dataType name="factory">
+                        <option type="nodeLabelExpression"
+                                value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                        <option type="nodeIcon"
+                                value="/productionLines/public/css/icons/factoryIcon16.png"/>
+                        <option type="newIcon"
+                                value="/productionLines/public/css/icons/factoryIcon16.png"/>
+                    </dataType>
+                    <dataType name="division">
+                        <option type="nodeLabelExpression"
+                                value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                        <option type="nodeIcon"
+                                value="/productionLines/public/css/icons/factoryIcon16.png"/>
+                        <option type="newIcon"
+                                value="/productionLines/public/css/icons/factoryIcon16.png"/>
+                    </dataType>
+                    <dataType name="productionLine">
+                        <option type="nodeLabelExpression"
+                                value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                        <option type="nodeIcon"
+                                value="/productionLines/public/css/icons/workstationIcon16.png"/>
+                        <option type="newIcon"
+                                value="/productionLines/public/css/icons/workstationIcon16.png"/>
+                    </dataType>
+                    <dataType name="workstation">
+                        <option type="nodeLabelExpression"
+                                value="#current ? ' &lt;span class=&quot;currentNode&quot; style=&quot;background: #BFF589; border: solid #8BD73E 1px;&quot;&gt;' + #number + ' - ' + #name + '&lt;/span&gt;'
+                                : ' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                        <option type="nodeIcon"
+                                value="/productionLines/public/css/icons/workstationIcon16.png"/>
+                        <option type="newIcon"
+                                value="/productionLines/public/css/icons/workstationIcon16.png"/>
+                    </dataType>
+                    <dataType name="subassembly">
+                        <option type="nodeLabelExpression"
+                                value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                        <option type="nodeIcon"
+                                value="/productionLines/public/css/icons/intermediateIcon16.png"/>
+                        <option type="newIcon"
+                                value="/productionLines/public/css/icons/intermediateIcon16.png"/>
+                    </dataType>
+                    <option type="selectableWhenDisabled" value="true"/>
+
+                    <option type="hasNewButtons" value="false"/>
+                    <option type="hasDeleteButton" value="false"/>
+                    <option type="hasEditButton" value="false"/>
+                    <option type="hasMoveButton" value="false"/>
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
 
 
 </windowTabExtension>

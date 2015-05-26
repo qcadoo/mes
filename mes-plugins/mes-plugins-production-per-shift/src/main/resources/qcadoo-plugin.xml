@@ -79,6 +79,13 @@
 			<model:boolean name="hasCorrections" />
 		</model:model-field>
 
+		<model:model-field model="order"
+		                   plugin="orders">
+			<model:hasMany name="productionPerShift" model="productionPerShift"
+			               plugin="productionPerShift" cascade="delete"
+			               joinField="order" />
+		</model:model-field>
+
 		<model:model-hook model="technologyOperationComponent"
 		                  plugin="technologies">
 			<model:validatesWith
