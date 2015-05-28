@@ -46,7 +46,9 @@
             <name>Qcadoo Limited</name>
             <url>http://www.qcadoo.com</url>
         </vendor>
-        <description>Adds the warehouse location type which can handle resource management.</description>
+        <description>Adds the warehouse location type which can handle resource management, adds update costs norms for
+            product.
+        </description>
         <license>AGPL</license>
     </information>
 
@@ -54,6 +56,11 @@
         <dependency>
             <plugin>materialFlow</plugin>
             <version>[1.1.7</version>
+        </dependency>
+
+        <dependency>
+            <plugin>costNormsForProduct</plugin>
+            <version>[1.4.0</version>
         </dependency>
     </dependencies>
 
@@ -69,6 +76,9 @@
         <model:model model="resourceCorrection" resource="model/resourceCorrection.xml"/>
         <model:model model="attribute" resource="model/attribute.xml"/>
         <model:model model="attributeValue" resource="model/attributeValue.xml"/>
+
+        <model:model model="costNormsGenerator" resource="model/costNormsGenerator.xml"/>
+        <model:model model="costNormsLocation" resource="model/costNormsLocation.xml"/>
 
         <model:model-field plugin="basic" model="parameter">
             <model:enum name="changeDateWhenTransferToWarehouseType"
@@ -119,6 +129,17 @@
                            plugin="materialFlowResources" joinField="location" cascade="delete"/>
         </model:model-field>
 
+        <!-- update cost norms for product -->
+        <model:model-field plugin="basic" model="product">
+            <model:belongsTo name="costNormsGenerator" plugin="materialFlowResources" model="costNormsGenerator"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="costNormsLocations" plugin="materialFlowResources" model="costNormsLocation"
+                           joinField="location" cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <!-- end -->
 
         <model:model-hook plugin="basic" model="parameter">
             <model:validatesWith
@@ -185,6 +206,9 @@
         <menu:menu-item name="documentPositions" category="materialFlow"
                         view="documentPositionsList"/>
 
+        <menu:menu-item name="costNormsGenerator" category="administration"
+                        view="costNormsGenerator"/>
+
         <view:view-listener plugin="materialFlow" view="transferDetails"
                             component="locationFrom" event="onSelectedEntityChange"
                             class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
@@ -213,6 +237,7 @@
         <view:view resource="view/resourceCorrectionsList.xml"/>
         <view:view resource="view/resourceCorrectionDetails.xml"/>
         <view:view resource="view/documentPositionsList.xml"/>
+        <view:view resource="view/costNormsGenerator.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
