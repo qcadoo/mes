@@ -27,16 +27,18 @@ public class CostNormsDaoImpl implements CostNormsDao {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("SELECT DISTINCT p.product_id AS productId, p.price AS lastPurchaseCost, d.time ");
         queryBuilder.append("FROM materialflowresources_position p ");
-        queryBuilder.append("INNER JOIN materialflowresources_document d ON d.id = p.document_id ");
+        queryBuilder.append("JOIN materialflowresources_document d ON d.id = p.document_id ");
+        queryBuilder.append("JOIN  ");
+        queryBuilder.append("   (SELECT pos.product_id AS lastId, max(doc.time) AS lastTime ");
+        queryBuilder.append("       FROM materialflowresources_position pos ");
+        queryBuilder.append("       JOIN materialflowresources_document doc ");
+        queryBuilder.append("       ON doc.id = pos.document_id ");
+        queryBuilder.append("       AND doc.type IN ('01receipt', '02internalInbound') AND doc.state = '02accepted' ");
         if (!warehousesIds.isEmpty()) {
-            queryBuilder.append("AND d.location_id IN (:warehousesIds) ");
+            queryBuilder.append("AND doc.locationto_id IN (:warehousesIds) ");
         }
-        queryBuilder.append("INNER JOIN  ");
-        queryBuilder.append("(SELECT pos.product_id AS lastId, max(doc.time) AS lastTIme ");
-        queryBuilder.append("FROM materialflowresources_position pos INNER JOIN materialflowresources_document doc ");
-        queryBuilder
-                .append("ON doc.id = pos.document_id AND doc.type IN ('01receipt', '02internalInbound') AND doc.state = '02accepted' ");
-        queryBuilder.append("WHERE pos.price IS NOT NULL GROUP BY pos.product_id) AS p2 ");
+        queryBuilder.append("   WHERE pos.price IS NOT NULL ");
+        queryBuilder.append("   GROUP BY pos.product_id) AS p2 ");
         queryBuilder.append("ON p.product_id = p2.lastId AND d.time = p2.lastTime ");
         if (!productIds.isEmpty()) {
             queryBuilder.append("WHERE p.product_id IN (:productIds) ");
@@ -96,9 +98,10 @@ public class CostNormsDaoImpl implements CostNormsDao {
             queryBuilder.append("UPDATE basic_product SET ");
             queryBuilder.append(prepareValuesToUpdate(costNorm));
             queryBuilder.append(" WHERE id = :productId");
-            SqlParameterSource namedParameters = new MapSqlParameterSource("productId", costNorm.getProductId()).addValue(
-                    "lastPurchaseCost", costNorm.getLastPurchaseCost()).addValue("averageCost", costNorm.getAverageCost())
-                    .addValue("nominalCost", costNorm.getNominalCost()).addValue("costForNumber", costNorm.getCostForNumber());
+            SqlParameterSource namedParameters = new MapSqlParameterSource("productId", costNorm.getProductId())
+                    .addValue("lastPurchaseCost", costNorm.getLastPurchaseCost())
+                    .addValue("averageCost", costNorm.getAverageCost()).addValue("nominalCost", costNorm.getNominalCost())
+                    .addValue("costForNumber", costNorm.getCostForNumber());
 
             jdbcTemplate.update(queryBuilder.toString(), namedParameters);
         }
@@ -120,7 +123,6 @@ public class CostNormsDaoImpl implements CostNormsDao {
                 values.append(", ");
             values.append("costfornumber = :costForNumber");
         }
-
 
         if (costNorm.getNominalCost() != null) {
             if (values.length() > 0)

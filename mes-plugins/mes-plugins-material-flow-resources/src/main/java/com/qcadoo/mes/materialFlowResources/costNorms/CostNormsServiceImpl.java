@@ -29,7 +29,7 @@ public class CostNormsServiceImpl implements CostNormsService {
 
     private Collection<CostNorm> mergeCostNorms(List<CostNorm> lastPurchases, List<CostNorm> averageCosts) {
         Map<Long, CostNorm> costNormMap = lastPurchases.stream().collect(
-                Collectors.toMap(CostNorm::getProductId, purchase -> purchase));
+                Collectors.toMap(CostNorm::getProductId, purchase -> purchase, (p, q) -> p));
         for (CostNorm averageCost : averageCosts) {
             CostNorm purchase = costNormMap.get(averageCost.getProductId());
             if (purchase != null) {
