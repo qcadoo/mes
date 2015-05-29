@@ -32,8 +32,6 @@ public class CostNormsGeneratorListeners {
 
         Entity generator = getFormEntity(view);
         boolean allProducts = ProductsToUpdate.of(generator).compareTo(ProductsToUpdate.ALL) == 0;
-        List<Entity> warehouses = generator.getHasManyField(CostNormsGeneratorFields.WAREHOUSES).stream()
-                .map(warehouse -> warehouse.getBelongsToField(L_LOCATION)).collect(Collectors.toList());
         List<Entity> products = Lists.newArrayList();
         if (!allProducts) {
             products = generator.getHasManyField(CostNormsGeneratorFields.PRODUCTS);
@@ -41,6 +39,12 @@ public class CostNormsGeneratorListeners {
                 view.addMessage("materialFlowResources.info.costNormsNotUpdated", ComponentState.MessageType.INFO);
                 return;
             }
+        }
+        List<Entity> warehouses = Lists.newArrayList();
+        String costSource = (String) componentState.getFieldValue();
+        if ("01mes".equals(costSource)) {
+            warehouses = generator.getHasManyField(CostNormsGeneratorFields.WAREHOUSES).stream()
+                    .map(warehouse -> warehouse.getBelongsToField(L_LOCATION)).collect(Collectors.toList());
         }
         costNormsService.updateCostNormsForProductsFromWarehouses(products, warehouses);
         view.addMessage("materialFlowResources.success.costNormsUpdated", ComponentState.MessageType.SUCCESS);

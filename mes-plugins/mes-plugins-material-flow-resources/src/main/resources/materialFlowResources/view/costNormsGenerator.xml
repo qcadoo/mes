@@ -104,7 +104,8 @@
                         <option type="fieldCode" value="number"/>
 
                         <option type="multiselect" value="true"/>
-
+						<criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
+							method="filterProducts" />
                     </component>
                     <component type="grid" name="products" reference="products"
                                source="#{form}.products" defaultVisible="false">
