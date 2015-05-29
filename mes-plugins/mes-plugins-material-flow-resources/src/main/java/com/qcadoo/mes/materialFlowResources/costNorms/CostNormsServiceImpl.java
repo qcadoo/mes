@@ -21,7 +21,8 @@ public class CostNormsServiceImpl implements CostNormsService {
     @Override
     public void updateCostNormsForProductsFromWarehouses(final List<Entity> products, final List<Entity> warehouses) {
         List<Long> productIds = products.stream().map(product -> product.getId()).collect(Collectors.toList());
-        List<Long> warehousesIds = warehouses.stream().map(warehouse -> warehouse.getId()).collect(Collectors.toList());
+        List<Long> warehousesIds = warehouses.stream().filter(warehouse -> warehouse != null).map(warehouse -> warehouse.getId())
+                .collect(Collectors.toList());
         List<CostNorm> lastPurchases = costNormsDao.getLastPurchaseCostsForProducts(productIds, warehousesIds);
         List<CostNorm> averageCosts = costNormsDao.getAverageCostForProducts(productIds, warehousesIds);
         costNormsDao.updateCostNormsForProducts(mergeCostNorms(lastPurchases, averageCosts));
