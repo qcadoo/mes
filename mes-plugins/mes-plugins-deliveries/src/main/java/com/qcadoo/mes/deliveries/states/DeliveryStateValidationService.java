@@ -23,21 +23,22 @@
  */
 package com.qcadoo.mes.deliveries.states;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
 
 @Service
 public class DeliveryStateValidationService {
@@ -48,6 +49,31 @@ public class DeliveryStateValidationService {
         final List<String> references = Lists.newArrayList(DELIVERY_DATE, SUPPLIER);
 
         checkRequired(references, stateChangeContext);
+        checkOrderedQuantity(stateChangeContext);
+    }
+
+    private void checkOrderedQuantity(StateChangeContext stateChangeContext) {
+        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        List<Entity> orderedProducts = stateChangeEntity.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
+
+        StringBuffer listOfProductNumber = new StringBuffer();
+
+        orderedProducts.forEach((orderedProduct)->{
+            BigDecimal orderedQuantity = BigDecimalUtils.convertNullToZero(orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY));
+            if(orderedQuantity.compareTo(BigDecimal.ZERO)<=0){
+                if(!listOfProductNumber.toString().isEmpty()){
+                    listOfProductNumber.append(", ");
+                }
+                listOfProductNumber.append(orderedProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER));
+            }
+        });
+
+        if(!listOfProductNumber.toString().isEmpty()) {
+            stateChangeContext.addValidationError("deliveries.orderedProducts.orderedQuantity.isRequired",
+                    listOfProductNumber.toString());
+            stateChangeContext.addMessage("deliveries.orderedProducts.orderedQuantity.isRequired", StateMessageType.FAILURE,
+                    false, listOfProductNumber.toString());
+        }
     }
 
     public void validationOnReceived(final StateChangeContext stateChangeContext) {

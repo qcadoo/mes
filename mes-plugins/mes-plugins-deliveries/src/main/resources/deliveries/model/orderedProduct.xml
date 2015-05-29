@@ -32,7 +32,7 @@
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<decimal name="orderedQuantity" required="true" >
-			<validatesRange from="0" exclusively="true" />
+			<validatesRange from="0" exclusively="false" />
 		</decimal>
 		<decimal name="pricePerUnit">
 			<validatesRange from="0" />
