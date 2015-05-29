@@ -91,7 +91,7 @@
                 </layoutElement>
 
 
-                <layoutElement column="2" row="2" height="6">
+                <layoutElement column="2" row="2" height="6" width="2">
                     <component type="lookup" name="productsLookup" reference="productsLookup"
                                field="#{form}.products" defaultVisible="false" persistent="false"
                                hasLabel="false">
