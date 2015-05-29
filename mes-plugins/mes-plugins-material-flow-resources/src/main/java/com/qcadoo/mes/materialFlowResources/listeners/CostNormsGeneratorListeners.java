@@ -34,7 +34,14 @@ public class CostNormsGeneratorListeners {
         boolean allProducts = ProductsToUpdate.of(generator).compareTo(ProductsToUpdate.ALL) == 0;
         List<Entity> warehouses = generator.getHasManyField(CostNormsGeneratorFields.WAREHOUSES).stream()
                 .map(warehouse -> warehouse.getBelongsToField(L_LOCATION)).collect(Collectors.toList());
-        List<Entity> products = allProducts ? Lists.newArrayList() : generator.getHasManyField(CostNormsGeneratorFields.PRODUCTS);
+        List<Entity> products = Lists.newArrayList();
+        if (!allProducts) {
+            products = generator.getHasManyField(CostNormsGeneratorFields.PRODUCTS);
+            if (products.isEmpty()) {
+                view.addMessage("materialFlowResources.info.costNormsNotUpdated", ComponentState.MessageType.INFO);
+                return;
+            }
+        }
         costNormsService.updateCostNormsForProductsFromWarehouses(products, warehouses);
         view.addMessage("materialFlowResources.success.costNormsUpdated", ComponentState.MessageType.SUCCESS);
     }

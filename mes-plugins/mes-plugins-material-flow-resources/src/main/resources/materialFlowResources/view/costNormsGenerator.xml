@@ -65,8 +65,8 @@
                                             <option type="fieldCode" value="number"/>
 
                                             <criteriaModifier
-                                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                                                    method="showWarehousesOnly"/>
+                                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                                    method="showWarehousesWithoutExternalNumber"/>
 
                                         </component>
                                     </layoutElement>
