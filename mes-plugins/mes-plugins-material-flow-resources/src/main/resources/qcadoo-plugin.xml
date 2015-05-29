@@ -206,9 +206,6 @@
         <menu:menu-item name="documentPositions" category="materialFlow"
                         view="documentPositionsList"/>
 
-        <menu:menu-item name="costNormsGenerator" category="administration"
-                        view="costNormsGenerator"/>
-
         <view:view-listener plugin="materialFlow" view="transferDetails"
                             component="locationFrom" event="onSelectedEntityChange"
                             class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
@@ -218,6 +215,10 @@
                             component="locationTo" event="onSelectedEntityChange"
                             class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
                             method="disableDateField"/>
+
+        <view:view-listener plugin="basic" view="productsList" component="window" event="updateProductCosts"
+                            class="com.qcadoo.mes.materialFlowResources.listeners.ProductsListListenersMFR"
+                            method="showCostNormsGenerator"/>
 
         <view:view-hook plugin="materialFlow" view="transformationsDetails"
                         type="beforeRender"
@@ -241,6 +242,8 @@
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
 
         <view:resource uri="public/**/*"/>
     </modules>
