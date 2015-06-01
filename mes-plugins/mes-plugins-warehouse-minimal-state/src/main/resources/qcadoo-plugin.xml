@@ -70,7 +70,7 @@
         <view:view resource="view/warehouseMinimumStateDetails.xml"/>
         <view:view resource="view/warehouseMinimumStateAddMulti.xml"/>
 
-        <menu:menu-item name="resources" category="materialFlow"
+        <menu:menu-item name="warehouseMinimumStateList" category="materialFlow"
                         view="warehouseMinimumStateList"/>
 
        <!-- view extensions -->
