@@ -25,6 +25,8 @@ package com.qcadoo.mes.productionPerShift.constants;
 
 public final class ProductionPerShiftFields {
 
+    public static final String ORDER_FINISH_DATE = "orderFinishDate";
+
     private ProductionPerShiftFields() {
 
     }

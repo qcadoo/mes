@@ -40,6 +40,7 @@
 			plugin="technologies" persistent="false" />
 		<belongsTo name="technology" model="technology" plugin="technologies"
 			persistent="false" />
+        <datetime name="orderFinishDate"/>
 	</fields>
 	<hooks>
 		<onSave class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftHooks"
