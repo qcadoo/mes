@@ -41,7 +41,7 @@ public class CostNormsGeneratorListeners {
             }
         }
         List<Entity> warehouses = Lists.newArrayList();
-        String costSource = (String) componentState.getFieldValue();
+        String costSource = generator.getStringField(CostNormsGeneratorFields.COSTS_SOURCE);
         if ("01mes".equals(costSource)) {
             warehouses = generator.getHasManyField(CostNormsGeneratorFields.WAREHOUSES).stream()
                     .map(warehouse -> warehouse.getBelongsToField(L_LOCATION)).collect(Collectors.toList());
