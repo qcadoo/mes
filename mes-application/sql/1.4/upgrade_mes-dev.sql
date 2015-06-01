@@ -21,24 +21,23 @@ ALTER TABLE basic_substitutecomponent
 INSERT INTO qcadooview_category(
             id, pluginidentifier, name, succession)
     VALUES (nextval('hibernate_sequence'), 'basic', 'companyStructure', (
-  SELECT succession FROM qcadooview_category WHERE name='basic'
-    )+1);
- 
-INSERT INTO qcadooview_view(id,pluginidentifier, name, view) 
+  SELECT MAX(succession) FROM qcadooview_category)+1);
+
+INSERT INTO qcadooview_view(id,pluginidentifier, name, view)
   VALUES (nextval('hibernate_sequence'),'basic','factoriesList','factoriesList');
-INSERT INTO qcadooview_view(id,pluginidentifier, name, view) 
+INSERT INTO qcadooview_view(id,pluginidentifier, name, view)
   VALUES (nextval('hibernate_sequence'),'basic','subassembliesList','subassembliesList');
 
 INSERT INTO qcadooview_item(
             id, pluginidentifier, name, active, category_id, view_id, succession)
-    VALUES (nextval('hibernate_sequence'), 'basic', 'subassemblies', TRUE, 
-  (SELECT id FROM qcadooview_category WHERE name='companyStructure'), 
+    VALUES (nextval('hibernate_sequence'), 'basic', 'subassemblies', TRUE,
+  (SELECT id FROM qcadooview_category WHERE name='companyStructure'),
   (SELECT id FROM qcadooview_view WHERE name='subassembliesList'),6);
 
 INSERT INTO qcadooview_item(
             id, pluginidentifier, name, active, category_id, view_id, succession)
-    VALUES (nextval('hibernate_sequence'), 'basic', 'factories', TRUE, 
-  (SELECT id FROM qcadooview_category WHERE name='companyStructure'), 
+    VALUES (nextval('hibernate_sequence'), 'basic', 'factories', TRUE,
+  (SELECT id FROM qcadooview_category WHERE name='companyStructure'),
   (SELECT id FROM qcadooview_view WHERE name='factoriesList'), 1);
 
 
