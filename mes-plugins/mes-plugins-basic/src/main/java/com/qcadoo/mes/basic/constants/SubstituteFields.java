@@ -28,6 +28,8 @@ public final class SubstituteFields {
     private SubstituteFields() {
     }
 
+    public static final String BASE_PRODUCT = "baseProduct";
+
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";

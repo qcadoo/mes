@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="warehouseMinimalState" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        group="other"
+        version="${qcadoo.plugin.version}"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+
+
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
+
+
+    <information>
+        <name>MES - Warehouse minimal state</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com</url>
+        </vendor>
+        <license>Commercial</license>
+        <description>Warehouse minimal state</description>
+    </information>
+
+    <dependencies>
+        <dependency>
+            <plugin>materialFlowResources</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+    </dependencies>
+
+
+    <modules>
+        <localization:translation path="locales"/>
+
+        <!-- view -->
+
+        <view:view resource="view/warehouseMinimumStateList.xml"/>
+        <view:view resource="view/warehouseMinimumStateDetails.xml"/>
+        <view:view resource="view/warehouseMinimumStateAddMulti.xml"/>
+
+        <menu:menu-item name="warehouseMinimumStateList" category="materialFlow"
+                        view="warehouseMinimumStateList"/>
+
+       <!-- view extensions -->
+
+
+        <!-- model -->
+        <model:model model="warehouseMinimumState" resource="model/warehouseMinimumState.xml"/>
+        <model:model model="warehouseMinimumStateMulti" resource="model/warehouseMinimumStateMulti.xml"/>
+        <!-- model extensions -->
+
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="warehouseMinimumState" model="warehouseMinimumState" plugin="warehouseMinimalState"
+                           joinField="product"
+                           cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field model="product" plugin="basic">
+            <model:manyToMany name="warehouseMinimumStateMulti" model="warehouseMinimumStateMulti" joinField="products" plugin="warehouseMinimalState"/>
+        </model:model-field>
+
+        <view:view-grid-column plugin="materialFlowResources"
+                               view="warehouseStocksList" component="grid">
+            <view:column name="minimumState" fields="minimumState" orderable="true"
+                         searchable="true"/>
+        </view:view-grid-column>
+
+        <view:resource uri="public/**/*"/>
+
+    </modules>
+
+</plugin>

@@ -36,9 +36,9 @@
 				<component type="grid" name="productsFamilies" reference="productsFamilies"
 					source="#{form}.productsFamilies">
 					<option type="column" name="number" fields="product"
-						expression="#product['number']" width="50" />
+						expression="#product['number']" width="50" link="true"/>
 					<option type="column" name="name" fields="product"
-						expression="#product['name']" width="100" />
+						expression="#product['name']" width="100" link="true"/>
 
 					<option type="order" column="number" direction="desc" />
 
@@ -59,9 +59,9 @@
 				<component type="grid" name="products" reference="products"
 					source="#{form}.products">
 					<option type="column" name="number" fields="product"
-						expression="#product['number']" width="50" />
+						expression="#product['number']" width="50" link="true"/>
 					<option type="column" name="name" fields="product"
-						expression="#product['name']" width="100" />
+						expression="#product['name']" width="100" link="true"/>
 
 					<option type="order" column="number" direction="desc" />
 
@@ -80,5 +80,5 @@
 			</layoutElement>
 		</component>
 	</windowTab>
-		
+
 </windowTabExtension>

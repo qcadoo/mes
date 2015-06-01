@@ -106,7 +106,14 @@
             <view:column name="delivery" fields="document" expression="#document['delivery']?.get('number')" orderable="true"
                          searchable="true"/>
         </view:view-grid-column>
-	</modules>
+
+        <view:view-grid-column plugin="materialFlowResources"
+                               view="warehouseStocksList" component="grid">
+            <view:column name="orderedQuantity" fields="orderedQuantity" orderable="true"
+                         searchable="true"/>
+        </view:view-grid-column>
+
+    </modules>
 
 	<features>
 		<end-user />

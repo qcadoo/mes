@@ -1,71 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.qcadoo.mes</groupId>
-		<artifactId>mes</artifactId>
-		<version>1.4-SNAPSHOT-DEV</version>
-	</parent>
+    <parent>
+        <groupId>com.qcadoo.mes</groupId>
+        <artifactId>mes</artifactId>
+        <version>1.4-SNAPSHOT-DEV</version>
+    </parent>
 
-	<artifactId>mes-plugins</artifactId>
-	<packaging>pom</packaging>
+    <artifactId>mes-plugins</artifactId>
+    <packaging>pom</packaging>
 
-	<name>Qcadoo MES :: Plugins</name>
+    <name>Qcadoo MES :: Plugins</name>
 
-	<modules>
-		<module>mes-plugins-orders</module>
-		<module>mes-plugins-basic</module>
-		<module>mes-plugins-quality-controls</module>
-		<module>mes-plugins-material-requirements</module>
-		<module>mes-plugins-work-plans</module>
-		<module>mes-plugins-technologies</module>
-		<module>mes-plugins-quality-controls-for-operation</module>
-		<module>mes-plugins-samples</module>
-		<module>mes-plugins-production-scheduling</module>
-		<module>mes-plugins-stoppage</module>
-		<module>mes-plugins-minimal-affordable-quantity</module>
-		<module>mes-plugins-gantt-for-operation</module>
-		<module>mes-plugins-gantt-for-orders</module>
-		<module>mes-plugins-gantt-for-shifts</module>
-		<module>mes-plugins-material-flow</module>
-		<module>mes-plugins-material-flow-resources</module>
-		<module>mes-plugins-material-flow-multitransfers</module>
-		<module>mes-plugins-time-norms-for-operations</module>
-		<module>mes-plugins-cost-norms-for-operation</module>
-		<module>mes-plugins-cost-norms-for-product</module>
-		<module>mes-plugins-cost-calculation</module>
-		<module>mes-plugins-simple-material-balance</module>
-		<module>mes-plugins-production-counting</module>
-		<module>mes-plugins-production-counting-with-costs</module>
-		<module>mes-plugins-basic-production-counting</module>
-		<module>mes-plugins-cost-norms-for-materials</module>
-		<module>mes-plugins-production-lines</module>
-		<module>mes-plugins-operation-time-calculations</module>
-		<module>mes-plugins-operation-cost-calculations</module>
-		<module>mes-plugins-deviation-causes-reporting</module>
-		<module>mes-plugins-production-per-shift</module>
-		<module>mes-plugins-line-changeover-norms</module>
-		<module>mes-plugins-line-changeover-norms-for-orders</module>
-		<module>mes-plugins-states</module>
-		<module>mes-plugins-wage-groups</module>
-		<module>mes-plugins-assignment-to-shift</module>
-		<module>mes-plugins-cost-norms-for-operation-in-order</module>
-		<module>mes-plugins-avg-labor-cost-calc-for-order</module>
-		<module>mes-plugins-product-catalog-numbers</module>
-		<module>mes-plugins-tech-subcontracting</module>
-		<module>mes-plugins-operational-tasks</module>
-		<module>mes-plugins-operational-tasks-for-orders</module>
-		<module>mes-plugins-tech-subcontr-for-oper-tasks</module>
-		<module>mes-plugins-deliveries</module>
-		<module>mes-plugins-tech-subcontr-for-deliveries</module>
-		<module>mes-plugins-column-extension</module>
-		<module>mes-plugins-deliveries-to-material-flow</module>
-		<module>mes-plugins-tech-subcontr-for-production-counting</module>
-		<module>mes-plugins-cat-numbers-in-deliveries</module>
-		<module>mes-plugins-master-orders</module>
-		<module>mes-pack-open-source</module>
-	</modules>
+    <modules>
+        <module>mes-plugins-orders</module>
+        <module>mes-plugins-basic</module>
+        <module>mes-plugins-quality-controls</module>
+        <module>mes-plugins-material-requirements</module>
+        <module>mes-plugins-work-plans</module>
+        <module>mes-plugins-technologies</module>
+        <module>mes-plugins-quality-controls-for-operation</module>
+        <module>mes-plugins-samples</module>
+        <module>mes-plugins-production-scheduling</module>
+        <module>mes-plugins-stoppage</module>
+        <module>mes-plugins-minimal-affordable-quantity</module>
+        <module>mes-plugins-gantt-for-operation</module>
+        <module>mes-plugins-gantt-for-orders</module>
+        <module>mes-plugins-gantt-for-shifts</module>
+        <module>mes-plugins-material-flow</module>
+        <module>mes-plugins-material-flow-resources</module>
+        <module>mes-plugins-material-flow-multitransfers</module>
+        <module>mes-plugins-time-norms-for-operations</module>
+        <module>mes-plugins-cost-norms-for-operation</module>
+        <module>mes-plugins-cost-norms-for-product</module>
+        <module>mes-plugins-cost-calculation</module>
+        <module>mes-plugins-simple-material-balance</module>
+        <module>mes-plugins-production-counting</module>
+        <module>mes-plugins-production-counting-with-costs</module>
+        <module>mes-plugins-basic-production-counting</module>
+        <module>mes-plugins-cost-norms-for-materials</module>
+        <module>mes-plugins-production-lines</module>
+        <module>mes-plugins-operation-time-calculations</module>
+        <module>mes-plugins-operation-cost-calculations</module>
+        <module>mes-plugins-deviation-causes-reporting</module>
+        <module>mes-plugins-production-per-shift</module>
+        <module>mes-plugins-line-changeover-norms</module>
+        <module>mes-plugins-line-changeover-norms-for-orders</module>
+        <module>mes-plugins-states</module>
+        <module>mes-plugins-wage-groups</module>
+        <module>mes-plugins-assignment-to-shift</module>
+        <module>mes-plugins-cost-norms-for-operation-in-order</module>
+        <module>mes-plugins-avg-labor-cost-calc-for-order</module>
+        <module>mes-plugins-product-catalog-numbers</module>
+        <module>mes-plugins-tech-subcontracting</module>
+        <module>mes-plugins-operational-tasks</module>
+        <module>mes-plugins-operational-tasks-for-orders</module>
+        <module>mes-plugins-tech-subcontr-for-oper-tasks</module>
+        <module>mes-plugins-deliveries</module>
+        <module>mes-plugins-tech-subcontr-for-deliveries</module>
+        <module>mes-plugins-column-extension</module>
+        <module>mes-plugins-deliveries-to-material-flow</module>
+        <module>mes-plugins-tech-subcontr-for-production-counting</module>
+        <module>mes-plugins-cat-numbers-in-deliveries</module>
+        <module>mes-plugins-master-orders</module>
+        <module>mes-plugins-cmmsMachineParts</module>
+        <module>mes-plugins-warehouse-minimal-state</module>
+        <module>mes-pack-open-source</module>
+    </modules>
 
 </project>

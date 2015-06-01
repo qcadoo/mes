@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.3
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="warehouseMinimumStateList" modelName="warehouseMinimumState" modelPlugin="warehouseMinimalState">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardGridTemplate"  excludeItems="actions.copy" />
+            <group name="actions">
+                <bigButton name="addMulti" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(redirectToAddManyMinimalState);">
+
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <component type="grid" name="grid" reference="grid">
+            <listener event="redirectToAddManyMinimalState" method="redirectToAddManyMinimalState"
+                      class="com.qcadoo.mes.warehouseMinimalState.listeners.WarehouseMinimumStateListListener"/>
+
+            <option type="column" name="locationNumber" fields="location"
+                    expression="#location['number']" link="true"/>
+            <option type="column" name="locationName" fields="location"
+                    expression="#location['name']" link="true"/>
+
+            <option type="column" name="productNumber" fields="location"
+                    expression="#product['number']" link="true"/>
+            <option type="column" name="productName" fields="location"
+                    expression="#product['name']" link="true"/>
+
+            <option type="column" name="minimumState" fields="minimumState"
+                    link="true"/>
+            <option type="column" name="optimalOrderQuantity" fields="optimalOrderQuantity"
+                    link="true"/>
+
+            <option type="column" name="unit" fields="product"
+                    expression="#product['unit']" width="40"/>
+
+            <option type="order" column="locationName" direction="asc"/>
+
+            <option type="correspondingView" value="warehouseMinimalState/warehouseMinimumStateDetails"/>
+            <option type="correspondingComponent" value="form"/>
+            <option type="correspondingViewInModal" value="true"/>
+
+            <option type="multiselect" value="true"/>
+            <option type="creatable" value="false"/>
+            <option type="deletable" value="true"/>
+            <option type="searchable" value="locationName,locationNumber,minimumState,optimalOrderQuantity"/>
+            <option type="orderable" value="locationName,locationNumber,minimumState,optimalOrderQuantity"/>
+            <option type="fullscreen" value="true"/>
+
+        </component>
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+
+    </component>
+
+    <hooks>
+
+    </hooks>
+</view>
