@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
-@Service public class WarehouseMinimumStateDetailsHooks {
+@Service
+public class WarehouseMinimumStateDetailsHooks {
 
     private static final Set<String> UNIT_COMPONENT_REFERENCES = Sets.newHashSet("minimumStateUNIT", "optimalOrderQuantityNIT");
 
@@ -28,6 +29,9 @@ import java.util.Set;
     }
 
     private void fillUnits(final ViewDefinitionState view, final Entity productEntity) {
+        if (productEntity == null) {
+            return;
+        }
         String unit = productEntity.getStringField(ProductFields.UNIT);
         for (String componentReferenceName : UNIT_COMPONENT_REFERENCES) {
             FieldComponent unitComponent = (FieldComponent) view.getComponentByReference(componentReferenceName);
