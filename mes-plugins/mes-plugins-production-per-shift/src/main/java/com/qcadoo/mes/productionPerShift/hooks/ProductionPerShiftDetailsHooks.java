@@ -172,7 +172,9 @@ public class ProductionPerShiftDetailsHooks {
 
     private void checkOrderDates(final ViewDefinitionState view, final Entity order) {
         Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
-        Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(technologyId);
+        boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
+        Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(technologyId,
+                shouldBeCorrected);
         DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
         Optional<OrderDates> maybeOrderDates = OrderDates.of(order);

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProductionPerShiftDataProvider;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
@@ -65,8 +66,9 @@ public class ProgressQuantitiesDeviationNotifier {
             return Optional.absent();
         }
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
         BigDecimal sumOfDailyPlannedQuantities = productionPerShiftDataProvider.countSumOfQuantities(technology.getId(),
-                ProductionPerShiftDataProvider.ONLY_ROOT_OPERATIONS_CRITERIA);
+                ProductionPerShiftDataProvider.ONLY_ROOT_OPERATIONS_CRITERIA, shouldBeCorrected);
         BigDecimal planedQuantityFromOrder = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
         return Optional.of(planedQuantityFromOrder.subtract(sumOfDailyPlannedQuantities, numberService.getMathContext()));
     }
