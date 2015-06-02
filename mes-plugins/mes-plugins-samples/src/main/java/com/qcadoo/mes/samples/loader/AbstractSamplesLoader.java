@@ -182,6 +182,9 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
             parameter.setField("changeDateWhenTransferToWarehouseType", "01never");
         }
 
+        if (isEnabledOrEnabling("goodFood")) {
+            parameter.setField("ssccNumberPrefix", "0005900125");
+        }
         parameter.getDataDefinition().save(parameter);
     }
 
