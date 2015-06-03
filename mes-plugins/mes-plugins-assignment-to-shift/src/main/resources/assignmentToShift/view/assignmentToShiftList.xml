@@ -24,11 +24,14 @@
 
 -->
 <view name="assignmentToShiftList" modelName="assignmentToShift"
-	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	  menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns="http://schema.qcadoo.org/view"
+	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
 	<component type="window" name="window" reference="window">
+
 		<ribbon>
-			<template name="standardGridTemplate" />
+			<template name="standardGridTemplate"/>
 			<group name="status">
 				<bigButton name="state" icon="startIcon24.png" state="disabled">
 					<script>
@@ -60,10 +63,11 @@
 				</bigButton>
 			</group>
 		</ribbon>
+
 		<component type="grid" name="assignmentToShiftList"
-			reference="grid">
-				<script>
- 				<![CDATA[ 
+				   reference="grid">
+			<script>
+				<![CDATA[
 					var copyBtn = #{window}.getRibbonItem("actions.copy");
 					var deleteBtn = #{window}.getRibbonItem("actions.delete");
 					var stateButton = #{window}.getRibbonItem("status.state");
@@ -124,22 +128,29 @@
 				]]>
 			</script>
 			<option type="column" name="startDate" fields="startDate"
-				link="true" />
+					link="true"/>
 			<option type="column" name="shift" fields="shift" link="true"
-				expression="#shift['name']" />
-			<option type="column" name="state" fields="state" />
-			<option type="order" column="name" direction="asc" />
-			<option type="correspondingView" value="assignmentToShift/assignmentToShiftDetails" />
-			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="startDate,shift,state" />
-			<option type="orderable" value="startDate" />
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
+					expression="#shift['name']"/>
+			<option type="column" name="state" fields="state"/>
+
+			<option type="order" column="name" direction="asc"/>
+
+			<option type="correspondingView" value="assignmentToShift/assignmentToShiftDetails"/>
+			<option type="correspondingComponent" value="form"/>
+
+			<option type="searchable" value="startDate,shift,state"/>
+			<option type="orderable" value="startDate"/>
+
+			<option type="fullscreen" value="true"/>
+			<option type="multiselect" value="true"/>
+
 			<listener event="changeState"
-				class="com.qcadoo.mes.assignmentToShift.states.client.AssignmentToShiftStateChangeViewClient"
-				method="changeState" />
+					  class="com.qcadoo.mes.assignmentToShift.states.client.AssignmentToShiftStateChangeViewClient"
+					  method="changeState"/>
 		</component>
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
+
+		<option type="fixedHeight" value="true"/>
+		<option type="header" value="false"/>
 	</component>
+
 </view>

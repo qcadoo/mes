@@ -24,21 +24,24 @@
 
 -->
 <view name="assignmentToShiftReportDetails" modelName="assignmentToShiftReport"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
 	<component type="window" name="window" reference="window">
+
 		<ribbon>
-			<template name="standardFormTemplate" />
+			<template name="standardFormTemplate"/>
 			<group name="generate">
 				<bigButton name="generateReport" icon="generateIcon24.png"
-					action="#{form}.fireEvent(generateReport);" state="disabled" />
+						   action="#{form}.fireEvent(generateReport);" state="disabled"/>
 			</group>
 			<group name="export">
 				<bigButton name="xls" icon="xlsIcon24.png"
-					action="#{form}.fireEvent(printAssignmentToShiftReport,xls,0);"
-					state="disabled" />
+						   action="#{form}.fireEvent(printAssignmentToShiftReport,xls,0);"
+						   state="disabled"/>
 			</group>
 		</ribbon>
+
 		<windowTab name="mainTab">
 			<component type="form" name="form" reference="form">
 				<script>
@@ -103,60 +106,64 @@
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="6">
+						   rows="6">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
-							reference="number">
-							<option type="alignment" value="right" />
+								   reference="number">
+							<option type="alignment" value="right"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="name" field="name"
-							reference="name" />
+								   reference="name"/>
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="lookup" name="shift" field="shift"
-							reference="shift">
-							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
-							<option type="expression" value="#name" />
-							<option type="fieldCode" value="name" />
+								   reference="shift">
+							<option type="searchable" value="name"/>
+							<option type="orderable" value="name"/>
+
+							<option type="expression" value="#name"/>
+							<option type="fieldCode" value="name"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="calendar" name="dateFrom" field="dateFrom"
-							reference="dateFrom">
+								   reference="dateFrom">
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
 						<component type="calendar" name="dateTo" field="dateTo"
-							reference="dateTo">
+								   reference="dateTo">
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="6">
 						<component type="checkbox" name="generated" field="generated"
-							reference="generated" defaultVisible="false" />
+								   reference="generated" defaultVisible="false"/>
 					</layoutElement>
 				</component>
-				
-				<option type="header" value="true" />
-				<option type="expression" value="' '" />
-				
+
+				<option type="header" value="true"/>
+				<option type="expression" value="' '"/>
+
 				<listener event="printAssignmentToShiftReport"
-					class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftReportDetailsListeners"
-					method="printAssignmentToShiftReport" />
+						  class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftReportDetailsListeners"
+						  method="printAssignmentToShiftReport"/>
 				<listener event="generateReport"
-					class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftReportDetailsListeners"
-					method="generateAssignmentToShiftReport" />
+						  class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftReportDetailsListeners"
+						  method="generateAssignmentToShiftReport"/>
 			</component>
 		</windowTab>
+
 	</component>
+
 	<hooks>
-		<beforeRender 
-			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftReportDetailsHooks" 
-			method="generateAssignmentToShiftReportNumber" />
-		<beforeRender 
-			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftReportDetailsHooks" 
-			method="disableFields" />
+		<beforeRender
+				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftReportDetailsHooks"
+				method="generateAssignmentToShiftReportNumber"/>
+		<beforeRender
+				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftReportDetailsHooks"
+				method="disableFields"/>
 	</hooks>
+
 </view>

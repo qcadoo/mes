@@ -25,41 +25,38 @@
 
 -->
 <model name="assignmentToShift" activable="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	   xmlns="http://schema.qcadoo.org/model"
+	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
-		<date name="startDate" required="true" />
+		<date name="startDate" required="true"/>
 		<belongsTo name="shift" model="shift" plugin="basic"
-			required="true" />
+				   required="true"/>
 		<enum values="01draft,02accepted,03duringCorrection,04corrected"
-			name="state" default="01draft" />
-		<boolean name="approvedAttendanceList" />
+			  name="state" default="01draft"/>
+		<boolean name="approvedAttendanceList"/>
 		<hasMany name="staffAssignmentToShifts" joinField="assignmentToShift"
-			model="staffAssignmentToShift" />
+				 model="staffAssignmentToShift"/>
 		<hasMany name="plannedStaffAssignmentToShifts" joinField="assignmentToShift"
-			model="staffAssignmentToShift" persistent="false" />
+				 model="staffAssignmentToShift" persistent="false"/>
 		<hasMany name="correctedStaffAssignmentToShifts" joinField="assignmentToShift"
-			model="staffAssignmentToShift" persistent="false" />
+				 model="staffAssignmentToShift" persistent="false"/>
 		<hasMany name="assignmentToShiftStateChange" joinField="assignmentToShift"
-			model="assignmentToShiftStateChange" cascade="delete" />
+				 model="assignmentToShiftStateChange" cascade="delete"/>
 	</fields>
+
 	<hooks>
 		<validatesWith
-			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
-			method="onValidate" />
+				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
+				method="onValidate"/>
 		<onCreate
-			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
-			method="onCreate" />
+				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
+				method="onCreate"/>
 		<onCopy
-			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
-			method="onCopy" />
-
-		<!--<onCopy-->
-			<!--class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"-->
-			<!--method="setInitialState" />-->
-		<!--<onCopy-->
-			<!--class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"-->
-			<!--method="clearState" />-->
+				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
+				method="onCopy"/>
 	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
+
+	<identifier expression="#number + ' - ' + #name"/>
+
 </model>

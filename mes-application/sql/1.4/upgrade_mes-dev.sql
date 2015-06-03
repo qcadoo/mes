@@ -5,6 +5,7 @@ ALTER TABLE productionpershift_productionpershift ADD COLUMN orderfinishdate tim
 
 -- end
 
+
 -- Changes in substitutes
 -- last touched 12.05.2015 by kama
 
@@ -14,6 +15,7 @@ ALTER TABLE basic_substitutecomponent
       REFERENCES basic_product (id) DEFERRABLE;
 
 -- end
+
 
 -- Reworked menu, added category Company structure, added missing views to basic
 -- last touched 13.05.2015 by kama
@@ -65,10 +67,11 @@ UPDATE qcadooview_item
    ),succession=5
  WHERE name='workstations';
 
- -- end
+-- end
 
- -- Added 'is default' field to delivered products in company
- -- last touched 14.05.2015 by kama
+
+-- Added 'is default' field to delivered products in company
+-- last touched 14.05.2015 by kama
 
 
 ALTER TABLE deliveries_companyproduct ADD COLUMN isdefault boolean;
@@ -77,6 +80,7 @@ ALTER TABLE deliveries_companyproductsfamily ADD COLUMN isdefault boolean;
 ALTER TABLE deliveries_companyproductsfamily ALTER COLUMN isdefault SET DEFAULT false;
 
 -- end
+
 
 -- Table: warehouseminimalstate_warehouseminimumstate
 
@@ -128,6 +132,7 @@ CREATE TABLE jointable_product_warehouseminimumstatemulti
 
 -- end
 
+
 -- Added updating cost norms for products
 -- last touched 28.05.2015 by kama
 
@@ -155,5 +160,17 @@ ALTER TABLE basic_product ADD COLUMN costnormsgenerator_id bigint;
 ALTER TABLE basic_product
   ADD CONSTRAINT product_costnormsgenerator_fkey FOREIGN KEY (costnormsgenerator_id)
       REFERENCES materialflowresources_costnormsgenerator (id) DEFERRABLE;
+
+-- end
+
+
+-- Table: assignmenttoshift_staffassignmenttoshift
+-- last touched 03.06.2015 by lupo
+
+ALTER TABLE assignmenttoshift_staffassignmenttoshift ADD COLUMN masterorder_id bigint;
+
+ALTER TABLE assignmenttoshift_staffassignmenttoshift
+  ADD CONSTRAINT staffassignmenttoshift_masterorder_fkey FOREIGN KEY (masterorder_id)
+      REFERENCES masterorders_masterorder (id) DEFERRABLE;
 
 -- end
