@@ -37,12 +37,14 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.dates.OrderDates;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
+import com.qcadoo.mes.productionPerShift.PpsTimeHelper;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProductionPerShiftDataProvider;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -67,6 +69,9 @@ public class OrderDetailsHooksPPS {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private PpsTimeHelper ppsTimeHelper;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         Predicate<Entity> predicate = Predicates.and(HAS_DEFINED_PLANNED_START_DATE,
                 OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
@@ -87,24 +92,39 @@ public class OrderDetailsHooksPPS {
         DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
         Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
+        DataDefinition orderDD = order.getDataDefinition();
+        Entity dbOrder = orderDD.get(order.getId());
         boolean areDatesCorrect = true;
         if (maybeOrderDates.isPresent()) {
             OrderDates orderDates = maybeOrderDates.get();
             Date orderStart = removeTime(orderDates.getStart().effectiveWithFallback().toDate());
-            Date orderEnd = removeTime(orderDates.getEnd().effectiveWithFallback().toDate());
+            Date orderEnd = orderDates.getEnd().effectiveWithFallback().toDate();
+            Date ppsFinishDate = null;
             for (Long id : progressForDayIds) {
                 Entity progressForDay = progressForDayDD.get(id);
                 Date progressDate = progressForDay.getDateField(ProgressForDayFields.ACTUAL_DATE_OF_DAY);
                 if (progressDate == null) {
                     progressDate = progressForDay.getDateField(ProgressForDayFields.DATE_OF_DAY);
                 }
-                if (progressDate.before(orderStart) || progressDate.after(orderEnd)) {
-                    areDatesCorrect = false;
+                EntityList dailyProgresses = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
+                for (Entity dailyProgress : dailyProgresses) {
+                    Date shiftFinishDate = ppsTimeHelper.findFinishDate(dailyProgress, progressDate, dbOrder);
+                    if (ppsFinishDate == null || ppsFinishDate.before(shiftFinishDate)) {
+                        ppsFinishDate = shiftFinishDate;
+                    }
+                    if (progressDate.before(orderStart)) {
+                        areDatesCorrect = false;
+                    }
                 }
+            }
+            if (ppsFinishDate.after(orderEnd)) {
+                view.addMessage("productionPerShift.info.endDateTooLate", MessageType.INFO, false);
+            } else if (ppsFinishDate.before(orderEnd)) {
+                view.addMessage("productionPerShift.info.endDateTooEarly", MessageType.INFO, false);
             }
         }
         if (!areDatesCorrect) {
-            view.addMessage("productionPerShift.info.invalidDates", MessageType.INFO, false);
+            view.addMessage("productionPerShift.info.invalidStartDate", MessageType.INFO, false);
         }
     }
 
@@ -117,5 +137,4 @@ public class OrderDetailsHooksPPS {
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
-
 }
