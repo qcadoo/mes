@@ -16,6 +16,7 @@ import com.qcadoo.mes.basic.constants.ShiftFields;
 import com.qcadoo.mes.basic.constants.ShiftTimetableExceptionFields;
 import com.qcadoo.mes.basic.constants.TimetableExceptionType;
 import com.qcadoo.mes.basic.shift.Shift;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -29,6 +30,7 @@ public class PpsTimeHelper {
     public Date findFinishDate(final Entity dailyProgress, Date dateOfDay, Entity order) {
         DateTime endDate = null;
         DateTime dateOfDayDT = new DateTime(dateOfDay, DateTimeZone.getDefault());
+        DateTime orderStartDate = new DateTime(order.getDateField(OrderFields.START_DATE), DateTimeZone.getDefault());
         Entity shiftEntity = dailyProgress.getBelongsToField(DailyProgressFields.SHIFT);
         Shift shift = new Shift(shiftEntity);
         List<TimeRange> shiftWorkTime = Lists.newArrayList();
@@ -37,7 +39,11 @@ public class PpsTimeHelper {
             shiftWorkTime = shift.findWorkTimeAt(new LocalDate(dateOfDay));
         }
         for (TimeRange range : shiftWorkTime) {
-            shiftWorkDateTime.add(new DateTimeRange(dateOfDayDT, range));
+            DateTimeRange dateTimeRange = new DateTimeRange(dateOfDayDT, range);
+            DateTimeRange trimmedRange = dateTimeRange.trimBefore(orderStartDate);
+            if (trimmedRange != null) {
+                shiftWorkDateTime.add(trimmedRange);
+            }
         }
 
         shiftWorkDateTime = manageExceptions(shiftWorkDateTime, shift.getEntity(), dateOfDay);
