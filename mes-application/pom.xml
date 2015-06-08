@@ -238,14 +238,14 @@
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-plugins-cmmsMachineParts</artifactId>
+            <artifactId>mes-plugins-cmms-machine-parts</artifactId>
             <version>1.4-SNAPSHOT-DEV</version>
         </dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-warehouse-minimal-state</artifactId>
-			<version>1.4-SNAPSHOT-DEV</version>
-		</dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-warehouse-minimal-state</artifactId>
+            <version>1.4-SNAPSHOT-DEV</version>
+        </dependency>
         <dependency>
             <groupId>com.qcadoo</groupId>
             <artifactId>qcadoo-plugins-unit-conversion-management</artifactId>

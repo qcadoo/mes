@@ -10,7 +10,7 @@
         <version>1.4-SNAPSHOT-DEV</version>
     </parent>
 
-    <artifactId>mes-plugins-cmmsMachineParts</artifactId>
+    <artifactId>mes-plugins-cmms-machine-parts</artifactId>
     <groupId>com.qcadoo.mes</groupId>
 
     <name>Qcadoo MES :: Plugins :: CMMS Machine Parts</name>
