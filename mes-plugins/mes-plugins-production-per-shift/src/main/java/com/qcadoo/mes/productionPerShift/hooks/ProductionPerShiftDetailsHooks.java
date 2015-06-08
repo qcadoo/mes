@@ -208,10 +208,12 @@ public class ProductionPerShiftDetailsHooks {
                     }
                 }
             }
-            if (ppsFinishDate.after(orderEnd)) {
-                view.addMessage("productionPerShift.info.endDateTooLate", MessageType.INFO, false);
-            } else if (ppsFinishDate.before(orderEnd)) {
-                view.addMessage("productionPerShift.info.endDateTooEarly", MessageType.INFO, false);
+            if (ppsFinishDate != null) {
+                if (ppsFinishDate.after(orderEnd)) {
+                    view.addMessage("productionPerShift.info.endDateTooLate", MessageType.INFO, false);
+                } else if (ppsFinishDate.before(orderEnd)) {
+                    view.addMessage("productionPerShift.info.endDateTooEarly", MessageType.INFO, false);
+                }
             }
         }
         if (!areDatesCorrect) {

@@ -25,12 +25,12 @@
 
 -->
 <plugin plugin="assignmentToShift" group="planning"
-		version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
-		xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
-		xmlns:localization="http://schema.qcadoo.org/modules/localization"
-		xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
-		xsi:schemaLocation="
+        version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+        xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -46,95 +46,95 @@
 		http://schema.qcadoo.org/modules/custom 
 		http://schema.qcadoo.org/modules/custom.xsd">
 
-	<information>
-		<name>MES - Assignment to shift</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-		<description>Lets you plan when and which workers will be assigned to which shifts.</description>
-		<license>AGPL</license>
-	</information>
+    <information>
+        <name>MES - Assignment to shift</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Lets you plan when and which workers will be assigned to which shifts.</description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>wageGroups</plugin>
-			<version>[1.1.7</version>
-		</dependency>
-		<dependency>
-			<plugin>productionLines</plugin>
-			<version>[1.4.0</version>
-		</dependency>
-		<dependency>
-			<plugin>masterOrders</plugin>
-			<version>[1.4.0</version>
-		</dependency>
-		<dependency>
-			<plugin>states</plugin>
-			<version>[1.4.0</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <plugin>wageGroups</plugin>
+            <version>[1.1.7</version>
+        </dependency>
+        <dependency>
+            <plugin>productionLines</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+        <dependency>
+            <plugin>masterOrders</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+        <dependency>
+            <plugin>states</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+    </dependencies>
 
-	<modules>
-		<localization:translation path="locales"/>
+    <modules>
+        <localization:translation path="locales"/>
 
-		<model:dictionary name="occupationType"/>
+        <model:dictionary name="occupationType"/>
 
-		<model:model model="assignmentToShift" resource="model/assignmentToShift.xml"/>
-		<model:model model="staffAssignmentToShift" resource="model/staffAssignmentToShift.xml"/>
-		<model:model model="assignmentToShiftStateChange"
-					 resource="model/assignmentToShiftStateChange.xml"/>
-		<model:model model="assignmentToShiftReport" resource="model/assignmentToShiftReport.xml"/>
+        <model:model model="assignmentToShift" resource="model/assignmentToShift.xml"/>
+        <model:model model="staffAssignmentToShift" resource="model/staffAssignmentToShift.xml"/>
+        <model:model model="assignmentToShiftStateChange"
+                     resource="model/assignmentToShiftStateChange.xml"/>
+        <model:model model="assignmentToShiftReport" resource="model/assignmentToShiftReport.xml"/>
 
-		<model:model-field plugin="states" model="message">
-			<model:belongsTo name="assignmentToShiftStateChange"
-							 plugin="assignmentToShift" model="assignmentToShiftStateChange"/>
-		</model:model-field>
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="assignmentToShiftStateChange"
+                             plugin="assignmentToShift" model="assignmentToShiftStateChange"/>
+        </model:model-field>
 
-		<model:model-field plugin="basic" model="shift">
-			<model:hasMany name="assignmentToShiftStateChanges"
-						   plugin="assignmentToShift" model="assignmentToShiftStateChange"
-						   joinField="shift" cascade="nullify"/>
-		</model:model-field>
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="assignmentToShiftStateChanges"
+                           plugin="assignmentToShift" model="assignmentToShiftStateChange"
+                           joinField="shift" cascade="nullify"/>
+        </model:model-field>
 
-		<model:model-field plugin="basic" model="staff">
-			<model:hasMany name="staffAssignmentToShifts"
-						   plugin="assignmentToShift" model="staffAssignmentToShift"
-						   joinField="staff" cascade="delete"/>
-		</model:model-field>
+        <model:model-field plugin="basic" model="staff">
+            <model:hasMany name="staffAssignmentToShifts"
+                           plugin="assignmentToShift" model="staffAssignmentToShift"
+                           joinField="worker" cascade="delete"/>
+        </model:model-field>
 
-		<model:model-field plugin="productionLines" model="productionLine">
-			<model:hasMany name="staffAssignmentToShifts"
-						   plugin="assignmentToShift" model="staffAssignmentToShift"
-						   joinField="productionLine" cascade="nullify"/>
-		</model:model-field>
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany name="staffAssignmentToShifts"
+                           plugin="assignmentToShift" model="staffAssignmentToShift"
+                           joinField="productionLine" cascade="nullify"/>
+        </model:model-field>
 
-		<model:model-field plugin="masterOrders" model="masterOrder">
-			<model:hasMany name="staffAssignmentToShifts"
-						   plugin="assignmentToShift" model="staffAssignmentToShift"
-						   joinField="masterOrder" cascade="nullify"/>
-		</model:model-field>
+        <model:model-field plugin="masterOrders" model="masterOrder">
+            <model:hasMany name="staffAssignmentToShifts"
+                           plugin="assignmentToShift" model="staffAssignmentToShift"
+                           joinField="masterOrder" cascade="nullify"/>
+        </model:model-field>
 
-		<menu:menu-category name="orders"/>
-		<menu:menu-item name="assignmentToShift" category="orders"
-						view="assignmentToShiftList"/>
-		<menu:menu-item name="assignmentToShiftReportList"
-						category="orders" view="assignmentToShiftReportList"/>
+        <menu:menu-category name="orders"/>
+        <menu:menu-item name="assignmentToShift" category="orders"
+                        view="assignmentToShiftList"/>
+        <menu:menu-item name="assignmentToShiftReportList"
+                        category="orders" view="assignmentToShiftReportList"/>
 
-		<view:view resource="view/assignmentToShiftList.xml"/>
-		<view:view resource="view/assignmentToShiftReportList.xml"/>
-		<view:view resource="view/assignmentToShiftDetails.xml"/>
-		<view:view resource="view/staffAssignmentToShiftDetails.xml"/>
-		<view:view resource="view/assignmentToShiftReportDetails.xml"/>
+        <view:view resource="view/assignmentToShiftList.xml"/>
+        <view:view resource="view/assignmentToShiftReportList.xml"/>
+        <view:view resource="view/assignmentToShiftDetails.xml"/>
+        <view:view resource="view/staffAssignmentToShiftDetails.xml"/>
+        <view:view resource="view/assignmentToShiftReportDetails.xml"/>
 
-		<view:resource uri="public/**/*"/>
+        <view:resource uri="public/**/*"/>
 
-		<custom:custom
-				class="com.qcadoo.mes.assignmentToShift.AssignmentToShiftLoaderModule"/>
-	</modules>
+        <custom:custom
+                class="com.qcadoo.mes.assignmentToShift.AssignmentToShiftLoaderModule"/>
+    </modules>
 
-	<features>
-		<end-user/>
-	</features>
+    <features>
+        <end-user/>
+    </features>
 
 </plugin>

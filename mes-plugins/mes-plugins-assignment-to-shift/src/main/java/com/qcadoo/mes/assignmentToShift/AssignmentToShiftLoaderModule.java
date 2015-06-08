@@ -25,10 +25,13 @@ package com.qcadoo.mes.assignmentToShift;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.String;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
+import com.qcadoo.model.constants.DictionaryItemFields;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -82,7 +85,7 @@ public class AssignmentToShiftLoaderModule extends Module {
             Map<Integer, Map<String, String>> occupationTypesAttributes = getOccupationTypesAttributesFromXML();
 
             for (Map<String, String> occupationTypeAttributes : occupationTypesAttributes.values()) {
-                addDictionaryItem(occupationTypeAttributes);
+                addOrEnableDictionaryItem(occupationTypeAttributes);
             }
         }
     }
@@ -97,7 +100,7 @@ public class AssignmentToShiftLoaderModule extends Module {
         Map<Integer, Map<String, String>> occupationTypesAttributes = getOccupationTypesAttributesFromXML();
 
         for (Map<String, String> occupationTypeAttributes : occupationTypesAttributes.values()) {
-            deleteDictionaryItem(occupationTypeAttributes);
+            disableDictionaryItemIfExists(occupationTypeAttributes);
         }
     }
 
@@ -138,18 +141,30 @@ public class AssignmentToShiftLoaderModule extends Module {
         return occupationTypesAttributes;
     }
 
-    private void addDictionaryItem(final Map<String, String> occupationTypeAttributes) {
-        Entity dictionaryItem = getDictionaryItemDataDefinition().create();
+    private void addOrEnableDictionaryItem(final Map<String, String> occupationTypeAttributes) {
+        Optional<Entity> dictionaryItem = getDictionaryItemByOccupationTypeAttributes(occupationTypeAttributes);
 
-        dictionaryItem.setField(L_TECHNICAL_CODE, occupationTypeAttributes.get(L_TECHNICAL_CODE.toLowerCase(Locale.ENGLISH)));
-        dictionaryItem.setField(L_NAME, occupationTypeAttributes.get(L_NAME.toLowerCase(Locale.ENGLISH)));
-        dictionaryItem.setField(L_DICTIONARY, getOcupationTypeDictionary());
+        if(dictionaryItem.isPresent()){
+            Entity dictionaryEntity = dictionaryItem.get();
+            dictionaryEntity.getDataDefinition().activate(dictionaryEntity.getId());
 
-        dictionaryItem = dictionaryItem.getDataDefinition().save(dictionaryItem);
+        } else {
+            addDictionaryItem(occupationTypeAttributes);
+        }
+    }
 
-        if (dictionaryItem.isValid()) {
+    private void addDictionaryItem(Map<String, String> occupationTypeAttributes) {
+        Entity newDictionaryItem = getDictionaryItemDataDefinition().create();
+
+        newDictionaryItem.setField(L_TECHNICAL_CODE, occupationTypeAttributes.get(L_TECHNICAL_CODE.toLowerCase(Locale.ENGLISH)));
+        newDictionaryItem.setField(L_NAME, occupationTypeAttributes.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        newDictionaryItem.setField(L_DICTIONARY, getOcupationTypeDictionary());
+
+        newDictionaryItem = newDictionaryItem.getDataDefinition().save(newDictionaryItem);
+
+        if (newDictionaryItem.isValid()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Occupation type saved {occupationType : " + dictionaryItem.toString() + "}");
+                LOG.debug("Occupation type saved {occupationType : " + newDictionaryItem.toString() + "}");
             }
         } else {
             throw new IllegalStateException("Saved dictionaryItem entity have validation errors - "
@@ -157,7 +172,7 @@ public class AssignmentToShiftLoaderModule extends Module {
         }
     }
 
-    public void deleteDictionaryItem(final Map<String, String> occupationTypeAttributes) {
+    public Optional<Entity> getDictionaryItemByOccupationTypeAttributes(final Map<String, String> occupationTypeAttributes) {
         List<Entity> dictionaryItems = getDictionaryItemDataDefinition()
                 .find()
                 .add(SearchRestrictions.belongsTo(L_DICTIONARY, getOcupationTypeDictionary()))
@@ -167,15 +182,20 @@ public class AssignmentToShiftLoaderModule extends Module {
                         SearchRestrictions.eq(L_NAME, occupationTypeAttributes.get(L_NAME.toLowerCase(Locale.ENGLISH))))).list()
                 .getEntities();
 
-        for (Entity dictionaryItem : dictionaryItems) {
-            dictionaryItem.getDataDefinition().delete(dictionaryItem.getId());
-        }
+        return dictionaryItems.isEmpty() ? Optional.empty() : Optional.of(dictionaryItems.get(0));
+    }
+
+    public void disableDictionaryItemIfExists(final Map<String, String> occupationTypeAttributes) {
+        Optional<Entity> dictionaryItem = getDictionaryItemByOccupationTypeAttributes(occupationTypeAttributes);
+
+        dictionaryItem.ifPresent(entity -> entity.getDataDefinition().deactivate(entity.getId()));
     }
 
     private boolean databaseHasToBePrepared() {
         return getDictionaryItemDataDefinition()
                 .find()
                 .add(SearchRestrictions.belongsTo(L_DICTIONARY, getOcupationTypeDictionary()))
+                .add(SearchRestrictions.eq(DictionaryItemFields.ACTIVE, true))
                 .add(SearchRestrictions.or(SearchRestrictions.eq(L_TECHNICAL_CODE, "01workForLine"),
                         SearchRestrictions.eq(L_TECHNICAL_CODE, "02otherCase"))).list().getTotalNumberOfEntities() == 0;
     }

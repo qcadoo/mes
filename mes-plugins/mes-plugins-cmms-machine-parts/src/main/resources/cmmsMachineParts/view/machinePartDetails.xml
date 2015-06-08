@@ -227,6 +227,10 @@
                                 expression="#product['number']" link="true" width="50"/>
                         <option type="column" name="name" fields="product"
                                 expression="#product['name']" link="true" width="100"/>
+
+                        <option type="column" name="producer" fields="product"
+                                expression="#product['producer']?.get('name')" link="true" width="100"/>
+
                         <option type="column" name="quantity" fields="quantity"
                                 width="40"/>
                         <option type="column" name="unit" fields="product"
@@ -237,8 +241,8 @@
                         <option type="correspondingView" value="cmmsMachineParts/productSubstituteComponentDetails"/>
                         <option type="correspondingComponent" value="form"/>
                         <option type="correspondingViewInModal" value="true"/>
-                        <option type="orderable" value="number,name,quantity"/>
-                        <option type="searchable" value="number,name,quantity"/>
+                        <option type="orderable" value="number,name,quantity,producer"/>
+                        <option type="searchable" value="number,name,quantity,producer"/>
 
                         <option type="paginable" value="false"/>
                         <option type="creatable" value="true"/>
