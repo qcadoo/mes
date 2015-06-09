@@ -1,5 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import com.qcadoo.view.api.components.FieldComponent;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
@@ -11,6 +13,8 @@ import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class MachinePartDetailsHooks {
+
+    private static final String L_FORM = "form";
 
     public void setMachinePartCheckbox(final ViewDefinitionState view) {
         CheckBoxComponent machinePartCheckbox = (CheckBoxComponent) view.getComponentByReference("machinePart");
@@ -31,5 +35,22 @@ public class MachinePartDetailsHooks {
             productCompanies.setVisible(false);
             productsFamilyCompanies.setVisible(true);
         }
+    }
+
+    public void setMachinePartIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent technologyIdForMultiUpload = (FieldComponent) view.getComponentByReference("machinePartIdForMultiUpload");
+        FieldComponent technologyMultiUploadLocale = (FieldComponent) view.getComponentByReference("machinePartMultiUploadLocale");
+
+        if (technology.getEntityId() != null) {
+            technologyIdForMultiUpload.setFieldValue(technology.getEntityId());
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        } else {
+            technologyIdForMultiUpload.setFieldValue("");
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        }
+        technologyMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
+        technologyMultiUploadLocale.requestComponentUpdateState();
+
     }
 }

@@ -47,6 +47,20 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="atachments">
+                <bigButton name="downloadAtachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAtachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
             <group name="warehouseState">
                 <bigButton name="warehouseState" icon="genealogyIcon24.png">
                     <script>
@@ -147,6 +161,8 @@
 
                 <listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
                           method="getDefaultConversions"/>
+                <listener event="downloadAtachment" method="downloadAtachment"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"/>
             </component>
         </windowTab>
 
@@ -381,7 +397,34 @@
         </windowTab>
 
         <windowTab name="attachmentsTab">
+            <component type="gridLayout" name="gridsLayout" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" height="6">
 
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="cmmsMachineParts/multiUpload.jsp"/>
+                    </component>
+                    <component type="input" name="machinePartIdForMultiUpload"
+                               reference="machinePartIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                    <component type="input" name="machinePartMultiUploadLocale"
+                               reference="machinePartMultiUploadLocale" defaultVisible="false">
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="machinePartAttachments"
+                               reference="machinePartAttachments" source="#{form}.machinePartAttachments">
+                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
         </windowTab>
 
     </component>
@@ -402,5 +445,9 @@
 
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartDetailsHooks"
                       method="toggleSuppliersGrids"/>
+
+        <beforeRender
+                class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartDetailsHooks"
+                method="setMachinePartIdForMultiUploadField" />
     </hooks>
 </view>

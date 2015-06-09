@@ -88,6 +88,8 @@
 
         <!-- model -->
 
+        <model:model model="machinePartAttachment" resource="model/machinePartAttachment.xml"/>
+
         <!-- model extensions -->
         <model:model-field plugin="basic" model="product">
             <model:belongsTo name="producer" model="company" plugin="basic"/>
@@ -96,6 +98,10 @@
             <model:hasMany name="producedProducts" model="product" plugin="basic" joinField="producer"
                            cascade="nullify"/>
         </model:model-field>
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="machinePartAttachments" joinField="product" model="machinePartAttachment" cascade="delete" plugin="cmmsMachineParts"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
             <model:string name="catalogNumber"/>
         </model:model-field>
