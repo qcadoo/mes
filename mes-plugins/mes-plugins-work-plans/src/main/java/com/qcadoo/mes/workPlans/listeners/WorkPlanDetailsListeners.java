@@ -153,6 +153,11 @@ public class WorkPlanDetailsListeners {
                 WorkPlansConstants.MODEL_WORK_PLAN });
     }
 
+    public void printWorkPlanForDivision(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        reportService.printGeneratedReport(view, state, new String[] { args[0], WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_WORK_PLAN });
+    }
+
     public void printAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("technologyAttachments");
         if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
