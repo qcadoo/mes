@@ -41,7 +41,9 @@ import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
+import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
+import com.qcadoo.mes.workPlans.print.WorkPlanForDivisionPdfService;
 import com.qcadoo.mes.workPlans.print.WorkPlanPdfService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
@@ -71,6 +73,9 @@ public class WorkPlanDetailsListeners {
 
     @Autowired
     private WorkPlanPdfService workPlanPdfService;
+
+    @Autowired
+    private WorkPlanForDivisionPdfService workPlanForDivisionPdfService;
 
     @Autowired
     private OrderHelperService orderHelperService;
@@ -146,16 +151,17 @@ public class WorkPlanDetailsListeners {
         Entity workPlanWithFilename = fileService.updateReportFileName(workPlan, WorkPlanFields.DATE,
                 "workPlans.workPlan.report.fileName");
         workPlanPdfService.generateDocument(workPlanWithFilename, state.getLocale());
+        if (workPlan.getStringField(WorkPlanFields.TYPE).compareTo(WorkPlanType.BY_DIVISION.getStringValue()) == 0) {
+            String fileNameForDivision = "workPlans.workPlan.report.fileNameForDivision";
+            Entity workPlanForDivision = fileService.updateReportFileName(workPlanWithFilename, WorkPlanFields.DATE,
+                    fileNameForDivision);
+            workPlanForDivisionPdfService.generateDocument(workPlanForDivision, state.getLocale(), fileNameForDivision);
+        }
     }
 
     public void printWorkPlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(view, state, new String[] { args[0], WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_WORK_PLAN });
-    }
-
-    public void printWorkPlanForDivision(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        reportService.printGeneratedReport(view, state, new String[] { args[0], WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_WORK_PLAN });
+                WorkPlansConstants.MODEL_WORK_PLAN, args[1] });
     }
 
     public void printAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {

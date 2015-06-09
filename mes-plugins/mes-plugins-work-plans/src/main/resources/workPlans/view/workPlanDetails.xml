@@ -39,9 +39,9 @@
             </group>
             <group name="export">
                 <bigButton name="printWorkPlan" icon="pdfIcon24.png"
-                           action="#{form}.fireEvent(printWorkPlan,pdf);" state="disabled"/>
+                           action="#{form}.fireEvent(printWorkPlan,pdf,0);" state="disabled"/>
                 <bigButton name="printWorkPlanForDivision" icon="pdfIcon24.png"
-                           action="#{form}.fireEvent(printWorkPlanForDivision,pdf);" state="disabled"/>
+                           action="#{form}.fireEvent(printWorkPlan,pdf,1);" state="disabled"/>
             </group>
             <group name="atachments">
                 <bigButton name="printAtachment" icon="pdfIcon24.png"
@@ -301,9 +301,6 @@
                 <listener event="printWorkPlan"
                           class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners"
                           method="printWorkPlan"/>
-                <listener event="printWorkPlanForDivision"
-                          class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners"
-                          method="printWorkPlanForDivision"/>
                 <listener event="generateWorkPlan"
                           class="com.qcadoo.mes.workPlans.listeners.WorkPlanDetailsListeners"
                           method="generateWorkPlan"/>
