@@ -32,23 +32,23 @@ $(function() {
 						submit : function(e, data) {
 							var locale = window.mainController
 							.getComponentByReferenceName(
-								"technologyMultiUploadLocale")
+								"machinePartMultiUploadLocale")
 									.getValue().content.value;
-							var techId = window.mainController
+							var partId = window.mainController
 								.getComponentByReferenceName(
-									"technologyIdForMultiUpload")
+									"machinePartIdForMultiUpload")
 										.getValue();
-							var techIdValue = techId.content;
-							if(!techIdValue.value || 0 === techIdValue.value){
+							var partIdValue = partId.content;
+							if(!partIdValue.value || 0 === partIdValue.value){
 							    $.each(data.files, function (index, file) {
 									if(locale === "pl_PL"){
 							    	showMessage("failure",
-											"Technologia niezapisana",
+											"Część niezapisana",
 											"Pominięto wgranie pliku : "
 													+ file.name);
 									} else {
 								    	showMessage("failure",
-												"Technology is not saved",
+												"Machine part is not saved",
 												"Omitted file upload : "
 														+ file.name);
 									}
@@ -72,7 +72,7 @@ $(function() {
 
 							var locale = window.mainController
 							.getComponentByReferenceName(
-								"technologyMultiUploadLocale")
+								"machinePartMultiUploadLocale")
 									.getValue().content.value;
 							var filetype = /(\.|\/)(gif|jpe?g|png|pdf)$/i;
 
@@ -99,22 +99,20 @@ $(function() {
 					}).bind(
 					'fileuploadsubmit',
 					function(e, data) {
-						var techId = window.mainController
+						var partId = window.mainController
 								.getComponentByReferenceName(
-										"technologyIdForMultiUpload")
-								.getValue();
-						var techIdValue = techId.content;
+										"machinePartIdForMultiUpload").getValue();
+						var partIdValue = partId.content;
 						data.formData = {
-							techId : techIdValue.value
+							partId : partIdValue.value
 						};
-					
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
 						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
-							"technologyMultiUploadLocale")
+							"machinePartMultiUploadLocale")
 								.getValue().content.value;
 						$.each(data.files, function(index, file) {
 							if (!filetype.test(file.name)) {

@@ -21,16 +21,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.controller;
+package com.qcadoo.mes.cmmsMachineParts.controller;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.collect.Lists;
+import com.google.common.io.Files;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.file.FileService;
+import com.qcadoo.view.api.crud.CrudService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,23 +47,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.view.api.crud.CrudService;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.List;
 
 @Controller
-@RequestMapping("/techologies")
-public class TechnologyMultiUploadController {
+@RequestMapping("/cmmsMachineParts")
+public class MachinePartMultiUploadController {
 
-    private static final Logger logger = LoggerFactory.getLogger(TechnologyMultiUploadController.class);
+    private static final Logger logger = LoggerFactory.getLogger(MachinePartMultiUploadController.class);
 
     @Autowired
     private FileService fileService;
@@ -83,11 +82,11 @@ public class TechnologyMultiUploadController {
     @ResponseBody
     @RequestMapping(value = "/multiUploadFiles", method = RequestMethod.POST)
     public void upload(MultipartHttpServletRequest request, HttpServletResponse response) {
-        Long technologyId = Long.parseLong(request.getParameter("techId"));
-        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
-        DataDefinition attachmentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);
+        Long part = Long.parseLong(request.getParameter("partId"));
+        Entity technology = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_PRODUCT).get(part);
+        DataDefinition attachmentDD = dataDefinitionService.get("cmmsMachineParts",
+                "machinePartAttachment");
 
         Iterator<String> itr = request.getFileNames();
         MultipartFile mpf = null;
@@ -106,21 +105,22 @@ public class TechnologyMultiUploadController {
                 Entity atchment = attachmentDD.create();
                 atchment.setField(TechnologyAttachmentFields.ATTACHMENT, path);
                 atchment.setField(TechnologyAttachmentFields.NAME, mpf.getOriginalFilename());
-                atchment.setField(TechnologyAttachmentFields.TECHNOLOGY, technology);
+                atchment.setField("product", technology);
                 atchment.setField(TechnologyAttachmentFields.EXT, Files.getFileExtension(path));
                 BigDecimal fileSize = new BigDecimal(mpf.getSize(), numberService.getMathContext());
                 BigDecimal divider = new BigDecimal(1024, numberService.getMathContext());
                 BigDecimal size = fileSize.divide(divider, L_SCALE, BigDecimal.ROUND_HALF_UP);
                 atchment.setField(TechnologyAttachmentFields.SIZE, size);
-                attachmentDD.save(atchment);
+                atchment = attachmentDD.save(atchment);
+                atchment.isValid();
             }
         }
     }
 
     @RequestMapping(value = "/getAttachment.html", method = RequestMethod.GET)
     public final void getAttachment(@RequestParam("id") final Long[] ids, HttpServletResponse response) {
-        DataDefinition attachmentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);
+        DataDefinition attachmentDD = dataDefinitionService.get("cmmsMachineParts",
+                "machinePartAttachment");
         Entity attachment = attachmentDD.get(ids[0]);
         InputStream is = fileService.getInputStream(attachment.getStringField(TechnologyAttachmentFields.ATTACHMENT));
 
