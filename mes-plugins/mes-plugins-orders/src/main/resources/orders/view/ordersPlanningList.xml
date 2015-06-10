@@ -223,14 +223,16 @@
 
  			<option type="column" name="externalNumber" fields="externalNumber" hidden="true" />
  			<option type="column" name="externalSynchronized" fields="externalSynchronized" expression="#externalSynchronized?'1':'0'" hidden="true" />
-			
+
+            <option type="column" name="productionLine" fields="productionLine" expression="#productionLine['number']" width="40" />
+
 			<option type="correspondingView" value="orders/orderDetails" />
 			<option type="correspondingComponent" value="form" />
 			
 			<option type="order" column="dateFrom" direction="desc" />
 			
-			<option type="searchable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
-			<option type="orderable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace" />
+			<option type="searchable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace,productionLine" />
+			<option type="orderable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace,productionLine" />
 			
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />

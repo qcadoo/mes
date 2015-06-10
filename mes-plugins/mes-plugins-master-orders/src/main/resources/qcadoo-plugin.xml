@@ -128,12 +128,6 @@
                          orderable="true" searchable="true" expression="#masterOrder['number']"
                          width="50"/>
         </view:view-grid-column>
-        <view:view-grid-column plugin="orders"
-                               view="ordersPlanningList" component="grid">
-            <view:column name="masterOrderDefinitionNumber" fields="masterOrder"
-                         orderable="true" searchable="true" expression="#masterOrder['masterOrderDefinition']?.get('number')"
-                         width="50"/>
-        </view:view-grid-column>
 
         <view:view-hook plugin="orders" view="orderDetails"
                         type="beforeRender"
