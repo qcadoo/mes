@@ -174,3 +174,20 @@ ALTER TABLE assignmenttoshift_staffassignmenttoshift
       REFERENCES masterorders_masterorder (id) DEFERRABLE;
 
 -- end
+
+-- Table: cmmsmachineparts_machinepartattachment
+-- last touched 08.06.2015 by kasi
+CREATE TABLE cmmsmachineparts_machinepartattachment
+(
+  id bigint  NOT NULL,
+  product_id bigint,
+  attachment character varying(255),
+  name character varying(255),
+  size numeric(12,5),
+  ext character varying(255),
+  CONSTRAINT cmmsmachineparts_machinepartattachment_pkey PRIMARY KEY (id),
+  CONSTRAINT machinepartattachment_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE
+ );
+
+--end
