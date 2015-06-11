@@ -73,6 +73,10 @@
 						<component type="textarea" name="otherAddress" field="#{form}.otherAddress"
 							reference="otherAddress"  hasLabel="false"/>
 					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="checkbox" name="positivePurchasePrice" hasDescription="true"
+								   field="#{form}.positivePurchasePrice" reference="positivePurchasePrice"/>
+					</layoutElement>
 
 					<layoutElement column="2" row="1" width="2" height="9">
 						<component type="borderLayout" name="columnsForOrdersBorderLayout">

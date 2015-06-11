@@ -191,3 +191,9 @@ CREATE TABLE cmmsmachineparts_machinepartattachment
  );
 
 --end
+
+
+-- add positivePurchasePrice to parameters
+ALTER TABLE basic_parameter
+        ADD COLUMN positivepurchaseprice boolean DEFAULT true;
+-- end
