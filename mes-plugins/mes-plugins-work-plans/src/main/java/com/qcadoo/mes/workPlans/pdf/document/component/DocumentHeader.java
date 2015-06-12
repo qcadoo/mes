@@ -38,10 +38,12 @@ import java.util.Locale;
 @Component
 public class DocumentHeader {
 
-    public static final String MSG_TITLE  = "workPlans.workPlan.report.title";
+    public static final String MSG_TITLE = "workPlans.workPlan.report.title";
+
     public static final String MSG_AUTHOR = "qcadooReport.commons.generatedBy.label";
 
     private TranslationService translationService;
+
     private PdfHelper pdfHelper;
 
     @Autowired

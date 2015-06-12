@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.PageSize;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.util.OrderHelperService;
@@ -155,7 +156,8 @@ public class WorkPlanDetailsListeners {
             String fileNameForDivision = "workPlans.workPlan.report.fileNameForDivision";
             Entity workPlanForDivision = fileService.updateReportFileName(workPlanWithFilename, WorkPlanFields.DATE,
                     fileNameForDivision);
-            workPlanForDivisionPdfService.generateDocument(workPlanForDivision, state.getLocale(), fileNameForDivision);
+            workPlanForDivisionPdfService.generateDocument(workPlanForDivision, state.getLocale(), fileNameForDivision,
+                    PageSize.A4.rotate());
         }
     }
 
