@@ -58,6 +58,10 @@
             <plugin>materialFlowResources</plugin>
             <version>[1.4.0</version>
         </dependency>
+        <dependency>
+            <plugin>deliveries</plugin>
+            <version>[1.4.0</version>
+        </dependency>
     </dependencies>
 
 

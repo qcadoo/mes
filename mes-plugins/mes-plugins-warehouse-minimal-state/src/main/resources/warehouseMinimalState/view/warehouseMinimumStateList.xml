@@ -38,6 +38,10 @@
 
                 </bigButton>
             </group>
+            <group name="report">
+				<bigButton name="generateMinStateReport" icon="pdfIcon24.png"
+				           action="#{grid}.fireEvent(printDocument,pdf);" />
+			</group>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
@@ -75,6 +79,9 @@
             <option type="orderable" value="locationName,locationNumber,productNumber,productName,minimumState,optimalOrderQuantity"/>
             <option type="fullscreen" value="true"/>
 
+			<listener event="printDocument"
+			          class="com.qcadoo.mes.warehouseMinimalState.listeners.WarehouseMinimumStateListListener"
+			          method="printDocument" />
         </component>
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
