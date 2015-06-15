@@ -281,11 +281,6 @@ DROP FUNCTION update_ordersupplies_columnforcoverages();
 
 INSERT INTO workplans_columnforinputproducts(
             identifier, name, description, columnfiller, alignment)
-    VALUES ('quantityPerUnitOperationProductColumn', 'workPlans.columnForInputProducts.name.value.quantityPerUnitOperationProductColumn',
-	'workPlans.columnForInputProducts.description.value.quantityPerUnitOperationProductColumn', 'com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller', '02right');
-
-INSERT INTO workplans_columnforinputproducts(
-            identifier, name, description, columnfiller, alignment)
     VALUES ('unitOperationProductColumn', 'workPlans.columnForInputProducts.name.value.unitOperationProductColumn',
 	'workPlans.columnForInputProducts.description.value.unitOperationProductColumn', 'com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller', '01left');
 
@@ -293,6 +288,12 @@ INSERT INTO workplans_columnforoutputproducts(
             identifier, name, description, columnfiller, alignment)
     VALUES ('unitOperationProductColumn', 'workPlans.columnForOutputProducts.name.value.unitOperationProductColumn',
 	'workPlans.columnForOutputProducts.description.value.unitOperationProductColumn', 'com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller', '01left');
+
+INSERT INTO workplans_columnforinputproducts(
+            identifier, name, description, columnfiller, alignment)
+    VALUES ('quantityPerUnitOperationProductColumn', 'workPlans.columnForInputProducts.name.value.quantityPerUnitOperationProductColumn',
+	'workPlans.columnForInputProducts.description.value.quantityPerUnitOperationProductColumn', 'com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller', '02right');
+
 
 INSERT INTO workplans_parameterinputcolumn(
             parameter_id, columnforinputproducts_id, succession)
@@ -368,47 +369,42 @@ UPDATE workplans_columnforinputproducts SET identifier='unitOperationProductColu
 UPDATE workplans_columnforinputproducts SET identifier='employeeSignatureOperationProductColumn_temp' WHERE identifier='employeeSignatureOperationProductColumn';
 UPDATE workplans_columnforinputproducts SET identifier='effectiveQuantityOperationProductColumn_temp' WHERE identifier='effectiveQuantityOperationProductColumn';
 UPDATE workplans_columnforinputproducts SET identifier='attentionOperationProductColumn_temp' WHERE identifier='attentionOperationProductColumn';
-UPDATE workplans_columnforinputproducts SET identifier='quantityPerUnitOperationProductColumn_temp' WHERE identifier='quantityPerUnitOperationProductColumn';
 
 UPDATE workplans_columnforinputproducts SET identifier='unitOperationProductColumn', name='workPlans.columnForInputProducts.name.value.unitOperationProductColumn',
 	description='workPlans.columnForInputProducts.description.value.unitOperationProductColumn', alignment='01left'
 	WHERE identifier='effectiveQuantityOperationProductColumn_temp';
 
-UPDATE workplans_columnforinputproducts SET identifier='quantityPerUnitOperationProductColumn', name='workPlans.columnForInputProducts.name.value.quantityPerUnitOperationProductColumn',
-	description='workPlans.columnForInputProducts.description.value.quantityPerUnitOperationProductColumn', alignment='02right'
-	WHERE identifier='attentionOperationProductColumn_temp';
-
 UPDATE workplans_columnforinputproducts SET identifier='effectiveQuantityOperationProductColumn', name='workPlans.columnForInputProducts.name.value.effectiveQuantityOperationProductColumn',
 	description='workPlans.columnForInputProducts.description.value.effectiveQuantityOperationProductColumn', alignment='02right'
-	WHERE identifier='employeeSignatureOperationProductColumn_temp';
+	WHERE identifier='attentionOperationProductColumn_temp';
 
 UPDATE workplans_columnforinputproducts SET identifier='attentionOperationProductColumn', name='workPlans.columnForInputProducts.name.value.attentionOperationProductColumn',
 	description='workPlans.columnForInputProducts.description.value.attentionOperationProductColumn', alignment='01left'
-	WHERE identifier='unitOperationProductColumn_temp';
+	WHERE identifier='employeeSignatureOperationProductColumn_temp';
 
 UPDATE workplans_columnforinputproducts SET identifier='employeeSignatureOperationProductColumn', name='workPlans.columnForInputProducts.name.value.employeeSignatureOperationProductColumn',
 	description='workPlans.columnForInputProducts.description.value.employeeSignatureOperationProductColumn', alignment='01left'
-	WHERE identifier='quantityPerUnitOperationProductColumn_temp';
+	WHERE identifier='unitOperationProductColumn_temp';
 
 UPDATE workplans_columnforoutputproducts SET identifier='unitOperationProductColumn_temp' WHERE identifier='unitOperationProductColumn';
 UPDATE workplans_columnforoutputproducts SET identifier='employeeSignatureOperationProductColumn_temp' WHERE identifier='employeeSignatureOperationProductColumn';
 UPDATE workplans_columnforoutputproducts SET identifier='effectiveQuantityOperationProductColumn_temp' WHERE identifier='effectiveQuantityOperationProductColumn';
 UPDATE workplans_columnforoutputproducts SET identifier='attentionOperationProductColumn_temp' WHERE identifier='attentionOperationProductColumn';
 
-UPDATE workplans_columnforoutputproducts SET identifier='unitOperationProductColumn', name='workPlans.columnForInputProducts.name.value.unitOperationProductColumn',
-	description='workPlans.columnForInputProducts.description.value.unitOperationProductColumn', alignment='01left'
+UPDATE workplans_columnforoutputproducts SET identifier='unitOperationProductColumn', name='workPlans.columnForOutputProducts.name.value.unitOperationProductColumn',
+	description='workPlans.columnForOutputProducts.description.value.unitOperationProductColumn', alignment='01left'
 	WHERE identifier='effectiveQuantityOperationProductColumn_temp';
 
-UPDATE workplans_columnforoutputproducts SET identifier='effectiveQuantityOperationProductColumn', name='workPlans.columnForInputProducts.name.value.effectiveQuantityOperationProductColumn',
-	description='workPlans.columnForInputProducts.description.value.effectiveQuantityOperationProductColumn', alignment='02right'
+UPDATE workplans_columnforoutputproducts SET identifier='effectiveQuantityOperationProductColumn', name='workPlans.columnForOutputProducts.name.value.effectiveQuantityOperationProductColumn',
+	description='workPlans.columnForOutputProducts.description.value.effectiveQuantityOperationProductColumn', alignment='02right'
 	WHERE identifier='attentionOperationProductColumn_temp';
 
-UPDATE workplans_columnforoutputproducts SET identifier='attentionOperationProductColumn', name='workPlans.columnForInputProducts.name.value.attentionOperationProductColumn',
-	description='workPlans.columnForInputProducts.description.value.attentionOperationProductColumn', alignment='01left'
+UPDATE workplans_columnforoutputproducts SET identifier='attentionOperationProductColumn', name='workPlans.columnForOutputProducts.name.value.attentionOperationProductColumn',
+	description='workPlans.columnForOutputProducts.description.value.attentionOperationProductColumn', alignment='01left'
 	WHERE identifier='employeeSignatureOperationProductColumn_temp';
 
-UPDATE workplans_columnforoutputproducts SET identifier='employeeSignatureOperationProductColumn', name='workPlans.columnForInputProducts.name.value.employeeSignatureOperationProductColumn',
-	description='workPlans.columnForInputProducts.description.value.employeeSignatureOperationProductColumn', alignment='01left'
+UPDATE workplans_columnforoutputproducts SET identifier='employeeSignatureOperationProductColumn', name='workPlans.columnForOutputProducts.name.value.employeeSignatureOperationProductColumn',
+	description='workPlans.columnForOutputProducts.description.value.employeeSignatureOperationProductColumn', alignment='01left'
 	WHERE identifier='unitOperationProductColumn_temp';
 
 -- end
