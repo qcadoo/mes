@@ -93,10 +93,8 @@ public class DeliveryStateValidationService {
             }
         }
         if (deliveredProductHasNull) {
-            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredQuantity.isRequired",
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredQuantity.isRequired", false,
                     listOfProductNumber.toString());
-            stateChangeContext.addMessage("deliveries.deliveredProducts.deliveredQuantity.isRequired", StateMessageType.FAILURE,
-                    false, listOfProductNumber.toString());
         }
     }
 
@@ -119,10 +117,8 @@ public class DeliveryStateValidationService {
         });
 
         if(!listOfProductNumber.toString().isEmpty()) {
-            stateChangeContext.addValidationError("deliveries.orderedProducts.orderedQuantity.isRequired",
+            stateChangeContext.addValidationError("deliveries.orderedProducts.orderedQuantity.isRequired", false,
                     listOfProductNumber.toString());
-            stateChangeContext.addMessage("deliveries.orderedProducts.orderedQuantity.isRequired", StateMessageType.FAILURE,
-                    false, listOfProductNumber.toString());
         }
     }
 
@@ -144,10 +140,8 @@ public class DeliveryStateValidationService {
         });
 
         if(!listOfProductNumber.toString().isEmpty()) {
-            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredPUrchasePrice.isRequired",
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredPurchasePrice.isRequired", false,
                     listOfProductNumber.toString());
-            stateChangeContext.addMessage("deliveries.deliveredProducts.deliveredPUrchasePrice.isRequired", StateMessageType.FAILURE,
-                    false, listOfProductNumber.toString());
         }
     }
 }
