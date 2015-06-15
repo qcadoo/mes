@@ -197,3 +197,8 @@ CREATE TABLE cmmsmachineparts_machinepartattachment
 ALTER TABLE basic_parameter
         ADD COLUMN positivepurchaseprice boolean DEFAULT true;
 -- end
+
+-- QCADOOCLS-4011
+ALTER TABLE orders_order
+  ADD COLUMN  workplandelivered boolean DEFAULT false;
+-- end

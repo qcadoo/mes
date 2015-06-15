@@ -29,6 +29,7 @@ import java.util.Set;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.view.api.ComponentState;
 
 public interface WorkPlansService {
 
@@ -309,4 +310,11 @@ public interface WorkPlansService {
      */
     int getAdditionalRowsFromParameter(final String field);
 
+    /**
+     * Set work plan as delivered in order
+     *
+     * @param state
+     * @param selectedEntities
+     */
+    void workPlanDelivered(ComponentState state, List<Entity> selectedEntities);
 }

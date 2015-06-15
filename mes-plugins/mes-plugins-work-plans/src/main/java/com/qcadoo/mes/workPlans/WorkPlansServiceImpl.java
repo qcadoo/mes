@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import com.qcadoo.mes.workPlans.constants.ColumnForOrdersFields;
+import com.qcadoo.view.api.ComponentState;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -289,6 +291,19 @@ public class WorkPlansServiceImpl implements WorkPlansService {
     public int getAdditionalRowsFromParameter(String field) {
         Integer rows = parameterService.getParameter().getIntegerField(field);
         return rows != null ? rows : 0;
+    }
+
+
+    public void workPlanDelivered(final ComponentState state, List<Entity> selectedEntities){
+        for(Entity orderEntity : selectedEntities){
+            boolean isWorkPlanDelivered = orderEntity.getBooleanField(ColumnForOrdersFields.WORK_PLAN_DELIVERED);
+            if(!isWorkPlanDelivered){
+                orderEntity.setField(ColumnForOrdersFields.WORK_PLAN_DELIVERED, true);
+                dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(orderEntity);
+            }
+        }
+
+        state.addMessage("workPlans.workPlanDelivered.message.generated", ComponentState.MessageType.SUCCESS);
     }
 
 }

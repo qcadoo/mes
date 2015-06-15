@@ -236,6 +236,9 @@
             <model:manyToMany name="workPlans" joinField="orders"
                               model="workPlan" plugin="workPlans"/>
         </model:model-field>
+        <model:model-field plugin="orders" model="order">
+            <model:boolean name="workPlanDelivered" default="false"/>
+        </model:model-field>
 
         <model:model-field plugin="workPlans" model="columnForInputProducts">
             <model:hasMany name="workPlan" plugin="workPlans" model="workPlan"
@@ -251,6 +254,16 @@
 <!--                            model="operation"> -->
 <!--             <model:boolean name="manualOrderForProducts"/> -->
 <!--         </model:model-field> -->
+
+        <view:view-grid-column view="ordersList" component="grid" plugin="orders">
+            <view:column name="workPlanDelivered" fields="workPlanDelivered"
+                         orderable="true" searchable="true" width="40"/>
+        </view:view-grid-column>
+
+        <view:view-grid-column view="ordersPlanningList" component="grid" plugin="orders">
+            <view:column name="workPlanDelivered" fields="workPlanDelivered"
+                         orderable="true" searchable="true" width="40"/>
+        </view:view-grid-column>
 
         <model:model-hook plugin="workPlans" model="workPlan">
             <model:onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanHooks"
@@ -321,6 +334,16 @@
                             component="grid" event="addSelectedOrdersToWorkPlan"
                             class="com.qcadoo.mes.workPlans.listeners.OrdersPlanningListListenersWP"
                             method="addSelectedOrdersToWorkPlan"/>
+
+        <view:view-listener plugin="orders" view="ordersList"
+                            component="grid" event="workPlanDelivered"
+                            class="com.qcadoo.mes.workPlans.listeners.OrdersListListenersWP"
+                            method="workPlanDelivered"/>
+
+        <view:view-listener plugin="orders" view="ordersPlanningList"
+                            component="grid" event="workPlanDelivered"
+                            class="com.qcadoo.mes.workPlans.listeners.OrdersPlanningListListenersWP"
+                            method="workPlanDelivered"/>
 
         <custom:custom class="com.qcadoo.mes.workPlans.WorkPlansOnStartupService"/>
     </modules>

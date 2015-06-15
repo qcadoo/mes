@@ -55,4 +55,10 @@ public class OrdersPlanningListListenersWP {
         view.redirectTo("/page/workPlans/workPlanDetails.html", false, true, parameters);
     }
 
+    public final void workPlanDelivered(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent ordersGrid = (GridComponent) state;
+        workPlanService.workPlanDelivered(state, ordersGrid.getSelectedEntities());
+    }
+
+
 }

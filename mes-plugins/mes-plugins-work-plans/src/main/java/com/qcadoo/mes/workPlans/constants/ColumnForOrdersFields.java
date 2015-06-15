@@ -43,4 +43,6 @@ public final class ColumnForOrdersFields {
 
     public static final String WORK_PLAN_ORDER_COLUMNS = "workPlanOrderColumns";
 
+    public static final String WORK_PLAN_DELIVERED = "workPlanDelivered";
+
 }
