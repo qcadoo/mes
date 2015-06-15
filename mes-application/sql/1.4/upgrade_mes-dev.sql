@@ -197,3 +197,49 @@ CREATE TABLE cmmsmachineparts_machinepartattachment
 ALTER TABLE basic_parameter
         ADD COLUMN positivepurchaseprice boolean DEFAULT true;
 -- end
+
+-- Table: cmmsmachineparts_machinepartattachment and jointables
+-- last touched 15.06.2015 by kama
+
+CREATE TABLE cmmsmachineparts_faulttype
+(
+  id bigint NOT NULL,
+  name character varying(255),
+  appliesto character varying(255) DEFAULT '01workstationOrSubassembly'::character varying,
+  CONSTRAINT cmmsmachineparts_faulttype_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE jointable_faulttype_subassembly
+(
+  faulttype_id bigint NOT NULL,
+  subassembly_id bigint NOT NULL,
+  CONSTRAINT jointable_faulttype_subassembly_pkey PRIMARY KEY (subassembly_id, faulttype_id),
+  CONSTRAINT jointable_faulttype_subassembly_faulttype_fkey FOREIGN KEY (faulttype_id)
+      REFERENCES cmmsmachineparts_faulttype (id) DEFERRABLE,
+  CONSTRAINT jointable_faulttype_subassembly_subassembly_fkey FOREIGN KEY (subassembly_id)
+      REFERENCES basic_subassembly (id) DEFERRABLE
+);
+
+CREATE TABLE jointable_faulttype_workstation
+(
+  workstation_id bigint NOT NULL,
+  faulttype_id bigint NOT NULL,
+  CONSTRAINT jointable_faulttype_workstation_pkey PRIMARY KEY (faulttype_id, workstation_id),
+  CONSTRAINT jointable_faulttype_workstation_faulttype_fkey FOREIGN KEY (faulttype_id)
+      REFERENCES cmmsmachineparts_faulttype (id) DEFERRABLE,
+  CONSTRAINT jointable_faulttype_workstation_workstation_fkey FOREIGN KEY (workstation_id)
+      REFERENCES basic_workstation (id) DEFERRABLE
+);
+
+CREATE TABLE jointable_faulttype_workstationtype
+(
+  workstationtype_id bigint NOT NULL,
+  faulttype_id bigint NOT NULL,
+  CONSTRAINT jointable_faulttype_workstationtype_pkey PRIMARY KEY (faulttype_id, workstationtype_id),
+  CONSTRAINT jointable_faulttype_workstationtype_workstationtype_fkey FOREIGN KEY (workstationtype_id)
+      REFERENCES basic_workstationtype (id) DEFERRABLE,
+  CONSTRAINT jointable_faulttype_workstationtype_faulttype_fkey FOREIGN KEY (faulttype_id)
+      REFERENCES cmmsmachineparts_faulttype (id) DEFERRABLE
+);
+
+-- end
