@@ -141,6 +141,7 @@ public class WorkPlanPdfForDivision {
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
             Paragraph mainOrder = new Paragraph(new Phrase(prepareMainOrderSummary(order, product, locale),
                     FontUtils.getDejavuBold9Dark()));
+            mainOrder.setIndentationLeft(3f);
             document.add(mainOrder);
         }
     }
@@ -183,10 +184,10 @@ public class WorkPlanPdfForDivision {
 
         addOrderSummary(headerCell, order, product, operationComponent);
 
-        addOperationProductsTable(inputCell, operationProductInComponents(operationComponent), inputProductColumnAlignmentMap,
-                ProductDirection.IN, locale);
-        addOperationProductsTable(outputCell, operationProductOutComponents(operationComponent), outputProductColumnAlignmentMap,
-                ProductDirection.OUT, locale);
+        addOperationProductsTable(inputCell, operationProductInComponents(operationComponent, order),
+                inputProductColumnAlignmentMap, ProductDirection.IN, locale);
+        addOperationProductsTable(outputCell, operationProductOutComponents(operationComponent, order),
+                outputProductColumnAlignmentMap, ProductDirection.OUT, locale);
 
         codeCell.addElement(createBarcode(pdfWriter, operationComponent));
 
@@ -197,6 +198,7 @@ public class WorkPlanPdfForDivision {
         table.addCell(codeCell);
         table.addCell(inputCell);
         table.addCell(outputCell);
+        table.setKeepTogether(true);
         document.add(table);
     }
 
@@ -277,9 +279,13 @@ public class WorkPlanPdfForDivision {
         cell.addElement(orderTable);
     }
 
-    private void addOperationProductsTable(PdfPCell cell, EntityList operationProductComponents,
+    private void addOperationProductsTable(PdfPCell cell, List<Entity> operationProductComponents,
             Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap, ProductDirection direction,
             Locale locale) throws DocumentException {
+
+        if (operationProductComponents.isEmpty()) {
+            return;
+        }
 
         int columnCount = operationProductColumnAlignmentMap.size();
 
@@ -300,11 +306,11 @@ public class WorkPlanPdfForDivision {
         cell.addElement(table);
     }
 
-    private EntityList operationProductOutComponents(Entity operationComponent) {
+    private List<Entity> operationProductOutComponents(Entity operationComponent, Entity order) {
         return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
     }
 
-    private EntityList operationProductInComponents(Entity operationComponent) {
+    private List<Entity> operationProductInComponents(Entity operationComponent, Entity order) {
         return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
     }
 
