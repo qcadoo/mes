@@ -98,13 +98,6 @@
 
         <!-- model extensions -->
         <model:model-field plugin="basic" model="product">
-            <model:belongsTo name="producer" model="company" plugin="basic"/>
-        </model:model-field>
-        <model:model-field plugin="basic" model="company">
-            <model:hasMany name="producedProducts" model="product" plugin="basic" joinField="producer"
-                           cascade="nullify"/>
-        </model:model-field>
-        <model:model-field plugin="basic" model="product">
             <model:hasMany name="machinePartAttachments" joinField="product" model="machinePartAttachment"
                            cascade="delete" plugin="cmmsMachineParts"/>
         </model:model-field>
@@ -143,8 +136,8 @@
 
         <view:resource uri="public/**/*"/>
 
-		<custom:custom
-            class="com.qcadoo.mes.cmmsMachineParts.DefaultFaultTypesLoaderModule" />
+        <custom:custom
+                class="com.qcadoo.mes.cmmsMachineParts.DefaultFaultTypesLoaderModule"/>
     </modules>
 
 </plugin>

@@ -128,6 +128,20 @@
                     <layoutElement column="2" row="3" height="2">
                         <component type="textarea" name="description" field="description"/>
                     </layoutElement>
+                    <layoutElement column="2" row="5">
+                        <component type="lookup" name="producer" field="#{form}.producer"
+                                   reference="producer">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="expression"
+                                    value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
@@ -208,6 +222,9 @@
                                 expression="#product['number']" link="true" width="50"/>
                         <option type="column" name="name" fields="product"
                                 expression="#product['name']" link="true" width="100"/>
+                        <option type="column" name="producer" fields="product"
+                                expression="#product['producer']?.get('name')" link="true" width="100"/>
+
                         <option type="column" name="quantity" fields="quantity"
                                 width="40"/>
                         <option type="column" name="unit" fields="product"
@@ -218,8 +235,8 @@
                         <option type="correspondingView" value="basic/productSubstituteComponentDetails"/>
                         <option type="correspondingComponent" value="form"/>
                         <option type="correspondingViewInModal" value="true"/>
-                        <option type="orderable" value="number,name,quantity"/>
-                        <option type="searchable" value="number,name,quantity"/>
+                        <option type="orderable" value="number,name,producer,quantity"/>
+                        <option type="searchable" value="number,name,producer,quantity"/>
 
                         <option type="paginable" value="false"/>
                         <option type="creatable" value="true"/>
