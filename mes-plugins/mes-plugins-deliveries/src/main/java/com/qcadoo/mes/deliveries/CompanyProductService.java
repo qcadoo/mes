@@ -56,4 +56,12 @@ public interface CompanyProductService {
     boolean checkIfDefaultExistsForParticularProduct(final Entity product);
 
     boolean checkIfDefaultExistsForProductFamily(final Entity product);
+
+    /**
+     * Checks if any product from given family has default supplier, if found - returns that product's number
+     * 
+     * @param companyProduct
+     * @return
+     */
+    String checkIfDefaultExistsForProductsInFamily(final Entity companyProduct);
 }

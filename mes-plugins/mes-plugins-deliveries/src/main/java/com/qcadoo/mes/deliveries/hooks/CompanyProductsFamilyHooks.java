@@ -29,6 +29,7 @@ import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.IS_DEFAUL
 import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.COMPANY;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.PRODUCT;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +75,11 @@ public class CompanyProductsFamilyHooks {
         if (companyProductService.checkIfDefaultExistsForFamily(companyProduct)) {
             companyProduct.addError(companyProductDD.getField(IS_DEFAULT),
                     "basic.company.message.defaultAlreadyExistsForProductFamily");
+            return false;
+        }
+        String productsWithDefault = companyProductService.checkIfDefaultExistsForProductsInFamily(companyProduct);
+        if (!StringUtils.isEmpty(productsWithDefault)) {
+            companyProduct.addGlobalError("basic.company.message.defaultAlreadyExistsForChildren", productsWithDefault);
             return false;
         }
 
