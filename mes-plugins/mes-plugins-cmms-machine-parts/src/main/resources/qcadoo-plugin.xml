@@ -31,6 +31,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -81,7 +82,11 @@
         <view:view resource="view/companyProductsFamilyDetails.xml"/>
         <view:view resource="view/productSubstituteComponentDetails.xml"/>
 
+        <view:view resource="view/faultTypesList.xml"/>
+        <view:view resource="view/faultTypeDetails.xml"/>
+
         <menu:menu-item name="machineParts" category="basic" view="machinePartsList"/>
+        <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"/>
 
         <!-- view extensions -->
 
@@ -89,6 +94,7 @@
         <!-- model -->
 
         <model:model model="machinePartAttachment" resource="model/machinePartAttachment.xml"/>
+        <model:model model="faultType" resource="model/faultType.xml"/>
 
         <!-- model extensions -->
         <model:model-field plugin="basic" model="product">
@@ -99,7 +105,8 @@
                            cascade="nullify"/>
         </model:model-field>
         <model:model-field plugin="basic" model="product">
-            <model:hasMany name="machinePartAttachments" joinField="product" model="machinePartAttachment" cascade="delete" plugin="cmmsMachineParts"/>
+            <model:hasMany name="machinePartAttachments" joinField="product" model="machinePartAttachment"
+                           cascade="delete" plugin="cmmsMachineParts"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -114,6 +121,21 @@
             <model:boolean name="machinePart"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="workstation">
+            <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
+                              joinField="workstations"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstationType">
+            <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
+                              joinField="workstationTypes"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="subassembly">
+            <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
+                              joinField="subassemblies"/>
+        </model:model-field>
+
         <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"
                             component="form" event="redirectToWarehouseStateList"
                             class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"
@@ -121,6 +143,8 @@
 
         <view:resource uri="public/**/*"/>
 
+		<custom:custom
+            class="com.qcadoo.mes.cmmsMachineParts.DefaultFaultTypesLoaderModule" />
     </modules>
 
 </plugin>
