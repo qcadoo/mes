@@ -31,6 +31,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -142,6 +143,8 @@
 
         <view:resource uri="public/**/*"/>
 
+		<custom:custom
+            class="com.qcadoo.mes.cmmsMachineParts.DefaultFaultTypesLoaderModule" />
     </modules>
 
 </plugin>
