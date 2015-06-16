@@ -408,3 +408,10 @@ UPDATE workplans_columnforoutputproducts SET identifier='employeeSignatureOperat
 	WHERE identifier='unitOperationProductColumn_temp';
 
 -- end
+
+-- Alter type of filename column in workplans
+-- last touched 16.06.2015 by kama
+
+ALTER TABLE workplans_workplan ALTER COLUMN filename TYPE character varying(1024);
+
+-- end
