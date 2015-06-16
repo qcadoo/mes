@@ -45,7 +45,11 @@
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="select" name="appliesTo" field="appliesTo"
-                                   reference="appliesTo"/>
+                                   reference="appliesTo">
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.FaultTypeDetailsListeners"
+                                      method="toggleAndClearGrids"/>
+                        </component>
                     </layoutElement>
                 </component>
 
@@ -55,239 +59,138 @@
             </component>
         </windowTab>
 
-        <!--<windowTab name="productFamily">-->
-        <!--<component type="gridLayout" name="gridLayout" columns="3"-->
-        <!--rows="2">-->
-        <!--<layoutElement column="1" row="1">-->
-        <!--<component type="select" name="entityType" field="#{form}.entityType"-->
-        <!--reference="entityType">-->
-        <!--<listener event="onSelectedEntityChange"-->
-        <!--class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"-->
-        <!--method="toggleSuppliersGrids"/>-->
-        <!--</component>-->
-        <!--</layoutElement>-->
-        <!--<layoutElement column="1" row="2">-->
-        <!--<component type="lookup" name="parent" field="#{form}.parent"-->
-        <!--reference="parent">-->
-        <!--<option type="column" name="name" fields="name" link="true"/>-->
-        <!--<option type="column" name="parent" fields="parent"-->
-        <!--expression="(#parent == null) ? '' : #parent['number'] + ' - ' + #parent['name']"/>-->
+        <windowTab name="workstationsAndSubassemblies">
+            <component type="gridLayout" name="gridLayout" columns="2"
+                       rows="1">
+                <layoutElement row="1" column="1">
 
-        <!--<option type="searchable" value="name,number"/>-->
-        <!--<option type="orderable" value="name,number"/>-->
+                    <component type="lookup" name="workstationsLookup" reference="workstationsLookup"
+                               field="#{form}.workstations" defaultVisible="false" persistent="false"
+                               hasLabel="false">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="100"/>
 
-        <!--<option type="expression"-->
-        <!--value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>-->
-        <!--<option type="fieldCode" value="number"/>-->
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
 
-        <!--<criteriaModifier-->
-        <!--class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"-->
-        <!--method="showProductFamilyOnly"/>-->
-        <!--<listener event="onSelectedEntityChange"-->
-        <!--class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"-->
-        <!--method="checkIfDefaultSupplierIsUnique"/>-->
-        <!--</component>-->
-        <!--</layoutElement>-->
-        <!--</component>-->
-        <!--</windowTab>-->
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
 
-        <!--<windowTab name="auditTab">-->
-        <!--<component type="gridLayout" name="gridLayout" columns="3"-->
-        <!--rows="4">-->
-        <!--<layoutElement column="1" row="1" height="4">-->
-        <!--<component type="borderLayout" name="auditBorderLayout"-->
-        <!--reference="auditBorderLayout">-->
-        <!--<option type="label" value="auditLayoutLabel"/>-->
-        <!--<component type="gridLayout" name="gridLayout" columns="1"-->
-        <!--rows="4">-->
-        <!--<layoutElement column="1" row="1">-->
-        <!--<component type="input" name="createDate" field="#{form}.createDate"-->
-        <!--defaultEnabled="never"/>-->
-        <!--</layoutElement>-->
-        <!--<layoutElement column="1" row="2">-->
-        <!--<component type="input" name="createUser" field="#{form}.createUser"-->
-        <!--defaultEnabled="never"/>-->
-        <!--</layoutElement>-->
-        <!--<layoutElement column="1" row="3">-->
-        <!--<component type="input" name="updateDate" field="#{form}.updateDate"-->
-        <!--defaultEnabled="never"/>-->
-        <!--</layoutElement>-->
-        <!--<layoutElement column="1" row="4">-->
-        <!--<component type="input" name="updateUser" field="#{form}.updateUser"-->
-        <!--defaultEnabled="never"/>-->
-        <!--</layoutElement>-->
-        <!--</component>-->
-        <!--</component>-->
-        <!--</layoutElement>-->
-        <!--</component>-->
-        <!--</windowTab>-->
+                        <option type="multiselect" value="true"/>
 
-        <!--<windowTab name="substitutesTab">-->
-        <!--<component type="gridLayout" name="gridsLayout" columns="5"-->
-        <!--rows="6" hasBorders="false">-->
-        <!--<layoutElement column="1" row="1" width="3" height="6">-->
-        <!--<component type="grid" name="substituteComponents"-->
-        <!--source="#{form}.substituteComponents">-->
-        <!--<option type="column" name="number" fields="product"-->
-        <!--expression="#product['number']" link="true" width="50"/>-->
-        <!--<option type="column" name="name" fields="product"-->
-        <!--expression="#product['name']" link="true" width="100"/>-->
+                    </component>
 
-        <!--<option type="column" name="producer" fields="product"-->
-        <!--expression="#product['producer']?.get('name')" link="true" width="100"/>-->
+                    <component type="grid" name="workstations" reference="workstations"
+                               source="#{form}.workstations">
 
-        <!--<option type="column" name="quantity" fields="quantity"-->
-        <!--width="40"/>-->
-        <!--<option type="column" name="unit" fields="product"-->
-        <!--expression="#product['unit']" link="false" width="30"/>-->
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name" width="100"/>
 
-        <!--<option type="order" column="number" direction="desc"/>-->
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
 
-        <!--<option type="correspondingView" value="cmmsMachineParts/productSubstituteComponentDetails"/>-->
-        <!--<option type="correspondingComponent" value="form"/>-->
-        <!--<option type="correspondingViewInModal" value="true"/>-->
-        <!--<option type="orderable" value="number,name,quantity,producer"/>-->
-        <!--<option type="searchable" value="number,name,quantity,producer"/>-->
+                        <option type="order" column="number" direction="desc"/>
 
-        <!--<option type="paginable" value="false"/>-->
-        <!--<option type="creatable" value="true"/>-->
-        <!--<option type="deletable" value="true"/>-->
-        <!--<option type="fullscreen" value="true"/>-->
-        <!--<option type="multiselect" value="true"/>-->
-        <!--</component>-->
-        <!--</layoutElement>-->
-        <!--</component>-->
-        <!--</windowTab>-->
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="paginable" value="false"/>
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="workstationsLookup"/>
+                    </component>
+                </layoutElement>
+                <layoutElement row="1" column="2">
 
-        <!--<windowTab name="integrationTab">-->
-        <!--<script>-->
-        <!--<![CDATA[-->
-        <!--var del = #{window}.getRibbonItem("actions.delete");-->
-        <!--var externalNumberListener = {-->
-        <!--onSetValue: function(value) {-->
+                    <component type="lookup" name="subassembliesLookup" reference="subassembliesLookup"
+                               field="#{form}.subassemblies" defaultVisible="false" persistent="false"
+                               hasLabel="false">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="100"/>
 
-        <!--var externalNumber = #{externalNumber}.getValue().content.value;-->
-        <!---->
-        <!--if(externalNumber != undefined && externalNumber != '') {-->
-        <!--del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");-->
-        <!--}-->
-        <!--}-->
-        <!--};-->
-        <!--#{form}.addOnChangeListener(externalNumberListener);-->
-        <!--]]>-->
-        <!--</script>-->
-        <!--<component type="gridLayout" name="gridLayout" columns="3"-->
-        <!--rows="1">-->
-        <!--<layoutElement column="1" row="1">-->
-        <!--<component type="input" name="externalNumber" field="#{form}.externalNumber"-->
-        <!--reference="externalNumber" defaultEnabled="never"/>-->
-        <!--</layoutElement>-->
-        <!--</component>-->
-        <!--</windowTab>-->
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
 
-        <!--<windowTab name="conversionTab">-->
-        <!--<component type="gridLayout" name="conversionGridLayout"-->
-        <!--columns="3" rows="1">-->
-        <!--<layoutElement column="1" row="1" width="2">-->
-        <!--<component type="borderLayout" name="conversionBorderLayout">-->
-        <!--<component type="awesomeDynamicList" name="conversionItems"-->
-        <!--source="#{form}.conversionItems" reference="conversionItems">-->
-        <!--<option type="hasBorder" value="false"/>-->
-        <!--<option type="hasButtons" value="true"/>-->
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
 
-        <!--<components>-->
-        <!--<component type="gridLayout" name="conversionGridLayout"-->
-        <!--columns="4" rows="1">-->
-        <!--<layoutElement column="1" row="1">-->
-        <!--<component type="input" name="quantityFrom" field="quantityFrom"-->
-        <!--reference="quantityFrom" hasLabel="false">-->
-        <!--<option type="alignment" value="right"/>-->
-        <!--</component>-->
-        <!--</layoutElement>-->
-        <!--<layoutElement column="2" row="1">-->
-        <!--<component type="select" name="unitFrom" field="unitFrom"-->
-        <!--reference="unitFrom" hasLabel="false">-->
-        <!--<option type="labelWidth" value="10"/>-->
-        <!--</component>-->
-        <!--</layoutElement>-->
-        <!--<layoutElement column="3" row="1">-->
-        <!--<component type="input" name="quantityTo" field="quantityTo"-->
-        <!--reference="quantityTo">-->
-        <!--<option type="alignment" value="right"/>-->
-        <!--</component>-->
-        <!--</layoutElement>-->
-        <!--<layoutElement column="4" row="1">-->
-        <!--<component type="select" name="unitTo" field="unitTo"-->
-        <!--reference="unitTo" hasLabel="false"/>-->
-        <!--</layoutElement>-->
-        <!--</component>-->
+                        <option type="multiselect" value="true"/>
 
-        <!--</components>-->
-        <!--</component>-->
+                    </component>
 
-        <!--<option type="label" value="conversionItems"/>-->
-        <!--</component>-->
-        <!--</layoutElement>-->
-        <!--</component>-->
-        <!--</windowTab>-->
+                    <component type="grid" name="subassemblies" reference="subassemblies"
+                               source="#{form}.subassemblies">
 
-        <!--<windowTab name="suppliersTab">-->
-        <!--<component type="gridLayout" name="suppliersGridLayout" columns="5"-->
-        <!--rows="6" hasBorders="false">-->
-        <!--<layoutElement column="1" row="1" width="3" height="6">-->
-        <!--<component type="grid" name="productCompanies"-->
-        <!--source="#{form}.productCompanies" reference="productCompanies">-->
-        <!--<option type="column" name="number" fields="company"-->
-        <!--expression="#company['number']" link="true" width="50"/>-->
-        <!--<option type="column" name="name" fields="company"-->
-        <!--expression="#company['name']" link="true" width="100"/>-->
-        <!--<option type="column" name="isDefault" fields="isDefault" width="30"/>-->
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name" width="100"/>
 
-        <!--<option type="order" column="number" direction="desc"/>-->
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
 
-        <!--<option type="correspondingView" value="cmmsMachineParts/companyProductDetails"/>-->
-        <!--<option type="correspondingComponent" value="form"/>-->
-        <!--<option type="correspondingViewInModal" value="true"/>-->
-        <!--<option type="orderable" value="number,name,isDefault"/>-->
-        <!--<option type="searchable" value="number,name,isDefault"/>-->
+                        <option type="order" column="number" direction="desc"/>
 
-        <!--<option type="paginable" value="false"/>-->
-        <!--<option type="creatable" value="true"/>-->
-        <!--<option type="deletable" value="true"/>-->
-        <!--<option type="fullscreen" value="true"/>-->
-        <!--<option type="multiselect" value="true"/>-->
-        <!--</component>-->
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="paginable" value="false"/>
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="subassembliesLookup"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-        <!--<component type="grid" name="productsFamilyCompanies"-->
-        <!--source="#{form}.productsFamilyCompanies" reference="productsFamilyCompanies"-->
-        <!--defaultVisible="false">-->
-        <!--<option type="column" name="number" fields="company"-->
-        <!--expression="#company['number']" link="true" width="50"/>-->
-        <!--<option type="column" name="name" fields="company"-->
-        <!--expression="#company['name']" link="true" width="100"/>-->
-        <!--<option type="column" name="isDefault" fields="isDefault" width="30"/>-->
+        <windowTab name="workstationTypes">
+            <component type="gridLayout" name="gridLayout" columns="2"
+                       rows="1">
+                <layoutElement row="1" column="1">
 
-        <!--<option type="order" column="number" direction="desc"/>-->
+                    <component type="lookup" name="workstationTypessLookup" reference="workstationTypessLookup"
+                               field="#{form}.workstationTypes" defaultVisible="false" persistent="false"
+                               hasLabel="false">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="100"/>
 
-        <!--<option type="correspondingView" value="cmmsMachineParts/companyProductsFamilyDetails"/>-->
-        <!--<option type="correspondingComponent" value="form"/>-->
-        <!--<option type="correspondingViewInModal" value="true"/>-->
-        <!--<option type="orderable" value="number,name,isDefault"/>-->
-        <!--<option type="searchable" value="number,name,isDefault"/>-->
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
 
-        <!--<option type="paginable" value="false"/>-->
-        <!--<option type="creatable" value="true"/>-->
-        <!--<option type="deletable" value="true"/>-->
-        <!--<option type="fullscreen" value="true"/>-->
-        <!--<option type="multiselect" value="true"/>-->
-        <!--</component>-->
-        <!--</layoutElement>-->
-        <!--</component>-->
-        <!--</windowTab>-->
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
 
+                        <option type="multiselect" value="true"/>
+
+                    </component>
+
+                    <component type="grid" name="workstationTypes" reference="workstationTypes"
+                               source="#{form}.workstationTypes">
+
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name" width="100"/>
+
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
+
+                        <option type="order" column="number" direction="desc"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="paginable" value="false"/>
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="workstationTypessLookup"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
     </component>
 
     <hooks>
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeDetailsHooks" method="onBeforeRender"/>
     </hooks>
 </view>

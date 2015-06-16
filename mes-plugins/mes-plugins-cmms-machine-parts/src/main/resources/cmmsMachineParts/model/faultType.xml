@@ -37,6 +37,6 @@
         <manyToMany name="subassemblies" model="subassembly" plugin="basic" cascade="nullify" joinField="faultTypes"/>
     </fields>
     <hooks>
-
+        <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeHooks" method="onSave"/>
     </hooks>
 </model>
