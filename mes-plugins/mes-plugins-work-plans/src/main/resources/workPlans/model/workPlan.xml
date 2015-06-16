@@ -33,11 +33,12 @@
             <validatesLength max="1024"/>
         </string>
         <datetime name="date"/>
-        <string name="worker">
+        <string name="worker"/>
+
+        <boolean name="generated"/>
+        <string name="fileName">
             <validatesLength max="1024"/>
         </string>
-        <boolean name="generated"/>
-        <string name="fileName"/>
         <boolean name="dontPrintOrdersInWorkPlans"/>
 
         <enum name="type"
