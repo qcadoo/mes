@@ -237,7 +237,7 @@
                               model="workPlan" plugin="workPlans"/>
         </model:model-field>
         <model:model-field plugin="orders" model="order">
-            <model:boolean name="workPlanDelivered" default="false"/>
+            <model:boolean name="workPlanDelivered" default="false" copyable="false"/>
         </model:model-field>
 
         <model:model-field plugin="workPlans" model="columnForInputProducts">
