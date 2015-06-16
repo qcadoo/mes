@@ -114,8 +114,8 @@ public class DocumentPdf extends ReportPdfView {
     private void addWarehouseTables(Document document) throws DocumentException {
         List<Entity> warehousesList = warehouses
                 .stream()
-                .sorted((w1, w2) -> w1.getStringField(LocationFields.NAME).compareToIgnoreCase(
-                        w2.getStringField(LocationFields.NAME))).collect(Collectors.toList());
+                .sorted((w1, w2) -> w1.getStringField(LocationFields.NUMBER).compareToIgnoreCase(
+                        w2.getStringField(LocationFields.NUMBER))).collect(Collectors.toList());
         for (Entity warehouse : warehousesList) {
             addWarehouseTable(document, warehouse);
         }
@@ -148,9 +148,9 @@ public class DocumentPdf extends ReportPdfView {
     }
 
     private PdfPTable createTable() {
-        int[] headerWidths = { 40, 70, 40, 40, 40, 40, 60 };
+        int[] headerWidths = { 40, 70, 40, 40, 40, 40, 40, 60 };
         Map<String, HeaderAlignment> headerValues = getHeaderValues(locale);
-        PdfPTable warehouseTable = pdfHelper.createTableWithHeader(7, Lists.newArrayList(headerValues.keySet()), false,
+        PdfPTable warehouseTable = pdfHelper.createTableWithHeader(8, Lists.newArrayList(headerValues.keySet()), false,
                 headerWidths, headerValues);
         warehouseTable.getDefaultCell().disableBorderSide(PdfPCell.RIGHT);
         warehouseTable.getDefaultCell().disableBorderSide(PdfPCell.LEFT);
@@ -187,6 +187,7 @@ public class DocumentPdf extends ReportPdfView {
         Entity product = warehouseMinimumState.getBelongsToField(WarehouseMinimumStateFields.PRODUCT);
         addSmallCell(table, product.getStringField(ProductFields.NUMBER));
         addSmallCell(table, product.getStringField(ProductFields.NAME));
+        addSmallCell(table, product.getStringField(ProductFields.UNIT));
         addSmallCell(table, warehouseMinimumState.getDecimalField(WarehouseMinimumStateFields.MINIMUM_STATE));
         if (stock != null) {
             addSmallCell(table, stock.getDecimalField("quantity"));
@@ -223,6 +224,8 @@ public class DocumentPdf extends ReportPdfView {
         headerLabels.put(translationService.translate("warehouseMinimalState.report.columnHeader.productNumber", locale),
                 HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate("warehouseMinimalState.report.columnHeader.productName", locale),
+                HeaderAlignment.LEFT);
+        headerLabels.put(translationService.translate("warehouseMinimalState.report.columnHeader.unit", locale),
                 HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate("warehouseMinimalState.report.columnHeader.minimumState", locale),
                 HeaderAlignment.RIGHT);
