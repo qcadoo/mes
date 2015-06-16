@@ -148,7 +148,7 @@ public class DocumentPdf extends ReportPdfView {
     }
 
     private PdfPTable createTable() {
-        int[] headerWidths = { 40, 70, 40, 40, 40, 40, 40, 60 };
+        int[] headerWidths = { 40, 70, 25, 40, 40, 40, 40, 60 };
         Map<String, HeaderAlignment> headerValues = getHeaderValues(locale);
         PdfPTable warehouseTable = pdfHelper.createTableWithHeader(8, Lists.newArrayList(headerValues.keySet()), false,
                 headerWidths, headerValues);
@@ -161,8 +161,8 @@ public class DocumentPdf extends ReportPdfView {
 
     private boolean addRow(Entity minimalState, Map<Long, Entity> stocksByProduct, PdfPTable table) {
         boolean rowAdded = false;
-        Entity product = minimalState.getBelongsToField("product");
-        Entity warehouse = minimalState.getBelongsToField("product");
+        Entity product = minimalState.getBelongsToField(WarehouseMinimumStateFields.PRODUCT);
+        Entity warehouse = minimalState.getBelongsToField(WarehouseMinimumStateFields.LOCATION);
         Entity stock = stocksByProduct.get(product.getId());
         if (stock == null) {
             BigDecimal ordered = getOrderedQuantityForProductAndLocation(warehouse.getId(), product.getId());
@@ -261,10 +261,14 @@ public class DocumentPdf extends ReportPdfView {
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
         if (product != null) {
-            if (ProductFamilyElementType.PARTICULAR_PRODUCT.equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
-                return getDefaultSupplierForParticularProduct(productId);
-            } else {
-                return getDefaultSupplierForProductsFamily(productId);
+            if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
+                    product.getStringField(ProductFields.ENTITY_TYPE))) {
+                Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
+                if (defaultSupplier != null) {
+                    return defaultSupplier;
+                } else {
+                    return getDefaultSupplierForParticularProduct(productId);
+                }
             }
         }
         return null;
