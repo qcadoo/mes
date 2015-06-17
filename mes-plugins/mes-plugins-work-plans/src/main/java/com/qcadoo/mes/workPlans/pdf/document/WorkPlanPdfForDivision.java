@@ -25,6 +25,7 @@ package com.qcadoo.mes.workPlans.pdf.document;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -99,9 +100,10 @@ public class WorkPlanPdfForDivision {
         for (String title : titleToOperationComponent.keySet()) {
             addWorkPlanTitle(document, workPlan, title, locale);
             List<OrderOperationComponent> components = titleToOperationComponent.get(title);
-            Collections.reverse(components);
-            addMainOrders(document, components, locale);
-            for (OrderOperationComponent orderOperationComponent : components) {
+            //Collections.reverse(components);
+            List<OrderOperationComponent> sorted = sortOrderOperationComponents(components);
+            addMainOrders(document, sorted, locale);
+            for (OrderOperationComponent orderOperationComponent : sorted) {
                 addOperationTable(pdfWriter, groupingContainer, document, orderOperationComponent, locale);
 
             }
@@ -407,5 +409,20 @@ public class WorkPlanPdfForDivision {
 
     private String getDivisionFromTitle(String title, Locale locale) {
         return title.replace(translationService.translate("workPlans.workPlan.report.title.byDivision", locale) + " ", "");
+    }
+
+    private List<OrderOperationComponent> sortOrderOperationComponents(final List<OrderOperationComponent> components) {
+
+        List<OrderOperationComponent> sorted = components.stream().sorted(new Comparator<OrderOperationComponent>() {
+
+            @Override
+            public int compare(OrderOperationComponent o1, OrderOperationComponent o2) {
+                Entity order1 = o1.getOrder();
+                Entity order2 = o2.getOrder();
+                return order1.getStringField(OrderFields.NUMBER).compareTo(order2.getStringField(OrderFields.NUMBER));
+            }
+        }).collect(Collectors.toList());
+        Collections.reverse(sorted);
+        return sorted;
     }
 }
