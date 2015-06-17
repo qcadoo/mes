@@ -265,6 +265,14 @@
                          orderable="true" searchable="true" width="40"/>
         </view:view-grid-column>
 
+        <model:model-hook plugin="orders" model="order">
+            <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderHooksWP" method="onCreate"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="orders" model="order">
+            <model:onCopy class="com.qcadoo.mes.workPlans.hooks.OrderHooksWP" method="onCopy"/>
+        </model:model-hook>
+
         <model:model-hook plugin="workPlans" model="workPlan">
             <model:onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanHooks"
                             method="onCreate"/>
