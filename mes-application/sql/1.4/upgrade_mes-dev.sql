@@ -196,6 +196,7 @@ CREATE TABLE cmmsmachineparts_machinepartattachment
 
 
 -- add positivePurchasePrice to parameters
+
 ALTER TABLE basic_parameter
         ADD COLUMN positivepurchaseprice boolean DEFAULT true;
 -- end
@@ -261,5 +262,16 @@ CREATE TABLE jointable_faulttype_workstationtype
 
 ALTER TABLE basic_parameter ADD COLUMN sameordernumber boolean;
 ALTER TABLE basic_parameter ALTER COLUMN sameordernumber SET DEFAULT false;
+
+-- end
+
+
+-- QCADOOCLS-4053
+
+CREATE OR REPLACE FUNCTION update_ordersupplies_columnforcoverages() RETURNS VOID AS $$  DECLARE row record; BEGIN IF EXISTS (SELECT * FROM ordersupplies_columnforcoverages WHERE identifier = 'isSubcontracted') THEN EXECUTE 'DELETE FROM ordersupplies_columnforcoverages WHERE identifier = ''isSubcontracted'';'; END IF; IF EXISTS (SELECT * FROM ordersupplies_columnforcoverages WHERE identifier = 'isPurchased') THEN EXECUTE 'DELETE FROM ordersupplies_columnforcoverages WHERE identifier = ''isPurchased'';'; END IF; IF NOT EXISTS (SELECT * FROM ordersupplies_columnforcoverages WHERE identifier = 'produceQuantity') THEN EXECUTE 'INSERT INTO ordersupplies_columnforcoverages (identifier, name, description, columnfiller, alignment, succession) VALUES (''produceQuantity'', ''orderSupplies.columnForCoverages.name.value.produceQuantity'', ''orderSupplies.columnForCoverages.description.value.produceQuantity'', ''com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller'', ''02right'', 11);';END IF;END; $$ LANGUAGE 'plpgsql';
+
+SELECT * FROM update_ordersupplies_columnforcoverages();
+
+DROP FUNCTION update_ordersupplies_columnforcoverages();
 
 -- end
