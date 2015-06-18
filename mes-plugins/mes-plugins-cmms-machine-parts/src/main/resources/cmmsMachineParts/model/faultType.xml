@@ -28,13 +28,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <string name="name" required="true"/>
+        <string name="name" required="true" unique="true"/>
         <enum name="appliesTo" values="01workstationOrSubassembly,02workstationType"
               default="01workstationOrSubassembly"/>
-        <manyToMany name="workstations" model="workstation" plugin="basic" cascade="nullify" joinField="faultTypes"/>
+        <manyToMany name="workstations" model="workstation" plugin="basic" cascade="nullify" joinField="faultTypes"
+                    copyable="true"/>
         <manyToMany name="workstationTypes" model="workstationType" plugin="basic" cascade="nullify"
-                    joinField="faultTypes"/>
-        <manyToMany name="subassemblies" model="subassembly" plugin="basic" cascade="nullify" joinField="faultTypes"/>
+                    joinField="faultTypes" copyable="true"/>
+        <manyToMany name="subassemblies" model="subassembly" plugin="basic" cascade="nullify" joinField="faultTypes"
+                    copyable="true"/>
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeHooks" method="onSave"/>
