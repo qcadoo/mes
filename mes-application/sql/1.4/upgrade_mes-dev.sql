@@ -175,8 +175,10 @@ ALTER TABLE assignmenttoshift_staffassignmenttoshift
 
 -- end
 
+
 -- Table: cmmsmachineparts_machinepartattachment
 -- last touched 08.06.2015 by kasi
+
 CREATE TABLE cmmsmachineparts_machinepartattachment
 (
   id bigint  NOT NULL,
@@ -190,7 +192,7 @@ CREATE TABLE cmmsmachineparts_machinepartattachment
       REFERENCES basic_product (id) DEFERRABLE
  );
 
---end
+-- end
 
 
 -- add positivePurchasePrice to parameters
@@ -198,10 +200,14 @@ ALTER TABLE basic_parameter
         ADD COLUMN positivepurchaseprice boolean DEFAULT true;
 -- end
 
+
 -- QCADOOCLS-4011
+
 ALTER TABLE orders_order
   ADD COLUMN  workplandelivered boolean DEFAULT false;
+
 -- end
+
 
 -- Table: cmmsmachineparts_machinepartattachment and jointables
 -- last touched 15.06.2015 by kama
@@ -246,5 +252,14 @@ CREATE TABLE jointable_faulttype_workstationtype
   CONSTRAINT jointable_faulttype_workstationtype_faulttype_fkey FOREIGN KEY (faulttype_id)
       REFERENCES cmmsmachineparts_faulttype (id) DEFERRABLE
 );
+
+-- end
+
+
+-- Table: basic_parameter
+-- last touched 16.06.2015 by lupo
+
+ALTER TABLE basic_parameter ADD COLUMN sameordernumber boolean;
+ALTER TABLE basic_parameter ALTER COLUMN sameordernumber SET DEFAULT false;
 
 -- end

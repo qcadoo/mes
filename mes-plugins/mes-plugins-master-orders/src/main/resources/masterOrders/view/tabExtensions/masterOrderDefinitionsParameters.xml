@@ -31,28 +31,34 @@
 
     <windowTab name="masterOrderDefinitionsTab" reference="masterOrderDefinitionsTab">
         <component type="gridLayout" name="gridLayout" columns="3"
-                   rows="1">
+                   rows="2">
             <layoutElement column="1" row="1">
+                <component type="checkbox" name="sameOrderNumber" field="#{form}.sameOrderNumber"
+                           reference="sameOrderNumber" hasDescription="true">
+                    <option type="labelWidth" value="90"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2">
                 <component type="grid" name="masterOrderDefinitions"
                            source="#{form}.masterOrderDefinitions" reference="masterOrderDefinitions">
                     <option type="column" name="number" fields="number" link="true"
-                            width="50" />
+                            width="50"/>
                     <option type="column" name="name" fields="name" link="true"
-                            width="100" />
+                            width="100"/>
 
-                    <option type="order" column="number" direction="desc" />
+                    <option type="order" column="number" direction="desc"/>
 
-                    <option type="searchable" value="number,name" />
-                    <option type="orderable" value="number,name" />
+                    <option type="searchable" value="number,name"/>
+                    <option type="orderable" value="number,name"/>
 
-                    <option type="correspondingView" value="masterOrders/masterOrderDefinitionDetails" />
-                    <option type="correspondingComponent" value="form" />
-                    <option type="correspondingViewInModal" value="true" />
+                    <option type="correspondingView" value="masterOrders/masterOrderDefinitionDetails"/>
+                    <option type="correspondingComponent" value="form"/>
+                    <option type="correspondingViewInModal" value="true"/>
 
-                    <option type="creatable" value="true" />
-                    <option type="deletable" value="true" />
-                    <option type="fullscreen" value="true" />
-                    <option type="multiselect" value="true" />
+                    <option type="creatable" value="true"/>
+                    <option type="deletable" value="true"/>
+                    <option type="fullscreen" value="true"/>
+                    <option type="multiselect" value="true"/>
                 </component>
             </layoutElement>
         </component>

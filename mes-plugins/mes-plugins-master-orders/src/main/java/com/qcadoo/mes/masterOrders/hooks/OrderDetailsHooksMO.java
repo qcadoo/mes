@@ -31,9 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
+import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -60,6 +62,9 @@ public class OrderDetailsHooksMO {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
@@ -106,6 +111,8 @@ public class OrderDetailsHooksMO {
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
 
         if (masterOrder != null) {
+            Entity parameter = parameterService.getParameter();
+
             String masterOrderNumber = masterOrder.getStringField(MasterOrderFields.NUMBER);
             Entity masterOrderCompany = masterOrder.getBelongsToField(MasterOrderFields.COMPANY);
             Date masterOrderDeadline = masterOrder.getDateField(MasterOrderFields.DEADLINE);
@@ -128,8 +135,14 @@ public class OrderDetailsHooksMO {
 
             String number = (String) numberField.getFieldValue();
 
-            String generatedNumber = numberGeneratorService.generateNumberWithPrefix(OrdersConstants.PLUGIN_IDENTIFIER,
-                    OrdersConstants.MODEL_ORDER, 3, masterOrderNumber + "-");
+            String generatedNumber = "";
+
+            if (parameter.getBooleanField(ParameterFieldsMO.SAME_ORDER_NUMBER)) {
+                generatedNumber = masterOrderNumber;
+            } else {
+                generatedNumber = numberGeneratorService.generateNumberWithPrefix(OrdersConstants.PLUGIN_IDENTIFIER,
+                        OrdersConstants.MODEL_ORDER, 3, masterOrderNumber + "-");
+            }
 
             // if (StringUtils.isEmpty(number) || generatedNumber.equals(number)) {
             numberField.setFieldValue(generatedNumber);

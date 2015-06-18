@@ -29,6 +29,8 @@ public final class ParameterFieldsMO {
 
     }
 
+    public static final String SAME_ORDER_NUMBER = "sameOrderNumber";
+
     public static final String MASTER_ORDER_DEFINITIONS = "masterOrderDefinitions";
 
 }
