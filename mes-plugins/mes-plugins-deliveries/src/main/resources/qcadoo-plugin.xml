@@ -142,12 +142,12 @@
 
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="products" joinField="company"
-                           plugin="deliveries" model="companyProduct" cascade="delete" copyable="true"/>
+                           plugin="deliveries" model="companyProduct" cascade="delete" copyable="false"/>
         </model:model-field>
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="productsFamilies" joinField="company"
                            plugin="deliveries" model="companyProductsFamily" cascade="delete"
-                           copyable="true"/>
+                           copyable="false"/>
         </model:model-field>
         <model:model-field plugin="basic" model="company">
             <model:integer name="buffer"/>
