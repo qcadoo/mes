@@ -58,6 +58,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.tree.builder.api.TechnologyOperationComponent;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
@@ -100,7 +101,7 @@ public class WorkPlanPdfForDivision {
         for (String title : titleToOperationComponent.keySet()) {
             addWorkPlanTitle(document, workPlan, title, locale);
             List<OrderOperationComponent> components = titleToOperationComponent.get(title);
-            //Collections.reverse(components);
+            // Collections.reverse(components);
             List<OrderOperationComponent> sorted = sortOrderOperationComponents(components);
             addMainOrders(document, sorted, locale);
             for (OrderOperationComponent orderOperationComponent : sorted) {
@@ -261,7 +262,7 @@ public class WorkPlanPdfForDivision {
         PdfPCell descriptionCell = new PdfPCell();
         descriptionCell.setBorder(Rectangle.NO_BORDER);
         descriptionCell.setColspan(3);
-        String comment = operation.getStringField(OperationFields.COMMENT);
+        String comment = operationComponent.getStringField(TechnologyOperationComponentFields.COMMENT);
         Paragraph description = null;
         if (!StringUtils.isEmpty(comment)) {
             description = new Paragraph(comment, FontUtils.getDejavuBold7Dark());
