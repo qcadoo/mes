@@ -32,63 +32,63 @@
 
     <component type="window" name="window">
         <ribbon>
-            <template name="standardGridTemplate" excludeItems="actions.copy,actions.delete,actions.new" />
+            <template name="standardGridTemplate" excludeItems="actions.copy,actions.delete,actions.new"/>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
             <option type="column" name="locationFrom" fields="document"
                     width="50" expression="#document['locationFrom']?.get('number')"/>
-                    
+
             <option type="column" name="locationTo" fields="document"
                     width="50" expression="#document['locationTo']?.get('number')"/>
-                    
-            <option type="column" name="productNumber" fields="product" 
-            		expression="#product['number']"/>
-            		
-            <option type="column" name="productName" fields="product" 
-            		expression="#product['name']"/>
-            		
-			<option type="column" name="quantity" fields="quantity" width="50" />
-			
-            <option type="column" name="unit" fields="product" width="30" 
-            		expression="#product['unit']"/>
-            		
-			<option type="column" name="documentDate" fields="document" 
-					expression="#document['time']" />
-					
+
+            <option type="column" name="productNumber" fields="product"
+                    expression="#product['number']"/>
+
+            <option type="column" name="productName" fields="product"
+                    expression="#product['name']"/>
+
+            <option type="column" name="quantity" fields="quantity" width="50"/>
+
+            <option type="column" name="unit" fields="product" width="30"
+                    expression="#product['unit']"/>
+
+            <option type="column" name="documentDate" fields="document"
+                    expression="#document['time']"/>
+
             <option type="column" name="documentType" fields="type"/>
-            		
+
             <option type="column" name="documentNumber" fields="document"
                     width="50" expression="#document['number']"/>
-                    
+
             <option type="column" name="company" fields="document"
-            		expression="#document['company']?.get('name')"/>
-            
-            <option type="column" name="batch" fields="batch" width="50" />
-            
-            <option type="column" name="expirationDate" fields="expirationDate" width="60" />
-            
-            <option type="column" name="productionDate" fields="productionDate" width="60" />
-            
-            <option type="column" name="storageLocation" fields="storageLocation" width="50" />
-            
-            <option type="column" name="state" fields="state" />
-                    
-            <option type="order" column="documentNumber" direction="desc" />
+                    expression="#document['company']?.get('name')"/>
+
+            <option type="column" name="batch" fields="batch" width="50"/>
+
+            <option type="column" name="expirationDate" fields="expirationDate" width="60"/>
+
+            <option type="column" name="productionDate" fields="productionDate" width="60"/>
+
+            <option type="column" name="storageLocation" fields="storageLocation" width="70"/>
+
+            <option type="column" name="state" fields="state"/>
+
+            <option type="order" column="documentNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,company,batch,expirationDate,productionDate,storageLocation,state,documentDate" />
+                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,company,batch,expirationDate,productionDate,storageLocation,state,documentDate"/>
             <option type="orderable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,company,batch,expirationDate,productionDate,storageLocation,state,documentDate" />
+                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,company,batch,expirationDate,productionDate,storageLocation,state,documentDate"/>
 
-			<option type="creatable" value="false" />
-			<option type="deletable" value="false" />
-			<option type="prioritizable" value="false"/>
-            <option type="fullscreen" value="true" />
-            <option type="multiselect" value="true" />
+            <option type="creatable" value="false"/>
+            <option type="deletable" value="false"/>
+            <option type="prioritizable" value="false"/>
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
         </component>
 
-        <option type="fixedHeight" value="true" />
-        <option type="header" value="false" />
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
     </component>
 </view>
