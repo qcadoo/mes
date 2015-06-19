@@ -208,6 +208,12 @@
                     method="checkExistingOrders"/>
         </model:model-hook>
 
+        <model:model-hook plugin="technologies" model="technology">
+            <model:onDelete
+                    class="com.qcadoo.mes.orders.hooks.TechnologyHooksO"
+                    method="checkIfTechnologyIsPrototypeForOrders"/>
+        </model:model-hook>
+
         <menu:menu-category name="orders"/>
         <menu:menu-category name="ordersTracking"/>
 

@@ -25,6 +25,8 @@ package com.qcadoo.mes.orders.constants;
 
 public final class TechnologyFieldsO {
 
+    public static final String ORDERS_USING_PROTOTYPE = "ordersUsingPrototype";
+
     private TechnologyFieldsO() {
     }
 
