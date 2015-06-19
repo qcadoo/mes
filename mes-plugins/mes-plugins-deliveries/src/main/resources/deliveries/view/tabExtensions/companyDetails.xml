@@ -39,11 +39,12 @@
 						expression="#product['number']" width="50" link="true"/>
 					<option type="column" name="name" fields="product"
 						expression="#product['name']" width="100" link="true"/>
+					<option type="column" name="isDefault" fields="isDefault" width="30"/>
 
 					<option type="order" column="number" direction="desc" />
 
-					<option type="searchable" value="number,name" />
-					<option type="orderable" value="number,name" />
+					<option type="searchable" value="number,name,isDefault" />
+					<option type="orderable" value="number,name,isDefault" />
 
 					<option type="correspondingView" value="deliveries/companyProductsFamilyDetails" />
 					<option type="correspondingComponent" value="form" />
@@ -62,11 +63,12 @@
 						expression="#product['number']" width="50" link="true"/>
 					<option type="column" name="name" fields="product"
 						expression="#product['name']" width="100" link="true"/>
+					<option type="column" name="isDefault" fields="isDefault" width="30"/>
 
 					<option type="order" column="number" direction="desc" />
 
-					<option type="searchable" value="number,name" />
-					<option type="orderable" value="number,name" />
+					<option type="searchable" value="number,name,isDefault" />
+					<option type="orderable" value="number,name,isDefault" />
 
 					<option type="correspondingView" value="deliveries/companyProductDetails" />
 					<option type="correspondingComponent" value="form" />
