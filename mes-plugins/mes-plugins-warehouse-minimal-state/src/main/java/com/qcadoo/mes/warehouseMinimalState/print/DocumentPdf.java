@@ -243,7 +243,7 @@ public class DocumentPdf extends ReportPdfView {
     public BigDecimal getOrderedQuantityForProductAndLocation(final Long warehouse, final Long product) {
         String query = "select COALESCE(sum(op.orderedQuantity),0) as  orderedQuantity from #deliveries_orderedProduct op, "
                 + "#deliveries_delivery del where op.delivery.id=del.id and op.product.id=:product and del.location.id = :warehouseId "
-                + "and del.state in ('01draft', '02prepared', '03duringCorrection', '05approved')";
+                + "and del.state in ('01draft', '02prepared', '03duringCorrection', '05approved') and del.active=true";
         return getWarehouseStockDD().find(query).setParameter("warehouseId", warehouse).setParameter("product", product)
                 .setMaxResults(1).uniqueResult().getDecimalField("orderedQuantity");
     }
