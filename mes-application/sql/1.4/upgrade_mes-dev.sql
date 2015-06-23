@@ -296,3 +296,146 @@ ALTER TABLE assignmenttoshift_assignmenttoshift ADD COLUMN laststatechangefailca
 UPDATE assignmenttoshift_assignmenttoshift SET externalsynchronized = TRUE, showlaststatechangeresult = FALSE, laststatechangefails = false;
 
 -- end
+
+
+-- Added columns to work plans
+-- last touched 11.06.2015 by kama
+
+INSERT INTO workplans_columnforinputproducts(
+            identifier, name, description, columnfiller, alignment)
+    VALUES ('unitOperationProductColumn', 'workPlans.columnForInputProducts.name.value.unitOperationProductColumn',
+	'workPlans.columnForInputProducts.description.value.unitOperationProductColumn', 'com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller', '01left');
+
+INSERT INTO workplans_columnforoutputproducts(
+            identifier, name, description, columnfiller, alignment)
+    VALUES ('unitOperationProductColumn', 'workPlans.columnForOutputProducts.name.value.unitOperationProductColumn',
+	'workPlans.columnForOutputProducts.description.value.unitOperationProductColumn', 'com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller', '01left');
+
+INSERT INTO workplans_columnforinputproducts(
+            identifier, name, description, columnfiller, alignment)
+    VALUES ('quantityPerUnitOperationProductColumn', 'workPlans.columnForInputProducts.name.value.quantityPerUnitOperationProductColumn',
+	'workPlans.columnForInputProducts.description.value.quantityPerUnitOperationProductColumn', 'com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller', '02right');
+
+
+INSERT INTO workplans_parameterinputcolumn(
+            parameter_id, columnforinputproducts_id, succession)
+    VALUES (
+	(SELECT MAX(id) FROM basic_parameter),
+	(SELECT id FROM workplans_columnforinputproducts WHERE identifier='unitOperationProductColumn'),
+	(SELECT MAX(succession) FROM workplans_parameterinputcolumn)+1);
+
+INSERT INTO workplans_parameteroutputcolumn(
+            parameter_id, columnforoutputproducts_id, succession)
+    VALUES (
+	(SELECT MAX(id) FROM basic_parameter),
+	(SELECT id FROM workplans_columnforoutputproducts WHERE identifier='unitOperationProductColumn'),
+	(SELECT MAX(succession) FROM workplans_parameteroutputcolumn)+1);
+
+CREATE OR REPLACE FUNCTION insert_operationworkplancolumns() RETURNS VOID AS
+$$
+	DECLARE
+		operation RECORD;
+
+	BEGIN
+		FOR operation IN SELECT * FROM technologies_operation LOOP
+			EXECUTE 'INSERT INTO workplans_operationinputcolumn(operation_id, columnforinputproducts_id, succession) VALUES('
+			|| operation."id" || ', '
+			|| '(SELECT id FROM workplans_columnforinputproducts WHERE identifier=''unitOperationProductColumn'') ' || ', '
+			|| '(SELECT MAX(succession) FROM workplans_operationinputcolumn)+1' || ');';
+
+			EXECUTE 'INSERT INTO workplans_operationoutputcolumn(operation_id, columnforoutputproducts_id, succession) VALUES('
+			|| operation."id" || ', '
+			|| '(SELECT id FROM workplans_columnforoutputproducts WHERE identifier=''unitOperationProductColumn'') ' || ', '
+			|| '(SELECT MAX(succession) FROM workplans_operationoutputcolumn)+1' || ');';
+		END LOOP;
+	END;
+$$
+LANGUAGE 'plpgsql';
+
+SELECT * FROM insert_operationworkplancolumns();
+
+DROP FUNCTION insert_operationworkplancolumns();
+
+
+CREATE OR REPLACE FUNCTION insert_tocworkplancolumns() RETURNS VOID AS
+$$
+	DECLARE
+		technologyoperationcomponent RECORD;
+
+	BEGIN
+		FOR technologyoperationcomponent IN SELECT * FROM technologies_technologyoperationcomponent LOOP
+			EXECUTE 'INSERT INTO workplans_technologyoperationinputcolumn(technologyoperationcomponent_id, columnforinputproducts_id, succession) VALUES('
+			|| technologyoperationcomponent."id" || ', '
+			|| '(SELECT id FROM workplans_columnforinputproducts WHERE identifier=''unitOperationProductColumn'') ' || ', '
+			|| '(SELECT MAX(succession) FROM workplans_technologyoperationinputcolumn)+1' || ');';
+
+			EXECUTE 'INSERT INTO workplans_technologyoperationoutputcolumn(technologyoperationcomponent_id, columnforoutputproducts_id, succession) VALUES('
+			|| technologyoperationcomponent."id" || ', '
+			|| '(SELECT id FROM workplans_columnforoutputproducts WHERE identifier=''unitOperationProductColumn'') ' || ', '
+			|| '(SELECT MAX(succession) FROM workplans_technologyoperationoutputcolumn)+1' || ');';
+		END LOOP;
+	END;
+$$
+LANGUAGE 'plpgsql';
+
+SELECT * FROM insert_tocworkplancolumns();
+
+DROP FUNCTION insert_tocworkplancolumns();
+
+-- end
+
+
+-- Change order of columns in work plans
+-- last touched 12.06.2015 by kama
+
+UPDATE workplans_columnforinputproducts SET identifier='unitOperationProductColumn_temp' WHERE identifier='unitOperationProductColumn';
+UPDATE workplans_columnforinputproducts SET identifier='employeeSignatureOperationProductColumn_temp' WHERE identifier='employeeSignatureOperationProductColumn';
+UPDATE workplans_columnforinputproducts SET identifier='effectiveQuantityOperationProductColumn_temp' WHERE identifier='effectiveQuantityOperationProductColumn';
+UPDATE workplans_columnforinputproducts SET identifier='attentionOperationProductColumn_temp' WHERE identifier='attentionOperationProductColumn';
+
+UPDATE workplans_columnforinputproducts SET identifier='unitOperationProductColumn', name='workPlans.columnForInputProducts.name.value.unitOperationProductColumn',
+	description='workPlans.columnForInputProducts.description.value.unitOperationProductColumn', alignment='01left'
+	WHERE identifier='effectiveQuantityOperationProductColumn_temp';
+
+UPDATE workplans_columnforinputproducts SET identifier='effectiveQuantityOperationProductColumn', name='workPlans.columnForInputProducts.name.value.effectiveQuantityOperationProductColumn',
+	description='workPlans.columnForInputProducts.description.value.effectiveQuantityOperationProductColumn', alignment='02right'
+	WHERE identifier='attentionOperationProductColumn_temp';
+
+UPDATE workplans_columnforinputproducts SET identifier='attentionOperationProductColumn', name='workPlans.columnForInputProducts.name.value.attentionOperationProductColumn',
+	description='workPlans.columnForInputProducts.description.value.attentionOperationProductColumn', alignment='01left'
+	WHERE identifier='employeeSignatureOperationProductColumn_temp';
+
+UPDATE workplans_columnforinputproducts SET identifier='employeeSignatureOperationProductColumn', name='workPlans.columnForInputProducts.name.value.employeeSignatureOperationProductColumn',
+	description='workPlans.columnForInputProducts.description.value.employeeSignatureOperationProductColumn', alignment='01left'
+	WHERE identifier='unitOperationProductColumn_temp';
+
+UPDATE workplans_columnforoutputproducts SET identifier='unitOperationProductColumn_temp' WHERE identifier='unitOperationProductColumn';
+UPDATE workplans_columnforoutputproducts SET identifier='employeeSignatureOperationProductColumn_temp' WHERE identifier='employeeSignatureOperationProductColumn';
+UPDATE workplans_columnforoutputproducts SET identifier='effectiveQuantityOperationProductColumn_temp' WHERE identifier='effectiveQuantityOperationProductColumn';
+UPDATE workplans_columnforoutputproducts SET identifier='attentionOperationProductColumn_temp' WHERE identifier='attentionOperationProductColumn';
+
+UPDATE workplans_columnforoutputproducts SET identifier='unitOperationProductColumn', name='workPlans.columnForOutputProducts.name.value.unitOperationProductColumn',
+	description='workPlans.columnForOutputProducts.description.value.unitOperationProductColumn', alignment='01left'
+	WHERE identifier='effectiveQuantityOperationProductColumn_temp';
+
+UPDATE workplans_columnforoutputproducts SET identifier='effectiveQuantityOperationProductColumn', name='workPlans.columnForOutputProducts.name.value.effectiveQuantityOperationProductColumn',
+	description='workPlans.columnForOutputProducts.description.value.effectiveQuantityOperationProductColumn', alignment='02right'
+	WHERE identifier='attentionOperationProductColumn_temp';
+
+UPDATE workplans_columnforoutputproducts SET identifier='attentionOperationProductColumn', name='workPlans.columnForOutputProducts.name.value.attentionOperationProductColumn',
+	description='workPlans.columnForOutputProducts.description.value.attentionOperationProductColumn', alignment='01left'
+	WHERE identifier='employeeSignatureOperationProductColumn_temp';
+
+UPDATE workplans_columnforoutputproducts SET identifier='employeeSignatureOperationProductColumn', name='workPlans.columnForOutputProducts.name.value.employeeSignatureOperationProductColumn',
+	description='workPlans.columnForOutputProducts.description.value.employeeSignatureOperationProductColumn', alignment='01left'
+	WHERE identifier='unitOperationProductColumn_temp';
+
+-- end
+
+
+-- Alter type of filename column in workplans
+-- last touched 16.06.2015 by kama
+
+ALTER TABLE workplans_workplan ALTER COLUMN filename TYPE character varying(1024);
+
+-- end
