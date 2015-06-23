@@ -25,44 +25,86 @@
 
 -->
 <column>
-    <row IDENTIFIER="productNameOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.productNameOperationProductColumn"
+    <row IDENTIFIER="productNameOperationProductColumn"
+         NAME="workPlans.columnForInputProducts.name.value.productNameOperationProductColumn"
          DESCRIPTION="workPlans.columnForInputProducts.description.value.productNameOperationProductColumn"
-         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" TYPE="input"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left"
+         TYPE="input"
          ACTIVE="true"/>
-    <row IDENTIFIER="plannedQuantityOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.plannedQuantityOperationProductColumn"
+    <row IDENTIFIER="plannedQuantityOperationProductColumn"
+         NAME="workPlans.columnForInputProducts.name.value.plannedQuantityOperationProductColumn"
          DESCRIPTION="workPlans.columnForInputProducts.description.value.plannedQuantityOperationProductColumn"
-         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right" TYPE="input"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right"
+         TYPE="input"
          ACTIVE="true"/>
-    <row IDENTIFIER="effectiveQuantityOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.effectiveQuantityOperationProductColumn"
+    <row IDENTIFIER="effectiveQuantityOperationProductColumn"
+         NAME="workPlans.columnForInputProducts.name.value.effectiveQuantityOperationProductColumn"
          DESCRIPTION="workPlans.columnForInputProducts.description.value.effectiveQuantityOperationProductColumn"
-         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right" TYPE="input"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right"
+         TYPE="input"
          ACTIVE="true"/>
-    <row IDENTIFIER="attentionOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.attentionOperationProductColumn"
+    <row IDENTIFIER="attentionOperationProductColumn"
+         NAME="workPlans.columnForInputProducts.name.value.attentionOperationProductColumn"
          DESCRIPTION="workPlans.columnForInputProducts.description.value.attentionOperationProductColumn"
-         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" TYPE="input"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left"
+         TYPE="input"
          ACTIVE="true"/>
-    <row IDENTIFIER="employeeSignatureOperationProductColumn" NAME="workPlans.columnForInputProducts.name.value.employeeSignatureOperationProductColumn"
+    <row IDENTIFIER="employeeSignatureOperationProductColumn"
+         NAME="workPlans.columnForInputProducts.name.value.employeeSignatureOperationProductColumn"
          DESCRIPTION="workPlans.columnForInputProducts.description.value.employeeSignatureOperationProductColumn"
-         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" TYPE="input"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left"
+         TYPE="input"
          ACTIVE="true"/>
-    <row IDENTIFIER="productNameOperationProductColumn" NAME="workPlans.columnForOutputProducts.name.value.productNameOperationProductColumn"
+
+    <row IDENTIFIER="quantityPerUnitOperationProductColumn"
+         NAME="workPlans.columnForInputProducts.name.value.quantityPerUnitOperationProductColumn"
+         DESCRIPTION="workPlans.columnForInputProducts.description.value.quantityPerUnitOperationProductColumn"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right"
+         TYPE="input"
+         ACTIVE="false"/>
+
+    <row IDENTIFIER="unitOperationProductColumn"
+         NAME="workPlans.columnForInputProducts.name.value.unitOperationProductColumn"
+         DESCRIPTION="workPlans.columnForInputProducts.description.value.unitOperationProductColumn"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left"
+         TYPE="input"
+         ACTIVE="true"/>
+
+    <row IDENTIFIER="unitOperationProductColumn"
+         NAME="workPlans.columnForOutputProducts.name.value.unitOperationProductColumn"
+         DESCRIPTION="workPlans.columnForOutputProducts.description.value.unitOperationProductColumn"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left"
+         TYPE="output"
+         ACTIVE="true"/>
+
+    <row IDENTIFIER="productNameOperationProductColumn"
+         NAME="workPlans.columnForOutputProducts.name.value.productNameOperationProductColumn"
          DESCRIPTION="workPlans.columnForOutputProducts.description.value.productNameOperationProductColumn"
-         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" TYPE="output"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left"
+         TYPE="output"
          ACTIVE="true"/>
-    <row IDENTIFIER="plannedQuantityOperationProductColumn" NAME="workPlans.columnForOutputProducts.name.value.plannedQuantityOperationProductColumn"
+    <row IDENTIFIER="plannedQuantityOperationProductColumn"
+         NAME="workPlans.columnForOutputProducts.name.value.plannedQuantityOperationProductColumn"
          DESCRIPTION="workPlans.columnForOutputProducts.description.value.plannedQuantityOperationProductColumn"
-         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right" TYPE="output"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right"
+         TYPE="output"
          ACTIVE="true"/>
-    <row IDENTIFIER="effectiveQuantityOperationProductColumn" NAME="workPlans.columnForOutputProducts.name.value.effectiveQuantityOperationProductColumn"
+    <row IDENTIFIER="effectiveQuantityOperationProductColumn"
+         NAME="workPlans.columnForOutputProducts.name.value.effectiveQuantityOperationProductColumn"
          DESCRIPTION="workPlans.columnForOutputProducts.description.value.effectiveQuantityOperationProductColumn"
-         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right" TYPE="output"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right"
+         TYPE="output"
          ACTIVE="true"/>
-    <row IDENTIFIER="attentionOperationProductColumn" NAME="workPlans.columnForOutputProducts.name.value.attentionOperationProductColumn"
+    <row IDENTIFIER="attentionOperationProductColumn"
+         NAME="workPlans.columnForOutputProducts.name.value.attentionOperationProductColumn"
          DESCRIPTION="workPlans.columnForOutputProducts.description.value.attentionOperationProductColumn"
-         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" TYPE="output"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left"
+         TYPE="output"
          ACTIVE="true"/>
-    <row IDENTIFIER="employeeSignatureOperationProductColumn" NAME="workPlans.columnForOutputProducts.name.value.employeeSignatureOperationProductColumn"
+    <row IDENTIFIER="employeeSignatureOperationProductColumn"
+         NAME="workPlans.columnForOutputProducts.name.value.employeeSignatureOperationProductColumn"
          DESCRIPTION="workPlans.columnForOutputProducts.description.value.employeeSignatureOperationProductColumn"
-         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" TYPE="output"
+         COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left"
+         TYPE="output"
          ACTIVE="true"/>
 </column>
