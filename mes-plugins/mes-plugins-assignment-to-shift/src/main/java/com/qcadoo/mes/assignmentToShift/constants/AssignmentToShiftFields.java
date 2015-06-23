@@ -33,8 +33,6 @@ public final class AssignmentToShiftFields {
 
     public static final String SHIFT = "shift";
 
-    public static final String STATE = "state";
-
     public static final String APPROVED_ATTENDANCE_LIST = "approvedAttendanceList";
 
     public static final String STAFF_ASSIGNMENT_TO_SHIFTS = "staffAssignmentToShifts";
@@ -43,5 +41,18 @@ public final class AssignmentToShiftFields {
 
     public static final String CORRECTED_STAFF_ASSIGNMENT_TO_SHIFTS = "correctedStaffAssignmentToShifts";
 
+    public static final String EXTERNAL_NUMBER = "externalNumber";
+
+    public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
+
+    public static final String STATE = "state";
+
     public static final String STATE_CHANGES = "assignmentToShiftStateChange";
+
+    public static final String SHOW_LAST_STATE_CHANGE_RESULT = "showLastStateChangeResult";
+
+    public static final String LAST_STATE_CHANGE_FAILS = "lastStateChangeFails";
+
+    public static final String LAST_STATE_CHANGE_FAIL_CAUSE = "lastStateChangeFailCause";
+
 }

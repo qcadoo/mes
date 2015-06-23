@@ -275,3 +275,24 @@ SELECT * FROM update_ordersupplies_columnforcoverages();
 DROP FUNCTION update_ordersupplies_columnforcoverages();
 
 -- end
+
+
+-- Table: assignmenttoshift_assignmenttoshift
+-- last touched 22.06.2015 by lupo
+
+ALTER TABLE assignmenttoshift_assignmenttoshift ADD COLUMN externalnumber integer;
+
+ALTER TABLE assignmenttoshift_assignmenttoshift ADD COLUMN externalsynchronized boolean;
+ALTER TABLE assignmenttoshift_assignmenttoshift ALTER COLUMN externalsynchronized SET DEFAULT true;
+
+ALTER TABLE assignmenttoshift_assignmenttoshift ADD COLUMN showlaststatechangeresult boolean;
+ALTER TABLE assignmenttoshift_assignmenttoshift ALTER COLUMN showlaststatechangeresult SET DEFAULT false;
+
+ALTER TABLE assignmenttoshift_assignmenttoshift ADD COLUMN laststatechangefails boolean;
+ALTER TABLE assignmenttoshift_assignmenttoshift ALTER COLUMN laststatechangefails SET DEFAULT false;
+
+ALTER TABLE assignmenttoshift_assignmenttoshift ADD COLUMN laststatechangefailcause character varying(2048);
+
+UPDATE assignmenttoshift_assignmenttoshift SET externalsynchronized = TRUE, showlaststatechangeresult = FALSE, laststatechangefails = false;
+
+-- end

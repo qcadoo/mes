@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.assignmentToShift.states.constants;
 
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants.PLUGIN_IDENTIFIER;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +41,7 @@ public class AssignmentToShiftStateChangeDescriber extends AbstractStateChangeDe
 
     @Override
     public DataDefinition getDataDefinition() {
-        return dataDefinitionService.get(PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_STATE_CHANGE);
+        return dataDefinitionService.get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_STATE_CHANGE);
     }
 
     @Override
@@ -59,7 +56,7 @@ public class AssignmentToShiftStateChangeDescriber extends AbstractStateChangeDe
 
     @Override
     public DataDefinition getOwnerDataDefinition() {
-        return dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_ASSIGNMENT_TO_SHIFT);
+        return dataDefinitionService.get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT);
     }
 
     @Override

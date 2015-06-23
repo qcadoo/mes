@@ -39,85 +39,121 @@
 
 		<windowTab name="mainTab">
 			<component type="form" name="form" reference="form">
-				<listener event="changeState"
-						  class="com.qcadoo.mes.assignmentToShift.states.client.AssignmentToShiftStateChangeViewClient"
-						  method="changeState"/>
+
 				<script>
 					<![CDATA[
-					this.changeState = function(eventPerformer, ribbonItemName) {
-						var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
-						var newState = ribbonItem.forState;
-						if (window.confirm(ribbonItem.confirmMessage)) {
-							#{form}.fireEvent(eventPerformer, 'changeState', [newState]);
-						}
-					}
-					this.addOnChangeListener({
-						onSetValue: function(value) {
-							if (!value || !value.content) {
-								var stateButton = #{window}.getRibbonItem("status.state");
-								stateButton.disable();
-								return;
+						this.changeState = function(eventPerformer, ribbonItemName) {
+							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+							var newState = ribbonItem.forState;
+
+							if (window.confirm(ribbonItem.confirmMessage)) {
+								#{form}.fireEvent(eventPerformer, 'changeState', [newState]);
 							}
-							var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
-							if(!isSaved){
-								var stateButton = #{window}.getRibbonItem("status.state");
-								stateButton.disable();
-								return;
-							}
-							var state = #{state}.getValue().content.value;
-							if (!state) {
-								return;
-							}
-							updateRibbon(state);
 						}
-					});
-					function updateRibbon(state) {
-						var stateButton = #{window}.getRibbonItem("status.state");
-						if (state == "01draft") {
-							stateButton.enable();
-							stateButton.actualState = "draft";
-							stateButton.forState="02accepted";
-							stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.accepted)}");
-							stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.accepted.confirm)}"
-						} else if (state == "02accepted") {
-							stateButton.enable();
-							stateButton.actualState = "accepted";
-							stateButton.forState="03duringCorrection";
-							stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection)}");
-							stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection.confirm)}"
-						} else if (state == "03duringCorrection") {
-							stateButton.enable();
-							stateButton.forState="04corrected";
-							stateButton.actualState = "duringCorrection";
-							stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.corrected)}");
-							stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.corrected.confirm)}"
-						} else if (state == "04corrected") {
-							stateButton.enable();
-							stateButton.forState="03duringCorrection";
-							stateButton.actualState = "corrected";
-							stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection)}");
-							stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection.confirm)}"
-						}else{
-							stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.state)}");
-							stateButton.disable();
+
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								var state = #{state}.getValue().content.value;
+
+								if (!state || !value || !value.content) {
+									return;
+								}
+
+								updateRibbon(state);
+							}
+						});
+
+						function toggleEditable(state, enabled, message) {
+							var toggleRibbonItems = [
+									"actions.save",
+									"actions.saveBack",
+									"actions.saveNew",
+									"actions.delete",
+									"status.state"
+								],
+
+								toggleRibbonItemsLen = toggleRibbonItems.length,
+
+								elementIndex = 0,
+								ribbonItemName = "",
+								ribbonItem = null;
+
+							for (elementIndex = 0; elementIndex < toggleRibbonItemsLen; elementIndex++) {
+								ribbonItemName = toggleRibbonItems[elementIndex];
+								ribbonItem = #{window}.getRibbonItem(ribbonItemName);
+
+								if (!ribbonItem) {
+									QCD.error("Can not find ribbon element: " + ribbonItemName + " - ommiting.");
+									continue;
+								}
+
+								if (enabled) {
+									ribbonItem.enable();
+								} else {
+									ribbonItem.disable(message);
+								}
+							}
 						}
-					}
-						this.updateRibbon = updateRibbon;
+
+						function updateRibbon(state) {
+							var stateButton = #{window}.getRibbonItem("status.state");
+
+							var isDraft = (state == "01draft");
+							var isAccepted = (state == "02accepted");
+                          	var isDuringCorrection = (state == "03duringCorrection");
+							var isCorrected = (state == "04corrected");
+
+							if (isDraft) {
+								stateButton.enable();
+								stateButton.actualState = "draft";
+								stateButton.forState="02accepted";
+								stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.accepted)}");
+								stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.accepted.confirm)}";
+							} else if (isAccepted) {
+								stateButton.enable();
+								stateButton.actualState = "accepted";
+								stateButton.forState="03duringCorrection";
+								stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection)}");
+								stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection.confirm)}";
+							} else if (isDuringCorrection) {
+								stateButton.enable();
+								stateButton.forState="04corrected";
+								stateButton.actualState = "duringCorrection";
+								stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.corrected)}");
+								stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.corrected.confirm)}";
+							} else if (isCorrected) {
+								stateButton.enable();
+								stateButton.forState="03duringCorrection";
+								stateButton.actualState = "corrected";
+								stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection)}");
+								stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection.confirm)}";
+							}
+
+							if (isDraft || isDuringCorrection) {
+							    if (#{externalSynchronized}.getValue().content.value == 0) {
+								    toggleEditable(state, false, "#{translate(assignmentToShift.assignmentToShift.info.isWaitingForSync)}");
+							    } else {
+							        toggleEditable(state, true, "");
+                                }
+							} else {
+								toggleEditable(state, false, "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.stateDoesNotAllowEditing)}");
+								stateButton.enable();
+							}
+						}
 					]]>
 				</script>
-				<component type="select" name="state" field="state"
-						   reference="state" hasLabel="false" defaultVisible="false"/>
+
 				<component type="gridLayout" name="gridLayout" columns="3"
 						   rows="5">
 					<layoutElement column="1" row="1" height="5">
 						<component type="gridLayout" name="leftColGridLayout" columns="1"
 								   rows="5">
-							<layoutElement column="1" row="1" height="1">
+							<layoutElement column="1" row="1">
 								<component type="calendar" name="startDate" field="startDate"
 										   reference="startDate">
 								</component>
 							</layoutElement>
-							<layoutElement column="1" row="2" height="1">
+							<layoutElement column="1" row="2">
 								<component type="lookup" name="shift" field="shift"
 										   reference="shift">
 									<option type="searchable" value="name"/>
@@ -127,10 +163,17 @@
 									<option type="fieldCode" value="name"/>
 								</component>
 							</layoutElement>
+							<layoutElement column="1" row="3">
+								<component type="select" name="state" field="state"
+										   reference="state" defaultEnabled="never" hasLabel="false"
+										   defaultVisible="false"/>
+								<component type="input" name="externalSynchronized"
+										   field="externalSynchronized" reference="externalSynchronized"
+										   persistent="false"/>
+							</layoutElement>
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1" width="2" height="5">
-
 						<component type="grid" name="staffAssignmentToShifts"
 								   reference="staffAssignmentToShifts" source="#{form}.staffAssignmentToShifts">
 							<option type="column" name="workerNumber" fields="worker"
@@ -167,16 +210,21 @@
 
 				<option type="header" value="true"/>
 				<option type="expression" value="#name"/>
+
+				<listener event="changeState"
+						  class="com.qcadoo.mes.assignmentToShift.states.client.AssignmentToShiftStateChangeViewClient"
+						  method="changeState"/>
 			</component>
 		</windowTab>
 
 		<windowTab name="comparePlanAndCorrected">
 			<component type="form" name="compareForm" reference="compareForm">
 				<component type="gridLayout" name="gridLayout" columns="2"
-						   rows="6">
+						   rows="1">
 					<layoutElement column="1" row="1">
-						<component type="grid" name="plannedStaffAssignment"
-								   reference="plannedStaffAssignment" source="#{form}.plannedStaffAssignmentToShifts">
+						<component type="grid" name="plannedStaffAssignmentToShifts"
+								   reference="plannedStaffAssignmentToShifts"
+								   source="#{form}.plannedStaffAssignmentToShifts">
 							<option type="column" name="workerNumber" fields="worker"
 									expression="#worker['number']"/>
 							<option type="column" name="workerName" fields="worker"
@@ -195,11 +243,12 @@
 
 							<option type="fullscreen" value="true"/>
 							<option type="multiselect" value="true"/>
+							<option type="fixedHeight" value="true"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
-						<component type="grid" name="correctedStaffAssignment"
-								   reference="correctedStaffAssignment"
+						<component type="grid" name="correctedStaffAssignmentToShifts"
+								   reference="correctedStaffAssignmentToShifts"
 								   source="#{form}.correctedStaffAssignmentToShifts">
 							<option type="column" name="workerNumber" fields="worker"
 									expression="#worker['number']"/>
@@ -219,6 +268,7 @@
 
 							<option type="fullscreen" value="true"/>
 							<option type="multiselect" value="true"/>
+							<option type="fixedHeight" value="true"/>
 						</component>
 					</layoutElement>
 				</component>
@@ -247,16 +297,7 @@
 	<hooks>
 		<beforeRender
 				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftDetailsHooks"
-				method="addDiscriminatorRestrictionToCorrectedStaffAssignmentGrid"/>
-		<beforeRender
-				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftDetailsHooks"
-				method="addDiscriminatorRestrictionToAcceptedStaffAssignmentGrid"/>
-		<beforeRender
-				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftDetailsHooks"
-				method="addDiscriminatorRestrictionToStaffAssignmentGrid"/>
-		<beforeRender
-				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftDetailsHooks"
-				method="disabledGridWhenStateIsAcceptedOrCorrected"/>
+				method="onBeforeRender"/>
 	</hooks>
 
 </view>

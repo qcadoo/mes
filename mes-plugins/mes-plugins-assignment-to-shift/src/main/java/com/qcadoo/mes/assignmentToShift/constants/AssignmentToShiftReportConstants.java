@@ -48,4 +48,5 @@ public final class AssignmentToShiftReportConstants {
     public static final String COLUMN_HEADER_SHIFT_NUMBER = "assignmentToShift.assignmentToShiftReport.report.columnHeader.shiftNumber";
 
     public static final String OCCUPATION_TYPE_ENUM = "assignmentToShift.staffAssignmentToShift.occupationTypeEnum.value.";
+
 }

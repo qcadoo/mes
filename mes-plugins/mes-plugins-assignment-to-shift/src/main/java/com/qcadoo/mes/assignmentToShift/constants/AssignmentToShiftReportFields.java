@@ -26,6 +26,7 @@ package com.qcadoo.mes.assignmentToShift.constants;
 public final class AssignmentToShiftReportFields {
 
     private AssignmentToShiftReportFields() {
+
     }
 
     public static final String NUMBER = "number";
@@ -49,4 +50,5 @@ public final class AssignmentToShiftReportFields {
     public static final String CREATE_USER = "createUser";
 
     public static final String UPDATE_USER = "updateUser";
+
 }

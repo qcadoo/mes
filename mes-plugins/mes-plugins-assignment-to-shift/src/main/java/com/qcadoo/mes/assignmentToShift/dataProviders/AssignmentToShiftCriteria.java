@@ -44,11 +44,13 @@ public class AssignmentToShiftCriteria {
 
     public AssignmentToShiftCriteria withCriteria(final SearchCriterion assignmentCriteria) {
         this.criteria = Optional.fromNullable(assignmentCriteria);
+
         return this;
     }
 
     public AssignmentToShiftCriteria withShiftCriteria(final SearchCriterion shiftCriteria) {
         this.shiftCriteria = Optional.fromNullable(shiftCriteria);
+
         return this;
     }
 
@@ -65,13 +67,17 @@ public class AssignmentToShiftCriteria {
         if (obj == null) {
             return false;
         }
+
         if (obj == this) {
             return true;
         }
+
         if (obj.getClass() != getClass()) {
             return false;
         }
+
         AssignmentToShiftCriteria rhs = (AssignmentToShiftCriteria) obj;
+
         return new EqualsBuilder().append(this.shiftCriteria, rhs.shiftCriteria).append(this.criteria, rhs.criteria).isEquals();
     }
 
@@ -79,4 +85,5 @@ public class AssignmentToShiftCriteria {
     public int hashCode() {
         return new HashCodeBuilder().append(shiftCriteria).append(criteria).toHashCode();
     }
+
 }

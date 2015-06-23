@@ -32,17 +32,30 @@
 		<date name="startDate" required="true"/>
 		<belongsTo name="shift" model="shift" plugin="basic"
 				   required="true"/>
-		<enum values="01draft,02accepted,03duringCorrection,04corrected"
-			  name="state" default="01draft"/>
+
 		<boolean name="approvedAttendanceList"/>
+
 		<hasMany name="staffAssignmentToShifts" joinField="assignmentToShift"
 				 model="staffAssignmentToShift"/>
 		<hasMany name="plannedStaffAssignmentToShifts" joinField="assignmentToShift"
 				 model="staffAssignmentToShift" persistent="false"/>
 		<hasMany name="correctedStaffAssignmentToShifts" joinField="assignmentToShift"
 				 model="staffAssignmentToShift" persistent="false"/>
+
+		<integer name="externalNumber" unique="true" copyable="false"/>
+		<boolean name="externalSynchronized" default="true" copyable="false" />
+
+		<enum name="state" values="01draft,02accepted,03duringCorrection,04corrected"
+			  default="01draft"/>
+
 		<hasMany name="assignmentToShiftStateChange" joinField="assignmentToShift"
 				 model="assignmentToShiftStateChange" cascade="delete"/>
+
+		<boolean name="showLastStateChangeResult" default="false" copyable="false"/>
+		<boolean name="lastStateChangeFails" default="false" copyable="false" />
+		<string name="lastStateChangeFailCause" copyable="false">
+			<validatesLength max="2048" />
+		</string>
 	</fields>
 
 	<hooks>

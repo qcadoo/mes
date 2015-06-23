@@ -48,17 +48,22 @@ public class AssignmentToShiftDataProvider {
 
     public Optional<Entity> find(final AssignmentToShiftCriteria criteria, final Optional<SearchProjection> maybeProjection) {
         SearchCriteriaBuilder scb = createCriteriaBuilder(criteria);
+
         setProjectionIfPresent(scb, maybeProjection);
+
         return Optional.fromNullable(scb.setMaxResults(1).uniqueResult());
     }
 
     public List<Entity> findAll(final AssignmentToShiftCriteria criteria, final Optional<SearchProjection> maybeProjection,
             final Optional<SearchOrder> maybeSearchOrder) {
         SearchCriteriaBuilder scb = createCriteriaBuilder(criteria);
+
         setProjectionIfPresent(scb, maybeProjection);
+
         for (SearchOrder searchOrder : maybeSearchOrder.asSet()) {
             scb.addOrder(searchOrder);
         }
+
         return scb.list().getEntities();
     }
 
@@ -70,13 +75,17 @@ public class AssignmentToShiftDataProvider {
 
     public SearchCriteriaBuilder createCriteriaBuilder(final AssignmentToShiftCriteria criteria) {
         SearchCriteriaBuilder scb = getAssignmentDD().find();
+
         for (SearchCriterion searchCriterion : criteria.getCriteria().asSet()) {
             scb.add(searchCriterion);
         }
+
         SearchCriteriaBuilder shiftScb = scb.createCriteria(AssignmentToShiftFields.SHIFT, "shift_alias", JoinType.INNER);
+
         for (SearchCriterion searchCriterion : criteria.getShiftCriteria().asSet()) {
             shiftScb.add(searchCriterion);
         }
+
         return scb;
     }
 

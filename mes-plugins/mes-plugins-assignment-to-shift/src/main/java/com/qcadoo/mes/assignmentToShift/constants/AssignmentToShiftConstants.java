@@ -26,6 +26,7 @@ package com.qcadoo.mes.assignmentToShift.constants;
 public final class AssignmentToShiftConstants {
 
     private AssignmentToShiftConstants() {
+
     }
 
     public static final String PLUGIN_IDENTIFIER = "assignmentToShift";
