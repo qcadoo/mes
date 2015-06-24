@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.3
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.google.common.base.Strings;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.constants.ProductComponentFields;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -74,42 +77,34 @@ import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 
-@Component(value = "orderReportPdf")
-public class OrderReportPdf extends ReportPdfView {
+@Component(value = "orderReportPdf") public class OrderReportPdf extends ReportPdfView {
 
     private static final Integer REPORT_WIDTH = 515;
 
     private static final String L_CURRENCY = "currency";
 
-    @Autowired
-    private DeliveriesService deliveriesService;
+    private static final String L_IDENTIFIER_PRODUCT_NAME = "productName";
 
-    @Autowired
-    private OrderColumnFetcher orderColumnFetcher;
+    @Autowired private DeliveriesService deliveriesService;
 
-    @Autowired
-    private ColumnExtensionService columnExtensionService;
+    @Autowired private OrderColumnFetcher orderColumnFetcher;
 
-    @Autowired
-    private TranslationService translationService;
+    @Autowired private ColumnExtensionService columnExtensionService;
 
-    @Autowired
-    private PdfHelper pdfHelper;
+    @Autowired private TranslationService translationService;
 
-    @Autowired
-    private ParameterService parameterService;
+    @Autowired private PdfHelper pdfHelper;
 
-    @Autowired
-    private CompanyService companyService;
+    @Autowired private ParameterService parameterService;
 
-    @Autowired
-    private NumberService numberService;
+    @Autowired private CompanyService companyService;
+
+    @Autowired private NumberService numberService;
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
             LocaleContextHolder.getLocale());
 
-    @Override
-    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+    @Override protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
         checkState(model.get("id") != null, "Unable to generate report for unsaved delivery! (missing id)");
 
@@ -125,8 +120,9 @@ public class OrderReportPdf extends ReportPdfView {
         createHeaderTable(document, delivery, locale);
         createProductsTable(document, delivery, locale);
 
-        return translationService.translate("deliveries.order.report.fileName", locale,
-                delivery.getStringField(DeliveryFields.NUMBER), getStringFromDate(delivery.getDateField("updateDate")));
+        return translationService
+                .translate("deliveries.order.report.fileName", locale, delivery.getStringField(DeliveryFields.NUMBER),
+                        getStringFromDate(delivery.getDateField("updateDate")));
     }
 
     private void createHeaderTable(final Document document, final Entity delivery, final Locale locale) throws DocumentException {
@@ -147,8 +143,9 @@ public class OrderReportPdf extends ReportPdfView {
         Map<String, Object> secondColumn = createSecondColumn(delivery);
         Map<String, Object> thirdColumn = createThirdColumn(delivery);
 
-        int maxSize = pdfHelper.getMaxSizeOfColumnsRows(Lists.newArrayList(Integer.valueOf(firstColumn.values().size()),
-                Integer.valueOf(secondColumn.values().size()), Integer.valueOf(thirdColumn.values().size())));
+        int maxSize = pdfHelper.getMaxSizeOfColumnsRows(
+                Lists.newArrayList(Integer.valueOf(firstColumn.values().size()), Integer.valueOf(secondColumn.values().size()),
+                        Integer.valueOf(thirdColumn.values().size())));
 
         for (int i = 0; i < maxSize; i++) {
             firstColumnHeaderTable = pdfHelper.addDynamicHeaderTableCell(firstColumnHeaderTable, firstColumn, locale);
@@ -268,12 +265,25 @@ public class OrderReportPdf extends ReportPdfView {
                         pdfHelper.getReportColumnWidths(REPORT_WIDTH, parameterService.getReportColumnWidths(), columnsName),
                         alignments);
 
+                boolean showDrawingNumber = checkIfAnyDrawingNumberIsFill(orderedProducts);
                 for (Entity orderedProduct : orderedProducts) {
                     for (Entity columnForOrders : filteredColumnsForOrders) {
                         String identifier = columnForOrders.getStringField(ColumnForOrdersFields.IDENTIFIER);
                         String alignment = columnForOrders.getStringField(ColumnForOrdersFields.ALIGNMENT);
 
                         String value = orderedProductsColumnValues.get(orderedProduct).get(identifier);
+
+                        if (showDrawingNumber && L_IDENTIFIER_PRODUCT_NAME.equals(identifier)) {
+                            PdfPCell cell = productsTable.getRow(0).getCells()[
+                                    ((int) columnForOrders.getField(ColumnForDeliveriesFields.SUCCESSION)) - 1];
+                            cell.setPhrase(new Phrase(
+                                    translationService.translate("deliveries.order.report.columnHeader.number", locale) + "\n"
+                                            + translationService
+                                            .translate("deliveries.order.report.columnHeader.drawingNumber", locale),
+                                    FontUtils.getDejavuBold7Dark()));
+                            value += "\n" + Strings.nullToEmpty(orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT)
+                                    .getStringField("drawingNumber"));
+                        }
 
                         prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
 
@@ -312,11 +322,12 @@ public class OrderReportPdf extends ReportPdfView {
 
     private List<Entity> getOrderReportColumns(final List<Entity> columnsForOrders, final List<Entity> orderedProducts,
             final Map<Entity, Map<String, String>> orderedProductsColumnValues) {
-        return deliveriesService.getColumnsWithFilteredCurrencies(columnExtensionService.filterEmptyColumns(columnsForOrders,
-                orderedProducts, orderedProductsColumnValues));
+        return deliveriesService.getColumnsWithFilteredCurrencies(
+                columnExtensionService.filterEmptyColumns(columnsForOrders, orderedProducts, orderedProductsColumnValues));
     }
 
-    private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName, Entity delivery) {
+    private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName,
+            Entity delivery) {
         DeliveryPricesAndQuantities deliveryPricesAndQuantities = new DeliveryPricesAndQuantities(delivery, numberService);
 
         PdfPCell total = new PdfPCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
@@ -376,8 +387,7 @@ public class OrderReportPdf extends ReportPdfView {
         }
     }
 
-    @Override
-    protected final void addTitle(final Document document, final Locale locale) {
+    @Override protected final void addTitle(final Document document, final Locale locale) {
         document.addTitle(translationService.translate("deliveries.order.report.title", locale));
     }
 
@@ -411,6 +421,18 @@ public class OrderReportPdf extends ReportPdfView {
             }
         }
         return columnNames;
+    }
+
+    private boolean checkIfAnyDrawingNumberIsFill(List<Entity> filteredColumnsForOrders) {
+        final boolean[] result = { false };
+
+        filteredColumnsForOrders.forEach(entity -> {
+            if (StringUtils.isNotEmpty(entity.getBelongsToField(OrderedProductFields.PRODUCT).getStringField("drawingNumber"))) {
+                result[0] = true;
+            }
+        });
+
+        return result[0];
     }
 
 }
