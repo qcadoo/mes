@@ -167,7 +167,7 @@
 								<component type="select" name="state" field="state"
 										   reference="state" defaultEnabled="never" hasLabel="false"
 										   defaultVisible="false"/>
-								<component type="input" name="externalSynchronized"
+								<component type="hidden" name="externalSynchronized"
 										   field="externalSynchronized" reference="externalSynchronized"
 										   persistent="false"/>
 							</layoutElement>
