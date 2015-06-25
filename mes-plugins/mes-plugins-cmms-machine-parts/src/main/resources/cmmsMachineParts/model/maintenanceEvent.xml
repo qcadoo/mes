@@ -24,13 +24,17 @@
     ***************************************************************************
 
 -->
-<model name="maintenanceEvent"
+<model name="maintenanceEvent" auditable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
         <string name="number" required="true" unique="true"/>
-        <enum name="type" values="01failure,02issue,03proposal"
-              default="01failure"/>
+        <enum name="type" values="01failure,02issue,03proposal" default="01failure" required="true"/>
+        <string name="description"/>
+        <belongsTo name="personReceiving" required="true" model="user" plugin="qcadooSecurity"/>
+        <enum name="targetState"
+              values="01new,02pending,03inProgress,04closed,05revoked,06planned" default="01new"/>
+
 
     </fields>
     <hooks>
