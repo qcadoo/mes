@@ -85,6 +85,12 @@
         <view:view resource="view/faultTypesList.xml"/>
         <view:view resource="view/faultTypeDetails.xml"/>
 
+        <view:view resource="view/eventsList.xml"/>
+        <view:view resource="view/maintenanceEventDetails.xml"/>
+
+        <menu:menu-category name="maintenance"/>
+        <menu:menu-item name="events" category="maintenance" view="eventsList"/>
+
         <menu:menu-item name="machineParts" category="basic" view="machinePartsList"/>
         <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"/>
 
@@ -95,6 +101,8 @@
 
         <model:model model="machinePartAttachment" resource="model/machinePartAttachment.xml"/>
         <model:model model="faultType" resource="model/faultType.xml"/>
+        <model:model model="maintenanceEvent" resource="model/maintenanceEvent.xml"/>
+        maintenenceEvent
 
         <!-- model extensions -->
         <model:model-field plugin="basic" model="product">
