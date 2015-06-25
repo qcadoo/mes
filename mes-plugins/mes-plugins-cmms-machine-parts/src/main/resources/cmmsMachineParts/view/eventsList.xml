@@ -34,8 +34,12 @@
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
-            <option type="column" name="number" fields="number" link="true"/>
-            <option type="column" name="type" fields="type" link="true"/>
+            <option type="column" name="number" fields="number" link="true" />
+            <option type="column" name="type" fields="type" link="true" />
+            <option type="column" name="description" fields="description" link="true" />
+            <option type="column" name="createDate" fields="createDate" link="true" />
+            <option type="column" name="createUser" fields="createUser" link="true" />
+            <option type="column" name="personReceiving" fields="personReceiving" expression="#personReceiving['userName']" link="true" />
 
             <option type="searchable" value="number,type"/>
             <option type="orderable" value="number,type"/>

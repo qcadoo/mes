@@ -29,13 +29,51 @@
       name="maintenanceEventDetails" modelName="maintenanceEvent" modelPlugin="cmmsMachineParts">
 
     <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew"/>
+        </ribbon>
+
         <windowTab name="mainTab">
             <component type="form" name="maintenanceEventForm" reference="form">
 
-                <component type="gridLayout" name="gridLayout" columns="3" rows="2">
+                <component type="gridLayout" name="gridLayout" columns="2" rows="8">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number" reference="number"/>
                     </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="type" field="type" reference="type" defaultEnabled="false"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        zakład...
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        dział...
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        Linia produkcyjna...
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        stacja robocza...
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        podzespół...
+                    </layoutElement>
+
+                    <layoutElement column="2" row="1">
+                        typ usterki...
+                    </layoutElement>
+                    <layoutElement column="2" row="2" height="3">
+                        <component type="textarea" name="description" field="description" reference="description"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="5">
+                        osoba przyjmująca...
+                    </layoutElement>
+                    <layoutElement column="2" row="6">
+                        źródło kosztów...
+                    </layoutElement>
+
+
                 </component>
 
                 <option type="header" value="true"/>
