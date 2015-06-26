@@ -39,10 +39,12 @@
 
                 <component type="gridLayout" name="gridLayout" columns="2" rows="8">
                     <layoutElement column="1" row="1">
+                        <component type="hidden" name="factoryStructure" field="factoryStructure"
+                                   reference="factoryStructure"/>
                         <component type="input" name="number" field="number" reference="number"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="input" name="type" field="type" reference="type" defaultEnabled="false"/>
+                        <component type="select" name="type" field="type" reference="type" defaultEnabled="false"/>
                     </layoutElement>
                     <layoutElement column="1" row="3">
                         zakład...
@@ -76,10 +78,12 @@
 
                 </component>
 
-                <option type="header" value="true"/>
-                <option type="expression" value="#number : #status"/>
 
             </component>
         </windowTab>
     </component>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
+                      method="maintenanceEventBeforeRender"/>
+    </hooks>
 </view>
