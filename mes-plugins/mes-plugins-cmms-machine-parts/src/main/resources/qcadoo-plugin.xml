@@ -146,6 +146,31 @@
             <model:belongsTo name="maintenanceEvent" model="maintenanceEvent" plugin="cmmsMachineParts"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="factory">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="factory" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="division" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="productionLine" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="workstation" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="subassembly">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="subassembly" copyable="false"/>
+        </model:model-field>
+
         <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"
                             component="form" event="redirectToWarehouseStateList"
                             class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"

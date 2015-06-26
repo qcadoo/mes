@@ -37,6 +37,14 @@
 
         <tree name="factoryStructure" model="factoryStructureElement"
               joinField="maintenanceEvent" cascade="delete" plugin="productionLines"/>
+
+        <belongsTo name="factory" model="factory" plugin="basic" required="true"/>
+        <belongsTo name="division" model="division" plugin="basic" required="true"/>
+        <belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
+        <belongsTo name="workstation" model="workstation" plugin="basic"/>
+        <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
+
+        <belongsTo name="faultType" model="faultType" required="true"/>
     </fields>
     <hooks>
     </hooks>
