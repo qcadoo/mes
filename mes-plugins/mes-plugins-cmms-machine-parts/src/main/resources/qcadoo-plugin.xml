@@ -91,7 +91,7 @@
 
         <view:view resource="view/eventsList.xml"/>
         <view:view resource="view/maintenanceEventDetails.xml"/>
-        <view:view resource="view/factoryStructureForEvent.xml"/>
+        <view:view resource="view/addNewEvent.xml"/>
 
         <menu:menu-category name="maintenance"/>
         <menu:menu-item name="events" category="maintenance" view="eventsList"/>

@@ -25,18 +25,15 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="factoryStructureForEvent" modelName="maintenanceEvent" modelPlugin="cmmsMachineParts">
+      name="addNewEvent" modelName="maintenanceEvent" modelPlugin="cmmsMachineParts">
 
     <component type="window" name="window" reference="window">
         <ribbon>
             <group template="navigation"/>
             <group name="addEvents">
-                <bigButton name="addFailure" icon="newIcon24.png"
-                           action="#{window}.fireEvent(addEvent, 01failure);" state="disabled"/>
-                <bigButton name="addIssue" icon="newIcon24.png"
-                           action="#{window}.fireEvent(addEvent, 02issue);" state="disabled"/>
-                <bigButton name="addProposal" icon="newIcon24.png"
-                           action="#{window}.fireEvent(addEvent, 03proposal);" state="disabled"/>
+                <bigButton name="addFailure" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 01failure);"/>
+                <bigButton name="addIssue" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 02issue);"/>
+                <bigButton name="addProposal" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 03proposal);"/>
             </group>
         </ribbon>
         <component type="form" name="product" reference="form">
@@ -44,6 +41,7 @@
                 <layoutElement column="1" row="1" height="8">
                     <component type="tree" name="factoryStructure" reference="factoryStructure"
                                field="#{form}.factoryStructure">
+
                         <dataType name="company">
                             <option type="nodeLabelExpression"
                                     value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
@@ -99,10 +97,18 @@
                         <option type="hasDeleteButton" value="false"/>
                         <option type="hasEditButton" value="false"/>
                         <option type="hasMoveButton" value="false"/>
+
+
+                        <listener event="select"
+                                  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"
+                                  method="selectOnTree" />
                     </component>
                 </layoutElement>
             </component>
         </component>
+
+        <listener event="addEvent" method="addEvent"
+                  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
     </component>
 
     <hooks>
