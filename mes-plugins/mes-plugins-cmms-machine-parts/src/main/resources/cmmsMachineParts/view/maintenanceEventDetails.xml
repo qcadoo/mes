@@ -57,6 +57,10 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      method="factoryChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
@@ -69,6 +73,10 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      method="divisionChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
@@ -81,6 +89,10 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      method="productionLineChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="6">
@@ -93,6 +105,10 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      method="workstationChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="7">
@@ -105,6 +121,10 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      method="subassemblyChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
                         </component>
                     </layoutElement>
 
