@@ -45,29 +45,91 @@
                         <component type="input" name="type" field="type" reference="type" defaultEnabled="false"/>
                     </layoutElement>
                     <layoutElement column="1" row="3">
-                        zakład...
+                        <component type="lookup" name="factory" field="factory"
+                                   reference="factory">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="column" name="city" fields="city"/>
+
+                            <option type="searchable" value="name,city,number"/>
+                            <option type="orderable" value="name,city,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
-                        dział...
+                        <component type="lookup" name="division" field="division"
+                                   reference="division">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
-                        Linia produkcyjna...
+                        <component type="lookup" name="productionLine" field="productionLine"
+                                   reference="productionLine">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="1" row="6">
-                        stacja robocza...
+                        <component type="lookup" name="workstation" field="workstation"
+                                   reference="workstation">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="1" row="7">
-                        podzespół...
+                        <component type="lookup" name="subassembly" field="subassembly"
+                                   reference="subassembly">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
                     </layoutElement>
 
                     <layoutElement column="2" row="1">
-                        typ usterki...
+                        <component type="lookup" name="faultType" field="faultType"
+                                   reference="faultType">
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression" value="#name"/>
+                            <option type="fieldCode" value="name"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="2" row="2" height="3">
                         <component type="textarea" name="description" field="description" reference="description"/>
                     </layoutElement>
                     <layoutElement column="2" row="5">
-                        osoba przyjmująca...
+                        <component type="lookup" name="personReceiving" field="personReceiving"
+                                   reference="personReceiving" defaultEnabled="false">
+                            <option type="column" name="firstName" fields="firstName"/>
+
+                            <option type="searchable" value="firstName,lastName"/>
+                            <option type="orderable" value="firstName,lastName"/>
+
+                            <option type="expression" value="#firstName + ' ' + #lastName"/>
+                            <option type="fieldCode" value="lastName"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="2" row="6">
                         źródło kosztów...

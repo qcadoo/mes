@@ -37,6 +37,8 @@
                     joinField="faultTypes" copyable="true"/>
         <manyToMany name="subassemblies" model="subassembly" plugin="basic" cascade="nullify" joinField="faultTypes"
                     copyable="true"/>
+
+        <hasMany name="maintenanceEvents" model="maintenanceEvent" joinField="faultType" cascade="nullify" copyable="false"/>
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeHooks" method="onSave"/>
