@@ -47,12 +47,13 @@ public class FactoryStructureGenerationService {
             return null;
         }
 
-        List<Entity> factoryStructureList = Lists.newArrayList();
-        Entity root = addRoot(factoryStructureList, workstation, FactoryStructureElementFields.WORKSTATION);
-        generateFactoryStructure(factoryStructureList, root, workstation, FactoryStructureElementFields.WORKSTATION);
-        EntityTree factoryStructure = EntityTreeUtilsService.getDetachedEntityTree(factoryStructureList);
+        // List<Entity> factoryStructureList = Lists.newArrayList();
+        // Entity root = addRoot(factoryStructureList, workstation, FactoryStructureElementFields.WORKSTATION);
+        // generateFactoryStructure(factoryStructureList, root, workstation, FactoryStructureElementFields.WORKSTATION);
+        // EntityTree factoryStructure = EntityTreeUtilsService.getDetachedEntityTree(factoryStructureList);
 
-        return factoryStructure;
+        // return factoryStructure;
+        return generateFactoryStructureForEntity(workstation, FactoryStructureElementFields.WORKSTATION);
     }
 
     public EntityTree generateFactoryStructureForSubassembly(final Entity subassemblyEntity) {
@@ -71,11 +72,20 @@ public class FactoryStructureGenerationService {
             return null;
         }
 
-        List<Entity> factoryStructureList = Lists.newArrayList();
-        Entity root = addRoot(factoryStructureList, subassembly, FactoryStructureElementFields.SUBASSEMBLY);
-        generateFactoryStructure(factoryStructureList, root, subassembly, FactoryStructureElementFields.SUBASSEMBLY);
-        EntityTree factoryStructure = EntityTreeUtilsService.getDetachedEntityTree(factoryStructureList);
+        // List<Entity> factoryStructureList = Lists.newArrayList();
+        // Entity root = addRoot(factoryStructureList, subassembly, FactoryStructureElementFields.SUBASSEMBLY);
+        // generateFactoryStructure(factoryStructureList, root, subassembly, FactoryStructureElementFields.SUBASSEMBLY);
+        // EntityTree factoryStructure = EntityTreeUtilsService.getDetachedEntityTree(factoryStructureList);
+        //
+        // return factoryStructure;
+        return generateFactoryStructureForEntity(subassembly, FactoryStructureElementFields.SUBASSEMBLY);
+    }
 
+    public EntityTree generateFactoryStructureForEntity(final Entity entity, final String belongsToField) {
+        List<Entity> factoryStructureList = Lists.newArrayList();
+        Entity root = addRoot(factoryStructureList, entity, belongsToField);
+        generateFactoryStructure(factoryStructureList, root, entity, belongsToField);
+        EntityTree factoryStructure = EntityTreeUtilsService.getDetachedEntityTree(factoryStructureList);
         return factoryStructure;
     }
 
@@ -87,7 +97,7 @@ public class FactoryStructureGenerationService {
                 continue;
             }
             Entity factoryNode = createNode(belongsToEntity, belongsToField, factory.getStringField(FactoryFields.NUMBER),
-                    factory.getStringField(FactoryFields.NAME), FactoryStructureElementType.FACTORY);
+                    factory.getStringField(FactoryFields.NAME), FactoryStructureElementType.FACTORY, factory.getId());
             addChild(tree, factoryNode, root);
 
             List<Entity> divisions = getDivisionsForFactory(factory);
@@ -96,7 +106,7 @@ public class FactoryStructureGenerationService {
                     continue;
                 }
                 Entity divisionNode = createNode(belongsToEntity, belongsToField, division.getStringField(DivisionFields.NUMBER),
-                        division.getStringField(DivisionFields.NAME), FactoryStructureElementType.DIVISION);
+                        division.getStringField(DivisionFields.NAME), FactoryStructureElementType.DIVISION, division.getId());
                 addChild(tree, divisionNode, factoryNode);
 
                 List<Entity> productionLines = getProductionLinesForDivision(division);
@@ -107,7 +117,8 @@ public class FactoryStructureGenerationService {
                     }
                     Entity productionLineNode = createNode(belongsToEntity, belongsToField,
                             productionLine.getStringField(ProductionLineFields.NUMBER),
-                            productionLine.getStringField(ProductionLineFields.NAME), FactoryStructureElementType.PRODUCTION_LINE);
+                            productionLine.getStringField(ProductionLineFields.NAME),
+                            FactoryStructureElementType.PRODUCTION_LINE, productionLine.getId());
                     addChild(tree, productionLineNode, divisionNode);
 
                     List<Entity> workstations = getWorkstationsForProductionLineAndDivision(productionLine, division);
@@ -118,7 +129,8 @@ public class FactoryStructureGenerationService {
                         }
                         Entity workstationNode = createNode(belongsToEntity, belongsToField,
                                 workstation.getStringField(WorkstationFields.NUMBER),
-                                workstation.getStringField(WorkstationFields.NAME), FactoryStructureElementType.WORKSTATION);
+                                workstation.getStringField(WorkstationFields.NAME), FactoryStructureElementType.WORKSTATION,
+                                workstation.getId());
                         if (areEntitiesEqual(workstation, belongsToEntity)) {
                             workstationNode.setField(FactoryStructureElementFields.CURRENT, true);
                         }
@@ -132,7 +144,8 @@ public class FactoryStructureGenerationService {
                             }
                             Entity subassemblyNode = createNode(belongsToEntity, belongsToField,
                                     subassembly.getStringField(SubassemblyFields.NUMBER),
-                                    subassembly.getStringField(SubassemblyFields.NAME), FactoryStructureElementType.SUBASSEMBLY);
+                                    subassembly.getStringField(SubassemblyFields.NAME), FactoryStructureElementType.SUBASSEMBLY,
+                                    subassembly.getId());
                             if (areEntitiesEqual(subassembly, belongsToEntity)) {
                                 subassemblyNode.setField(FactoryStructureElementFields.CURRENT, true);
                             }
@@ -152,7 +165,7 @@ public class FactoryStructureGenerationService {
         Entity company = parameterService.getParameter().getBelongsToField(ParameterFields.COMPANY);
 
         Entity root = createNode(belongsToEntity, belongsToField, company.getStringField(CompanyFields.NUMBER),
-                company.getStringField(CompanyFields.NAME), FactoryStructureElementType.COMPANY);
+                company.getStringField(CompanyFields.NAME), FactoryStructureElementType.COMPANY, company.getId());
 
         addChild(tree, root, null);
         return root;
@@ -167,7 +180,7 @@ public class FactoryStructureGenerationService {
     }
 
     private Entity createNode(final Entity belongsToEntity, final String belongsToField, final String number, final String name,
-            final FactoryStructureElementType entityType) {
+            final FactoryStructureElementType entityType, final Long entityId) {
 
         DataDefinition elementDD = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_FACTORY_STRUCTURE_ELEMENT);
@@ -178,6 +191,7 @@ public class FactoryStructureGenerationService {
         node.setField(FactoryStructureElementFields.NAME, name);
         node.setField(FactoryStructureElementFields.ENTITY_TYPE, entityType.getStringValue());
         node.setField(FactoryStructureElementFields.CURRENT, false);
+        node.setField(FactoryStructureElementFields.ENTITY_ID, entityId);
         return node;
     }
 

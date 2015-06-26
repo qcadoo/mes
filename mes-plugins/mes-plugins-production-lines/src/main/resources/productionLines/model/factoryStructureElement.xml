@@ -37,6 +37,7 @@
         <string name="nodeNumber"/>
         <enum name="entityType" values="company,factory,division,productionLine,workstation,subassembly"
               default="company"/>
+        <integer name="entityId"/>
         <belongsTo name="workstation" model="workstation" plugin="basic"/>
         <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
     </fields>

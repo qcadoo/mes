@@ -31,6 +31,11 @@
             <artifactId>mes-plugins-warehouse-minimal-state</artifactId>
             <version>1.4-SNAPSHOT-DEV</version>
         </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-production-lines</artifactId>
+            <version>1.4-SNAPSHOT-DEV</version>
+        </dependency>
     </dependencies>
 
     <build>

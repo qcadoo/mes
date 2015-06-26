@@ -35,7 +35,8 @@
         <enum name="targetState"
               values="01new,02pending,03inProgress,04closed,05revoked,06planned" default="01new"/>
 
-
+        <tree name="factoryStructure" model="factoryStructureElement"
+              joinField="maintenanceEvent" cascade="delete" plugin="productionLines"/>
     </fields>
     <hooks>
     </hooks>

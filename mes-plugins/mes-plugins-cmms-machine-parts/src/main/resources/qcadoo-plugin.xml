@@ -68,6 +68,10 @@
             <plugin>warehouseMinimalState</plugin>
             <version>[1.4.0</version>
         </dependency>
+        <dependency>
+            <plugin>productionLines</plugin>
+            <version>[1.4.0</version>
+        </dependency>
     </dependencies>
 
 
@@ -87,6 +91,7 @@
 
         <view:view resource="view/eventsList.xml"/>
         <view:view resource="view/maintenanceEventDetails.xml"/>
+        <view:view resource="view/factoryStructureForEvent.xml"/>
 
         <menu:menu-category name="maintenance"/>
         <menu:menu-item name="events" category="maintenance" view="eventsList"/>
@@ -135,6 +140,10 @@
         <model:model-field plugin="basic" model="subassembly">
             <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
                               joinField="subassemblies"/>
+        </model:model-field>
+
+        <model:model-field plugin="productionLines" model="factoryStructureElement">
+            <model:belongsTo name="maintenanceEvent" model="maintenanceEvent" plugin="cmmsMachineParts"/>
         </model:model-field>
 
         <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"

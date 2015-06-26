@@ -30,6 +30,10 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
+            <group name="customActions">
+                <bigButton name="addEvent" icon="newIcon24.png"
+                           action="#{window}.fireEvent(showFactoryStructure);" state="enabled"/>
+            </group>
             <template name="standardGridTemplate"/>
         </ribbon>
 
@@ -54,13 +58,17 @@
             <option type="fullscreen" value="true"/>
 
             <!--<criteriaModifier-->
-                    <!--class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP"-->
-                    <!--method="showMachineParts"/>-->
+            <!--class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP"-->
+            <!--method="showMachineParts"/>-->
         </component>
 
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
+
+        <listener event="showFactoryStructure"
+                  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
+                  method="showFactoryStructure"/>
     </component>
 
 
