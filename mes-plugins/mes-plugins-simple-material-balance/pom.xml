@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
-		<version>1.4-SNAPSHOT</version>
+		<version>1.4-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-simple-material-balance</artifactId>
@@ -17,12 +17,12 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-material-requirements</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.4-SNAPSHOT-DEV</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-material-flow</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.4-SNAPSHOT-DEV</version>
 		</dependency>
 	</dependencies>
 
