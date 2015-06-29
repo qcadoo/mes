@@ -60,6 +60,10 @@ public class EventListeners {
             viewDefinitionState.addMessage("cmmsMachineParts.error.companySelected", ComponentState.MessageType.INFO);
             return;
         }
+        if (FactoryStructureElementType.of(selectedElement).compareTo(FactoryStructureElementType.FACTORY) == 0) {
+            viewDefinitionState.addMessage("cmmsMachineParts.error.factorySelected", ComponentState.MessageType.INFO);
+            return;
+        }
         DataDefinition dataDefinition = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
                 CmmsMachinePartsConstants.MAINTENANCE_EVENT);
         Entity maintenanceEvent = dataDefinition.create();

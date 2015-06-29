@@ -48,6 +48,10 @@
                     link="true"/>
             <option type="column" name="subassembly" field="subassembly" expression="#subassembly['number']"
                     link="true"/>
+
+            <option type="column" name="faultType" field="faultType" expression="#faultType['name']"
+                    link="true"/>
+
             <option type="column" name="description" fields="description" link="true"/>
             <option type="column" name="createDate" fields="createDate" link="true"/>
             <option type="column" name="createUser" fields="createUser" link="true"/>
@@ -55,9 +59,9 @@
                     expression="#personReceiving['userName']" link="true"/>
 
             <option type="searchable"
-                    value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving"/>
+                    value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType"/>
             <option type="orderable"
-                    value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving"/>
+                    value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType"/>
 
 
             <option type="multiselect" value="true"/>
