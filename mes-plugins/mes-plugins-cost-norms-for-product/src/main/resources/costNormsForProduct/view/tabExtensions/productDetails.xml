@@ -30,8 +30,8 @@
 	plugin="basic" view="productDetails">
 
 	<windowTab name="costTab" reference="costTab">
-		<script> 
-			<![CDATA[ 
+		<script>
+			<![CDATA[
 				jQuery(document).ready(function() { 
 				var productUnit = $("#window\\.mainTab\\.product\\.gridLayout\\.unit_input"); 
 				var costUnit = $("#window\\.costTab\\.gridLayout\\.unitGridLayout\\.unit_input"); 
@@ -82,7 +82,7 @@
 						columns="4" rows="2">
 						<layoutElement column="1" row="1" width="3">
 							<component type="input" name="lastPurchaseCost"
-								reference="lastPurchaseCost" field="#{form}.lastPurchaseCost">
+								reference="lastPurchaseCost" field="#{form}.lastPurchaseCost" hasDescription="true">
 								<option type="alignment" value="right" />
 							</component>
 						</layoutElement>
@@ -93,7 +93,7 @@
 						</layoutElement>
 						<layoutElement column="1" row="2" width="3">
 							<component type="input" name="averageCost" reference="averageCost"
-								field="#{form}.averageCost">
+								field="#{form}.averageCost" hasDescription="true">
 								<option type="alignment" value="right" />
 							</component>
 						</layoutElement>

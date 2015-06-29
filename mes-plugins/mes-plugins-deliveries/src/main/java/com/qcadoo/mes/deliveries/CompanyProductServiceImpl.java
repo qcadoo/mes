@@ -23,8 +23,16 @@
  */
 package com.qcadoo.mes.deliveries;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
+import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
+import com.qcadoo.mes.deliveries.constants.ProductFieldsD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
@@ -56,4 +64,125 @@ public class CompanyProductServiceImpl implements CompanyProductService {
         return true;
     }
 
+    public boolean checkIfDefaultAlreadyExists(final Entity companyProduct) {
+        if (companyProduct.getBooleanField(CompanyProductFields.IS_DEFAULT)) {
+            Entity product = companyProduct.getBelongsToField(CompanyProductFields.PRODUCT);
+
+            if (product == null) {
+                return false;
+            } else {
+                Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
+                if (productFamily != null) {
+                    List<Entity> companyProductsForFamily = productFamily
+                            .getHasManyField(ProductFieldsD.PRODUCTS_FAMILY_COMPANIES);
+                    if (companyProductsForFamily.stream().anyMatch(
+                            companyProductForFamily -> companyProductForFamily.getBooleanField(CompanyProductFields.IS_DEFAULT))) {
+                        return true;
+                    }
+                }
+                List<Entity> companyProductsForProduct = product.getHasManyField(ProductFieldsD.PRODUCT_COMPANIES);
+                if (companyProductsForProduct.stream().anyMatch(
+                        companyProductForProduct -> companyProductForProduct.getBooleanField(CompanyProductFields.IS_DEFAULT)
+                                && !companyProductForProduct.getId().equals(companyProduct.getId()))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean checkIfDefaultExistsForFamily(final Entity companyProduct) {
+        if (companyProduct.getBooleanField(CompanyProductFields.IS_DEFAULT)) {
+            Entity product = companyProduct.getBelongsToField(CompanyProductFields.PRODUCT);
+
+            if (product == null) {
+                return false;
+            } else {
+                Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
+                if (productFamily != null) {
+                    List<Entity> companyProductsForFamily = productFamily
+                            .getHasManyField(ProductFieldsD.PRODUCTS_FAMILY_COMPANIES);
+                    if (companyProductsForFamily.stream().anyMatch(
+                            companyProductForFamily -> companyProductForFamily.getBooleanField(CompanyProductFields.IS_DEFAULT))) {
+                        return true;
+                    }
+                }
+                List<Entity> companyProductsForProduct = product.getHasManyField(ProductFieldsD.PRODUCTS_FAMILY_COMPANIES);
+                if (companyProductsForProduct.stream()
+                        .anyMatch(
+                                companyProductForProduct -> (companyProductForProduct
+                                        .getBooleanField(CompanyProductFields.IS_DEFAULT) && !companyProductForProduct.getId()
+                                        .equals(companyProduct.getId())))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public String checkIfDefaultExistsForProductsInFamily(final Entity companyProduct) {
+        if (companyProduct.getBooleanField(CompanyProductFields.IS_DEFAULT)) {
+            Entity product = companyProduct.getBelongsToField(CompanyProductFields.PRODUCT);
+
+            if (product == null) {
+                return StringUtils.EMPTY;
+            } else {
+                StringBuilder productNames = new StringBuilder();
+                List<Entity> children = product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS);
+                for (Entity child : children) {
+                    List<Entity> familiesCompanies = child.getHasManyField(ProductFieldsD.PRODUCTS_FAMILY_COMPANIES);
+                    if (!familiesCompanies.isEmpty()) {
+                        String defaultCompaniesForFamilies = familiesCompanies
+                                .stream()
+                                .filter(cp -> cp.getBooleanField(CompanyProductsFamilyFields.IS_DEFAULT))
+                                .map(cp -> cp.getBelongsToField(CompanyProductsFamilyFields.PRODUCT).getStringField(
+                                        ProductFields.NUMBER)).collect(Collectors.joining(", "));
+                        productNames.append(defaultCompaniesForFamilies);
+                    }
+                    List<Entity> productCompanies = child.getHasManyField(ProductFieldsD.PRODUCT_COMPANIES);
+                    if (!productCompanies.isEmpty()) {
+                        String defaultCompaniesForProducts = productCompanies
+                                .stream()
+                                .filter(cp -> cp.getBooleanField(CompanyProductFields.IS_DEFAULT))
+                                .map(cp -> cp.getBelongsToField(CompanyProductFields.PRODUCT)
+                                        .getStringField(ProductFields.NUMBER)).collect(Collectors.joining(", "));
+                        productNames.append(defaultCompaniesForProducts);
+                    }
+                }
+                return productNames.toString();
+            }
+        }
+        return StringUtils.EMPTY;
+    }
+
+    public boolean checkIfDefaultExistsForParticularProduct(final Entity product) {
+
+        if (product == null) {
+            return false;
+        } else {
+            List<Entity> companyProductsForProduct = product.getHasManyField(ProductFieldsD.PRODUCT_COMPANIES);
+            if (companyProductsForProduct.stream().anyMatch(
+                    companyProductForProduct -> companyProductForProduct.getBooleanField(CompanyProductFields.IS_DEFAULT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkIfDefaultExistsForProductFamily(final Entity product) {
+
+        if (product == null) {
+            return false;
+        } else {
+            List<Entity> companyProductsForProduct = product.getHasManyField(ProductFieldsD.PRODUCTS_FAMILY_COMPANIES);
+            if (companyProductsForProduct.stream().anyMatch(
+                    companyProductForProduct -> (companyProductForProduct.getBooleanField(CompanyProductFields.IS_DEFAULT)))) {
+                return true;
+            }
+        }
+        return false;
+
+    }
 }

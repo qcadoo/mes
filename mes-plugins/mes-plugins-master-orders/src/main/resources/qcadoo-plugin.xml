@@ -69,6 +69,14 @@
 
         <model:dictionary name="masterOrderState"/>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="sameOrderNumber" default="false"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:hasMany name="masterOrderDefinitions" model="masterOrderDefinition" plugin="masterOrders"
+                           joinField="parameter" cascade="nullify"/>
+        </model:model-field>
+
         <model:model-field model="order" plugin="orders">
             <model:belongsTo name="masterOrder" model="masterOrder"
                              plugin="masterOrders" lazy="true"/>
@@ -77,11 +85,6 @@
         <model:model-field model="order" plugin="orders">
             <model:belongsTo name="masterOrderProduct" model="product"
                              plugin="basic" lazy="true"/>
-        </model:model-field>
-
-        <model:model-field model="parameter" plugin="basic">
-            <model:hasMany name="masterOrderDefinitions" model="masterOrderDefinition" plugin="masterOrders"
-                           joinField="parameter" cascade="nullify"/>
         </model:model-field>
 
         <model:model-hook model="order" plugin="orders">
@@ -126,12 +129,6 @@
                                view="ordersPlanningList" component="grid">
             <view:column name="masterOrderNumber" fields="masterOrder"
                          orderable="true" searchable="true" expression="#masterOrder['number']"
-                         width="50"/>
-        </view:view-grid-column>
-        <view:view-grid-column plugin="orders"
-                               view="ordersPlanningList" component="grid">
-            <view:column name="masterOrderDefinitionNumber" fields="masterOrder"
-                         orderable="true" searchable="true" expression="#masterOrder['masterOrderDefinition']?.get('number')"
                          width="50"/>
         </view:view-grid-column>
 

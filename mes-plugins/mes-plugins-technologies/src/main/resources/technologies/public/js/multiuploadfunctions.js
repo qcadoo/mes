@@ -27,7 +27,7 @@ $(function() {
 					{
 						
 						dataType : 'json',
-						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf)$/i,
+						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx)$/i,
 
 						submit : function(e, data) {
 							var locale = window.mainController
@@ -41,7 +41,7 @@ $(function() {
 							var techIdValue = techId.content;
 							if(!techIdValue.value || 0 === techIdValue.value){
 							    $.each(data.files, function (index, file) {
-									if(locale === "pl"){
+									if(locale === "pl_PL"){
 							    	showMessage("failure",
 											"Technologia niezapisana",
 											"Pominięto wgranie pliku : "
@@ -78,7 +78,7 @@ $(function() {
 
 							$.each(data.files, function(index, file) {
 								if (filetype.test(file.name)) {
-								if(locale === "pl"){
+								if(locale === "pl_PL"){
 									showMessage("success", "Wgrywanie zakończone",
 											"Wgrano plik : " + file.name);
 								} else {
@@ -111,14 +111,14 @@ $(function() {
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
-						var filetype = /(\.|\/)(gif|jpe?g|png|pdf)$/i;
+						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
 							"technologyMultiUploadLocale")
 								.getValue().content.value;
 						$.each(data.files, function(index, file) {
 							if (!filetype.test(file.name)) {
-								if(locale === "pl"){
+								if(locale === "pl_PL"){
 								showMessage("failure",
 										"Pominięto wgranie pliku",
 										"Niedopuszczalny typ pliku : "

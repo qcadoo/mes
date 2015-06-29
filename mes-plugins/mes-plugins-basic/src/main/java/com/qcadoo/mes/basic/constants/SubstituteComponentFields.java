@@ -25,6 +25,8 @@ package com.qcadoo.mes.basic.constants;
 
 public final class SubstituteComponentFields {
 
+    public static final String BASE_PRODUCT = "baseProduct";
+
     private SubstituteComponentFields() {
     }
 

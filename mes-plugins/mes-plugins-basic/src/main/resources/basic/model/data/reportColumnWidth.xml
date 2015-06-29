@@ -32,4 +32,5 @@
 	<row IDENTIFIER="price" NAME="basic.reportColumnWidth.name.value.Price" CHARTYPE="01smallChars" />
 	<row IDENTIFIER="name" NAME="basic.reportColumnWidth.name.value.Name" CHARTYPE="01smallChars" />
 	<row IDENTIFIER="quantity" NAME="basic.reportColumnWidth.name.value.Quantity" CHARTYPE="01smallChars" />
+    <row IDENTIFIER="catalogNumber" NAME="basic.reportColumnWidth.name.value.CatalogNumber" CHARTYPE="01smallChars" />
 </reportColumnWidth>

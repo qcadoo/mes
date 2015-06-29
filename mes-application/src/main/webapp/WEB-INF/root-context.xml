@@ -25,10 +25,10 @@
 
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:task="http://www.springframework.org/schema/task"
-	xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="
        http://www.springframework.org/schema/beans 
        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
        http://www.springframework.org/schema/util 
@@ -38,40 +38,41 @@
        http://www.springframework.org/schema/task
 	   http://www.springframework.org/schema/task/spring-task-3.1.xsd">
 
-	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/mail.properties,file:${QCADOO_CONF}/report.properties,file:${QCADOO_CONF}/app.properties"
-		ignore-resource-not-found="true"
-		ignore-unresolvable="true"
-		properties-ref="defaultConfiguration" />
+    <context:property-placeholder
+            location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/mail.properties,file:${QCADOO_CONF}/report.properties,file:${QCADOO_CONF}/mailing.properties,file:${QCADOO_CONF}/app.properties"
+            ignore-resource-not-found="true"
+            ignore-unresolvable="true"
+            properties-ref="defaultConfiguration"/>
 
-		<util:properties id="defaultConfiguration">
-			<prop key="samplesDatasetLocale">default</prop>
-			<prop key="showContextualHelpPaths">false</prop>
-		</util:properties>
+    <util:properties id="defaultConfiguration">
+        <prop key="samplesDatasetLocale">default</prop>
+        <prop key="showContextualHelpPaths">false</prop>
+    </util:properties>
 
-	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetClass">
-			<value>org.springframework.util.Log4jConfigurer</value>
-		</property>
-		<property name="targetMethod">
-			<value>initLogging</value>
-		</property>
-		<property name="arguments">
-			<list>
-				<value>file:${QCADOO_CONF}/log4j.xml</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="logdiggerFilter" class="com.logdigger.connector.servlet.LogDiggerConnectorFilter">
-		<property name="config" value="${logdigger}" />
-	</bean>
-	
-	<task:annotation-driven executor="wrappedExecutor" />
-	
-	<bean id="wrappedExecutor" class="com.qcadoo.commons.tasks.DefaultAsyncTaskExecutorWrapper">
-		<constructor-arg ref="executor" />
-	</bean>
-	
-	<task:executor id="executor" rejection-policy="CALLER_RUNS" />
+    <bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass">
+            <value>org.springframework.util.Log4jConfigurer</value>
+        </property>
+        <property name="targetMethod">
+            <value>initLogging</value>
+        </property>
+        <property name="arguments">
+            <list>
+                <value>file:${QCADOO_CONF}/log4j.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="logdiggerFilter" class="com.logdigger.connector.servlet.LogDiggerConnectorFilter">
+        <property name="config" value="${logdigger}"/>
+    </bean>
+
+    <task:annotation-driven executor="wrappedExecutor"/>
+
+    <bean id="wrappedExecutor" class="com.qcadoo.commons.tasks.DefaultAsyncTaskExecutorWrapper">
+        <constructor-arg ref="executor"/>
+    </bean>
+
+    <task:executor id="executor" rejection-policy="CALLER_RUNS"/>
 
 </beans>

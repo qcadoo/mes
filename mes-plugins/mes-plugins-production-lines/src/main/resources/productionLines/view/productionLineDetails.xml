@@ -178,7 +178,7 @@
                                 var that = this;
                                 this.onDeleteButtonClicked = function () {
                                     var selectedEntities = #{workstations}.getValue().content.selectedEntities;
-                                    //that.performDelete();
+
                                     if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
                                         #{workstations}.fireEvent(null,'removeSelectedEntites',[selectedEntities]);
                                     }

@@ -40,7 +40,9 @@
         <hasMany name="divisions" model="division" joinField="factory" cascade="nullify"/>
     </fields>
 
-    <hooks/>
+    <hooks>
+        <onDelete class="com.qcadoo.mes.basic.hooks.FactoryModelHooks" method="onDelete"/>
+    </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>
 </model>

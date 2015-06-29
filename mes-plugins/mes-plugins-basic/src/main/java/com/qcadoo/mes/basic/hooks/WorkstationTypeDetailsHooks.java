@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -25,11 +26,13 @@ public class WorkstationTypeDetailsHooks {
 
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity workstationType = form.getEntity();
+        FieldComponent subassemblyCheckbox = (FieldComponent) view.getComponentByReference(WorkstationTypeFields.SUBASSEMBLY);
         if (workstationType.getBooleanField(WorkstationTypeFields.SUBASSEMBLY)) {
             boolean hasSubassemblies = hasSubassemblies(workstationType);
-            FieldComponent subassemblyCheckbox = (FieldComponent) view.getComponentByReference(WorkstationTypeFields.SUBASSEMBLY);
             subassemblyCheckbox.setEnabled(!hasSubassemblies);
-
+        } else {
+            boolean hasWorkstations = hasWorkstations(workstationType);
+            subassemblyCheckbox.setEnabled(!hasWorkstations);
         }
     }
 
@@ -38,5 +41,12 @@ public class WorkstationTypeDetailsHooks {
                 .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBASSEMBLY).find()
                 .add(SearchRestrictions.belongsTo(SubassemblyFields.WORKSTATION_TYPE, workstationType)).list().getEntities();
         return !subassemblies.isEmpty();
+    }
+
+    private boolean hasWorkstations(final Entity workstationType) {
+        List<Entity> workstations = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION)
+                .find().add(SearchRestrictions.belongsTo(WorkstationFields.WORKSTATION_TYPE, workstationType)).list()
+                .getEntities();
+        return !workstations.isEmpty();
     }
 }

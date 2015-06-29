@@ -34,6 +34,8 @@
         <belongsTo name="product" model="product" plugin="basic"
                    required="true" />
         <decimal name="quantity" required="true" />
+        <decimal name="orderedQuantity"></decimal>
+        <decimal name="minimumState"></decimal>
     </fields>
     <hooks>
     </hooks>

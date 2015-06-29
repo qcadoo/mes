@@ -227,7 +227,8 @@
 								checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
 								checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
 								acceptState.enable();
-								toggleEditable(false,"#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
+								toggleEditable(true, "");
+                                deleteItem.disable();
 							}
 							if (externalSynchronized == '0') {
 								toggleEditable(false, "#{translate(technologies.technology.ribbon.message.technologyIsSynchronized)}");

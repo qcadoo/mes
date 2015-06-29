@@ -25,24 +25,25 @@
 
 -->
 <model name="substituteComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="product" model="product" required="true" />
-		<belongsTo name="substitute" model="substitute" required="true" />
-		<decimal name="quantity" required="true">
-			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="4" />
-			<validatesScale max="5" />
-		</decimal>
-	</fields>
-	
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.basic.ProductService"
-			method="checkIfSubstituteIsNotRemoved" />
-		<validatesWith class="com.qcadoo.mes.basic.ProductService"
-			method="checkSubstituteComponentUniqueness" />
-	</hooks>
-	
-	<identifier expression="#product['number'] + ' - ' + #product['name']" />
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="product" model="product" required="true"/>
+        <belongsTo name="substitute" model="substitute"/>
+        <belongsTo name="baseProduct" model="product" required="true"/>
+        <decimal name="quantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="4"/>
+            <validatesScale max="5"/>
+        </decimal>
+    </fields>
+
+    <hooks>
+        <!--<validatesWith class="com.qcadoo.mes.basic.ProductService"-->
+        <!--method="checkIfSubstituteIsNotRemoved"/>-->
+        <validatesWith class="com.qcadoo.mes.basic.ProductService"
+                       method="checkSubstituteComponentUniqueness"/>
+    </hooks>
+
+    <identifier expression="#product['number'] + ' - ' + #product['name']"/>
 </model>

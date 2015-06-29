@@ -25,6 +25,8 @@ package com.qcadoo.mes.deliveries.constants;
 
 public final class CompanyProductsFamilyFields {
 
+    public static final String IS_DEFAULT = "isDefault";
+
     private CompanyProductsFamilyFields() {
 
     }

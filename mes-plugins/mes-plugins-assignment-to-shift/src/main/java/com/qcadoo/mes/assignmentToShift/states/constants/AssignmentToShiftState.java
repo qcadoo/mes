@@ -34,12 +34,20 @@ public enum AssignmentToShiftState implements StateEnum {
         public boolean canChangeTo(final StateEnum targetState) {
             return ACCEPTED.equals(targetState);
         }
+
+        public boolean isEditingAllowed() {
+            return true;
+        }
     },
     ACCEPTED(AssignmentToShiftStateStringValues.ACCEPTED) {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
             return DURING_CORRECTION.equals(targetState);
+        }
+
+        public boolean isEditingAllowed() {
+            return false;
         }
     },
     DURING_CORRECTION(AssignmentToShiftStateStringValues.DURING_CORRECTION) {
@@ -48,12 +56,20 @@ public enum AssignmentToShiftState implements StateEnum {
         public boolean canChangeTo(final StateEnum targetState) {
             return CORRECTED.equals(targetState);
         }
+
+        public boolean isEditingAllowed() {
+            return true;
+        }
     },
     CORRECTED(AssignmentToShiftStateStringValues.CORRECTED) {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
             return DURING_CORRECTION.equals(targetState);
+        }
+
+        public boolean isEditingAllowed() {
+            return false;
         }
     };
 
@@ -81,4 +97,7 @@ public enum AssignmentToShiftState implements StateEnum {
     }
 
     public abstract boolean canChangeTo(final StateEnum targetState);
+
+    public abstract boolean isEditingAllowed();
+
 }

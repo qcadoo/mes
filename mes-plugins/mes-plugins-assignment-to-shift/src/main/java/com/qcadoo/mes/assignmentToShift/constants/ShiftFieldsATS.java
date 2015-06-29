@@ -25,10 +25,10 @@ package com.qcadoo.mes.assignmentToShift.constants;
 
 public final class ShiftFieldsATS {
 
+    public static final String ASSIGNMENT_TO_SHIFT_STATE_CHANGES = "assignmentToShiftStateChanges";
+
     private ShiftFieldsATS() {
 
     }
-
-    public static final String ASSIGNMENT_TO_SHIFT_STATE_CHANGES = "assignmentToShiftStateChanges";
 
 }

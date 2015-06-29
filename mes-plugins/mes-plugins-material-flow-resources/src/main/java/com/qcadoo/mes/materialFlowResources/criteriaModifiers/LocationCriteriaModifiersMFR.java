@@ -42,4 +42,9 @@ public class LocationCriteriaModifiersMFR {
         return SearchRestrictions.eq(LocationFields.TYPE, LocationType.WAREHOUSE.getStringValue());
     }
 
+    public void showWarehousesWithoutExternalNumber(final SearchCriteriaBuilder scb) {
+        scb.add(createCriteriaForWarehouse());
+        scb.add(SearchRestrictions.isNull(LocationFields.EXTERNAL_NUMBER));
+    }
+
 }

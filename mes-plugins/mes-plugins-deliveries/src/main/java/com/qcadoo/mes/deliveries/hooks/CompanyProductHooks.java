@@ -26,6 +26,7 @@ package com.qcadoo.mes.deliveries.hooks;
 import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PARTICULAR_PRODUCT;
 import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.COMPANY;
+import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.IS_DEFAULT;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.PRODUCT;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,17 @@ public class CompanyProductHooks {
     public boolean checkIfProductIsNotAlreadyUsed(final DataDefinition companyProductDD, final Entity companyProduct) {
         if (!companyProductService.checkIfProductIsNotUsed(companyProduct, PRODUCT, COMPANY, PRODUCTS)) {
             companyProduct.addError(companyProductDD.getField(PRODUCT), "basic.company.message.productIsAlreadyUsed");
+            companyProduct.addError(companyProductDD.getField(COMPANY), "basic.company.message.companyIsAlreadyUsed");
+            return false;
+        }
 
+        return true;
+    }
+
+    public boolean checkIfProductHasDefaultSupplier(final DataDefinition companyProductDD, final Entity companyProduct) {
+        if (companyProductService.checkIfDefaultAlreadyExists(companyProduct)) {
+            companyProduct
+                    .addError(companyProductDD.getField(IS_DEFAULT), "basic.company.message.defaultAlreadyExistsForProduct");
             return false;
         }
 

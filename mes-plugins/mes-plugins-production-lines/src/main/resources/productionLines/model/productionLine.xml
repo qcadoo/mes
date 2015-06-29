@@ -56,7 +56,7 @@
         </integer>
     </fields>
     <hooks>
-
+        <onDelete class="com.qcadoo.mes.productionLines.hooks.ProductionLineHooks" method="onDelete"/>
     </hooks>
     <identifier expression="#number + ' - ' + #name"/>
 </model>

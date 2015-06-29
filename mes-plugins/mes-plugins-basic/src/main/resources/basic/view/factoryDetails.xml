@@ -37,7 +37,7 @@
 
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="10">
+                           rows="6">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number">
                             <option type="alignment" value="right"/>
@@ -49,7 +49,7 @@
                     <layoutElement column="1" row="4" height="1">
                         <component type="input" name="city" field="city"/>
                     </layoutElement>
-                    <layoutElement column="1" row="5" height="6">
+                    <layoutElement column="2" row="1" height="6">
                         <component type="lookup" name="divisionsLookup" reference="divisionsLookup"
                                    field="#{form}.divisions" defaultVisible="false" persistent="false"
                                    hasLabel="false">

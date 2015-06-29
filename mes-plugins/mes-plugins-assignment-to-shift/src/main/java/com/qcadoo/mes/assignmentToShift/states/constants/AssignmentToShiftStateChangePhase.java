@@ -25,11 +25,16 @@ package com.qcadoo.mes.assignmentToShift.states.constants;
 
 public final class AssignmentToShiftStateChangePhase {
 
+
     public static final int PRE_VALIDATION = 1;
 
     public static final int DEFAULT = 3;
 
-    public static final int LAST = DEFAULT + 1;
+    public static final int EXT_SYNC = 7;
+
+    public static final int AFTER_SUCCESSFULL_EXT_SYNC = 10;
+
+    public static final int LAST = AFTER_SUCCESSFULL_EXT_SYNC + 1;
 
     private AssignmentToShiftStateChangePhase() {
     }

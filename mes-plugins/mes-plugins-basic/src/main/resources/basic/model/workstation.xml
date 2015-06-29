@@ -55,7 +55,9 @@
         <hasMany name="subassemblies" model="subassembly" joinField="workstation" cascade="nullify"/>
     </fields>
 
-    <hooks/>
+    <hooks>
+        <onDelete class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onDelete"/>
+    </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>
 </model>

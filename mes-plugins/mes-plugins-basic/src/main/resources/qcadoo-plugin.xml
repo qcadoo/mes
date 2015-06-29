@@ -103,6 +103,7 @@
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 
         <menu:menu-category name="basic"/>
+        <menu:menu-category name="companyStructure"/>
 
         <menu:menu-item-url name="home" category="home"
                             url="/dashboard.html" defaultAuthorizationRole="ROLE_MENU_HOME"/>
@@ -118,10 +119,6 @@
         <menu:menu-item name="products" category="basic" view="productsList"/>
         <menu:menu-item name="productsFamilies" category="basic"
                         view="productsFamilies"/>
-        <menu:menu-item name="workstationTypes" category="basic"
-                        view="workstationTypesList"/>
-        <menu:menu-item name="divisions" category="basic"
-                        view="divisionsList"/>
 
         <menu:menu-item-url name="dictionariesInBasic"
                             category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
@@ -133,14 +130,22 @@
         <menu:menu-item-url name="conversion" category="basic"
                             url="/unitConversions.html"/>
 
-        <menu:menu-item name="workstations" category="basic"
+
+        <menu:menu-item name="subassemblies" category="companyStructure"
+                        view="subassembliesList"/>
+
+        <menu:menu-item name="workstationTypes" category="companyStructure"
+                        view="workstationTypesList"/>
+
+        <menu:menu-item name="workstations" category="companyStructure"
                         view="workstationsList"/>
 
-        <menu:menu-item name="factories" category="basic"
+        <menu:menu-item name="divisions" category="companyStructure"
+                        view="divisionsList"/>
+
+        <menu:menu-item name="factories" category="companyStructure"
                         view="factoriesList"/>
 
-        <menu:menu-item name="subassemblies" category="basic"
-                        view="subassembliesList"/>
 
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>

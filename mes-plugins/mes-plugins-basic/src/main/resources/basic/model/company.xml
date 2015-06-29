@@ -54,6 +54,9 @@
 
         <manyToMany name="workstations" model="workstation" joinField="companies" cascade="nullify"/>
         <manyToMany name="subassemblies" model="subassembly" joinField="companies" cascade="nullify"/>
+
+        <hasMany name="producedProducts" model="product" plugin="basic" joinField="producer"
+                 cascade="nullify"/>
     </fields>
 
     <hooks>
