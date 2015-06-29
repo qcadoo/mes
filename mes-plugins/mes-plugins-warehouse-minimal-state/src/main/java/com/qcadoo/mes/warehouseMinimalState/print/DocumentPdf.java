@@ -142,7 +142,7 @@ public class DocumentPdf extends ReportPdfView {
             rowsWereAdded |= addRow(minimumState, stocksByProduct, warehouseTable);
         }
         if (rowsWereAdded) {
-            document.add(new Paragraph(subtitle));
+            document.add(new Paragraph(subtitle, FontUtils.getDejavuBold11Light()));
             document.add(warehouseTable);
         }
     }
