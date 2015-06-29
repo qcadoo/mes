@@ -61,6 +61,9 @@
                             <listener event="onSelectedEntityChange"
                                       method="factoryChanged"
                                       class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectFactory"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
@@ -77,11 +80,14 @@
                             <listener event="onSelectedEntityChange"
                                       method="divisionChanged"
                                       class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectDivision"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
                         <component type="lookup" name="productionLine" field="productionLine"
-                                   reference="productionLine">
+                                   reference="productionLine" source="#{division}.productionLines">
                             <option type="column" name="name" fields="name"/>
 
                             <option type="searchable" value="name,number"/>
@@ -109,6 +115,9 @@
                             <listener event="onSelectedEntityChange"
                                       method="workstationChanged"
                                       class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectWorkstation"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="7">
@@ -125,6 +134,9 @@
                             <listener event="onSelectedEntityChange"
                                       method="subassemblyChanged"
                                       class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectSubassembly"/>
                         </component>
                     </layoutElement>
 
