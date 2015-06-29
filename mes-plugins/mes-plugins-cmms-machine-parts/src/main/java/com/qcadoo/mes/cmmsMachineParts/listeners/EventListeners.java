@@ -1,20 +1,32 @@
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.internal.components.tree.TreeComponentState;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.hooks.FactoryStructureForEventHooks;
+import com.qcadoo.mes.productionLines.constants.FactoryStructureElementFields;
+import com.qcadoo.mes.productionLines.constants.FactoryStructureElementType;
+import com.qcadoo.mes.productionLines.factoryStructure.FactoryStructureElementsService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.internal.components.tree.TreeComponentState;
 
 @Service
 public class EventListeners {
@@ -22,31 +34,60 @@ public class EventListeners {
     private Long factoryStructureId;
 
     @Autowired
+    private FactoryStructureForEventHooks factoryStructureForEventHooks;
+
+    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
+    @Autowired
+    private FactoryStructureElementsService factoryStructureElementsService;
+
     public void addEvent(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String args[]) {
         String eventType = args[0];
 
-        DataDefinition dataDefinition = dataDefinitionService.
-                get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MAINTENANCE_EVENT);
+        EntityTree tree = factoryStructureForEventHooks.getGeneratedTree();
+        Optional<Entity> maybeElement = tree.stream().filter(element -> element.getId() == factoryStructureId).findFirst();
+        // getSelectedStructureElement(tree);
+        if (!maybeElement.isPresent()) {
+            viewDefinitionState.addMessage("cmmsMachineParts.error.elementNotSelected", ComponentState.MessageType.FAILURE);
+            return;
+        }
+        Entity selectedElement = maybeElement.get();
+        if (FactoryStructureElementType.of(selectedElement).compareTo(FactoryStructureElementType.COMPANY) == 0) {
+            viewDefinitionState.addMessage("cmmsMachineParts.error.companySelected", ComponentState.MessageType.INFO);
+            return;
+        }
+        DataDefinition dataDefinition = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MAINTENANCE_EVENT);
         Entity maintenanceEvent = dataDefinition.create();
 
+        fillEventFieldsFromSelectedElement(maintenanceEvent, selectedElement);
         maintenanceEvent.setField(MaintenanceEventFields.TYPE, eventType);
-//        maintenanceEvent.setField(MaintenanceEventFields.FACTORY_STRUCTURE, factoryStructureId);
-        maintenanceEvent.setField(MaintenanceEventFields.NUMBER, numberGeneratorService.generateNumber(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MAINTENANCE_EVENT));
+        maintenanceEvent.setField(MaintenanceEventFields.NUMBER, numberGeneratorService.generateNumber(
+                CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MAINTENANCE_EVENT));
         maintenanceEvent = dataDefinition.save(maintenanceEvent);
 
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", maintenanceEvent.getId());
-        viewDefinitionState.redirectTo("../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html", false, true, parameters);
+        viewDefinitionState.redirectTo(
+                "../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html", false, true,
+                parameters);
     }
 
-    public final void selectOnTree(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void selectOnTree(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         TreeComponentState treeComponentState = (TreeComponentState) state;
         factoryStructureId = treeComponentState.getSelectedEntityId();
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup addEvents = ribbon.getGroupByName("addEvents");
+        List<RibbonActionItem> items = addEvents.getItems();
+        for (RibbonActionItem item : items) {
+            item.setEnabled(true);
+            item.requestUpdate(true);
+        }
     }
 
     public void factoryChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -92,4 +133,16 @@ public class EventListeners {
         fieldComponent.setFieldValue(null);
         fieldComponent.requestComponentUpdateState();
     }
+
+    private void fillEventFieldsFromSelectedElement(Entity event, final Entity selectedElement) {
+
+        Entity currentElement = selectedElement;
+        while (currentElement != null
+                && FactoryStructureElementType.of(currentElement).compareTo(FactoryStructureElementType.COMPANY) != 0) {
+            Entity relatedEntity = factoryStructureElementsService.getRelatedEntity(currentElement);
+            event.setField(currentElement.getStringField(FactoryStructureElementFields.ENTITY_TYPE), relatedEntity);
+            currentElement = currentElement.getBelongsToField(FactoryStructureElementFields.PARENT);
+        }
+    }
+
 }

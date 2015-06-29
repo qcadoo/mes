@@ -31,12 +31,15 @@
         <ribbon>
             <group template="navigation"/>
             <group name="addEvents">
-                <bigButton name="addFailure" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 01failure);"/>
-                <bigButton name="addIssue" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 02issue);"/>
-                <bigButton name="addProposal" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 03proposal);"/>
+                <bigButton name="addFailure" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 01failure);"
+                           state="disabled"/>
+                <bigButton name="addIssue" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 02issue);"
+                           state="disabled"/>
+                <bigButton name="addProposal" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 03proposal);"
+                           state="disabled"/>
             </group>
         </ribbon>
-        <component type="form" name="product" reference="form">
+        <component type="form" name="form" reference="form">
             <component type="gridLayout" name="factoryStructureLayout" rows="8" columns="1">
                 <layoutElement column="1" row="1" height="8">
                     <component type="tree" name="factoryStructure" reference="factoryStructure"
@@ -101,7 +104,7 @@
 
                         <listener event="select"
                                   class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"
-                                  method="selectOnTree" />
+                                  method="selectOnTree"/>
                     </component>
                 </layoutElement>
             </component>
