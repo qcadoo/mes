@@ -31,12 +31,45 @@
         <ribbon>
             <group template="navigation"/>
             <group name="addEvents">
-                <bigButton name="addFailure" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,01failure);"
-                           state="disabled"/>
-                <bigButton name="addIssue" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,02issue);"
-                           state="disabled"/>
-                <bigButton name="addProposal" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,03proposal);"
-                           state="disabled"/>
+                <bigButton name="addFailure" icon="newIcon24.png" state="disabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    var arr = $('.jstree').jstree("get_selected").attr('id').split('_');
+                                    var selectedId = arr[arr.length-1];
+                                    #{window}.fireEvent(#{window}, 'addEvent', ["01failure", selectedId]);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+                <bigButton name="addIssue" icon="newIcon24.png" state="disabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    var arr = $('.jstree').jstree("get_selected").attr('id').split('_');
+                                    var selectedId = arr[arr.length-1];
+                                    #{window}.fireEvent(#{window}, 'addEvent', ["02issue", selectedId]);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+                <bigButton name="addProposal" icon="newIcon24.png" state="disabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    var arr = $('.jstree').jstree("get_selected").attr('id').split('_');
+                                    var selectedId = arr[arr.length-1];
+                                    #{window}.fireEvent(#{window}, 'addEvent', ["03proposal", selectedId]);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
         <component type="form" name="form" reference="form">
@@ -44,6 +77,20 @@
                 <layoutElement column="1" row="1" height="8">
                     <component type="tree" name="factoryStructure" reference="factoryStructure"
                                field="#{form}.factoryStructure">
+<script>
+   <![CDATA[
+
+        this.addOnChangeListener({
+            onSetValue: function(value) {
+                $('.jstree').bind("select_node.jstree", function (e, data) {
+                    #{window}.getRibbonItem("addEvents.addFailure").enable();
+                    #{window}.getRibbonItem("addEvents.addIssue").enable();
+                    #{window}.getRibbonItem("addEvents.addProposal").enable();
+                });
+            }
+        })
+    ]]>
+</script>
 
                         <dataType name="company">
                             <option type="nodeLabelExpression"
@@ -100,11 +147,6 @@
                         <option type="hasDeleteButton" value="false"/>
                         <option type="hasEditButton" value="false"/>
                         <option type="hasMoveButton" value="false"/>
-
-
-                        <listener event="select"
-                                  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"
-                                  method="selectOnTree"/>
                     </component>
                 </layoutElement>
             </component>

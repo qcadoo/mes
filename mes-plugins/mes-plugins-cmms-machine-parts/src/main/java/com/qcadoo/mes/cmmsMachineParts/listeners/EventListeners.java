@@ -1,12 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
@@ -24,12 +17,12 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.Ribbon;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.internal.components.tree.TreeComponentState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class EventListeners {
@@ -52,6 +45,7 @@ public class EventListeners {
 
     public void addEvent(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String args[]) {
         String eventType = args[0];
+        factoryStructureId = Long.parseLong(args[1]);
 
         EntityTree tree = factoryStructureForEventHooks.getGeneratedTree();
         Optional<Entity> maybeElement = tree.stream().filter(element -> element.getId() == factoryStructureId).findFirst();
@@ -90,19 +84,6 @@ public class EventListeners {
         viewDefinitionState.redirectTo(
                 "../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html", false, true,
                 parameters);
-    }
-
-    public void selectOnTree(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        TreeComponentState treeComponentState = (TreeComponentState) state;
-        factoryStructureId = treeComponentState.getSelectedEntityId();
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        Ribbon ribbon = window.getRibbon();
-        RibbonGroup addEvents = ribbon.getGroupByName("addEvents");
-        List<RibbonActionItem> items = addEvents.getItems();
-        for (RibbonActionItem item : items) {
-            item.setEnabled(true);
-            item.requestUpdate(true);
-        }
     }
 
     public void factoryChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
