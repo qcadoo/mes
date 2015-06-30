@@ -148,6 +148,9 @@
 
                             <option type="expression" value="#name"/>
                             <option type="fieldCode" value="name"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectFaultType"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2" height="3">
