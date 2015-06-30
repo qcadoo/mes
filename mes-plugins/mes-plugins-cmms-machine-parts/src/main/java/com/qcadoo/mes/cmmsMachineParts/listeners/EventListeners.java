@@ -160,7 +160,7 @@ public class EventListeners {
         }
     }
 
-    private Entity getDefaultFaultType() {
+    public Entity getDefaultFaultType() {
         return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_FAULT_TYPE)
                 .find().add(SearchRestrictions.eq(FaultTypeFields.NAME, L_OTHER)).setMaxResults(1).uniqueResult();
     }

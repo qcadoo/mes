@@ -47,5 +47,7 @@
         <belongsTo name="faultType" model="faultType"/>
     </fields>
     <hooks>
+        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"
+                       method="validateDescription"/>
     </hooks>
 </model>
