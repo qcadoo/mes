@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
 import com.qcadoo.mes.cmmsMachineParts.hooks.FactoryStructureForEventHooks;
 import com.qcadoo.mes.productionLines.constants.FactoryStructureElementFields;
 import com.qcadoo.mes.productionLines.constants.FactoryStructureElementType;
@@ -18,6 +20,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -30,6 +33,8 @@ import com.qcadoo.view.internal.components.tree.TreeComponentState;
 
 @Service
 public class EventListeners {
+
+    private static final String L_OTHER = "Inne";
 
     private Long factoryStructureId;
 
@@ -56,18 +61,24 @@ public class EventListeners {
             return;
         }
         Entity selectedElement = maybeElement.get();
-        if (FactoryStructureElementType.of(selectedElement).compareTo(FactoryStructureElementType.COMPANY) == 0) {
+        FactoryStructureElementType elementType = FactoryStructureElementType.of(selectedElement);
+        if (elementType.compareTo(FactoryStructureElementType.COMPANY) == 0) {
             viewDefinitionState.addMessage("cmmsMachineParts.error.companySelected", ComponentState.MessageType.INFO);
             return;
         }
-        if (FactoryStructureElementType.of(selectedElement).compareTo(FactoryStructureElementType.FACTORY) == 0) {
+        if (elementType.compareTo(FactoryStructureElementType.FACTORY) == 0) {
             viewDefinitionState.addMessage("cmmsMachineParts.error.factorySelected", ComponentState.MessageType.INFO);
             return;
         }
+
         DataDefinition dataDefinition = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
                 CmmsMachinePartsConstants.MAINTENANCE_EVENT);
         Entity maintenanceEvent = dataDefinition.create();
-
+        if (elementType.compareTo(FactoryStructureElementType.DIVISION) == 0
+                || elementType.compareTo(FactoryStructureElementType.PRODUCTION_LINE) == 0
+                || MaintenanceEventType.parseString(eventType).compareTo(MaintenanceEventType.PROPOSAL) == 0) {
+            maintenanceEvent.setField(MaintenanceEventFields.FAULT_TYPE, getDefaultFaultType());
+        }
         fillEventFieldsFromSelectedElement(maintenanceEvent, selectedElement);
         maintenanceEvent.setField(MaintenanceEventFields.TYPE, eventType);
         maintenanceEvent.setField(MaintenanceEventFields.NUMBER, numberGeneratorService.generateNumber(
@@ -147,6 +158,11 @@ public class EventListeners {
             event.setField(currentElement.getStringField(FactoryStructureElementFields.ENTITY_TYPE), relatedEntity);
             currentElement = currentElement.getBelongsToField(FactoryStructureElementFields.PARENT);
         }
+    }
+
+    private Entity getDefaultFaultType() {
+        return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_FAULT_TYPE)
+                .find().add(SearchRestrictions.eq(FaultTypeFields.NAME, L_OTHER)).setMaxResults(1).uniqueResult();
     }
 
 }

@@ -31,11 +31,11 @@
         <ribbon>
             <group template="navigation"/>
             <group name="addEvents">
-                <bigButton name="addFailure" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 01failure);"
+                <bigButton name="addFailure" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,01failure);"
                            state="disabled"/>
-                <bigButton name="addIssue" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 02issue);"
+                <bigButton name="addIssue" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,02issue);"
                            state="disabled"/>
-                <bigButton name="addProposal" icon="newIcon24.png" action="#{window}.fireEvent(addEvent, 03proposal);"
+                <bigButton name="addProposal" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,03proposal);"
                            state="disabled"/>
             </group>
         </ribbon>
@@ -108,6 +108,8 @@
                     </component>
                 </layoutElement>
             </component>
+
+            <option type="header" value="true"/>
         </component>
 
         <listener event="addEvent" method="addEvent"
