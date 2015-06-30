@@ -11,4 +11,5 @@ public class CmmsMachinePartsConstants {
     // MODEL
 
     public static final String MODEL_FAULT_TYPE = "faultType";
+    public static final String MAINTENANCE_EVENT = "maintenanceEvent";
 }
