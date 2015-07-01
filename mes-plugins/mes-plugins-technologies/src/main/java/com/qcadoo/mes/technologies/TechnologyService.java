@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,6 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
@@ -343,42 +343,44 @@ public class TechnologyService {
 
     public boolean invalidateIfAllreadyInTheSameOperation(final DataDefinition operationProductComponentDD,
             final Entity operationProductComponent) {
-        if (operationProductComponent.getId() == null) {
-            Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
-            Entity operationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);
+        // if (operationProductComponent.getId() == null) {
+        Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
+        Entity operationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);
 
-            String fieldName;
+        String fieldName;
 
-            if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(operationProductComponentDD.getName())) {
-                fieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
-            } else {
-                fieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
-            }
-
-            EntityList products = operationComponent.getHasManyField(fieldName);
-
-            if (product == null || product.getId() == null) {
-                throw new IllegalStateException("Cant get product id");
-            }
-
-            if (products != null && listContainsProduct(products, product)) {
-                operationProductComponent.addError(operationProductComponentDD.getField(L_PRODUCT),
-                        "technologyOperationComponent.validate.error.productAlreadyExistInTechnologyOperation");
-
-                return false;
-            }
+        if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(operationProductComponentDD.getName())) {
+            fieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
+        } else {
+            fieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
         }
+
+        List<Entity> products = operationComponent.getHasManyField(fieldName);
+
+        if (product == null || product.getId() == null) {
+            throw new IllegalStateException("Cant get product id");
+        }
+
+        if (products != null && listContainsProduct(products, product, operationProductComponent)) {
+            operationProductComponent.addError(operationProductComponentDD.getField(L_PRODUCT),
+                    "technologyOperationComponent.validate.error.productAlreadyExistInTechnologyOperation");
+
+            return false;
+        }
+        // }
 
         return true;
     }
 
-    private boolean listContainsProduct(final EntityList list, final Entity product) {
-        for (Entity prod : list) {
-            if (prod.getBelongsToField(L_PRODUCT).getId().equals(product.getId())) {
-                return true;
-            }
+    private boolean listContainsProduct(final List<Entity> list, final Entity product, final Entity operationProductComponent) {
+        Predicate<Entity> condition;
+        if (operationProductComponent.getId() == null) {
+            condition = opProduct -> opProduct.getBelongsToField(L_PRODUCT).getId().equals(product.getId());
+        } else {
+            condition = opProduct -> !opProduct.getId().equals(operationProductComponent.getId())
+                    && opProduct.getBelongsToField(L_PRODUCT).getId().equals(product.getId());
         }
-        return false;
+        return list.stream().anyMatch(condition);
     }
 
     /**
