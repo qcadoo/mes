@@ -9,6 +9,7 @@ import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
@@ -22,6 +23,17 @@ public class EventHooks {
     public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
         setEventCriteriaModifiers(view);
         setUpFaultTypeLookup(view);
+        setFieldsRequired(view);
+    }
+
+    private void setFieldsRequired(final ViewDefinitionState view) {
+        FieldComponent factory = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
+        FieldComponent division = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
+        FieldComponent faultType = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
+
+        factory.setRequired(true);
+        division.setRequired(true);
+        faultType.setRequired(true);
     }
 
     private void setEventCriteriaModifiers(ViewDefinitionState view) {

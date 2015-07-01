@@ -31,13 +31,19 @@
 
         <ribbon>
             <group name="customActions">
-                <bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.fireEvent(newEvent);"/>
+                <bigButton name="addFailure" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,01failure);"
+                           state="enabled"/>
+                <bigButton name="addIssue" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,02issue);"
+                           state="enabled"/>
+                <bigButton name="addProposal" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,03proposal);"
+                           state="enabled"/>
             </group>
             <template name="standardGridTemplate" excludeItems="actions.copy,actions.new"/>
 
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
+
             <option type="column" name="number" fields="number" link="true"/>
             <option type="column" name="type" fields="type" link="true"/>
             <option type="column" name="factory" field="factory" expression="#factory['number']" link="true"/>
@@ -69,14 +75,14 @@
             <option type="order" column="number" direction="asc"/>
             <option type="fullscreen" value="true"/>
 
-
-            <listener event="newEvent" method="newEventAction"
-                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
         </component>
 
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
+
+        <listener event="addEvent" method="addEvent"
+                  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
 
     </component>
 

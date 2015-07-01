@@ -15,7 +15,14 @@ public class MaintenanceEventValidators {
     @Autowired
     private EventListeners eventListeners;
 
-    public boolean validateDescription(final DataDefinition eventDD, final Entity event) {
+    public boolean validateRequiredFields(final DataDefinition eventDD, final Entity event) {
+        boolean faultTypeCorrect = validateFaultType(eventDD, event);
+        boolean descriptionCorrect = validateDescription(eventDD, event);
+        boolean fieldsCorrect = validateFactoryAndDivision(eventDD, event);
+        return faultTypeCorrect && descriptionCorrect && fieldsCorrect;
+    }
+
+    private boolean validateDescription(final DataDefinition eventDD, final Entity event) {
         Entity faultType = event.getBelongsToField(MaintenanceEventFields.FAULT_TYPE);
         if (event.getId() == null || faultType == null) {
             return true;
@@ -28,5 +35,33 @@ public class MaintenanceEventValidators {
             }
         }
         return true;
+    }
+
+    private boolean validateFaultType(final DataDefinition eventDD, final Entity event) {
+        if (event.getId() == null) {
+            return true;
+        }
+        if (event.getBelongsToField(MaintenanceEventFields.FAULT_TYPE) == null) {
+            event.addError(eventDD.getField(MaintenanceEventFields.FAULT_TYPE), "cmmsMachineParts.error.faultTypenRequired");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateFactoryAndDivision(final DataDefinition eventDD, final Entity event) {
+        if (event.getId() == null) {
+            return true;
+        }
+        boolean isCorrect = true;
+        if (event.getBelongsToField(MaintenanceEventFields.DIVISION) == null) {
+            event.addError(eventDD.getField(MaintenanceEventFields.DIVISION), "cmmsMachineParts.error.divisionRequired");
+            isCorrect = false;
+        }
+        if (event.getBelongsToField(MaintenanceEventFields.FACTORY) == null) {
+            event.addError(eventDD.getField(MaintenanceEventFields.FACTORY), "cmmsMachineParts.error.factoryRequired");
+            isCorrect = false;
+        }
+        return isCorrect;
+
     }
 }
