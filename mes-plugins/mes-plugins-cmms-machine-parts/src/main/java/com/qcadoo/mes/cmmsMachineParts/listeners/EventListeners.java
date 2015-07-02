@@ -1,6 +1,14 @@
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
@@ -18,18 +26,14 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class EventListeners {
 
-    private static final String L_OTHER = "Inne";
-
     private Long factoryStructureId;
+
+    @Autowired
+    private TranslationService translationService;
 
     @Autowired
     private FactoryStructureForEventHooks factoryStructureForEventHooks;
@@ -142,8 +146,9 @@ public class EventListeners {
     }
 
     public Entity getDefaultFaultType() {
+        String other = translationService.translate("cmmsMachineParts.faultType.name.other", LocaleContextHolder.getLocale());
         return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_FAULT_TYPE)
-                .find().add(SearchRestrictions.eq(FaultTypeFields.NAME, L_OTHER)).setMaxResults(1).uniqueResult();
+                .find().add(SearchRestrictions.eq(FaultTypeFields.NAME, other)).setMaxResults(1).uniqueResult();
     }
 
 }
