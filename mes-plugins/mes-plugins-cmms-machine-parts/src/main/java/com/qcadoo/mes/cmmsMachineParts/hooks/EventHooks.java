@@ -43,11 +43,12 @@ public class EventHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity event = form.getPersistedEntityWithIncludedFormValues();
         String type = event.getStringField(MaintenanceEventFields.TYPE);
+        LookupComponent faultType = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
         if (type.compareTo(MaintenanceEventType.PROPOSAL.getStringValue()) == 0) {
-            LookupComponent faultType = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
             if (faultType.getFieldValue() == null) {
                 faultType.setFieldValue(eventListeners.getDefaultFaultType().getId());
             }
+            faultType.setEnabled(false);
         }
 
         if (numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, MaintenanceEventFields.NUMBER)) {

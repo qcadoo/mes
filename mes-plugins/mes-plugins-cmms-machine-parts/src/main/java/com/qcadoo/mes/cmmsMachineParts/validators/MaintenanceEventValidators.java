@@ -16,10 +16,7 @@ public class MaintenanceEventValidators {
     private EventListeners eventListeners;
 
     public boolean validateRequiredFields(final DataDefinition eventDD, final Entity event) {
-        boolean faultTypeCorrect = validateFaultType(eventDD, event);
-        boolean descriptionCorrect = validateDescription(eventDD, event);
-        boolean fieldsCorrect = validateFactoryAndDivision(eventDD, event);
-        return faultTypeCorrect && descriptionCorrect && fieldsCorrect;
+        return validateDescription(eventDD, event);
     }
 
     private boolean validateDescription(final DataDefinition eventDD, final Entity event) {
