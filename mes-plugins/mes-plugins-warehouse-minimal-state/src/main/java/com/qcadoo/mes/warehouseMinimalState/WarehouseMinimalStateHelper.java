@@ -3,7 +3,6 @@ package com.qcadoo.mes.warehouseMinimalState;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +11,6 @@ import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -32,20 +30,6 @@ public class WarehouseMinimalStateHelper {
 
     public boolean checkIfLowerThanMinimum(long productId, BigDecimal quantity, BigDecimal minimumState) {
         return quantity.compareTo(minimumState) == -1 || quantity.compareTo(minimumState) == 0;
-    }
-
-    public BigDecimal getPlannedQuantity(long productId, int daysForward) {
-        DateTime today = DateTime.now();
-        DateTime endDate = today.plusDays(daysForward);
-        String requirementQuery = "select sum(o.plannedQuantity) as required from #orders_order o where o.product.id = :productId and o.startDate between :startTimestamp and :endTimestamp group by o.product.id";
-        DataDefinition ordersDataDefinition = dataDefinitionService.get("orders", "order");
-        Entity entity = ordersDataDefinition.find(requirementQuery).setParameter("startTimestamp", today.toDate())
-                .setParameter("endTimestamp", endDate.toDate()).setLong("productId", productId).setMaxResults(1).uniqueResult();
-        if (entity != null) {
-            return BigDecimalUtils.convertNullToZero(entity.getDecimalField("required"));
-        } else {
-            return BigDecimal.ZERO;
-        }
     }
 
     public BigDecimal getOrderedQuantityForProductAndLocation(final Long warehouse, final Long product) {

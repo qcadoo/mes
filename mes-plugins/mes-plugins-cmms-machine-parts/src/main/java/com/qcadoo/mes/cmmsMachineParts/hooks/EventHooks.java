@@ -5,10 +5,10 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
-import com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -27,7 +27,7 @@ public class EventHooks {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private EventListeners eventListeners;
+    private FaultTypesService faultTypesService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
@@ -43,11 +43,12 @@ public class EventHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity event = form.getPersistedEntityWithIncludedFormValues();
         String type = event.getStringField(MaintenanceEventFields.TYPE);
+        LookupComponent faultType = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
         if (type.compareTo(MaintenanceEventType.PROPOSAL.getStringValue()) == 0) {
-            LookupComponent faultType = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
             if (faultType.getFieldValue() == null) {
-                faultType.setFieldValue(eventListeners.getDefaultFaultType().getId());
+                faultType.setFieldValue(faultTypesService.getDefaultFaultType().getId());
             }
+            faultType.setEnabled(false);
         }
 
         if (numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, MaintenanceEventFields.NUMBER)) {

@@ -4,13 +4,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
 import com.qcadoo.mes.cmmsMachineParts.hooks.FactoryStructureForEventHooks;
@@ -21,7 +20,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -39,6 +37,9 @@ public class EventListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private FaultTypesService faultTypesService;
 
     @Autowired
     private FactoryStructureElementsService factoryStructureElementsService;
@@ -71,7 +72,7 @@ public class EventListeners {
         if (elementType.compareTo(FactoryStructureElementType.DIVISION) == 0
                 || elementType.compareTo(FactoryStructureElementType.PRODUCTION_LINE) == 0
                 || MaintenanceEventType.parseString(eventType).compareTo(MaintenanceEventType.PROPOSAL) == 0) {
-            maintenanceEvent.setField(MaintenanceEventFields.FAULT_TYPE, getDefaultFaultType());
+            maintenanceEvent.setField(MaintenanceEventFields.FAULT_TYPE, faultTypesService.getDefaultFaultType());
         }
         fillEventFieldsFromSelectedElement(maintenanceEvent, selectedElement);
         maintenanceEvent.setField(MaintenanceEventFields.TYPE, eventType);
@@ -139,12 +140,6 @@ public class EventListeners {
             event.setField(currentElement.getStringField(FactoryStructureElementFields.ENTITY_TYPE), relatedEntity);
             currentElement = currentElement.getBelongsToField(FactoryStructureElementFields.PARENT);
         }
-    }
-
-    public Entity getDefaultFaultType() {
-        String other = translationService.translate("cmmsMachineParts.faultType.name.other", LocaleContextHolder.getLocale());
-        return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_FAULT_TYPE)
-                .find().add(SearchRestrictions.eq(FaultTypeFields.NAME, other)).setMaxResults(1).uniqueResult();
     }
 
     public void fillFieldValues(final ViewDefinitionState view, final ComponentState state, final String[] args) {
