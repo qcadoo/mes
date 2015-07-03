@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
+import com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -13,17 +16,44 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class EventHooks {
 
+    private static final String L_FORM = "form";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private EventListeners eventListeners;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
         setEventCriteriaModifiers(view);
         setUpFaultTypeLookup(view);
         setFieldsRequired(view);
+        fillDefaultFields(view);
+    }
+
+    private void fillDefaultFields(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        String type = event.getStringField(MaintenanceEventFields.TYPE);
+        if (type.compareTo(MaintenanceEventType.PROPOSAL.getStringValue()) == 0) {
+            LookupComponent faultType = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
+            if (faultType.getFieldValue() == null) {
+                faultType.setFieldValue(eventListeners.getDefaultFaultType().getId());
+            }
+        }
+
+        if (numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, MaintenanceEventFields.NUMBER)) {
+            numberGeneratorService.generateAndInsertNumber(view, CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                    CmmsMachinePartsConstants.MAINTENANCE_EVENT, L_FORM, MaintenanceEventFields.NUMBER);
+        }
     }
 
     private void setFieldsRequired(final ViewDefinitionState view) {

@@ -35,8 +35,24 @@
         </ribbon>
 
         <windowTab name="mainTab">
+            <component type="input" name="eventType" reference="eventType"
+                       defaultVisible="false"/>
             <component type="form" name="maintenanceEventForm" reference="form">
+                <script>
+                    <![CDATA[
 
+                         this.addOnChangeListener({
+                                onSetValue: function() {
+                                    var json = JSON.parse(context);
+                                    var currentType = #{type}.getValue().content.value;
+                                    var eventType = json['window.mainTab.eventType'];
+                                    if (eventType != null && currentType !== eventType) {
+                                       #{form}.fireEvent(this, 'fillFieldValues', ['type', eventType]);
+                                    }
+                                }
+                        });
+                    ]]>
+                </script>
                 <component type="gridLayout" name="gridLayout" columns="2" rows="8">
                     <layoutElement column="1" row="1">
                         <component type="hidden" name="factoryStructure" field="factoryStructure"
@@ -179,6 +195,9 @@
                 <option type="header" value="true"/>
                 <option type="expression"
                         value="#number + ' - ' + '@cmmsMachineParts.maintenanceEvent.type.value.' + #type"/>
+                <listener event="fillFieldValues"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"
+                          method="fillFieldValues"/>
             </component>
         </windowTab>
     </component>
