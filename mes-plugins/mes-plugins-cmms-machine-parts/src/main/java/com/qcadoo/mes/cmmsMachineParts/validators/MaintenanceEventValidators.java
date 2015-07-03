@@ -4,8 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
-import com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -13,18 +13,18 @@ import com.qcadoo.model.api.Entity;
 public class MaintenanceEventValidators {
 
     @Autowired
-    private EventListeners eventListeners;
+    private FaultTypesService faultTypesService;
 
     public boolean validateRequiredFields(final DataDefinition eventDD, final Entity event) {
-        return validateDescription(eventDD, event);
+        return validateDescription(eventDD, event) && validateFaultType(eventDD, event);
     }
 
     private boolean validateDescription(final DataDefinition eventDD, final Entity event) {
         Entity faultType = event.getBelongsToField(MaintenanceEventFields.FAULT_TYPE);
-        if (event.getId() == null || faultType == null) {
+        if (faultType == null) {
             return true;
         }
-        Entity otherType = eventListeners.getDefaultFaultType();
+        Entity otherType = faultTypesService.getDefaultFaultType();
         if (otherType != null && faultType.getId().compareTo(otherType.getId()) == 0) {
             if (StringUtils.isEmpty(event.getStringField(MaintenanceEventFields.DESCRIPTION))) {
                 event.addError(eventDD.getField(MaintenanceEventFields.DESCRIPTION), "cmmsMachineParts.error.desriptionRequired");
@@ -35,14 +35,26 @@ public class MaintenanceEventValidators {
     }
 
     private boolean validateFaultType(final DataDefinition eventDD, final Entity event) {
-        if (event.getId() == null) {
-            return true;
+        Entity faultType = event.getBelongsToField(MaintenanceEventFields.FAULT_TYPE);
+        boolean typeCorrect = true;
+        if (faultType != null) {
+            Entity subassembly = event.getBelongsToField(MaintenanceEventFields.SUBASSEMBLY);
+            Entity workstation = event.getBelongsToField(MaintenanceEventFields.WORKSTATION);
+            if (subassembly != null) {
+                typeCorrect = faultTypesService.checkIfFaultTypeAppliesToSubassembly(faultType, subassembly);
+                if (!typeCorrect) {
+                    event.addError(eventDD.getField(MaintenanceEventFields.FAULT_TYPE),
+                            "cmmsMachineParts.error.faultTypenRequired");
+                }
+            } else if (workstation != null) {
+                typeCorrect = faultTypesService.checkIfFaultTypeAppliesToWorkstation(faultType, workstation);
+                if (!typeCorrect) {
+                    event.addError(eventDD.getField(MaintenanceEventFields.FAULT_TYPE),
+                            "cmmsMachineParts.error.faultTypenRequired");
+                }
+            }
         }
-        if (event.getBelongsToField(MaintenanceEventFields.FAULT_TYPE) == null) {
-            event.addError(eventDD.getField(MaintenanceEventFields.FAULT_TYPE), "cmmsMachineParts.error.faultTypenRequired");
-            return false;
-        }
-        return true;
+        return typeCorrect;
     }
 
     private boolean validateFactoryAndDivision(final DataDefinition eventDD, final Entity event) {
