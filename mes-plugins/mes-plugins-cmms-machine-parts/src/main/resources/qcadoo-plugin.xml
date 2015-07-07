@@ -107,16 +107,28 @@
         <!-- model -->
 
         <model:model model="machinePartAttachment" resource="model/machinePartAttachment.xml"/>
+        <model:model model="eventAttachment" resource="model/eventAttachment.xml"/>
         <model:model model="faultType" resource="model/faultType.xml"/>
         <model:model model="maintenanceEvent" resource="model/maintenanceEvent.xml"/>
         <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
 
-        maintenenceEvent
+        <model:model model="maintenanceEventStateChange" resource="model/maintenanceEventStateChange.xml"/>
 
         <!-- model extensions -->
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="machinePartAttachments" joinField="product" model="machinePartAttachment"
                            cascade="delete" plugin="cmmsMachineParts"/>
+        </model:model-field>
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="maintenanceEventStateChange" plugin="cmmsMachineParts"
+                             model="maintenanceEventStateChange"/>
+        </model:model-field>
+
+        <model:model-field model="shift" plugin="basic">
+            <model:hasMany name="maintenanceEventStateChanges" model="maintenanceEventStateChange" joinField="shift"
+                           plugin="cmmsMachineParts"
+                           cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">

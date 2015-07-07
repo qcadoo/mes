@@ -32,6 +32,21 @@
 
         <ribbon>
             <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew"/>
+
+            <group name="atachments">
+                <bigButton name="downloadAtachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAtachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -84,7 +99,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="4">
                         <component type="lookup" name="division" field="division"
-                                   reference="division">
+                                   reference="division" source="#{factory}.divisions">
                             <option type="column" name="name" fields="name"/>
 
                             <option type="searchable" value="name,number"/>
@@ -119,7 +134,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="6">
                         <component type="lookup" name="workstation" field="workstation"
-                                   reference="workstation">
+                                   reference="workstation" defaultEnabled="false">
                             <option type="column" name="name" fields="name"/>
 
                             <option type="searchable" value="name,number"/>
@@ -138,7 +153,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="7">
                         <component type="lookup" name="subassembly" field="subassembly"
-                                   reference="subassembly">
+                                   reference="subassembly" source="#{workstation}.subassemblies">
                             <option type="column" name="name" fields="name"/>
 
                             <option type="searchable" value="name,number"/>
@@ -198,6 +213,39 @@
                 <listener event="fillFieldValues"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"
                           method="fillFieldValues"/>
+
+                <listener event="downloadAtachment" method="downloadAtachment"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+            </component>
+        </windowTab>
+        <windowTab name="attachmentsTab">
+            <component type="gridLayout" name="gridsLayout" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" height="6">
+
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="cmmsMachineParts/multiUploadForEvent.jsp"/>
+                    </component>
+                    <component type="input" name="eventIdForMultiUpload"
+                               reference="eventIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                    <component type="input" name="eventMultiUploadLocale"
+                               reference="eventMultiUploadLocale" defaultVisible="false">
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="attachments"
+                               reference="attachments" source="#{form}.attachments">
+                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
 
@@ -235,5 +283,9 @@
     <hooks>
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
                       method="maintenanceEventBeforeRender"/>
+
+        <beforeRender
+                class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
+                method="setEventIdForMultiUploadField"/>
     </hooks>
 </view>

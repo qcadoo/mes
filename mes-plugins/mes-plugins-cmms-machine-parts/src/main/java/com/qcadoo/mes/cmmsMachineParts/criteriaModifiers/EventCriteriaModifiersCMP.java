@@ -43,6 +43,11 @@ public class EventCriteriaModifiersCMP {
     }
 
     public void selectWorkstation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        if (filterValue.has(MaintenanceEventFields.DIVISION)) {
+            Long divisionId = filterValue.getLong(MaintenanceEventFields.DIVISION);
+            scb.createAlias(WorkstationFields.DIVISION, WorkstationFields.DIVISION, JoinType.INNER).add(
+                    SearchRestrictions.eq(WorkstationFields.DIVISION + ".id", divisionId));
+        }
         if (filterValue.has(MaintenanceEventFields.PRODUCTION_LINE)) {
             Long productionLineId = filterValue.getLong(MaintenanceEventFields.PRODUCTION_LINE);
             scb.createAlias(WorkstationFieldsPL.PRODUCTION_LINE, WorkstationFieldsPL.PRODUCTION_LINE, JoinType.INNER).add(

@@ -184,10 +184,6 @@
 									expression="#worker['surname']" link="true"/>
 							<option type="column" name="occupationTypeValueForGrid"
 									fields="occupationTypeValueForGrid"/>
-							<option type="column" name="workerWageGroup" fields="worker"
-									expression="#worker['wageGroup'] ==null ? '' : #worker['wageGroup'].get('number')"/>
-							<option type="column" name="workerLaborHourlyCost" fields="worker"
-									expression="#worker['laborHourlyCost']" link="true"/>
 
 							<option type="order" column="workerNumber" direction="desc"/>
 

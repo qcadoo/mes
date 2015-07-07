@@ -32,8 +32,8 @@
         <enum name="type" values="01failure,02issue,03proposal" default="01failure" required="true"/>
         <string name="description"/>
         <belongsTo name="personReceiving" model="user" plugin="qcadooSecurity"/>
-        <enum name="targetState"
-              values="01new,02pending,03inProgress,04closed,05revoked,06planned" default="01new"/>
+        <enum name="state"
+              values="01new,02inProgress,03edited,04closed,05revoked,06planned" default="01new"/>
 
         <tree name="factoryStructure" model="factoryStructureElement"
               joinField="maintenanceEvent" cascade="delete" plugin="productionLines"/>
@@ -49,6 +49,9 @@
         <hasMany name="staffWorkTimes" model="staffWorkTime"
                  joinField="maintenanceEvent" copyable="false" cascade="delete"/>
 
+        <hasMany name="attachments" model="eventAttachment" joinField="maintenanceEvent" cascade="delete"/>
+
+        <hasMany name="stateChanges" joinField="maintenanceEvent" model="maintenanceEventStateChange" cascade="delete"/>
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"

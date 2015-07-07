@@ -1,6 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
@@ -37,6 +38,7 @@ public class EventHooks {
         setUpFaultTypeLookup(view);
         setFieldsRequired(view);
         fillDefaultFields(view);
+        toggleEnabledForWorkstation(view);
     }
 
     private void fillDefaultFields(final ViewDefinitionState view) {
@@ -57,6 +59,15 @@ public class EventHooks {
         }
     }
 
+    private void toggleEnabledForWorkstation(final ViewDefinitionState view) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        boolean enabled = event.getBelongsToField(MaintenanceEventFields.PRODUCTION_LINE) != null;
+        LookupComponent workstation = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.WORKSTATION);
+        workstation.setEnabled(enabled);
+    }
+
     private void setFieldsRequired(final ViewDefinitionState view) {
         FieldComponent factory = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
         FieldComponent division = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
@@ -72,6 +83,7 @@ public class EventHooks {
         Entity event = formComponent.getEntity();
 
         setEventCriteriaModifier(view, event, MaintenanceEventFields.FACTORY, MaintenanceEventFields.DIVISION);
+        setEventCriteriaModifier(view, event, MaintenanceEventFields.DIVISION, MaintenanceEventFields.WORKSTATION);
         setEventCriteriaModifier(view, event, MaintenanceEventFields.PRODUCTION_LINE, MaintenanceEventFields.WORKSTATION);
         setEventCriteriaModifier(view, event, MaintenanceEventFields.WORKSTATION, MaintenanceEventFields.SUBASSEMBLY);
     }
@@ -109,6 +121,23 @@ public class EventHooks {
             }
             faultTypeLookup.setFilterValue(filter);
         }
+    }
+
+    public void setEventIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent technologyIdForMultiUpload = (FieldComponent) view.getComponentByReference("eventIdForMultiUpload");
+        FieldComponent technologyMultiUploadLocale = (FieldComponent) view.getComponentByReference("eventMultiUploadLocale");
+
+        if (technology.getEntityId() != null) {
+            technologyIdForMultiUpload.setFieldValue(technology.getEntityId());
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        } else {
+            technologyIdForMultiUpload.setFieldValue("");
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        }
+        technologyMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
+        technologyMultiUploadLocale.requestComponentUpdateState();
+
     }
 
 }
