@@ -3,6 +3,7 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 public class MaintenanceEventFields {
 
     public static final String DESCRIPTION = "description";
+    public static final String STATE = "state";
 
     private MaintenanceEventFields() {
     }

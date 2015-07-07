@@ -7,7 +7,7 @@ CREATE TABLE cmmsmachineparts_maintenanceevent
   type character varying(255) DEFAULT '01failure'::character varying,
   description character varying(255),
   personreceiving_id bigint,
-  targetstate character varying(255) DEFAULT '01new'::character varying,
+  state character varying(255) DEFAULT '01new'::character varying,
   createdate timestamp without time zone,
   updatedate timestamp without time zone,
   createuser character varying(255),
@@ -48,7 +48,7 @@ ALTER TABLE productionlines_factorystructureelement
 
 CREATE TABLE cmmsmachineparts_eventattachment
 (
-  id bigint NOT NULL DEFAULT nextval('cmmsmachineparts_eventattachment_id_seq'::regclass),
+  id bigint NOT NULL,
   maintenanceevent_id bigint,
   attachment character varying(255),
   name character varying(255),
@@ -59,4 +59,32 @@ CREATE TABLE cmmsmachineparts_eventattachment
       REFERENCES cmmsmachineparts_maintenanceevent (id) DEFERRABLE
 );
 
+-- end
+
+-- Added event state changes
+-- last touched 07.07.2015 by kama
+
+CREATE TABLE cmmsmachineparts_maintenanceeventstatechange
+(
+  id bigint NOT NULL,
+  dateandtime timestamp without time zone,
+  sourcestate character varying(255),
+  targetstate character varying(255),
+  status character varying(255),
+  phase integer,
+  worker character varying(255),
+  maintenanceevent_id bigint,
+  shift_id bigint,
+  CONSTRAINT cmmsmachineparts_maintenanceeventstatechange_pkey PRIMARY KEY (id),
+  CONSTRAINT maintenanceeventstatechange_maintenanceevent_fkey FOREIGN KEY (maintenanceevent_id)
+      REFERENCES cmmsmachineparts_maintenanceevent (id) DEFERRABLE,
+  CONSTRAINT maintenanceeventstatechange_shift_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE
+);
+
+
+ALTER TABLE states_message ADD COLUMN maintenanceeventstatechange_id bigint;
+ALTER TABLE states_message
+  ADD CONSTRAINT message_maintenanceeventstatechange_fkey FOREIGN KEY (maintenanceeventstatechange_id)
+      REFERENCES cmmsmachineparts_maintenanceeventstatechange (id) DEFERRABLE;
 -- end

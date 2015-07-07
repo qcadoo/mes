@@ -3,6 +3,8 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 public class CmmsMachinePartsConstants {
 
+    public static final String MODEL_MAINTENANCE_EVENT_STATE_CHANGE = "maintenanceEventStateChange";
+
     private CmmsMachinePartsConstants() {
     }
 
