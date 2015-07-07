@@ -45,6 +45,10 @@
         <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
 
         <belongsTo name="faultType" model="faultType" required="true"/>
+
+        <hasMany name="staffWorkTimes" model="staffWorkTime"
+                 joinField="maintenanceEvent" copyable="false" cascade="delete"/>
+
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"

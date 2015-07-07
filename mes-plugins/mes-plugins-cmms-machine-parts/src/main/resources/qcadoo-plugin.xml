@@ -93,6 +93,8 @@
         <view:view resource="view/maintenanceEventDetails.xml"/>
         <view:view resource="view/addNewEvent.xml"/>
 
+        <view:view resource="view/staffWorkTimeDetails.xml"/>
+
         <menu:menu-category name="maintenance"/>
         <menu:menu-item name="events" category="maintenance" view="eventsList"/>
 
@@ -107,6 +109,8 @@
         <model:model model="machinePartAttachment" resource="model/machinePartAttachment.xml"/>
         <model:model model="faultType" resource="model/faultType.xml"/>
         <model:model model="maintenanceEvent" resource="model/maintenanceEvent.xml"/>
+        <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
+
         maintenenceEvent
 
         <!-- model extensions -->

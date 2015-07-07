@@ -200,6 +200,37 @@
                           method="fillFieldValues"/>
             </component>
         </windowTab>
+
+        <windowTab name="timeTab" reference="timeTab">
+            <component type="gridLayout" name="timeGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="staffWorkTimes" reference="staffWorkTimes"
+                               source="#{form}.staffWorkTimes">
+                        <option type="column" name="workerNumber" fields="worker"
+                                expression="#worker['number']" link="true"/>
+                        <option type="column" name="workerName" fields="worker"
+                                expression="#worker['name']" link="true"/>
+                        <option type="column" name="workerSurname" fields="worker"
+                                expression="#worker['surname']" link="true"/>
+                        <option type="column" name="laborTime" fields="laborTime"
+                                expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTime)"/>
+
+                        <option type="order" column="workerNumber" direction="asc"/>
+
+                        <option type="correspondingView" value="cmmsMachineParts/staffWorkTimeDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="searchable" value="workerNumber,workerName,workerSurname"/>
+                        <option type="orderable" value="workerNumber,workerName,workerSurname"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
     </component>
     <hooks>
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
