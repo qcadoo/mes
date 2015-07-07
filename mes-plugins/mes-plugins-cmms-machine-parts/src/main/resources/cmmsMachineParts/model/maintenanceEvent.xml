@@ -52,6 +52,8 @@
         <hasMany name="attachments" model="eventAttachment" joinField="maintenanceEvent" cascade="delete"/>
 
         <hasMany name="stateChanges" joinField="maintenanceEvent" model="maintenanceEventStateChange" cascade="delete"/>
+
+        <text name="solutionDescription"/>
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"

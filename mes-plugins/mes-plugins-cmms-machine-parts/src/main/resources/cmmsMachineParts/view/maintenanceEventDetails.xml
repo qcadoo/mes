@@ -218,6 +218,15 @@
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
             </component>
         </windowTab>
+        <windowTab name="solutionDescriptionTab">
+            <component type="gridLayout" name="solutionDescriptionGrid" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" width="2" height="6">
+                       <component type="textarea" name="solutionDescription" field="#{form}.solutionDescription"
+                       			  reference="solutionDescription"/>
+                </layoutElement>
+            </component>
+        </windowTab>
         <windowTab name="attachmentsTab">
             <component type="gridLayout" name="gridsLayout" columns="3"
                        rows="6" hasBorders="false">

@@ -26,4 +26,6 @@ public class MaintenanceEventFields {
 
     public static final String SUBASSEMBLY = "subassembly";
 
+    public static final String SOLUTION_DESCRIPTION = "solutionDescription";
+
 }

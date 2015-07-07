@@ -110,3 +110,10 @@ CREATE TABLE cmmsmachineparts_staffworktime
 );
 
 --end
+
+-- Added solution description to maintenance event
+-- last touched 7.07.2015 by pako
+
+ALTER TABLE cmmsmachineparts_maintenanceevent ADD COLUMN solutiondescription text;
+
+-- end
