@@ -100,6 +100,7 @@ public class EventListeners {
 
     public void productionLineChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         clearSelectionOnWorkstation(view);
+        setEnabledForField(view, MaintenanceEventFields.WORKSTATION, state.getFieldValue() != null);
     }
 
     public void workstationChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -138,6 +139,11 @@ public class EventListeners {
         FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
         fieldComponent.setFieldValue(null);
         fieldComponent.requestComponentUpdateState();
+    }
+
+    private void setEnabledForField(ViewDefinitionState view, String reference, boolean enabled) {
+        FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
+        fieldComponent.setEnabled(enabled);
     }
 
     private void clearFilterForFaultType(final ViewDefinitionState view, final String field) {
