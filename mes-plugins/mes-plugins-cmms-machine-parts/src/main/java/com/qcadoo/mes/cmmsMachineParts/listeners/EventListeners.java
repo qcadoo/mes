@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
@@ -23,6 +24,8 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class EventListeners {
@@ -101,9 +104,15 @@ public class EventListeners {
 
     public void workstationChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         clearSelectionOnSubassembly(view);
+        if (state.getFieldValue() == null) {
+            clearFilterForFaultType(view, MaintenanceEventFields.WORKSTATION);
+        }
     }
 
     public void subassemblyChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        if (state.getFieldValue() == null) {
+            clearFilterForFaultType(view, MaintenanceEventFields.SUBASSEMBLY);
+        }
     }
 
     private void clearSelectionOnDivision(final ViewDefinitionState view) {
@@ -129,6 +138,16 @@ public class EventListeners {
         FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
         fieldComponent.setFieldValue(null);
         fieldComponent.requestComponentUpdateState();
+    }
+
+    private void clearFilterForFaultType(final ViewDefinitionState view, final String field) {
+        LookupComponent faultType = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
+        FilterValueHolder filter = faultType.getFilterValue();
+        if (filter.has(field)) {
+            filter.remove(field);
+            filter.remove(WorkstationFields.WORKSTATION_TYPE);
+        }
+        faultType.setFilterValue(filter);
     }
 
     private void fillEventFieldsFromSelectedElement(Entity event, final Entity selectedElement) {
