@@ -88,3 +88,25 @@ ALTER TABLE states_message
   ADD CONSTRAINT message_maintenanceeventstatechange_fkey FOREIGN KEY (maintenanceeventstatechange_id)
       REFERENCES cmmsmachineparts_maintenanceeventstatechange (id) DEFERRABLE;
 -- end
+
+
+-- Added cmmsmachineparts_staffworktime table
+-- last touched 07.07.2015 by kasi
+
+CREATE TABLE cmmsmachineparts_staffworktime
+(
+  id bigint NOT NULL,
+  maintenanceevent_id bigint,
+  worker_id bigint,
+  labortime integer DEFAULT 0,
+  effectiveexecutiontimestart timestamp without time zone,
+  effectiveexecutiontimeend timestamp without time zone,
+  CONSTRAINT cmmsmachineparts_staffworktime_pkey PRIMARY KEY (id),
+  CONSTRAINT staffworktime_worker_fkey FOREIGN KEY (worker_id)
+      REFERENCES basic_staff (id) DEFERRABLE,
+  CONSTRAINT fke4a6b1484a0e200c FOREIGN KEY (maintenanceevent_id)
+      REFERENCES worker_maintenanceevent_fkey (id)  DEFERRABLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+--end
