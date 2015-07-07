@@ -105,9 +105,9 @@
         <!-- model -->
 
         <model:model model="machinePartAttachment" resource="model/machinePartAttachment.xml"/>
+        <model:model model="eventAttachment" resource="model/eventAttachment.xml"/>
         <model:model model="faultType" resource="model/faultType.xml"/>
         <model:model model="maintenanceEvent" resource="model/maintenanceEvent.xml"/>
-        maintenenceEvent
 
         <!-- model extensions -->
         <model:model-field plugin="basic" model="product">

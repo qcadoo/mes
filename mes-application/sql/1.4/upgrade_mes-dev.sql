@@ -42,3 +42,21 @@ ALTER TABLE productionlines_factorystructureelement
       REFERENCES cmmsmachineparts_maintenanceevent (id) DEFERRABLE;
 
 -- end
+
+-- Added event attachments
+-- last touched 07.07.2015 by kama
+
+CREATE TABLE cmmsmachineparts_eventattachment
+(
+  id bigint NOT NULL DEFAULT nextval('cmmsmachineparts_eventattachment_id_seq'::regclass),
+  maintenanceevent_id bigint,
+  attachment character varying(255),
+  name character varying(255),
+  size numeric(12,5),
+  ext character varying(255),
+  CONSTRAINT cmmsmachineparts_eventattachment_pkey PRIMARY KEY (id),
+  CONSTRAINT eventattachment_maintenanceevent_fkey FOREIGN KEY (maintenanceevent_id)
+      REFERENCES cmmsmachineparts_maintenanceevent (id) DEFERRABLE
+);
+
+-- end

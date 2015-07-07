@@ -1,6 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
@@ -120,6 +121,23 @@ public class EventHooks {
             }
             faultTypeLookup.setFilterValue(filter);
         }
+    }
+
+    public void setEventIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent technologyIdForMultiUpload = (FieldComponent) view.getComponentByReference("eventIdForMultiUpload");
+        FieldComponent technologyMultiUploadLocale = (FieldComponent) view.getComponentByReference("eventMultiUploadLocale");
+
+        if (technology.getEntityId() != null) {
+            technologyIdForMultiUpload.setFieldValue(technology.getEntityId());
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        } else {
+            technologyIdForMultiUpload.setFieldValue("");
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        }
+        technologyMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
+        technologyMultiUploadLocale.requestComponentUpdateState();
+
     }
 
 }

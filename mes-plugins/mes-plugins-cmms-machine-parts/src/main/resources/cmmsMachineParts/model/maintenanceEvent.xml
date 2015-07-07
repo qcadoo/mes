@@ -45,6 +45,8 @@
         <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
 
         <belongsTo name="faultType" model="faultType" required="true"/>
+
+        <hasMany name="attachments" model="eventAttachment" joinField="maintenanceEvent" cascade="delete"/>
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"

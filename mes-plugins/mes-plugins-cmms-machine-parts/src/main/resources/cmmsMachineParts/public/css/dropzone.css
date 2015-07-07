@@ -23,11 +23,13 @@
  */
 #dropzone {
    	background: #454545; 
-	border: 2px dotted #E8E8E8;
+	border: 2px solid #E8E8E8;
 	color: #DADCE3;
     height: 45px;
     line-height: 50px;
     text-align: center;
+    font-size: 13px;
+    font-family: "Lucida Grande",Arial, Helvetica, sans-serif;
 }
 #dropzone.in {
     width: 600px;
