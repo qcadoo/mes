@@ -35,6 +35,8 @@
         <datetime name="effectiveExecutionTimeEnd"/>
     </fields>
     <hooks>
-
+        <validatesWith
+                class="com.qcadoo.mes.cmmsMachineParts.validators.StaffWorkTimeValidatorsCMMS"
+                method="validatesWith" />
     </hooks>
 </model>
