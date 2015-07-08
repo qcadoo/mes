@@ -33,6 +33,17 @@
         <ribbon>
             <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew"/>
 
+            <group name="status">
+                <smallButton name="startEvent" icon="startIcon16.png"
+                             state="disabled" action="#{form}.changeState(startEvent);"/>
+                <smallButton name="revokeEvent" icon="deleteIcon16.png"
+                             state="disabled" action="#{form}.changeState(revokeEvent);"/>
+                <smallButton name="planEvent" icon="startIcon16.png"
+                             state="disabled" action="#{form}.changeState(planEvent);"/>
+                <smallButton name="closeEvent" icon="acceptIcon16.png"
+                             state="disabled" action="#{form}.changeState(closeEvent);"/>
+            </group>
+
             <group name="atachments">
                 <bigButton name="downloadAtachment" icon="generateIcon24.png"
                            state="enabled">
@@ -47,6 +58,7 @@
                     </script>
                 </bigButton>
             </group>
+
         </ribbon>
 
         <windowTab name="mainTab">
@@ -55,7 +67,118 @@
             <component type="form" name="maintenanceEventForm" reference="form">
                 <script>
                     <![CDATA[
+                       this.changeState = function(eventPerformer, ribbonItemName) {
+							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+							var newState = ribbonItem.forState;
 
+							if (window.confirm(ribbonItem.confirmMessage)) {
+								#{form}.fireEvent(eventPerformer, 'changeState', [newState]);
+							}
+						}
+
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								var state = #{state}.getValue().content.value;
+								if (!state) {
+									return;
+								}
+								if (! value || ! value.content) {
+									return;
+								}
+
+								if (! value.content.entityId) {
+									var startEvent = #{window}.getRibbonItem("status.startEvent");
+									var planEvent = #{window}.getRibbonItem("status.planEvent");
+									var revokeEvent = #{window}.getRibbonItem("status.revokeEvent");
+									var closeEvent = #{window}.getRibbonItem("status.closeEvent");
+									startEvent.disable();
+									planEvent.disable();
+									revokeEvent.disable();
+									closeEvent.disable();
+									return;
+								}
+								updateRibbon(state);
+							}
+						});
+
+						function toggleEditable(enabled, message) {
+							var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.cancel", "actions.delete"];
+							for (var elementKey in toggleRibbonItems) {
+								var ribbonItemName = toggleRibbonItems[elementKey];
+								var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
+
+								if (!ribbonItem) {
+									continue;
+								}
+
+								if (enabled) {
+									ribbonItem.enable();
+								} else {
+									if (message) {
+										ribbonItem.disable(message);
+									}else{
+										ribbonItem.disable();
+									}
+								}
+							}
+						}
+
+
+						function updateRibbon(state) {
+                            var startEvent = #{window}.getRibbonItem("status.startEvent");
+                            var planEvent = #{window}.getRibbonItem("status.planEvent");
+                            var revokeEvent = #{window}.getRibbonItem("status.revokeEvent");
+                            var closeEvent = #{window}.getRibbonItem("status.closeEvent");
+
+							startEvent.forState="02inProgress";
+							startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.inProgress)}";
+							startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.startEvent)}");
+
+							closeEvent.forState="04closed";
+							closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
+
+							revokeEvent.forState="05revoked";
+							revokeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.revoked)}";
+
+							planEvent.forState="06planned";
+							planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.planned)}";
+
+
+							if (state == "01new") {
+								startEvent.enable();
+								planEvent.enable();
+								revokeEvent.enable();
+								closeEvent.disable();
+								toggleEditable(true, "");
+							} else if (state == "02inProgress") {
+
+								startEvent.enable();
+								planEvent.enable();
+								revokeEvent.enable();
+								closeEvent.disable();
+
+							    startEvent.forState="03edited";
+							    startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.edited)}";
+							    startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.stopEvent)}");
+								toggleEditable(true, "");
+
+							} else if (state == "05revoked" || state == "06planned" || state == "04closed") {
+								startEvent.disable();
+								planEvent.disable();
+								revokeEvent.disable();
+								closeEvent.disable();
+								toggleEditable(false);
+							} else if ( state == "03edited"){
+								startEvent.disable();
+								planEvent.disable();
+								revokeEvent.disable();
+								closeEvent.enable();
+								toggleEditable(true, "");
+							}
+						}
                          this.addOnChangeListener({
                                 onSetValue: function() {
                                     var json = JSON.parse(context);
@@ -206,16 +329,22 @@
 
                 </component>
 
+                <component type="select" name="state" field="state"
+                           reference="state" hasLabel="false" defaultVisible="false"/>
 
                 <option type="header" value="true"/>
                 <option type="expression"
-                        value="#number + ' - ' + '@cmmsMachineParts.maintenanceEvent.type.value.' + #type"/>
+                        value="#number + ' - ' + '@cmmsMachineParts.maintenanceEvent.type.value.' + #type + ' - ' + '@cmmsMachineParts.maintenanceEvent.state.value.' + #state"/>
                 <listener event="fillFieldValues"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"
                           method="fillFieldValues"/>
 
                 <listener event="downloadAtachment" method="downloadAtachment"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+
+                <listener event="changeState"
+                          class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
+                          method="changeState"/>
             </component>
         </windowTab>
 
@@ -253,11 +382,26 @@
             <component type="gridLayout" name="solutionDescriptionGrid" columns="3"
                        rows="6" hasBorders="false">
                 <layoutElement column="1" row="1" width="2" height="6">
-                       <component type="textarea" name="solutionDescription" field="#{form}.solutionDescription"
-                       			  reference="solutionDescription"/>
+                    <component type="textarea" name="solutionDescription" field="#{form}.solutionDescription"
+                               reference="solutionDescription"/>
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="history">
+            <component type="grid" name="loggings" reference="grid"
+                       source="#{form}.stateChanges">
+                <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                <option type="column" name="previousState" fields="sourceState"/>
+                <option type="column" name="currentState" fields="targetState"/>
+                <option type="column" name="worker" fields="worker"/>
+
+                <option type="order" column="dateAndTime" direction="asc"/>
+
+                <option type="searchable" value="dateAndTime,sourceState,targetState,worker"/>
+                <option type="orderable" value="dateAndTime,sourceState,targetState,worker"/>
+            </component>
+        </windowTab>
+
         <windowTab name="attachmentsTab">
             <component type="gridLayout" name="gridsLayout" columns="3"
                        rows="6" hasBorders="false">

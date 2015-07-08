@@ -55,17 +55,20 @@
             <option type="column" name="subassembly" fields="subassembly" expression="#subassembly['number']"
                     link="true"/>
             <option type="column" name="faultType" fields="faultType" expression="#faultType['name']"
-                    link="true"/>
+                    link="false"/>
             <option type="column" name="description" fields="description" link="true"/>
-            <option type="column" name="createDate" fields="createDate" link="true"/>
-            <option type="column" name="createUser" fields="createUser" link="true"/>
+            <option type="column" name="createDate" fields="createDate" link="false"/>
+            <option type="column" name="createUser" fields="createUser" link="false"/>
             <option type="column" name="personReceiving" fields="personReceiving"
-                    expression="#personReceiving['userName']" link="true"/>
+                    expression="#personReceiving['userName']" link="false"/>
+
+            <option type="column" name="state" fields="state" link="false"/>
+
 
             <option type="searchable"
-                    value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType"/>
+                    value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType,state"/>
             <option type="orderable"
-                    value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType"/>
+                    value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType,state"/>
             <option type="multiselect" value="true"/>
             <option type="fullscreen" value="true"/>
 
