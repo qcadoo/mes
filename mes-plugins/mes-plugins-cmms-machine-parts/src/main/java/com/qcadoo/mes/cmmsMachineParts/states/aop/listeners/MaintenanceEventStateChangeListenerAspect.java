@@ -40,6 +40,21 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
 
     }
 
+    @RunInPhase(MaintenanceEventStateChangePhase.SETUP)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.IN_PROGRESS)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void setupOnInProgress(final StateChangeContext stateChangeContext, final int phase) {
+        setupService.setupOnInProgress(stateChangeContext);
+    }
+
+    @RunInPhase(MaintenanceEventStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.IN_PROGRESS)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnInProgress(final StateChangeContext stateChangeContext, final int phase) {
+        validationService.validationOnInProgress(stateChangeContext);
+    }
+
+
     @RunInPhase(MaintenanceEventStateChangePhase.DEFAULT)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.PLANNED)
     @Before(PHASE_EXECUTION_POINTCUT)
