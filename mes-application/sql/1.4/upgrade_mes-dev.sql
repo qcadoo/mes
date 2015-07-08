@@ -32,7 +32,7 @@ CREATE TABLE cmmsmachineparts_maintenanceevent
   CONSTRAINT maintenanceevent_subassembly_fkey FOREIGN KEY (subassembly_id)
       REFERENCES basic_subassembly (id) DEFERRABLE,
   CONSTRAINT maintenanceevent_personreceiving_fkey FOREIGN KEY (personreceiving_id)
-      REFERENCES qcadoosecurity_user (id) DEFERRABLE
+      REFERENCES basic_staff (id) DEFERRABLE
 );
 
 ALTER TABLE productionlines_factorystructureelement ADD COLUMN entityid integer;
