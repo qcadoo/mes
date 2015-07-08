@@ -28,5 +28,6 @@
 <aspectj>
     <aspects>
         <aspect name="com.qcadoo.mes.cmmsMachineParts.states.aop.MaintenanceEventStateChangeAspect"/>
+        <aspect name="com.qcadoo.mes.cmmsMachineParts.states.aop.listeners.MaintenanceEventStateChangeListenerAspect"/>
     </aspects>
 </aspectj>
