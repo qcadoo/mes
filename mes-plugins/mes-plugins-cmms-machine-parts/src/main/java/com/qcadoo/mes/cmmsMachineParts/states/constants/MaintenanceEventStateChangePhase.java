@@ -25,9 +25,11 @@ package com.qcadoo.mes.cmmsMachineParts.states.constants;
 
 public final class MaintenanceEventStateChangePhase {
 
-    public static final int PRE_VALIDATION = 1;
+    public static final int SETUP = 1;
 
-    public static final int DEFAULT = 3;
+    public static final int PRE_VALIDATION = 3;
+
+    public static final int DEFAULT = 5;
 
     public static final int LAST = DEFAULT + 1;
 

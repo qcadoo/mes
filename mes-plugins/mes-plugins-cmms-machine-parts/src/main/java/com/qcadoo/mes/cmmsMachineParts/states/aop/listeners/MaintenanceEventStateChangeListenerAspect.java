@@ -2,6 +2,7 @@ package com.qcadoo.mes.cmmsMachineParts.states.aop.listeners;
 
 import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 
+import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateSetupService;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateValidationService;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -27,7 +28,10 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
 
     @Autowired
     private MaintenanceEventStateValidationService validationService;
-    
+
+    @Autowired
+    private MaintenanceEventStateSetupService setupService;
+
     @Autowired
     private MaintenanceEventStateChangeListenerService listenerService;
 
