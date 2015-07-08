@@ -2,8 +2,6 @@ package com.qcadoo.mes.cmmsMachineParts.states.aop.listeners;
 
 import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 
-import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateSetupService;
-import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateValidationService;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -12,6 +10,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeListenerService;
+import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateSetupService;
+import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateValidationService;
 import com.qcadoo.mes.cmmsMachineParts.states.aop.MaintenanceEventStateChangeAspect;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangePhase;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateStringValues;

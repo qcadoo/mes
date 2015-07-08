@@ -10,11 +10,13 @@ import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -39,6 +41,19 @@ public class EventHooks {
         setFieldsRequired(view);
         fillDefaultFields(view);
         toggleEnabledForWorkstation(view);
+        disableFieldsForState(view);
+    }
+
+    private void disableFieldsForState(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        MaintenanceEventState state = MaintenanceEventState.of(event);
+        if (state.compareTo(MaintenanceEventState.CLOSED) == 0 || state.compareTo(MaintenanceEventState.REVOKED) == 0
+                || state.compareTo(MaintenanceEventState.PLANNED) == 0) {
+            form.setFormEnabled(false);
+            GridComponent staffWorkTimes = (GridComponent) view.getComponentByReference(MaintenanceEventFields.STAFF_WORK_TIMES);
+            staffWorkTimes.setEnabled(false);
+        }
     }
 
     private void fillDefaultFields(final ViewDefinitionState view) {

@@ -101,6 +101,8 @@
         <menu:menu-item name="machineParts" category="basic" view="machinePartsList"/>
         <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"/>
 
+        <view:view-tab resource="view/tabExtensions/parameters.xml"/>
+
         <!-- view extensions -->
 
 
@@ -115,6 +117,11 @@
         <model:model model="maintenanceEventStateChange" resource="model/maintenanceEventStateChange.xml"/>
 
         <!-- model extensions -->
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:decimal name="possibleWorkTimeDeviation"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="machinePartAttachments" joinField="product" model="machinePartAttachment"
                            cascade="delete" plugin="cmmsMachineParts"/>
