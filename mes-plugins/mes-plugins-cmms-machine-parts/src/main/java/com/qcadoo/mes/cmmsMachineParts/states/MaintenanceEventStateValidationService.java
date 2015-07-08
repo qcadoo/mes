@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
     }
 
     public void validationOnClosed(final StateChangeContext stateChangeContext) {
+        Entity event = stateChangeContext.getOwner();
+        checkIfPersonReceivingIsSet(event, stateChangeContext);
+
 
     }
 
