@@ -1,5 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.validators;
 
+import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,11 +11,25 @@ import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
-@Service
-public class MaintenanceEventValidators {
+@Service public class MaintenanceEventValidators {
 
-    @Autowired
-    private FaultTypesService faultTypesService;
+    @Autowired private FaultTypesService faultTypesService;
+
+    @Autowired private MaintenanceEventService maintenanceEventService;
+
+    public boolean validate(final DataDefinition eventDD, final Entity event) {
+        return validateRequiredFields(eventDD, event) && validateIfExistOpenIssue(eventDD, event);
+    }
+
+    private boolean validateIfExistOpenIssue(DataDefinition eventDD, Entity event) {
+        if (event.getId() == null || MaintenanceEventState.of(event) == MaintenanceEventState.NEW
+                || MaintenanceEventState.of(event) == MaintenanceEventState.IN_PROGRESS) {
+            if (maintenanceEventService.existOpenFailrueForObjectFromEvent(event)){
+                event.addGlobalError("cmmsMachineParts.error.existOpenIssueForObject", true);
+            }
+        }
+        return true;
+    }
 
     public boolean validateRequiredFields(final DataDefinition eventDD, final Entity event) {
         return validateDescription(eventDD, event) && validateFaultType(eventDD, event);

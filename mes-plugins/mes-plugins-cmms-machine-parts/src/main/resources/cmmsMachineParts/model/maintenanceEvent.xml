@@ -57,6 +57,6 @@
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"
-                       method="validateRequiredFields"/>
+                       method="validate"/>
     </hooks>
 </model>
