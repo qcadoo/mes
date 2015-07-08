@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
             Entity staff = user.getBelongsToField(UserFields.STAFF);
             if (staff != null) {
                 event.setField(MaintenanceEventFields.PERSON_RECEIVING, staff);
-                event.getDataDefinition().save(event);
+                stateChangeContext.setOwner(event);
             }
 
         }
