@@ -54,6 +54,12 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
         validationService.validationOnInProgress(stateChangeContext);
     }
 
+    @RunInPhase(MaintenanceEventStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.CLOSED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnClosed(final StateChangeContext stateChangeContext, final int phase) {
+        validationService.validationOnClosed(stateChangeContext);
+    }
 
     @RunInPhase(MaintenanceEventStateChangePhase.DEFAULT)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.PLANNED)
