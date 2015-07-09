@@ -31,10 +31,17 @@
                     view="parameters">
 
     <windowTab name="eventsTab" reference="eventsTab">
-        <component type="gridLayout" name="eventsGridLayout" columns="3" rows="2">
-            <layoutElement column="1" row="1">
+        <component type="gridLayout" name="eventsGridLayout" columns="18" rows="2" hasBorders="false">
+            <layoutElement column="1" row="1" width="5">
                 <component type="input" name="possibleWorkTimeDeviation"
-                           field="#{form}.possibleWorkTimeDeviation" hasDescription="true">
+                           field="#{form}.possibleWorkTimeDeviation" hasDescription="true"
+                           reference="possibleWorkTimeDeviation">
+                    <option type="alignment" value="right"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="6" row="1">
+                <component type="input" name="percent" reference="percent" defaultEnabled="never">
+                    <option type="textRepresentationOnDisabled" value="true"/>
                 </component>
             </layoutElement>
         </component>

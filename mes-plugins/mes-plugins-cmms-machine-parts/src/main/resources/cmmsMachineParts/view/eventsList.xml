@@ -39,11 +39,164 @@
                            state="enabled"/>
             </group>
             <template name="standardGridTemplate" excludeItems="actions.copy,actions.new"/>
-
+            <group name="status">
+                <smallButton name="startEvent" icon="startIcon16.png"
+                             state="disabled" action="#{grid}.changeState(startEvent);"/>
+                <smallButton name="revokeEvent" icon="deleteIcon16.png"
+                             state="disabled" action="#{grid}.changeState(revokeEvent);"/>
+                <smallButton name="planEvent" icon="startIcon16.png"
+                             state="disabled" action="#{grid}.changeState(planEvent);"/>
+                <smallButton name="closeEvent" icon="acceptIcon16.png"
+                             state="disabled" action="#{grid}.changeState(closeEvent);"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
+            <script>
+                <![CDATA[
+					var toggleRibbonItems = ["actions.delete"];
 
+					this.addOnChangeListener({
+						onChange: function(selectedEntitiesArray) {
+							if (selectedEntitiesArray && selectedEntitiesArray.length > 0) {
+								updateRibbon(selectedEntitiesArray);
+							} else {
+								resetRibbon();
+							}
+						}
+					});
+
+					this.changeState = function(eventPerformer, ribbonItemName, entityId) {
+						var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+						var newState = ribbonItem.forState;
+						if (window.confirm(ribbonItem.confirmMessage)) {
+							if (window.canClose()) {
+								#{grid}.fireEvent(eventPerformer, 'changeState', [newState]);
+							}
+						}
+					}
+
+					function resetRibbon() {
+						for (var elementKey in toggleRibbonItems) {
+							getRibbonItem(toggleRibbonItems[elementKey]).disable();
+						}
+						getRibbonItem("status.startEvent").disable();
+						getRibbonItem("status.revokeEvent").disable();
+						getRibbonItem("status.planEvent").disable();
+						getRibbonItem("status.closeEvent").disable();
+					}
+
+					function updateRibbon(selectedEntitiesArray) {
+						var locked = shouldLockStatusRibbonItems(selectedEntitiesArray);
+						var lockedMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.cantModifyEvent)}";
+						var differentStatesMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.differentStates)}";
+						var differentStates = statesAreDifferent(selectedEntitiesArray);
+
+						for (var elementKey in toggleRibbonItems) {
+							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
+							if (!ribbonItem) {
+								continue;
+							}
+
+							if (locked && differentStates) {
+								ribbonItem.disable(differentStatesMessage);
+							} else if (locked) {
+								ribbonItem.disable(lockedMessage);
+							} else {
+								ribbonItem.enable();
+							}
+						}
+
+						if (!differentStates) {
+							var state = selectedEntitiesArray[0].fields.state;
+						}
+
+						if (state && (state == "01new" || state == "05revoked")) {
+							getRibbonItem("actions.delete").enable();
+						}
+						else {
+						    getRibbonItem("actions.delete").disable();
+						}
+
+                            var startEvent = #{window}.getRibbonItem("status.startEvent");
+                            var planEvent = #{window}.getRibbonItem("status.planEvent");
+                            var revokeEvent = #{window}.getRibbonItem("status.revokeEvent");
+                            var closeEvent = #{window}.getRibbonItem("status.closeEvent");
+
+							startEvent.forState="02inProgress";
+							startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.inProgress)}";
+							startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.startEvent)}");
+
+							closeEvent.forState="04closed";
+							closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
+
+							revokeEvent.forState="05revoked";
+							revokeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.revoked)}";
+
+							planEvent.forState="06planned";
+							planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.planned)}";
+
+
+							if (state == "01new") {
+								startEvent.enable();
+								planEvent.enable();
+								revokeEvent.enable();
+								closeEvent.disable();
+								startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.startEvent)}");
+								startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.inProgress)}";
+							} else if (state == "02inProgress") {
+
+								startEvent.enable();
+								planEvent.enable();
+								revokeEvent.enable();
+								closeEvent.disable();
+
+							    startEvent.forState="03edited";
+							    startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.edited)}";
+							    startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.stopEvent)}");
+
+							} else if (state == "05revoked" || state == "06planned" || state == "04closed") {
+								startEvent.disable();
+								planEvent.disable();
+								revokeEvent.disable();
+								closeEvent.disable();
+							} else if ( state == "03edited") {
+								startEvent.disable();
+								planEvent.disable();
+								revokeEvent.disable();
+								closeEvent.enable();
+							}
+							else {
+							    startEvent.disable();
+								planEvent.disable();
+								revokeEvent.disable();
+								closeEvent.disable();
+							}
+					}
+
+					function getRibbonItem(ribbonPath) {
+						return #{window}.getRibbonItem(ribbonPath);
+					}
+
+					function shouldLockStatusRibbonItems(selectedEntitiesArray) {
+						return selectedEntitiesArray[0].fields.state == '05revoked' || selectedEntitiesArray[0].fields.state == '06planned' || selectedEntitiesArray[0].fields.state == '04closed' ||
+								statesAreDifferent(selectedEntitiesArray);
+					}
+
+					function statesAreDifferent(selectedEntitiesArray) {
+						if (selectedEntitiesArray.length < 2) {
+							return false;
+						}
+						for (var i = 1; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+								return true;
+							}
+						}
+						return false;
+					}
+
+				]]>
+            </script>
             <option type="column" name="number" fields="number" link="true"/>
             <option type="column" name="type" fields="type" link="true"/>
             <option type="column" name="factory" fields="factory" expression="#factory['number']" link="true"/>
@@ -78,6 +231,9 @@
             <option type="order" column="number" direction="asc"/>
             <option type="fullscreen" value="true"/>
 
+            <listener event="changeState"
+                      class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
+                      method="changeState"/>
         </component>
 
 

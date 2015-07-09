@@ -132,6 +132,7 @@
                             var planEvent = #{window}.getRibbonItem("status.planEvent");
                             var revokeEvent = #{window}.getRibbonItem("status.revokeEvent");
                             var closeEvent = #{window}.getRibbonItem("status.closeEvent");
+                            var deleteButton = #{window}.getRibbonItem("actions.delete");
 
 							startEvent.forState="02inProgress";
 							startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.inProgress)}";
@@ -164,6 +165,7 @@
 							    startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.edited)}";
 							    startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.stopEvent)}");
 								toggleEditable(true, "");
+								deleteButton.disable();
 
 							} else if (state == "05revoked" || state == "06planned" || state == "04closed") {
 								startEvent.disable();
@@ -171,12 +173,16 @@
 								revokeEvent.disable();
 								closeEvent.disable();
 								toggleEditable(false);
+								if (state == "05revoked") {
+								    deleteButton.enable();
+								}
 							} else if ( state == "03edited"){
 								startEvent.disable();
 								planEvent.disable();
 								revokeEvent.disable();
 								closeEvent.enable();
 								toggleEditable(true, "");
+								deleteButton.disable();
 							}
 						}
                          this.addOnChangeListener({
@@ -312,7 +318,7 @@
                     </layoutElement>
                     <layoutElement column="2" row="5">
                         <component type="lookup" name="personReceiving" field="personReceiving"
-                                   reference="personReceiving" defaultEnabled="false">
+                                   reference="personReceiving" defaultEnabled="true">
                             <option type="column" name="name" fields="name" link="true"/>
 
                             <option type="searchable" value="name"/>

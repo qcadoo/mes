@@ -41,7 +41,6 @@ public class MaintenanceEventStateValidationService {
     @Autowired
     private NumberService numberService;
 
-
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
         Entity event = stateChangeContext.getOwner();
         checkIfPersonReceivingIsSet(event, stateChangeContext);
@@ -72,6 +71,7 @@ public class MaintenanceEventStateValidationService {
         if (event.getBelongsToField(MaintenanceEventFields.PERSON_RECEIVING) == null) {
             stateChangeContext.addFieldValidationError(MaintenanceEventFields.PERSON_RECEIVING,
                     "cmmsMachineParts.maintenanceEvent.state.fieldRequired");
+            stateChangeContext.addValidationError("cmmsMachineParts.maintenanceEvent.state.workerNotFound");
         }
     }
 
@@ -101,7 +101,8 @@ public class MaintenanceEventStateValidationService {
         for (Map.Entry<Entity, Integer> entry : groupedWorkTimes.entrySet()) {
             Integer diff = entry.getValue() - progressTime.get();
             if (diff > possibleDeviation) {
-                workersWithIncorrectTime.add(entry.getKey().getStringField(StaffFields.NAME) + " " + entry.getKey().getStringField(StaffFields.SURNAME));
+                workersWithIncorrectTime.add(entry.getKey().getStringField(StaffFields.NAME) + " "
+                        + entry.getKey().getStringField(StaffFields.SURNAME));
             }
         }
         if (!workersWithIncorrectTime.isEmpty()) {
@@ -121,8 +122,7 @@ public class MaintenanceEventStateValidationService {
         List<Entity> staffWorkTimes = event.getHasManyField(MaintenanceEventFields.STAFF_WORK_TIMES);
         Function<Entity, Entity> toWorker = entity -> entity.getBelongsToField(StaffWorkTimeFields.WORKER);
         ToIntFunction<Entity> toInt = entity -> entity.getIntegerField(StaffWorkTimeFields.LABOR_TIME);
-        Map<Entity, Integer> map = staffWorkTimes.stream()
-                .collect(Collectors.groupingBy(toWorker, Collectors.summingInt(toInt)));
+        Map<Entity, Integer> map = staffWorkTimes.stream().collect(Collectors.groupingBy(toWorker, Collectors.summingInt(toInt)));
         return map;
     }
 
