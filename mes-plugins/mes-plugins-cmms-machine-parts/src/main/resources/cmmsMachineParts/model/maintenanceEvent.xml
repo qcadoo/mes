@@ -58,5 +58,6 @@
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"
                        method="validate"/>
+        <onCreate class="com.qcadoo.mes.cmmsMachineParts.hooks.MaintenanceEventHooks" method="onCreate"/>
     </hooks>
 </model>
