@@ -32,14 +32,14 @@ $(function() {
 						submit : function(e, data) {
 							var locale = window.mainController
 							.getComponentByReferenceName(
-								"machinePartMultiUploadLocale")
+								"eventMultiUploadLocale")
 									.getValue().content.value;
-							var partId = window.mainController
+							var eventId = window.mainController
 								.getComponentByReferenceName(
-									"machinePartIdForMultiUpload")
+									"eventIdForMultiUpload")
 										.getValue();
-							var partIdValue = partId.content;
-							if(!partIdValue.value || 0 === partIdValue.value){
+							var eventIdValue = eventId.content;
+							if(!eventIdValue.value || 0 === eventIdValue.value){
 							    $.each(data.files, function (index, file) {
 									if(locale === "pl_PL" || locale === "pl"){
 							    	showMessage("failure",
@@ -48,7 +48,7 @@ $(function() {
 													+ file.name);
 									} else {
 								    	showMessage("failure",
-												"Machine part is not saved",
+												"Event is not saved",
 												"Omitted file upload : "
 														+ file.name);
 									}
@@ -72,7 +72,7 @@ $(function() {
 
 							var locale = window.mainController
 							.getComponentByReferenceName(
-								"machinePartMultiUploadLocale")
+								"eventMultiUploadLocale")
 									.getValue().content.value;
 							var filetype = /(\.|\/)(gif|jpe?g|png|pdf)$/i;
 
@@ -99,12 +99,12 @@ $(function() {
 					}).bind(
 					'fileuploadsubmit',
 					function(e, data) {
-						var partId = window.mainController
+						var eventId = window.mainController
 								.getComponentByReferenceName(
-										"machinePartIdForMultiUpload").getValue();
-						var partIdValue = partId.content;
+										"eventIdForMultiUpload").getValue();
+						var eventIdValue = eventId.content;
 						data.formData = {
-							partId : partIdValue.value
+							eventId : eventIdValue.value
 						};
 					}).bind(
 					'fileuploadadd',
@@ -112,7 +112,7 @@ $(function() {
 						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
-							"machinePartMultiUploadLocale")
+							"eventMultiUploadLocale")
 								.getValue().content.value;
 						$.each(data.files, function(index, file) {
 							if (!filetype.test(file.name)) {

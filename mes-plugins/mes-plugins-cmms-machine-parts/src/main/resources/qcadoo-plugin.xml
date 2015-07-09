@@ -68,6 +68,10 @@
             <plugin>warehouseMinimalState</plugin>
             <version>[1.4.0</version>
         </dependency>
+        <dependency>
+            <plugin>productionLines</plugin>
+            <version>[1.4.0</version>
+        </dependency>
     </dependencies>
 
 
@@ -85,6 +89,15 @@
         <view:view resource="view/faultTypesList.xml"/>
         <view:view resource="view/faultTypeDetails.xml"/>
 
+        <view:view resource="view/eventsList.xml"/>
+        <view:view resource="view/maintenanceEventDetails.xml"/>
+        <view:view resource="view/addNewEvent.xml"/>
+
+        <view:view resource="view/staffWorkTimeDetails.xml"/>
+
+        <menu:menu-category name="maintenance"/>
+        <menu:menu-item name="events" category="maintenance" view="eventsList"/>
+
         <menu:menu-item name="machineParts" category="basic" view="machinePartsList"/>
         <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"/>
 
@@ -94,12 +107,28 @@
         <!-- model -->
 
         <model:model model="machinePartAttachment" resource="model/machinePartAttachment.xml"/>
+        <model:model model="eventAttachment" resource="model/eventAttachment.xml"/>
         <model:model model="faultType" resource="model/faultType.xml"/>
+        <model:model model="maintenanceEvent" resource="model/maintenanceEvent.xml"/>
+        <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
+
+        <model:model model="maintenanceEventStateChange" resource="model/maintenanceEventStateChange.xml"/>
 
         <!-- model extensions -->
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="machinePartAttachments" joinField="product" model="machinePartAttachment"
                            cascade="delete" plugin="cmmsMachineParts"/>
+        </model:model-field>
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="maintenanceEventStateChange" plugin="cmmsMachineParts"
+                             model="maintenanceEventStateChange"/>
+        </model:model-field>
+
+        <model:model-field model="shift" plugin="basic">
+            <model:hasMany name="maintenanceEventStateChanges" model="maintenanceEventStateChange" joinField="shift"
+                           plugin="cmmsMachineParts"
+                           cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -127,6 +156,35 @@
         <model:model-field plugin="basic" model="subassembly">
             <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
                               joinField="subassemblies"/>
+        </model:model-field>
+
+        <model:model-field plugin="productionLines" model="factoryStructureElement">
+            <model:belongsTo name="maintenanceEvent" model="maintenanceEvent" plugin="cmmsMachineParts"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="factory">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="factory" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="division" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="productionLine" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="workstation" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="subassembly">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="subassembly" copyable="false"/>
         </model:model-field>
 
         <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"

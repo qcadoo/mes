@@ -1,5 +1,7 @@
 package com.qcadoo.mes.productionLines.constants;
 
+import com.qcadoo.model.api.Entity;
+
 public enum FactoryStructureElementType {
     COMPANY("company"), FACTORY("factory"), DIVISION("division"), PRODUCTION_LINE("productionLine"), WORKSTATION("workstation"), SUBASSEMBLY(
             "subassembly");
@@ -14,7 +16,11 @@ public enum FactoryStructureElementType {
         return elementType;
     }
 
-    public FactoryStructureElementType parseString(final String elementType) {
+    public static FactoryStructureElementType of(final Entity factoryStructureElement) {
+        return parseString(factoryStructureElement.getStringField(FactoryStructureElementFields.ENTITY_TYPE));
+    }
+
+    public static FactoryStructureElementType parseString(final String elementType) {
         if ("company".equals(elementType)) {
             return COMPANY;
         } else if ("factory".equals(elementType)) {
