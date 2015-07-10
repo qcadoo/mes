@@ -112,6 +112,24 @@ CREATE TABLE cmmsmachineparts_staffworktime
 
 --end
 
+
+-- GOODFOOD-508
+CREATE TABLE basic_subassemblytoworkstationhelper
+(
+  id bigint NOT NULL,
+  subassembly_id bigint,
+  type character varying(255),
+  workstation_id bigint,
+  CONSTRAINT basic_subassemblytoworkstationhelper_pkey PRIMARY KEY (id),
+  CONSTRAINT fkc24cad816abb91e8 FOREIGN KEY (workstation_id)
+      REFERENCES basic_workstation (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fkc24cad81ccbe1b08 FOREIGN KEY (subassembly_id)
+      REFERENCES basic_subassembly (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+
+--end
 -- Added solution description to maintenance event
 -- last touched 7.07.2015 by pako
 

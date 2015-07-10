@@ -16,4 +16,6 @@ public final class SubassemblyFields {
     public static final String NAME = "name";
 
     public static final String WORKSTATION = "workstation";
+
+    public static final String TYPE = "type";
 }

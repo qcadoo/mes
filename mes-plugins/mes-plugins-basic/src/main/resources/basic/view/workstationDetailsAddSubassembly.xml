@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.3
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="workstationDetailsAddSubassembly" modelName="subassemblyToWorkstationHelper">
+
+    <component type="window" name="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew"/>
+        </ribbon>
+
+        <component type="form" name="substituteComponent" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="1"
+                       rows="2">
+                <layoutElement column="1" row="1">
+                    <component type="lookup" name="subassembliesLookup" reference="subassembliesLookup"
+                               field="#{form}.subassembly" hasLabel="true">
+                        <option type="column" name="name" fields="name" link="true"/>
+                        <option type="column" name="workstationType" fields="workstationType" link="true"
+                                expression="#workstationType?.get('number')"/>
+
+                        <option type="searchable" value="number,name,workstationType"/>
+                        <option type="orderable" value="number,name,workstationType"/>
+
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <option type="multiselect" value="false"/>
+
+                        <listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.hooks.SubassemblyToWorkstationHelperHooks"
+                                  method="subassemblyEntityChange"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.basic.criteriaModifiers.SubassemblyCriteriaModifiers"
+                                method="showSubassembliesWithoutWorkstation"/>
+                    </component>
+
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="select" name="type" field="type" reference="type" defaultEnabled="false" />
+                </layoutElement>
+            </component>
+
+            <!--<option type="header" value="true"/>-->
+            <!--<option type="expression" value="@basic.workstationDetailsAddSubassembly.header #subassembly.get('number')"/>-->
+
+        </component>
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.SubassemblyToWorkstationHelperHooks"
+                      method="beforeRenderView"/>
+    </hooks>
+</view>

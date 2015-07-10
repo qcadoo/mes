@@ -44,4 +44,6 @@ public final class WorkstationFields {
 
     public static final String SUBASSEMBLIES = "subassemblies";
 
+    public static final String SUBASSEMBLIES_HELPERS = "subassembliesHelpers";
+
 }

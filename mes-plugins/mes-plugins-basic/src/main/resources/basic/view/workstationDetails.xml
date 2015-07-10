@@ -185,35 +185,16 @@
             <component type="gridLayout" name="subassembliesGridLayout"
                        columns="2" rows="1">
                 <layoutElement column="1" row="1">
-                    <component type="lookup" name="subassembliesLookup" reference="subassembliesLookup"
-                               field="#{form}.subassemblies" defaultVisible="false" persistent="false"
-                               hasLabel="false">
-                        <option type="column" name="name" fields="name" link="true"
-                                />
-                        <option type="column" name="workstationType" fields="workstationType" link="true"
-                                expression="#workstationType?.get('number')"/>
-
-                        <option type="searchable" value="number,name,workstationType"/>
-                        <option type="orderable" value="number,name,workstationType"/>
-
-                        <option type="expression"
-                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-                        <option type="fieldCode" value="number"/>
-
-                        <option type="multiselect" value="true"/>
-
-                        <criteriaModifier
-                                class="com.qcadoo.mes.basic.criteriaModifiers.SubassemblyCriteriaModifiers"
-                                method="showSubassembliesWithoutWorkstation"/>
-                    </component>
                     <component type="grid" name="subassemblies" reference="subassemblies"
-                               source="#{form}.subassemblies">
-                        <option type="column" name="number" fields="number" width="50"/>
-                        <option type="column" name="name" fields="name" width="100"/>
-                        <option type="column" name="workstationType" fields="workstationType" link="true"
-                                expression="#workstationType?.get('number')"/>
-                        <option type="searchable" value="number,name,workstationType"/>
-                        <option type="orderable" value="number,name,workstationType"/>
+                               source="#{form}.subassembliesHelpers">
+                        <option type="column" name="number" fields="subassembly" expression="#subassembly['number']" width="50" link="true" />
+                        <option type="column" name="name" fields="subassembly" expression="#subassembly['name']" width="100" link="true" />
+                        <option type="column" name="workstationType" fields="subassembly" link="true"
+                                expression="#subassembly['workstationType']?.get('number')"/>
+                        <option type="column" name="type" fields="subassembly" expression="#subassembly['type']" link="true" />
+
+                        <option type="searchable" value="number,name,workstationType,type"/>
+                        <option type="orderable" value="number,name,workstationType,type"/>
 
                         <option type="order" column="number" direction="asc"/>
 
@@ -222,8 +203,9 @@
                         <option type="creatable" value="true"/>
                         <option type="deletable" value="true"/>
 
-                        <option type="weakRelation" value="true"/>
-                        <option type="correspondingLookup" value="subassembliesLookup"/>
+                        <option type="correspondingView" value="basic/workstationDetailsAddSubassembly"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
 
                     </component>
                 </layoutElement>
@@ -234,6 +216,9 @@
         <beforeRender
                 class="com.qcadoo.mes.basic.hooks.WorkstationDetailsHooks"
                 method="setWorkstationIdForMultiUploadField"/>
+        <beforeRender
+                class="com.qcadoo.mes.basic.hooks.WorkstationDetailsHooks"
+                method="setSubassembliesHelpers"/>
     </hooks>
 
 </view>

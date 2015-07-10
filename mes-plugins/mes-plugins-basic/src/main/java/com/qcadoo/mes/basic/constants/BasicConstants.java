@@ -68,6 +68,8 @@ public final class BasicConstants {
 
     public static final String MODEL_SUBASSEMBLY_ATTACHMENT = "subassemblyAttachment";
 
+    public static final String MODEL_SUBASSEMBLY_TO_WORKSTATION_HELPER = "subassemblyToWorkstationHelper";
+
     public static final String MODEL_FACTORY = "factory";
 
     // VIEW
