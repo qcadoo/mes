@@ -7,6 +7,7 @@ CREATE TABLE cmmsmachineparts_maintenanceevent
   type character varying(255) DEFAULT '01failure'::character varying,
   description character varying(255),
   personreceiving_id bigint,
+  personreceivingname character varying(255),
   state character varying(255) DEFAULT '01new'::character varying,
   createdate timestamp without time zone,
   updatedate timestamp without time zone,

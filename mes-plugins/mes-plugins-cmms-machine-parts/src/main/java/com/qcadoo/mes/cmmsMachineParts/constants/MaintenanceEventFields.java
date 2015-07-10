@@ -35,6 +35,8 @@ public class MaintenanceEventFields {
 
     public static final String PERSON_RECEIVING = "personReceiving";
 
+    public static final String PERSON_RECEIVING_NAME = "personReceivingName";
+
     public static final String STAFF_WORK_TIEMS = "staffWorkTimes";
 
 
