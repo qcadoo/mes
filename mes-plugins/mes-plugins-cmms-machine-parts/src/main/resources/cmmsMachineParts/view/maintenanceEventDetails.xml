@@ -348,6 +348,9 @@
                 <listener event="downloadAtachment" method="downloadAtachment"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
 
+                <listener event="save" method="validateIssueOrProposal"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+
                 <listener event="changeState"
                           class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
                           method="changeState"/>
@@ -405,7 +408,8 @@
 
                 <option type="searchable" value="dateAndTime,sourceState,targetState,worker"/>
                 <option type="orderable" value="dateAndTime,sourceState,targetState,worker"/>
-                <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP" method="hideFailedStateChanges"/>
+                <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                  method="hideFailedStateChanges"/>
             </component>
         </windowTab>
 

@@ -3,6 +3,7 @@ package com.qcadoo.mes.cmmsMachineParts.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangeDescriber;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
