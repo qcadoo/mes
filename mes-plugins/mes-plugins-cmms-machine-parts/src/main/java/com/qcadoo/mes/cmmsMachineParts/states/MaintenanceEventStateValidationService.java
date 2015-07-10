@@ -20,6 +20,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
 import com.qcadoo.mes.cmmsMachineParts.constants.ParameterFieldsCMP;
 import com.qcadoo.mes.cmmsMachineParts.constants.StaffWorkTimeFields;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -92,7 +93,8 @@ public class MaintenanceEventStateValidationService {
 
         Optional<Integer> progressTime = getProgressTime(event);
         Optional<BigDecimal> possibleDeviationPercent = getPossibleDeviationFromParameters();
-        if (!progressTime.isPresent() || !possibleDeviationPercent.isPresent()) {
+        if (!progressTime.isPresent() || !possibleDeviationPercent.isPresent()
+                || MaintenanceEventType.from(event).compareTo(MaintenanceEventType.PROPOSAL) == 0) {
             return;
         }
         Integer possibleDeviation = calculatePossibleDeviation(progressTime.get(), possibleDeviationPercent.get());
