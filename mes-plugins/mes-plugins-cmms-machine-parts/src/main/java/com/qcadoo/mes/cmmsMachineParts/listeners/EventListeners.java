@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +17,12 @@ import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
+import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
 import com.qcadoo.mes.cmmsMachineParts.hooks.FactoryStructureForEventHooks;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.mes.productionLines.constants.FactoryStructureElementFields;
 import com.qcadoo.mes.productionLines.constants.FactoryStructureElementType;
 import com.qcadoo.mes.productionLines.factoryStructure.FactoryStructureElementsService;
@@ -32,6 +35,7 @@ import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
@@ -57,6 +61,9 @@ public class EventListeners {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private MaintenanceEventService maintenanceEventService;
 
     @Autowired
     private FactoryStructureElementsService factoryStructureElementsService;
@@ -218,6 +225,30 @@ public class EventListeners {
         }
 
         view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
+    }
+
+    public void validateIssueOrProposal(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        if (event.getId() == null || MaintenanceEventState.of(event) == MaintenanceEventState.NEW
+                || MaintenanceEventState.of(event) == MaintenanceEventState.IN_PROGRESS) {
+            MaintenanceEventType type = MaintenanceEventType.from(event);
+            if (type.compareTo(MaintenanceEventType.ISSUE) == 0 || type.compareTo(MaintenanceEventType.PROPOSAL) == 0) {
+                List<Entity> existingEvents = maintenanceEventService.getExistingEventsForEvent(event,
+                        MaintenanceEventType.ISSUE.getStringValue());
+                existingEvents.addAll(maintenanceEventService.getExistingEventsForEvent(event,
+                        MaintenanceEventType.PROPOSAL.getStringValue()));
+
+                if (!existingEvents.isEmpty()) {
+                    view.addMessage(
+                            "cmmsMachineParts.error.existsOpenIssuesOrProposals",
+                            ComponentState.MessageType.INFO,
+                            false,
+                            existingEvents.stream().map(e -> e.getStringField(MaintenanceEventFields.NUMBER))
+                                    .collect(Collectors.joining(",")));
+                }
+            }
+        }
     }
 
 }

@@ -31,10 +31,12 @@
         <belongsTo name="maintenanceEvent" model="maintenanceEvent" required="true" />
         <belongsTo name="worker" model="staff" plugin="basic" required="true" />
         <integer name="laborTime" copyable="false" default="0" />
-        <datetime name="effectiveExecutionTimeStart"/>
-        <datetime name="effectiveExecutionTimeEnd"/>
+        <datetime name="effectiveExecutionTimeStart" required="true"/>
+        <datetime name="effectiveExecutionTimeEnd" required="true"/>
     </fields>
     <hooks>
-
+        <validatesWith
+                class="com.qcadoo.mes.cmmsMachineParts.validators.StaffWorkTimeValidatorsCMMS"
+                method="validatesWith" />
     </hooks>
 </model>

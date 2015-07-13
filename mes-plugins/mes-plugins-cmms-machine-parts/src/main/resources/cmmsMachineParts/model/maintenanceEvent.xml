@@ -31,7 +31,10 @@
         <string name="number" required="true" unique="true"/>
         <enum name="type" values="01failure,02issue,03proposal" default="01failure" required="true"/>
         <string name="description"/>
-        <belongsTo name="personReceiving" model="user" plugin="qcadooSecurity"/>
+        <belongsTo name="personReceiving" model="staff" plugin="basic"/>
+        <!-- only for show in grid-->
+        <string name="personReceivingName"/>
+
         <enum name="state"
               values="01new,02inProgress,03edited,04closed,05revoked,06planned" default="01new"/>
 
@@ -52,9 +55,14 @@
         <hasMany name="attachments" model="eventAttachment" joinField="maintenanceEvent" cascade="delete"/>
 
         <hasMany name="stateChanges" joinField="maintenanceEvent" model="maintenanceEventStateChange" cascade="delete"/>
+
+        <text name="solutionDescription"/>
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"
-                       method="validateRequiredFields"/>
+                       method="validate"/>
+        <onCreate class="com.qcadoo.mes.cmmsMachineParts.hooks.MaintenanceEventHooks" method="onCreate"/>
+        <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.MaintenanceEventHooks" method="onSave"/>
+
     </hooks>
 </model>

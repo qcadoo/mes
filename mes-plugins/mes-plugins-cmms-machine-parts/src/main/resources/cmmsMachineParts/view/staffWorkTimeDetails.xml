@@ -72,7 +72,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="4">
                         <component type="time" name="laborTime" reference="laborTime"
-                                   field="laborTime">
+                                   field="laborTime" defaultEnabled="false">
                             <option type="noHours" value="3"/>
                         </component>
                     </layoutElement>

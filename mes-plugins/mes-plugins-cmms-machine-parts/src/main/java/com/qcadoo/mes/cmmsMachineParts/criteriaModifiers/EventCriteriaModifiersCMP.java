@@ -10,6 +10,7 @@ import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangeFields;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -29,6 +30,10 @@ public class EventCriteriaModifiersCMP {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    public void hideFailedStateChanges(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.eq(MaintenanceEventStateChangeFields.STATUS, "03successful"));
+    }
 
     public void selectFactory(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
     }

@@ -7,6 +7,7 @@ CREATE TABLE cmmsmachineparts_maintenanceevent
   type character varying(255) DEFAULT '01failure'::character varying,
   description character varying(255),
   personreceiving_id bigint,
+  personreceivingname character varying(255),
   state character varying(255) DEFAULT '01new'::character varying,
   createdate timestamp without time zone,
   updatedate timestamp without time zone,
@@ -32,7 +33,7 @@ CREATE TABLE cmmsmachineparts_maintenanceevent
   CONSTRAINT maintenanceevent_subassembly_fkey FOREIGN KEY (subassembly_id)
       REFERENCES basic_subassembly (id) DEFERRABLE,
   CONSTRAINT maintenanceevent_personreceiving_fkey FOREIGN KEY (personreceiving_id)
-      REFERENCES qcadoosecurity_user (id) DEFERRABLE
+      REFERENCES basic_staff (id) DEFERRABLE
 );
 
 ALTER TABLE productionlines_factorystructureelement ADD COLUMN entityid integer;
@@ -110,3 +111,10 @@ CREATE TABLE cmmsmachineparts_staffworktime
 );
 
 --end
+
+-- Added solution description to maintenance event
+-- last touched 7.07.2015 by pako
+
+ALTER TABLE cmmsmachineparts_maintenanceevent ADD COLUMN solutiondescription text;
+
+-- end
