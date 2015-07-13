@@ -25,13 +25,14 @@ public class MaintenanceEventValidators {
         return validateRequiredFields(eventDD, event) && validateIfExistOpenIssue(eventDD, event);
     }
 
-    private boolean validateIfExistOpenIssue(DataDefinition eventDD, Entity event) {
+    public boolean validateIfExistOpenIssue(DataDefinition eventDD, Entity event) {
         if (event.getId() == null || MaintenanceEventState.of(event) == MaintenanceEventState.NEW
                 || MaintenanceEventState.of(event) == MaintenanceEventState.IN_PROGRESS) {
             MaintenanceEventType type = MaintenanceEventType.from(event);
             if (type.compareTo(MaintenanceEventType.FAILURE) == 0) {
                 if (maintenanceEventService.existOpenFailrueForObjectFromEvent(event)) {
                     event.addGlobalError("cmmsMachineParts.error.existOpenIssueForObject", true);
+                    return false;
                 }
             }
         }
@@ -42,7 +43,7 @@ public class MaintenanceEventValidators {
         return validateDescription(eventDD, event) && validateFaultType(eventDD, event);
     }
 
-    private boolean validateDescription(final DataDefinition eventDD, final Entity event) {
+    public boolean validateDescription(final DataDefinition eventDD, final Entity event) {
         Entity faultType = event.getBelongsToField(MaintenanceEventFields.FAULT_TYPE);
         if (faultType == null) {
             return true;
@@ -57,7 +58,7 @@ public class MaintenanceEventValidators {
         return true;
     }
 
-    private boolean validateFaultType(final DataDefinition eventDD, final Entity event) {
+    public boolean validateFaultType(final DataDefinition eventDD, final Entity event) {
         Entity faultType = event.getBelongsToField(MaintenanceEventFields.FAULT_TYPE);
         boolean typeCorrect = true;
         if (faultType != null) {
