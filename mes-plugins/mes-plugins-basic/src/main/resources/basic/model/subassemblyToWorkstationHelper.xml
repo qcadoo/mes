@@ -30,7 +30,7 @@
     <fields>
         <belongsTo name="subassembly" model="subassembly" required="true"/>
         <belongsTo name="workstation" model="workstation"/>
-        <dictionary name="type" dictionary="typeOfSubassembly" required="true"/>
+        <dictionary name="type" dictionary="typeOfSubassembly" />
     </fields>
 
     <hooks>

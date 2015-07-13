@@ -37,6 +37,8 @@ import com.qcadoo.view.api.components.FormComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class SubassemblyToWorkstationHelperHooks {
 
@@ -52,14 +54,16 @@ public class SubassemblyToWorkstationHelperHooks {
             subassembly.setField(SubassemblyFields.TYPE, subassemblyToWorkstationHelper.getField(SubassemblyToWorkstationHelperFields.TYPE));
             subassembly = subassemblyDD.save(subassembly);
 
-            if(!subassembly.isValid()){
-                for (String key : subassembly.getErrors().keySet()) {
-                    subassemblyToWorkstationHelper.addGlobalError(subassembly.getErrors().get(key).getMessage(), subassembly.getErrors().get(key).getVars());
+            if (!subassembly.isValid()) {
+                for (Map.Entry<String, ErrorMessage> entry : subassembly.getErrors().entrySet()) {
+                    subassemblyToWorkstationHelper.addGlobalError(entry.getValue().getMessage(), entry.getValue().getAutoClose(), entry.getValue().getVars());
+                    subassemblyToWorkstationHelper.addError(subassemblyToWorkstationHelperDD.getField(SubassemblyToWorkstationHelperFields.TYPE), entry.getValue().getMessage());
                 }
+
                 for (ErrorMessage msg : subassembly.getGlobalErrors()) {
                     subassemblyToWorkstationHelper.addGlobalError(msg.getMessage(), msg.getAutoClose(), msg.getVars());
+                    subassemblyToWorkstationHelper.addError(subassemblyToWorkstationHelperDD.getField(SubassemblyToWorkstationHelperFields.TYPE), msg.getMessage());
                 }
-                subassemblyToWorkstationHelper.addError(subassemblyToWorkstationHelperDD.getField(SubassemblyToWorkstationHelperFields.TYPE), "basic.subassembly.type.requiredWithGlEkstrs");
                 subassemblyToWorkstationHelper.setNotValid();
             }
         }
@@ -72,7 +76,6 @@ public class SubassemblyToWorkstationHelperHooks {
     public void subassemblyEntityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         refreshTypeComponentValue(view);
     }
-
 
     private void refreshTypeComponentValue(ViewDefinitionState view) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference("form");

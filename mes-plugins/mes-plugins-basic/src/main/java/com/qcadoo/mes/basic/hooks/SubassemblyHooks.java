@@ -42,8 +42,8 @@ public class SubassemblyHooks {
     private DataDefinitionService dataDefinitionService;
 
     public void validateSubassembly(final DataDefinition subassemblyDD, final Entity subassembly) {
-        validateRequiredSubassemblyType(subassemblyDD, subassembly);
         validateUniquenessOfWorkstationAndType(subassemblyDD, subassembly);
+        validateRequiredSubassemblyType(subassemblyDD, subassembly);
     }
 
     private void validateUniquenessOfWorkstationAndType(DataDefinition subassemblyDD, Entity subassembly) {
@@ -53,19 +53,18 @@ public class SubassemblyHooks {
 
         Long count = criterionId == null ? subassemblyDD.count(SearchRestrictions.and(criterionWorkstation, criterionType)) : subassemblyDD.count(SearchRestrictions.and(criterionWorkstation, criterionType, criterionId));
         if (count > 0) {
-            subassembly.addGlobalError("basic.validate.global.error.uniquenessOfWorkstationAndType", true);
+            subassembly.addError(subassemblyDD.getField(SubassemblyFields.WORKSTATION), "basic.validate.global.error.uniquenessOfWorkstationAndType");
         }
     }
 
     private void validateRequiredSubassemblyType(DataDefinition subassemblyDD, Entity subassembly) {
         String workstationTypeName = subassembly.getBelongsToField(SubassemblyFields.WORKSTATION_TYPE).getStringField(WorkstationTypeFields.NUMBER);
 
-        if (GL_EKSTR.equals(workstationTypeName)) {
+        if (GL_EKSTR.equals(workstationTypeName) && subassembly.getField(SubassemblyFields.WORKSTATION) != null) {
             String subassemblyType = subassembly.getStringField(SubassemblyFields.TYPE);
             if (subassemblyType == null) {
                 subassembly.addError(subassemblyDD.getField(SubassemblyFields.TYPE), "basic.subassembly.type.requiredWithGlEkstr");
             }
         }
     }
-
 }
