@@ -50,7 +50,8 @@ public class FaultTypesService {
     }
 
     public boolean checkIfFaultTypeAppliesToEntity(final Entity faultType, final Entity entity, final String fieldToTest) {
-        return faultType.getManyToManyField(fieldToTest).stream().anyMatch(e -> e.getId() == entity.getId());
+        boolean result = faultType.getManyToManyField(fieldToTest).stream().anyMatch(e -> e.getId().equals(entity.getId()));
+        return result;
     }
 
     public Entity getDefaultFaultType() {
