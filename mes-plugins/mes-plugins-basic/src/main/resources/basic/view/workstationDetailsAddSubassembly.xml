@@ -31,7 +31,7 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew"/>
+            <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew,actions.delete"/>
         </ribbon>
 
         <component type="form" name="substituteComponent" reference="form">

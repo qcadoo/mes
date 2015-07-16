@@ -35,6 +35,7 @@
 
     <hooks>
         <onSave class="com.qcadoo.mes.basic.hooks.SubassemblyToWorkstationHelperHooks" method="onSave"/>
+        <onDelete class="com.qcadoo.mes.basic.hooks.SubassemblyToWorkstationHelperHooks" method="onDelete"/>
     </hooks>
 
     <identifier expression="#subassembly['number']"/>

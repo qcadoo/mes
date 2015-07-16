@@ -69,6 +69,12 @@ public class SubassemblyToWorkstationHelperHooks {
         }
     }
 
+    public void onDelete(DataDefinition subassemblyToWorkstationHelperDD, Entity subassemblyToWorkstationHelper) {
+        Entity subassembly = subassemblyToWorkstationHelper.getBelongsToField(SubassemblyToWorkstationHelperFields.SUBASSEMBLY);
+        subassembly.setField(SubassemblyFields.WORKSTATION, null);
+        subassembly.getDataDefinition().save(subassembly);
+    }
+
     public void beforeRenderView(final ViewDefinitionState view) {
         refreshTypeComponentValue(view);
     }
