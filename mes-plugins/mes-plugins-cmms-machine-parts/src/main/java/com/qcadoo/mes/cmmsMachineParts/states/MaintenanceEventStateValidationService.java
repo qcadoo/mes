@@ -1,5 +1,23 @@
 package com.qcadoo.mes.cmmsMachineParts.states;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.StaffFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangeFields;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Seconds;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -8,27 +26,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.StaffFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
-import com.qcadoo.mes.cmmsMachineParts.constants.ParameterFieldsCMP;
-import com.qcadoo.mes.cmmsMachineParts.constants.StaffWorkTimeFields;
-import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
 
 @Service
 public class MaintenanceEventStateValidationService {
@@ -61,7 +58,10 @@ public class MaintenanceEventStateValidationService {
     }
 
     public void validationOnRevoked(final StateChangeContext stateChangeContext) {
-
+        String stateChangeComment = stateChangeContext.getStateChangeEntity().getStringField(MaintenanceEventStateChangeFields.COMMENT);
+        if(Strings.isNullOrEmpty(stateChangeComment)){
+            stateChangeContext.addValidationError("cmmsMachineParts.maintenanceEvent.state.commentRequired");
+        }
     }
 
     public void validationOnPlanned(final StateChangeContext stateChangeContext) {

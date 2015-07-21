@@ -94,6 +94,8 @@
         <view:view resource="view/addNewEvent.xml"/>
 
         <view:view resource="view/staffWorkTimeDetails.xml"/>
+        
+        <view:view resource="view/maintenanceEventStateChangeReasonDialog.xml" />
 
         <menu:menu-category name="maintenance"/>
         <menu:menu-item name="events" category="maintenance" view="eventsList"/>
