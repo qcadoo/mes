@@ -53,6 +53,8 @@
 					<layoutElement column="1" row="4" height="2">
 						<component type="textarea" name="comment" field="#{form}.comment"
 							reference="comment" />
+                        <component type="checkbox" name="commentRequired" reference="commentRequired"
+						    field="#{form}.commentRequired" defaultEnabled="false" defaultVisible="false" />
 					</layoutElement>
 				</component>
 				<listener event="continue"

@@ -25,6 +25,7 @@ package com.qcadoo.mes.cmmsMachineParts.listeners;
 
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient;
 import com.qcadoo.mes.cmmsMachineParts.states.aop.MaintenanceEventStateChangeAspect;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangeFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
@@ -32,6 +33,7 @@ import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,6 +81,11 @@ public class MaintenanceEventReasonViewListeners {
     }
 
     public void beforeRenderDialog(final ViewDefinitionState view) {
+        final FieldComponent commentField = (FieldComponent) view.getComponentByReference(MaintenanceEventStateChangeFields.COMMENT);
+        commentField.setRequired(true);
+
+        final FieldComponent commentRequiredField = (FieldComponent) view.getComponentByReference(MaintenanceEventStateChangeFields.COMMENT_REQUIRED);
+        commentRequiredField.setFieldValue(true);
     }
 
 }

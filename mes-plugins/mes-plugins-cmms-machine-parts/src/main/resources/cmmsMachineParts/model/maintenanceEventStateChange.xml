@@ -47,7 +47,10 @@
         <!-- owner -->
         <belongsTo name="shift" model="shift" plugin="basic"/>
         <string name="comment" />
+        <boolean name="commentRequired" default="false" />
 
     </fields>
-    <hooks/>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventStateChangeValidators" method="validate"/>
+    </hooks>
 </model>

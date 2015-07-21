@@ -1,11 +1,9 @@
 package com.qcadoo.mes.cmmsMachineParts.states;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.*;
-import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangeFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -58,10 +56,6 @@ public class MaintenanceEventStateValidationService {
     }
 
     public void validationOnRevoked(final StateChangeContext stateChangeContext) {
-        String stateChangeComment = stateChangeContext.getStateChangeEntity().getStringField(MaintenanceEventStateChangeFields.COMMENT);
-        if(Strings.isNullOrEmpty(stateChangeComment)){
-            stateChangeContext.addValidationError("cmmsMachineParts.maintenanceEvent.state.commentRequired");
-        }
     }
 
     public void validationOnPlanned(final StateChangeContext stateChangeContext) {
