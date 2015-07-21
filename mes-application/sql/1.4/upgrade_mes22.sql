@@ -105,9 +105,8 @@ CREATE TABLE cmmsmachineparts_staffworktime
   CONSTRAINT cmmsmachineparts_staffworktime_pkey PRIMARY KEY (id),
   CONSTRAINT staffworktime_worker_fkey FOREIGN KEY (worker_id)
       REFERENCES basic_staff (id) DEFERRABLE,
-  CONSTRAINT fke4a6b1484a0e200c FOREIGN KEY (maintenanceevent_id)
-      REFERENCES worker_maintenanceevent_fkey (id)  DEFERRABLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT worker_maintenanceevent_fkey FOREIGN KEY (maintenanceevent_id)
+      REFERENCES cmmsmachineparts_maintenanceevent (id) DEFERRABLE
 );
 
 --end
@@ -127,7 +126,7 @@ CREATE TABLE basic_subassemblytoworkstationhelper
   CONSTRAINT fkc24cad81ccbe1b08 FOREIGN KEY (subassembly_id)
       REFERENCES basic_subassembly (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
-)
+);
 
 --end
 -- Added solution description to maintenance event
@@ -141,5 +140,12 @@ ALTER TABLE cmmsmachineparts_maintenanceevent ADD COLUMN solutiondescription tex
 -- last touched 21.07.2015 by kama
 
 ALTER TABLE basic_parameter ADD COLUMN possibleworktimedeviation numeric(12,5);
+	
+-- end
+
+-- Missing column
+-- last touched 21.07.2015 by pako
+
+alter TABLE basic_subassembly add type character varying(255);
 
 -- end
