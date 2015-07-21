@@ -119,13 +119,12 @@ CREATE TABLE basic_subassemblytoworkstationhelper
   subassembly_id bigint,
   type character varying(255),
   workstation_id bigint,
+
   CONSTRAINT basic_subassemblytoworkstationhelper_pkey PRIMARY KEY (id),
-  CONSTRAINT fkc24cad816abb91e8 FOREIGN KEY (workstation_id)
-      REFERENCES basic_workstation (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT fkc24cad81ccbe1b08 FOREIGN KEY (subassembly_id)
-      REFERENCES basic_subassembly (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT subassemblytoworkstationhelper_workstation_fkey FOREIGN KEY (workstation_id)
+    REFERENCES basic_workstation (id) DEFERRABLE,
+  CONSTRAINT subassemblytoworkstationhelper_subassembly_fkey FOREIGN KEY (subassembly_id)
+    REFERENCES basic_subassembly (id) DEFERRABLE
 );
 
 --end
