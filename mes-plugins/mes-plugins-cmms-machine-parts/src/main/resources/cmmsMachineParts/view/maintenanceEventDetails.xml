@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.3
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="maintenanceEventDetails" modelName="maintenanceEvent" modelPlugin="cmmsMachineParts">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew"/>
+
+            <group name="status">
+                <smallButton name="startEvent" icon="startIcon16.png"
+                             state="disabled" action="#{form}.changeState(startEvent);"/>
+                <smallButton name="revokeEvent" icon="deleteIcon16.png"
+                             state="disabled" action="#{form}.changeState(revokeEvent);"/>
+                <smallButton name="planEvent" icon="startIcon16.png"
+                             state="disabled" action="#{form}.changeState(planEvent);"/>
+                <smallButton name="closeEvent" icon="acceptIcon16.png"
+                             state="disabled" action="#{form}.changeState(closeEvent);"/>
+            </group>
+
+            <group name="atachments">
+                <bigButton name="downloadAtachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAtachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="input" name="eventType" reference="eventType"
+                       defaultVisible="false"/>
+            <component type="form" name="maintenanceEventForm" reference="form">
+                <script>
+                    <![CDATA[
+                       this.changeState = function(eventPerformer, ribbonItemName) {
+							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+							var newState = ribbonItem.forState;
+
+							if (window.confirm(ribbonItem.confirmMessage)) {
+								#{form}.fireEvent(eventPerformer, 'changeState', [newState]);
+							}
+						}
+
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								var state = #{state}.getValue().content.value;
+								if (!state) {
+									return;
+								}
+								if (! value || ! value.content) {
+									return;
+								}
+
+								if (! value.content.entityId) {
+									var startEvent = #{window}.getRibbonItem("status.startEvent");
+									var planEvent = #{window}.getRibbonItem("status.planEvent");
+									var revokeEvent = #{window}.getRibbonItem("status.revokeEvent");
+									var closeEvent = #{window}.getRibbonItem("status.closeEvent");
+									startEvent.disable();
+									planEvent.disable();
+									revokeEvent.disable();
+									closeEvent.disable();
+									return;
+								}
+								updateRibbon(state);
+							}
+						});
+
+						function toggleEditable(enabled, message) {
+							var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.cancel", "actions.delete"];
+							for (var elementKey in toggleRibbonItems) {
+								var ribbonItemName = toggleRibbonItems[elementKey];
+								var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
+
+								if (!ribbonItem) {
+									continue;
+								}
+
+								if (enabled) {
+									ribbonItem.enable();
+								} else {
+									if (message) {
+										ribbonItem.disable(message);
+									}else{
+										ribbonItem.disable();
+									}
+								}
+							}
+						}
+
+
+						function updateRibbon(state) {
+                            var startEvent = #{window}.getRibbonItem("status.startEvent");
+                            var planEvent = #{window}.getRibbonItem("status.planEvent");
+                            var revokeEvent = #{window}.getRibbonItem("status.revokeEvent");
+                            var closeEvent = #{window}.getRibbonItem("status.closeEvent");
+                            var deleteButton = #{window}.getRibbonItem("actions.delete");
+
+							startEvent.forState="02inProgress";
+							startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.inProgress)}";
+							startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.startEvent)}");
+
+							closeEvent.forState="04closed";
+							closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
+
+							revokeEvent.forState="05revoked";
+							revokeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.revoked)}";
+
+							planEvent.forState="06planned";
+							planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.planned)}";
+
+
+							if (state == "01new") {
+								startEvent.enable();
+								planEvent.enable();
+								revokeEvent.enable();
+								closeEvent.disable();
+								toggleEditable(true, "");
+							} else if (state == "02inProgress") {
+
+								startEvent.enable();
+								planEvent.enable();
+								revokeEvent.enable();
+								closeEvent.disable();
+
+							    startEvent.forState="03edited";
+							    startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.edited)}";
+							    startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.stopEvent)}");
+								toggleEditable(true, "");
+								deleteButton.disable();
+
+							} else if (state == "05revoked" || state == "06planned" || state == "04closed") {
+								startEvent.disable();
+								planEvent.disable();
+								revokeEvent.disable();
+								closeEvent.disable();
+								toggleEditable(false);
+								if (state == "05revoked") {
+								    deleteButton.enable();
+								}
+							} else if ( state == "03edited"){
+								startEvent.disable();
+								planEvent.disable();
+								revokeEvent.disable();
+								closeEvent.enable();
+								toggleEditable(true, "");
+								deleteButton.disable();
+							}
+						}
+                         this.addOnChangeListener({
+                                onSetValue: function() {
+                                    var json = JSON.parse(context);
+                                    var currentType = #{type}.getValue().content.value;
+                                    var eventType = json['window.mainTab.eventType'];
+                                    if (eventType != null && currentType !== eventType) {
+                                       #{form}.fireEvent(this, 'fillFieldValues', ['type', eventType]);
+                                    }
+                                }
+                        });
+                    ]]>
+                </script>
+                <component type="gridLayout" name="gridLayout" columns="2" rows="8">
+                    <layoutElement column="1" row="1">
+                        <component type="hidden" name="factoryStructure" field="factoryStructure"
+                                   reference="factoryStructure"/>
+                        <component type="input" name="number" field="number" reference="number"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="select" name="type" field="type" reference="type" defaultEnabled="false"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="lookup" name="factory" field="factory"
+                                   reference="factory">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="column" name="city" fields="city"/>
+
+                            <option type="searchable" value="name,city,number"/>
+                            <option type="orderable" value="name,city,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      method="factoryChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectFactory"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="lookup" name="division" field="division"
+                                   reference="division" source="#{factory}.divisions">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      method="divisionChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectDivision"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="lookup" name="productionLine" field="productionLine"
+                                   reference="productionLine" source="#{division}.productionLines">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      method="productionLineChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="lookup" name="workstation" field="workstation"
+                                   reference="workstation" defaultEnabled="false">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      method="workstationChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectWorkstation"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="lookup" name="subassembly" field="subassembly"
+                                   reference="subassembly" source="#{workstation}.subassemblies">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      method="subassemblyChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectSubassembly"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="1">
+                        <component type="lookup" name="faultType" field="faultType"
+                                   reference="faultType">
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression" value="#name"/>
+                            <option type="fieldCode" value="name"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectFaultType"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="2" height="3">
+                        <component type="textarea" name="description" field="description" reference="description"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="5">
+                        <component type="lookup" name="personReceiving" field="personReceiving"
+                                   reference="personReceiving" defaultEnabled="true">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression" value="#name + ' ' + #surname"/>
+                            <option type="fieldCode" value="surname"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="6">
+                        źródło kosztów...
+                    </layoutElement>
+
+
+                </component>
+
+                <component type="select" name="state" field="state"
+                           reference="state" hasLabel="false" defaultVisible="false"/>
+
+                <option type="header" value="true"/>
+                <option type="expression"
+                        value="#number + ' - ' + '@cmmsMachineParts.maintenanceEvent.type.value.' + #type + ' - ' + '@cmmsMachineParts.maintenanceEvent.state.value.' + #state"/>
+                <listener event="fillFieldValues"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"
+                          method="fillFieldValues"/>
+
+                <listener event="downloadAtachment" method="downloadAtachment"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+
+                <listener event="save" method="validateIssueOrProposal"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+
+                <listener event="changeState"
+                          class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
+                          method="changeState"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="timeTab" reference="timeTab">
+            <component type="gridLayout" name="timeGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="staffWorkTimes" reference="staffWorkTimes"
+                               source="#{form}.staffWorkTimes">
+                        <option type="column" name="workerNumber" fields="worker"
+                                expression="#worker['number']" link="true"/>
+                        <option type="column" name="workerName" fields="worker"
+                                expression="#worker['name']" link="true"/>
+                        <option type="column" name="workerSurname" fields="worker"
+                                expression="#worker['surname']" link="true"/>
+                        <option type="column" name="laborTime" fields="laborTime"
+                                expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTime)"/>
+
+                        <option type="order" column="workerNumber" direction="asc"/>
+
+                        <option type="correspondingView" value="cmmsMachineParts/staffWorkTimeDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="searchable" value="workerNumber,workerName,workerSurname"/>
+                        <option type="orderable" value="workerNumber,workerName,workerSurname"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="solutionDescriptionTab">
+            <component type="gridLayout" name="solutionDescriptionGrid" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" width="2" height="6">
+                    <component type="textarea" name="solutionDescription" field="#{form}.solutionDescription"
+                               reference="solutionDescription"/>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="history">
+            <component type="grid" name="loggings" reference="grid"
+                       source="#{form}.stateChanges">
+                <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                <option type="column" name="previousState" fields="sourceState"/>
+                <option type="column" name="currentState" fields="targetState"/>
+                <option type="column" name="worker" fields="worker"/>
+
+                <option type="order" column="dateAndTime" direction="asc"/>
+
+                <option type="searchable" value="dateAndTime,sourceState,targetState,worker"/>
+                <option type="orderable" value="dateAndTime,sourceState,targetState,worker"/>
+                <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                  method="hideFailedStateChanges"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="attachmentsTab">
+            <component type="gridLayout" name="gridsLayout" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" height="6">
+
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="cmmsMachineParts/multiUploadForEvent.jsp"/>
+                    </component>
+                    <component type="input" name="eventIdForMultiUpload"
+                               reference="eventIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                    <component type="input" name="eventMultiUploadLocale"
+                               reference="eventMultiUploadLocale" defaultVisible="false">
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="attachments"
+                               reference="attachments" source="#{form}.attachments">
+                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+
+    </component>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
+                      method="maintenanceEventBeforeRender"/>
+
+        <beforeRender
+                class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
+                method="setEventIdForMultiUploadField"/>
+    </hooks>
+</view>

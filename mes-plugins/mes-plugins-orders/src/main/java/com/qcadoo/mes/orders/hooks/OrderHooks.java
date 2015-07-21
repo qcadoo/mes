@@ -223,9 +223,10 @@ public class OrderHooks {
     private void backupTechnology(final DataDefinition orderDD, final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         if (technology != null){
-        technology.setField(TechnologyFields.NUMBER,
-                BACKUP_TECHNOLOGY_PREFIX + technology.getStringField(TechnologyFields.NUMBER));
-        technology.getDataDefinition().save(technology);
+            String bNumber = BACKUP_TECHNOLOGY_PREFIX + new Date().getTime()+"_"+technology.getStringField(TechnologyFields.NUMBER);
+            bNumber = bNumber.substring(0, Math.min(bNumber.length(), 255));
+            technology.setField(TechnologyFields.NUMBER,bNumber);
+            technology.getDataDefinition().save(technology);
         }
     }
 

@@ -47,6 +47,34 @@
 				]]>
 			</script>
 		</bigButton>
+		<bigButton name="workPlanDelivered" icon="acceptIcon24.png"
+				   action="#{grid}.fireEvent(workPlanDelivered);">
+			<script>
+				<![CDATA[
+					var workPlanDelivered = #{window}.getRibbonItem("workPlan.workPlanDelivered");
+					#{grid}.addOnChangeListener({
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								workPlanDelivered.disable();
+							} else {
+								var enableWorkPlanDelivered = false;
+								for(i in selectedEntitiesArray){
+									if(selectedEntitiesArray[i].fields.workPlanDelivered !== "1"){
+										enableWorkPlanDelivered = true;
+										break;
+									}
+								}
+								if(enableWorkPlanDelivered){
+									workPlanDelivered.enable();
+								} else {
+									workPlanDelivered.disable();
+								}
+							}
+						}
+					});
+				]]>
+			</script>
+		</bigButton>
 	</group>
 
 </ribbonExtension>

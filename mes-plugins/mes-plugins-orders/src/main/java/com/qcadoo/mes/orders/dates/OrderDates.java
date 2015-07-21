@@ -58,7 +58,7 @@ public class OrderDates {
     }
 
     private static boolean hasPlannedDatesDefined(final Entity order) {
-        return order.getField(OrderFields.DATE_FROM) != null && order.getField(OrderFields.DATE_TO) != null;
+        return ((order.getField(OrderFields.DATE_FROM) != null) && (order.getField(OrderFields.DATE_TO) != null));
     }
 
     public static OrderDates of(final Entity order, final DateTime defaultStart, final DateTime defaultEnd) {
@@ -68,18 +68,23 @@ public class OrderDates {
     private static OrderDates of(final Entity order, final Optional<DateTime> defaultStart, final Optional<DateTime> defaultEnd) {
         ThreeLevelDate startDates = threeLevelDate(order, OrderFields.DATE_FROM, OrderFields.CORRECTED_DATE_FROM,
                 OrderFields.EFFECTIVE_DATE_FROM, defaultStart);
+
         ThreeLevelDate endDates = threeLevelDate(order, OrderFields.DATE_TO, OrderFields.CORRECTED_DATE_TO,
                 OrderFields.EFFECTIVE_DATE_TO, defaultEnd);
+
         return new OrderDates(startDates, endDates);
     }
 
-    private static ThreeLevelDate threeLevelDate(final Entity order, final String plannedDateFieldName,
+    public static ThreeLevelDate threeLevelDate(final Entity order, final String plannedDateFieldName,
             final String correctedDateFieldName, final String effectiveDateFieldName, final Optional<DateTime> defaultPlanned) {
         Optional<DateTime> plannedStart = tryExtractLocalDate(order, plannedDateFieldName);
+
         Preconditions.checkArgument(defaultPlanned.isPresent() || plannedStart.isPresent(),
                 "You have to either pass an order with defined planned dates or provide the default values");
+
         Optional<DateTime> correctedStart = tryExtractLocalDate(order, correctedDateFieldName);
         Optional<DateTime> effectiveStart = tryExtractLocalDate(order, effectiveDateFieldName);
+
         return new ThreeLevelDate(plannedStart.or(defaultPlanned).get(), correctedStart, effectiveStart);
     }
 
@@ -105,13 +110,16 @@ public class OrderDates {
         if (obj == null) {
             return false;
         }
+
         if (obj == this) {
             return true;
         }
+
         if (obj.getClass() != getClass()) {
             return false;
         }
         OrderDates rhs = (OrderDates) obj;
+
         return new EqualsBuilder().append(this.start, rhs.start).append(this.end, rhs.end).isEquals();
     }
 

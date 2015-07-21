@@ -189,4 +189,12 @@ public interface BasicProductionCountingService {
      */
     Set<String> fillRowStylesDependsOfTypeOfMaterial(final Entity productionCountingQuantity);
 
+
+    /**
+     * Update producted quantity
+     *
+     * @param order
+     */
+    void updateProducedQuantity(final Entity order);
+
 }

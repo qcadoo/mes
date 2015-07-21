@@ -52,18 +52,32 @@
         <windowTab name="mainTab">
             <component type="form" name="masterOrderDetails" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="6">
+                           rows="7">
                     <layoutElement column="1" row="1">
+                        <component type="lookup" name="masterOrderDefinition" reference="masterOrderDefinition"
+                                   field="#{form}.masterOrderDefinition">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="100"/>
+
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
                         <component type="input" name="number" field="number"
                                    reference="number">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2" height="2">
+                    <layoutElement column="1" row="3" height="2">
                         <component type="textarea" name="name" field="name"
                                    reference="name"/>
                     </layoutElement>
-                    <layoutElement column="1" row="4" height="2">
+                    <layoutElement column="1" row="5" height="2">
                         <component type="textarea" name="description" field="description"
                                    reference="description"/>
                     </layoutElement>
@@ -90,6 +104,20 @@
                     <layoutElement column="2" row="3">
                         <component type="calendar" name="deadline" field="deadline"
                                    reference="deadline" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
+                        <component type="calendar" name="startDate" field="startDate"
+                                   reference="startDate">
+                            <option type="labelWidth" value="40"/>
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="5">
+                        <component type="calendar" name="finishDate" field="finishDate"
+                                   reference="finishDate">
                             <option type="labelWidth" value="40"/>
                             <option type="withTimePicker" value="true"/>
                         </component>
@@ -219,7 +247,7 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="2" row="1" width="2" height="5">
-                    <component type="grid" name="products" reference="productsGrid"
+                    <component type="grid" name="masterOrderProducts" reference="masterOrderProducts"
                                source="#{form}.masterOrderProducts">
                         <option type="column" name="productNumber" fields="product"
                                 link="true" expression="#product['number']"/>
@@ -248,7 +276,6 @@
                         <option type="creatable" value="true"/>
                         <option type="multiselect" value="true"/>
 
-
                         <listener event="onSelectedEntityChange"
                                   class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                                   method="onProductsChange"/>
@@ -275,7 +302,7 @@
                         class="com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier"
                         method="filterByMasterOrderNumber"/>
             </component>
-            <component type="grid" name="orders" reference="ordersGrid"
+            <component type="grid" name="orders" reference="orders"
                        source="#{form}.orders">
                 <option type="column" name="number" fields="number" link="true"/>
                 <option type="column" name="productNumber" fields="product"

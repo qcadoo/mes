@@ -1,0 +1,158 @@
+package com.qcadoo.mes.cmmsMachineParts.hooks;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.qcadoo.mes.basic.constants.SubassemblyFields;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
+import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+@Service
+public class EventHooks {
+
+    private static final String L_FORM = "form";
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private FaultTypesService faultTypesService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
+        setEventCriteriaModifiers(view);
+        setUpFaultTypeLookup(view);
+        setFieldsRequired(view);
+        fillDefaultFields(view);
+        toggleEnabledForWorkstation(view);
+        disableFieldsForState(view);
+    }
+
+    private void disableFieldsForState(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        MaintenanceEventState state = MaintenanceEventState.of(event);
+        if (state.compareTo(MaintenanceEventState.CLOSED) == 0 || state.compareTo(MaintenanceEventState.REVOKED) == 0
+                || state.compareTo(MaintenanceEventState.PLANNED) == 0) {
+            form.setFormEnabled(false);
+            GridComponent staffWorkTimes = (GridComponent) view.getComponentByReference(MaintenanceEventFields.STAFF_WORK_TIMES);
+            staffWorkTimes.setEnabled(false);
+        }
+    }
+
+    private void fillDefaultFields(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        String type = event.getStringField(MaintenanceEventFields.TYPE);
+        LookupComponent faultType = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
+        if (type.compareTo(MaintenanceEventType.PROPOSAL.getStringValue()) == 0) {
+            if (faultType.getFieldValue() == null) {
+                faultType.setFieldValue(faultTypesService.getDefaultFaultType().getId());
+            }
+            faultType.setEnabled(false);
+        }
+
+        if (numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, MaintenanceEventFields.NUMBER)) {
+            numberGeneratorService.generateAndInsertNumber(view, CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                    CmmsMachinePartsConstants.MAINTENANCE_EVENT, L_FORM, MaintenanceEventFields.NUMBER);
+        }
+    }
+
+    private void toggleEnabledForWorkstation(final ViewDefinitionState view) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        boolean enabled = event.getBelongsToField(MaintenanceEventFields.PRODUCTION_LINE) != null;
+        LookupComponent workstation = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.WORKSTATION);
+        workstation.setEnabled(enabled);
+    }
+
+    private void setFieldsRequired(final ViewDefinitionState view) {
+        FieldComponent factory = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
+        FieldComponent division = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
+        FieldComponent faultType = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
+
+        factory.setRequired(true);
+        division.setRequired(true);
+        faultType.setRequired(true);
+    }
+
+    private void setEventCriteriaModifiers(ViewDefinitionState view) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        Entity event = formComponent.getEntity();
+
+        setEventCriteriaModifier(view, event, MaintenanceEventFields.FACTORY, MaintenanceEventFields.DIVISION);
+        setEventCriteriaModifier(view, event, MaintenanceEventFields.DIVISION, MaintenanceEventFields.WORKSTATION);
+        setEventCriteriaModifier(view, event, MaintenanceEventFields.PRODUCTION_LINE, MaintenanceEventFields.WORKSTATION);
+        setEventCriteriaModifier(view, event, MaintenanceEventFields.WORKSTATION, MaintenanceEventFields.SUBASSEMBLY);
+    }
+
+    private void setEventCriteriaModifier(ViewDefinitionState view, Entity event, String fieldFrom, String fieldTo) {
+        LookupComponent lookupComponent = (LookupComponent) view.getComponentByReference(fieldTo);
+
+        Entity value = event.getBelongsToField(fieldFrom);
+        if (value != null) {
+            FilterValueHolder holder = lookupComponent.getFilterValue();
+            holder.put(fieldFrom, value.getId());
+            lookupComponent.setFilterValue(holder);
+        }
+    }
+
+    private void setUpFaultTypeLookup(final ViewDefinitionState view) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
+        Entity workstation = event.getBelongsToField(MaintenanceEventFields.WORKSTATION);
+        Entity subassembly = event.getBelongsToField(MaintenanceEventFields.SUBASSEMBLY);
+        if (workstation != null) {
+
+            LookupComponent faultTypeLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
+
+            FilterValueHolder filter = faultTypeLookup.getFilterValue();
+            filter.put(MaintenanceEventFields.WORKSTATION, workstation.getId());
+
+            if (subassembly != null) {
+                Entity workstationType = subassembly.getBelongsToField(SubassemblyFields.WORKSTATION_TYPE);
+                filter.put(MaintenanceEventFields.SUBASSEMBLY, subassembly.getId());
+                filter.put(WorkstationFields.WORKSTATION_TYPE, workstationType.getId());
+            } else {
+                Entity workstationType = workstation.getBelongsToField(WorkstationFields.WORKSTATION_TYPE);
+                filter.put(WorkstationFields.WORKSTATION_TYPE, workstationType.getId());
+            }
+            faultTypeLookup.setFilterValue(filter);
+        }
+    }
+
+    public void setEventIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent technologyIdForMultiUpload = (FieldComponent) view.getComponentByReference("eventIdForMultiUpload");
+        FieldComponent technologyMultiUploadLocale = (FieldComponent) view.getComponentByReference("eventMultiUploadLocale");
+
+        if (technology.getEntityId() != null) {
+            technologyIdForMultiUpload.setFieldValue(technology.getEntityId());
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        } else {
+            technologyIdForMultiUpload.setFieldValue("");
+            technologyIdForMultiUpload.requestComponentUpdateState();
+        }
+        technologyMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
+        technologyMultiUploadLocale.requestComponentUpdateState();
+
+    }
+
+}

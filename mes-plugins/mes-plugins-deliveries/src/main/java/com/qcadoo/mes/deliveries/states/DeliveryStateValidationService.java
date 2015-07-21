@@ -23,24 +23,30 @@
  */
 package com.qcadoo.mes.deliveries.states;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
 
 @Service
 public class DeliveryStateValidationService {
+
+    @Autowired ParameterService parameterService;
 
     private static final String ENTITY_IS_NULL = "entity is null";
 
@@ -48,10 +54,15 @@ public class DeliveryStateValidationService {
         final List<String> references = Lists.newArrayList(DELIVERY_DATE, SUPPLIER);
 
         checkRequired(references, stateChangeContext);
+        checkOrderedQuantity(stateChangeContext);
     }
 
     public void validationOnReceived(final StateChangeContext stateChangeContext) {
         checkDeliveredQuantity(stateChangeContext);
+
+        if(parameterService.getParameter().getBooleanField("positivePurchasePrice")) {
+            checkDeliveredPurchasePrices(stateChangeContext);
+        }
     }
 
     public void checkRequired(final List<String> fieldNames, final StateChangeContext stateChangeContext) {
@@ -82,11 +93,55 @@ public class DeliveryStateValidationService {
             }
         }
         if (deliveredProductHasNull) {
-            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredQuantity.isRequired",
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredQuantity.isRequired", false,
                     listOfProductNumber.toString());
-            stateChangeContext.addMessage("deliveries.deliveredProducts.deliveredQuantity.isRequired", StateMessageType.FAILURE,
-                    false, listOfProductNumber.toString());
         }
     }
 
+
+
+    private void checkOrderedQuantity(StateChangeContext stateChangeContext) {
+        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        List<Entity> orderedProducts = stateChangeEntity.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
+
+        StringBuffer listOfProductNumber = new StringBuffer();
+
+        orderedProducts.forEach((orderedProduct)->{
+            BigDecimal orderedQuantity = BigDecimalUtils.convertNullToZero(orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY));
+            if(orderedQuantity.compareTo(BigDecimal.ZERO)<=0){
+                if(!listOfProductNumber.toString().isEmpty()){
+                    listOfProductNumber.append(", ");
+                }
+                listOfProductNumber.append(orderedProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER));
+            }
+        });
+
+        if(!listOfProductNumber.toString().isEmpty()) {
+            stateChangeContext.addValidationError("deliveries.orderedProducts.orderedQuantity.isRequired", false,
+                    listOfProductNumber.toString());
+        }
+    }
+
+    private void checkDeliveredPurchasePrices(StateChangeContext stateChangeContext) {
+        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        List<Entity> deliveredProducts = stateChangeEntity.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+
+        StringBuffer listOfProductNumber = new StringBuffer();
+
+        deliveredProducts.forEach((deliveredProduct)->{
+
+            BigDecimal price = deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
+            if(price == null || price.compareTo(BigDecimal.ZERO)<=0){
+                if(!listOfProductNumber.toString().isEmpty()){
+                    listOfProductNumber.append(", ");
+                }
+                listOfProductNumber.append(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER));
+            }
+        });
+
+        if(!listOfProductNumber.toString().isEmpty()) {
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredPurchasePrice.isRequired", false,
+                    listOfProductNumber.toString());
+        }
+    }
 }

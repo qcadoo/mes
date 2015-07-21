@@ -25,6 +25,7 @@ package com.qcadoo.mes.basic.constants;
 
 public final class DivisionFields {
 
+
     private DivisionFields() {
 
     }
@@ -38,5 +39,7 @@ public final class DivisionFields {
     public static final String WORKSTATION_TYPES = "workstationTypes";
 
     public static final String WORKSTATIONS = "workstations";
+
+    public static final String FACTORY = "factory";
 
 }

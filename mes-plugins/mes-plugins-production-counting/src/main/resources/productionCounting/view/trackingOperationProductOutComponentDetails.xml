@@ -25,58 +25,72 @@
 
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="trackingOperationProductOutComponentDetails" modelName="trackingOperationProductOutComponent">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="trackingOperationProductOutComponentDetails" modelName="trackingOperationProductOutComponent">
 
-	<component type="window" name="window">
+    <component type="window" name="window">
 
-		<ribbon>
-			<group template="navigation" />
-			<group template="formSaveAction" />
-		</ribbon>
+        <ribbon>
+            <group template="navigation"/>
+            <group template="formSaveAction"/>
+        </ribbon>
 
-		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="grid" reference="grid"
-				columns="6" rows="4" hasBorders="false">
-				<layoutElement column="1" row="1" width="5">
-					<component type="input" name="number" reference="number"
-						defaultEnabled="false">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" width="5">
-					<component type="input" name="name" reference="name"
-						defaultEnabled="false" />
-				</layoutElement>
-				<layoutElement column="1" row="3" width="5">
-					<component type="input" name="plannedQuantity" field="plannedQuantity"
-						reference="plannedQuantity" defaultEnabled="false">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="6" row="3">
-					<component type="input" name="plannedQuantityUNIT"
-						reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
-				</layoutElement>
-				<layoutElement column="1" row="4" width="5">
-					<component type="input" name="usedQuantity" field="usedQuantity"
-                               reference="usedQuantity">
-						<option type="alignment" value="right" />
-					</component>
-				</layoutElement>
-				<layoutElement column="6" row="4">
-					<component type="input" name="usedQuantityUNIT"
-						reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false" />
-				</layoutElement>
-			</component>
-			<option type="header" value="true" />
-			<option type="expression" value="#product['name']" />
-		</component>
-	</component>
+        <component type="form" name="form" reference="form">
+            <component type="gridLayout" name="grid" reference="grid"
+                       columns="6" rows="5" hasBorders="false">
+                <layoutElement column="1" row="1" width="5">
+                    <component type="input" name="number" reference="number"
+                               defaultEnabled="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="5">
+                    <component type="input" name="name" reference="name"
+                               defaultEnabled="false"/>
+                </layoutElement>
+                <layoutElement column="1" row="3" width="5">
+                    <component type="input" name="plannedQuantity" field="plannedQuantity"
+                               reference="plannedQuantity" defaultEnabled="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="6" row="3">
+                    <component type="input" name="plannedQuantityUNIT"
+                               reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+                </layoutElement>
+                <layoutElement column="1" row="4" width="5">
+                    <component type="input" name="usedQuantity" field="usedQuantity"
+                               reference="usedQuantity" defaultEnabled="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="6" row="4">
+                    <component type="input" name="usedQuantityUNIT"
+                               reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+                </layoutElement>
+                <layoutElement column="1" row="5" width="5">
+                    <component type="input" name="givenQuantity" field="givenQuantity" reference="givenQuantity">
+                        <option type="alignment" value="right"/>
+                        <listener event="onInputChange" method="calculateQuantity"
+                                  class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="6" row="5">
+                    <component type="select" name="givenUnit" reference="givenUnit"
+                               hasLabel="false" field="givenUnit">
+                        <listener event="onSelectedEntityChange" method="calculateQuantity"
+                                  class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"/>
+                    </component>
+                </layoutElement>
+            </component>
+            <option type="header" value="true"/>
+            <option type="expression" value="#product['name']"/>
+        </component>
+    </component>
 
-	<hooks>
-		<beforeRender
+    <hooks>
+        <beforeRender
                 class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
-                method="onBeforeRender" />
-	</hooks>
+                method="onBeforeRender"/>
+    </hooks>
 </view>

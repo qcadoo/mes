@@ -78,7 +78,7 @@ public class TechnologyMultiUploadController {
 
     private static final Integer L_SCALE = 2;
 
-    private static final List<String> exts = Lists.newArrayList("GIF", "JPG", "JPEG", "PNG", "PDF");
+    private static final List<String> exts = Lists.newArrayList("GIF", "JPG", "JPEG", "PNG", "PDF", "XLS", "XLSX");
 
     @ResponseBody
     @RequestMapping(value = "/multiUploadFiles", method = RequestMethod.POST)

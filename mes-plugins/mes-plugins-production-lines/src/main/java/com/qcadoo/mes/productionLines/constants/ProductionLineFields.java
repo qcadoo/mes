@@ -33,7 +33,7 @@ public final class ProductionLineFields {
 
     public static final String NAME = "name";
 
-    public static final String DIVISION = "division";
+    public static final String DIVISIONS = "divisions";
 
     public static final String PLACE = "place";
 

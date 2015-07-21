@@ -67,7 +67,7 @@ public class OperationProductOutTable {
     public void print(GroupingContainer groupingContainer, Entity operationComponent, Document document, Locale locale)
             throws DocumentException {
         Map<Long, Map<OperationProductColumn, ColumnAlignment>> map = groupingContainer
-                .getOperationComponentIdProductInColumnToAlignment();
+                .getOperationComponentIdProductOutColumnToAlignment();
         Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap = map.get(operationComponent.getId());
 
         int columnCount = operationProductColumnAlignmentMap.size();

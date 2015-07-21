@@ -37,6 +37,8 @@ public final class StaffAssignmentToShiftFields {
 
     public static final String OCCUPATION_TYPE = "occupationType";
 
+    public static final String MASTER_ORDER = "masterOrder";
+
     public static final String OCCUPATION_TYPE_NAME = "occupationTypeName";
 
     public static final String OCCUPATION_TYPE_ENUM = "occupationTypeEnum";
@@ -44,4 +46,5 @@ public final class StaffAssignmentToShiftFields {
     public static final String OCCUPATION_TYPE_VALUE_FOR_GRID = "occupationTypeValueForGrid";
 
     public static final String STATE = "state";
+
 }

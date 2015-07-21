@@ -118,7 +118,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return getProductComponentQuantitiesWithoutNonComponents(orders, false);
     }
 
-    private OperationProductComponentWithQuantityContainer getProductComponentQuantitiesWithoutNonComponents(
+    @Override
+    public OperationProductComponentWithQuantityContainer getProductComponentQuantitiesWithoutNonComponents(
             final List<Entity> orders, final boolean onTheFly) {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();

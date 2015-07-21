@@ -166,8 +166,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
         SearchCriterion hasStateChangeFromDraftToAccepted = and(
                 eq(scAlias + "." + ProductionTrackingStateChangeFields.SOURCE_STATE, ProductionTrackingStateStringValues.DRAFT),
-                eq(scAlias + "." + ProductionTrackingStateChangeFields.TARGET_STATE,
-                        ProductionTrackingStateStringValues.ACCEPTED));
+                eq(scAlias + "." + ProductionTrackingStateChangeFields.TARGET_STATE, ProductionTrackingStateStringValues.ACCEPTED));
 
         SearchCriterion isAlreadyAccepted = and(eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED),
                 eq(scAlias + "." + ProductionTrackingStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()),
@@ -218,8 +217,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
             final Entity productionTrackingReportOrBalance) {
         Entity order = productionTrackingReportOrBalance.getBelongsToField(L_ORDER);
 
-        if ((order == null) || isTypeOfProductionRecordingBasic(
-                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+        if ((order == null) || isTypeOfProductionRecordingBasic(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
 
@@ -310,19 +308,20 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
         String state = order.getStringField(OrderFields.STATE);
 
-        if (OrderStateStringValues.PENDING.equals(state) || OrderStateStringValues.ACCEPTED.equals(state)) {
-            doneQuantityField.setEnabled(false);
-            amountOfProductProducedField.setEnabled(false);
-        } else {
+        if (OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED.equals(state)) {
             String typeOfProductionRecording = (String) typeOfProductionRecordingField.getFieldValue();
 
             if (checkIfTypeOfProductionRecordingIsEmptyOrBasic(typeOfProductionRecording)) {
                 doneQuantityField.setEnabled(true);
-                amountOfProductProducedField.setEnabled(true);
+                amountOfProductProducedField.setEnabled(false);
             } else {
                 doneQuantityField.setEnabled(false);
                 amountOfProductProducedField.setEnabled(false);
             }
+
+        } else {
+            doneQuantityField.setEnabled(false);
+            amountOfProductProducedField.setEnabled(false);
         }
     }
 
@@ -436,23 +435,23 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
         Entity toc = operationProduct.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
         Entity product = operationProduct.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 
-        List<Entity> tracings =
-                getProductionTrackingDD().find()
-                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
-                        .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
-                        .list()
-                        .getEntities();
+        List<Entity> tracings = getProductionTrackingDD().find()
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED)).list()
+                .getEntities();
         for (Entity tracking : tracings) {
-            Entity topIN = getTrackingOperationProductInComponentDD().find().add(SearchRestrictions.belongsTo(
-                    TrackingOperationProductInComponentFields.PRODUCTION_TRACKING, tracking))
+            Entity topIN = getTrackingOperationProductInComponentDD().find()
+                    .add(SearchRestrictions.belongsTo(TrackingOperationProductInComponentFields.PRODUCTION_TRACKING, tracking))
                     .add(SearchRestrictions.belongsTo(TrackingOperationProductInComponentFields.PRODUCT, product))
                     .setMaxResults(1).uniqueResult();
             if (topIN != null) {
                 if (value == null) {
                     value = new BigDecimal(0l);
                 }
-                value = value.add(topIN.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY),
-                        numberService.getMathContext());
+                BigDecimal usedQuantity = topIN.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+                if (usedQuantity != null) {
+                    value = value.add(usedQuantity, numberService.getMathContext());
+                }
             }
         }
         if (value != null) {
@@ -474,23 +473,23 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
         Entity toc = operationProduct.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT);
         Entity product = operationProduct.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
 
-        List<Entity> tracings =
-                getProductionTrackingDD().find()
-                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
-                        .add(SearchRestrictions
-                                .eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED)).list()
-                        .getEntities();
+        List<Entity> tracings = getProductionTrackingDD().find()
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED)).list()
+                .getEntities();
         for (Entity tracking : tracings) {
-            Entity topIN = getTrackingOperationProductOutComponentDD().find().add(SearchRestrictions.belongsTo(
-                    TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING, tracking))
+            Entity topIN = getTrackingOperationProductOutComponentDD().find()
+                    .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING, tracking))
                     .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, product))
                     .setMaxResults(1).uniqueResult();
             if (topIN != null) {
                 if (value == null) {
                     value = new BigDecimal(0l);
                 }
-                value = value.add(topIN.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY),
-                        numberService.getMathContext());
+                BigDecimal usedQuantity = topIN.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
+                if (usedQuantity != null) {
+                    value = value.add(usedQuantity, numberService.getMathContext());
+                }
             }
         }
         if (value != null) {

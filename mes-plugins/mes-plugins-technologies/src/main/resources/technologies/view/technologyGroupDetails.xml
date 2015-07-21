@@ -25,64 +25,90 @@
 
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="technologyGroupDetails" modelName="technologyGroup">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="technologyGroupDetails" modelName="technologyGroup">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<template name="standardFormTemplate" />
-		</ribbon>
-	
-		<windowTab name="mainTab">
-			<component type="form" name="product" reference="product" />
-	
-			<component type="form" name="technologyGroup" reference="form">
-				<component type="gridLayout" name="technologyGroupGridLayout"
-					columns="3" rows="3" hasBorders="false">
-					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number"
-							reference="number">
-							<option type="alignment" value="left" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="name" field="name"
-							reference="name" />
-					</layoutElement>
-				</component>
-				<option type="header" value="true" />
-				<option type="expression" value="#name" />
-	
-				<listener event="save"
-					class="com.qcadoo.mes.technologies.hooks.TechnologyGroupDetailsViewHooks"
-					method="addTechnologyGroupToProduct" />
-					
-			</component>
-		</windowTab>
-		<windowTab name="technologies">
-			<component type="grid" name="technologies" reference="grid"  source="#{form}.technologies"> 
-				<option type="column" name="number" fields="number" link="true"
-					width="50" />
-				<option type="column" name="name" fields="name" link="true" />
-				<option type="column" name="productName" fields="product"
-					expression="#product['name']" />
-				<option type="column" name="state" fields="state" />
-				<option type="column" name="master" fields="master" />
-				<option type="order" column="number" direction="desc" />
-				<option type="searchable" value="name,number,productName,state" />
-				<option type="orderable" value="name,number,productName,state" />
-				<option type="correspondingView" value="technologies/technologyDetails" />
-				<option type="correspondingComponent" value="form" />
-				<option type="fullscreen" value="true" />
-				<option type="multiselect" value="true" />
-				
-				<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers" method="showPatternTechnology" />			
-			</component>
-		</windowTab>
-	
-	</component>
-		<hooks>
-			<beforeRender class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyGroupNumber" />
-		</hooks>
+        <ribbon>
+            <template name="standardFormTemplate"/>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="product" reference="product"/>
+
+            <component type="form" name="technologyGroup" reference="form">
+                <component type="gridLayout" name="technologyGroupGridLayout"
+                           columns="3" rows="3" hasBorders="false">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number"
+                                   reference="number">
+                            <option type="alignment" value="left"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   reference="name"/>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="#name"/>
+
+                <listener event="save"
+                          class="com.qcadoo.mes.technologies.hooks.TechnologyGroupDetailsViewHooks"
+                          method="addTechnologyGroupToProduct"/>
+
+            </component>
+        </windowTab>
+        <windowTab name="technologies">
+            <component type="lookup" name="technologiesLookup" reference="technologiesLookup"
+                       field="#{form}.technologies" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                <option type="column" name="name" fields="name" link="true"
+                        width="200"/>
+                <option type="column" name="productName" fields="product"
+                        expression="#product['name']"/>
+                <option type="column" name="state" fields="state"/>
+                <option type="column" name="master" fields="master"/>
+                <option type="searchable" value="name,number,productName,state,master"/>
+                <option type="orderable" value="name,number,productName,state,master"/>
+                <option type="multiselect" value="true"/>
+                <option type="expression"
+                        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                <option type="fieldCode" value="number"/>
+
+                <criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+                                  method="showPatternTechnologyWithoutGroup"/>
+            </component>
+            <component type="grid" name="technologies" reference="grid" source="#{form}.technologies">
+                <option type="column" name="number" fields="number" link="true"
+                        width="50"/>
+                <option type="column" name="name" fields="name" link="true"/>
+                <option type="column" name="productName" fields="product"
+                        expression="#product['name']"/>
+                <option type="column" name="state" fields="state"/>
+                <option type="column" name="master" fields="master"/>
+                <option type="order" column="number" direction="desc"/>
+                <option type="searchable" value="name,number,productName,state"/>
+                <option type="orderable" value="name,number,productName,state"/>
+                <option type="correspondingView" value="technologies/technologyDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+
+                <option type="weakRelation" value="true"/>
+                <option type="correspondingLookup" value="technologiesLookup"/>
+
+                <criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+                                  method="showPatternTechnology"/>
+            </component>
+        </windowTab>
+
+    </component>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyGroupNumber"/>
+    </hooks>
 </view>

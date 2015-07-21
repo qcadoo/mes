@@ -291,8 +291,11 @@ public class DeliveryDetailsHooks {
         Entity delivery = deliveriesService.getDelivery(deliveryId);
         boolean hasOrderedProducts = !delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS).isEmpty();
 
-        copyWith.setEnabled(hasOrderedProducts);
-        copyWithout.setEnabled(hasOrderedProducts);
+        String state = delivery.getStringField(DeliveryFields.STATE);
+        boolean isFinished = DeliveryState.RECEIVED.getStringValue().equals(state)
+                || DeliveryState.DECLINED.getStringValue().equals(state);
+        copyWith.setEnabled(hasOrderedProducts && !isFinished);
+        copyWithout.setEnabled(hasOrderedProducts && !isFinished);
         copyWith.requestUpdate(true);
         copyWithout.requestUpdate(true);
 

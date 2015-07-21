@@ -29,6 +29,8 @@ public final class MasterOrderFields {
 
     }
 
+    public static final String MASTER_ORDER_DEFINITION = "masterOrderDefinition";
+
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";
@@ -40,6 +42,10 @@ public final class MasterOrderFields {
     public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
 
     public static final String DEADLINE = "deadline";
+
+    public static final String START_DATE = "startDate";
+
+    public static final String FINISH_DATE = "finishDate";
 
     public static final String ADD_MASTER_PREFIX_TO_NUMBER = "addMasterPrefixToNumber";
 
@@ -62,4 +68,5 @@ public final class MasterOrderFields {
     public static final String ORDERS = "orders";
 
     public static final String MASTER_ORDER_PRODUCTS = "masterOrderProducts";
+
 }

@@ -39,4 +39,8 @@ public final class TrackingOperationProductOutComponentFields {
 
     public static final String BALANCE = "balance";
 
+    public static final String GIVEN_QUANTITY = "givenQuantity";
+
+    public static final String GIVEN_UNIT = "givenUnit";
+
 }

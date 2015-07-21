@@ -426,6 +426,8 @@
                                 expression="#product['number']" link="true" width="100"/>
                         <option type="column" name="name" fields="product"
                                 expression="#product['name']" link="true" width="200"/>
+                        <option type="column" name="plannedQuantity" fields="plannedQuantity"
+                                width="100"/>
                         <option type="column" name="usedQuantity" fields="usedQuantity"
                                 width="100"/>
                         <option type="column" name="unit" fields="product"
@@ -458,6 +460,8 @@
                                 expression="#product['number']" link="true" width="100"/>
                         <option type="column" name="name" fields="product"
                                 expression="#product['name']" link="true" width="200"/>
+                        <option type="column" name="plannedQuantity" fields="plannedQuantity"
+                                width="100"/>
                         <option type="column" name="usedQuantity" fields="usedQuantity"
                                 width="100"/>
                         <option type="column" name="unit" fields="product"

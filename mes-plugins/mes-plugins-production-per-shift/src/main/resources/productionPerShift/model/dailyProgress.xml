@@ -27,21 +27,20 @@
 <model name="dailyProgress" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="progressForDay" model="progressForDay" />
-		<belongsTo name="shift" model="shift" plugin="basic"
-		           required="true" />
-		<decimal name="quantity" required="true">
-			<validatesRange from="0" exclusively="false" />
-		</decimal>
-		<decimal name="efficiency" persistent="false" />
+    <fields>
+        <belongsTo name="progressForDay" model="progressForDay"/>
+        <belongsTo name="shift" model="shift" plugin="basic"
+                   required="true"/>
+        <decimal name="quantity" required="true">
+            <validatesRange from="0" exclusively="false"/>
+        </decimal>
 
-		<!-- set to true if this progress' plan should not be editable by the user via PPS view -->
-		<boolean name="locked" default="false" />
-	</fields>
-	<hooks>
-		<validatesWith
-				class="com.qcadoo.mes.productionPerShift.validators.DailyProgressValidators"
-				method="validateShiftUniqueness" />
-	</hooks>
+        <!-- set to true if this progress' plan should not be editable by the user via PPS view -->
+        <boolean name="locked" default="false"/>
+    </fields>
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.productionPerShift.validators.DailyProgressValidators"
+                method="validateShiftUniqueness"/>
+    </hooks>
 </model>

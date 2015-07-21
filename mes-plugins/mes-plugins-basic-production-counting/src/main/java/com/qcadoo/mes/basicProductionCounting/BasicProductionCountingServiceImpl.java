@@ -384,6 +384,21 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     @Override
+    public void updateProducedQuantity(final Entity order) {
+        final List<Entity> basicProductionCountings = order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS).find()
+                .list().getEntities();
+
+        for (Entity basicProductionCounting : basicProductionCountings) {
+            Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
+
+            if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId())) {
+                basicProductionCounting.setField(BasicProductionCountingFields.PRODUCED_QUANTITY, order.getDecimalField(OrderFields.DONE_QUANTITY));
+                basicProductionCounting.getDataDefinition().save(basicProductionCounting);
+            }
+        }
+    }
+
+    @Override
     public Entity getBasicProductionCounting(final Long basicProductionCoutningId) {
         return getBasicProductionCountingDD().get(basicProductionCoutningId);
     }

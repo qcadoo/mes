@@ -199,15 +199,15 @@ public class ProductService {
 
     public boolean checkSubstituteComponentUniqueness(final DataDefinition substituteComponentDD, final Entity substituteComponent) {
         Entity product = substituteComponent.getBelongsToField(SubstituteComponentFields.PRODUCT);
-        Entity substitute = substituteComponent.getBelongsToField(SubstituteComponentFields.SUBSTITUTE);
+        Entity baseProduct = substituteComponent.getBelongsToField(SubstituteComponentFields.BASE_PRODUCT);
 
-        if (substitute == null || product == null) {
+        if (baseProduct == null || product == null) {
             return false;
         }
 
         final SearchResult searchResult = substituteComponentDD.find()
                 .add(SearchRestrictions.belongsTo(SubstituteComponentFields.PRODUCT, product))
-                .add(SearchRestrictions.belongsTo(SubstituteComponentFields.SUBSTITUTE, substitute)).list();
+                .add(SearchRestrictions.belongsTo(SubstituteComponentFields.BASE_PRODUCT, baseProduct)).list();
 
         if (searchResult.getTotalNumberOfEntities() > 0
                 && !searchResult.getEntities().get(0).getId().equals(substituteComponent.getId())) {

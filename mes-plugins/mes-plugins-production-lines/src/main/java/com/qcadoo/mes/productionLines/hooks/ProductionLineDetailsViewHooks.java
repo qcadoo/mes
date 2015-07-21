@@ -30,6 +30,10 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -43,5 +47,16 @@ public class ProductionLineDetailsViewHooks {
     public void generateProductionLineNumber(final ViewDefinitionState viewDefinitionState) {
         numberGeneratorService.generateAndInsertNumber(viewDefinitionState, ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE, L_FORM, NUMBER);
+    }
+
+    public void fillCriteriaModifiers(final ViewDefinitionState viewDefinitionState) {
+        GridComponent workstations = (GridComponent) viewDefinitionState.getComponentByReference("workstations");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        if (form.getEntityId() != null) {
+            FilterValueHolder filter = workstations.getFilterValue();
+            filter.put("productionLine", form.getEntityId());
+            workstations.setFilterValue(filter);
+        }
+        workstations.reloadEntities();
     }
 }

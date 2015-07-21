@@ -37,5 +37,7 @@ public final class ShiftTimetableExceptionFields {
     public static final String TYPE = "type";
 
     public static final String SHIFT = "shift";
+    
+    public static final String RELATES_TO_PREV_DAY = "relatesToPrevDay";
 
 }

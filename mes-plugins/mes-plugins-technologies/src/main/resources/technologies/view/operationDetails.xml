@@ -154,13 +154,14 @@
 
                         <option type="expression" value="#number + ' - ' + #name"/>
                         <option type="fieldCode" value="number"/>
-                        <listener event="onSelectedEntityChange"
-                                  class="com.qcadoo.mes.technologies.listeners.OperationDetailsListeners"
-                                  method="setProductionLineLookup"/>
+                        <!--<listener event="onSelectedEntityChange"-->
+                        <!--class="com.qcadoo.mes.technologies.listeners.OperationDetailsListeners"-->
+                        <!--method="setProductionLineLookup"/>-->
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="5">
                     <component type="lookup" name="productionLine" field="#{form}.productionLine"
+                               source="#{division}.productionLines"
                                reference="productionLine">
                         <option type="column" name="name" fields="name" link="true"/>
 
@@ -172,12 +173,12 @@
                         <listener event="onSelectedEntityChange"
                                   class="com.qcadoo.mes.technologies.listeners.OperationDetailsListeners"
                                   method="setWorkstationsLookup"/>
-                        <criteriaModifier 
-                        	class="com.qcadoo.mes.technologies.criteriaModifiers.OperationDetailsCriteriaModifiers"
-                        	method="showProductionLinesForDivision" />
+                        <!--<criteriaModifier -->
+                        <!--class="com.qcadoo.mes.technologies.criteriaModifiers.OperationDetailsCriteriaModifiers"-->
+                        <!--method="showProductionLinesForDivision" />-->
                     </component>
                 </layoutElement>
-                
+
                 <layoutElement column="1" row="6" width="2" height="5">
                     <component type="lookup" name="workstationLookup"
                                reference="workstationLookup" field="#{form}.workstations"
@@ -195,9 +196,9 @@
                         <option type="fieldCode" value="number"/>
 
                         <option type="multiselect" value="true"/>
-                        <criteriaModifier 
-                        	class="com.qcadoo.mes.technologies.criteriaModifiers.OperationDetailsCriteriaModifiers"
-                        	method="showWorkstationsForProductionLine" />
+                        <criteriaModifier
+                                class="com.qcadoo.mes.technologies.criteriaModifiers.OperationDetailsCriteriaModifiers"
+                                method="showWorkstationsForProductionLine"/>
                     </component>
                     <component type="grid" name="workstations" reference="workstations"
                                source="#{form}.workstations">

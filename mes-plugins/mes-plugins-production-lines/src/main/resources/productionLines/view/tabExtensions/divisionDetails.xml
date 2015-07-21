@@ -44,12 +44,25 @@
                     <option type="fieldCode" value="number"/>
 
                     <option type="multiselect" value="true"/>
-                    <criteriaModifier
-                            class="com.qcadoo.mes.productionLines.criteriaModifiers.ProductionLineCriteriaModifiers"
-                            method="showProductionLinesWithoutDivisionOnly"/>
+                    <!--<criteriaModifier-->
+                    <!--class="com.qcadoo.mes.productionLines.criteriaModifiers.ProductionLineCriteriaModifiers"-->
+                    <!--method="showProductionLinesWithoutDivisionOnly"/>-->
                 </component>
                 <component type="grid" name="productionLines" reference="productionLines"
                            source="#{form}.productionLines">
+                    <script>
+                        <![CDATA[
+                                var that = this;
+                                this.onDeleteButtonClicked = function () {
+                                    var selectedEntities = #{productionLines}.getValue().content.selectedEntities;
+                                    if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
+                                        that.performDeleteWithoutConfirm();
+                                        #{productionLines}.fireEvent(null,'removeSelectedProductionLines',[selectedEntities]);
+                                    }
+                                };
+                    ]]>
+                    </script>
+
                     <option type="column" name="number" fields="number"/>
                     <option type="column" name="name" fields="name"/>
 
@@ -64,8 +77,12 @@
                     <option type="creatable" value="true"/>
                     <option type="deletable" value="true"/>
                     <option type="fullscreen" value="true"/>
-                    <option type="multiselect" value="false"/>
+                    <option type="multiselect" value="true"/>
                     <option type="paginable" value="false"/>
+
+                    <listener event="removeSelectedProductionLines"
+                              method="onRemoveSelectedProductionLines"
+                              class="com.qcadoo.mes.productionLines.listeners.DivisionDetailsListenersPL"/>
                 </component>
             </layoutElement>
 
@@ -89,6 +106,19 @@
                 </component>
                 <component type="grid" name="workstations" reference="workstations"
                            source="#{productionLines}.workstations">
+
+                    <script>
+                        <![CDATA[
+                                var that = this;
+                                this.onDeleteButtonClicked = function () {
+                                    var selectedEntities = #{workstations}.getValue().content.selectedEntities;
+                                    //that.performDelete();
+                                    if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
+                                        #{workstations}.fireEvent(null,'removeSelectedEntites',[selectedEntities]);
+                                    }
+                                };
+                    ]]>
+                    </script>
                     <option type="column" name="number" fields="number"/>
                     <option type="column" name="name" fields="name"/>
 
@@ -105,6 +135,16 @@
                     <option type="fullscreen" value="true"/>
                     <option type="multiselect" value="true"/>
                     <option type="paginable" value="false"/>
+
+                    <criteriaModifier
+                            class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
+                            method="showWorkstationsForCurrentDivision"/>
+                    <listener event="addExistingEntity"
+                              method="onAddExistingEntity"
+                              class="com.qcadoo.mes.productionLines.listeners.DivisionDetailsListenersPL"/>
+                    <listener event="removeSelectedEntites"
+                              method="onRemoveSelectedEntity"
+                              class="com.qcadoo.mes.productionLines.listeners.DivisionDetailsListenersPL"/>
                 </component>
             </layoutElement>
         </component>

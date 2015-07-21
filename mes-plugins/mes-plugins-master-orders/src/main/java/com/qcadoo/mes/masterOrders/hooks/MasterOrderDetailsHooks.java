@@ -68,10 +68,6 @@ public class MasterOrderDetailsHooks {
 
     private static final String L_CREATE_ORDER = "createOrder";
 
-    private static final String L_ORDERS_GRID = "ordersGrid";
-
-    private static final String L_PRODUCTS_GRID = "productsGrid";
-
     private static final String L_ORDERS_LOOKUP = "ordersLookup";
 
     @Autowired
@@ -104,15 +100,17 @@ public class MasterOrderDetailsHooks {
             field.setVisible(visibleFields);
         }
 
-        GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
-        masterOrderProducts.setVisible(visibleGrid);
+        GridComponent masterOrderProductsGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+        masterOrderProductsGrid.setVisible(visibleGrid);
+
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
-        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("createOrder");
+        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName(L_ORDERS);
+        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName(L_CREATE_ORDER);
+
         if (visibleGrid) {
-            if (masterOrderProducts.getSelectedEntities().isEmpty()) {
+            if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
                 createOrder.setEnabled(false);
-            } else if (masterOrderProducts.getSelectedEntities().size() == 1) {
+            } else if (masterOrderProductsGrid.getSelectedEntities().size() == 1) {
                 createOrder.setEnabled(true);
             } else {
                 createOrder.setEnabled(false);
@@ -141,13 +139,15 @@ public class MasterOrderDetailsHooks {
             unit = product.getStringField(UNIT);
         }
 
-        for (String reference : Arrays
-                .asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit", "producedOrderQuantityUnit")) {
+        for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
+                "producedOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
+
             if (unit != null) {
                 field.setVisible(true);
             }
+
             field.requestComponentUpdateState();
         }
     }
@@ -180,8 +180,7 @@ public class MasterOrderDetailsHooks {
             return;
         }
 
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
-                .equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
+        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             return;
         }
 
@@ -201,11 +200,11 @@ public class MasterOrderDetailsHooks {
             return;
         }
 
-        GridComponent ordersGrid = (GridComponent) view.getComponentByReference(L_ORDERS_GRID);
-        GridComponent productsGrid = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
+        GridComponent ordersGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.ORDERS);
+        GridComponent masterOrderProductsGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
         if (masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
-                .equals(MasterOrderType.MANY_PRODUCTS.getStringValue()) && productsGrid.getEntities().isEmpty()) {
+                .equals(MasterOrderType.MANY_PRODUCTS.getStringValue()) && masterOrderProductsGrid.getEntities().isEmpty()) {
             ordersGrid.setEditable(false);
         } else {
             ordersGrid.setEditable(true);
@@ -223,7 +222,7 @@ public class MasterOrderDetailsHooks {
         FieldComponent masterOrderTypeField = (FieldComponent) view.getComponentByReference(MASTER_ORDER_TYPE);
         Entity masterOrder = form.getEntity().getDataDefinition().get(masterOrderId);
         String masterOrderType = masterOrderTypeField.getFieldValue().toString();
-        GridComponent productsGrid = (GridComponent) view.getComponentByReference(L_PRODUCTS_GRID);
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
         if (!masterOrder.getStringField(MASTER_ORDER_TYPE).equals(masterOrderType)) {
             productsGrid.setEditable(false);
@@ -248,4 +247,5 @@ public class MasterOrderDetailsHooks {
         FieldComponent productField = (FieldComponent) view.getComponentByReference(PRODUCT);
         productField.setRequired(true);
     }
+
 }

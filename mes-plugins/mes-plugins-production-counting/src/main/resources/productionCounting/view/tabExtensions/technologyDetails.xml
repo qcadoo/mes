@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.3
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="technologies" view="technologyDetails">
+
+	<windowTab name="productionCounting" reference="productionCounting">
+		<component type="gridLayout" name="gridLayout" reference="gridLayout"
+			columns="3" rows="5">
+			<layoutElement column="1" row="1">
+				<component type="select" name="typeOfProductionRecording"
+					reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
+					default="01basic">
+                    <option type="labelWidth" value="60" />
+					<listener event="onSelectedEntityChange"
+						class="com.qcadoo.mes.productionCounting.listeners.TechnologyDetailsListenersPC"
+						method="disableFields" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="checkbox" name="registerQuantityInProduct"
+					reference="registerQuantityInProduct" field="#{form}.registerQuantityInProduct" >
+                    <option type="labelWidth" value="60" />
+                </component>
+			</layoutElement>
+			<layoutElement column="1" row="3">
+				<component type="checkbox" name="registerQuantityOutProduct"
+					reference="registerQuantityOutProduct" field="#{form}.registerQuantityOutProduct" >
+                    <option type="labelWidth" value="60" />
+                </component>
+			</layoutElement>
+			<layoutElement column="1" row="4">
+				<component type="checkbox" name="registerProductionTime"
+					reference="registerProductionTime" field="#{form}.registerProductionTime" >
+                    <option type="labelWidth" value="60" />
+                </component>
+			</layoutElement>
+			<layoutElement column="1" row="5">
+				<component type="checkbox" name="registerPiecework"
+					reference="registerPiecework" field="#{form}.registerPiecework" >
+                    <option type="labelWidth" value="60" />
+                </component>
+			</layoutElement>
+			<layoutElement column="2" row="1">
+				<component type="checkbox" name="justOne" reference="justOne"
+					field="#{form}.justOne" >
+                    <option type="labelWidth" value="80" />
+                </component>
+			</layoutElement>
+			<layoutElement column="2" row="2">
+				<component type="checkbox" name="allowToClose" reference="allowToClose"
+					field="#{form}.allowToClose" hasDescription="true" >
+                    <option type="labelWidth" value="80" />
+                </component>
+			</layoutElement>
+			<layoutElement column="2" row="3">
+				<component type="checkbox" name="autoCloseOrder"
+					reference="autoCloseOrder" field="#{form}.autoCloseOrder"
+					hasDescription="true" >
+                    <option type="labelWidth" value="80" />
+                </component>
+			</layoutElement>
+		</component>
+	</windowTab>
+	
+</windowTabExtension>

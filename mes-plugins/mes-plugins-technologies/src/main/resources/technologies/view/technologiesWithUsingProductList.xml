@@ -53,6 +53,8 @@
 				<option type="searchable" value="techNumber,techName,operationLevel,operationName,quantity" />
 				
 				<option type="fullscreen" value="true" />
+				<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+					method="showPatternTechnologyFromOperationProductInComponent"/>
 			</component>
 			
 			<option type="header" value="true" />

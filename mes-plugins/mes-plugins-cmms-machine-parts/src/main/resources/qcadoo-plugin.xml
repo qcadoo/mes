@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="cmmsMachineParts" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        group="other"
+        version="${qcadoo.plugin.version}"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+
+
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
+
+
+    <information>
+        <name>MES - CMMS Machine Parts</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com</url>
+        </vendor>
+        <license>AGPL</license>
+        <description>Computerised Maintenance Management Systems - provides machine parts management
+        </description>
+    </information>
+
+    <dependencies>
+        <dependency>
+            <plugin>deliveries</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+        <dependency>
+            <plugin>materialFlowResources</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+        <dependency>
+            <plugin>warehouseMinimalState</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+        <dependency>
+            <plugin>productionLines</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+    </dependencies>
+
+
+    <modules>
+        <localization:translation path="locales"/>
+
+        <!-- view -->
+        <view:view resource="view/machinePartsList.xml"/>
+        <view:view resource="view/machinePartDetails.xml"/>
+
+        <view:view resource="view/companyProductDetails.xml"/>
+        <view:view resource="view/companyProductsFamilyDetails.xml"/>
+        <view:view resource="view/productSubstituteComponentDetails.xml"/>
+
+        <view:view resource="view/faultTypesList.xml"/>
+        <view:view resource="view/faultTypeDetails.xml"/>
+
+        <view:view resource="view/eventsList.xml"/>
+        <view:view resource="view/maintenanceEventDetails.xml"/>
+        <view:view resource="view/addNewEvent.xml"/>
+
+        <view:view resource="view/staffWorkTimeDetails.xml"/>
+
+        <menu:menu-category name="maintenance"/>
+        <menu:menu-item name="events" category="maintenance" view="eventsList"/>
+
+        <menu:menu-item name="machineParts" category="basic" view="machinePartsList"/>
+        <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"/>
+
+        <view:view-tab resource="view/tabExtensions/parameters.xml"/>
+
+        <!-- view extensions -->
+
+
+        <!-- model -->
+
+        <model:model model="machinePartAttachment" resource="model/machinePartAttachment.xml"/>
+        <model:model model="eventAttachment" resource="model/eventAttachment.xml"/>
+        <model:model model="faultType" resource="model/faultType.xml"/>
+        <model:model model="maintenanceEvent" resource="model/maintenanceEvent.xml"/>
+        <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
+
+        <model:model model="maintenanceEventStateChange" resource="model/maintenanceEventStateChange.xml"/>
+
+        <!-- model extensions -->
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:decimal name="possibleWorkTimeDeviation"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="machinePartAttachments" joinField="product" model="machinePartAttachment"
+                           cascade="delete" plugin="cmmsMachineParts"/>
+        </model:model-field>
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="maintenanceEventStateChange" plugin="cmmsMachineParts"
+                             model="maintenanceEventStateChange"/>
+        </model:model-field>
+
+        <model:model-field model="shift" plugin="basic">
+            <model:hasMany name="maintenanceEventStateChanges" model="maintenanceEventStateChange" joinField="shift"
+                           plugin="cmmsMachineParts"
+                           cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:string name="catalogNumber"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:string name="drawingNumber"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:boolean name="machinePart"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
+                              joinField="workstations"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstationType">
+            <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
+                              joinField="workstationTypes"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="subassembly">
+            <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
+                              joinField="subassemblies"/>
+        </model:model-field>
+
+        <model:model-field plugin="productionLines" model="factoryStructureElement">
+            <model:belongsTo name="maintenanceEvent" model="maintenanceEvent" plugin="cmmsMachineParts"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="factory">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="factory" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="division" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="productionLine" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="workstation" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="subassembly">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="subassembly" copyable="false"/>
+        </model:model-field>
+
+        <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"
+                            component="form" event="redirectToWarehouseStateList"
+                            class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"
+                            method="redirectToWarehouseStateList"/>
+
+        <view:resource uri="public/**/*"/>
+
+        <custom:custom
+                class="com.qcadoo.mes.cmmsMachineParts.DefaultFaultTypesLoaderModule"/>
+    </modules>
+
+</plugin>

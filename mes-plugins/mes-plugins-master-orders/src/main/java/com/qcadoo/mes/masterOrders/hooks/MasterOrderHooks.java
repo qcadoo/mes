@@ -84,8 +84,11 @@ public class MasterOrderHooks {
         if (masterOrder.getId() == null || MasterOrderType.of(masterOrder) != MasterOrderType.ONE_PRODUCT) {
             return;
         }
+
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
+
         BigDecimal quantitiesSum = masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, product);
+
         masterOrder.setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, quantitiesSum);
     }
 
@@ -95,8 +98,7 @@ public class MasterOrderHooks {
         }
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
 
-        BigDecimal doneQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersDoneQuantities(
-                masterOrder, product);
+        BigDecimal doneQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersDoneQuantities(masterOrder, product);
         masterOrder.setField("producedOrderQuantity", doneQuantity);
 
     }

@@ -25,41 +25,44 @@
 
 -->
 <model name="workPlan" activable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-	<fields>
-		<string name="name" required="true" unique="true">
-			<validatesLength max="1024" />
-		</string>
-		<datetime name="date" />
-		<string name="worker" />
-		<boolean name="generated" />
-		<string name="fileName" />
-		<boolean name="dontPrintOrdersInWorkPlans" />
+    <fields>
+        <string name="name" required="true" unique="true">
+            <validatesLength max="1024"/>
+        </string>
+        <datetime name="date"/>
+        <string name="worker"/>
 
-		<enum name="type"
-			values="01noDistinction,02byEndProduct,03byWorkstationType,04byDivision"
-			default="01allOperations" required="true" />
+        <boolean name="generated"/>
+        <string name="fileName">
+            <validatesLength max="1024"/>
+        </string>
+        <boolean name="dontPrintOrdersInWorkPlans"/>
 
-		<hasMany name="workPlanOrderColumns" plugin="workPlans"
-			model="workPlanOrderColumn" joinField="workPlan" cascade="delete"
-			copyable="true" />
+        <enum name="type"
+              values="01noDistinction,02byEndProduct,03byWorkstationType,04byDivision"
+              default="01allOperations" required="true"/>
 
-		<manyToMany name="orders" joinField="workPlans" model="order"
-			plugin="orders" copyable="true" />
+        <hasMany name="workPlanOrderColumns" plugin="workPlans"
+                 model="workPlanOrderColumn" joinField="workPlan" cascade="delete"
+                 copyable="true"/>
 
-		<belongsTo name="inputProductColumnToSortBy" model="columnForInputProducts" />
-		<enum name="orderSorting" values="01asc,02desc"/>
+        <manyToMany name="orders" joinField="workPlans" model="order"
+                    plugin="orders" copyable="true"/>
 
-	</fields>
+        <belongsTo name="inputProductColumnToSortBy" model="columnForInputProducts"/>
+        <enum name="orderSorting" values="01asc,02desc"/>
 
-	<hooks>
-		<onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanHooks"
-			method="onCreate" />
-		<onCopy class="com.qcadoo.mes.workPlans.hooks.WorkPlanHooks"
-			method="onCopy" />
-	</hooks>
+    </fields>
 
-	<identifier expression="#name" />
+    <hooks>
+        <onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanHooks"
+                  method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.workPlans.hooks.WorkPlanHooks"
+                method="onCopy"/>
+    </hooks>
+
+    <identifier expression="#name"/>
 </model>
