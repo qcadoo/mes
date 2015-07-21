@@ -136,3 +136,10 @@ CREATE TABLE basic_subassemblytoworkstationhelper
 ALTER TABLE cmmsmachineparts_maintenanceevent ADD COLUMN solutiondescription text;
 
 -- end
+
+-- Added possible work time deviation to parameter
+-- last touched 21.07.2015 by kama
+
+ALTER TABLE basic_parameter ADD COLUMN possibleworktimedeviation numeric(12,5);
+
+-- end
