@@ -181,8 +181,6 @@
                     <component type="lookup" name="parent" field="#{form}.parent"
                                reference="parent">
                         <option type="column" name="name" fields="name" link="true"/>
-                        <option type="column" name="parent" fields="parent"
-                                expression="(#parent == null) ? '' : #parent['number'] + ' - ' + #parent['name']"/>
 
                         <option type="searchable" value="name,number"/>
                         <option type="orderable" value="name,number"/>
@@ -192,8 +190,8 @@
                         <option type="fieldCode" value="number"/>
 
                         <criteriaModifier
-                                class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
-                                method="showProductFamilyOnly"/>
+                                class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP"
+                                method="showFamilyMachineParts"/>
                         <listener event="onSelectedEntityChange"
                                   class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
                                   method="checkIfDefaultSupplierIsUnique"/>
