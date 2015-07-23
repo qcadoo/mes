@@ -25,18 +25,18 @@
 
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orderDetails" modelName="order">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="orderDetails" modelName="order">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<template name="standardFormTemplate" />
-			<group name="status">
-				<smallButton name="acceptOrder" icon="startIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="status">
+                <smallButton name="acceptOrder" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 						
 							this.addOnChangeListener({
 								onClick: function() {
@@ -60,12 +60,12 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="declineOrder" icon="deleteIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="declineOrder" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (this.state == "decline") {
@@ -80,12 +80,12 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="interruptOrder" icon="pauseIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="interruptOrder" icon="pauseIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.interruptOrder.confirm)}")) {
@@ -94,14 +94,14 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-			</group>
-			<group name="export">
-				<bigButton name="print" icon="pdfIcon24.png"
-					action="#{form}.generateReportForEntity('orders','order','pdf')">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+            </group>
+            <group name="export">
+                <bigButton name="print" icon="pdfIcon24.png"
+                           action="#{form}.generateReportForEntity('orders','order','pdf')">
+                    <script>
+                        <![CDATA[
 							#{form}.addOnChangeListener({
 								onSetValue: function(value) {
 									if (! value || ! value.content) {
@@ -115,14 +115,14 @@
 								}
 							});					
 						]]>
-					</script>
-				</bigButton>
-			</group>
-			<group name="orderCopyOfTechnology">
-				<bigButton name="orderCopyOfTechnology" icon="settingsIcon24.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </bigButton>
+            </group>
+            <group name="orderCopyOfTechnology">
+                <bigButton name="orderCopyOfTechnology" icon="settingsIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.canClose()) {
@@ -143,15 +143,15 @@
 								}
 							});					
 						]]>
-					</script>
-				</bigButton>
-			</group>
-		</ribbon>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
 
-		<windowTab name="mainTab">
-			<component type="form" name="order" reference="form">
-				<script>
-					<![CDATA[
+        <windowTab name="mainTab">
+            <component type="form" name="order" reference="form">
+                <script>
+                    <![CDATA[
 					var save = #{window}.getRibbonItem("actions.save");
 					var saveBack = #{window}.getRibbonItem("actions.saveBack");
 					var saveNew = #{window}.getRibbonItem("actions.saveNew");
@@ -286,629 +286,651 @@
 						}
 					});
 					]]>
-				</script>
-				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="10">
-					<layoutElement column="1" row="1">
-						<component type="select" name="orderType" field="orderType"
-							reference="orderType" hasDescription="true">
+                </script>
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="10">
+                    <layoutElement column="1" row="1">
+                        <component type="select" name="orderType" field="orderType"
+                                   reference="orderType" hasDescription="true">
 
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-								method="onOrderTypeChange" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2">
-						<component type="input" name="number" reference="number"
-							field="number">
-							<option type="alignment" value="right" />
-						</component>
-						<component type="hidden" name="externalSynchronized"
-							field="externalSynchronized" reference="externalSynchronized" />
-					</layoutElement>
-					<layoutElement column="1" row="3" height="2">
-						<component type="textarea" name="name" field="name"
-							reference="name" hasDescription="true" />
-					</layoutElement>
-					<layoutElement column="1" row="5" height="2">
-						<component type="textarea" name="description" field="description"
-							reference="description" />
-					</layoutElement>
-					<layoutElement column="1" row="7">
-						<component type="lookup" name="company" reference="company"
-							field="company">
-							<option type="column" name="name" fields="name" link="true" />
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                      method="onOrderTypeChange"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="number" reference="number"
+                                   field="number">
+                            <option type="alignment" value="right"/>
+                        </component>
+                        <component type="hidden" name="externalSynchronized"
+                                   field="externalSynchronized" reference="externalSynchronized"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   reference="name" hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="5" height="2">
+                        <component type="textarea" name="description" field="description"
+                                   reference="description"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="lookup" name="company" reference="company"
+                                   field="company">
+                            <option type="column" name="name" fields="name" link="true"/>
 
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
-							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="8">
-						<component type="calendar" name="dateFrom" field="startDate"
-							reference="dateFrom" hasDescription="true">
-							<option type="labelWidth" value="50" />
-							<option type="withTimePicker" value="true" />
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="8">
+                        <component type="calendar" name="dateFrom" field="startDate"
+                                   reference="dateFrom" hasDescription="true">
+                            <option type="labelWidth" value="50"/>
+                            <option type="withTimePicker" value="true"/>
 
-							<listener event="onChange"
-								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-								method="copyStartDateToDetails" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="9">
-						<component type="calendar" name="dateTo" field="finishDate"
-							reference="dateTo" hasDescription="true">
-							<option type="labelWidth" value="50" />
-							<option type="withTimePicker" value="true" />
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                      method="copyStartDateToDetails"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="9">
+                        <component type="calendar" name="dateTo" field="finishDate"
+                                   reference="dateTo" hasDescription="true">
+                            <option type="labelWidth" value="50"/>
+                            <option type="withTimePicker" value="true"/>
 
-							<listener event="onChange"
-								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-								method="copyFinishDateToDetails" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="10">
-						<component type="calendar" name="deadline" field="deadline"
-							reference="deadline">
-							<option type="labelWidth" value="50" />
-							<option type="withTimePicker" value="true" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="lookup" name="product" reference="product"
-							field="product">
-							<option type="column" name="name" fields="name" link="true"
-								width="200" />
-							<option type="column" name="ean" fields="ean" />
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                      method="copyFinishDateToDetails"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="10">
+                        <component type="calendar" name="deadline" field="deadline"
+                                   reference="deadline">
+                            <option type="labelWidth" value="50"/>
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="lookup" name="product" reference="product"
+                                   field="product">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="200"/>
+                            <option type="column" name="ean" fields="ean"/>
 
-							<option type="searchable" value="name,ean" />
-							<option type="orderable" value="name,ean" />
+                            <option type="searchable" value="name,ean"/>
+                            <option type="orderable" value="name,ean"/>
 
-							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
 
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-								method="changeOrderProduct" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.util.UnitService"
-								method="fillProductUnit" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-								method="setDefaultNameUsingTechnology" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="2" height="2">
-						<component type="borderLayout" name="predefinedTechnology"
-							reference="predefinedTechnology">
-							<component type="gridLayout" name="predefinedTechnologyGridLayout"
-								columns="1" rows="2" reference="predefinedTechnologyGridLayout"
-								hasBorders="false">
-								<layoutElement column="1" row="1">
-									<component type="input" name="defaultTechnology"
-										reference="defaultTechnology" field="defaultTechnology"
-										defaultEnabled="false" />
-								</layoutElement>
-								<layoutElement column="1" row="2">
-									<component type="lookup" name="technology" reference="technologyPrototype"
-										field="technologyPrototype" source="#{product}.technologies">
-										<option type="column" name="name" fields="name" link="true"
-											width="300" />
-										<option type="column" name="state" fields="state" />
-										
-										<option type="searchable" value="name,number,state" />
-										<option type="orderable" value="name,number,state" />
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                      method="changeOrderProduct"/>
+                            <listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.util.UnitService"
+                                      method="fillProductUnit"/>
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                      method="setDefaultNameUsingTechnology"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="2" height="2">
+                        <component type="borderLayout" name="predefinedTechnology"
+                                   reference="predefinedTechnology">
+                            <component type="gridLayout" name="predefinedTechnologyGridLayout"
+                                       columns="1" rows="2" reference="predefinedTechnologyGridLayout"
+                                       hasBorders="false">
+                                <layoutElement column="1" row="1">
+                                    <component type="input" name="defaultTechnology"
+                                               reference="defaultTechnology" field="defaultTechnology"
+                                               defaultEnabled="false"/>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="lookup" name="technology" reference="technologyPrototype"
+                                               field="technologyPrototype" source="#{product}.technologies">
+                                        <option type="column" name="name" fields="name" link="true"
+                                                width="300"/>
+                                        <option type="column" name="state" fields="state"/>
 
-										<option type="expression"
-											value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-										<option type="fieldCode" value="number" />
+                                        <option type="searchable" value="name,number,state"/>
+                                        <option type="orderable" value="name,number,state"/>
 
-										<criteriaModifier
-											class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-											method="showAcceptedPatternTechnology" />
+                                        <option type="expression"
+                                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                        <option type="fieldCode" value="number"/>
 
-										<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-											method="setDefaultNameUsingTechnology" />
-									</component>
-								</layoutElement>
+                                        <criteriaModifier
+                                                class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+                                                method="showAcceptedPatternTechnology"/>
 
-							</component>
-							<option type="label" value="predefinedTechnologyLabel" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="4">
-						<component type="lookup" name="recipe"
-							reference="recipe" field="recipe" source="#{product}.recipes" defaultVisible="false">
-							<option type="column" name="version" fields="version" link="true" />
-							<option type="column" name="isDefault" fields="isDefault" link="true" />
+                                        <listener event="onSelectedEntityChange"
+                                                  class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                                  method="setDefaultNameUsingTechnology"/>
+                                    </component>
+                                </layoutElement>
 
-							<option type="searchable" value="name,version,isDefault" />
-							<option type="orderable" value="name,version,isDefault" />
+                            </component>
+                            <option type="label" value="predefinedTechnologyLabel"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
+                        <component type="lookup" name="recipe"
+                                   reference="recipe" field="recipe" source="#{product}.recipes" defaultVisible="false">
+                            <option type="column" name="version" fields="version" link="true"/>
+                            <option type="column" name="isDefault" fields="isDefault" link="true"/>
 
-							<option type="expression" value="#name" />
-							<option type="fieldCode" value="name" />
-							<criteriaModifier
-									class="com.qcadoo.mes.orders.criteriaModifires.TechnologyCriteriaModifiersO"
-									method="showAcceptedRecipes" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="5">
-						<component type="lookup" name="productionLine"
-							reference="productionLine" field="productionLine">
-							<option type="column" name="name" fields="name" link="true"
-								width="300" />
+                            <option type="searchable" value="name,version,isDefault"/>
+                            <option type="orderable" value="name,version,isDefault"/>
 
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
+                            <option type="expression" value="#name"/>
+                            <option type="fieldCode" value="name"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.orders.criteriaModifires.TechnologyCriteriaModifiersO"
+                                    method="showAcceptedRecipes"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="5">
+                        <component type="lookup" name="productionLine"
+                                   reference="productionLine" field="productionLine">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="300"/>
 
-							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="6">
-						<component type="input" name="plannedQuantity"
-							reference="plannedQuantity" field="plannedQuantity">
-							<option type="labelWidth" value="55" />
-							<option type="alignment" value="right" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="7">
-						<component type="input" name="doneQuantity" field="doneQuantity"
-							reference="doneQuantity" hasDescription="true">
-							<option type="labelWidth" value="55" />
-							<option type="alignment" value="right" />
-							
-<!-- 							<listener event="onSetValue" method="setProductQuantities" -->
-<!-- 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="8">
-						<component type="input" name="unit" reference="unit"
-							defaultEnabled="false">
-							<option type="labelWidth" value="55" />
-							<option type="alignment" value="right" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="9">
-						<component type="select" name="state" field="state"
-							reference="state" defaultVisible="false" />
-					</layoutElement>
-				</component>
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
-				<option type="header" value="true" />
-				<option type="expression"
-					value="#name + ' - ' + #number + ' - ' + '@orders.order.state.value.' + #state" />
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.orders.criteriaModifires.ProductionLineCriteriaModifiersO"
+                                    method="filterProductionLines"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="6">
+                        <component type="input" name="plannedQuantity"
+                                   reference="plannedQuantity" field="plannedQuantity">
+                            <option type="labelWidth" value="55"/>
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="7">
+                        <component type="input" name="doneQuantity" field="doneQuantity"
+                                   reference="doneQuantity" hasDescription="true">
+                            <option type="labelWidth" value="55"/>
+                            <option type="alignment" value="right"/>
 
-				<listener event="changeState"
-					class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient"
-					method="changeState" />
-				<listener event="showCopyOfTechnology" method="showCopyOfTechnology"
-					class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
-			</component>
-		</windowTab>
+                            <!-- 							<listener event="onSetValue" method="setProductQuantities" -->
+                            <!-- 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="8">
+                        <component type="input" name="unit" reference="unit"
+                                   defaultEnabled="false">
+                            <option type="labelWidth" value="55"/>
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="9">
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultVisible="false"/>
+                    </layoutElement>
+                </component>
 
-		<windowTab name="detailsTab">
-			<component type="gridLayout" name="detailsTablayout"
-				columns="3" rows="1">
-				<layoutElement column="1" row="1">
-					<component type="borderLayout" name="startDates">
-						<component type="gridLayout" name="startDatesGridLayout"
-							columns="1" rows="3" reference="startDatesGridLayout">
-							<layoutElement column="1" row="1">
-								<component type="calendar" name="plannedDateFrom"
-									field="#{form}.dateFrom" reference="plannedDateFrom"
-									hasDescription="true" defaultEnabled="false">
-									<option type="withTimePicker" value="true" />
+                <option type="header" value="true"/>
+                <option type="expression"
+                        value="#name + ' - ' + #number + ' - ' + '@orders.order.state.value.' + #state"/>
 
-									<listener event="onChange"
-										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-										method="copyStartDate" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2">
-								<component type="calendar" name="correctedDateFrom"
-									field="#{form}.correctedDateFrom" reference="correctedDateFrom"
-									defaultEnabled="false">
-									<option type="withTimePicker" value="true" />
+                <listener event="changeState"
+                          class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient"
+                          method="changeState"/>
+                <listener event="showCopyOfTechnology" method="showCopyOfTechnology"
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+            </component>
+        </windowTab>
 
-									<listener event="onChange"
-										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-										method="copyStartDate" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="3">
-								<component type="calendar" name="effectiveDateFrom"
-									field="#{form}.effectiveDateFrom" reference="effectiveDateFrom"
-									defaultEnabled="false">
-									<option type="withTimePicker" value="true" />
+        <windowTab name="detailsTab">
+            <component type="gridLayout" name="detailsTablayout"
+                       columns="3" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="borderLayout" name="startDates">
+                        <component type="gridLayout" name="startDatesGridLayout"
+                                   columns="1" rows="3" reference="startDatesGridLayout">
+                            <layoutElement column="1" row="1">
+                                <component type="calendar" name="plannedDateFrom"
+                                           field="#{form}.dateFrom" reference="plannedDateFrom"
+                                           hasDescription="true" defaultEnabled="false">
+                                    <option type="withTimePicker" value="true"/>
 
-									<listener event="onChange"
-										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-										method="copyStartDate" />
-								</component>
-							</layoutElement>
-						</component>
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                              method="copyStartDate"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="calendar" name="correctedDateFrom"
+                                           field="#{form}.correctedDateFrom" reference="correctedDateFrom"
+                                           defaultEnabled="false">
+                                    <option type="withTimePicker" value="true"/>
 
-						<option type="label" value="startDatesLabel" />
-					</component>
-					<component type="borderLayout" name="causeOfPlannedDateFromCorrection">
-						<component type="gridLayout"
-							name="causeOfPlannedDateFromCorrectionGridLayout" columns="1"
-							rows="3" reference="causeOfPlannedDateFromCorrectionGridLayout">
-							<layoutElement column="1" row="1">
-								<component type="gridLayout"
-									name="reasonTypesCorrectionDateFromGridLayout" columns="3"
-									rows="1">
-									<layoutElement column="1" row="1">
-										<component type="label" name="reasonTypesCorrectionDateFromLabel">
-											<option type="labelStyle" value="label" />
-										</component>
-									</layoutElement>
-									<layoutElement column="2" row="1" width="2">
-										<component type="awesomeDynamicList" name="reasonTypesCorrectionDateFrom"
-											source="#{form}.reasonTypesCorrectionDateFrom" reference="reasonTypesCorrectionDateFrom"
-											defaultEnabled="false">
-											<option type="hasBorder" value="false" />
-											<option type="hasButtons" value="true" />
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                              method="copyStartDate"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
+                                <component type="calendar" name="effectiveDateFrom"
+                                           field="#{form}.effectiveDateFrom" reference="effectiveDateFrom"
+                                           defaultEnabled="false">
+                                    <option type="withTimePicker" value="true"/>
 
-											<components>
-												<component type="gridLayout"
-													name="reasonTypeOfChangingOrderStateGridLayout" columns="1"
-													rows="1">
-													<layoutElement column="1" row="1">
-														<component type="select" name="reasonTypeOfChangingOrderState"
-															field="reasonTypeOfChangingOrderState" hasLabel="false" />
-													</layoutElement>
-												</component>
-											</components>
-										</component>
-									</layoutElement>
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" height="2">
-								<component type="textarea" name="commentReasonTypeCorrectionDateFrom"
-									field="#{form}.commentReasonTypeCorrectionDateFrom" reference="commentReasonTypeCorrectionDateFrom"
-									defaultEnabled="false">
-								</component>
-							</layoutElement>
-						</component>
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                              method="copyStartDate"/>
+                                </component>
+                            </layoutElement>
+                        </component>
 
-						<option type="label" value="causeOfPlannedDateFromCorrectionLabel" />
-					</component>
-					<component type="borderLayout" name="causeDeviationsOfEffectiveStart">
-						<component type="gridLayout"
-							name="causeDeviationsOfEffectiveStartGridLayout" columns="1"
-							rows="3" reference="causeDeviationsOfEffectiveStartGridLayout">
-							<layoutElement column="1" row="1">
-								<component type="gridLayout"
-									name="reasonTypeDeviationsOfEffectiveStartGridLayout" columns="3"
-									rows="1">
-									<layoutElement column="1" row="1">
-										<component type="label"
-											name="reasonTypesDeviationsOfEffectiveStartLabel">
-											<option type="labelStyle" value="label" />
-										</component>
-									</layoutElement>
-									<layoutElement column="2" row="1" width="2">
-										<component type="awesomeDynamicList"
-											name="reasonTypesDeviationsOfEffectiveStart" source="#{form}.reasonTypesDeviationsOfEffectiveStart"
-											reference="reasonTypesDeviationsOfEffectiveStart"
-											defaultEnabled="false">
-											<option type="hasBorder" value="false" />
-											<option type="hasButtons" value="true" />
+                        <option type="label" value="startDatesLabel"/>
+                    </component>
+                    <component type="borderLayout" name="causeOfPlannedDateFromCorrection">
+                        <component type="gridLayout"
+                                   name="causeOfPlannedDateFromCorrectionGridLayout" columns="1"
+                                   rows="3" reference="causeOfPlannedDateFromCorrectionGridLayout">
+                            <layoutElement column="1" row="1">
+                                <component type="gridLayout"
+                                           name="reasonTypesCorrectionDateFromGridLayout" columns="3"
+                                           rows="1">
+                                    <layoutElement column="1" row="1">
+                                        <component type="label" name="reasonTypesCorrectionDateFromLabel">
+                                            <option type="labelStyle" value="label"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="2" row="1" width="2">
+                                        <component type="awesomeDynamicList" name="reasonTypesCorrectionDateFrom"
+                                                   source="#{form}.reasonTypesCorrectionDateFrom"
+                                                   reference="reasonTypesCorrectionDateFrom"
+                                                   defaultEnabled="false">
+                                            <option type="hasBorder" value="false"/>
+                                            <option type="hasButtons" value="true"/>
 
-											<components>
-												<component type="gridLayout"
-													name="reasonTypeOfChangingOrderStateGridLayout" columns="1"
-													rows="1">
-													<layoutElement column="1" row="1">
-														<component type="select" name="reasonTypeOfChangingOrderState"
-															field="reasonTypeOfChangingOrderState" hasLabel="false" />
-													</layoutElement>
-												</component>
-											</components>
-										</component>
-									</layoutElement>
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" height="2">
-								<component type="textarea"
-									field="#{form}.commentReasonDeviationEffectiveStart" name="commentReasonTypeDeviationsOfEffectiveStart"
-									reference="commentReasonTypeDeviationsOfEffectiveStart"
-									defaultEnabled="false">
-								</component>
-							</layoutElement>
-						</component>
+                                            <components>
+                                                <component type="gridLayout"
+                                                           name="reasonTypeOfChangingOrderStateGridLayout" columns="1"
+                                                           rows="1">
+                                                    <layoutElement column="1" row="1">
+                                                        <component type="select" name="reasonTypeOfChangingOrderState"
+                                                                   field="reasonTypeOfChangingOrderState"
+                                                                   hasLabel="false"/>
+                                                    </layoutElement>
+                                                </component>
+                                            </components>
+                                        </component>
+                                    </layoutElement>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2" height="2">
+                                <component type="textarea" name="commentReasonTypeCorrectionDateFrom"
+                                           field="#{form}.commentReasonTypeCorrectionDateFrom"
+                                           reference="commentReasonTypeCorrectionDateFrom"
+                                           defaultEnabled="false">
+                                </component>
+                            </layoutElement>
+                        </component>
 
-						<option type="label" value="causeDeviationsOfEffectiveStartLabel" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1">
-					<component type="borderLayout" name="endDates">
-						<component type="gridLayout" name="endDatesGridLayout"
-							columns="1" rows="3" reference="endDatesGridLayout">
-							<layoutElement column="1" row="1">
-								<component type="calendar" name="plannedDateTo" field="#{form}.dateTo"
-									reference="plannedDateTo" hasDescription="true" defaultEnabled="false">
-									<option type="withTimePicker" value="true" />
+                        <option type="label" value="causeOfPlannedDateFromCorrectionLabel"/>
+                    </component>
+                    <component type="borderLayout" name="causeDeviationsOfEffectiveStart">
+                        <component type="gridLayout"
+                                   name="causeDeviationsOfEffectiveStartGridLayout" columns="1"
+                                   rows="3" reference="causeDeviationsOfEffectiveStartGridLayout">
+                            <layoutElement column="1" row="1">
+                                <component type="gridLayout"
+                                           name="reasonTypeDeviationsOfEffectiveStartGridLayout" columns="3"
+                                           rows="1">
+                                    <layoutElement column="1" row="1">
+                                        <component type="label"
+                                                   name="reasonTypesDeviationsOfEffectiveStartLabel">
+                                            <option type="labelStyle" value="label"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="2" row="1" width="2">
+                                        <component type="awesomeDynamicList"
+                                                   name="reasonTypesDeviationsOfEffectiveStart"
+                                                   source="#{form}.reasonTypesDeviationsOfEffectiveStart"
+                                                   reference="reasonTypesDeviationsOfEffectiveStart"
+                                                   defaultEnabled="false">
+                                            <option type="hasBorder" value="false"/>
+                                            <option type="hasButtons" value="true"/>
 
-									<listener event="onChange"
-										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-										method="copyEndDate" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2">
-								<component type="calendar" name="correctedDateTo"
-									field="#{form}.correctedDateTo" reference="correctedDateTo"
-									defaultEnabled="false">
-									<option type="withTimePicker" value="true" />
+                                            <components>
+                                                <component type="gridLayout"
+                                                           name="reasonTypeOfChangingOrderStateGridLayout" columns="1"
+                                                           rows="1">
+                                                    <layoutElement column="1" row="1">
+                                                        <component type="select" name="reasonTypeOfChangingOrderState"
+                                                                   field="reasonTypeOfChangingOrderState"
+                                                                   hasLabel="false"/>
+                                                    </layoutElement>
+                                                </component>
+                                            </components>
+                                        </component>
+                                    </layoutElement>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2" height="2">
+                                <component type="textarea"
+                                           field="#{form}.commentReasonDeviationEffectiveStart"
+                                           name="commentReasonTypeDeviationsOfEffectiveStart"
+                                           reference="commentReasonTypeDeviationsOfEffectiveStart"
+                                           defaultEnabled="false">
+                                </component>
+                            </layoutElement>
+                        </component>
 
-									<listener event="onChange"
-										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-										method="copyEndDate" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="3">
-								<component type="calendar" name="effectiveDateTo"
-									field="#{form}.effectiveDateTo" reference="effectiveDateTo"
-									defaultEnabled="false">
-									<option type="withTimePicker" value="true" />
+                        <option type="label" value="causeDeviationsOfEffectiveStartLabel"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1">
+                    <component type="borderLayout" name="endDates">
+                        <component type="gridLayout" name="endDatesGridLayout"
+                                   columns="1" rows="3" reference="endDatesGridLayout">
+                            <layoutElement column="1" row="1">
+                                <component type="calendar" name="plannedDateTo" field="#{form}.dateTo"
+                                           reference="plannedDateTo" hasDescription="true" defaultEnabled="false">
+                                    <option type="withTimePicker" value="true"/>
 
-									<listener event="onChange"
-										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-										method="copyEndDate" />
-								</component>
-							</layoutElement>
-						</component>
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                              method="copyEndDate"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="calendar" name="correctedDateTo"
+                                           field="#{form}.correctedDateTo" reference="correctedDateTo"
+                                           defaultEnabled="false">
+                                    <option type="withTimePicker" value="true"/>
 
-						<option type="label" value="endDatesLabel" />
-					</component>
-					<component type="borderLayout" name="causeOfPlannedDateToCorrection">
-						<component type="gridLayout"
-							name="causeOfPlannedDateToCorrectionGridLayout" columns="1" rows="3"
-							reference="causeOfPlannedDateToCorrectionGridLayout">
-							<layoutElement column="1" row="1">
-								<component type="gridLayout"
-									name="reasonTypesCorrectionDateToGridLayout" columns="3" rows="1">
-									<layoutElement column="1" row="1">
-										<component type="label" name="reasonTypesCorrectionDateToLabel">
-											<option type="labelStyle" value="label" />
-										</component>
-									</layoutElement>
-									<layoutElement column="2" row="1" width="2">
-										<component type="awesomeDynamicList" name="reasonTypesCorrectionDateTo"
-											source="#{form}.reasonTypesCorrectionDateTo" reference="reasonTypesCorrectionDateTo"
-											defaultEnabled="false">
-											<option type="hasBorder" value="false" />
-											<option type="hasButtons" value="true" />
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                              method="copyEndDate"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
+                                <component type="calendar" name="effectiveDateTo"
+                                           field="#{form}.effectiveDateTo" reference="effectiveDateTo"
+                                           defaultEnabled="false">
+                                    <option type="withTimePicker" value="true"/>
 
-											<components>
-												<component type="gridLayout"
-													name="reasonTypeOfChangingOrderStateGridLayout" columns="1"
-													rows="1">
-													<layoutElement column="1" row="1">
-														<component type="select" name="reasonTypeOfChangingOrderState"
-															field="reasonTypeOfChangingOrderState" hasLabel="false" />
-													</layoutElement>
-												</component>
-											</components>
-										</component>
-									</layoutElement>
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" height="2">
-								<component type="textarea" name="commentReasonTypeCorrectionDateTo"
-									field="#{form}.commentReasonTypeCorrectionDateTo" reference="commentReasonTypeCorrectionDateTo"
-									defaultEnabled="false">
-								</component>
-							</layoutElement>
-						</component>
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                              method="copyEndDate"/>
+                                </component>
+                            </layoutElement>
+                        </component>
 
-						<option type="label" value="causeOfPlannedDateToCorrectionLabel" />
-					</component>
-					<component type="borderLayout" name="causeDeviationsOfEffectiveEnd">
-						<component type="gridLayout"
-							name="causeDeviationsOfEffectiveEndGridLayout" columns="1" rows="3"
-							reference="causeDeviationsOfEffectiveEndGridLayout">
-							<layoutElement column="1" row="1">
-								<component type="gridLayout"
-									name="reasonTypeDeviationsOfEffectiveEndGridLayout" columns="3"
-									rows="1">
-									<layoutElement column="1" row="1">
-										<component type="label"
-											name="reasonTypesDeviationsOfEffectiveEndLabel">
-											<option type="labelStyle" value="label" />
-										</component>
-									</layoutElement>
-									<layoutElement column="2" row="1" width="2">
-										<component type="awesomeDynamicList"
-											name="reasonTypesDeviationsOfEffectiveEnd" source="#{form}.reasonTypesDeviationsOfEffectiveEnd"
-											reference="reasonTypesDeviationsOfEffectiveEnd"
-											defaultEnabled="false">
-											<option type="hasBorder" value="false" />
-											<option type="hasButtons" value="true" />
+                        <option type="label" value="endDatesLabel"/>
+                    </component>
+                    <component type="borderLayout" name="causeOfPlannedDateToCorrection">
+                        <component type="gridLayout"
+                                   name="causeOfPlannedDateToCorrectionGridLayout" columns="1" rows="3"
+                                   reference="causeOfPlannedDateToCorrectionGridLayout">
+                            <layoutElement column="1" row="1">
+                                <component type="gridLayout"
+                                           name="reasonTypesCorrectionDateToGridLayout" columns="3" rows="1">
+                                    <layoutElement column="1" row="1">
+                                        <component type="label" name="reasonTypesCorrectionDateToLabel">
+                                            <option type="labelStyle" value="label"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="2" row="1" width="2">
+                                        <component type="awesomeDynamicList" name="reasonTypesCorrectionDateTo"
+                                                   source="#{form}.reasonTypesCorrectionDateTo"
+                                                   reference="reasonTypesCorrectionDateTo"
+                                                   defaultEnabled="false">
+                                            <option type="hasBorder" value="false"/>
+                                            <option type="hasButtons" value="true"/>
 
-											<components>
-												<component type="gridLayout"
-													name="reasonTypeOfChangingOrderStateGridLayout" columns="1"
-													rows="1">
-													<layoutElement column="1" row="1">
-														<component type="select" name="reasonTypeOfChangingOrderState"
-															field="reasonTypeOfChangingOrderState" hasLabel="false" />
-													</layoutElement>
-												</component>
-											</components>
-										</component>
-									</layoutElement>
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" height="2">
-								<component type="textarea"
-									field="#{form}.commentReasonDeviationEffectiveEnd" name="commentReasonTypeDeviationsOfEffectiveEnd"
-									reference="commentReasonTypeDeviationsOfEffectiveEnd"
-									defaultEnabled="false">
-								</component>
-							</layoutElement>
-						</component>
+                                            <components>
+                                                <component type="gridLayout"
+                                                           name="reasonTypeOfChangingOrderStateGridLayout" columns="1"
+                                                           rows="1">
+                                                    <layoutElement column="1" row="1">
+                                                        <component type="select" name="reasonTypeOfChangingOrderState"
+                                                                   field="reasonTypeOfChangingOrderState"
+                                                                   hasLabel="false"/>
+                                                    </layoutElement>
+                                                </component>
+                                            </components>
+                                        </component>
+                                    </layoutElement>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2" height="2">
+                                <component type="textarea" name="commentReasonTypeCorrectionDateTo"
+                                           field="#{form}.commentReasonTypeCorrectionDateTo"
+                                           reference="commentReasonTypeCorrectionDateTo"
+                                           defaultEnabled="false">
+                                </component>
+                            </layoutElement>
+                        </component>
 
-						<option type="label" value="causeDeviationsOfEffectiveEndLabel" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
+                        <option type="label" value="causeOfPlannedDateToCorrectionLabel"/>
+                    </component>
+                    <component type="borderLayout" name="causeDeviationsOfEffectiveEnd">
+                        <component type="gridLayout"
+                                   name="causeDeviationsOfEffectiveEndGridLayout" columns="1" rows="3"
+                                   reference="causeDeviationsOfEffectiveEndGridLayout">
+                            <layoutElement column="1" row="1">
+                                <component type="gridLayout"
+                                           name="reasonTypeDeviationsOfEffectiveEndGridLayout" columns="3"
+                                           rows="1">
+                                    <layoutElement column="1" row="1">
+                                        <component type="label"
+                                                   name="reasonTypesDeviationsOfEffectiveEndLabel">
+                                            <option type="labelStyle" value="label"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="2" row="1" width="2">
+                                        <component type="awesomeDynamicList"
+                                                   name="reasonTypesDeviationsOfEffectiveEnd"
+                                                   source="#{form}.reasonTypesDeviationsOfEffectiveEnd"
+                                                   reference="reasonTypesDeviationsOfEffectiveEnd"
+                                                   defaultEnabled="false">
+                                            <option type="hasBorder" value="false"/>
+                                            <option type="hasButtons" value="true"/>
 
-		<windowTab name="productQuantityTab">
-			<component type="gridLayout" name="productQuantityTablayout"
-				columns="3" rows="3">
-				<layoutElement column="1" row="1" height="3">
-					<component type="gridLayout" name="prodQuantityTablayout"
-						columns="1" rows="3">
-						<layoutElement column="1" row="1">
-							<component type="borderLayout" name="commissionedAmount">
-								<component type="gridLayout" name="commissionedAmountGridLayout"
-									columns="4" rows="2" reference="commissionedAmountGridLayout"
-									hasBorders="false">
-									<layoutElement column="1" row="1" width="3">
-										<component type="input" name="commissionedPlannedQuantity"
-											reference="commissionedPlannedQuantity" field="#{form}.commissionedPlannedQuantity">
-											<option type="labelWidth" value="55" />
-											<option type="alignment" value="right" />
-										</component>
-									</layoutElement>
-									<layoutElement column="4" row="1">
-										<component type="input" name="unitCPQ" reference="unitCPQ"
-											hasLabel="false">
-											<option type="textRepresentationOnDisabled" value="true" />
-										</component>
-									</layoutElement>
-									<layoutElement column="1" row="2" width="3">
-										<component type="input" name="commissionedCorrectedQuantity"
-											reference="commissionedCorrectedQuantity" field="#{form}.commissionedCorrectedQuantity">
-											<option type="labelWidth" value="55" />
-											<option type="alignment" value="right" />
-										</component>
-									</layoutElement>
-									<layoutElement column="4" row="2">
-										<component type="input" name="unitCCQ" reference="unitCCQ"
-											hasLabel="false">
-											<option type="textRepresentationOnDisabled" value="true" />
-										</component>
-									</layoutElement>
-								</component>
-								<option type="label" value="commissionedAmountLabel" />
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="2">
-							<component type="gridLayout" name="amountOfProductProducedGridLayout"
-								columns="4" rows="1" reference="amountOfProductProducedGridLayout"
-								hasBorders="false">
-								<layoutElement column="1" row="1" width="3">
-									<component type="input" name="amountOfProductProduced"
-										reference="amountOfProductProduced" field="#{form}.amountOfProductProduced">
-										<option type="labelWidth" value="55" />
-										<option type="alignment" value="right" />
-										
-<!-- 										<listener event="onSetValue" method="setDoneQuantity" -->
-<!-- 											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
-									</component>
-								</layoutElement>
-								<layoutElement column="4" row="1">
-									<component type="input" name="unitAOPP" reference="unitAOPP"
-										hasLabel="false">
-										<option type="textRepresentationOnDisabled" value="true" />
-									</component>
-								</layoutElement>
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="3">
-							<component type="gridLayout"
-								name="remainingAmountOfProductToProduceGridLayout" columns="4"
-								rows="1" reference="remainingAmountOfProductToProduceGridLayout"
-								hasBorders="false">
-								<layoutElement column="1" row="1" width="3">
-									<component type="input" name="remainingAmountOfProductToProduce"
-										reference="remainingAmountOfProductToProduce" field="#{form}.remainingAmountOfProductToProduce"
-										defaultEnabled="never">
-										<option type="labelWidth" value="55" />
-										<option type="alignment" value="right" />
-									</component>
-								</layoutElement>
-								<layoutElement column="4" row="1">
-									<component type="input" name="unitRAOPTP" reference="unitRAOPTP"
-										hasLabel="false">
-										<option type="textRepresentationOnDisabled" value="true" />
-									</component>
-								</layoutElement>
-							</component>
-						</layoutElement>
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1" height="3">
-					<component type="borderLayout" name="reasonForCorrectionBorderLayout">
-						<component type="gridLayout" name="productQuantityGridLayout"
-							columns="3" rows="3">
-							<layoutElement column="1" row="1">
-								<component type="label"
-									name="reasonTypesCorrectionProductQuantityFromLabel">
-									<option type="labelStyle" value="label" />
-								</component>
-							</layoutElement>
-							<layoutElement column="2" row="1" width="2">
-								<component type="awesomeDynamicList" name="typeOfCorrectionCauses"
-									source="#{form}.typeOfCorrectionCauses" reference="typeOfCorrectionCauses">
-									<option type="hasBorder" value="false" />
-									<option type="hasButtons" value="true" />
+                                            <components>
+                                                <component type="gridLayout"
+                                                           name="reasonTypeOfChangingOrderStateGridLayout" columns="1"
+                                                           rows="1">
+                                                    <layoutElement column="1" row="1">
+                                                        <component type="select" name="reasonTypeOfChangingOrderState"
+                                                                   field="reasonTypeOfChangingOrderState"
+                                                                   hasLabel="false"/>
+                                                    </layoutElement>
+                                                </component>
+                                            </components>
+                                        </component>
+                                    </layoutElement>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2" height="2">
+                                <component type="textarea"
+                                           field="#{form}.commentReasonDeviationEffectiveEnd"
+                                           name="commentReasonTypeDeviationsOfEffectiveEnd"
+                                           reference="commentReasonTypeDeviationsOfEffectiveEnd"
+                                           defaultEnabled="false">
+                                </component>
+                            </layoutElement>
+                        </component>
 
-									<components>
-										<component type="gridLayout" name="productQuantityGridLayout"
-											columns="1" rows="1">
-											<layoutElement column="1" row="1">
-												<component type="select" name="reasonType" field="reasonType"
-													reference="reasonType" hasLabel="false">
-												</component>
-											</layoutElement>
-										</component>
-									</components>
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" height="2" width="3">
-								<component type="textarea" name="commentReasonTypeDeviationsQuantity"
-									field="#{form}.commentReasonTypeDeviationsQuantity" reference="commentReasonTypeDeviationsQuantity">
-								</component>
-							</layoutElement>
-						</component>
-						<option type="label" value="reasonForCorrectionLabel" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
+                        <option type="label" value="causeDeviationsOfEffectiveEndLabel"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-		<windowTab name="history">
-			<component type="grid" name="loggings" reference="grid"
-				source="#{form}.stateChanges">
-				<option type="column" name="dateAndTime" fields="dateAndTime"
-					link="true" />
-				<option type="column" name="previousState" fields="sourceState" />
-				<option type="column" name="currentState" fields="targetState" />
-				<option type="column" name="datesChanged" fields="datesChanged" width="30"/>
-				<option type="column" name="worker" fields="worker" />
-				<option type="column" name="comment" fields="comment" />
+        <windowTab name="productQuantityTab">
+            <component type="gridLayout" name="productQuantityTablayout"
+                       columns="3" rows="3">
+                <layoutElement column="1" row="1" height="3">
+                    <component type="gridLayout" name="prodQuantityTablayout"
+                               columns="1" rows="3">
+                        <layoutElement column="1" row="1">
+                            <component type="borderLayout" name="commissionedAmount">
+                                <component type="gridLayout" name="commissionedAmountGridLayout"
+                                           columns="4" rows="2" reference="commissionedAmountGridLayout"
+                                           hasBorders="false">
+                                    <layoutElement column="1" row="1" width="3">
+                                        <component type="input" name="commissionedPlannedQuantity"
+                                                   reference="commissionedPlannedQuantity"
+                                                   field="#{form}.commissionedPlannedQuantity">
+                                            <option type="labelWidth" value="55"/>
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="4" row="1">
+                                        <component type="input" name="unitCPQ" reference="unitCPQ"
+                                                   hasLabel="false">
+                                            <option type="textRepresentationOnDisabled" value="true"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="1" row="2" width="3">
+                                        <component type="input" name="commissionedCorrectedQuantity"
+                                                   reference="commissionedCorrectedQuantity"
+                                                   field="#{form}.commissionedCorrectedQuantity">
+                                            <option type="labelWidth" value="55"/>
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="4" row="2">
+                                        <component type="input" name="unitCCQ" reference="unitCCQ"
+                                                   hasLabel="false">
+                                            <option type="textRepresentationOnDisabled" value="true"/>
+                                        </component>
+                                    </layoutElement>
+                                </component>
+                                <option type="label" value="commissionedAmountLabel"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="2">
+                            <component type="gridLayout" name="amountOfProductProducedGridLayout"
+                                       columns="4" rows="1" reference="amountOfProductProducedGridLayout"
+                                       hasBorders="false">
+                                <layoutElement column="1" row="1" width="3">
+                                    <component type="input" name="amountOfProductProduced"
+                                               reference="amountOfProductProduced"
+                                               field="#{form}.amountOfProductProduced">
+                                        <option type="labelWidth" value="55"/>
+                                        <option type="alignment" value="right"/>
 
-				<option type="order" column="dateAndTime" direction="asc" />
+                                        <!-- 										<listener event="onSetValue" method="setDoneQuantity" -->
+                                        <!-- 											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="4" row="1">
+                                    <component type="input" name="unitAOPP" reference="unitAOPP"
+                                               hasLabel="false">
+                                        <option type="textRepresentationOnDisabled" value="true"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="3">
+                            <component type="gridLayout"
+                                       name="remainingAmountOfProductToProduceGridLayout" columns="4"
+                                       rows="1" reference="remainingAmountOfProductToProduceGridLayout"
+                                       hasBorders="false">
+                                <layoutElement column="1" row="1" width="3">
+                                    <component type="input" name="remainingAmountOfProductToProduce"
+                                               reference="remainingAmountOfProductToProduce"
+                                               field="#{form}.remainingAmountOfProductToProduce"
+                                               defaultEnabled="never">
+                                        <option type="labelWidth" value="55"/>
+                                        <option type="alignment" value="right"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="4" row="1">
+                                    <component type="input" name="unitRAOPTP" reference="unitRAOPTP"
+                                               hasLabel="false">
+                                        <option type="textRepresentationOnDisabled" value="true"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                        </layoutElement>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" height="3">
+                    <component type="borderLayout" name="reasonForCorrectionBorderLayout">
+                        <component type="gridLayout" name="productQuantityGridLayout"
+                                   columns="3" rows="3">
+                            <layoutElement column="1" row="1">
+                                <component type="label"
+                                           name="reasonTypesCorrectionProductQuantityFromLabel">
+                                    <option type="labelStyle" value="label"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="2" row="1" width="2">
+                                <component type="awesomeDynamicList" name="typeOfCorrectionCauses"
+                                           source="#{form}.typeOfCorrectionCauses" reference="typeOfCorrectionCauses">
+                                    <option type="hasBorder" value="false"/>
+                                    <option type="hasButtons" value="true"/>
 
-				<option type="searchable" value="dateAndTime,previousState,currentState,datesChanged" />
-				<option type="orderable" value="dateAndTime,previousState,currentState,datesChanged" />
+                                    <components>
+                                        <component type="gridLayout" name="productQuantityGridLayout"
+                                                   columns="1" rows="1">
+                                            <layoutElement column="1" row="1">
+                                                <component type="select" name="reasonType" field="reasonType"
+                                                           reference="reasonType" hasLabel="false">
+                                                </component>
+                                            </layoutElement>
+                                        </component>
+                                    </components>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2" height="2" width="3">
+                                <component type="textarea" name="commentReasonTypeDeviationsQuantity"
+                                           field="#{form}.commentReasonTypeDeviationsQuantity"
+                                           reference="commentReasonTypeDeviationsQuantity">
+                                </component>
+                            </layoutElement>
+                        </component>
+                        <option type="label" value="reasonForCorrectionLabel"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-				<option type="correspondingView" value="orders/orderStateChangeDetails" />
-				<option type="correspondingComponent" value="form" />
-			</component>
-		</windowTab>
+        <windowTab name="history">
+            <component type="grid" name="loggings" reference="grid"
+                       source="#{form}.stateChanges">
+                <option type="column" name="dateAndTime" fields="dateAndTime"
+                        link="true"/>
+                <option type="column" name="previousState" fields="sourceState"/>
+                <option type="column" name="currentState" fields="targetState"/>
+                <option type="column" name="datesChanged" fields="datesChanged" width="30"/>
+                <option type="column" name="worker" fields="worker"/>
+                <option type="column" name="comment" fields="comment"/>
 
-		<windowTab name="integrationTab">
-			<script>
-					<![CDATA[
+                <option type="order" column="dateAndTime" direction="asc"/>
+
+                <option type="searchable" value="dateAndTime,previousState,currentState,datesChanged"/>
+                <option type="orderable" value="dateAndTime,previousState,currentState,datesChanged"/>
+
+                <option type="correspondingView" value="orders/orderStateChangeDetails"/>
+                <option type="correspondingComponent" value="form"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="integrationTab">
+            <script>
+                <![CDATA[
 						var del = #{window}.getRibbonItem("actions.delete");
 						var externalNumberListener = {
 							onSetValue: function(value) {
@@ -922,21 +944,21 @@
 						};
 						#{form}.addOnChangeListener(externalNumberListener);
 					]]>
-			</script>
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="1">
-				<layoutElement column="1" row="1">
-					<component type="input" name="externalNumber" field="#{form}.externalNumber"
-						reference="externalNumber" defaultEnabled="never" />
-				</layoutElement>
-			</component>
-		</windowTab>
+            </script>
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="input" name="externalNumber" field="#{form}.externalNumber"
+                               reference="externalNumber" defaultEnabled="never"/>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-	</component>
+    </component>
 
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="onBeforeRender" />
-	</hooks>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 
 </view>
