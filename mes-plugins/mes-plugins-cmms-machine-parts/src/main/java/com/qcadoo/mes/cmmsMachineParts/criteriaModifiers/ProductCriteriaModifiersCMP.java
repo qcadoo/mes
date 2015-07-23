@@ -1,16 +1,16 @@
 package com.qcadoo.mes.cmmsMachineParts.criteriaModifiers;
 
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers;
 import com.qcadoo.mes.cmmsMachineParts.constants.ProductFieldsCMP;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-
-import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
 
 @Service
 public class ProductCriteriaModifiersCMP {

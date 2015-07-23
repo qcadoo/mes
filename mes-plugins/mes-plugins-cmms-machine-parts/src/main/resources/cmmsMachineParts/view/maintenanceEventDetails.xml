@@ -387,6 +387,75 @@
             </component>
         </windowTab>
 
+        <windowTab name="machinePartsTab">
+            <component type="gridLayout" name="machinePartsGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="machinePartsForEvent" reference="machinePartsForEvent"
+                               source="#{form}.machinePartsForEvent">
+                        <option type="column" name="number" fields="machinePart" expression="#machinePart['number']"
+                                link="true"/>
+                        <option type="column" name="name" fields="machinePart" expression="#machinePart['name']"
+                                link="true"/>
+                        <option type="column" name="unit" fields="machinePart" expression="#machinePart['unit']"
+                                link="true"/>
+                        <option type="column" name="warehouse" fields="warehouse" expression="#warehouse['number']"
+                                link="true"/>
+                        <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
+                        <option type="column" name="availableQuantity" fields="availableQuantity"/>
+                        <option type="column" name="issuedQuantity" fields="issuedQuantity"/>
+                        <option type="column" name="remainingQuantity" fields="remainingQuantity"/>
+
+                        <option type="order" column="number" direction="asc"/>
+
+                        <option type="correspondingView" value="cmmsMachineParts/machinePartForEventDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="searchable"
+                                value="number,name,unit,warehouse,plannedQuantity,availableQuantity,issuedQuantity,remainingQuantity"/>
+                        <option type="orderable"
+                                value="number,name,unit,warehouse,plannedQuantity,availableQuantity,issuedQuantity,remainingQuantity"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="documentsTab">
+            <component type="gridLayout" name="documentsGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="documents" reference="documents"
+                               source="#{form}.documents">
+                        <option type="column" name="number" fields="number" link="true"
+                                width="50"/>
+                        <option type="column" name="type" fields="type"/>
+                        <option type="column" name="time" fields="time"/>
+                        <option type="column" name="locationFrom" fields="locationFrom"
+                                expression="#locationFrom['name']"/>
+                        <option type="column" name="user" fields="user"
+                                expression="#user['firstName'] + ' ' + #user['lastName']" width="150"/>
+                        <option type="column" name="state" fields="state" width="100"/>
+
+                        <option type="order" column="number" direction="desc" width="200"/>
+
+                        <option type="searchable"
+                                value="number,time,locationFrom,user,type,state"/>
+                        <option type="orderable"
+                                value="number,time,locationFrom,user,type,state"/>
+
+                        <option type="correspondingView" value="materialFlowResources/documentDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="false"/>
+
+                        <option type="creatable" value="false"/>
+                        <option type="deletable" value="false"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
         <windowTab name="solutionDescriptionTab">
             <component type="gridLayout" name="solutionDescriptionGrid" columns="3"
                        rows="6" hasBorders="false">
