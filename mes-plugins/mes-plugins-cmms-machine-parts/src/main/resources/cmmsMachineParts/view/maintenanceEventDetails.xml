@@ -397,12 +397,11 @@
                                 link="true"/>
                         <option type="column" name="name" fields="machinePart" expression="#machinePart['name']"
                                 link="true"/>
-                        <option type="column" name="unit" fields="machinePart" expression="#machinePart['unit']"
-                                link="true"/>
                         <option type="column" name="warehouse" fields="warehouse" expression="#warehouse['number']"
                                 link="true"/>
                         <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
                         <option type="column" name="availableQuantity" fields="availableQuantity"/>
+                        <option type="column" name="unit" fields="machinePart" expression="#machinePart['unit']"/>
 
                         <option type="order" column="number" direction="asc"/>
 

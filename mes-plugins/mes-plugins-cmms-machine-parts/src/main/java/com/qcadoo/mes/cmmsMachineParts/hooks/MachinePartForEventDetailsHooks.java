@@ -16,8 +16,7 @@ import com.qcadoo.view.api.components.LookupComponent;
 @Service
 public class MachinePartForEventDetailsHooks {
 
-    private static final String[] unitFields = { "plannedQuantityUnit", "availableQuantityUnit", "issuedQuantityUnit",
-            "remainingQuantityUnit" };
+    private static final String[] unitFields = { "plannedQuantityUnit", "availableQuantityUnit" };
 
     private static final String L_FORM = "form";
 
