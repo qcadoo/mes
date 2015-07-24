@@ -9,7 +9,6 @@ CREATE TABLE cmmsmachineparts_machinepartforevent
   warehouse_id bigint,
   plannedquantity numeric(14,5),
   availablequantity numeric(14,5),
-  issuedquantity numeric(14,5),
   CONSTRAINT cmmsmachineparts_machinepartforevent_pkey PRIMARY KEY (id),
   CONSTRAINT machinepartforevent_warehouse_fkey FOREIGN KEY (warehouse_id)
       REFERENCES materialflow_location (id) DEFERRABLE,

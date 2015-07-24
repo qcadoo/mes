@@ -52,7 +52,9 @@ public class EventHooks {
                 || state.compareTo(MaintenanceEventState.PLANNED) == 0) {
             form.setFormEnabled(false);
             GridComponent staffWorkTimes = (GridComponent) view.getComponentByReference(MaintenanceEventFields.STAFF_WORK_TIMES);
+            GridComponent machineParts = (GridComponent) view.getComponentByReference(MaintenanceEventFields.MACHINE_PARTS_FOR_EVENT);
             staffWorkTimes.setEnabled(false);
+            machineParts.setEnabled(false);
         }
     }
 

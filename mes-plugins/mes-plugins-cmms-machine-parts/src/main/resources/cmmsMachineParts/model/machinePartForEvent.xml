@@ -38,24 +38,13 @@
             <validatesScale max="5"/>
         </decimal>
 
-        <decimal name="remainingQuantity" persistent="false">
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-
         <decimal name="availableQuantity">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
 
-        <decimal name="issuedQuantity">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
     </fields>
     <hooks>
-        <onView class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartForEventHooks" method="onView"/>
     </hooks>
 </model>

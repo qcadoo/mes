@@ -403,8 +403,6 @@
                                 link="true"/>
                         <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
                         <option type="column" name="availableQuantity" fields="availableQuantity"/>
-                        <option type="column" name="issuedQuantity" fields="issuedQuantity"/>
-                        <option type="column" name="remainingQuantity" fields="remainingQuantity"/>
 
                         <option type="order" column="number" direction="asc"/>
 
@@ -415,9 +413,9 @@
                         <option type="creatable" value="true"/>
                         <option type="deletable" value="true"/>
                         <option type="searchable"
-                                value="number,name,unit,warehouse,plannedQuantity,availableQuantity,issuedQuantity,remainingQuantity"/>
+                                value="number,name,unit,warehouse,plannedQuantity,availableQuantity"/>
                         <option type="orderable"
-                                value="number,name,unit,warehouse,plannedQuantity,availableQuantity,issuedQuantity,remainingQuantity"/>
+                                value="number,name,unit,warehouse,plannedQuantity,availableQuantity"/>
                     </component>
                 </layoutElement>
             </component>

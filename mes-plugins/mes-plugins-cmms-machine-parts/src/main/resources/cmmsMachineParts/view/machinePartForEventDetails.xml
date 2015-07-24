@@ -39,7 +39,7 @@
             <component type="form" name="form"
                        reference="form">
                 <component type="gridLayout" name="gridLayout" columns="7"
-                           rows="6" hasBorders="false">
+                           rows="4" hasBorders="false">
                     <layoutElement column="1" row="1" width="5">
                         <component type="lookup" name="machinePart" field="machinePart"
                                    reference="machinePart">
@@ -96,31 +96,6 @@
 
                     <layoutElement column="6" row="4">
                         <component type="input" name="availableQuantityUnit" reference="availableQuantityUnit"
-                                   hasLabel="false" defaultEnabled="false">
-                            <option type="textRepresentationOnDisabled" value="true"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="5" width="5">
-                        <component type="input" name="issuedQuantity" reference="issuedQuantity"
-                                   field="issuedQuantity" defaultEnabled="false">
-                            <option type="alignment" value="right"/>
-                        </component>
-                    </layoutElement>
-
-                    <layoutElement column="6" row="5">
-                        <component type="input" name="issuedQuantityUnit" reference="issuedQuantityUnit"
-                                   hasLabel="false" defaultEnabled="false">
-                            <option type="textRepresentationOnDisabled" value="true"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="6" width="5">
-                        <component type="input" name="remainingQuantity" reference="remainingQuantity"
-                                   field="remainingQuantity" defaultEnabled="false">
-                            <option type="alignment" value="right"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="6" row="6">
-                        <component type="input" name="remainingQuantityUnit" reference="remainingQuantityUnit"
                                    hasLabel="false" defaultEnabled="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
