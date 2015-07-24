@@ -1,14 +1,12 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
+import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
@@ -24,6 +22,9 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EventHooks {
@@ -39,11 +40,15 @@ public class EventHooks {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
+    @Autowired
+    private MaintenanceEventContextService maintenanceEventContextService;
+
     public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
         setEventCriteriaModifiers(view);
         setUpFaultTypeLookup(view);
         setFieldsRequired(view);
         fillDefaultFields(view);
+        fillDefaultFieldsFromContext(view);
         toggleEnabledForWorkstation(view);
         disableFieldsForState(view);
         toggleOldSolutionsButton(view);
@@ -77,7 +82,29 @@ public class EventHooks {
 
         if (numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, MaintenanceEventFields.NUMBER)) {
             numberGeneratorService.generateAndInsertNumber(view, CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                    CmmsMachinePartsConstants.MAINTENANCE_EVENT, L_FORM, MaintenanceEventFields.NUMBER);
+                    CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT, L_FORM, MaintenanceEventFields.NUMBER);
+        }
+    }
+
+    private void fillDefaultFieldsFromContext(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if(form.getEntityId() == null) {
+            Entity event = form.getEntity();
+            Entity eventContext = event.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
+
+            Entity factoryEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.FACTORY);
+            if (factoryEntity != null) {
+                FieldComponent factoryField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
+                factoryField.setFieldValue(factoryEntity.getId());
+                factoryField.requestComponentUpdateState();
+            }
+
+            Entity divisionEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.DIVISION);
+            if (divisionEntity != null) {
+                FieldComponent divisionField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
+                divisionField.setFieldValue(divisionEntity.getId());
+                divisionField.requestComponentUpdateState();
+            }
         }
     }
 
@@ -173,5 +200,7 @@ public class EventHooks {
 
         showSolutionsRibbonActionItem.setEnabled(event.getId() != null);
         showSolutionsRibbonActionItem.requestUpdate(true);
+    public final void onBeforeRenderListView(final ViewDefinitionState view) {
+           maintenanceEventContextService.beforeRenderListView(view);
     }
 }

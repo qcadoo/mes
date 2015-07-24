@@ -194,6 +194,14 @@
                          this.addOnChangeListener({
                                 onSetValue: function() {
                                     var json = JSON.parse(context);
+
+                                    var maintenanceEventContextId = json['window.mainTab.maintenanceEventForm.gridLayout.maintenanceEventContext'];
+                                    var currentMaintenanceEventContextId = #{maintenanceEventContext}.getValue().content.value;
+
+                                    if (maintenanceEventContextId != null && currentMaintenanceEventContextId != maintenanceEventContextId) {
+                                       #{form}.fireEvent(this, 'fillFieldValues', ['maintenanceEventContext', maintenanceEventContextId]);
+                                    }
+
                                     var currentType = #{type}.getValue().content.value;
                                     var eventType = json['window.mainTab.eventType'];
                                     if (eventType != null && currentType !== eventType) {
@@ -207,6 +215,8 @@
                     <layoutElement column="1" row="1">
                         <component type="hidden" name="factoryStructure" field="factoryStructure"
                                    reference="factoryStructure"/>
+                        <component type="hidden" name="maintenanceEventContext" field="maintenanceEventContext"
+                                   reference="maintenanceEventContext"/>
                         <component type="input" name="number" field="number" reference="number"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">

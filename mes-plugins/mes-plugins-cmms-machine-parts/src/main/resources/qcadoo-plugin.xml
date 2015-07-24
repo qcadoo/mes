@@ -126,6 +126,7 @@
         <model:model model="machinePartForEvent" resource="model/machinePartForEvent.xml"/>
 
         <model:model model="maintenanceEventStateChange" resource="model/maintenanceEventStateChange.xml"/>
+        <model:model model="maintenanceEventContext" resource="model/maintenanceEventContext.xml"/>
 
         <!-- model extensions -->
 

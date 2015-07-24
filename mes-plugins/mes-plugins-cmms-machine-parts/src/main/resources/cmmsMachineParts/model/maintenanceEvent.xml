@@ -62,6 +62,9 @@
         <hasMany name="stateChanges" joinField="maintenanceEvent" model="maintenanceEventStateChange" cascade="delete"/>
 
         <text name="solutionDescription"/>
+
+        <belongsTo name="maintenanceEventContext" plugin="cmmsMachineParts"
+            model="maintenanceEventContext" persistent="true"/>
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"
