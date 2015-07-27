@@ -514,7 +514,7 @@
                             </dataType>
                             <dataType name="material">
                                 <option type="nodeLabelExpression"
-                                        value="(#operation.get('tj') != null ? (T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#operation.get('tj')) + ' - ') : '') + '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit')"/>
+                                        value="'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit')"/>
                                 <option type="nodeIcon" value="/technologies/public/css/icons/materialIcon16.png"/>
                                 <option type="newIcon" value="/technologies/public/css/icons/materialIcon16.png"/>
 
