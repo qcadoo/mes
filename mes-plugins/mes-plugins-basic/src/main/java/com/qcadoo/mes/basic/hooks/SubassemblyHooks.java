@@ -47,13 +47,16 @@ public class SubassemblyHooks {
     }
 
     private void validateUniquenessOfWorkstationAndType(DataDefinition subassemblyDD, Entity subassembly) {
-        SearchCriterion criterionWorkstation = SearchRestrictions.belongsTo(SubassemblyFields.WORKSTATION, subassembly.getBelongsToField(SubassemblyFields.WORKSTATION));
-        SearchCriterion criterionType = SearchRestrictions.eq(SubassemblyFields.TYPE, subassembly.getStringField(SubassemblyFields.TYPE));
-        SearchCriterion criterionId = subassembly.getId() == null ? null : SearchRestrictions.idNe(subassembly.getId());
+        Entity workstationEntity = subassembly.getBelongsToField(SubassemblyFields.WORKSTATION);
+        if(workstationEntity!=null) {
+            SearchCriterion criterionWorkstation = SearchRestrictions.belongsTo(SubassemblyFields.WORKSTATION, workstationEntity);
+            SearchCriterion criterionType = SearchRestrictions.eq(SubassemblyFields.TYPE, subassembly.getStringField(SubassemblyFields.TYPE));
+            SearchCriterion criterionId = subassembly.getId() == null ? null : SearchRestrictions.idNe(subassembly.getId());
 
-        Long count = criterionId == null ? subassemblyDD.count(SearchRestrictions.and(criterionWorkstation, criterionType)) : subassemblyDD.count(SearchRestrictions.and(criterionWorkstation, criterionType, criterionId));
-        if (count > 0) {
-            subassembly.addError(subassemblyDD.getField(SubassemblyFields.WORKSTATION), "basic.validate.global.error.uniquenessOfWorkstationAndType");
+            Long count = criterionId == null ? subassemblyDD.count(SearchRestrictions.and(criterionWorkstation, criterionType)) : subassemblyDD.count(SearchRestrictions.and(criterionWorkstation, criterionType, criterionId));
+            if (count > 0) {
+                subassembly.addError(subassemblyDD.getField(SubassemblyFields.WORKSTATION), "basic.validate.global.error.uniquenessOfWorkstationAndType");
+            }
         }
     }
 
