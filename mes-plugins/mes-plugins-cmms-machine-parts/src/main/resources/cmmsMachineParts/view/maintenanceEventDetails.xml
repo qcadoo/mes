@@ -411,6 +411,7 @@
 
                         <option type="creatable" value="true"/>
                         <option type="deletable" value="true"/>
+                        <option type="multiselect" value="true"/>
                         <option type="searchable"
                                 value="number,name,unit,warehouse,plannedQuantity,availableQuantity"/>
                         <option type="orderable"

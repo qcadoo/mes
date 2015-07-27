@@ -33,7 +33,7 @@
     <windowTab name="eventsTab" reference="eventsTab">
         <component type="gridLayout" name="eventsGridLayout" columns="4" rows="1" hasBorders="false">
             <layoutElement row="1" column="1">
-                <component type="lookup" name="maintenanceEvent" field="maintenanceEvent"
+                <component type="lookup" name="maintenanceEvent" field="#{form}.maintenanceEvent"
                            reference="maintenanceEvent">
                     <option type="column" name="type" fields="type" link="true"/>
                     <option type="column" name="createDate" fields="createDate" link="createDate"/>

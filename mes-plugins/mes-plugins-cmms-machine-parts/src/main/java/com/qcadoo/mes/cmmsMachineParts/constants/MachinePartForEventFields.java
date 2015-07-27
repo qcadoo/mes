@@ -10,6 +10,8 @@ public class MachinePartForEventFields {
 
     public static final String AVAILABLE_QUANTITY = "availableQuantity";
 
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
+
     private MachinePartForEventFields() {
     }
 }
