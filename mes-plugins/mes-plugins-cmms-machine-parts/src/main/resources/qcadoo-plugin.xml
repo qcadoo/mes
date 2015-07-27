@@ -223,7 +223,7 @@
                         class="com.qcadoo.mes.cmmsMachineParts.hooks.DocumentDetailsHooksCMP"
                         method="toggleEnabledForEventLookup"/>
         <view:view-grid-column plugin="materialFlowResources" view="documentsList" component="grid">
-            <view:column name="maintenanceEvent" fields="maintenanceEvent"/>
+            <view:column name="maintenanceEvent" fields="maintenanceEvent" expression="#maintenanceEvent['number']"/>
         </view:view-grid-column>
 
         <view:resource uri="public/**/*"/>
