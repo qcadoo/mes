@@ -60,6 +60,8 @@ public class MaintenanceEventDocumentsService {
         DataDefinition warehouseDD = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_LOCATION);
         Multimap<Long, Entity> groupedMachinePartsForEvent = groupMachinePartsByLocation(machinePartsForEvent);
+
+        boolean resourcesSufficient = true;
         for (Long warehouseId : groupedMachinePartsForEvent.keySet()) {
             Collection<Entity> machinePartsForLocation = groupedMachinePartsForEvent.get(warehouseId);
             List<Entity> machineParts = machinePartsForLocation.stream()
@@ -70,8 +72,17 @@ public class MaintenanceEventDocumentsService {
                     machineParts, warehouse);
 
             if (!checkIfResourcesAreSufficient(maintenanceEvent, quantitiesInWarehouse, machinePartsForLocation, warehouse)) {
-                return;
+                resourcesSufficient = false;
             }
+        }
+        if (!resourcesSufficient) {
+            return;
+        }
+        for (Long warehouseId : groupedMachinePartsForEvent.keySet()) {
+            Collection<Entity> machinePartsForLocation = groupedMachinePartsForEvent.get(warehouseId);
+
+            Entity warehouse = warehouseDD.get(warehouseId);
+
             Entity document = createDocumentForLocation(maintenanceEvent, warehouse, machinePartsForLocation);
             if (!document.isValid()) {
                 maintenanceEvent.addGlobalError("cmmsMachineParts.maintenanceEvent.state.documentNotCreated");
