@@ -51,7 +51,7 @@
             <url>http://www.qcadoo.com</url>
         </vendor>
         <license>AGPL</license>
-        <description>Computerised Maintenance Management Systems - provides machine parts management
+        <description>Computerised Maintenance Management Systems - provides machine parts and events management
         </description>
     </information>
 
@@ -110,6 +110,8 @@
         <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
+
+        <view:view-tab resource="view/tabExtensions/documentDetails.xml"/>
 
         <!-- view extensions -->
 
@@ -221,6 +223,18 @@
                             component="form" event="redirectToWarehouseStateList"
                             class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"
                             method="redirectToWarehouseStateList"/>
+
+        <view:view-hook plugin="materialFlowResources" view="documentDetails" type="beforeRender"
+                        class="com.qcadoo.mes.cmmsMachineParts.hooks.DocumentDetailsHooksCMP"
+                        method="toggleEnabledForEventLookup"/>
+        <view:view-listener plugin="materialFlowResources" view="documentDetails" component="type"
+                            event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.cmmsMachineParts.listeners.DocumentDetailsListenersCMP"
+                            method="clearMaintenanceEvent"/>
+        <view:view-grid-column plugin="materialFlowResources" view="documentsList" component="grid">
+            <view:column name="maintenanceEvent" fields="maintenanceEvent" expression="#maintenanceEvent['number']"
+                         searchable="true" orderable="true"/>
+        </view:view-grid-column>
 
         <view:resource uri="public/**/*"/>
 
