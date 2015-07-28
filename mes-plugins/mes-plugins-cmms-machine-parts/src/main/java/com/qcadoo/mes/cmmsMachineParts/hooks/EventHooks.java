@@ -7,18 +7,22 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
+import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -27,7 +31,7 @@ public class EventHooks {
     private static final String L_FORM = "form";
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private MaintenanceEventService maintenanceEventService;
 
     @Autowired
     private FaultTypesService faultTypesService;
@@ -42,6 +46,7 @@ public class EventHooks {
         fillDefaultFields(view);
         toggleEnabledForWorkstation(view);
         disableFieldsForState(view);
+        toggleOldSolutionsButton(view);
     }
 
     private void disableFieldsForState(final ViewDefinitionState view) {
@@ -157,4 +162,16 @@ public class EventHooks {
 
     }
 
+    private void toggleOldSolutionsButton(ViewDefinitionState view) {
+        WindowComponent windowComponent = (WindowComponent) view.getComponentByReference("window");
+        Ribbon ribbon = windowComponent.getRibbon();
+        RibbonGroup solutionsRibbonGroup = ribbon.getGroupByName("solutions");
+        RibbonActionItem showSolutionsRibbonActionItem = solutionsRibbonGroup.getItemByName("showSolutions");
+
+        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
+
+        showSolutionsRibbonActionItem.setEnabled(event.getId() != null);
+        showSolutionsRibbonActionItem.requestUpdate(true);
+    }
 }

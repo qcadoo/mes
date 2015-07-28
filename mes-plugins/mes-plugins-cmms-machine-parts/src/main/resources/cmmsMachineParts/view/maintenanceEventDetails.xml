@@ -59,6 +59,12 @@
                 </bigButton>
             </group>
 
+            <group name="solutions">
+            	<bigButton name="showSolutions" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(showSolutions);">
+                </bigButton>
+            </group>
+
         </ribbon>
 
         <windowTab name="mainTab">
@@ -346,6 +352,9 @@
                           method="fillFieldValues"/>
 
                 <listener event="downloadAtachment" method="downloadAtachment"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+
+				<listener event="showSolutions" method="showSolutions"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
 
                 <listener event="save" method="validateIssueOrProposal"

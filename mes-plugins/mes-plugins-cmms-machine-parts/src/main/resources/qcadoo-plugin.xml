@@ -98,6 +98,11 @@
 
         <view:view resource="view/maintenanceEventStateChangeReasonDialog.xml"/>
 
+        <view:view resource="view/oldSolutionsSubassembly.xml" />
+        <view:view resource="view/oldSolutionsWorkstation.xml" />
+        <view:view resource="view/oldSolutionsLine.xml" />
+        <view:view resource="view/oldSolutionsDivision.xml" />
+
         <menu:menu-category name="maintenance"/>
         <menu:menu-item name="events" category="maintenance" view="eventsList"/>
 

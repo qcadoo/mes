@@ -227,6 +227,27 @@ public class EventListeners {
         view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
     }
 
+    public void showSolutions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        if (!checkAndShow("subassembly", "oldSolutionsSubassembly", view)) {
+            if (!checkAndShow("workstation", "oldSolutionsWorkstation", view)) {
+                if (!checkAndShow("productionLine", "oldSolutionsLine", view)) {
+                    checkAndShow("division", "oldSolutionsDivision", view);
+                }
+            }
+        }
+    }
+
+    private boolean checkAndShow(final String modelName, final String viewName, final ViewDefinitionState view) {
+        LookupComponent lookup = (LookupComponent) view.getComponentByReference(modelName);
+        if (lookup.getEntity() != null) {
+            String url = "../page/cmmsMachineParts/" + viewName + ".html?context={\"" + modelName + ".id\":\""
+                    + lookup.getEntity().getId() + "\"}";
+            view.openModal(url);
+            return true;
+        }
+        return false;
+    }
+
     public void validateIssueOrProposal(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity event = form.getPersistedEntityWithIncludedFormValues();
