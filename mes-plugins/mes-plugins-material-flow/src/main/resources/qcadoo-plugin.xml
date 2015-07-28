@@ -26,6 +26,7 @@
 -->
 <plugin plugin="materialFlow" group="flow" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:security="http://schema.qcadoo.org/modules/security"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
@@ -33,7 +34,9 @@
 	   http://schema.qcadoo.org/modules/report 
 	   http://schema.qcadoo.org/modules/report.xsd 
 		http://schema.qcadoo.org/plugin 
-		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/plugin.xsd
+		http://schema.qcadoo.org/modules/security
+	    http://schema.qcadoo.org/modules/security.xsd
 		http://schema.qcadoo.org/modules/model 
 		http://schema.qcadoo.org/modules/model.xsd 
 		http://schema.qcadoo.org/modules/view 
@@ -84,19 +87,21 @@
 			<model:hasMany name="transformations" joinField="operation" 
 				model="transformations" plugin="materialFlow" cascade="delete"/>
 		</model:model-field>
-	
+
+		<security:role identifier="ROLE_MATERIAL_FLOW" description="Dostęp do magazynu, dokumntów itd."/>
+
 		<menu:menu-category name="materialFlow" />
 	
 		<menu:menu-item name="locations" category="materialFlow"
-			view="locationsList" />
+			view="locationsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 		<menu:menu-item name="materialsInLocations" category="materialFlow"
-			view="materialsInLocationsList" active="false" />
+			view="materialsInLocationsList" active="false" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 		<menu:menu-item name="stockCorrections" category="materialFlow"
-			view="stockCorrectionsList" active="false" />
+			view="stockCorrectionsList" active="false" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 		<menu:menu-item name="transfers" category="materialFlow"
-			view="transfersList" active="false" />
+			view="transfersList" active="false" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 		<menu:menu-item name="transformations" category="materialFlow"
-			view="transformationsList" active="false" />
+			view="transformationsList" active="false" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 	
 		<view:view resource="view/locationDetails.xml" />
 		<view:view resource="view/locationsList.xml" />

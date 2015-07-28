@@ -195,16 +195,16 @@
         </model:model-hook>
 
         <menu:menu-item name="resources" category="materialFlow"
-                        view="resourcesList"/>
+                        view="resourcesList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
         <menu:menu-item name="resourceCorrections" category="materialFlow"
-                        view="resourceCorrectionsList"/>
+                        view="resourceCorrectionsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
         <menu:menu-item name="documents" category="materialFlow"
-                        view="documentsList"/>
+                        view="documentsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
         <menu:menu-item name="warehouseStock" category="materialFlow"
-                        view="warehouseStocksList"/>
+                        view="warehouseStocksList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
         <menu:menu-item name="documentPositions" category="materialFlow"
-                        view="documentPositionsList"/>
+                        view="documentPositionsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
         <view:view-listener plugin="materialFlow" view="transferDetails"
                             component="locationFrom" event="onSelectedEntityChange"

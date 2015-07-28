@@ -26,12 +26,15 @@
 -->
 <plugin plugin="wageGroups" group="basic" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:security="http://schema.qcadoo.org/modules/security"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/security
+	   http://schema.qcadoo.org/modules/security.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
@@ -84,9 +87,10 @@
 			<model:onSave class="com.qcadoo.mes.wageGroups.hooks.StaffHooks" method="saveLaborHourlyCost"/>
 		</model:model-hook>
 
+
 		<menu:menu-item name="wageGroups" category="basic"
-			view="wageGroupsList" />
-		<menu:menu-item name="wages" category="basic" view="wagesList" />
+			view="wageGroupsList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
+		<menu:menu-item name="wages" category="basic" view="wagesList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
 
 		<view:view resource="view/wageGroupsList.xml" />
 		<view:view resource="view/wageGroupsDetails.xml" />

@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view name="assignmentToShiftReportList" modelName="assignmentToShiftReport"
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="assignmentToShiftReportList" modelName="assignmentToShiftReport"
 	  menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	  xmlns="http://schema.qcadoo.org/view"
 	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
