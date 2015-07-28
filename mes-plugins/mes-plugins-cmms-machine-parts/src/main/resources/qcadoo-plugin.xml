@@ -222,6 +222,10 @@
         <view:view-hook plugin="materialFlowResources" view="documentDetails" type="beforeRender"
                         class="com.qcadoo.mes.cmmsMachineParts.hooks.DocumentDetailsHooksCMP"
                         method="toggleEnabledForEventLookup"/>
+        <view:view-listener plugin="materialFlowResources" view="documentDetails" component="type"
+                            event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.cmmsMachineParts.listeners.DocumentDetailsListenersCMP"
+                            method="clearMaintenanceEvent"/>
         <view:view-grid-column plugin="materialFlowResources" view="documentsList" component="grid">
             <view:column name="maintenanceEvent" fields="maintenanceEvent" expression="#maintenanceEvent['number']"/>
         </view:view-grid-column>
