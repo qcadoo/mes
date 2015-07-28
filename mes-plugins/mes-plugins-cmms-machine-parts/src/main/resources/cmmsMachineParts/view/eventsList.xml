@@ -228,7 +228,7 @@
             <option type="correspondingView" value="cmmsMachineParts/maintenanceEventDetails"/>
             <option type="correspondingComponent" value="form"/>
 
-            <option type="order" column="number" direction="asc"/>
+            <option type="order" column="number" direction="desc"/>
             <option type="fullscreen" value="true"/>
 
             <listener event="changeState"

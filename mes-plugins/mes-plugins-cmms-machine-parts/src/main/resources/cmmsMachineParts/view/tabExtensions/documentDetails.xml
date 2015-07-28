@@ -41,6 +41,7 @@
                     <option type="searchable" value="number,type,createDate,state"/>
                     <option type="orderable" value="number,type,createDate,state"/>
 
+                    <option type="order" column="createDate" direction="desc"/>
                     <option type="expression" value="#number"/>
                     <option type="fieldCode" value="number"/>
                     <criteriaModifier
