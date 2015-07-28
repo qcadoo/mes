@@ -27,12 +27,10 @@ import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATI
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.RESOURCE_CORRECTIONS;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,9 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
@@ -304,6 +300,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 resource.getDataDefinition().delete(resource.getId());
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceQuantity));
+                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(resourceQuantity));
                 newPositions.add(newPosition);
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
@@ -317,6 +314,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 resource.getDataDefinition().save(resource);
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
+                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(quantity));
                 newPositions.add(newPosition);
                 return newPositions;
             }
