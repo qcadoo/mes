@@ -227,7 +227,8 @@
                             class="com.qcadoo.mes.cmmsMachineParts.listeners.DocumentDetailsListenersCMP"
                             method="clearMaintenanceEvent"/>
         <view:view-grid-column plugin="materialFlowResources" view="documentsList" component="grid">
-            <view:column name="maintenanceEvent" fields="maintenanceEvent" expression="#maintenanceEvent['number']"/>
+            <view:column name="maintenanceEvent" fields="maintenanceEvent" expression="#maintenanceEvent['number']"
+                         searchable="true" orderable="true"/>
         </view:view-grid-column>
 
         <view:resource uri="public/**/*"/>
