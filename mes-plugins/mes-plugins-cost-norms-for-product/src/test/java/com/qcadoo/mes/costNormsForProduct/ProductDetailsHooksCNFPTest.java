@@ -119,12 +119,16 @@ public class ProductDetailsHooksCNFPTest {
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.NOMINAL_COST)).thenReturn(field1);
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.AVERAGE_OFFER_COST)).thenReturn(field2);
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.LAST_OFFER_COST)).thenReturn(field3);
+        when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.LAST_PURCHASE_COST)).thenReturn(field4);
+        when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.AVERAGE_COST)).thenReturn(field5);
         // when
         costNormsForProductService.enabledFieldForExternalID(viewDefinitionState);
         // then
         Mockito.verify(field1).setEnabled(true);
         Mockito.verify(field2).setEnabled(true);
         Mockito.verify(field3).setEnabled(true);
+        Mockito.verify(field4).setEnabled(true);
+        Mockito.verify(field5).setEnabled(true);
     }
 
     @Test
