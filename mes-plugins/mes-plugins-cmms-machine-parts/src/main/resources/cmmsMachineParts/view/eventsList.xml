@@ -324,8 +324,8 @@
                 <option type="correspondingView" value="cmmsMachineParts/maintenanceEventDetails"/>
                 <option type="correspondingComponent" value="form"/>
 
-            <option type="order" column="number" direction="desc"/>
-            <option type="fullscreen" value="true"/>
+				<option type="order" column="number" direction="desc"/>
+				<option type="fullscreen" value="true"/>
 
                 <listener event="changeState"
                           class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
@@ -334,6 +334,8 @@
 				<listener event="onSelectedEntityChange"
 						  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
 						  method="onSelectedEventChange"/>
+
+				<criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP" method="showEventsFromContext" />
             </component>
         </windowTab>
 

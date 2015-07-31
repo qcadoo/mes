@@ -31,7 +31,7 @@
 		<belongsTo name="factory" model="factory" plugin="basic" />
 		<belongsTo name="division" model="division" plugin="basic" />
 		<hasMany name="events" model="maintenanceEvent"
-				 joinField="maintenanceEventContext" plugin="cmmsMachineParts" persistent="false"/>
+				 joinField="maintenanceEventContext" plugin="cmmsMachineParts" />
 		<boolean name="generated" default="false" />
 		<boolean name="confirmed" default="false" />
 	</fields>

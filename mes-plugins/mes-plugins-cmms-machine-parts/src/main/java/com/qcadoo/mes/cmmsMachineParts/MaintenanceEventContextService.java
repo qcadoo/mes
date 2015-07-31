@@ -1,10 +1,10 @@
 package com.qcadoo.mes.cmmsMachineParts;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.DivisionFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -16,6 +16,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.internal.components.form.FormComponentState;
@@ -23,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -64,6 +64,11 @@ public class MaintenanceEventContextService {
 
         maintenanceEventContextEntity.setField(MaintenanceEventContextFields.CONFIRMED, true);
         maintenanceEventContextEntity = maintenanceEventContextEntity.getDataDefinition().save(maintenanceEventContextEntity);
+        Long maintenanceEventContextEntityId = maintenanceEventContextEntity.getId();
+        dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT).find().list().getEntities().stream().forEach(event -> {
+            event.setField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT, maintenanceEventContextEntityId);
+            event.getDataDefinition().save(event);
+        });
 
         return maintenanceEventContextEntity;
     }
@@ -103,16 +108,13 @@ public class MaintenanceEventContextService {
 
     private void prepareViewWithContext(ViewDefinitionState view, Entity maintenanceEventContext) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
-        maintenanceEventContext = prepareFilteredEvents(maintenanceEventContext);
         formComponent.setEntity(maintenanceEventContext);
-
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
-        List<Entity> events = maintenanceEventContext.getHasManyField(MaintenanceEventContextFields.EVENTS);
-        grid.setEntities(events);
 
         setEnableOfRibbonActions(view, true);
         setEnableOfContextTab(view, false);
         setEnableOfMainTab(view, true);
+
+        setGridFilterParameters(view, maintenanceEventContext);
     }
 
     private void prepareViewWithEmptyContext(ViewDefinitionState view, Entity maintenanceEventContext) {
@@ -162,6 +164,23 @@ public class MaintenanceEventContextService {
         }
     }
 
+    private void setGridFilterParameters(ViewDefinitionState view, Entity maintenanceEventContext) {
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference(L_GRID);
+
+        FilterValueHolder filterValueHolder = gridComponent.getFilterValue();
+
+        Entity factoryEntity = maintenanceEventContext.getBelongsToField(MaintenanceEventContextFields.FACTORY);
+        if(factoryEntity != null) {
+            filterValueHolder.put(EventCriteriaModifiersCMP.EVENT_CONTEXT_FILTER_PARAMETER_FACTORY, factoryEntity.getId());
+        }
+
+        Entity divisionEntity = maintenanceEventContext.getBelongsToField(MaintenanceEventContextFields.DIVISION);
+        if(divisionEntity != null) {
+            filterValueHolder.put(EventCriteriaModifiersCMP.EVENT_CONTEXT_FILTER_PARAMETER_DIVISION, divisionEntity.getId());
+        }
+        gridComponent.setFilterValue(filterValueHolder);
+    }
+
     public void onSelectedEventChange(ViewDefinitionState view) {
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
@@ -175,24 +194,8 @@ public class MaintenanceEventContextService {
 
     private Map<String, Object> getContextParameterToRedirect(final Entity maintenanceEventContextEntity) {
         Map<String, Object> parameters = Maps.newHashMap();
+
         parameters.put("form.id", maintenanceEventContextEntity.getId());
-
-        Map<String, Object> gridOptions = Maps.newHashMap();
-        if (maintenanceEventContextEntity.getBooleanField(MaintenanceEventContextFields.CONFIRMED)) {
-            Map<String, String> filters = Maps.newHashMap();
-            Entity divisionEntity = maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.DIVISION);
-            if (divisionEntity != null) {
-                filters.put("division", applyInOperator(divisionEntity.getStringField(DivisionFields.NUMBER)));
-            }
-
-            Entity factoryEntity = maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.FACTORY);
-            if (factoryEntity != null) {
-                filters.put("factory", applyInOperator(factoryEntity.getStringField(DivisionFields.NUMBER)));
-            }
-            gridOptions.put("filters", filters);
-        }
-
-        parameters.put("grid.options", gridOptions);
         parameters.put("window.activeMenu", "maintenance.events");
 
         return parameters;

@@ -49,7 +49,7 @@ public class EventHooks {
         setFieldsRequired(view);
         fillDefaultFields(view);
         fillDefaultFieldsFromContext(view);
-        toggleEnabledForWorkstation(view);
+        toggleEnabledViewComponents(view);
         disableFieldsForState(view);
         toggleOldSolutionsButton(view);
     }
@@ -108,13 +108,31 @@ public class EventHooks {
         }
     }
 
-    private void toggleEnabledForWorkstation(final ViewDefinitionState view) {
-
+    private void toggleEnabledViewComponents(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity event = form.getPersistedEntityWithIncludedFormValues();
-        boolean enabled = event.getBelongsToField(MaintenanceEventFields.PRODUCTION_LINE) != null;
+        Entity eventEntity = form.getPersistedEntityWithIncludedFormValues();
+
+        toggleEnabledForWorkstation(view, form, eventEntity);
+        toggleEnabledForFactory(view, form, eventEntity);
+        toggleEnabledForDivision(view, form, eventEntity);
+    }
+
+    private void toggleEnabledForWorkstation(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
+        boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.PRODUCTION_LINE) != null;
         LookupComponent workstation = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.WORKSTATION);
         workstation.setEnabled(enabled);
+    }
+
+    private void toggleEnabledForFactory(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
+        boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT).getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
+        LookupComponent factoryLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
+        factoryLookup.setEnabled(enabled);
+    }
+
+    private void toggleEnabledForDivision(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
+        boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT).getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
+        divisionLookup.setEnabled(enabled);
     }
 
     private void setFieldsRequired(final ViewDefinitionState view) {
@@ -200,6 +218,8 @@ public class EventHooks {
 
         showSolutionsRibbonActionItem.setEnabled(event.getId() != null);
         showSolutionsRibbonActionItem.requestUpdate(true);
+    }
+
     public final void onBeforeRenderListView(final ViewDefinitionState view) {
            maintenanceEventContextService.beforeRenderListView(view);
     }

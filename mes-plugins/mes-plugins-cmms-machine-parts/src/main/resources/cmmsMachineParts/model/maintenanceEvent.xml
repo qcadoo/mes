@@ -63,8 +63,7 @@
 
         <text name="solutionDescription"/>
 
-        <belongsTo name="maintenanceEventContext" plugin="cmmsMachineParts"
-            model="maintenanceEventContext" persistent="true"/>
+        <belongsTo name="maintenanceEventContext" plugin="cmmsMachineParts" model="maintenanceEventContext" />
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"
