@@ -32,7 +32,7 @@
 	
 		<ribbon>
 			<template name="standardFormTemplate" />
-			<group name="orderProduction">
+			<group name="orderProduction" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY">
 				<bigButton name="redirectToFilteredOrderProductionList"
 					icon="genealogyIcon24.png">
 					<script>

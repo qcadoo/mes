@@ -81,9 +81,6 @@
     <modules>
         <localization:translation path="locales"/>
 
-        <security:role identifier="ROLE_MAINTENANCE" description="Dostęp do utrzymania ruchu, typów usterek"/>
-        <security:role identifier="ROLE_MACHINE_PARTS" description="Dostęp do części"/>
-
         <!-- view -->
         <view:view resource="view/machinePartsList.xml"/>
         <view:view resource="view/machinePartDetails.xml"/>

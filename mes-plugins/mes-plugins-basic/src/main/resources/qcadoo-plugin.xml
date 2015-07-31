@@ -89,6 +89,10 @@
 
         <security:role identifier="ROLE_STAFF_WAGES" description="Dostęp pracowników, płac, grup płacowych"/>
 
+        <security:role identifier="ROLE_MAINTENANCE" description="Dostęp do utrzymania ruchu, typów usterek"/>
+
+        <security:role identifier="ROLE_MACHINE_PARTS" description="Dostęp do części"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="shift" resource="model/shift.xml"/>
