@@ -1,6 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts;
 
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.Map;
 
 @Service
 public class MaintenanceEventContextService {
@@ -45,8 +43,7 @@ public class MaintenanceEventContextService {
         } else {
             maintenanceEventContextEntity = confirmContext(view, maintenanceEventContextEntity);
         }
-
-        view.redirectTo("/page/cmmsMachineParts/eventsList.html", false, true, getContextParameterToRedirect(maintenanceEventContextEntity));
+        formComponent.setEntity(maintenanceEventContextEntity);
     }
 
     private Entity changeContext(ViewDefinitionState view, Entity maintenanceEventContextEntity) {
@@ -120,6 +117,10 @@ public class MaintenanceEventContextService {
     private void prepareViewWithEmptyContext(ViewDefinitionState view, Entity maintenanceEventContext) {
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
         grid.setEntities(Arrays.asList());
+
+        setEnableOfRibbonActions(view, false);
+        setEnableOfContextTab(view, true);
+        setEnableOfMainTab(view, false);
     }
 
     private void setEnableOfContextTab(ViewDefinitionState view, boolean enabled) {
@@ -190,20 +191,6 @@ public class MaintenanceEventContextService {
             eventEntity.setField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT, form.getEntityId());
             maintenanceEventDD.save(eventEntity);
         }
-    }
-
-    private Map<String, Object> getContextParameterToRedirect(final Entity maintenanceEventContextEntity) {
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("form.id", maintenanceEventContextEntity.getId());
-        parameters.put("window.activeMenu", "maintenance.events");
-
-        return parameters;
-    }
-
-    private String applyInOperator(final String value) {
-        StringBuilder builder = new StringBuilder();
-        return builder.append("[").append(value).append("]").toString();
     }
 }
 
