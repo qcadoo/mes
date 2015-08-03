@@ -54,7 +54,7 @@
                     value="number,createDate,solutionDescription"/>
                     
             <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.OldSolutionsCriteriaModifiers"
-            	method="showSolutions" />
+            	method="showSolutionsLine" />
         </component>
     </component>
 </view>

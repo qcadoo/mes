@@ -33,6 +33,8 @@ public class AssignmentToShiftCriteria {
 
     private Optional<SearchCriterion> shiftCriteria = Optional.absent();
 
+    private Optional<SearchCriterion> factoryCriteria = Optional.absent();
+
     private Optional<SearchCriterion> criteria = Optional.absent();
 
     public static AssignmentToShiftCriteria empty() {
@@ -54,8 +56,18 @@ public class AssignmentToShiftCriteria {
         return this;
     }
 
+    public AssignmentToShiftCriteria withFactoryCriteria(final SearchCriterion factoryCriteria) {
+        this.factoryCriteria = Optional.fromNullable(factoryCriteria);
+
+        return this;
+    }
+
     public Optional<SearchCriterion> getShiftCriteria() {
         return shiftCriteria;
+    }
+
+    public Optional<SearchCriterion> getFactoryCriteria() {
+        return factoryCriteria;
     }
 
     public Optional<SearchCriterion> getCriteria() {
@@ -76,14 +88,15 @@ public class AssignmentToShiftCriteria {
             return false;
         }
 
-        AssignmentToShiftCriteria rhs = (AssignmentToShiftCriteria) obj;
+        AssignmentToShiftCriteria other = (AssignmentToShiftCriteria) obj;
 
-        return new EqualsBuilder().append(this.shiftCriteria, rhs.shiftCriteria).append(this.criteria, rhs.criteria).isEquals();
+        return new EqualsBuilder().append(this.shiftCriteria, other.shiftCriteria)
+                .append(this.factoryCriteria, other.factoryCriteria).append(this.criteria, other.criteria).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(shiftCriteria).append(criteria).toHashCode();
+        return new HashCodeBuilder().append(shiftCriteria).append(factoryCriteria).append(criteria).toHashCode();
     }
 
 }

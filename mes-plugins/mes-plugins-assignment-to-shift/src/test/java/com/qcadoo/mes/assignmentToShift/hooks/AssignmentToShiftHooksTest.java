@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState.DRAFT;
 import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
 import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
@@ -55,6 +54,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.dataProviders.AssignmentToShiftCriteria;
 import com.qcadoo.mes.assignmentToShift.dataProviders.AssignmentToShiftDataProvider;
+import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftStateChangeDescriber;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.basic.shift.ShiftsFactory;
@@ -84,7 +84,7 @@ public class AssignmentToShiftHooksTest {
     @Mock
     private Shift shiftPojo;
 
-    private Entity assignmentToShift, shiftEntity;
+    private Entity assignmentToShift, shift, factory;
 
     @Before
     public void init() {
@@ -98,12 +98,16 @@ public class AssignmentToShiftHooksTest {
         ReflectionTestUtils.setField(assignmentToShiftHooks, "shiftsFactory", shiftsFactory);
 
         assignmentToShift = mockEntity(mock(DataDefinition.class));
-        shiftEntity = mockEntity(mock(DataDefinition.class));
-        given(shiftEntity.copy()).willReturn(shiftEntity);
+        shift = mockEntity(mock(DataDefinition.class));
+        factory = mockEntity(mock(DataDefinition.class));
+
+        given(shift.copy()).willReturn(shift);
         given(shiftsFactory.buildFrom(any(Entity.class))).willReturn(shiftPojo);
 
-        stubBelongsToField(assignmentToShift, AssignmentToShiftFields.SHIFT, shiftEntity);
+
         stubDateField(assignmentToShift, AssignmentToShiftFields.START_DATE, START_DATE.toDate());
+        stubBelongsToField(assignmentToShift, AssignmentToShiftFields.SHIFT, shift);
+        stubBelongsToField(assignmentToShift, AssignmentToShiftFields.FACTORY, factory);
 
         stubFind(null);
         stubFindAll(ImmutableList.<Entity> of());
@@ -126,7 +130,7 @@ public class AssignmentToShiftHooksTest {
         assignmentToShiftHooks.setInitialState(assignmentToShift);
 
         // then
-        verify(stateChangeEntityBuilder).buildInitial(describer, assignmentToShift, DRAFT);
+        verify(stateChangeEntityBuilder).buildInitial(describer, assignmentToShift, AssignmentToShiftState.DRAFT);
     }
 
     @Test
@@ -149,7 +153,7 @@ public class AssignmentToShiftHooksTest {
 
         // then
         Assert.assertFalse(result);
-        verify(assignmentToShift, times(2)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
+        verify(assignmentToShift, times(3)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
     }
 
     @Test
@@ -162,7 +166,7 @@ public class AssignmentToShiftHooksTest {
 
         // then
         Assert.assertFalse(result);
-        verify(assignmentToShift, times(2)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
+        verify(assignmentToShift, times(3)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
     }
 
     @Test
@@ -227,7 +231,9 @@ public class AssignmentToShiftHooksTest {
 
     private Entity mockStartDateProjection(final LocalDate localDate) {
         Entity projection = mockEntity();
+
         stubDateField(projection, AssignmentToShiftFields.START_DATE, localDate.toDate());
+
         return projection;
     }
 
