@@ -92,18 +92,20 @@ public class EventHooks {
             Entity event = form.getEntity();
             Entity eventContext = event.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
 
-            Entity factoryEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.FACTORY);
-            if (factoryEntity != null) {
-                FieldComponent factoryField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
-                factoryField.setFieldValue(factoryEntity.getId());
-                factoryField.requestComponentUpdateState();
-            }
+            if(eventContext != null) {
+                Entity factoryEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.FACTORY);
+                if (factoryEntity != null) {
+                    FieldComponent factoryField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
+                    factoryField.setFieldValue(factoryEntity.getId());
+                    factoryField.requestComponentUpdateState();
+                }
 
-            Entity divisionEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.DIVISION);
-            if (divisionEntity != null) {
-                FieldComponent divisionField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
-                divisionField.setFieldValue(divisionEntity.getId());
-                divisionField.requestComponentUpdateState();
+                Entity divisionEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.DIVISION);
+                if (divisionEntity != null) {
+                    FieldComponent divisionField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
+                    divisionField.setFieldValue(divisionEntity.getId());
+                    divisionField.requestComponentUpdateState();
+                }
             }
         }
     }

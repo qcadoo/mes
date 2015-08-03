@@ -80,9 +80,9 @@ public class EventCriteriaModifiersCMP {
     }
 
     public void selectFaultType(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-
         if (filterValue.has(MaintenanceEventFields.SUBASSEMBLY)) {
             addSubassemblyCriteria(scb, filterValue);
+
         } else if (filterValue.has(MaintenanceEventFields.WORKSTATION)) {
             addWorkstationCriteria(scb, filterValue);
         }

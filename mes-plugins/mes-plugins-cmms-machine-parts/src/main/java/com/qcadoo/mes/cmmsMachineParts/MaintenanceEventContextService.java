@@ -94,7 +94,7 @@ public class MaintenanceEventContextService {
 
     public void beforeRenderListView(final ViewDefinitionState view) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity maintenanceEventContext = prepareContextEntity(formComponent.getEntity());
+        Entity maintenanceEventContext = formComponent.getEntity();
 
         if (maintenanceEventContext.getBooleanField(MaintenanceEventContextFields.CONFIRMED)) {
             prepareViewWithContext(view, maintenanceEventContext);
@@ -104,9 +104,6 @@ public class MaintenanceEventContextService {
     }
 
     private void prepareViewWithContext(ViewDefinitionState view, Entity maintenanceEventContext) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
-        formComponent.setEntity(maintenanceEventContext);
-
         setEnableOfRibbonActions(view, true);
         setEnableOfContextTab(view, false);
         setEnableOfMainTab(view, true);
@@ -126,8 +123,8 @@ public class MaintenanceEventContextService {
     private void setEnableOfContextTab(ViewDefinitionState view, boolean enabled) {
         ComponentState contextTabComponent = view.getComponentByReference("contextTab");
 
-        ((FieldComponent) view.getComponentByReference(MaintenanceEventContextFields.FACTORY)).setEnabled(enabled);
-        ((FieldComponent) view.getComponentByReference(MaintenanceEventContextFields.DIVISION)).setEnabled(enabled);
+        view.<FieldComponent>tryFindComponentByReference(MaintenanceEventContextFields.FACTORY).orNull().setEnabled(enabled);
+        view.<FieldComponent>tryFindComponentByReference(MaintenanceEventContextFields.DIVISION).orNull().setEnabled(enabled);
     }
 
     private void setEnableOfMainTab(ViewDefinitionState view, boolean enabled) {
