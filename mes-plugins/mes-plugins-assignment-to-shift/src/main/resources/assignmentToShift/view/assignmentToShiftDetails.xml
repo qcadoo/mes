@@ -73,6 +73,10 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="copy">
+                <bigButton name="copyStaffAssignmentToShift" icon="copyIcon24.png" state="disabled"
+                           action="#{form}.fireEvent(copyStaffAssignmentToShift);" />
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -105,7 +109,8 @@
 									"actions.delete",
 									"status.acceptAssignmentToShift",
 									"status.correctAssignmentToShift",
-									"status.acceptCorrectedAssignmentToShift"
+									"status.acceptCorrectedAssignmentToShift",
+									"copy.copyStaffAssignmentToShift"
 								],
 
 								toggleRibbonItemsLen = toggleRibbonItems.length,
@@ -229,6 +234,10 @@
                 <listener event="changeState"
                           class="com.qcadoo.mes.assignmentToShift.states.client.AssignmentToShiftStateChangeViewClient"
                           method="changeState"/>
+
+                <listener event="copyStaffAssignmentToShift"
+                          class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftDetailsListeners"
+                          method="copyStaffAssignmentToShift"/>
             </component>
         </windowTab>
 

@@ -36,13 +36,13 @@
 				   plugin="productionLines"/>
 		<dictionary dictionary="occupationType" name="occupationType"
 					required="true"/>
+		<string name="occupationTypeName"/>
+		<enum name="occupationTypeEnum" values="01workOnLine,02otherCase" />
+		<string name="occupationTypeValueForGrid"/>
 		<belongsTo name="masterOrder" model="masterOrder"
 				   plugin="masterOrders"/>
-		<string name="occupationTypeName"/>
 		<enum name="state" values="01simple,02accepted,03corrected"
 			  default="01simple"/>
-		<enum values="01workOnLine,02otherCase" name="occupationTypeEnum"/>
-		<string name="occupationTypeValueForGrid"/>
 	</fields>
 
 	<hooks>
