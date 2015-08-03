@@ -54,8 +54,6 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class AssignmentToShiftDetailsHooks {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AssignmentToShiftDetailsHooks.class);
-
     public static final String L_FORM = "form";
 
     public static final String L_WINDOW = "window";
@@ -72,14 +70,17 @@ public class AssignmentToShiftDetailsHooks {
 
     public static final String L_DELETE = "delete";
 
-    public static final String L_STATE = "state";
+    public static final String L_ACCEPT_ASSIGNMENT_TO_SHIFT = "acceptAssignmentToShift";
+
+    public static final String L_CORRECT_ASSIGNMENT_TO_SHIFT = "correctAssignmentToShift";
+
+    public static final String L_ACCEPT_CORRECTED_ASSIGNMENT_TO_SHIFT = "acceptCorrectedAssignmentToShift";
 
     public static final String L_ASSIGNMENT_TO_SHIFT_INFO_IS_WAITING_FOR_SYNC = "assignmentToShift.assignmentToShift.info.isWaitingForSync";
 
     public static final String L_ASSIGNMENT_TO_SHIFT_STATE_DOES_NOT_ALLOW_EDITING = "assignmentToShift.assignmentToShiftDetails.window.ribbon.stateDoesNotAllowEditing";
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private static final Logger LOG = LoggerFactory.getLogger(AssignmentToShiftDetailsHooks.class);
 
     private static CustomRestriction customRestrictionAccepted = new CustomRestriction() {
 
@@ -109,6 +110,9 @@ public class AssignmentToShiftDetailsHooks {
         }
 
     };
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         addDiscriminatorRestrictionToStaffAssignmentGrid(view);
@@ -170,7 +174,12 @@ public class AssignmentToShiftDetailsHooks {
         RibbonActionItem saveBackRibbonActionItem = actionsRibbonGroup.getItemByName(L_SAVE_BACK);
         RibbonActionItem saveNewRibbonActionItem = actionsRibbonGroup.getItemByName(L_SAVE_NEW);
         RibbonActionItem deleteRibbonActionItem = actionsRibbonGroup.getItemByName(L_DELETE);
-        RibbonActionItem stateRibbonActionItem = statusRibbonGroup.getItemByName(L_STATE);
+
+        RibbonActionItem acceptAssignmentToShiftRibbonActionItem = statusRibbonGroup.getItemByName(L_ACCEPT_ASSIGNMENT_TO_SHIFT);
+        RibbonActionItem correctAssignmentToShiftRibbonActionItem = statusRibbonGroup
+                .getItemByName(L_CORRECT_ASSIGNMENT_TO_SHIFT);
+        RibbonActionItem acceptCorrectedAssignmentToShiftRibbonActionItem = statusRibbonGroup
+                .getItemByName(L_ACCEPT_CORRECTED_ASSIGNMENT_TO_SHIFT);
 
         String state = assignmentToShift.getStringField(AssignmentToShiftFields.STATE);
 
@@ -199,13 +208,26 @@ public class AssignmentToShiftDetailsHooks {
         }
 
         List<RibbonActionItem> ribbonActionItems = Lists.newArrayList(saveRibbonActionItem, saveBackRibbonActionItem,
-                saveNewRibbonActionItem, deleteRibbonActionItem, stateRibbonActionItem);
+                saveNewRibbonActionItem, deleteRibbonActionItem, acceptAssignmentToShiftRibbonActionItem,
+                correctAssignmentToShiftRibbonActionItem, acceptCorrectedAssignmentToShiftRibbonActionItem);
 
         for (RibbonActionItem ribbonActionItem : ribbonActionItems) {
             if (ribbonActionItem != null) {
-                if ((AssignmentToShiftStateStringValues.ACCEPTED.equals(state) || AssignmentToShiftStateStringValues.CORRECTED
-                        .equals(state)) && L_STATE.equals(ribbonActionItem.getName())) {
+                String ribbonActionItemName = ribbonActionItem.getName();
+
+                if (AssignmentToShiftStateStringValues.DRAFT.equals(state)
+                        && (L_CORRECT_ASSIGNMENT_TO_SHIFT.equals(ribbonActionItemName) || L_ACCEPT_CORRECTED_ASSIGNMENT_TO_SHIFT
+                                .equals(ribbonActionItemName))) {
+                    ribbonActionItem.setEnabled(false);
+                    ribbonActionItem.setMessage(message);
+                } else if ((AssignmentToShiftStateStringValues.ACCEPTED.equals(state) || AssignmentToShiftStateStringValues.CORRECTED
+                        .equals(state)) && L_CORRECT_ASSIGNMENT_TO_SHIFT.equals(ribbonActionItemName)) {
                     ribbonActionItem.setEnabled(true);
+                } else if (AssignmentToShiftStateStringValues.DURING_CORRECTION.equals(state)
+                        && (L_DELETE.equals(ribbonActionItemName) || L_ACCEPT_ASSIGNMENT_TO_SHIFT.equals(ribbonActionItemName) || L_CORRECT_ASSIGNMENT_TO_SHIFT
+                                .equals(ribbonActionItemName))) {
+                    ribbonActionItem.setEnabled(false);
+                    ribbonActionItem.setMessage(message);
                 } else {
                     ribbonActionItem.setEnabled(isEnabled);
                     ribbonActionItem.setMessage(message);

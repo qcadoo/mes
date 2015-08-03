@@ -31,9 +31,47 @@
 
         <ribbon>
             <template name="standardFormTemplate"/>
+
             <group name="status">
-                <bigButton name="state" icon="startIcon24.png" state="disabled"
-                           action="#{form}.changeState(state)"/>
+                <smallButton name="acceptAssignmentToShift" icon="startIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.accepted.confirm)}")) {
+										#{form}.performEvent('changeState', ['02accepted']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="correctAssignmentToShift" icon="deleteIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection.confirm)}")) {
+										#{form}.performEvent('changeState', ['03duringCorrection']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="acceptCorrectedAssignmentToShift" icon="deleteIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.corrected.confirm)}")) {
+										#{form}.performEvent('changeState', ['04corrected']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
             </group>
         </ribbon>
 
@@ -42,15 +80,6 @@
 
                 <script>
                     <![CDATA[
-						this.changeState = function(eventPerformer, ribbonItemName) {
-							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
-							var newState = ribbonItem.forState;
-
-							if (window.confirm(ribbonItem.confirmMessage)) {
-								#{form}.fireEvent(eventPerformer, 'changeState', [newState]);
-							}
-						}
-
 						this.addOnChangeListener({
 							onSetValue: function(value) {
 								var state = #{state}.getValue().content.value;
@@ -64,12 +93,19 @@
 						});
 
 						function toggleEditable(state, enabled, message) {
+						    var isDraft = (state == "01draft");
+							var isAccepted = (state == "02accepted");
+                          	var isDuringCorrection = (state == "03duringCorrection");
+							var isCorrected = (state == "04corrected");
+
 							var toggleRibbonItems = [
 									"actions.save",
 									"actions.saveBack",
 									"actions.saveNew",
 									"actions.delete",
-									"status.state"
+									"status.acceptAssignmentToShift",
+									"status.correctAssignmentToShift",
+									"status.acceptCorrectedAssignmentToShift"
 								],
 
 								toggleRibbonItemsLen = toggleRibbonItems.length,
@@ -88,56 +124,37 @@
 								}
 
 								if (enabled) {
-									ribbonItem.enable();
+								    if (isDraft && ((ribbonItemName == "status.correctAssignmentToShift") || (ribbonItemName == "status.acceptCorrectedAssignmentToShift"))) {
+								        ribbonItem.disable();
+								    } else if (isDuringCorrection && ((ribbonItemName == "actions.delete") || (ribbonItemName == "status.acceptAssignmentToShift") || (ribbonItemName == "status.correctAssignmentToShift"))) {
+								    	ribbonItem.disable();
+								    } else {
+									    ribbonItem.enable();
+									}
 								} else {
-									ribbonItem.disable(message);
+								    if ((isAccepted || isCorrected) && (ribbonItemName == "status.correctAssignmentToShift")) {
+									    ribbonItem.enable();
+									} else {
+									    ribbonItem.disable(message);
+									}
 								}
 							}
 						}
 
 						function updateRibbon(state) {
-							var stateButton = #{window}.getRibbonItem("status.state");
-
 							var isDraft = (state == "01draft");
-							var isAccepted = (state == "02accepted");
                           	var isDuringCorrection = (state == "03duringCorrection");
-							var isCorrected = (state == "04corrected");
 
 							if (isDraft) {
-								stateButton.enable();
-								stateButton.actualState = "draft";
-								stateButton.forState="02accepted";
-								stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.accepted)}");
-								stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.accepted.confirm)}";
-							} else if (isAccepted) {
-								stateButton.enable();
-								stateButton.actualState = "accepted";
-								stateButton.forState="03duringCorrection";
-								stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection)}");
-								stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection.confirm)}";
-							} else if (isDuringCorrection) {
-								stateButton.enable();
-								stateButton.forState="04corrected";
-								stateButton.actualState = "duringCorrection";
-								stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.corrected)}");
-								stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.corrected.confirm)}";
-							} else if (isCorrected) {
-								stateButton.enable();
-								stateButton.forState="03duringCorrection";
-								stateButton.actualState = "corrected";
-								stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection)}");
-								stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection.confirm)}";
-							}
-
-							if (isDraft || isDuringCorrection) {
 							    if (#{externalSynchronized}.getValue().content.value == 0) {
 								    toggleEditable(state, false, "#{translate(assignmentToShift.assignmentToShift.info.isWaitingForSync)}");
 							    } else {
 							        toggleEditable(state, true, "");
                                 }
+                            } else if (isDuringCorrection) {
+                                toggleEditable(state, true, "");
 							} else {
 								toggleEditable(state, false, "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.stateDoesNotAllowEditing)}");
-								stateButton.enable();
 							}
 						}
 					]]>
