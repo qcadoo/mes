@@ -107,9 +107,10 @@ public class AssignmentToShiftHooks {
     }
 
     private Optional<LocalDate> resolveNextStartDate(final Entity assignmentToShift) {
-        final LocalDate startDate = LocalDate.fromDateFields(assignmentToShift.getDateField(AssignmentToShiftFields.START_DATE));
-        final Shift shift = shiftsFactory.buildFrom(assignmentToShift.getBelongsToField(AssignmentToShiftFields.SHIFT));
-        final Set<LocalDate> occupiedDates = findNextStartDatesMatching(assignmentToShift.getDataDefinition(), shift, startDate);
+        LocalDate startDate = LocalDate.fromDateFields(assignmentToShift.getDateField(AssignmentToShiftFields.START_DATE));
+        Shift shift = shiftsFactory.buildFrom(assignmentToShift.getBelongsToField(AssignmentToShiftFields.SHIFT));
+        Entity factory = assignmentToShift.getBelongsToField(AssignmentToShiftFields.FACTORY);
+        Set<LocalDate> occupiedDates = findNextStartDatesMatching(assignmentToShift.getDataDefinition(), startDate, shift, factory);
 
         Iterable<Integer> daysRange = ContiguousSet.create(Range.closed(1, DAYS_IN_YEAR), DiscreteDomain.integers());
 
@@ -144,12 +145,13 @@ public class AssignmentToShiftHooks {
         }
     };
 
-    private Set<LocalDate> findNextStartDatesMatching(final DataDefinition assignmentToShiftDD, final Shift shift,
-            final LocalDate laterThan) {
+    private Set<LocalDate> findNextStartDatesMatching(final DataDefinition assignmentToShiftDD, final LocalDate laterThan, final Shift shift, final Entity factory) {
         AssignmentToShiftCriteria criteria = AssignmentToShiftCriteria.empty();
 
         criteria.withCriteria(gt(AssignmentToShiftFields.START_DATE, laterThan.toDate()));
+
         criteria.withShiftCriteria(idEq(shift.getId()));
+        criteria.withFactoryCriteria(idEq(factory.getId()));
 
         List<Entity> matchingStartDatesProjection = assignmentToShiftDataProvider.findAll(criteria,
                 Optional.of(alias(field(AssignmentToShiftFields.START_DATE), AssignmentToShiftFields.START_DATE)),
@@ -161,14 +163,17 @@ public class AssignmentToShiftHooks {
     }
 
     boolean checkUniqueEntity(final Entity assignmentToShift) {
+        Date startDate = assignmentToShift.getDateField(AssignmentToShiftFields.START_DATE);
         Entity shift = assignmentToShift.getBelongsToField(AssignmentToShiftFields.SHIFT);
+        Entity factory = assignmentToShift.getBelongsToField(AssignmentToShiftFields.FACTORY);
 
         AssignmentToShiftCriteria criteria = AssignmentToShiftCriteria.empty();
 
         SearchCriterion startDateCriteria = eq(AssignmentToShiftFields.START_DATE,
-                assignmentToShift.getField(AssignmentToShiftFields.START_DATE));
+                startDate);
 
         criteria.withShiftCriteria(idEq(shift.getId()));
+        criteria.withFactoryCriteria(idEq(factory.getId()));
 
         if (assignmentToShift.getId() == null) {
             criteria.withCriteria(startDateCriteria);
@@ -186,9 +191,11 @@ public class AssignmentToShiftHooks {
     }
 
     private void addErrorMessages(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift) {
+        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.START_DATE),
+                "assignmentToShift.assignmentToShift.entityAlreadyExists");
         assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.SHIFT),
                 "assignmentToShift.assignmentToShift.entityAlreadyExists");
-        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.START_DATE),
+        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.FACTORY),
                 "assignmentToShift.assignmentToShift.entityAlreadyExists");
     }
 
