@@ -106,7 +106,7 @@
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
-						   rows="6">
+						   rows="7">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
 								   reference="number">
@@ -128,16 +128,29 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
+						<component type="lookup" name="factory" field="factory"
+								   reference="factory">
+							<option type="column" name="name" fields="name" link="true"/>
+							<option type="column" name="city" fields="city" link="true"/>
+
+							<option type="searchable" value="number,name,city"/>
+							<option type="orderable" value="number,name,city"/>
+
+							<option type="expression" value="#number"/>
+							<option type="fieldCode" value="number"/>
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="5">
 						<component type="calendar" name="dateFrom" field="dateFrom"
 								   reference="dateFrom">
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="5">
+					<layoutElement column="1" row="6">
 						<component type="calendar" name="dateTo" field="dateTo"
 								   reference="dateTo">
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="6">
+					<layoutElement column="1" row="7">
 						<component type="checkbox" name="generated" field="generated"
 								   reference="generated" defaultVisible="false"/>
 					</layoutElement>

@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.DATE_FROM;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.DATE_TO;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.GENERATED;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.NAME;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.NUMBER;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.SHIFT;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
+import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -49,7 +43,9 @@ public final class AssignmentToShiftReportDetailsHooks {
 
     private static final String L_FORM = "form";
 
-    private static final List<String> REPORT_FIELDS = Arrays.asList(NUMBER, NAME, SHIFT, DATE_FROM, DATE_TO);
+    private static final List<String> L_REPORT_FIELDS = Arrays.asList(AssignmentToShiftReportFields.NUMBER,
+            AssignmentToShiftReportFields.NAME, AssignmentToShiftReportFields.SHIFT, AssignmentToShiftReportFields.FACTORY,
+            AssignmentToShiftReportFields.DATE_FROM, AssignmentToShiftReportFields.DATE_TO);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -59,7 +55,7 @@ public final class AssignmentToShiftReportDetailsHooks {
 
     public void generateAssignmentToShiftReportNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
-                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT, L_FORM, NUMBER);
+                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT, L_FORM, AssignmentToShiftReportFields.NUMBER);
     }
 
     public void disableFields(final ViewDefinitionState view) {
@@ -67,17 +63,17 @@ public final class AssignmentToShiftReportDetailsHooks {
         Long assignmentToShiftReportId = assignmentToShiftReportForm.getEntityId();
 
         if (assignmentToShiftReportId == null) {
-            setFieldsState(view, REPORT_FIELDS, true);
+            setFieldsState(view, L_REPORT_FIELDS, true);
         } else {
             Entity assignmentToShiftReport = getAssignmentToShiftReportFromDB(assignmentToShiftReportId);
 
             if (assignmentToShiftReport != null) {
-                boolean generated = assignmentToShiftReport.getBooleanField(GENERATED);
+                boolean generated = assignmentToShiftReport.getBooleanField(AssignmentToShiftReportFields.GENERATED);
 
                 if (generated) {
-                    setFieldsState(view, REPORT_FIELDS, false);
+                    setFieldsState(view, L_REPORT_FIELDS, false);
                 } else {
-                    setFieldsState(view, REPORT_FIELDS, true);
+                    setFieldsState(view, L_REPORT_FIELDS, true);
                 }
             }
         }
@@ -96,4 +92,5 @@ public final class AssignmentToShiftReportDetailsHooks {
         return dataDefinitionService.get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
                 AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT).get(assignmentToShiftReportId);
     }
+
 }

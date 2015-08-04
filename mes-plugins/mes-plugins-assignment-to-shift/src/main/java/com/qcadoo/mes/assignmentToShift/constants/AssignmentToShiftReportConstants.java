@@ -33,6 +33,8 @@ public final class AssignmentToShiftReportConstants {
 
     public static final String COLUMN_HEADER_SHIFT = "assignmentToShift.assignmentToShiftReport.report.columnHeader.shift";
 
+    public static final String COLUMN_HEADER_FACTORY = "assignmentToShift.assignmentToShiftReport.report.columnHeader.factory";
+
     public static final String COLUMN_HEADER_AUTHOR = "assignmentToShift.assignmentToShiftReport.report.columnHeader.author";
 
     public static final String COLUMN_HEADER_UPDATE_DATE = "assignmentToShift.assignmentToShiftReport.report.columnHeader.updateDate";
