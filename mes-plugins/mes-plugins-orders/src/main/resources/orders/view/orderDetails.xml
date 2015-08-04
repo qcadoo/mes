@@ -98,8 +98,7 @@
                 </smallButton>
             </group>
             <group name="export">
-                <bigButton name="print" icon="pdfIcon24.png"
-                           action="#{form}.generateReportForEntity('orders','order','pdf')">
+                <bigButton name="print" icon="pdfIcon24.png">
                     <script>
                         <![CDATA[
 							#{form}.addOnChangeListener({
@@ -113,7 +112,18 @@
 										this.enable();
 									}
 								}
-							});					
+							});
+
+
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent({
+                                        name : 'printOrderReport',
+                                        args : ['pdf']
+                                    });
+                                }
+                            });
+
 						]]>
                     </script>
                 </bigButton>
@@ -491,6 +501,10 @@
                           method="changeState"/>
                 <listener event="showCopyOfTechnology" method="showCopyOfTechnology"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+                <listener event="printOrderReport" method="printOrderReport"
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+
+
             </component>
         </windowTab>
 
