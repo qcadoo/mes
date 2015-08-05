@@ -18,6 +18,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.primitives.Ints;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -145,15 +146,20 @@ public class DocumentPdf extends ReportPdfView {
     }
 
     private PdfPTable createTable() {
-        int[] headerWidths = { 40, 70, 25, 40, 40, 40, 40, 60 };
+        int[] headerWidths = Ints.toArray(getHeaderWidths());
         Map<String, HeaderAlignment> headerValues = getHeaderValues(locale);
-        PdfPTable warehouseTable = pdfHelper.createTableWithHeader(8, Lists.newArrayList(headerValues.keySet()), false,
+        PdfPTable warehouseTable = pdfHelper.createTableWithHeader(headerWidths.length,
+                Lists.newArrayList(headerValues.keySet()), false,
                 headerWidths, headerValues);
         warehouseTable.getDefaultCell().disableBorderSide(PdfPCell.RIGHT);
         warehouseTable.getDefaultCell().disableBorderSide(PdfPCell.LEFT);
         warehouseTable.setHeaderRows(1);
         warehouseTable.setSpacingAfter(12.0f);
         return warehouseTable;
+    }
+
+    private List<Integer> getHeaderWidths() {
+        return Lists.newArrayList(40, 65, 25, 40, 40, 40, 40, 60);
     }
 
     private boolean addRow(Entity minimalState, Map<Long, Entity> stocksByProduct, PdfPTable table) {
@@ -197,6 +203,7 @@ public class DocumentPdf extends ReportPdfView {
             addSmallCell(table, ordered);
         }
         addSmallCell(table, warehouseMinimumState.getDecimalField(WarehouseMinimumStateFields.OPTIMAL_ORDER_QUANTITY));
+        addAdditionalCells(table, product);
         Entity supplier = warehouseMinimalStateHelper.getDefaultSupplier(product.getId());
         if (supplier != null) {
             Entity company = supplier.getBelongsToField(CompanyProductFields.COMPANY);
@@ -206,11 +213,15 @@ public class DocumentPdf extends ReportPdfView {
         }
     }
 
-    private void addSmallCell(PdfPTable table, String content) {
+    private void addAdditionalCells(PdfPTable table, Entity product) {
+
+    }
+
+    public void addSmallCell(PdfPTable table, String content) {
         table.addCell(new Phrase(content, FontUtils.getDejavuRegular7Dark()));
     }
 
-    private void addSmallCell(PdfPTable table, BigDecimal content) {
+    public void addSmallCell(PdfPTable table, BigDecimal content) {
         PdfPCell cell = new PdfPCell(table.getDefaultCell());
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         String value = numberService.formatWithMinimumFractionDigits(content, 0);
@@ -235,8 +246,13 @@ public class DocumentPdf extends ReportPdfView {
                 HeaderAlignment.RIGHT);
         headerLabels.put(translationService.translate("warehouseMinimalState.report.columnHeader.optimalOrderQuantity", locale),
                 HeaderAlignment.RIGHT);
+        addAdditionalHeaders(headerLabels, locale);
         headerLabels.put(translationService.translate("warehouseMinimalState.report.columnHeader.contractor", locale),
                 HeaderAlignment.LEFT);
         return headerLabels;
+    }
+
+    private void addAdditionalHeaders(Map<String, HeaderAlignment> headerLabels, Locale locale) {
+
     }
 }
