@@ -4,6 +4,10 @@ public class PlannedEventFields {
 
     public static final String STATE_CHANGES = "stateChanges";
 
+    public static final String OWNER = "owner";
+
+    public static final String OWNER_NAME = "ownerName";
+
     private PlannedEventFields() {
     }
 

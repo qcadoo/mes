@@ -50,5 +50,6 @@
     </fields>
     <hooks>
 
+        <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onSave"/>
     </hooks>
 </model>

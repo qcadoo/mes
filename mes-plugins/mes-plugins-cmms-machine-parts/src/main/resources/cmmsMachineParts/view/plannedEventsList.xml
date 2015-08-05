@@ -90,7 +90,7 @@
 					]]>
                 </script>
 
-                <component type="gridLayout" name="gridLayout" columns="3" rows="2">
+                <component type="gridLayout" name="gridLayout" columns="3" rows="2" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="factory" field="factory" reference="factory">
                             <option type="column" name="name" fields="name"/>
@@ -290,6 +290,8 @@
                 </script>
                 <option type="column" name="number" fields="number" link="true"/>
                 <option type="column" name="type" fields="type" link="true"/>
+                <option type="column" name="ownerName" fields="ownerName" link="true"/>
+                <option type="column" name="description" fields="description" link="true"/>
                 <option type="column" name="factory" fields="factory" expression="#factory['number']" link="true"/>
                 <option type="column" name="division" fields="division" expression="#division['number']" link="true"/>
                 <option type="column" name="productionLine" fields="productionLine"
@@ -299,17 +301,16 @@
                         link="true"/>
                 <option type="column" name="subassembly" fields="subassembly" expression="#subassembly['number']"
                         link="true"/>
-                <option type="column" name="description" fields="description" link="true"/>
-                <option type="column" name="createDate" fields="createDate" link="false"/>
                 <option type="column" name="createUser" fields="createUser" link="false"/>
+                <option type="column" name="createDate" fields="createDate" link="false"/>
 
                 <option type="column" name="state" fields="state" link="false"/>
 
 
                 <option type="searchable"
-                        value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,state"/>
+                        value="number,type,ownerName,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,state"/>
                 <option type="orderable"
-                        value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,state"/>
+                        value="number,type,ownerName,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,state"/>
                 <option type="multiselect" value="true"/>
                 <option type="fullscreen" value="true"/>
 
