@@ -1,7 +1,8 @@
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
-
 public class CmmsMachinePartsConstants {
+
+    public static final String MODEL_PLANNED_EVENT = "plannedEvent";
 
     private CmmsMachinePartsConstants() {
     }
@@ -11,9 +12,11 @@ public class CmmsMachinePartsConstants {
     // MODEL
 
     public static final String MODEL_FAULT_TYPE = "faultType";
-    public static final String MODEL_MAINTENANCE_EVENT = "maintenanceEvent";
-    public static final String MODEL_MAINTENANCE_EVENT_STATE_CHANGE = "maintenanceEventStateChange";
-    public static final String MODEL_MAINTENANCE_EVENT_CONTEXT = "maintenanceEventContext";
 
+    public static final String MODEL_MAINTENANCE_EVENT = "maintenanceEvent";
+
+    public static final String MODEL_MAINTENANCE_EVENT_STATE_CHANGE = "maintenanceEventStateChange";
+
+    public static final String MODEL_MAINTENANCE_EVENT_CONTEXT = "maintenanceEventContext";
 
 }

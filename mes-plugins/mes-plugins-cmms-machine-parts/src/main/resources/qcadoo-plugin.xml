@@ -98,13 +98,17 @@
 
         <view:view resource="view/maintenanceEventStateChangeReasonDialog.xml"/>
 
-        <view:view resource="view/oldSolutionsSubassembly.xml" />
-        <view:view resource="view/oldSolutionsWorkstation.xml" />
-        <view:view resource="view/oldSolutionsLine.xml" />
-        <view:view resource="view/oldSolutionsDivision.xml" />
+        <view:view resource="view/oldSolutionsSubassembly.xml"/>
+        <view:view resource="view/oldSolutionsWorkstation.xml"/>
+        <view:view resource="view/oldSolutionsLine.xml"/>
+        <view:view resource="view/oldSolutionsDivision.xml"/>
+
+        <view:view resource="view/plannedEventsList.xml"/>
+        <view:view resource="view/plannedEventDetails.xml"/>
 
         <menu:menu-category name="maintenance"/>
         <menu:menu-item name="events" category="maintenance" view="eventsList"/>
+        <menu:menu-item name="plannedEvents" category="maintenance" view="plannedEventsList"/>
 
         <menu:menu-item name="machineParts" category="basic" view="machinePartsList"/>
         <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"/>
@@ -127,6 +131,9 @@
 
         <model:model model="maintenanceEventStateChange" resource="model/maintenanceEventStateChange.xml"/>
         <model:model model="maintenanceEventContext" resource="model/maintenanceEventContext.xml"/>
+
+        <model:model model="plannedEvent" resource="model/plannedEvent.xml"/>
+        <model:model model="plannedEventContext" resource="model/plannedEventContext.xml"/>
 
         <!-- model extensions -->
 
@@ -217,6 +224,58 @@
 
         <model:model-field plugin="basic" model="subassembly">
             <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="subassembly" copyable="false"/>
+        </model:model-field>
+
+
+        <model:model-field plugin="basic" model="factory">
+            <model:hasMany name="maintenanceEventContexts" model="maintenanceEventContext" plugin="cmmsMachineParts"
+                           cascade="nullify"
+                           joinField="factory" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:hasMany name="maintenanceEventContexts" model="maintenanceEventContext" plugin="cmmsMachineParts"
+                           cascade="nullify"
+                           joinField="division" copyable="false"/>
+        </model:model-field>
+
+        <!-- planned events -->
+
+        <model:model-field plugin="basic" model="factory">
+            <model:hasMany name="plannedEventContexts" model="plannedEventContext" plugin="cmmsMachineParts"
+                           cascade="nullify"
+                           joinField="factory" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:hasMany name="plannedEventContexts" model="plannedEventContext" plugin="cmmsMachineParts"
+                           cascade="nullify"
+                           joinField="division" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="factory">
+            <model:hasMany name="plannedEvents" model="plannedEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="factory" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:hasMany name="plannedEvents" model="plannedEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="division" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany name="plannedEvents" model="plannedEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="productionLine" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="plannedEvents" model="plannedEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="workstation" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="subassembly">
+            <model:hasMany name="plannedEvents" model="plannedEvent" plugin="cmmsMachineParts" cascade="nullify"
                            joinField="subassembly" copyable="false"/>
         </model:model-field>
 
