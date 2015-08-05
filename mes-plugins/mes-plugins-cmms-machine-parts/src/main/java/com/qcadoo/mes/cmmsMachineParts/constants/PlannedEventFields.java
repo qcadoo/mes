@@ -29,5 +29,11 @@ public class PlannedEventFields {
 
     public static final String SUBASSEMBLY = "subassembly";
 
+    public static final String START_DATE = "startDate";
+
+    public static final String FINISH_DATE = "finishDate";
+
+    public static final String IS_DEADLINE = "isDeadline";
+
     public static final String PLANNED_EVENT_CONTEXT = "plannedEventContext";
 }
