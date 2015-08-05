@@ -73,6 +73,7 @@
         <model:model model="document" resource="model/document.xml"/>
         <model:model model="position" resource="model/position.xml"/>
         <model:model model="warehouseStock" resource="model/warehouseStock.xml"/>
+        <model:model model="warehouseStockListDto" resource="model/warehouseStockListDto.xml"/>
         <model:model model="resourceCorrection" resource="model/resourceCorrection.xml"/>
         <model:model model="attribute" resource="model/attribute.xml"/>
         <model:model model="attributeValue" resource="model/attributeValue.xml"/>
