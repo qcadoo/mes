@@ -46,6 +46,10 @@
         <belongsTo name="workstation" model="workstation" plugin="basic"/>
         <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
 
+        <datetime name="startDate"/>
+        <datetime name="finishDate"/>
+        <boolean name="isDeadline"/>
+
         <belongsTo name="plannedEventContext" plugin="cmmsMachineParts" model="plannedEventContext"/>
     </fields>
     <hooks>

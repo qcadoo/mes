@@ -328,6 +328,33 @@
                           method="changeState"/>
             </component>
         </windowTab>
+        <windowTab name="datesTab">
+	        <component type="gridLayout" name="datesGridLayout" columns="2" rows="1">
+	        	<layoutElement column="1" row="1">
+	        		<component type="borderLayout" name="datesBorderLayout">
+				        <component type="gridLayout" name="datesGridLayout" columns="1" rows="3">
+				        	<layoutElement column="1" row="1">
+				        		<component type="calendar" name="startDate" field="#{form}.startDate"
+									reference="startDate">
+									<option type="withTimePicker" value="true" />
+								</component>
+				        	</layoutElement>
+				        	<layoutElement column="1" row="2">
+				        		<component type="calendar" name="finishDate" field="#{form}.finishDate"
+									reference="finishDate">
+									<option type="withTimePicker" value="true" />
+								</component>
+				        	</layoutElement>
+				        	<layoutElement column="1" row="3">
+				        		<component type="checkbox" name="isDeadline" field="#{form}.isDeadline"
+									reference="isDeadline"/>
+				        	</layoutElement>
+			        	</component>
+			        	<option type="label" value="datesBorderLayoutLabel"/>
+		        	</component>
+        		</layoutElement>
+	        </component>
+        </windowTab>
 
     </component>
     <hooks>
