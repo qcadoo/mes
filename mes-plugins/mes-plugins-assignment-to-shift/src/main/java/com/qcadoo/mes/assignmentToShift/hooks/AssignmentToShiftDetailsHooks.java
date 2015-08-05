@@ -54,9 +54,9 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class AssignmentToShiftDetailsHooks {
 
-    public static final String L_FORM = "form";
-
     public static final String L_WINDOW = "window";
+
+    public static final String L_FORM = "form";
 
     public static final String L_ACTIONS = "actions";
 
@@ -189,6 +189,9 @@ public class AssignmentToShiftDetailsHooks {
         RibbonActionItem copyStaffAssignmentToShiftRibbonActionItem = copyRibbonGroup
                 .getItemByName(L_COPY_STAFF_ASSIGNMENT_TO_SHIFT);
 
+        GridComponent staffAssignmentToShiftsGrid = (GridComponent) view
+                .getComponentByReference(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS);
+
         String state = assignmentToShift.getStringField(AssignmentToShiftFields.STATE);
 
         AssignmentToShiftState assignmentToShiftState = AssignmentToShiftState.parseString(state);
@@ -202,6 +205,8 @@ public class AssignmentToShiftDetailsHooks {
         }
 
         boolean isExternalSynchronized = assignmentToShift.getBooleanField(AssignmentToShiftFields.EXTERNAL_SYNCHRONIZED);
+
+        boolean areSelected = !staffAssignmentToShiftsGrid.getSelectedEntities().isEmpty();
 
         boolean isEnabled = isSaved ? isExternalSynchronized && assignmentToShiftState.isEditingAllowed() : true;
 
@@ -236,6 +241,8 @@ public class AssignmentToShiftDetailsHooks {
                                 .equals(ribbonActionItemName))) {
                     ribbonActionItem.setEnabled(false);
                     ribbonActionItem.setMessage(message);
+                } else if (L_COPY_STAFF_ASSIGNMENT_TO_SHIFT.equals(ribbonActionItemName) && !areSelected) {
+                    ribbonActionItem.setEnabled(false);
                 } else {
                     ribbonActionItem.setEnabled(isEnabled);
                     ribbonActionItem.setMessage(message);

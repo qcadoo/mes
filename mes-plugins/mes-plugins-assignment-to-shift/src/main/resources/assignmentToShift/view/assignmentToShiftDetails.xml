@@ -237,6 +237,10 @@
 
                             <option type="fullscreen" value="true"/>
                             <option type="multiselect" value="true"/>
+
+                            <listener event="select"
+                                  class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftDetailsListeners"
+                                  method="changeCopyStaffAssignmentToShiftButtonState"/>
                         </component>
                     </layoutElement>
                 </component>
