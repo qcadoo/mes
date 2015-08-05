@@ -1,5 +1,6 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -17,6 +18,8 @@ public class PlannedEventHooks {
             String person = Strings.nullToEmpty(owner.getStringField(StaffFields.NAME)) + " "
                     + Strings.nullToEmpty(owner.getStringField(StaffFields.SURNAME));
             event.setField(PlannedEventFields.OWNER_NAME, person);
+        } else {
+            event.setField(PlannedEventFields.OWNER_NAME, StringUtils.EMPTY);
         }
     }
 }

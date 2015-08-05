@@ -279,6 +279,11 @@
                            joinField="subassembly" copyable="false"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="company">
+            <model:hasMany name="plannedEvents" model="plannedEvent" plugin="cmmsMachineParts" cascade="nullify"
+                           joinField="company" copyable="false"/>
+        </model:model-field>
+
         <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"
                             component="form" event="redirectToWarehouseStateList"
                             class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"

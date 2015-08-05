@@ -45,6 +45,33 @@
         <belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
         <belongsTo name="workstation" model="workstation" plugin="basic"/>
         <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
+        <belongsTo name="company" model="company" plugin="basic"/>
+
+        <boolean name="plannedSeparately" default="false"/>
+        <boolean name="requiresShutdown" default="false"/>
+
+        <enum name="basedOn" values="01date,02counter" default="01date" required="true"/>
+        <date name="date"/>
+
+        <decimal name="counter">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="counterTolerance">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <integer name="duration" default="0"/>
+        <integer name="effectiveDuration" default="0"/>
+
+        <decimal name="effectiveCounter">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
 
         <datetime name="startDate"/>
         <datetime name="finishDate"/>

@@ -8,6 +8,12 @@ public class PlannedEventFields {
 
     public static final String OWNER_NAME = "ownerName";
 
+    public static final String BASED_ON = "basedOn";
+
+    public static final String DATE = "date";
+
+    public static final String COUNTER = "counter";
+
     private PlannedEventFields() {
     }
 

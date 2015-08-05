@@ -13,6 +13,7 @@ import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.Entity;
@@ -62,6 +63,23 @@ public class EventHooks {
         generateNumber(view, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT, PlannedEventFields.NUMBER);
         fillDefaultFieldsFromContext(view, PlannedEventFields.PLANNED_EVENT_CONTEXT);
         toggleEnabledViewComponents(view, PlannedEventFields.PLANNED_EVENT_CONTEXT);
+        toggleEnabledFromBasedOn(view);
+    }
+
+    public void toggleEnabledFromBasedOn(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+
+        String basedOn = event.getStringField(PlannedEventFields.BASED_ON);
+        FieldComponent date = (FieldComponent) view.getComponentByReference(PlannedEventFields.DATE);
+        FieldComponent counter = (FieldComponent) view.getComponentByReference(PlannedEventFields.COUNTER);
+        if (basedOn.equals(PlannedEventBasedOn.DATE.getStringValue())) {
+            date.setEnabled(true);
+            counter.setEnabled(false);
+        } else if (basedOn.equals(PlannedEventBasedOn.COUNTER.getStringValue())) {
+            date.setEnabled(false);
+            counter.setEnabled(true);
+        }
     }
 
     private void disableFieldsForState(final ViewDefinitionState view) {

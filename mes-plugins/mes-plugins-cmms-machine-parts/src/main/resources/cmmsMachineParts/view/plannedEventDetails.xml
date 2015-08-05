@@ -199,7 +199,7 @@
                             });
                         ]]>
                 </script>
-                <component type="gridLayout" name="gridLayout" columns="2" rows="8">
+                <component type="gridLayout" name="gridLayout" columns="3" rows="13" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="hidden" name="plannedEventContext" field="plannedEventContext"
                                    reference="plannedEventContext"/>
@@ -301,7 +301,90 @@
                                     method="selectSubassembly"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="1" row="8" height="3">
+                        <component type="textarea" name="description" field="description" reference="description"/>
+                    </layoutElement>
 
+                    <layoutElement column="1" row="11">
+                        <component type="lookup" name="owner" field="owner"
+                                   reference="owner" defaultEnabled="true">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression" value="#name + ' ' + #surname"/>
+                            <option type="fieldCode" value="surname"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="12">
+                        <component type="checkbox" name="plannedSeparately" field="plannedSeparately"
+                                   reference="plannedSeparately"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="13">
+                        <component type="checkbox" name="requiresShutdown" field="requiresShutdown"
+                                   reference="requiresShutdown"/>
+                    </layoutElement>
+
+                    <layoutElement row="1" column="2" height="5">
+                        <component type="borderLayout" name="dateBorderLayout" reference="dateBorderLayout">
+                            <component type="gridLayout" name="dateGridLayout" reference="dateGridLayout" rows="5"
+                                       columns="1" hasBorders="false">
+                                <layoutElement row="1" column="1">
+                                    <component type="select" name="basedOn" reference="basedOn" field="basedOn">
+                                        <listener event="onSelectedEntityChange"
+                                                  class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"
+                                                  method="toggleEnabledFromBasedOn"/>
+                                    </component>
+                                </layoutElement>
+
+                                <layoutElement row="2" column="1">
+                                    <component type="calendar" name="date" reference="date" field="date"/>
+                                </layoutElement>
+
+                                <layoutElement row="3" column="1">
+                                    <component type="input" name="counter" reference="counter" field="counter"/>
+                                </layoutElement>
+
+                                <layoutElement row="4" column="1">
+                                    <component type="input" name="counterTolerance" reference="counterTolerance"
+                                               field="counterTolerance"/>
+                                </layoutElement>
+
+                                <layoutElement row="5" column="1">
+                                    <component type="time" name="duration" reference="duration" field="duration">
+                                        <option type="noHours" value="4"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                            <option type="label" value="plannedEventDate"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement row="6" column="2">
+                        <component type="input" name="effectiveCounter" reference="effectiveCounter"
+                                   field="effectiveCounter"/>
+                    </layoutElement>
+
+                    <layoutElement row="7" column="2">
+                        <component type="time" name="effectiveDuration" reference="effectiveDuration"
+                                   field="effectiveDuration">
+                            <option type="noHours" value="4"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="8">
+                        <component type="lookup" name="company" field="company"
+                                   reference="company">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <component type="select" name="state" field="state"
