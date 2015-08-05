@@ -23,22 +23,21 @@
  */
 package com.qcadoo.mes.basic;
 
-import static com.google.common.base.Preconditions.checkState;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CharType;
 import com.qcadoo.mes.basic.constants.ReportColumnWidthFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Service for accessing parameters
@@ -76,7 +75,7 @@ public class ParameterService {
     public Entity getParameter() {
         DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_PARAMETER);
-        Entity parameter = dataDefinition.find().setMaxResults(1).setCacheable(false).uniqueResult();
+        Entity parameter = dataDefinition.find("SELECT p FROM #basic_parameter p").setMaxResults(1).setCacheable(true).uniqueResult();
 
         if (parameter == null) {
             parameter = createParameter(dataDefinition);
