@@ -32,6 +32,8 @@
 		<date name="startDate" required="true"/>
 		<belongsTo name="shift" model="shift" plugin="basic"
 				   required="true"/>
+		<belongsTo name="factory" model="factory" plugin="basic"
+				   required="true"/>
 
 		<boolean name="approvedAttendanceList"/>
 

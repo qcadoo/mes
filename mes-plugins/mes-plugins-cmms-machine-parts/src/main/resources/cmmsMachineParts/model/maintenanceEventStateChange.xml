@@ -37,7 +37,7 @@
         <enum name="targetState"
               values="01new,02inProgress,03edited,04closed,05revoked,06planned"
               required="true"/>
-        <enum name="status" values="01inProgress,02paused,03successful,04failure" required="true"/>
+        <enum name="status" values="01inProgress,02paused,03successful,04failure,05canceled" required="true"/>
         <integer name="phase"/>
         <string name="worker"/>
         <hasMany name="messages" joinField="maintenanceEventStateChange" model="message" plugin="states"
@@ -46,7 +46,11 @@
         <belongsTo name="maintenanceEvent" model="maintenanceEvent"/>
         <!-- owner -->
         <belongsTo name="shift" model="shift" plugin="basic"/>
+        <string name="comment" />
+        <boolean name="commentRequired" default="false" />
 
     </fields>
-    <hooks/>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventStateChangeValidators" method="validate"/>
+    </hooks>
 </model>

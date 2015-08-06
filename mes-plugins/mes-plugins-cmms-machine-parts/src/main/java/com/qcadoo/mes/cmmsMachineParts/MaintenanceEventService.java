@@ -74,6 +74,6 @@ public class MaintenanceEventService {
 
     public DataDefinition getMaintenanceEventDD() {
         return dataDefinitionService
-                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MAINTENANCE_EVENT);
+                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
     }
 }

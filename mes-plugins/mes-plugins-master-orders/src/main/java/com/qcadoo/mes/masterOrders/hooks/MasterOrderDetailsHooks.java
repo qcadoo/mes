@@ -23,25 +23,9 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEFAULT_TECHNOLOGY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.TECHNOLOGY;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
@@ -49,13 +33,19 @@ import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.*;
 
 @Service
 public class MasterOrderDetailsHooks {
@@ -69,6 +59,9 @@ public class MasterOrderDetailsHooks {
     private static final String L_CREATE_ORDER = "createOrder";
 
     private static final String L_ORDERS_LOOKUP = "ordersLookup";
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private ExpressionService expressionService;
@@ -246,6 +239,32 @@ public class MasterOrderDetailsHooks {
     public void setProductLookupRequired(final ViewDefinitionState view) {
         FieldComponent productField = (FieldComponent) view.getComponentByReference(PRODUCT);
         productField.setRequired(true);
+    }
+
+    public void setDefaultMasterOrderNumber(final ViewDefinitionState view){
+        if(checkIfShouldInsertNumber(view)) {
+            FieldComponent numberField = (FieldComponent) view.getComponentByReference(MasterOrderFields.NUMBER);
+            numberField.setFieldValue(numberGeneratorService.generateNumber(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER));
+            numberField.requestComponentUpdateState();
+        }
+    }
+
+    public boolean checkIfShouldInsertNumber(final ViewDefinitionState state) {
+        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
+        FieldComponent number = (FieldComponent) state.getComponentByReference(MasterOrderFields.NUMBER);
+        if (form.getEntityId() != null) {
+            // form is already saved
+            return false;
+        }
+        if (StringUtils.isNotBlank((String) number.getFieldValue())) {
+            // number is already chosen
+            return false;
+        }
+        if (number.isHasError()) {
+            // there is a validation message for that field
+            return false;
+        }
+        return true;
     }
 
 }

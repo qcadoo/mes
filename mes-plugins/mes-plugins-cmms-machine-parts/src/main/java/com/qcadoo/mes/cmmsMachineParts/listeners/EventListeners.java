@@ -1,17 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
@@ -39,6 +27,17 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventListeners {
@@ -91,7 +90,7 @@ public class EventListeners {
         }
 
         DataDefinition dataDefinition = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                CmmsMachinePartsConstants.MAINTENANCE_EVENT);
+                CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
         Entity maintenanceEvent = dataDefinition.create();
         if (elementType.compareTo(FactoryStructureElementType.DIVISION) == 0
                 || elementType.compareTo(FactoryStructureElementType.PRODUCTION_LINE) == 0
@@ -100,8 +99,6 @@ public class EventListeners {
         }
         fillEventFieldsFromSelectedElement(maintenanceEvent, selectedElement);
         maintenanceEvent.setField(MaintenanceEventFields.TYPE, eventType);
-        // maintenanceEvent.setField(MaintenanceEventFields.NUMBER, numberGeneratorService.generateNumber(
-        // CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MAINTENANCE_EVENT));
         maintenanceEvent = dataDefinition.save(maintenanceEvent);
 
         Map<String, Object> parameters = Maps.newHashMap();
@@ -138,28 +135,30 @@ public class EventListeners {
     }
 
     private void clearSelectionOnDivision(final ViewDefinitionState view) {
-        clearField(view, MaintenanceEventFields.DIVISION);
+        clearFieldIfExists(view, MaintenanceEventFields.DIVISION);
         clearSelectionOnProductionLine(view);
     }
 
     private void clearSelectionOnProductionLine(final ViewDefinitionState view) {
-        clearField(view, MaintenanceEventFields.PRODUCTION_LINE);
+        clearFieldIfExists(view, MaintenanceEventFields.PRODUCTION_LINE);
         clearSelectionOnWorkstation(view);
     }
 
     private void clearSelectionOnWorkstation(final ViewDefinitionState view) {
-        clearField(view, MaintenanceEventFields.WORKSTATION);
+        clearFieldIfExists(view, MaintenanceEventFields.WORKSTATION);
         clearSelectionOnSubassembly(view);
     }
 
     private void clearSelectionOnSubassembly(final ViewDefinitionState view) {
-        clearField(view, MaintenanceEventFields.SUBASSEMBLY);
+        clearFieldIfExists(view, MaintenanceEventFields.SUBASSEMBLY);
     }
 
-    private void clearField(ViewDefinitionState view, String reference) {
+    private void clearFieldIfExists(ViewDefinitionState view, String reference) {
         FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
-        fieldComponent.setFieldValue(null);
-        fieldComponent.requestComponentUpdateState();
+        if(fieldComponent!= null) {
+            fieldComponent.setFieldValue(null);
+            fieldComponent.requestComponentUpdateState();
+        }
     }
 
     private void setEnabledForField(ViewDefinitionState view, String reference, boolean enabled) {
@@ -197,7 +196,9 @@ public class EventListeners {
         if (field.equals(MaintenanceEventFields.TYPE)) {
             FieldComponent type = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.TYPE);
             type.setFieldValue(value);
-
+        } else if(field.equals(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT)){
+            FieldComponent type = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
+            type.setFieldValue(value);
         }
     }
 
@@ -225,6 +226,27 @@ public class EventListeners {
         }
 
         view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
+    }
+
+    public void showSolutions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        if (!checkAndShow("subassembly", "oldSolutionsSubassembly", view)) {
+            if (!checkAndShow("workstation", "oldSolutionsWorkstation", view)) {
+                if (!checkAndShow("productionLine", "oldSolutionsLine", view)) {
+                    checkAndShow("division", "oldSolutionsDivision", view);
+                }
+            }
+        }
+    }
+
+    private boolean checkAndShow(final String modelName, final String viewName, final ViewDefinitionState view) {
+        LookupComponent lookup = (LookupComponent) view.getComponentByReference(modelName);
+        if (lookup.getEntity() != null) {
+            String url = "../page/cmmsMachineParts/" + viewName + ".html?context={\"" + modelName + ".id\":\""
+                    + lookup.getEntity().getId() + "\"}";
+            view.openModal(url);
+            return true;
+        }
+        return false;
     }
 
     public void validateIssueOrProposal(final ViewDefinitionState view, final ComponentState state, final String[] args) {

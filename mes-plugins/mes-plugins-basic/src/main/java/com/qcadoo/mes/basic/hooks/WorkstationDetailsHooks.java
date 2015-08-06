@@ -7,17 +7,17 @@ import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,9 +75,8 @@ public class WorkstationDetailsHooks {
 
     private void deleteSubassemblyToWorkstationHelpers(List<Long> idList) {
         if (!idList.isEmpty()) {
-            Map<String, Object> param = new HashMap<>();
-            param.put("ids", idList.stream().map(Object::toString).collect(Collectors.joining(",")));
-            jdbcTemplate.update("DELETE FROM basic_subassemblytoworkstationhelper WHERE id IN (:ids)", param);
+            String ids = idList.stream().map(Object::toString).collect(Collectors.joining(","));
+            jdbcTemplate.update("DELETE FROM basic_subassemblytoworkstationhelper WHERE id IN (" + ids + ")", new HashMap<String, Object>());
         }
     }
 

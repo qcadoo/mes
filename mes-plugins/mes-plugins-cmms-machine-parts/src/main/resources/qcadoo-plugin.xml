@@ -51,7 +51,7 @@
             <url>http://www.qcadoo.com</url>
         </vendor>
         <license>AGPL</license>
-        <description>Computerised Maintenance Management Systems - provides machine parts management
+        <description>Computerised Maintenance Management Systems - provides machine parts and events management
         </description>
     </information>
 
@@ -94,6 +94,14 @@
         <view:view resource="view/addNewEvent.xml"/>
 
         <view:view resource="view/staffWorkTimeDetails.xml"/>
+        <view:view resource="view/machinePartForEventDetails.xml"/>
+
+        <view:view resource="view/maintenanceEventStateChangeReasonDialog.xml"/>
+
+        <view:view resource="view/oldSolutionsSubassembly.xml" />
+        <view:view resource="view/oldSolutionsWorkstation.xml" />
+        <view:view resource="view/oldSolutionsLine.xml" />
+        <view:view resource="view/oldSolutionsDivision.xml" />
 
         <menu:menu-category name="maintenance"/>
         <menu:menu-item name="events" category="maintenance" view="eventsList"/>
@@ -102,6 +110,8 @@
         <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
+
+        <view:view-tab resource="view/tabExtensions/documentDetails.xml"/>
 
         <!-- view extensions -->
 
@@ -113,8 +123,10 @@
         <model:model model="faultType" resource="model/faultType.xml"/>
         <model:model model="maintenanceEvent" resource="model/maintenanceEvent.xml"/>
         <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
+        <model:model model="machinePartForEvent" resource="model/machinePartForEvent.xml"/>
 
         <model:model model="maintenanceEventStateChange" resource="model/maintenanceEventStateChange.xml"/>
+        <model:model model="maintenanceEventContext" resource="model/maintenanceEventContext.xml"/>
 
         <!-- model extensions -->
 
@@ -126,10 +138,24 @@
             <model:hasMany name="machinePartAttachments" joinField="product" model="machinePartAttachment"
                            cascade="delete" plugin="cmmsMachineParts"/>
         </model:model-field>
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="machinePartsForEvent" joinField="machinePart" model="machinePartForEvent"
+                           cascade="delete" plugin="cmmsMachineParts"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="machinePartsForEvent" joinField="warehouse" model="machinePartForEvent"
+                           cascade="delete" plugin="cmmsMachineParts"/>
+        </model:model-field>
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="maintenanceEventStateChange" plugin="cmmsMachineParts"
                              model="maintenanceEventStateChange"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="document">
+            <model:belongsTo name="maintenanceEvent" plugin="cmmsMachineParts"
+                             model="maintenanceEvent"/>
         </model:model-field>
 
         <model:model-field model="shift" plugin="basic">
@@ -198,6 +224,18 @@
                             component="form" event="redirectToWarehouseStateList"
                             class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"
                             method="redirectToWarehouseStateList"/>
+
+        <view:view-hook plugin="materialFlowResources" view="documentDetails" type="beforeRender"
+                        class="com.qcadoo.mes.cmmsMachineParts.hooks.DocumentDetailsHooksCMP"
+                        method="toggleEnabledForEventLookup"/>
+        <view:view-listener plugin="materialFlowResources" view="documentDetails" component="type"
+                            event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.cmmsMachineParts.listeners.DocumentDetailsListenersCMP"
+                            method="clearMaintenanceEvent"/>
+        <view:view-grid-column plugin="materialFlowResources" view="documentsList" component="grid">
+            <view:column name="maintenanceEvent" fields="maintenanceEvent" expression="#maintenanceEvent['number']"
+                         searchable="true" orderable="true"/>
+        </view:view-grid-column>
 
         <view:resource uri="public/**/*"/>
 

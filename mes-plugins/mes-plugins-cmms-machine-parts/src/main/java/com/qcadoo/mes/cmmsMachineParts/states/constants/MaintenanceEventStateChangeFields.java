@@ -40,4 +40,7 @@ public final class MaintenanceEventStateChangeFields {
 
     public static final String PHASE = "phase";
 
+    public static final String COMMENT = "comment";
+
+    public static final String COMMENT_REQUIRED = "commentRequired";
 }

@@ -57,7 +57,7 @@ public final class MaintenanceEventStateChangeDescriber extends AbstractStateCha
     @Override
     public DataDefinition getOwnerDataDefinition() {
         return dataDefinitionService
-                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MAINTENANCE_EVENT);
+                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
     }
 
 }

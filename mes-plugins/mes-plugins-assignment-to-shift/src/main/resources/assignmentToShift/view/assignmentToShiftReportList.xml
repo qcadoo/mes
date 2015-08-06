@@ -39,6 +39,7 @@
 			<option type="column" name="number" fields="number" link="true"/>
 			<option type="column" name="name" fields="name" link="true"/>
 			<option type="column" name="shift" fields="shift" expression="#shift['name']"/>
+			<option type="column" name="factory" fields="factory" expression="#factory['name']"/>
 			<option type="column" name="dateFrom" fields="dateFrom"/>
 			<option type="column" name="dateTo" fields="dateTo"/>
 			<option type="column" name="generated" fields="generated"/>
@@ -51,8 +52,8 @@
 					value="assignmentToShift/assignmentToShiftReportDetails"/>
 			<option type="correspondingComponent" value="form"/>
 
-			<option type="searchable" value="name,number"/>
-			<option type="orderable" value="name,number"/>
+			<option type="searchable" value="name,number,shift,factory,dateFrom,dateTo,generated,createDate,createUser"/>
+			<option type="orderable" value="name,number,shift,factory,dateFrom,dateTo,generated,createDate,createUser"/>
 
 			<option type="fullscreen" value="true"/>
 			<option type="multiselect" value="true"/>

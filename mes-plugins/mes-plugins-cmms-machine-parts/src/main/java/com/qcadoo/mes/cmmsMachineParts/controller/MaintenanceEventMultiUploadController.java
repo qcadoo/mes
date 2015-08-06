@@ -46,7 +46,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -86,7 +85,7 @@ public class MaintenanceEventMultiUploadController {
     public void upload(MultipartHttpServletRequest request, HttpServletResponse response) {
         Long eventId = Long.parseLong(request.getParameter("eventId"));
         Entity event = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                CmmsMachinePartsConstants.MAINTENANCE_EVENT).get(eventId);
+                CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT).get(eventId);
         DataDefinition attachmentDD = dataDefinitionService.get("cmmsMachineParts", "eventAttachment");
 
         Iterator<String> itr = request.getFileNames();

@@ -25,18 +25,32 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="eventsList" modelName="maintenanceEvent" modelPlugin="cmmsMachineParts" menuAccessible="true">
+      name="eventsList" modelName="maintenanceEventContext" modelPlugin="cmmsMachineParts" menuAccessible="true">
 
     <component type="window" name="window" reference="window">
 
         <ribbon>
+            <group name="contextActions">
+                <bigButton name="confirmContext" icon="startIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('confirmContext', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+
             <group name="customActions">
                 <bigButton name="addFailure" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,01failure);"
-                           state="enabled"/>
+                           state="disabled"/>
                 <bigButton name="addIssue" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,02issue);"
-                           state="enabled"/>
+                           state="disabled"/>
                 <bigButton name="addProposal" icon="newIcon24.png" action="#{window}.fireEvent(addEvent,03proposal);"
-                           state="enabled"/>
+                           state="disabled"/>
             </group>
             <template name="standardGridTemplate" excludeItems="actions.copy,actions.new"/>
             <group name="status">
@@ -51,9 +65,90 @@
             </group>
         </ribbon>
 
-        <component type="grid" name="grid" reference="grid">
-            <script>
-                <![CDATA[
+        <windowTab name="contextTab" reference="contextTab">
+            <component type="form" name="eventContextForm" reference="form">
+                <script>
+                    <![CDATA[
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								updateRibbon();
+							}
+						});
+
+						function updateRibbon() {
+							var confirmed = #{confirmed}.getValue().content.value,
+							    confirmContextButton = #{window}.getRibbonItem("contextActions.confirmContext"),
+							    confirmContextButtonLabel;
+
+							if (confirmed == 'true' || confirmed == '1') {
+								confirmContextButtonLabel = "#{translate(cmmsMachineParts.eventsList.window.ribbon.contextActions.changeContext)}";
+							} else {
+							    confirmContextButtonLabel = "#{translate(cmmsMachineParts.eventsList.window.ribbon.contextActions.confirmContext)}";
+							}
+
+							confirmContextButton.setLabel(confirmContextButtonLabel);
+						}
+					]]>
+                </script>
+
+                <component type="gridLayout" name="gridLayout" columns="3" rows="2">
+                    <layoutElement column="1" row="1">
+                        <component type="lookup" name="factory" field="factory" reference="factory">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="column" name="city" fields="city"/>
+
+                            <option type="searchable" value="name,city,number"/>
+                            <option type="orderable" value="name,city,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+								method="factoryChanged"
+								class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="2">
+                        <component type="lookup" name="division" field="division" reference="division"
+                                   source="#{factory}.divisions">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+								method="divisionChanged"
+								class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+
+                            <criteriaModifier
+								class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+								method="selectDivision"/>
+                        </component>
+                    </layoutElement>
+
+					<layoutElement column="2" row="1">
+						<component type="hidden" name="confirmed" field="confirmed"
+								   reference="confirmed"/>
+						<component type="hidden" name="generated" field="generated"
+								   reference="generated"/>
+					</layoutElement>
+                </component>
+                <listener event="confirmContext" method="confirmContext"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners" />
+            </component>
+        </windowTab>
+
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="grid" name="grid" reference="grid" source="#{form}.events">
+                <script>
+                    <![CDATA[
 					var toggleRibbonItems = ["actions.delete"];
 
 					this.addOnChangeListener({
@@ -196,46 +291,53 @@
 					}
 
 				]]>
-            </script>
-            <option type="column" name="number" fields="number" link="true"/>
-            <option type="column" name="type" fields="type" link="true"/>
-            <option type="column" name="factory" fields="factory" expression="#factory['number']" link="true"/>
-            <option type="column" name="division" fields="division" expression="#division['number']" link="true"/>
-            <option type="column" name="productionLine" fields="productionLine" expression="#productionLine['number']"
-                    link="true"/>
-            <option type="column" name="workstation" fields="workstation" expression="#workstation['number']"
-                    link="true"/>
-            <option type="column" name="subassembly" fields="subassembly" expression="#subassembly['number']"
-                    link="true"/>
-            <option type="column" name="faultType" fields="faultType" expression="#faultType['name']"
-                    link="false"/>
-            <option type="column" name="description" fields="description" link="true"/>
-            <option type="column" name="createDate" fields="createDate" link="false"/>
-            <option type="column" name="createUser" fields="createUser" link="false"/>
-            <option type="column" name="personReceiving" fields="personReceivingName"
-                    link="false"/>
+                </script>
+                <option type="column" name="number" fields="number" link="true"/>
+                <option type="column" name="type" fields="type" link="true"/>
+                <option type="column" name="factory" fields="factory" expression="#factory['number']" link="true"/>
+                <option type="column" name="division" fields="division" expression="#division['number']" link="true"/>
+                <option type="column" name="productionLine" fields="productionLine"
+                        expression="#productionLine['number']"
+                        link="true"/>
+                <option type="column" name="workstation" fields="workstation" expression="#workstation['number']"
+                        link="true"/>
+                <option type="column" name="subassembly" fields="subassembly" expression="#subassembly['number']"
+                        link="true"/>
+                <option type="column" name="faultType" fields="faultType" expression="#faultType['name']"
+                        link="false"/>
+                <option type="column" name="description" fields="description" link="true"/>
+                <option type="column" name="createDate" fields="createDate" link="false"/>
+                <option type="column" name="createUser" fields="createUser" link="false"/>
+                <option type="column" name="personReceiving" fields="personReceivingName"
+                        link="false"/>
 
-            <option type="column" name="state" fields="state" link="false"/>
+                <option type="column" name="state" fields="state" link="false"/>
 
 
-            <option type="searchable"
-                    value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType,state"/>
-            <option type="orderable"
-                    value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType,state"/>
-            <option type="multiselect" value="true"/>
-            <option type="fullscreen" value="true"/>
+                <option type="searchable"
+                        value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType,state"/>
+                <option type="orderable"
+                        value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType,state"/>
+                <option type="multiselect" value="true"/>
+                <option type="fullscreen" value="true"/>
 
-            <option type="correspondingView" value="cmmsMachineParts/maintenanceEventDetails"/>
-            <option type="correspondingComponent" value="form"/>
+                <option type="correspondingView" value="cmmsMachineParts/maintenanceEventDetails"/>
+                <option type="correspondingComponent" value="form"/>
 
-            <option type="order" column="number" direction="asc"/>
-            <option type="fullscreen" value="true"/>
+				<option type="order" column="number" direction="desc"/>
+				<option type="fullscreen" value="true"/>
 
-            <listener event="changeState"
-                      class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
-                      method="changeState"/>
-        </component>
+                <listener event="changeState"
+                          class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
+                          method="changeState"/>
 
+				<listener event="onSelectedEntityChange"
+						  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
+						  method="onSelectedEventChange"/>
+
+				<criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP" method="showEventsFromContext" />
+            </component>
+        </windowTab>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
@@ -245,5 +347,9 @@
 
     </component>
 
-
+	<hooks>
+		<beforeRender
+				class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
+				method="onBeforeRenderListView"/>
+	</hooks>
 </view>

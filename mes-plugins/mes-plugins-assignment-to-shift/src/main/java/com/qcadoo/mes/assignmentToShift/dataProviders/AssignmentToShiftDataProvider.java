@@ -86,6 +86,12 @@ public class AssignmentToShiftDataProvider {
             shiftScb.add(searchCriterion);
         }
 
+        SearchCriteriaBuilder factoryScb = scb.createCriteria(AssignmentToShiftFields.FACTORY, "factory_alias", JoinType.INNER);
+
+        for (SearchCriterion searchCriterion : criteria.getFactoryCriteria().asSet()) {
+            factoryScb.add(searchCriterion);
+        }
+
         return scb;
     }
 

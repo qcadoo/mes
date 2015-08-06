@@ -25,8 +25,10 @@ package com.qcadoo.mes.costNormsForProduct.hooks;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_COST;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_OFFER_COST;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_OFFER_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_PURCHASE_COST;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.NOMINAL_COST;
 
 import java.util.Arrays;
@@ -150,7 +152,8 @@ public class ProductDetailsHooksCNFP {
         String externalNumber = entity.getStringField("externalNumber");
 
         if (externalNumber != null) {
-            for (String reference : Arrays.asList(NOMINAL_COST, LAST_OFFER_COST, AVERAGE_OFFER_COST)) {
+            for (String reference : Arrays.asList(NOMINAL_COST, LAST_PURCHASE_COST, AVERAGE_COST, LAST_OFFER_COST,
+                    AVERAGE_OFFER_COST)) {
                 FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
                 field.setEnabled(true);
             }
