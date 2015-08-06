@@ -89,6 +89,9 @@
         <view:view resource="view/faultTypesList.xml"/>
         <view:view resource="view/faultTypeDetails.xml"/>
 
+        <view:view resource="view/actionsList.xml"/>
+        <view:view resource="view/actionDetails.xml"/>
+
         <view:view resource="view/eventsList.xml"/>
         <view:view resource="view/maintenanceEventDetails.xml"/>
         <view:view resource="view/addNewEvent.xml"/>
@@ -112,6 +115,7 @@
 
         <menu:menu-item name="machineParts" category="basic" view="machinePartsList"/>
         <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"/>
+        <menu:menu-item name="actions" category="basic" view="actionsList"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
 
@@ -134,6 +138,8 @@
 
         <model:model model="plannedEvent" resource="model/plannedEvent.xml"/>
         <model:model model="plannedEventContext" resource="model/plannedEventContext.xml"/>
+
+        <model:model model="action" resource="model/action.xml"/>
 
         <!-- model extensions -->
 
@@ -195,6 +201,20 @@
 
         <model:model-field plugin="basic" model="subassembly">
             <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
+                              joinField="subassemblies"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="workstation">
+            <model:manyToMany name="actions" model="action" plugin="cmmsMachineParts" cascade="nullify"
+                              joinField="workstations"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstationType">
+            <model:manyToMany name="actions" model="action" plugin="cmmsMachineParts" cascade="nullify"
+                              joinField="workstationTypes"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="subassembly">
+            <model:manyToMany name="actions" model="action" plugin="cmmsMachineParts" cascade="nullify"
                               joinField="subassemblies"/>
         </model:model-field>
 
@@ -307,6 +327,9 @@
         </view:view-grid-column>
 
         <view:resource uri="public/**/*"/>
+
+        <custom:custom
+                class="com.qcadoo.mes.cmmsMachineParts.DefaultActionsLoaderModule"/>
 
         <custom:custom
                 class="com.qcadoo.mes.cmmsMachineParts.DefaultFaultTypesLoaderModule"/>
