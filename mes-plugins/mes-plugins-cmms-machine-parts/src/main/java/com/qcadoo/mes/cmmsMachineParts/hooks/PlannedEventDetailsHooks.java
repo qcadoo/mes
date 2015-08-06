@@ -6,12 +6,14 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -46,9 +48,10 @@ public class PlannedEventDetailsHooks {
         List<String> hiddenFields = fieldsForType.getHiddenFields();
 
         for (String fieldName : allFields) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldName);
+            Optional<ComponentState> maybeFieldComponent = view.tryFindComponentByReference(fieldName);
 
-            if (fieldComponent != null && !fieldName.equals(PlannedEventFields.STATE)) {
+            if (maybeFieldComponent.isPresent() && !fieldName.equals(PlannedEventFields.STATE)) {
+                ComponentState fieldComponent = maybeFieldComponent.get();
                 if (hiddenFields.contains(fieldName)) {
                     fieldComponent.setVisible(false);
                 } else {
