@@ -416,6 +416,7 @@
                           method="changeState"/>
             </component>
         </windowTab>
+
         <windowTab name="datesTab">
             <component type="gridLayout" name="datesGridLayout" columns="2" rows="1">
                 <layoutElement column="1" row="1">
@@ -444,6 +445,42 @@
             </component>
         </windowTab>
 
+		<windowTab name="responsibleWorkersTab">
+	        <component type="lookup" name="staffLookup" reference="staffLookup"
+	                   field="#{form}.responsibleWorkers" defaultVisible="false" persistent="false"
+	                   hasLabel="false">
+	               <option type="column" name="name" fields="name"/>
+	               <option type="column" name="surname" fields="surname"/>
+
+	            <option type="searchable" value="number,name,surname"/>
+	               <option type="orderable" value="number,name,surname"/>
+
+	            <option type="expression" value="#name + ' ' + #surname"/>
+	            <option type="fieldCode" value="number"/>
+
+	            <option type="multiselect" value="true"/>
+	        </component>
+	           <component type="grid" name="responsibleWorkers" reference="responsibleWorkers"
+	                      source="#{form}.responsibleWorkers">
+	               <option type="column" name="number" fields="number"/>
+	               <option type="column" name="name" fields="name"/>
+	               <option type="column" name="surname" fields="surname"/>
+
+	               <option type="order" column="number" direction="asc"/>
+
+	               <option type="searchable" value="number,name,surname"/>
+	               <option type="orderable" value="number,name,surname"/>
+
+	               <option type="weakRelation" value="true"/>
+	           	<option type="correspondingLookup" value="staffLookup"/>
+
+	               <option type="fullscreen" value="true"/>
+	           	<option type="multiselect" value="true"/>
+	               <option type="deletable" value="true"/>
+	               <option type="creatable" value="true"/>
+
+	           </component>
+		</windowTab>
     </component>
     <hooks>
 

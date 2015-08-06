@@ -76,6 +76,8 @@
         <datetime name="startDate"/>
         <datetime name="finishDate"/>
         <boolean name="isDeadline"/>
+        <manyToMany name="responsibleWorkers" joinField="plannedEvents" model="staff" cascade="nullify" plugin="basic"
+                    copyable="true"/>
 
         <belongsTo name="plannedEventContext" plugin="cmmsMachineParts" model="plannedEventContext"/>
     </fields>

@@ -53,5 +53,7 @@ public class PlannedEventFields {
 
     public static final String IS_DEADLINE = "isDeadline";
 
+    public static final String RESPONSIBLE_WORKERS = "responsibleWorkers";
+
     public static final String PLANNED_EVENT_CONTEXT = "plannedEventContext";
 }

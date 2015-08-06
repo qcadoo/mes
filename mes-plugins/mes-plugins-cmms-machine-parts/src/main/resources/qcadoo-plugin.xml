@@ -284,6 +284,11 @@
                            joinField="company" copyable="false"/>
         </model:model-field>
 
+        <model:model-field model="staff" plugin="basic">
+            <model:manyToMany name="plannedEvents" model="plannedEvent" joinField="responsibleWorkers" plugin="cmmsMachineParts"
+            			   cascade="nullify"/>
+        </model:model-field>
+
         <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"
                             component="form" event="redirectToWarehouseStateList"
                             class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"
