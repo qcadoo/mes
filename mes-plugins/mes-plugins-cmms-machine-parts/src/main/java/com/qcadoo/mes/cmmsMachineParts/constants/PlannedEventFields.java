@@ -14,6 +14,18 @@ public class PlannedEventFields {
 
     public static final String COUNTER = "counter";
 
+    public static final String EFFECTIVE_DURATION = "effectiveDuration";
+
+    public static final String COMPANY = "company";
+
+    public static final String PLANNED_SEPARATELY = "plannedSeparately";
+
+    public static final String REQUIRES_SHUTDOWN = "requiresShutdown";
+
+    public static final String DURATION = "duration";
+
+    public static final String EFFECTIVE_COUNTER = "effectiveCounter";
+
     private PlannedEventFields() {
     }
 
