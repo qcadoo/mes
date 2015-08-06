@@ -47,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -68,12 +69,11 @@ public class OrderReportPdf extends ReportPdfView {
     @Autowired
     private NumberService numberService;
 
+    private Entity orderEntity;
+
     @Override
     protected String addContent(Document document, Map<String, Object> model, Locale locale, PdfWriter writer)
             throws DocumentException, IOException {
-        Long orderId = Long.valueOf(model.get("id").toString());
-        Entity orderEntity = getOrderEntity(orderId);
-
         pdfHelper.addDocumentHeader(document, "", translationService.translate("orders.order.report.order", locale, orderEntity.getStringField(OrderFields.NUMBER)), "", new Date());
 
         addHeaderTable(document, orderEntity, locale);
@@ -83,7 +83,7 @@ public class OrderReportPdf extends ReportPdfView {
         addTechnologyTable(document, orderEntity, locale);
         addMasterOrderTable(document, orderEntity, locale);
 
-        return translationService.translate("orders.order.report.fileName", locale, "");
+        return translationService.translate("orders.order.report.fileName", locale, orderEntity.getStringField(OrderFields.NUMBER));
     }
 
     private void addHeaderTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
@@ -113,8 +113,12 @@ public class OrderReportPdf extends ReportPdfView {
 
     private void addProductQuantityTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
         Map<String, String> values = new LinkedHashMap<>();
-        values.put("plannedQuantity", numberService.format(orderEntity.getDecimalField(OrderFields.PLANNED_QUANTITY)));
-        values.put("doneQuantity", orderEntity.getField(OrderFields.DONE_QUANTITY) == null ? " - " : numberService.format(orderEntity.getDecimalField(OrderFields.DONE_QUANTITY)) + " " + orderEntity.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT));
+        String unit = orderEntity.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT);
+        String plannedQuantity = orderEntity.getField(OrderFields.PLANNED_QUANTITY) == null ? " - " : numberService.format(orderEntity.getDecimalField(OrderFields.PLANNED_QUANTITY)) + " " + unit;
+        String doneQuantity = orderEntity.getField(OrderFields.DONE_QUANTITY) == null ? " - " : numberService.format(orderEntity.getDecimalField(OrderFields.DONE_QUANTITY)) + " " + unit;
+
+        values.put("plannedQuantity", plannedQuantity);
+        values.put("doneQuantity", doneQuantity);
 
         addTableToDocument(document, orderEntity, locale, "orders.order.report.productQuantity.label", values);
     }
@@ -125,11 +129,15 @@ public class OrderReportPdf extends ReportPdfView {
         values.put("technologyNumber", technologyEntity.getStringField(TechnologyFields.NUMBER));
         values.put("technologyName", technologyEntity.getStringField(TechnologyFields.NAME));
 
-        addTableToDocument(document, orderEntity, locale, "orders.order.report.technology.own", values);
+        String tableLabelKey = "orders.order.report.technology.own";
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderEntity.getStringField(OrderFields.ORDER_TYPE))) {
+            tableLabelKey = "orders.order.report.technology.label";
+        }
+        addTableToDocument(document, orderEntity, locale, tableLabelKey, values);
     }
 
     private void addTechnologyTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderEntity.getStringField(OrderFields.ORDER_TYPE))){
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderEntity.getStringField(OrderFields.ORDER_TYPE))) {
             Map<String, String> values = new LinkedHashMap<>();
             Entity technologyEntity = orderEntity.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
             values.put("technologyNumber", technologyEntity.getStringField(TechnologyFields.NUMBER));
@@ -141,7 +149,7 @@ public class OrderReportPdf extends ReportPdfView {
 
     private void addMasterOrderTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
         Entity masterOrderEntity = orderEntity.getBelongsToField("masterOrder");
-        if(masterOrderEntity != null) {
+        if (masterOrderEntity != null) {
             Map<String, String> values = new LinkedHashMap<>();
 
             values.put("masterOrderNumber", masterOrderEntity.getStringField(OrderFields.NUMBER));
@@ -150,7 +158,6 @@ public class OrderReportPdf extends ReportPdfView {
             addTableToDocument(document, orderEntity, locale, "orders.order.report.masterOrder.label", values);
         }
     }
-
 
     private void addTableToDocument(Document document, Entity orderEntity, Locale locale, String headerKey, Map<String, String> values) throws DocumentException {
         document.add(new Paragraph(translationService.translate(headerKey, locale), FontUtils.getDejavuBold10Dark()));
@@ -191,8 +198,17 @@ public class OrderReportPdf extends ReportPdfView {
     }
 
     @Override
+    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
+            throws DocumentException {
+        super.prepareWriter(model, writer, request);
+
+        Long orderId = Long.valueOf(model.get("id").toString());
+        orderEntity = getOrderEntity(orderId);
+    }
+
+    @Override
     protected void addTitle(Document document, Locale locale) {
-        document.addTitle(translationService.translate("orders.order.report.order", locale));
+        document.addTitle(translationService.translate("orders.order.report.order", locale, orderEntity.getStringField(OrderFields.NUMBER)));
     }
 
     private List<HeaderPair> getDocumentHeaderTableContent(final Entity orderEntity, final Locale locale) {
