@@ -36,3 +36,28 @@ ALTER TABLE cmmsmachineparts_maintenanceevent ADD CONSTRAINT maintenanceevent_ma
       REFERENCES cmmsmachineparts_maintenanceeventcontext (id) DEFERRABLE;
 
 -- end
+
+
+-- Table: assignmenttoshift_assignmenttoshift
+-- last touched 05.08.2015 by lupo
+
+ALTER TABLE assignmenttoshift_assignmenttoshift ADD COLUMN factory_id bigint;
+
+ALTER TABLE assignmenttoshift_assignmenttoshift
+  ADD CONSTRAINT assignmenttoshift_factory_fkey FOREIGN KEY (factory_id)
+      REFERENCES basic_factory (id) DEFERRABLE;
+      
+-- end
+
+
+-- Table: assignmenttoshift_assignmenttoshiftreport
+-- last touched 05.08.2015 by lupo
+
+ALTER TABLE assignmenttoshift_assignmenttoshiftreport ADD COLUMN factory_id bigint;
+
+ALTER TABLE assignmenttoshift_assignmenttoshiftreport
+  ADD CONSTRAINT assignmenttoshiftreport_factory_fkey FOREIGN KEY (factory_id)
+      REFERENCES basic_factory (id) DEFERRABLE;
+
+-- end
+   
