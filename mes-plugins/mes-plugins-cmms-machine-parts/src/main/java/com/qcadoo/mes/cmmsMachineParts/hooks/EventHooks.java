@@ -76,8 +76,10 @@ public class EventHooks {
         if (basedOn.equals(PlannedEventBasedOn.DATE.getStringValue())) {
             date.setEnabled(true);
             counter.setEnabled(false);
+            counter.setFieldValue(null);
         } else if (basedOn.equals(PlannedEventBasedOn.COUNTER.getStringValue())) {
             date.setEnabled(false);
+            date.setFieldValue(null);
             counter.setEnabled(true);
         }
     }

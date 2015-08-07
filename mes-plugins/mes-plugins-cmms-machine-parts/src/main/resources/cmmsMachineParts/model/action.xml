@@ -34,7 +34,7 @@
         <manyToMany name="workstations" model="workstation" plugin="basic" cascade="nullify" joinField="actions"
                     copyable="true"/>
         <manyToMany name="workstationTypes" model="workstationType" plugin="basic" cascade="nullify"
-                    joinField="faultTypes" copyable="true"/>
+                    joinField="actions" copyable="true"/>
         <manyToMany name="subassemblies" model="subassembly" plugin="basic" cascade="nullify" joinField="actions"
                     copyable="true"/>
     </fields>
