@@ -6,6 +6,6 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 public class FieldsForReview extends AbstractFieldsForType {
 
     public FieldsForReview() {
-        super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.COMPANY), Lists.newArrayList());
+        super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.COMPANY), Lists.newArrayList(PlannedEventFields.SOLUTINO_DESCRIPTION_TAB));
     }
 }

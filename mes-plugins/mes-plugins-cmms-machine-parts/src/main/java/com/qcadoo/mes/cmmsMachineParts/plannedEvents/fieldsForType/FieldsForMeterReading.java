@@ -8,12 +8,11 @@ public class FieldsForMeterReading extends AbstractFieldsForType {
     public FieldsForMeterReading() {
         super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.PLANNED_SEPARATELY,
                 PlannedEventFields.REQUIRES_SHUTDOWN, PlannedEventFields.COUNTER, PlannedEventFields.DURATION,
-                PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.COMPANY), Lists
-                .newArrayList(PlannedEventFields.ACTIONS_TAB));
+                PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.COMPANY),
+                Lists.newArrayList(PlannedEventFields.ACTIONS_TAB, PlannedEventFields.SOLUTINO_DESCRIPTION_TAB));
     }
 
-    @Override
-    public boolean shouldLockBasedOn() {
+    @Override public boolean shouldLockBasedOn() {
         return true;
     }
 }

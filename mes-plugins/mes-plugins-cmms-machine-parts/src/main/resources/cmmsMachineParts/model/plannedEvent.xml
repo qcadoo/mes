@@ -83,6 +83,8 @@
 
         <hasMany name="actions" model="actionForPlannedEvent" joinField="plannedEvent" cascade="delete"
                  copyable="true"/>
+
+        <text name="solutionDescription"/>
     </fields>
     <hooks>
 
