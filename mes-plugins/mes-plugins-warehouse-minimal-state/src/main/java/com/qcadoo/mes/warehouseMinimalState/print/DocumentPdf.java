@@ -202,8 +202,8 @@ public class DocumentPdf extends ReportPdfView {
             addSmallCell(table, BigDecimal.ZERO);
             addSmallCell(table, ordered);
         }
-        addSmallCell(table, warehouseMinimumState.getDecimalField(WarehouseMinimumStateFields.OPTIMAL_ORDER_QUANTITY));
         addAdditionalCells(table, product);
+        addSmallCell(table, warehouseMinimumState.getDecimalField(WarehouseMinimumStateFields.OPTIMAL_ORDER_QUANTITY));
         Entity supplier = warehouseMinimalStateHelper.getDefaultSupplier(product.getId());
         if (supplier != null) {
             Entity company = supplier.getBelongsToField(CompanyProductFields.COMPANY);
@@ -244,9 +244,9 @@ public class DocumentPdf extends ReportPdfView {
                 HeaderAlignment.RIGHT);
         headerLabels.put(translationService.translate("warehouseMinimalState.report.columnHeader.orderQuantity", locale),
                 HeaderAlignment.RIGHT);
+        addAdditionalHeaders(headerLabels, locale);
         headerLabels.put(translationService.translate("warehouseMinimalState.report.columnHeader.optimalOrderQuantity", locale),
                 HeaderAlignment.RIGHT);
-        addAdditionalHeaders(headerLabels, locale);
         headerLabels.put(translationService.translate("warehouseMinimalState.report.columnHeader.contractor", locale),
                 HeaderAlignment.LEFT);
         return headerLabels;
