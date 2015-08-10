@@ -79,13 +79,16 @@
         <manyToMany name="responsibleWorkers" joinField="plannedEvents" model="staff" cascade="nullify" plugin="basic"
                     copyable="true"/>
 
+        <hasMany name="realizations" model="plannedEventRealization" joinField="plannedEvent" copyable="false" cascade="delete"/>
+
         <belongsTo name="plannedEventContext" plugin="cmmsMachineParts" model="plannedEventContext"/>
 
         <hasMany name="actions" model="actionForPlannedEvent" joinField="plannedEvent" cascade="delete"
                  copyable="true"/>
     </fields>
     <hooks>
-
+		<validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventValidators"
+                method="validatesWith" />
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onSave"/>
     </hooks>
 </model>

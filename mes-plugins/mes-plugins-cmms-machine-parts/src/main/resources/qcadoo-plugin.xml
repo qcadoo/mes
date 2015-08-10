@@ -109,6 +109,7 @@
         <view:view resource="view/plannedEventsList.xml"/>
         <view:view resource="view/plannedEventDetails.xml"/>
         <view:view resource="view/actionForPlannedEventDetails.xml"/>
+        <view:view resource="view/plannedEventRealizationDetails.xml"/>
 
         <menu:menu-category name="maintenance"/>
         <menu:menu-item name="events" category="maintenance" view="eventsList"/>
@@ -139,6 +140,7 @@
 
         <model:model model="plannedEvent" resource="model/plannedEvent.xml"/>
         <model:model model="plannedEventContext" resource="model/plannedEventContext.xml"/>
+        <model:model model="plannedEventRealization" resource="model/plannedEventRealization.xml"/>
 
         <model:model model="action" resource="model/action.xml"/>
         <model:model model="actionForPlannedEvent" resource="model/actionForPlannedEvent.xml"/>

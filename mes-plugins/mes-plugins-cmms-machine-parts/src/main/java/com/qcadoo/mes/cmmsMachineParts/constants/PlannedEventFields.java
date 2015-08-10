@@ -58,4 +58,6 @@ public class PlannedEventFields {
     public static final String RESPONSIBLE_WORKERS = "responsibleWorkers";
 
     public static final String PLANNED_EVENT_CONTEXT = "plannedEventContext";
+
+    public static final String ACTIONS = "actions";
 }
