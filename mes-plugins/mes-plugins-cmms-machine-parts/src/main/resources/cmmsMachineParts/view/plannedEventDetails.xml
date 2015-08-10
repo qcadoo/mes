@@ -199,7 +199,7 @@
                             });
                         ]]>
                 </script>
-                <component type="gridLayout" name="gridLayout" columns="3" rows="13" hasBorders="false">
+                <component type="gridLayout" name="gridLayout" columns="3" rows="9" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="hidden" name="plannedEventContext" field="plannedEventContext"
                                    reference="plannedEventContext"/>
@@ -306,11 +306,11 @@
                                     method="selectSubassembly"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="8" height="3">
+                    <layoutElement column="2" row="1" height="3">
                         <component type="textarea" name="description" field="description" reference="description"/>
                     </layoutElement>
 
-                    <layoutElement column="1" row="11">
+                    <layoutElement column="2" row="4">
                         <component type="lookup" name="owner" field="owner"
                                    reference="owner" defaultEnabled="true">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -322,16 +322,16 @@
                             <option type="fieldCode" value="surname"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="12">
+                    <layoutElement column="2" row="5">
                         <component type="checkbox" name="plannedSeparately" field="plannedSeparately"
                                    reference="plannedSeparately"/>
                     </layoutElement>
-                    <layoutElement column="1" row="13">
+                    <layoutElement column="2" row="6">
                         <component type="checkbox" name="requiresShutdown" field="requiresShutdown"
                                    reference="requiresShutdown"/>
                     </layoutElement>
 
-                    <layoutElement row="1" column="2" height="5">
+                    <layoutElement row="1" column="3" height="5">
                         <component type="borderLayout" name="dateBorderLayout" reference="dateBorderLayout">
                             <component type="gridLayout" name="dateGridLayout" reference="dateGridLayout" rows="5"
                                        columns="1" hasBorders="false">
@@ -366,19 +366,19 @@
                         </component>
                     </layoutElement>
 
-                    <layoutElement row="6" column="2">
+                    <layoutElement row="6" column="3">
                         <component type="input" name="effectiveCounter" reference="effectiveCounter"
                                    field="effectiveCounter"/>
                     </layoutElement>
 
-                    <layoutElement row="7" column="2">
+                    <layoutElement row="7" column="3">
                         <component type="time" name="effectiveDuration" reference="effectiveDuration"
                                    field="effectiveDuration">
                             <option type="noHours" value="4"/>
                         </component>
                     </layoutElement>
 
-                    <layoutElement column="2" row="8">
+                    <layoutElement column="3" row="8">
                         <component type="lookup" name="company" field="company"
                                    reference="company">
                             <option type="column" name="name" fields="name"/>
@@ -475,6 +475,34 @@
                 <option type="multiselect" value="true"/>
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
+
+                <option type="fixedHeight" value="true"/>
+            </component>
+        </windowTab>
+        <windowTab name="actionsTab">
+            <component type="grid" name="actions" reference="actions"
+                       source="#{form}.actions">
+                <option type="column" name="name" fields="action" link="true" expression="#action['name']"/>
+                <option type="column" name="responsibleWorkerName" fields="responsibleWorkerName" link="true"/>
+                <option type="column" name="description" fields="description"/>
+                <option type="column" name="state" fields="state"/>
+                <option type="column" name="reason" fields="reason"/>
+
+                <option type="order" column="name" direction="asc"/>
+
+                <option type="searchable" value="name,responsibleWorkerName,description,state,reason"/>
+                <option type="orderable" value="name,responsibleWorkerName,description,state,reason"/>
+
+                <option type="correspondingView" value="cmmsMachineParts/actionForPlannedEventDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="creatable" value="true"/>
+
+                <option type="fixedHeight" value="true"/>
 
             </component>
         </windowTab>

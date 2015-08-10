@@ -80,6 +80,9 @@
                     copyable="true"/>
 
         <belongsTo name="plannedEventContext" plugin="cmmsMachineParts" model="plannedEventContext"/>
+
+        <hasMany name="actions" model="actionForPlannedEvent" joinField="plannedEvent" cascade="delete"
+                 copyable="true"/>
     </fields>
     <hooks>
 
