@@ -7,6 +7,6 @@ public class FieldsForExternalService extends AbstractFieldsForType {
 
     public FieldsForExternalService() {
         super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.PLANNED_SEPARATELY), Lists
-                .newArrayList());
+                .newArrayList(PlannedEventFields.ACTIONS_TAB));
     }
 }

@@ -479,7 +479,7 @@
                 <option type="fixedHeight" value="true"/>
             </component>
         </windowTab>
-        <windowTab name="actionsTab">
+        <windowTab name="actionsTab" reference="actionsTab">
             <component type="grid" name="actions" reference="actions"
                        source="#{form}.actions">
                 <option type="column" name="name" fields="action" link="true" expression="#action['name']"/>

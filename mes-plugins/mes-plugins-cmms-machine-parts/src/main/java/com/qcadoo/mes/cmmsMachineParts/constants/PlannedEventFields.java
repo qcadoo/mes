@@ -26,6 +26,8 @@ public class PlannedEventFields {
 
     public static final String EFFECTIVE_COUNTER = "effectiveCounter";
 
+    public static final String ACTIONS_TAB = "actionsTab";
+
     private PlannedEventFields() {
     }
 

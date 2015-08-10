@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
@@ -28,6 +29,8 @@ public class PlannedEventDetailsHooks {
 
     @Autowired
     private EventHooks eventHooks;
+
+    private List<String> previouslyHiddenTabs = Lists.newArrayList();
 
     public void plannedEventBeforeRender(final ViewDefinitionState view) {
         eventHooks.plannedEventBeforeRender(view);
@@ -60,6 +63,21 @@ public class PlannedEventDetailsHooks {
             }
 
         }
+
+        List<String> hiddenTabs = fieldsForType.getHiddenTabs();
+        for (String tab : previouslyHiddenTabs) {
+            ComponentState tabComponent = view.getComponentByReference(tab);
+            if (tabComponent != null) {
+                tabComponent.setVisible(true);
+            }
+        }
+        for (String tab : hiddenTabs) {
+            ComponentState tabComponent = view.getComponentByReference(tab);
+            if (tabComponent != null) {
+                tabComponent.setVisible(false);
+            }
+        }
+        previouslyHiddenTabs = hiddenTabs;
         setAndLockBasedOn(view, fieldsForType);
     }
 

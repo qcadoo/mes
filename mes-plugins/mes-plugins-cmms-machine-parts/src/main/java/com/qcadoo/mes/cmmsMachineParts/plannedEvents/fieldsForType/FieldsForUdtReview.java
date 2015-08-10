@@ -7,7 +7,7 @@ public class FieldsForUdtReview extends AbstractFieldsForType {
 
     public FieldsForUdtReview() {
         super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.PLANNED_SEPARATELY), Lists
-                .newArrayList());
+                .newArrayList(PlannedEventFields.ACTIONS_TAB));
     }
 
 }
