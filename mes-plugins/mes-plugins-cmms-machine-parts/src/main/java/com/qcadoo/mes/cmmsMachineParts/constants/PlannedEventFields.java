@@ -62,4 +62,6 @@ public class PlannedEventFields {
     public static final String SOLUTINO_DESCRIPTION = "solutionDescription";
 
     public static final String SOLUTINO_DESCRIPTION_TAB = "solutionDescriptionTab";
+
+    public static final String ACTIONS = "actions";
 }

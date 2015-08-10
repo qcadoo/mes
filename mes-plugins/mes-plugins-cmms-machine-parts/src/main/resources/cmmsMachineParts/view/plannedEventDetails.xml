@@ -506,7 +506,6 @@
 
             </component>
         </windowTab>
-
         <windowTab name="solutionDescriptionTab" reference="solutionDescriptionTab">
             <component type="gridLayout" name="solutionDescriptionGrid" columns="3"
                        rows="6" hasBorders="false">
@@ -516,6 +515,33 @@
                 </layoutElement>
             </component>
         </windowTab>
+		<windowTab name="realizationTab">
+	           <component type="grid" name="realizations" reference="realizations"
+	                      source="#{form}.realizations">
+	               <option type="column" name="worker" fields="worker"
+	               		   expression="#worker['name'] + ' ' + #worker['surname']" link="true"/>
+	               <option type="column" name="action" fields="action"
+	               		   expression="#action['name']" link="true"/>
+	               <option type="column" name="startDate" fields="startDate"/>
+	               <option type="column" name="finishDate" fields="finishDate"/>
+	               <option type="column" name="duration" fields="duration"
+                                expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
+
+	               <option type="searchable" value="worker,action,startDate,finishDate,duration"/>
+	               <option type="orderable" value="worker,action,startDate,finishDate,duration"/>
+
+
+				   <option type="order" column="worker" direction="asc"/>
+
+                   <option type="correspondingView" value="cmmsMachineParts/plannedEventRealizationDetails"/>
+                   <option type="correspondingComponent" value="form"/>
+                   <option type="correspondingViewInModal" value="true"/>
+
+	               <option type="deletable" value="true"/>
+	               <option type="creatable" value="true"/>
+
+	           </component>
+		</windowTab>
     </component>
     <hooks>
 
