@@ -20,6 +20,10 @@ public class MachinePartForEventFields {
 
     public static final String WAREHOUSE_NUMBER = "warehouseNumber";
 
+    public static final String MAINTENANCE_EVENT = "maintenanceEvent";
+
+    public static final String PLANNED_EVENT = "plannedEvent";
+
     private MachinePartForEventFields() {
     }
 }

@@ -122,6 +122,7 @@
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
 
         <view:view-tab resource="view/tabExtensions/documentDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/factoryDetails.xml"/>
 
         <!-- view extensions -->
 
@@ -263,6 +264,17 @@
             <model:hasMany name="maintenanceEventContexts" model="maintenanceEventContext" plugin="cmmsMachineParts"
                            cascade="nullify"
                            joinField="division" copyable="false"/>
+        </model:model-field>
+
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="factories" model="factory" plugin="basic"
+                           cascade="nullify"
+                           joinField="warehouse" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="factory">
+            <model:belongsTo name="warehouse" model="location" plugin="materialFlow"/>
         </model:model-field>
 
         <!-- planned events -->

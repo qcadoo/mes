@@ -114,6 +114,8 @@
                       method="fillUnitFields"/>
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartForEventDetailsHooks"
                       method="disableFieldsForIssuedPart"/>
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartForEventDetailsHooks"
+                      method="fillWarehouse"/>
 
     </hooks>
 
