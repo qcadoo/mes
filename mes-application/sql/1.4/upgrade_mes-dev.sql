@@ -50,12 +50,30 @@ CREATE TABLE cmmsmachineparts_plannedeventrealization
   finishdate timestamp without time zone,
   duration integer DEFAULT 0,
   CONSTRAINT cmmsmachineparts_plannedeventrealization_pkey PRIMARY KEY (id),
-  CONSTRAINT cmmsmachineparts_staff_fkey FOREIGN KEY (worker_id)
+  CONSTRAINT plannedeventrealization_staff_fkey FOREIGN KEY (worker_id)
       REFERENCES basic_staff (id) DEFERRABLE,
-  CONSTRAINT cmmsmachineparts_planned_event FOREIGN KEY (plannedevent_id)
+  CONSTRAINT plannedeventrealization_planned_event FOREIGN KEY (plannedevent_id)
       REFERENCES cmmsmachineparts_plannedevent (id) DEFERRABLE,
-  CONSTRAINT cmmsmachineparts_action FOREIGN KEY (action_id)
+  CONSTRAINT plannedeventrealization_action FOREIGN KEY (action_id)
       REFERENCES cmmsmachineparts_action (id) DEFERRABLE
 )
 
 -- end
+
+-- Added event attachment
+-- last touched 11.08.2015 by pako
+
+CREATE TABLE cmmsmachineparts_plannedeventattachment
+(
+  id bigint NOT NULL,
+  plannedevent_id bigint,
+  attachment character varying(255),
+  name character varying(255),
+  size numeric(12,5),
+  ext character varying(255),
+  CONSTRAINT cmmsmachineparts_plannedeventattachment_pkey PRIMARY KEY (id),
+  CONSTRAINT plannedeventattachment_plannedevent FOREIGN KEY (plannedevent_id)
+      REFERENCES cmmsmachineparts_plannedevent (id) DEFERRABLE
+)
+
+--

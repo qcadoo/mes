@@ -90,6 +90,9 @@
         <text name="solutionDescription"/>
         <hasMany name="machinePartsForEvent" model="machinePartForEvent" joinField="plannedEvent" cascade="delete"
                  copyable="true"/>
+
+        <hasMany name="attachments" model="plannedEventAttachment" joinField="plannedEvent" cascade="delete"/>
+
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventValidators"

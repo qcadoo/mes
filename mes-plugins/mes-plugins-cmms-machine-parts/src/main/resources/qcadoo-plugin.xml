@@ -141,6 +141,7 @@
         <model:model model="plannedEvent" resource="model/plannedEvent.xml"/>
         <model:model model="plannedEventContext" resource="model/plannedEventContext.xml"/>
         <model:model model="plannedEventRealization" resource="model/plannedEventRealization.xml"/>
+        <model:model model="plannedEventAttachment" resource="model/plannedEventAttachment.xml"/>
 
         <model:model model="action" resource="model/action.xml"/>
         <model:model model="actionForPlannedEvent" resource="model/actionForPlannedEvent.xml"/>

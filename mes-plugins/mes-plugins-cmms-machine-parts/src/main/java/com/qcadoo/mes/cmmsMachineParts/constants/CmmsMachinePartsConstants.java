@@ -2,18 +2,20 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 public class CmmsMachinePartsConstants {
 
-    public static final String MODEL_PLANNED_EVENT = "plannedEvent";
-
-    public static final String MODEL_PLANNED_EVENT_REALIZATION = "plannedEventRealization";
-
-    public static final String MODEL_ACTION = "action";
-
     private CmmsMachinePartsConstants() {
     }
 
     public static final String PLUGIN_IDENTIFIER = "cmmsMachineParts";
 
     // MODEL
+
+    public static final String MODEL_PLANNED_EVENT = "plannedEvent";
+
+    public static final String MODEL_PLANNED_EVENT_REALIZATION = "plannedEventRealization";
+
+    public static final String MODEL_ACTION = "action";
+
+    public static final String MODEL_PLANNED_EVENT_ATTACHMENT = "plannedEventAttachment";
 
     public static final String MODEL_FAULT_TYPE = "faultType";
 

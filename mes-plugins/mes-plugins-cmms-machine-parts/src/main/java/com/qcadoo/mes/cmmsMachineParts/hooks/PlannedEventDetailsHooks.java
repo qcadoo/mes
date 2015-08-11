@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
@@ -107,5 +108,22 @@ public class PlannedEventDetailsHooks {
         } else {
             basedOn.setEnabled(true);
         }
+    }
+
+    public void setEventIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent plannedEvent = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent plannedEventIdForMultiUpload = (FieldComponent) view.getComponentByReference("eventIdForMultiUpload");
+        FieldComponent plannedEventMultiUploadLocale = (FieldComponent) view.getComponentByReference("eventMultiUploadLocale");
+
+        if (plannedEvent.getEntityId() != null) {
+            plannedEventIdForMultiUpload.setFieldValue(plannedEvent.getEntityId());
+            plannedEventIdForMultiUpload.requestComponentUpdateState();
+        } else {
+            plannedEventIdForMultiUpload.setFieldValue("");
+            plannedEventIdForMultiUpload.requestComponentUpdateState();
+        }
+        plannedEventMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
+        plannedEventMultiUploadLocale.requestComponentUpdateState();
+
     }
 }
