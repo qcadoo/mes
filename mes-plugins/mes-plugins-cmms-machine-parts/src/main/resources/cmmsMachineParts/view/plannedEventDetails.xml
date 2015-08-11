@@ -44,21 +44,20 @@
                 <smallButton name="closeEvent" icon="acceptIcon16.png"
                              state="disabled" action="#{form}.changeState(closeEvent);"/>
             </group>
-            <!--
-                                    <group name="atachments">
-                                        <bigButton name="downloadAtachment" icon="generateIcon24.png"
-                                                   state="enabled">
-                                            <script>
-                                                <![CDATA[
-                                                    this.addOnChangeListener({
-                                                        onClick: function() {
-                                                            #{form}.performEvent('downloadAtachment', []);
-                                                        }
-                                                    });
-                                                ]]>
-                                            </script>
-                                        </bigButton>
-                                    </group>-->
+            <group name="attachments">
+                <bigButton name="downloadAttachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent('downloadAttachment', []);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
 
         </ribbon>
 
@@ -402,8 +401,8 @@
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"
                           method="fillFieldValues"/>
 
-                <listener event="downloadAtachment" method="downloadAtachment"
-                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                <listener event="downloadAttachment" method="downloadAttachment"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
 
                 <listener event="showSolutions" method="showSolutions"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>

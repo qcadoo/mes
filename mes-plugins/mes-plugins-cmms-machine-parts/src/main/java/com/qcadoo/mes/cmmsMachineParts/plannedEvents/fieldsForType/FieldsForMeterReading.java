@@ -10,7 +10,7 @@ public class FieldsForMeterReading extends AbstractFieldsForType {
                 PlannedEventFields.REQUIRES_SHUTDOWN, PlannedEventFields.COUNTER, PlannedEventFields.DURATION,
                 PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.COMPANY), Lists
                 .newArrayList(PlannedEventFields.ACTIONS_TAB, PlannedEventFields.MACHINE_PARTS_TAB,
-                        PlannedEventFields.SOLUTINO_DESCRIPTION_TAB), Lists.newArrayList(PlannedEventFields.ACTIONS,
+                        PlannedEventFields.SOLUTION_DESCRIPTION_TAB), Lists.newArrayList(PlannedEventFields.ACTIONS,
                 PlannedEventFields.MACHINE_PARTS_FOR_EVENT));
     }
 

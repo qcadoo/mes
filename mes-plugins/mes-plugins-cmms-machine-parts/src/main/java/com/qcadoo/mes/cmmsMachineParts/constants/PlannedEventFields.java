@@ -58,13 +58,15 @@ public class PlannedEventFields {
 
     public static final String PLANNED_EVENT_CONTEXT = "plannedEventContext";
 
-    public static final String SOLUTINO_DESCRIPTION = "solutionDescription";
+    public static final String SOLUTION_DESCRIPTION = "solutionDescription";
 
-    public static final String SOLUTINO_DESCRIPTION_TAB = "solutionDescriptionTab";
+    public static final String SOLUTION_DESCRIPTION_TAB = "solutionDescriptionTab";
 
     public static final String ACTIONS = "actions";
 
     public static final String MACHINE_PARTS_FOR_EVENT = "machinePartsForEvent";
+
+    public static final String ATTACHMENTS = "attachments";
 
     private PlannedEventFields() {
     }
