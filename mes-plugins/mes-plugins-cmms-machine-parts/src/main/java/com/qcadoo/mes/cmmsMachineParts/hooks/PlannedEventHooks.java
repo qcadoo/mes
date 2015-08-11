@@ -1,5 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +35,21 @@ public class PlannedEventHooks {
 
     private void clearHiddenFields(final Entity event) {
         FieldsForType fieldsForType = fieldsForTypeFactory.createFieldsForType(PlannedEventType.from(event));
-        for (String fieldName : fieldsForType.getHiddenFields()) {
+        List<String> fieldsToClear = fieldsForType.getHiddenFields();
+        List<String> hasManyToClear = fieldsForType.getGridsToClear();
+        for (String fieldName : fieldsToClear) {
             event.setField(fieldName, null);
+        }
+
+        for (String fieldName : hasManyToClear) {
+            List<Entity> fields = event.getHasManyField(fieldName);
+
+            if (!fields.isEmpty()) {
+                DataDefinition dataDefinition = fields.get(0).getDataDefinition();
+                Long[] ids = fields.stream().map(entity -> entity.getId()).toArray(size -> new Long[size]);
+                dataDefinition.delete(ids);
+                event.setField(fieldName, null);
+            }
         }
 
     }

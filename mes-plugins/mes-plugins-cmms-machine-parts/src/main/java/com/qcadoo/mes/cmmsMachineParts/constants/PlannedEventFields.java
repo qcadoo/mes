@@ -28,8 +28,7 @@ public class PlannedEventFields {
 
     public static final String ACTIONS_TAB = "actionsTab";
 
-    private PlannedEventFields() {
-    }
+    public static final String MACHINE_PARTS_TAB = "machinePartsTab";
 
     public static final String DESCRIPTION = "description";
 
@@ -64,4 +63,10 @@ public class PlannedEventFields {
     public static final String SOLUTINO_DESCRIPTION_TAB = "solutionDescriptionTab";
 
     public static final String ACTIONS = "actions";
+
+    public static final String MACHINE_PARTS_FOR_EVENT = "machinePartsForEvent";
+
+    private PlannedEventFields() {
+    }
+
 }

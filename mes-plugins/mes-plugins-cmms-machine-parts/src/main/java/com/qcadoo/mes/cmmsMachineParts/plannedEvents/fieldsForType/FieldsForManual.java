@@ -8,7 +8,7 @@ public class FieldsForManual extends AbstractFieldsForType {
     public FieldsForManual() {
         super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.PLANNED_SEPARATELY,
                 PlannedEventFields.COUNTER, PlannedEventFields.DURATION, PlannedEventFields.EFFECTIVE_DURATION,
-                PlannedEventFields.COMPANY), Lists.newArrayList());
+                PlannedEventFields.COMPANY), Lists.newArrayList(), Lists.newArrayList());
     }
 
     @Override

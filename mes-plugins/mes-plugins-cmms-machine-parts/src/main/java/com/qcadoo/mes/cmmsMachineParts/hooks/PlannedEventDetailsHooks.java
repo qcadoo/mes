@@ -18,6 +18,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class PlannedEventDetailsHooks {
@@ -46,6 +47,13 @@ public class PlannedEventDetailsHooks {
             return;
         }
 
+        hideFields(view, plannedEvent, fieldsForType);
+        hideTabs(view, fieldsForType);
+        clearGrids(view, fieldsForType);
+        setAndLockBasedOn(view, fieldsForType);
+    }
+
+    private void hideFields(final ViewDefinitionState view, final Entity plannedEvent, final FieldsForType fieldsForType) {
         Set<String> allFields = plannedEvent.getDataDefinition().getFields().keySet();
 
         List<String> hiddenFields = fieldsForType.getHiddenFields();
@@ -63,7 +71,9 @@ public class PlannedEventDetailsHooks {
             }
 
         }
+    }
 
+    private void hideTabs(final ViewDefinitionState view, final FieldsForType fieldsForType) {
         List<String> hiddenTabs = fieldsForType.getHiddenTabs();
         for (String tab : previouslyHiddenTabs) {
             ComponentState tabComponent = view.getComponentByReference(tab);
@@ -78,7 +88,15 @@ public class PlannedEventDetailsHooks {
             }
         }
         previouslyHiddenTabs = hiddenTabs;
-        setAndLockBasedOn(view, fieldsForType);
+    }
+
+    private void clearGrids(final ViewDefinitionState view, final FieldsForType fieldsForType) {
+
+        List<String> gridsToClear = fieldsForType.getGridsToClear();
+        for (String grid : gridsToClear) {
+            GridComponent gridComponent = (GridComponent) view.getComponentByReference(grid);
+            gridComponent.setEntities(Lists.newArrayList());
+        }
     }
 
     private void setAndLockBasedOn(final ViewDefinitionState view, final FieldsForType fieldsForType) {

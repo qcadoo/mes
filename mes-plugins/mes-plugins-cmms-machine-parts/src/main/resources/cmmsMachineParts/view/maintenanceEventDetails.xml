@@ -412,15 +412,15 @@
                 <layoutElement column="1" row="1">
                     <component type="grid" name="machinePartsForEvent" reference="machinePartsForEvent"
                                source="#{form}.machinePartsForEvent">
-                        <option type="column" name="number" fields="machinePart" expression="#machinePart['number']"
+                        <option type="column" name="number" fields="machinePartNumber"
                                 link="true"/>
-                        <option type="column" name="name" fields="machinePart" expression="#machinePart['name']"
+                        <option type="column" name="name" fields="machinePartName"
                                 link="true"/>
-                        <option type="column" name="warehouse" fields="warehouse" expression="#warehouse['number']"
-                                link="true"/>
+                        <option type="column" name="warehouse" fields="warehouseNumber"
+                                link=" true"/>
                         <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
                         <option type="column" name="availableQuantity" fields="availableQuantity"/>
-                        <option type="column" name="unit" fields="machinePart" expression="#machinePart['unit']"/>
+                        <option type="column" name="unit" fields="machinePartUnit"/>
 
                         <option type="order" column="number" direction="asc"/>
 

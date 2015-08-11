@@ -481,7 +481,7 @@
         </windowTab>
         <windowTab name="actionsTab" reference="actionsTab">
             <component type="grid" name="actions" reference="actions"
-                       source="#{form}.actions">
+                       source="#{form}.actions" field="#{form}.actions">
                 <option type="column" name="name" fields="action" link="true" expression="#action['name']"/>
                 <option type="column" name="responsibleWorkerName" fields="responsibleWorkerName" link="true"/>
                 <option type="column" name="description" fields="description"/>
@@ -515,33 +515,67 @@
                 </layoutElement>
             </component>
         </windowTab>
-		<windowTab name="realizationTab">
-	           <component type="grid" name="realizations" reference="realizations"
-	                      source="#{form}.realizations">
-	               <option type="column" name="worker" fields="worker"
-	               		   expression="#worker['name'] + ' ' + #worker['surname']" link="true"/>
-	               <option type="column" name="action" fields="action"
-	               		   expression="#action['name']" link="true"/>
-	               <option type="column" name="startDate" fields="startDate"/>
-	               <option type="column" name="finishDate" fields="finishDate"/>
-	               <option type="column" name="duration" fields="duration"
-                                expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
+        <windowTab name="realizationTab">
+            <component type="grid" name="realizations" reference="realizations"
+                       source="#{form}.realizations">
+                <option type="column" name="worker" fields="worker"
+                        expression="#worker['name'] + ' ' + #worker['surname']" link="true"/>
+                <option type="column" name="action" fields="action"
+                        expression="#action['name']" link="true"/>
+                <option type="column" name="startDate" fields="startDate"/>
+                <option type="column" name="finishDate" fields="finishDate"/>
+                <option type="column" name="duration" fields="duration"
+                        expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
 
-	               <option type="searchable" value="worker,action,startDate,finishDate,duration"/>
-	               <option type="orderable" value="worker,action,startDate,finishDate,duration"/>
+                <option type="searchable" value="worker,action,startDate,finishDate,duration"/>
+                <option type="orderable" value="worker,action,startDate,finishDate,duration"/>
 
 
-				   <option type="order" column="worker" direction="asc"/>
+                <option type="order" column="worker" direction="asc"/>
 
-                   <option type="correspondingView" value="cmmsMachineParts/plannedEventRealizationDetails"/>
-                   <option type="correspondingComponent" value="form"/>
-                   <option type="correspondingViewInModal" value="true"/>
+                <option type="correspondingView" value="cmmsMachineParts/plannedEventRealizationDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
 
-	               <option type="deletable" value="true"/>
-	               <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="creatable" value="true"/>
 
-	           </component>
-		</windowTab>
+            </component>
+        </windowTab>
+        <windowTab name="machinePartsTab" reference="machinePartsTab">
+            <component type="gridLayout" name="machinePartsGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="machinePartsForEvent" reference="machinePartsForEvent"
+                               source="#{form}.machinePartsForEvent" field="#{form}.machinePartsForEvent">
+                        <option type="column" name="number" fields="machinePartNumber"
+                                link="true"/>
+                        <option type="column" name="name" fields="machinePartName"
+                                link="true"/>
+                        <option type="column" name="warehouse" fields="warehouseNumber"
+                                link="true"/>
+                        <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
+                        <option type="column" name="availableQuantity" fields="availableQuantity"/>
+                        <option type="column" name="unit" fields="machinePartUnit"/>
+
+                        <option type="order" column="number" direction="asc"/>
+
+                        <option type="correspondingView" value="cmmsMachineParts/machinePartForEventDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="fixedHeight" value="true"/>
+                        <option type="searchable"
+                                value="number,name,unit,warehouse,plannedQuantity,availableQuantity"/>
+                        <option type="orderable"
+                                value="number,name,unit,warehouse,plannedQuantity,availableQuantity"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
     </component>
     <hooks>
 

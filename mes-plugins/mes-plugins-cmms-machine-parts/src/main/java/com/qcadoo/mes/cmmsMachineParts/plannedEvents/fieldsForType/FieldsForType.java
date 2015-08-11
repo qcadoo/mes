@@ -8,5 +8,7 @@ public interface FieldsForType {
 
     public List<String> getHiddenTabs();
 
+    public List<String> getGridsToClear();
+
     public boolean shouldLockBasedOn();
 }

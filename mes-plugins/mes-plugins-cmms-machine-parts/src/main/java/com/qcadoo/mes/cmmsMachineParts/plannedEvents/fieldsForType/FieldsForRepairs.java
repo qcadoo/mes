@@ -6,6 +6,7 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 public class FieldsForRepairs extends AbstractFieldsForType {
 
     public FieldsForRepairs() {
-        super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.COMPANY), Lists.newArrayList());
+        super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.COMPANY), Lists.newArrayList(), Lists
+                .newArrayList());
     }
 }

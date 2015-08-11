@@ -9,7 +9,7 @@ public class FieldsForAdditionalWork extends AbstractFieldsForType {
         super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.PLANNED_SEPARATELY,
                 PlannedEventFields.REQUIRES_SHUTDOWN, PlannedEventFields.COUNTER, PlannedEventFields.DURATION,
                 PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.COMPANY, PlannedEventFields.EFFECTIVE_COUNTER), Lists
-                .newArrayList());
+                .newArrayList(), Lists.newArrayList());
     }
 
     @Override
