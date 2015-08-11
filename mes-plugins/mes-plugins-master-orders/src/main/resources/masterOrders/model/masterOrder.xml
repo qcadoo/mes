@@ -108,8 +108,6 @@
                 method="onValidate"/>
         <onCreate class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
                   method="onCreate"/>
-        <onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-                method="onView"/>
         <onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
                 method="onSave"/>
         <onCopy class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
