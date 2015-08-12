@@ -33,7 +33,7 @@
 		<belongsTo name="action" model="action"/>
 		<datetime name="startDate" required="true"/>
         <datetime name="finishDate" required="true"/>
-        <integer name="duration" copyable="false" default="0"/>
+        <integer name="duration" default="0"/>
 	</fields>
 	<hooks>
 		<validatesWith
