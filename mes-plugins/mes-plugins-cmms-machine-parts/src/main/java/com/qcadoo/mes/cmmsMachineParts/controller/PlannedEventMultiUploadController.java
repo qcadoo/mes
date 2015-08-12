@@ -79,7 +79,7 @@ public class PlannedEventMultiUploadController {
     private static final Integer L_SCALE = 2;
 
     private static final List<String> exts = Lists.newArrayList("GIF", "JPG", "JPEG", "PNG", "PDF", "XLS", "XLSX", "DWG", "IPT",
-            "IAM", "IDW");
+            "IAM", "IDW", "DOC", "DOCX");
 
     @ResponseBody
     @RequestMapping(value = "/multiUploadFilesForPlannedEvent", method = RequestMethod.POST)
