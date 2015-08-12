@@ -27,9 +27,11 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
+import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -71,6 +73,12 @@ public class MasterOrderDetailsHooks {
 
     @Autowired
     private OrderCriteriaModifier orderCriteriaModifier;
+
+    @Autowired
+    private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
+
+    @Autowired
+    private NumberService numberService;
 
     public void hideFieldDependOnMasterOrderType(final ViewDefinitionState view) {
         FieldComponent masterOrderType = (FieldComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_TYPE);
@@ -265,6 +273,49 @@ public class MasterOrderDetailsHooks {
             return false;
         }
         return true;
+    }
+
+    public void calculateMasterOrderFields(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Long masterOrderId = form.getEntityId();
+
+        if (masterOrderId == null) {
+            return;
+        }
+        Entity masterOrder = form.getEntity();
+
+        calculateCumulativeQuantityFromOrders(view, masterOrder);
+        fillRegisteredQuantity(view, masterOrder);
+    }
+
+    private void fillRegisteredQuantity(final ViewDefinitionState view, final Entity masterOrder) {
+        if (masterOrder.getId() == null || MasterOrderType.of(masterOrder) != MasterOrderType.ONE_PRODUCT) {
+            return;
+        }
+        Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
+
+        FieldComponent producedOrderQuantityField = (FieldComponent) view.getComponentByReference(MasterOrderFields.PRODUCED_ORDER_QUQNTITY);
+
+        BigDecimal doneQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersDoneQuantities(masterOrder, product);
+
+        producedOrderQuantityField.setFieldValue(doneQuantity);
+
+        producedOrderQuantityField.requestComponentUpdateState();
+    }
+
+    private void calculateCumulativeQuantityFromOrders(final ViewDefinitionState view, final Entity masterOrder) {
+        if (masterOrder.getId() == null || MasterOrderType.of(masterOrder) != MasterOrderType.ONE_PRODUCT) {
+            return;
+        }
+        Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
+
+        FieldComponent cumulatedOrderQuantityField = (FieldComponent) view.getComponentByReference(MasterOrderFields.CUMULATED_ORDER_QUANTITY);
+
+        BigDecimal quantitiesSum = masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, product);
+
+        cumulatedOrderQuantityField.setFieldValue(quantitiesSum);
+
+        cumulatedOrderQuantityField.requestComponentUpdateState();
     }
 
 }

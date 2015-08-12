@@ -111,7 +111,7 @@ $(function() {
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
-						var filetype = /(\.|\/)(jpe?g|png|pdf|docx?|odt|xlsx?|ods)$/i;
+						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
 							"workstationMultiUploadLocale")

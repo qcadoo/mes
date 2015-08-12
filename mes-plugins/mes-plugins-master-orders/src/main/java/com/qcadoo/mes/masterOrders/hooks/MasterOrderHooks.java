@@ -67,11 +67,6 @@ public class MasterOrderHooks {
         changedDeadlineAndInOrder(masterOrder);
     }
 
-    public void onView(final DataDefinition dataDefinition, final Entity masterOrder) {
-        calculateCumulativeQuantityFromOrders(masterOrder);
-        fillRegisteredQuantity(masterOrder);
-    }
-
     public void onCopy(final DataDefinition dataDefinition, final Entity masterOrder) {
         clearExternalFields(masterOrder);
     }
