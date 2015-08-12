@@ -529,15 +529,18 @@
                 <option type="searchable" value="worker,action,startDate,finishDate,duration"/>
                 <option type="orderable" value="worker,action,startDate,finishDate,duration"/>
 
-
-                <option type="order" column="worker" direction="asc"/>
+                <option type="order" column="startDate" direction="asc"/>
 
                 <option type="correspondingView" value="cmmsMachineParts/plannedEventRealizationDetails"/>
                 <option type="correspondingComponent" value="form"/>
                 <option type="correspondingViewInModal" value="true"/>
 
+				<option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
+
+                <option type="fixedHeight" value="true"/>
 
             </component>
         </windowTab>
