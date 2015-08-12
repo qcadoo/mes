@@ -379,6 +379,9 @@
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
                 method="setDefaultMasterOrderNumber"/>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="calculateMasterOrderFields"/>
     </hooks>
 
 </view>
