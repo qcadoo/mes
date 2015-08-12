@@ -35,7 +35,13 @@ public class PlannedEventDetailsHooks {
     private List<String> previouslyHiddenTabs = Lists.newArrayList();
 
     public void plannedEventBeforeRender(final ViewDefinitionState view) {
+
         eventHooks.plannedEventBeforeRender(view);
+
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity plannedEvent = form.getEntity();
+        FieldComponent type = (FieldComponent) view.getComponentByReference(PlannedEventFields.TYPE);
+        type.setEnabled(plannedEvent.getId() == null);
     }
 
     public void toggleFieldsVisible(final ViewDefinitionState view) {
