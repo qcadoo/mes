@@ -22,16 +22,16 @@ public class ActionsService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public boolean checkIfFaultTypeAppliesToOthers(final Entity action) {
+    public boolean checkIfActionAppliesToOthers(final Entity action) {
 
         return ActionAppliesTo.from(action).compareTo(ActionAppliesTo.NONE) == 0 || action.getId() == getDefaultAction().getId();
     }
 
-    public boolean checkIfFaultTypeAppliesToWorkstation(final Entity action, final Entity workstation) {
+    public boolean checkIfActionAppliesToWorkstation(final Entity action, final Entity workstation) {
         return checkIfActionAppliesToWorkstationOrSubassembly(action, workstation, ActionFields.WORKSTATIONS);
     }
 
-    public boolean checkIfFaultTypeAppliesToSubassembly(final Entity action, final Entity subassembly) {
+    public boolean checkIfActionAppliesToSubassembly(final Entity action, final Entity subassembly) {
         return checkIfActionAppliesToWorkstationOrSubassembly(action, subassembly, ActionFields.SUBASSEMBLIES);
     }
 
@@ -44,7 +44,11 @@ public class ActionsService {
             return checkIfActionAppliesToEntity(action, entity.getBelongsToField(WorkstationFields.WORKSTATION_TYPE),
                     ActionFields.WORKSTATION_TYPES);
         }
-        return action.getId() == getDefaultAction().getId();
+        Entity defaultAction = getDefaultAction();
+        if (defaultAction == null) {
+            return false;
+        }
+        return action.getId() == defaultAction.getId();
     }
 
     public boolean checkIfActionAppliesToEntity(final Entity action, final Entity entity, final String fieldToTest) {
