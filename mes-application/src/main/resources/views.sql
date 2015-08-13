@@ -41,3 +41,6 @@ DROP FUNCTION update_sequence();
 --
 DROP TABLE IF EXISTS ordersupplies_materialrequirementcoveragedto;
 CREATE OR REPLACE VIEW ordersupplies_materialrequirementcoveragedto AS SELECT id, number, coveragetodate, actualdate, generateddate, generatedby FROM  ordersupplies_materialrequirementcoverage where saved = true;
+
+DROP TABLE IF EXISTS ordersupplies_orderdto;
+CREATE OR REPLACE VIEW ordersupplies_orderdto AS SELECT id, number, name, state FROM orders_order;
