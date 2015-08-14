@@ -59,6 +59,12 @@
                 </bigButton>
             </group>
 
+            <group name="solutions">
+            	<bigButton name="showSolutions" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(showSolutions);">
+                </bigButton>
+            </group>
+
         </ribbon>
 
         <windowTab name="mainTab">
@@ -188,6 +194,14 @@
                          this.addOnChangeListener({
                                 onSetValue: function() {
                                     var json = JSON.parse(context);
+
+                                    var maintenanceEventContextId = json['window.mainTab.maintenanceEventForm.gridLayout.maintenanceEventContext'];
+                                    var currentMaintenanceEventContextId = #{maintenanceEventContext}.getValue().content.value;
+
+                                    if (maintenanceEventContextId != null && currentMaintenanceEventContextId != maintenanceEventContextId) {
+                                       #{form}.fireEvent(this, 'fillFieldValues', ['maintenanceEventContext', maintenanceEventContextId]);
+                                    }
+
                                     var currentType = #{type}.getValue().content.value;
                                     var eventType = json['window.mainTab.eventType'];
                                     if (eventType != null && currentType !== eventType) {
@@ -201,6 +215,8 @@
                     <layoutElement column="1" row="1">
                         <component type="hidden" name="factoryStructure" field="factoryStructure"
                                    reference="factoryStructure"/>
+                        <component type="hidden" name="maintenanceEventContext" field="maintenanceEventContext"
+                                   reference="maintenanceEventContext"/>
                         <component type="input" name="number" field="number" reference="number"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
@@ -348,6 +364,9 @@
                 <listener event="downloadAtachment" method="downloadAtachment"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
 
+				<listener event="showSolutions" method="showSolutions"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+
                 <listener event="save" method="validateIssueOrProposal"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
 
@@ -382,6 +401,73 @@
                         <option type="deletable" value="true"/>
                         <option type="searchable" value="workerNumber,workerName,workerSurname"/>
                         <option type="orderable" value="workerNumber,workerName,workerSurname"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="machinePartsTab">
+            <component type="gridLayout" name="machinePartsGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="machinePartsForEvent" reference="machinePartsForEvent"
+                               source="#{form}.machinePartsForEvent">
+                        <option type="column" name="number" fields="machinePart" expression="#machinePart['number']"
+                                link="true"/>
+                        <option type="column" name="name" fields="machinePart" expression="#machinePart['name']"
+                                link="true"/>
+                        <option type="column" name="warehouse" fields="warehouse" expression="#warehouse['number']"
+                                link="true"/>
+                        <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
+                        <option type="column" name="availableQuantity" fields="availableQuantity"/>
+                        <option type="column" name="unit" fields="machinePart" expression="#machinePart['unit']"/>
+
+                        <option type="order" column="number" direction="asc"/>
+
+                        <option type="correspondingView" value="cmmsMachineParts/machinePartForEventDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="searchable"
+                                value="number,name,unit,warehouse,plannedQuantity,availableQuantity"/>
+                        <option type="orderable"
+                                value="number,name,unit,warehouse,plannedQuantity,availableQuantity"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="documentsTab">
+            <component type="gridLayout" name="documentsGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="documents" reference="documents"
+                               source="#{form}.documents">
+                        <option type="column" name="number" fields="number" link="true"
+                                width="50"/>
+                        <option type="column" name="type" fields="type"/>
+                        <option type="column" name="time" fields="time"/>
+                        <option type="column" name="locationFrom" fields="locationFrom"
+                                expression="#locationFrom['name']"/>
+                        <option type="column" name="user" fields="user"
+                                expression="#user['firstName'] + ' ' + #user['lastName']" width="150"/>
+                        <option type="column" name="state" fields="state" width="100"/>
+
+                        <option type="order" column="number" direction="desc" width="200"/>
+
+                        <option type="searchable"
+                                value="number,time,locationFrom,user,type,state"/>
+                        <option type="orderable"
+                                value="number,time,locationFrom,user,type,state"/>
+
+                        <option type="correspondingView" value="materialFlowResources/documentDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="false"/>
+
+                        <option type="creatable" value="false"/>
+                        <option type="deletable" value="false"/>
                     </component>
                 </layoutElement>
             </component>

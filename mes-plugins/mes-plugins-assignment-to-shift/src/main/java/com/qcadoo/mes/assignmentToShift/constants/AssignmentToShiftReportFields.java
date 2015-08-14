@@ -39,6 +39,8 @@ public final class AssignmentToShiftReportFields {
 
     public static final String SHIFT = "shift";
 
+    public static final String FACTORY = "factory";
+
     public static final String FILE_NAME = "fileName";
 
     public static final String GENERATED = "generated";

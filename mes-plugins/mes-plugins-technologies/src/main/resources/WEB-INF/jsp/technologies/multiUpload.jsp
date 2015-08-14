@@ -46,8 +46,8 @@ String ctx = request.getContextPath();
 
     <input type="file" name="files[]" multiple>
 
-    <div id="dropzone">Upuść pliki tutaj</div>
- 
+    <div id="dropzone">${requestScope.translationsMap['qcadooView.fileupload.dropzone']}</div>
+
 	<div id="progress" class="progress">
         <div class="progress-bar progress-bar-success"> </div>
     </div>

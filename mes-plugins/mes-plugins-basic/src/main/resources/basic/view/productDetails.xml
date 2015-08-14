@@ -173,7 +173,7 @@
 
                         <criteriaModifier
                                 class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP"
-                                method="showFamilyParticularProduct"/>
+                                method="showFamiliesByMachinePartType"/>
                     </component>
                 </layoutElement>
             </component>
@@ -331,5 +331,7 @@
                       method="disableUnitFromWhenFormIsSaved"/>
         <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
                       method="updateRibbonState"/>
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.ProductHooksCMP"
+                      method="setCriteriaModifierParameters"/>
     </hooks>
 </view>

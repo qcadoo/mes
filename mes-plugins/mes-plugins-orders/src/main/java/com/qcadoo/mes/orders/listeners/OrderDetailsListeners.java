@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.Locale;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -46,6 +38,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class OrderDetailsListeners {
@@ -268,4 +267,11 @@ public class OrderDetailsListeners {
         }
     }
 
+    public void printOrderReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        state.performEvent(view, "save", args);
+
+        if (!state.isHasError()) {
+            view.redirectTo("/orders/ordersOrderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
+        }
+    }
 }

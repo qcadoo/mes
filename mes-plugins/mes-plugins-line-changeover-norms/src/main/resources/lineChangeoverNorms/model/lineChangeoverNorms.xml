@@ -29,6 +29,9 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true" />
+		<string name="name" required="true">
+			<validatesLength max="1024"/>
+		</string>
 		<enum name="changeoverType" values="01forTechnology,02forTechnologyGroup"
 			default="01forTechnology" required="true" />
 		<belongsTo name="fromTechnology" model="technology" plugin="technologies" />

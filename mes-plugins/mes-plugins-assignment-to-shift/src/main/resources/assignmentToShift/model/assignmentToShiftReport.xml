@@ -39,6 +39,8 @@
 		<date name="dateTo" required="true"/>
 		<belongsTo name="shift" model="shift" plugin="basic"
 				   required="true"/>
+		<belongsTo name="factory" model="factory" plugin="basic"
+				   required="true"/>
 		<string name="fileName"/>
 		<boolean name="generated" default="false"/>
 	</fields>

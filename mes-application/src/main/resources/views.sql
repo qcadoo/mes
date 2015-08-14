@@ -37,3 +37,10 @@ DROP FUNCTION createWarehouseStockView ();
 CREATE OR REPLACE FUNCTION update_sequence() RETURNS VOID AS $$ DECLARE row record; BEGIN FOR row IN SELECT tablename FROM pg_tables p INNER JOIN information_schema.columns c on p.tablename = c.table_name WHERE c.table_schema = 'public' and p.schemaname = 'public'  and c.column_name = 'id' and data_type = 'bigint' LOOP IF EXISTS (SELECT 0 FROM pg_class where relname = '' || quote_ident(row.tablename) || '_id_seq' ) THEN	EXECUTE 'ALTER TABLE ' || quote_ident(row.tablename) || ' ALTER COLUMN id SET DEFAULT nextval(''' || quote_ident(row.tablename) || '_id_seq'');';  EXECUTE 'SELECT setval(''' || quote_ident(row.tablename) || '_id_seq'', COALESCE((SELECT MAX(id)+1 FROM ' || quote_ident(row.tablename) || '), 1), false);';  END IF; END LOOP; END; $$ LANGUAGE 'plpgsql';
 SELECT * FROM update_sequence();
 DROP FUNCTION update_sequence();
+
+--
+DROP TABLE IF EXISTS ordersupplies_materialrequirementcoveragedto;
+CREATE OR REPLACE VIEW ordersupplies_materialrequirementcoveragedto AS SELECT id, number, coveragetodate, actualdate, generateddate, generatedby FROM  ordersupplies_materialrequirementcoverage where saved = true;
+
+DROP TABLE IF EXISTS ordersupplies_orderdto;
+CREATE OR REPLACE VIEW ordersupplies_orderdto AS SELECT id, number, name, state FROM orders_order;

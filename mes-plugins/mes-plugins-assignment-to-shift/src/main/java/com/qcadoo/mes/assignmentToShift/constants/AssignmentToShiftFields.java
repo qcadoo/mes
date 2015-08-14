@@ -33,6 +33,8 @@ public final class AssignmentToShiftFields {
 
     public static final String SHIFT = "shift";
 
+    public static final String FACTORY = "factory";
+
     public static final String APPROVED_ATTENDANCE_LIST = "approvedAttendanceList";
 
     public static final String STAFF_ASSIGNMENT_TO_SHIFTS = "staffAssignmentToShifts";

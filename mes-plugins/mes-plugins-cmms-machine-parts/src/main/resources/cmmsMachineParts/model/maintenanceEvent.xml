@@ -54,9 +54,16 @@
 
         <hasMany name="attachments" model="eventAttachment" joinField="maintenanceEvent" cascade="delete"/>
 
+        <hasMany name="documents" model="document" plugin="materialFlowResources" joinField="maintenanceEvent"
+                 cascade="nullify"/>
+
+        <hasMany name="machinePartsForEvent" model="machinePartForEvent" joinField="maintenanceEvent" cascade="delete"/>
+
         <hasMany name="stateChanges" joinField="maintenanceEvent" model="maintenanceEventStateChange" cascade="delete"/>
 
         <text name="solutionDescription"/>
+
+        <belongsTo name="maintenanceEventContext" plugin="cmmsMachineParts" model="maintenanceEventContext" />
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"

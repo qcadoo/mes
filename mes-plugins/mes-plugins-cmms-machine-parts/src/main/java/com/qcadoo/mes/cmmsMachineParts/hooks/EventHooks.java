@@ -1,25 +1,30 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
+import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
+import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EventHooks {
@@ -27,7 +32,7 @@ public class EventHooks {
     private static final String L_FORM = "form";
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private MaintenanceEventService maintenanceEventService;
 
     @Autowired
     private FaultTypesService faultTypesService;
@@ -35,13 +40,18 @@ public class EventHooks {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
+    @Autowired
+    private MaintenanceEventContextService maintenanceEventContextService;
+
     public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
         setEventCriteriaModifiers(view);
         setUpFaultTypeLookup(view);
         setFieldsRequired(view);
         fillDefaultFields(view);
-        toggleEnabledForWorkstation(view);
+        fillDefaultFieldsFromContext(view);
+        toggleEnabledViewComponents(view);
         disableFieldsForState(view);
+        toggleOldSolutionsButton(view);
     }
 
     private void disableFieldsForState(final ViewDefinitionState view) {
@@ -52,7 +62,9 @@ public class EventHooks {
                 || state.compareTo(MaintenanceEventState.PLANNED) == 0) {
             form.setFormEnabled(false);
             GridComponent staffWorkTimes = (GridComponent) view.getComponentByReference(MaintenanceEventFields.STAFF_WORK_TIMES);
+            GridComponent machineParts = (GridComponent) view.getComponentByReference(MaintenanceEventFields.MACHINE_PARTS_FOR_EVENT);
             staffWorkTimes.setEnabled(false);
+            machineParts.setEnabled(false);
         }
     }
 
@@ -70,17 +82,59 @@ public class EventHooks {
 
         if (numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, MaintenanceEventFields.NUMBER)) {
             numberGeneratorService.generateAndInsertNumber(view, CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                    CmmsMachinePartsConstants.MAINTENANCE_EVENT, L_FORM, MaintenanceEventFields.NUMBER);
+                    CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT, L_FORM, MaintenanceEventFields.NUMBER);
         }
     }
 
-    private void toggleEnabledForWorkstation(final ViewDefinitionState view) {
-
+    private void fillDefaultFieldsFromContext(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity event = form.getPersistedEntityWithIncludedFormValues();
-        boolean enabled = event.getBelongsToField(MaintenanceEventFields.PRODUCTION_LINE) != null;
+        if(form.getEntityId() == null) {
+            Entity event = form.getEntity();
+            Entity eventContext = event.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
+
+            if(eventContext != null) {
+                Entity factoryEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.FACTORY);
+                if (factoryEntity != null) {
+                    FieldComponent factoryField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
+                    factoryField.setFieldValue(factoryEntity.getId());
+                    factoryField.requestComponentUpdateState();
+                }
+
+                Entity divisionEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.DIVISION);
+                if (divisionEntity != null) {
+                    FieldComponent divisionField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
+                    divisionField.setFieldValue(divisionEntity.getId());
+                    divisionField.requestComponentUpdateState();
+                }
+            }
+        }
+    }
+
+    private void toggleEnabledViewComponents(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity eventEntity = form.getPersistedEntityWithIncludedFormValues();
+
+        toggleEnabledForWorkstation(view, form, eventEntity);
+        toggleEnabledForFactory(view, form, eventEntity);
+        toggleEnabledForDivision(view, form, eventEntity);
+    }
+
+    private void toggleEnabledForWorkstation(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
+        boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.PRODUCTION_LINE) != null;
         LookupComponent workstation = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.WORKSTATION);
         workstation.setEnabled(enabled);
+    }
+
+    private void toggleEnabledForFactory(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
+        boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT).getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
+        LookupComponent factoryLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
+        factoryLookup.setEnabled(enabled);
+    }
+
+    private void toggleEnabledForDivision(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
+        boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT).getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
+        divisionLookup.setEnabled(enabled);
     }
 
     private void setFieldsRequired(final ViewDefinitionState view) {
@@ -155,4 +209,20 @@ public class EventHooks {
 
     }
 
+    private void toggleOldSolutionsButton(ViewDefinitionState view) {
+        WindowComponent windowComponent = (WindowComponent) view.getComponentByReference("window");
+        Ribbon ribbon = windowComponent.getRibbon();
+        RibbonGroup solutionsRibbonGroup = ribbon.getGroupByName("solutions");
+        RibbonActionItem showSolutionsRibbonActionItem = solutionsRibbonGroup.getItemByName("showSolutions");
+
+        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
+
+        showSolutionsRibbonActionItem.setEnabled(event.getId() != null);
+        showSolutionsRibbonActionItem.requestUpdate(true);
+    }
+
+    public final void onBeforeRenderListView(final ViewDefinitionState view) {
+           maintenanceEventContextService.beforeRenderListView(view);
+    }
 }
