@@ -42,5 +42,7 @@ DROP FUNCTION update_sequence();
 DROP TABLE IF EXISTS ordersupplies_materialrequirementcoveragedto;
 CREATE OR REPLACE VIEW ordersupplies_materialrequirementcoveragedto AS SELECT id, number, coveragetodate, actualdate, generateddate, generatedby FROM  ordersupplies_materialrequirementcoverage where saved = true;
 
+DROP TABLE IF EXISTS jointable_coverageorderhelper_orderdto;
 DROP TABLE IF EXISTS ordersupplies_orderdto;
 CREATE OR REPLACE VIEW ordersupplies_orderdto AS SELECT id, number, name, state FROM orders_order;
+CREATE TABLE jointable_coverageorderhelper_orderdto ( coverageorderhelper_id bigint NOT NULL, orderdto_id bigint NOT NULL, CONSTRAINT jointable_coverageorderhelper_orderdto_pkey PRIMARY KEY (coverageorderhelper_id, orderdto_id), CONSTRAINT jointable_coverageorderhelper_coverageorderhelper_fkey FOREIGN KEY (coverageorderhelper_id) REFERENCES ordersupplies_coverageorderhelper (id) DEFERRABLE);
