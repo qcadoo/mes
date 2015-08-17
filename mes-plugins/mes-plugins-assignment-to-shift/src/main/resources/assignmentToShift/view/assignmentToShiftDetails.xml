@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view name="assignmentToShiftDetails" modelName="assignmentToShift"
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="assignmentToShiftDetails" modelName="assignmentToShift"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -84,6 +84,7 @@
 
                 <script>
                     <![CDATA[
+>>>>>>> dev
 						this.addOnChangeListener({
 							onSetValue: function(value) {
 								var state = #{state}.getValue().content.value;

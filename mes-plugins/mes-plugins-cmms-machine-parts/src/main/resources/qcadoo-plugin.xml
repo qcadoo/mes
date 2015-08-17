@@ -29,11 +29,14 @@
         group="other"
         version="${qcadoo.plugin.version}"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:security="http://schema.qcadoo.org/modules/security"
         xmlns:model="http://schema.qcadoo.org/modules/model"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xmlns:custom="http://schema.qcadoo.org/modules/custom"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/security
+	   http://schema.qcadoo.org/modules/security.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
@@ -103,11 +106,12 @@
         <view:view resource="view/oldSolutionsLine.xml" />
         <view:view resource="view/oldSolutionsDivision.xml" />
 
-        <menu:menu-category name="maintenance"/>
-        <menu:menu-item name="events" category="maintenance" view="eventsList"/>
+        <menu:menu-category name="maintenance" defaultAuthorizationRole="ROLE_MAINTENANCE"/>
 
-        <menu:menu-item name="machineParts" category="basic" view="machinePartsList"/>
-        <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"/>
+        <menu:menu-item name="events" category="maintenance" view="eventsList" defaultAuthorizationRole="ROLE_MAINTENANCE"/>
+
+        <menu:menu-item name="machineParts" category="basic" view="machinePartsList" defaultAuthorizationRole="ROLE_MACHINE_PARTS"/>
+        <menu:menu-item name="faultTypes" category="basic" view="faultTypesList" defaultAuthorizationRole="ROLE_MAINTENANCE"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
 

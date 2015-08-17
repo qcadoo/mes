@@ -29,7 +29,7 @@
 	plugin="basic"
 	view="productDetails">
 	
-	<group name="technologies">
+	<group name="technologies" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY">
 		<bigButton name="showTechnologiesWithTechnologyGroup" icon="genealogyIcon24.png">
 			<script>
 				<![CDATA[
