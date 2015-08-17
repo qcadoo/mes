@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MachinePartForEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.model.api.Entity;
@@ -66,12 +65,12 @@ public class MachinePartForEventDetailsHooks {
 
         Entity plannedEvent = machinePartForEvent.getBelongsToField(MachinePartForEventFields.PLANNED_EVENT);
         if (maintenanceEvent != null) {
-            Entity context = maintenanceEvent.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
-            Entity factory = context.getBelongsToField(MaintenanceEventContextFields.FACTORY);
+            // Entity context = maintenanceEvent.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
+            Entity factory = maintenanceEvent.getBelongsToField(MaintenanceEventFields.FACTORY);
             setWarehouseLookup(view, factory);
         } else if (plannedEvent != null) {
-            Entity context = plannedEvent.getBelongsToField(PlannedEventFields.PLANNED_EVENT_CONTEXT);
-            Entity factory = context.getBelongsToField(MaintenanceEventContextFields.FACTORY);
+            // Entity context = plannedEvent.getBelongsToField(PlannedEventFields.PLANNED_EVENT_CONTEXT);
+            Entity factory = plannedEvent.getBelongsToField(PlannedEventFields.FACTORY);
             setWarehouseLookup(view, factory);
         }
     }
