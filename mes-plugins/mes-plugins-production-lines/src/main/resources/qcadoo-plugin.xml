@@ -108,7 +108,7 @@
         </model:model-hook>
 
         <menu:menu-item name="productionLines" category="companyStructure"
-                        view="productionLinesList"/>
+                        view="productionLinesList"  defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
 
         <view:view resource="view/productionLinesList.xml"/>
         <view:view resource="view/productionLineDetails.xml"/>

@@ -29,9 +29,11 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
+import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -39,11 +41,21 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class AssignmentToShiftDetailsListeners {
 
+    public static final String L_WINDOW = "window";
+
     public static final String L_FORM = "form";
+
+    public static final String L_COPY = "copy";
+
+    public static final String L_COPY_STAFF_ASSIGNMENT_TO_SHIFT = "copyStaffAssignmentToShift";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -58,8 +70,8 @@ public class AssignmentToShiftDetailsListeners {
         if (assignmentToShiftId != null) {
             Entity assignmentToShift = getAssignmentToShiftFromDB(assignmentToShiftId);
 
-            List<Entity> staffAssignmentToShifts = assignmentToShift
-                    .getHasManyField(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS);
+            List<Entity> staffAssignmentToShifts = Lists.newArrayList(assignmentToShift
+                    .getHasManyField(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS));
 
             Set<Long> selectedStaffAssignmentToShiftIds = staffAssignmentToShiftsGrid.getSelectedEntitiesIds();
 
@@ -73,15 +85,6 @@ public class AssignmentToShiftDetailsListeners {
 
             assignmentToShiftForm.setEntity(assignmentToShift);
         }
-    }
-
-    private Entity getAssignmentToShiftFromDB(final Long assignmentToShiftId) {
-        return getAssignmentToShiftDD().get(assignmentToShiftId);
-    }
-
-    private DataDefinition getAssignmentToShiftDD() {
-        return dataDefinitionService.get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
-                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT);
     }
 
     private Entity copyStaffAssignmentToShift(final Entity staffAssignmentToShift) {
@@ -112,6 +115,58 @@ public class AssignmentToShiftDetailsListeners {
         newStaffAssignmentToShift = newStaffAssignmentToShift.getDataDefinition().save(newStaffAssignmentToShift);
 
         return newStaffAssignmentToShift;
+    }
+
+    public void changeCopyStaffAssignmentToShiftButtonState(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity assignmentToShift = assignmentToShiftForm.getEntity();
+
+        changeCopyStaffAssignmentToShiftButtonState(view, assignmentToShift);
+    }
+
+    private void changeCopyStaffAssignmentToShiftButtonState(ViewDefinitionState view, Entity assignmentToShift) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+
+        RibbonGroup copyRibbonGroup = ribbon.getGroupByName(L_COPY);
+
+        RibbonActionItem copyStaffAssignmentToShiftRibbonActionItem = copyRibbonGroup
+                .getItemByName(L_COPY_STAFF_ASSIGNMENT_TO_SHIFT);
+
+        GridComponent staffAssignmentToShiftsGrid = (GridComponent) view
+                .getComponentByReference(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS);
+
+        String state = assignmentToShift.getStringField(AssignmentToShiftFields.STATE);
+
+        AssignmentToShiftState assignmentToShiftState = AssignmentToShiftState.parseString(state);
+
+        Long assignmentToShiftId = assignmentToShift.getId();
+
+        boolean isSaved = (assignmentToShiftId != null);
+
+        if (isSaved) {
+            assignmentToShift = getAssignmentToShiftFromDB(assignmentToShiftId);
+        }
+
+        boolean isExternalSynchronized = assignmentToShift.getBooleanField(AssignmentToShiftFields.EXTERNAL_SYNCHRONIZED);
+
+        boolean areSelected = !staffAssignmentToShiftsGrid.getSelectedEntities().isEmpty();
+
+        boolean isEnabled = isSaved ? isExternalSynchronized && assignmentToShiftState.isEditingAllowed() && areSelected : false;
+
+        copyStaffAssignmentToShiftRibbonActionItem.setEnabled(isEnabled);
+        copyStaffAssignmentToShiftRibbonActionItem.requestUpdate(true);
+    }
+
+    private Entity getAssignmentToShiftFromDB(final Long assignmentToShiftId) {
+        return getAssignmentToShiftDD().get(assignmentToShiftId);
+    }
+
+    private DataDefinition getAssignmentToShiftDD() {
+        return dataDefinitionService.get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
+                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT);
     }
 
     private Entity getStaffAssignmentToShiftFromDB(final Long staffAssignmentToShiftId) {

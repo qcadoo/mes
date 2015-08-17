@@ -86,7 +86,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         String shift = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_SHIFT, locale) + " "
                 + assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.SHIFT).getStringField(ShiftFields.NAME);
         String factory = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_FACTORY, locale) + " "
-                + assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.FACTORY).getStringField(FactoryFields.NUMBER);
+                + assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.FACTORY).getStringField(FactoryFields.NAME);
         String user = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_AUTHOR, locale) + " " + assignmentToShiftReport.getField(AssignmentToShiftReportFields.CREATE_USER).toString();
         String date = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_UPDATE_DATE, locale) + " "
                 + DateFormat.getDateInstance().format(assignmentToShiftReport.getField(AssignmentToShiftReportFields.UPDATE_DATE));
@@ -108,7 +108,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
         assignmentToShiftXlsStyleHelper.addMarginsAndStylesForAuthor(sheet, 1,
                 assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
-        assignmentToShiftXlsStyleHelper.addMarginsAndStylesForAuthor(sheet, 2,
+        assignmentToShiftXlsStyleHelper.addMarginsAndStylesForAuthorFactory(sheet, 2,
                 assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
     }
 

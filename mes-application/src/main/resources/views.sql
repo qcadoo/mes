@@ -39,6 +39,7 @@ SELECT * FROM update_sequence();
 DROP FUNCTION update_sequence();
 
 
+-- optymalizacja QCADOOCLS-4315
 DROP TABLE IF EXISTS materialflowresources_warehousestocklistdto;
 
 CREATE OR REPLACE VIEW materialflowresources_orderedquantity AS SELECT COALESCE(sum(orderedproduct.orderedquantity), 0::numeric) AS orderedquantity, resource.id as resource_id FROM materialflowresources_resource resource JOIN deliveries_orderedproduct orderedproduct ON (orderedproduct.product_id = resource.product_id ) JOIN deliveries_delivery delivery ON (orderedproduct.delivery_id = delivery.id AND delivery.active = true AND delivery.location_id = resource.location_id AND (delivery.state::text = ANY (ARRAY['01draft'::character varying::text, '02prepared'::character varying::text, '03duringCorrection'::character varying::text, '05approved'::character varying::text]))) group by resource.id;
@@ -46,3 +47,13 @@ CREATE OR REPLACE VIEW materialflowresources_orderedquantity AS SELECT COALESCE(
 CREATE OR REPLACE VIEW materialflowresources_warehousestocklistdto_internal AS SELECT row_number() OVER () AS id, resource.location_id, resource.product_id, sum(resource.quantity) AS quantity, COALESCE(orderedquantity.orderedquantity, 0::numeric) as orderedquantity, ( SELECT sum(warehouseminimalstate_warehouseminimumstate.minimumstate) AS sum FROM warehouseminimalstate_warehouseminimumstate WHERE warehouseminimalstate_warehouseminimumstate.product_id = resource.product_id AND warehouseminimalstate_warehouseminimumstate.location_id = resource.location_id) AS minimumstate FROM materialflowresources_resource resource left join materialflowresources_orderedquantity orderedquantity ON (orderedquantity.resource_id = resource.id) GROUP BY resource.location_id, resource.product_id, orderedquantity.orderedquantity;
 
 CREATE OR REPLACE VIEW materialflowresources_warehousestocklistdto AS select internal.*, location.number as locationNumber, location.name as locationName, product.number as productNumber, product.name as productName, product.unit as productUnit from materialflowresources_warehousestocklistdto_internal internal join materialflow_location location ON (location.id = internal.location_id) join basic_product product ON (product.id = internal.product_id);
+-- end
+
+--
+DROP TABLE IF EXISTS ordersupplies_materialrequirementcoveragedto;
+CREATE OR REPLACE VIEW ordersupplies_materialrequirementcoveragedto AS SELECT id, number, coveragetodate, actualdate, generateddate, generatedby FROM  ordersupplies_materialrequirementcoverage where saved = true;
+
+DROP TABLE IF EXISTS jointable_coverageorderhelper_orderdto;
+DROP TABLE IF EXISTS ordersupplies_orderdto;
+CREATE OR REPLACE VIEW ordersupplies_orderdto AS SELECT id, number, name, state FROM orders_order;
+CREATE TABLE jointable_coverageorderhelper_orderdto ( coverageorderhelper_id bigint NOT NULL, orderdto_id bigint NOT NULL, CONSTRAINT jointable_coverageorderhelper_orderdto_pkey PRIMARY KEY (coverageorderhelper_id, orderdto_id), CONSTRAINT jointable_coverageorderhelper_coverageorderhelper_fkey FOREIGN KEY (coverageorderhelper_id) REFERENCES ordersupplies_coverageorderhelper (id) DEFERRABLE);

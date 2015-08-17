@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="productDetails" modelName="product">
 
@@ -215,7 +215,7 @@
                        rows="6" hasBorders="false">
                 <layoutElement column="1" row="1" width="3" height="6">
                     <component type="grid" name="substituteComponents"
-                               source="#{form}.substituteComponents">
+                               source="#{form}.substituteComponents" defaultAuthorizationRole="ROLE_PRODUCTS">
                         <option type="column" name="number" fields="product"
                                 expression="#product['number']" link="true" width="50"/>
                         <option type="column" name="name" fields="product"

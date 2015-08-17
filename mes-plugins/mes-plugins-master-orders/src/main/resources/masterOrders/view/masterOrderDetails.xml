@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view name="masterOrderDetails" modelName="masterOrder"
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="masterOrderDetails" modelName="masterOrder"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -379,6 +379,9 @@
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
                 method="setDefaultMasterOrderNumber"/>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="calculateMasterOrderFields"/>
     </hooks>
 
 </view>

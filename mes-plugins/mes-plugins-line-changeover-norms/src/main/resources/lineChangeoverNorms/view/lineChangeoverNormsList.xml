@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view name="lineChangeoverNormsList" modelName="lineChangeoverNorms" menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="lineChangeoverNormsList" modelName="lineChangeoverNorms" menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
 		<ribbon>

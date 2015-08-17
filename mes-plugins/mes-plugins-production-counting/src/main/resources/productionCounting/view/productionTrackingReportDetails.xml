@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view name="productionTrackingReportDetails" modelName="productionTrackingReport"
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="productionTrackingReportDetails" modelName="productionTrackingReport"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 

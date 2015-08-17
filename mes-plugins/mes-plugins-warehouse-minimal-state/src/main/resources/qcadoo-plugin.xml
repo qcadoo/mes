@@ -75,7 +75,7 @@
         <view:view resource="view/warehouseMinimumStateAddMulti.xml"/>
 
         <menu:menu-item name="warehouseMinimumStateList" category="materialFlow"
-                        view="warehouseMinimumStateList"/>
+                        view="warehouseMinimumStateList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
        <!-- view extensions -->
 

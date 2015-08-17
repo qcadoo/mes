@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.constants.QcadooSecurityConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
@@ -37,8 +41,21 @@ public class ProductDetailsViewHooksT {
 
     private static final String L_FORM = "form";
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private SecurityService securityService;
+
     // TODO lupo fix when problem with navigation will be done
     public void updateRibbonState(final ViewDefinitionState view) {
+        Entity loggedUser = dataDefinitionService
+                .get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER).get(
+                        securityService.getCurrentUserId());
+
+        if (!securityService.hasRole(loggedUser, "ROLE_BASE_FUNCTIONALITY")) {
+            view.getComponentByReference("technologyTab").setVisible(false);
+        }
         FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity product = productForm.getEntity();
 

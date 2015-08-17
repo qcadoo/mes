@@ -28,11 +28,14 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
         xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:security="http://schema.qcadoo.org/modules/security"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xmlns:custom="http://schema.qcadoo.org/modules/custom"
         xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/security
+	   http://schema.qcadoo.org/modules/security.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
@@ -190,11 +193,11 @@
                                  method="checkIfDefaultSupplierIsUnique"/>
         </model:model-hook>
 
-        <menu:menu-category name="requirements"/>
+        <menu:menu-category name="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
 
-        <menu:menu-item name="deliveries" category="requirements"
+        <menu:menu-item name="deliveries" category="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"
                         view="deliveriesList"/>
-        <menu:menu-item name="supplyItems" category="requirements"
+        <menu:menu-item name="supplyItems" category="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"
                         view="supplyItems"/>
 
         <view:view resource="view/companyProductDetails.xml"/>

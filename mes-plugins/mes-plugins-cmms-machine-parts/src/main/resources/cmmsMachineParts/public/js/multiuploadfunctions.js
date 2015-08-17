@@ -27,7 +27,7 @@ $(function() {
 					{
 						
 						dataType : 'json',
-						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx)$/i,
+						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods)$/i,
 
 						submit : function(e, data) {
 							var locale = window.mainController
@@ -109,7 +109,7 @@ $(function() {
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
-						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx)$/i;
+						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
 							"machinePartMultiUploadLocale")

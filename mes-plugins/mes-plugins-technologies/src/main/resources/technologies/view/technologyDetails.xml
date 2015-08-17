@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="technologyDetails" modelName="technology">
 
@@ -321,13 +321,13 @@
 
         <windowTab name="treeTab">
             <component type="gridLayout" name="gridsLayout" columns="2"
-                       rows="8" hasBorders="false">
+                       rows="14" hasBorders="false">
                 <layoutElement column="1" row="1" height="1">
                     <component type="label" name="description">
                         <option type="labelStyle" value="text"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="2" height="7">
+                <layoutElement column="1" row="2" height="12">
                     <component type="tree" name="technologyTree" reference="technologyTree"
                                field="#{form}.operationComponents">
                         <dataType name="operation">
@@ -365,7 +365,7 @@
                                   method="setGridEditable"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="2" row="1" height="4">
+                <layoutElement column="2" row="1" height="3">
                     <component type="grid" name="outProducts" reference="outProducts"
                                source="#{technologyTree}.operationProductOutComponents"
                                defaultEnabled="false">
@@ -397,7 +397,7 @@
                         <option type="filtersDefaultVisible" value="false"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="2" row="5" height="4">
+                <layoutElement column="2" row="4" height="10">
                     <component type="grid" name="inProducts" reference="inProducts"
                                source="#{technologyTree}.operationProductInComponents"
                                defaultEnabled="false">

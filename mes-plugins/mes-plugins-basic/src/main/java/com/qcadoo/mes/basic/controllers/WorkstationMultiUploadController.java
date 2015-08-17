@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.3
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -55,40 +55,33 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.view.api.crud.CrudService;
 
-@Controller
-@RequestMapping("/basic")
-public class WorkstationMultiUploadController {
+@Controller @RequestMapping("/basic") public class WorkstationMultiUploadController {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkstationMultiUploadController.class);
 
-    @Autowired
-    private FileService fileService;
+    @Autowired private FileService fileService;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    @Autowired private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    private CrudService crudController;
+    @Autowired private CrudService crudController;
 
-    @Autowired
-    private NumberService numberService;
+    @Autowired private NumberService numberService;
 
-    @Autowired
-    private TranslationService translationService;
+    @Autowired private TranslationService translationService;
 
     private static final Integer L_SCALE = 2;
 
-    private static final List<String> exts = Lists.newArrayList("JPG", "JPEG", "PNG", "PDF", "DOC", "DOCX", "ODT", "XLS", "XLSX",
-            "ODS");
+    private static final List<String> exts = Lists
+            .newArrayList("JPG", "JPEG", "PNG", "PDF", "DOC", "DOCX", "XLS", "XLSX", "GIF", "DWG", "IPT", "IAM", "IDW", "ODT",
+                    "ODS");
 
-    @ResponseBody
-    @RequestMapping(value = "/multiUploadFiles", method = RequestMethod.POST)
-    public void upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+    @ResponseBody @RequestMapping(value = "/multiUploadFiles", method = RequestMethod.POST) public void upload(
+            MultipartHttpServletRequest request, HttpServletResponse response) {
         Long workstationId = Long.parseLong(request.getParameter("techId"));
-        Entity workstation = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(
-                workstationId);
-        DataDefinition attachmentDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_WORKSTATION_ATTACHMENT);
+        Entity workstation = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION)
+                .get(workstationId);
+        DataDefinition attachmentDD = dataDefinitionService
+                .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION_ATTACHMENT);
 
         Iterator<String> itr = request.getFileNames();
         MultipartFile mpf = null;
@@ -118,10 +111,10 @@ public class WorkstationMultiUploadController {
         }
     }
 
-    @RequestMapping(value = "/getAttachment.html", method = RequestMethod.GET)
-    public final void getAttachment(@RequestParam("id") final Long[] ids, HttpServletResponse response) {
-        DataDefinition attachmentDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_WORKSTATION_ATTACHMENT);
+    @RequestMapping(value = "/getAttachment.html", method = RequestMethod.GET) public final void getAttachment(
+            @RequestParam("id") final Long[] ids, HttpServletResponse response) {
+        DataDefinition attachmentDD = dataDefinitionService
+                .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION_ATTACHMENT);
         Entity attachment = attachmentDD.get(ids[0]);
         InputStream is = fileService.getInputStream(attachment.getStringField(WorkstationAttachmentFields.ATTACHMENT));
 
@@ -132,7 +125,8 @@ public class WorkstationMultiUploadController {
 
             response.setHeader("Content-disposition",
                     "inline; filename=" + attachment.getStringField(WorkstationAttachmentFields.NAME));
-            response.setContentType(fileService.getContentType(attachment.getStringField(WorkstationAttachmentFields.ATTACHMENT)));
+            response.setContentType(
+                    fileService.getContentType(attachment.getStringField(WorkstationAttachmentFields.ATTACHMENT)));
 
             int bytes = IOUtils.copy(is, response.getOutputStream());
             response.setContentLength(bytes);
