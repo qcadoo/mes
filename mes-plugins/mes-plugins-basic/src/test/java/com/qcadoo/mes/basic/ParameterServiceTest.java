@@ -42,6 +42,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
 
 public class ParameterServiceTest {
 
@@ -54,7 +55,7 @@ public class ParameterServiceTest {
     private DataDefinition parameterDD;
 
     @Mock
-    private SearchCriteriaBuilder searchCriteriaBuilder;
+    private SearchQueryBuilder searchQueryBuilder;
 
     @Before
     public final void init() {
@@ -63,10 +64,9 @@ public class ParameterServiceTest {
         ReflectionTestUtils.setField(parameterService, "dataDefinitionService", dataDefinitionService);
 
         given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PARAMETER)).willReturn(parameterDD);
-        given(parameterDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.setMaxResults(Mockito.anyInt())).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.setCacheable(Mockito.anyBoolean())).willReturn(searchCriteriaBuilder);
+        given(parameterDD.find(Mockito.anyString())).willReturn(searchQueryBuilder);
+        given(searchQueryBuilder.setMaxResults(Mockito.anyInt())).willReturn(searchQueryBuilder);
+        given(searchQueryBuilder.setCacheable(Mockito.anyBoolean())).willReturn(searchQueryBuilder);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ParameterServiceTest {
         // given
         Entity parameter = Mockito.mock(Entity.class);
         given(parameter.getId()).willReturn(13L);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(parameter);
+        given(searchQueryBuilder.uniqueResult()).willReturn(parameter);
 
         // when
         Long id = parameterService.getParameterId();
@@ -88,7 +88,7 @@ public class ParameterServiceTest {
         // given
         Entity parameter = Mockito.mock(Entity.class);
         given(parameter.getId()).willReturn(13L);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(parameter);
+        given(searchQueryBuilder.uniqueResult()).willReturn(parameter);
         given(parameter.isValid()).willReturn(true);
 
         // when
