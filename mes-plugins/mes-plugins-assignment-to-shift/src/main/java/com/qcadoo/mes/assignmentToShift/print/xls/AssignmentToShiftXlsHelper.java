@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.3
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -26,6 +26,7 @@ package com.qcadoo.mes.assignmentToShift.print.xls;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,12 +201,17 @@ public class AssignmentToShiftXlsHelper {
 
             Entity worker = staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.WORKER);
 
+            String occupationTypeName = staffAssignmentToShift
+                    .getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME);
+
             listOfWorkersWithOtherCases.append(worker.getStringField(StaffFields.NAME));
             listOfWorkersWithOtherCases.append(" ");
             listOfWorkersWithOtherCases.append(worker.getStringField(StaffFields.SURNAME));
-            listOfWorkersWithOtherCases.append(" - ");
-            listOfWorkersWithOtherCases.append(staffAssignmentToShift
-                    .getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME));
+
+            if (StringUtils.isNotEmpty(occupationTypeName)) {
+                listOfWorkersWithOtherCases.append(" - ");
+                listOfWorkersWithOtherCases.append(occupationTypeName);
+            }
 
             listOfWorkers.add(listOfWorkersWithOtherCases.toString());
 
