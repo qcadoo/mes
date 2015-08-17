@@ -161,6 +161,9 @@ public class EventHooks {
 
     private void toggleEnabledForFactory(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
             String contextField) {
+        if (eventEntity.getBelongsToField(contextField) == null) {
+            return;
+        }
         boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
         LookupComponent factoryLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
         factoryLookup.setEnabled(enabled);
@@ -168,6 +171,9 @@ public class EventHooks {
 
     private void toggleEnabledForDivision(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
             String contextField) {
+        if (eventEntity.getBelongsToField(contextField) == null) {
+            return;
+        }
         boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
         divisionLookup.setEnabled(enabled);
