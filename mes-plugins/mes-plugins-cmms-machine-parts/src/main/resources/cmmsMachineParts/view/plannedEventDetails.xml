@@ -31,7 +31,7 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <template name="standardFormTemplate" excludeItems="actions.saveNew"/>
 
 
             <group name="status">
@@ -535,7 +535,7 @@
                 <option type="correspondingComponent" value="form"/>
                 <option type="correspondingViewInModal" value="true"/>
 
-				<option type="fullscreen" value="true"/>
+                <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
@@ -576,36 +576,36 @@
                                 value="number,name,unit,warehouse,plannedQuantity,availableQuantity"/>
                     </component>
                 </layoutElement>
-	        </component>
-		</windowTab>
-		<windowTab name="attachmentsTab">
-               <component type="gridLayout" name="gridsLayout" columns="3"
+            </component>
+        </windowTab>
+        <windowTab name="attachmentsTab">
+            <component type="gridLayout" name="gridsLayout" columns="3"
                        rows="6" hasBorders="false">
-               <layoutElement column="1" row="1" height="6">
+                <layoutElement column="1" row="1" height="6">
 
-                   <component type="staticPage" name="multiUpload">
+                    <component type="staticPage" name="multiUpload">
                         <option type="page" value="cmmsMachineParts/multiUploadForPlannedEvent.jsp"/>
-                   </component>
-                   <component type="input" name="eventIdForMultiUpload"
+                    </component>
+                    <component type="input" name="eventIdForMultiUpload"
                                reference="eventIdForMultiUpload" defaultVisible="false">
                         <option type="alignment" value="right"/>
-                   </component>
-                   <component type="input" name="eventMultiUploadLocale"
+                    </component>
+                    <component type="input" name="eventMultiUploadLocale"
                                reference="eventMultiUploadLocale" defaultVisible="false">
-                   </component>
-               </layoutElement>
-               <layoutElement column="2" row="1" width="2" height="6">
-                   <component type="grid" name="attachments"
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="attachments"
                                reference="attachments" source="#{form}.attachments">
-                       <option type="column" name="attachment" fields="name"/>
-                       <option type="column" name="size" fields="size"/>
-                       <option type="order" column="attachment" direction="desc"/>
+                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
 
-                       <option type="deletable" value="true"/>
-                       <option type="fullscreen" value="true"/>
-                       <option type="multiselect" value="true"/>
-                   </component>
-               </layoutElement>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
     </component>
