@@ -28,20 +28,27 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <belongsTo name="maintenanceEvent" model="maintenanceEvent" required="true"/>
+        <belongsTo name="maintenanceEvent" model="maintenanceEvent"/>
+        <belongsTo name="plannedEvent" model="plannedEvent"/>
         <belongsTo name="machinePart" model="product" plugin="basic" required="true"/>
         <belongsTo name="warehouse" model="location" plugin="materialFlow" required="true"/>
 
+        <string name="machinePartName"/>
+        <string name="machinePartNumber"/>
+        <string name="machinePartUnit"/>
+        <string name="warehouseNumber"/>
         <decimal name="plannedQuantity" required="true">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
 
+
         <decimal name="availableQuantity" persistent="false"/>
 
     </fields>
     <hooks>
         <onView class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartForEventHooks" method="onView"/>
+        <!-- <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartForEventHooks" method="onSave"/> -->
     </hooks>
 </model>

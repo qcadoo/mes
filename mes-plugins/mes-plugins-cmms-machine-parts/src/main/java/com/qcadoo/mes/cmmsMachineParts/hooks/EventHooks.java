@@ -1,5 +1,9 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
@@ -9,6 +13,8 @@ import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -22,9 +28,6 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EventHooks {
@@ -48,10 +51,37 @@ public class EventHooks {
         setUpFaultTypeLookup(view);
         setFieldsRequired(view);
         fillDefaultFields(view);
-        fillDefaultFieldsFromContext(view);
-        toggleEnabledViewComponents(view);
+        generateNumber(view, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT, MaintenanceEventFields.NUMBER);
+        fillDefaultFieldsFromContext(view, MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
+        toggleEnabledViewComponents(view, MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
         disableFieldsForState(view);
         toggleOldSolutionsButton(view);
+    }
+
+    public void plannedEventBeforeRender(final ViewDefinitionState view) {
+        setEventCriteriaModifiers(view);
+        generateNumber(view, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT, PlannedEventFields.NUMBER);
+        fillDefaultFieldsFromContext(view, PlannedEventFields.PLANNED_EVENT_CONTEXT);
+        toggleEnabledViewComponents(view, PlannedEventFields.PLANNED_EVENT_CONTEXT);
+        toggleEnabledFromBasedOn(view);
+    }
+
+    public void toggleEnabledFromBasedOn(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+
+        String basedOn = event.getStringField(PlannedEventFields.BASED_ON);
+        FieldComponent date = (FieldComponent) view.getComponentByReference(PlannedEventFields.DATE);
+        FieldComponent counter = (FieldComponent) view.getComponentByReference(PlannedEventFields.COUNTER);
+        if (basedOn.equals(PlannedEventBasedOn.DATE.getStringValue())) {
+            date.setEnabled(true);
+            counter.setEnabled(false);
+            counter.setFieldValue(null);
+        } else if (basedOn.equals(PlannedEventBasedOn.COUNTER.getStringValue())) {
+            date.setEnabled(false);
+            date.setFieldValue(null);
+            counter.setEnabled(true);
+        }
     }
 
     private void disableFieldsForState(final ViewDefinitionState view) {
@@ -62,7 +92,8 @@ public class EventHooks {
                 || state.compareTo(MaintenanceEventState.PLANNED) == 0) {
             form.setFormEnabled(false);
             GridComponent staffWorkTimes = (GridComponent) view.getComponentByReference(MaintenanceEventFields.STAFF_WORK_TIMES);
-            GridComponent machineParts = (GridComponent) view.getComponentByReference(MaintenanceEventFields.MACHINE_PARTS_FOR_EVENT);
+            GridComponent machineParts = (GridComponent) view
+                    .getComponentByReference(MaintenanceEventFields.MACHINE_PARTS_FOR_EVENT);
             staffWorkTimes.setEnabled(false);
             machineParts.setEnabled(false);
         }
@@ -80,19 +111,22 @@ public class EventHooks {
             faultType.setEnabled(false);
         }
 
-        if (numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, MaintenanceEventFields.NUMBER)) {
-            numberGeneratorService.generateAndInsertNumber(view, CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                    CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT, L_FORM, MaintenanceEventFields.NUMBER);
+    }
+
+    private void generateNumber(final ViewDefinitionState view, String modelName, String fieldName) {
+        if (numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, fieldName)) {
+            numberGeneratorService.generateAndInsertNumber(view, CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, modelName, L_FORM,
+                    fieldName);
         }
     }
 
-    private void fillDefaultFieldsFromContext(final ViewDefinitionState view) {
+    private void fillDefaultFieldsFromContext(final ViewDefinitionState view, String contextField) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if(form.getEntityId() == null) {
+        if (form.getEntityId() == null) {
             Entity event = form.getEntity();
-            Entity eventContext = event.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
+            Entity eventContext = event.getBelongsToField(contextField);
 
-            if(eventContext != null) {
+            if (eventContext != null) {
                 Entity factoryEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.FACTORY);
                 if (factoryEntity != null) {
                     FieldComponent factoryField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
@@ -110,13 +144,13 @@ public class EventHooks {
         }
     }
 
-    private void toggleEnabledViewComponents(final ViewDefinitionState view) {
+    private void toggleEnabledViewComponents(final ViewDefinitionState view, String contextField) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity eventEntity = form.getPersistedEntityWithIncludedFormValues();
 
         toggleEnabledForWorkstation(view, form, eventEntity);
-        toggleEnabledForFactory(view, form, eventEntity);
-        toggleEnabledForDivision(view, form, eventEntity);
+        toggleEnabledForFactory(view, form, eventEntity, contextField);
+        toggleEnabledForDivision(view, form, eventEntity, contextField);
     }
 
     private void toggleEnabledForWorkstation(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
@@ -125,14 +159,22 @@ public class EventHooks {
         workstation.setEnabled(enabled);
     }
 
-    private void toggleEnabledForFactory(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
-        boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT).getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
+    private void toggleEnabledForFactory(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
+            String contextField) {
+        if (eventEntity.getBelongsToField(contextField) == null) {
+            return;
+        }
+        boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
         LookupComponent factoryLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
         factoryLookup.setEnabled(enabled);
     }
 
-    private void toggleEnabledForDivision(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
-        boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT).getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
+    private void toggleEnabledForDivision(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
+            String contextField) {
+        if (eventEntity.getBelongsToField(contextField) == null) {
+            return;
+        }
+        boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
         divisionLookup.setEnabled(enabled);
     }
@@ -223,6 +265,6 @@ public class EventHooks {
     }
 
     public final void onBeforeRenderListView(final ViewDefinitionState view) {
-           maintenanceEventContextService.beforeRenderListView(view);
+        maintenanceEventContextService.beforeRenderListView(view);
     }
 }
