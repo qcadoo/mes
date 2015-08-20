@@ -20,6 +20,8 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class PlannedEventDetailsHooks {
@@ -42,6 +44,15 @@ public class PlannedEventDetailsHooks {
         Entity plannedEvent = form.getEntity();
         FieldComponent type = (FieldComponent) view.getComponentByReference(PlannedEventFields.TYPE);
         type.setEnabled(plannedEvent.getId() == null);
+        setCriteriaModifiers(view, plannedEvent);
+    }
+
+    private void setCriteriaModifiers(final ViewDefinitionState view, final Entity plannedEvent) {
+        LookupComponent relatedEventLookup = (LookupComponent) view.getComponentByReference("relatedEventLookup");
+        FilterValueHolder filter = relatedEventLookup.getFilterValue();
+        filter.put(PlannedEventFields.NUMBER, plannedEvent.getStringField(PlannedEventFields.NUMBER));
+        relatedEventLookup.setFilterValue(filter);
+
     }
 
     public void toggleFieldsVisible(final ViewDefinitionState view) {

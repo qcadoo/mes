@@ -93,6 +93,12 @@
 
         <hasMany name="attachments" model="plannedEventAttachment" joinField="plannedEvent" cascade="delete"/>
 
+
+        <manyToMany name="relatedEvents" joinField="relatedEvents" columnName="relatedEvent" model="plannedEvent"
+                    cascade="nullify"
+                    copyable="false"/>
+
+
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventValidators"

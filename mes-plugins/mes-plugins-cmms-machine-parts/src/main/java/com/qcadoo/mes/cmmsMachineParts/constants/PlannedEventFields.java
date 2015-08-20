@@ -68,6 +68,10 @@ public class PlannedEventFields {
 
     public static final String ATTACHMENTS = "attachments";
 
+    public static final String RELATED_EVENTS = "relatedEvents";
+
+    public static final String RELATED_EVENTS_TAB = "relatedEventsTab";
+
     private PlannedEventFields() {
     }
 
