@@ -41,7 +41,7 @@ public class PlannedEventHooks {
             event.setField(fieldName, null);
         }
 
-        for (String fieldName : hasManyToClear) {
+        /*for (String fieldName : hasManyToClear) {
             List<Entity> fields = event.getHasManyField(fieldName);
 
             if (!fields.isEmpty()) {
@@ -50,7 +50,7 @@ public class PlannedEventHooks {
                 dataDefinition.delete(ids);
                 event.setField(fieldName, null);
             }
-        }
+        }*/
 
     }
 }

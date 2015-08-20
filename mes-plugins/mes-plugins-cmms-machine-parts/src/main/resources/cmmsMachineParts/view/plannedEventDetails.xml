@@ -514,6 +514,69 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="relatedEventsTab" reference="relatedEventsTab">
+            <component type="lookup" name="relatedEventLookup" reference="relatedEventLookup"
+                       field="#{form}.relatedEvents" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                <option type="column" name="type" fields="type"/>
+
+                <option type="searchable" value="number,type"/>
+                <option type="orderable" value="number,type"/>
+
+                <option type="expression" value="#number"/>
+                <option type="fieldCode" value="number"/>
+
+                <option type="multiselect" value="true"/>
+                <criteriaModifier
+                        class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.PlannedEventsCriteriaModifiers"
+                        method="filterRealizedAndCancelledEvents"/>
+            </component>
+            <component type="grid" name="relatedEvents" reference="relatedEvents"
+                       source="#{form}.relatedEvents">
+                <script>
+                    <![CDATA[
+                                var that = this;
+                                this.onDeleteButtonClicked = function () {
+                                    var selectedEntities = #{relatedEvents}.getValue().content.selectedEntities;
+
+                                    if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
+                                        #{relatedEvents}.fireEvent(null,'removeSelectedEntites',[selectedEntities]);
+                                    }
+                                };
+                            ]]>
+                </script>
+                <option type="column" name="number" fields="number" link="true"/>
+                <option type="column" name="type" fields="type" link="true"/>
+                <option type="column" name="description" fields="description" link="true"/>
+                <option type="column" name="ownerName" fields="ownerName"/>
+                <option type="column" name="state" fields="state"/>
+
+                <option type="order" column="number" direction="desc"/>
+
+                <option type="searchable" value="number,type,description,ownerName,state"/>
+                <option type="orderable" value="number,type,description,ownerName,state"/>
+
+                <option type="weakRelation" value="true"/>
+                <option type="correspondingLookup" value="relatedEventLookup"/>
+
+                <option type="correspondingView" value="cmmsMachineParts/plannedEventDetails"/>
+                <option type="correspondingComponent" value="form"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="creatable" value="true"/>
+
+                <option type="fixedHeight" value="true"/>
+
+                <listener event="addExistingEntity"
+                          method="onAddExistingRelatedEvent"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
+                <listener event="removeSelectedEntites"
+                          method="onRemoveRelatedEvents"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
+            </component>
+        </windowTab>
         <windowTab name="realizationTab">
             <component type="grid" name="realizations" reference="realizations"
                        source="#{form}.realizations">
