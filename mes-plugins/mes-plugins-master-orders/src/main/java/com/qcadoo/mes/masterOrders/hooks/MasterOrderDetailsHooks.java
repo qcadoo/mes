@@ -298,7 +298,7 @@ public class MasterOrderDetailsHooks {
 
         BigDecimal doneQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersDoneQuantities(masterOrder, product);
 
-        producedOrderQuantityField.setFieldValue(doneQuantity);
+        producedOrderQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(doneQuantity,0));
 
         producedOrderQuantityField.requestComponentUpdateState();
     }
@@ -313,7 +313,7 @@ public class MasterOrderDetailsHooks {
 
         BigDecimal quantitiesSum = masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, product);
 
-        cumulatedOrderQuantityField.setFieldValue(quantitiesSum);
+        cumulatedOrderQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(quantitiesSum,0));
 
         cumulatedOrderQuantityField.requestComponentUpdateState();
     }
