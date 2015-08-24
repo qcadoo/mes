@@ -190,3 +190,9 @@ select
 	left join masterOrders_masterOrder  master on (o.masterorder_id = master.id)
 	left join basic_division division on (tech.division_id = division.id)
 -- end
+--
+-- versionable
+CREATE OR REPLACE FUNCTION update_version() RETURNS VOID AS $$ DECLARE row record;  BEGIN FOR row IN SELECT tablename FROM pg_tables p INNER  JOIN information_schema.columns c on p.tablename = c.table_name WHERE c.table_schema = 'public' and p.schemaname = 'public' and c.column_name = 'id' and data_type = 'bigint'  LOOP  EXECUTE 'ALTER TABLE ' || quote_ident(row.tablename) || ' ADD entityVersion BIGINT DEFAULT 0;';  END LOOP;  END;  $$ LANGUAGE 'plpgsql';
+SELECT * FROM update_version();
+DROP FUNCTION update_version();
+--end
