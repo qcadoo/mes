@@ -231,8 +231,8 @@
 			
 			<option type="order" column="dateFrom" direction="desc" />
 			
-			<option type="searchable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace,productionLine" />
-			<option type="orderable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLine,productionLinePlace,productionLine" />
+			<option type="searchable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine" />
+			<option type="orderable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine" />
 			
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />

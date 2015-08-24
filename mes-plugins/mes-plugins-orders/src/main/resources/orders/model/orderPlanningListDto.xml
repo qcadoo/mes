@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="orderPlanningListDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="orderPlanningListDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
@@ -38,7 +38,7 @@
         <string name="technologyNumber" />
         <string name="productNumber" />
         <decimal name="plannedQuantity" />
-        <dictionary name="unit" dictionary="units" />
+        <string name="unit" />
         <string name="externalNumber" />
         <boolean name="externalSynchronized" default="true" />
         <string name="productionLineNumber" />

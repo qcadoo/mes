@@ -181,7 +181,7 @@ drop table orders_orderPlanningListDto;
 CREATE SEQUENCE orders_orderplanninglistdto_id_seq;
 create or replace view orders_orderPlanningListDto as
 select
-	o.id, o.number, o.name, o.dateFrom, o.dateTo, o.startDate, o.finishDate, o.state, o.externalNumber, o.externalSynchronized, o.isSubcontracted, o.plannedQuantity, o.workPlanDelivered,
+	o.id, o.active, o.number, o.name, o.dateFrom, o.dateTo, o.startDate, o.finishDate, o.state, o.externalNumber, o.externalSynchronized, o.isSubcontracted, o.plannedQuantity, o.workPlanDelivered,
 	product.number as productNumber, tech.number as technologyNumber, product.unit, line.number as productionLineNumber, master.number as masterOrderNumber, division.name as divisionName
 	from orders_order o
 	join basic_product product on (o.product_id = product.id)
