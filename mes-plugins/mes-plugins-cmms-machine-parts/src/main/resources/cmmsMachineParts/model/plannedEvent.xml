@@ -93,6 +93,9 @@
 
         <hasMany name="attachments" model="plannedEventAttachment" joinField="plannedEvent" cascade="delete"/>
 
+        <hasMany name="documents" model="document" plugin="materialFlowResources" joinField="plannedEvent"
+                 cascade="nullify"/>
+
         <manyToMany name="relatedEvents" joinField="relatedEvents" columnName="relatedEvent" model="plannedEvent"
                     cascade="nullify"
                     copyable="false"/>
