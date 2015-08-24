@@ -13,6 +13,8 @@ public class CmmsMachinePartsConstants {
 
     public static final String MODEL_PLANNED_EVENT_REALIZATION = "plannedEventRealization";
 
+    public static final String MODEL_PLANNED_EVENT_STATE_CHANGE = "plannedEventStateChange";
+
     public static final String MODEL_ACTION = "action";
 
     public static final String MODEL_PLANNED_EVENT_ATTACHMENT = "plannedEventAttachment";

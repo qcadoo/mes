@@ -21,27 +21,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.states.constants;
+package com.qcadoo.mes.cmmsMachineParts.states;
 
-import com.qcadoo.mes.states.aop.RunForStateTransitionAspect;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public final class PlannedEventStateStringValues {
+import com.qcadoo.mes.cmmsMachineParts.states.aop.PlannedEventStateChangeAspect;
+import com.qcadoo.mes.states.service.StateChangeService;
+import com.qcadoo.mes.states.service.client.AbstractStateChangeViewClient;
 
-    public static final String NEW = "01new";
+@Service
+public class PlannedEventStateChangeViewClient extends AbstractStateChangeViewClient {
 
-    public static final String IN_PLAN = "02inPlan";
+    @Autowired
+    private PlannedEventStateChangeAspect plannedEventStateChangeAspect;
 
-    public static final String PLANNED = "03planned";
-
-    public static final String IN_REALIZATION = "04inRealization";
-
-    public static final String REALIZED = "05realized";
-
-    public static final String CANCELED = "06canceled";
-
-    public static final String WILDCARD_STATE = RunForStateTransitionAspect.WILDCARD_STATE;
-
-    private PlannedEventStateStringValues() {
+    @Override
+    protected StateChangeService getStateChangeService() {
+        return plannedEventStateChangeAspect;
     }
 
 }
