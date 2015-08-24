@@ -2,9 +2,11 @@ package com.qcadoo.mes.cmmsMachineParts.states.aop.listeners;
 
 import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 
+import com.qcadoo.mes.cmmsMachineParts.states.EventDocumentsService;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
@@ -22,6 +24,9 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 @Configurable
 @RunIfEnabled(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER)
 public class PlannedEventStateChangeListenerAspect extends AbstractStateListenerAspect {
+
+    @Autowired
+    private EventDocumentsService eventDocumentsService;
 
     @Pointcut(PlannedEventStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
@@ -47,9 +52,10 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
     }
 
     @RunInPhase(PlannedEventStateChangePhase.DEFAULT)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.CANCELED)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.REALIZED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void createDocumentsForMachineParts(final StateChangeContext stateChangeContext, final int phase) {
+        eventDocumentsService.createDocumentsForMachineParts(stateChangeContext);
     }
 
     @RunInPhase(PlannedEventStateChangePhase.DEFAULT)
