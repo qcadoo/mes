@@ -72,6 +72,8 @@ public class PlannedEventFields {
 
     public static final String RELATED_EVENTS_TAB = "relatedEventsTab";
 
+    public static final String REALIZATIONS = "realizations";
+
     private PlannedEventFields() {
     }
 
