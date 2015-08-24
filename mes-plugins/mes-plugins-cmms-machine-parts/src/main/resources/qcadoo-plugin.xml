@@ -187,6 +187,11 @@
                              model="maintenanceEvent"/>
         </model:model-field>
 
+        <model:model-field plugin="materialFlowResources" model="document">
+            <model:belongsTo name="plannedEvent" plugin="cmmsMachineParts"
+                             model="plannedEvent"/>
+        </model:model-field>
+
         <model:model-field model="shift" plugin="basic">
             <model:hasMany name="maintenanceEventStateChanges" model="maintenanceEventStateChange" joinField="shift"
                            plugin="cmmsMachineParts"
@@ -343,6 +348,12 @@
                            cascade="nullify"/>
         </model:model-field>
 
+        <model:model-hook plugin="materialFlowResources" model="document">
+            <model:validatesWith
+                    class="com.qcadoo.mes.cmmsMachineParts.validators.DocumentValidatorsCMP"
+                    method="checkSelectedEvents" />
+        </model:model-hook>
+
         <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"
                             component="form" event="redirectToWarehouseStateList"
                             class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"
@@ -357,7 +368,12 @@
                             method="clearMaintenanceEvent"/>
         <view:view-grid-column plugin="materialFlowResources" view="documentsList" component="grid">
             <view:column name="maintenanceEvent" fields="maintenanceEvent" expression="#maintenanceEvent['number']"
-                         searchable="true" orderable="true"/>
+                         searchable="true" orderable="true"  width="50"/>
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="materialFlowResources" view="documentsList" component="grid">
+            <view:column name="plannedEvent" fields="plannedEvent" expression="#plannedEvent['number']"
+                         searchable="true" orderable="true"  width="67"/>
         </view:view-grid-column>
 
         <view:view-grid-column plugin="materialFlowResources"
@@ -366,6 +382,14 @@
                          expression="#document['maintenanceEvent']?.get('number')" orderable="true"
                          searchable="true" width="45"/>
         </view:view-grid-column>
+
+        <view:view-grid-column plugin="materialFlowResources"
+                               view="documentPositionsList" component="grid">
+            <view:column name="plannedEvent" fields="document"
+                         expression="#document['plannedEvent']?.get('number')" orderable="true"
+                         searchable="true" width="52"/>
+        </view:view-grid-column>
+
         <view:resource uri="public/**/*"/>
 
         <custom:custom
