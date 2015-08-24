@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MachinePartForEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -52,5 +54,34 @@ public class MachinePartForEventDetailsHooks {
             }
         }
 
+    }
+
+    public void fillWarehouse(final ViewDefinitionState view) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity machinePartForEvent = form.getPersistedEntityWithIncludedFormValues();
+
+        Entity maintenanceEvent = machinePartForEvent.getBelongsToField(MachinePartForEventFields.MAINTENANCE_EVENT);
+
+        Entity plannedEvent = machinePartForEvent.getBelongsToField(MachinePartForEventFields.PLANNED_EVENT);
+        if (maintenanceEvent != null) {
+            // Entity context = maintenanceEvent.getBelongsToField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
+            Entity factory = maintenanceEvent.getBelongsToField(MaintenanceEventFields.FACTORY);
+            setWarehouseLookup(view, factory);
+        } else if (plannedEvent != null) {
+            // Entity context = plannedEvent.getBelongsToField(PlannedEventFields.PLANNED_EVENT_CONTEXT);
+            Entity factory = plannedEvent.getBelongsToField(PlannedEventFields.FACTORY);
+            setWarehouseLookup(view, factory);
+        }
+    }
+
+    private void setWarehouseLookup(final ViewDefinitionState view, final Entity factory) {
+        if (factory != null) {
+            LookupComponent warehouseLookup = (LookupComponent) view.getComponentByReference(MachinePartForEventFields.WAREHOUSE);
+            Entity warehouse = factory.getBelongsToField("warehouse");
+            if (warehouse != null && warehouseLookup.getFieldValue() == null) {
+                warehouseLookup.setFieldValue(warehouse.getId());
+            }
+        }
     }
 }

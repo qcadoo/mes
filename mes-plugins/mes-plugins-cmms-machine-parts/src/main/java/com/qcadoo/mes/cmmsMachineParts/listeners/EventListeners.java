@@ -1,5 +1,17 @@
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
@@ -9,6 +21,7 @@ import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.hooks.FactoryStructureForEventHooks;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.mes.productionLines.constants.FactoryStructureElementFields;
@@ -27,17 +40,6 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class EventListeners {
@@ -155,7 +157,7 @@ public class EventListeners {
 
     private void clearFieldIfExists(ViewDefinitionState view, String reference) {
         FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
-        if(fieldComponent!= null) {
+        if (fieldComponent != null) {
             fieldComponent.setFieldValue(null);
             fieldComponent.requestComponentUpdateState();
         }
@@ -196,8 +198,11 @@ public class EventListeners {
         if (field.equals(MaintenanceEventFields.TYPE)) {
             FieldComponent type = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.TYPE);
             type.setFieldValue(value);
-        } else if(field.equals(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT)){
+        } else if (field.equals(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT)) {
             FieldComponent type = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
+            type.setFieldValue(value);
+        } else if (field.equals(PlannedEventFields.PLANNED_EVENT_CONTEXT)) {
+            FieldComponent type = (FieldComponent) view.getComponentByReference(PlannedEventFields.PLANNED_EVENT_CONTEXT);
             type.setFieldValue(value);
         }
     }

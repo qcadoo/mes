@@ -57,6 +57,7 @@ import com.qcadoo.report.api.xls.XlsDocumentService;
 public class AssignmentToShiftXlsService extends XlsDocumentService {
 
     public static final String L_OCCUPATION_TYPE = "occupationType";
+
     @Autowired
     private TranslationService translationService;
 
@@ -87,9 +88,12 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 + assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.SHIFT).getStringField(ShiftFields.NAME);
         String factory = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_FACTORY, locale) + " "
                 + assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.FACTORY).getStringField(FactoryFields.NAME);
-        String user = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_AUTHOR, locale) + " " + assignmentToShiftReport.getField(AssignmentToShiftReportFields.CREATE_USER).toString();
-        String date = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_UPDATE_DATE, locale) + " "
-                + DateFormat.getDateInstance().format(assignmentToShiftReport.getField(AssignmentToShiftReportFields.UPDATE_DATE));
+        String user = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_AUTHOR, locale) + " "
+                + assignmentToShiftReport.getField(AssignmentToShiftReportFields.CREATE_USER).toString();
+        String date = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_UPDATE_DATE, locale)
+                + " "
+                + DateFormat.getDateInstance()
+                        .format(assignmentToShiftReport.getField(AssignmentToShiftReportFields.UPDATE_DATE));
 
         HSSFCell headerAuthorLineCell0 = headerAuthorLine.createCell(0);
         headerAuthorLineCell0.setCellValue(shift);
@@ -118,7 +122,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         if (days != null) {
             HSSFRow headerAssignmentToShift = sheet.createRow(4);
 
-            String occupationType = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_OCCUPATIONTYPE, locale);
+            String occupationType = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_OCCUPATIONTYPE,
+                    locale);
 
             HSSFCell cell0 = headerAssignmentToShift.createCell(0);
             cell0.setCellValue(occupationType);
@@ -164,13 +169,11 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
             sheet.autoSizeColumn(0);
         }
-
     }
 
     private int fillColumnWithStaffForWorkOnLine(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
-                                                 final List<DateTime> days, final List<Entity> productionLines, final Entity dictionaryItem) {
+            final List<DateTime> days, final List<Entity> productionLines, final Entity dictionaryItem) {
         if ((assignmentToShiftReport != null) && (days != null) && (productionLines != null)) {
-
             for (Entity productionLine : productionLines) {
                 int rowNumFromLastSection = rowNum;
                 int numberOfColumnsForWorkers = getNumberOfRowsForWorkers(assignmentToShiftReport, days, productionLine,
@@ -211,14 +214,14 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 for (DateTime day : days) {
                     Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                             assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.SHIFT),
-                            assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY),
-                            day.toDate());
+                            assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
 
                     if (assignmentToShift == null) {
                         columnNumber += 3;
 
                         continue;
                     }
+
                     List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
                             dictionaryItem.getStringField(DictionaryItemFields.NAME), productionLine);
 
@@ -258,20 +261,19 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
                 }
             }
-
         }
+
         return rowNum;
     }
 
     private int getNumberOfRowsForWorkers(final Entity assignmentToShiftReport, final List<DateTime> days,
-                                          final Entity productionLine, final Entity dictionaryItem) {
+            final Entity productionLine, final Entity dictionaryItem) {
         int numberOfWorkers = 0;
 
         for (DateTime day : days) {
             Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                     assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.SHIFT),
-                    assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY),
-                    day.toDate());
+                    assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
 
             List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
                     dictionaryItem.getStringField(DictionaryItemFields.NAME), productionLine);
@@ -287,21 +289,21 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     }
 
     private int getNumberOfRowsForWorkersForOtherTypes(final Entity assignmentToShiftReport, final List<DateTime> days,
-                                                       final Entity dictionaryItem) {
+            final Entity dictionaryItem) {
         int numberOfWorkers = 0;
 
         for (DateTime day : days) {
             Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                     assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.SHIFT),
-                    assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY),
-                    day.toDate());
+                    assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
 
             List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
                     dictionaryItem.getStringField(DictionaryItemFields.NAME), null);
 
             List<String> workers = Lists.newArrayList();
 
-            if (OccupationType.OTHER_CASE.getStringValue().equals(dictionaryItem.getStringField(DictionaryItemFields.TECHNICAL_CODE))) {
+            if (OccupationType.OTHER_CASE.getStringValue().equals(
+                    dictionaryItem.getStringField(DictionaryItemFields.TECHNICAL_CODE))) {
                 workers = assignmentToShiftXlsHelper.getListOfWorkerWithOtherCases(staffs);
             } else {
                 workers = assignmentToShiftXlsHelper.getListOfWorker(staffs);
@@ -316,9 +318,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     }
 
     private int fillColumnWithStaffForOtherTypes(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
-                                                 final List<DateTime> days, final Entity dictionaryItem) {
+            final List<DateTime> days, final Entity dictionaryItem) {
         if ((assignmentToShiftReport != null) && (days != null) && (dictionaryItem != null)) {
-
             int rowNumFromLastSection = rowNum;
 
             int numberOfColumnsForWorkers = getNumberOfRowsForWorkersForOtherTypes(assignmentToShiftReport, days, dictionaryItem);
@@ -357,12 +358,14 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
                     continue;
                 }
+
                 List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
                         dictionaryItem.getStringField(DictionaryItemFields.NAME), null);
 
                 List<String> workers = Lists.newArrayList();
 
-                if (OccupationType.OTHER_CASE.getStringValue().equals(dictionaryItem.getStringField(DictionaryItemFields.TECHNICAL_CODE))) {
+                if (OccupationType.OTHER_CASE.getStringValue().equals(
+                        dictionaryItem.getStringField(DictionaryItemFields.TECHNICAL_CODE))) {
                     workers = assignmentToShiftXlsHelper.getListOfWorkerWithOtherCases(staffs);
                 } else {
                     workers = assignmentToShiftXlsHelper.getListOfWorker(staffs);
@@ -409,7 +412,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
         return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY_ITEM)
                 .find().add(SearchRestrictions.belongsTo(DictionaryItemFields.DICTIONARY, occupationTypeDictionary))
-                .add(SearchRestrictions.eq(DictionaryItemFields.TECHNICAL_CODE, OccupationType.WORK_ON_LINE.getStringValue())).uniqueResult();
+                .add(SearchRestrictions.eq(DictionaryItemFields.TECHNICAL_CODE, OccupationType.WORK_ON_LINE.getStringValue()))
+                .uniqueResult();
     }
 
     private Entity getDictionaryItemWithOtherCase() {
@@ -419,7 +423,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
         return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY_ITEM)
                 .find().add(SearchRestrictions.belongsTo(DictionaryItemFields.DICTIONARY, occupationTypeDictionary))
-                .add(SearchRestrictions.eq(DictionaryItemFields.TECHNICAL_CODE, OccupationType.OTHER_CASE.getStringValue())).uniqueResult();
+                .add(SearchRestrictions.eq(DictionaryItemFields.TECHNICAL_CODE, OccupationType.OTHER_CASE.getStringValue()))
+                .uniqueResult();
     }
 
 }

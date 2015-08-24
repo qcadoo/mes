@@ -46,7 +46,11 @@ public class FaultTypesService {
             return checkIfFaultTypeAppliesToEntity(faultType, entity.getBelongsToField(WorkstationFields.WORKSTATION_TYPE),
                     FaultTypeFields.WORKSTATION_TYPES);
         }
-        return faultType.getId() == getDefaultFaultType().getId();
+        Entity defaultType = getDefaultFaultType();
+        if (defaultType == null) {
+            return false;
+        }
+        return faultType.getId() == defaultType.getId();
     }
 
     public boolean checkIfFaultTypeAppliesToEntity(final Entity faultType, final Entity entity, final String fieldToTest) {

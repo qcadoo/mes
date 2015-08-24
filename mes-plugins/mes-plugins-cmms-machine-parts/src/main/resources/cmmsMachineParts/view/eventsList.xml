@@ -36,7 +36,7 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									#{form}.performEvent('confirmContext', []);
+									#{form}.performEvent('confirmContext', ['maintenanceEvent']);
 								}
 							});
 						]]>
@@ -107,8 +107,8 @@
                             <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange"
-								method="factoryChanged"
-								class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                                      method="factoryChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
                         </component>
                     </layoutElement>
 
@@ -124,24 +124,24 @@
                             <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange"
-								method="divisionChanged"
-								class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                                      method="divisionChanged"
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
 
                             <criteriaModifier
-								class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
-								method="selectDivision"/>
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectDivision"/>
                         </component>
                     </layoutElement>
 
-					<layoutElement column="2" row="1">
-						<component type="hidden" name="confirmed" field="confirmed"
-								   reference="confirmed"/>
-						<component type="hidden" name="generated" field="generated"
-								   reference="generated"/>
-					</layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="hidden" name="confirmed" field="confirmed"
+                                   reference="confirmed"/>
+                        <component type="hidden" name="generated" field="generated"
+                                   reference="generated"/>
+                    </layoutElement>
                 </component>
                 <listener event="confirmContext" method="confirmContext"
-                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners" />
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
             </component>
         </windowTab>
 
@@ -324,18 +324,19 @@
                 <option type="correspondingView" value="cmmsMachineParts/maintenanceEventDetails"/>
                 <option type="correspondingComponent" value="form"/>
 
-				<option type="order" column="number" direction="desc"/>
-				<option type="fullscreen" value="true"/>
+                <option type="order" column="number" direction="desc"/>
+                <option type="fullscreen" value="true"/>
 
                 <listener event="changeState"
                           class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
                           method="changeState"/>
 
-				<listener event="onSelectedEntityChange"
-						  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
-						  method="onSelectedEventChange"/>
+                <listener event="onSelectedEntityChange"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
+                          method="onSelectedEventChange"/>
 
-				<criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP" method="showEventsFromContext" />
+                <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                  method="showEventsFromContext"/>
             </component>
         </windowTab>
 
@@ -347,9 +348,9 @@
 
     </component>
 
-	<hooks>
-		<beforeRender
-				class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
-				method="onBeforeRenderListView"/>
-	</hooks>
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
+                method="onBeforeRenderListView"/>
+    </hooks>
 </view>

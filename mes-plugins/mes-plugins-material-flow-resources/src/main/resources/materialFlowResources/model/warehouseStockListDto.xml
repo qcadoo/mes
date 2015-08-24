@@ -37,6 +37,7 @@
         <string name="productUnit" />
         <decimal name="minimumState" />
         <decimal name="orderedQuantity" />
+        <integer name="product_id" />
     </fields>
     <hooks>
     </hooks>
