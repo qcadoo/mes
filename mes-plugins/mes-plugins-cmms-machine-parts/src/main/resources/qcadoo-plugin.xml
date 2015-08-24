@@ -182,6 +182,11 @@
                              model="maintenanceEventStateChange"/>
         </model:model-field>
 
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="plannedEventStateChange" plugin="cmmsMachineParts"
+                             model="plannedEventStateChange"/>
+        </model:model-field>
+
         <model:model-field plugin="materialFlowResources" model="document">
             <model:belongsTo name="maintenanceEvent" plugin="cmmsMachineParts"
                              model="maintenanceEvent"/>
