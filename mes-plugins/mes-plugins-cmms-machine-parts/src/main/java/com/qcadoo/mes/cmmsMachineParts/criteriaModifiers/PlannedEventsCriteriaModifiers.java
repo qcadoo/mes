@@ -16,7 +16,7 @@ public class PlannedEventsCriteriaModifiers {
             scb.add(SearchRestrictions.ne(PlannedEventFields.NUMBER, filter.getString(PlannedEventFields.NUMBER)));
         }
         scb.add(SearchRestrictions.ne(PlannedEventFields.STATE, PlannedEventStateStringValues.REALIZED)).add(
-                SearchRestrictions.ne(PlannedEventFields.STATE, PlannedEventStateStringValues.CANCELLED));
+                SearchRestrictions.ne(PlannedEventFields.STATE, PlannedEventStateStringValues.CANCELED));
     }
 
 }
