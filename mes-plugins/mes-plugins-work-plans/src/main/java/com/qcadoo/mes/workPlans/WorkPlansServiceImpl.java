@@ -23,23 +23,12 @@
  */
 package com.qcadoo.mes.workPlans;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import com.qcadoo.mes.workPlans.constants.ColumnForOrdersFields;
-import com.qcadoo.view.api.ComponentState;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.workPlans.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
@@ -50,6 +39,16 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.view.api.ComponentState;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class WorkPlansServiceImpl implements WorkPlansService {
@@ -295,11 +294,14 @@ public class WorkPlansServiceImpl implements WorkPlansService {
 
 
     public void workPlanDelivered(final ComponentState state, List<Entity> selectedEntities){
-        for(Entity orderEntity : selectedEntities){
-            boolean isWorkPlanDelivered = orderEntity.getBooleanField(ColumnForOrdersFields.WORK_PLAN_DELIVERED);
+        for(Entity orderListDtoEntity : selectedEntities){
+            boolean isWorkPlanDelivered = orderListDtoEntity.getBooleanField(ColumnForOrdersFields.WORK_PLAN_DELIVERED);
             if(!isWorkPlanDelivered){
-                orderEntity.setField(ColumnForOrdersFields.WORK_PLAN_DELIVERED, true);
-                dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(orderEntity);
+                DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+                Entity order = orderDD.get(orderListDtoEntity.getId());
+                orderListDtoEntity.setField(ColumnForOrdersFields.WORK_PLAN_DELIVERED, true);
+                order.setField(ColumnForOrdersFields.WORK_PLAN_DELIVERED, true);
+                orderDD.save(order);
             }
         }
 
