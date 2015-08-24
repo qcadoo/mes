@@ -56,7 +56,7 @@ public class PlannedEventDetailsHooks {
         // TODO dev_team - very very ugly way to fix issue GOODFOOD-742, should be fixed more properly
         // if problem with manyToMany in related entity will happen once more
         Object relatedEvents = plannedEvent.getField(PlannedEventFields.RELATED_EVENTS);
-        if (relatedEvents.getClass().equals(Integer.class)) {
+        if (relatedEvents != null && relatedEvents.getClass().equals(Integer.class)) {
             lockView(view);
         }
     }
