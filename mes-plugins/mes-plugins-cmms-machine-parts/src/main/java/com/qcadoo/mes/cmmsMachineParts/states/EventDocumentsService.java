@@ -28,7 +28,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class MaintenanceEventDocumentsService {
+public class EventDocumentsService {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
