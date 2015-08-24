@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventChangeReasonService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventDocumentsService;
+import com.qcadoo.mes.cmmsMachineParts.states.EventDocumentsService;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeListenerService;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateSetupService;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateValidationService;
@@ -42,7 +42,7 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
     private MaintenanceEventChangeReasonService stateChangeReasonService;
 
     @Autowired
-    private MaintenanceEventDocumentsService maintenanceEventDocumentsService;
+    private EventDocumentsService eventDocumentsService;
 
     @Pointcut(MaintenanceEventStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
@@ -74,7 +74,7 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.CLOSED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void createDocumentsForMachineParts(final StateChangeContext stateChangeContext, final int phase) {
-        maintenanceEventDocumentsService.createDocumentsForMachineParts(stateChangeContext);
+        eventDocumentsService.createDocumentsForMachineParts(stateChangeContext);
     }
 
     @RunInPhase(MaintenanceEventStateChangePhase.DEFAULT)
