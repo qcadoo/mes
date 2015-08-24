@@ -713,10 +713,10 @@
     <hooks>
 
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventDetailsHooks"
-                      method="plannedEventBeforeRender"/>
+                      method="toggleFieldsVisible"/>
 
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventDetailsHooks"
-                      method="toggleFieldsVisible"/>
+                      method="plannedEventBeforeRender"/>
 
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventDetailsHooks"
                       method="setEventIdForMultiUploadField"/>
