@@ -23,25 +23,21 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.states.constants;
 
-import com.qcadoo.mes.states.aop.RunForStateTransitionAspect;
+public final class PlannedEventStateChangePhase {
 
-public final class PlannedEventStateStringValues {
+    public static final int SETUP = 1;
 
-    public static final String NEW = "01new";
+    public static final int PRE_VALIDATION = 3;
 
-    public static final String IN_PLAN = "02inPlan";
+    public static final int DEFAULT = 5;
 
-    public static final String PLANNED = "03planned";
+    public static final int LAST = DEFAULT + 1;
 
-    public static final String IN_REALIZATION = "04inRealization";
+    private PlannedEventStateChangePhase() {
+    }
 
-    public static final String REALIZED = "05realized";
-
-    public static final String CANCELED = "06canceled";
-
-    public static final String WILDCARD_STATE = RunForStateTransitionAspect.WILDCARD_STATE;
-
-    private PlannedEventStateStringValues() {
+    public static int getNumOfPhases() {
+        return LAST;
     }
 
 }

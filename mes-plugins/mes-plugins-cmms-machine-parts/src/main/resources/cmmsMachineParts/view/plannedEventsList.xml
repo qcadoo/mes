@@ -50,14 +50,14 @@
             </group>
             <template name="standardGridTemplate" excludeItems="actions.copy,actions.new"/>
             <group name="status">
-                <smallButton name="startEvent" icon="startIcon16.png"
-                             state="disabled" action="#{grid}.changeState(startEvent);"/>
-                <smallButton name="revokeEvent" icon="deleteIcon16.png"
-                             state="disabled" action="#{grid}.changeState(revokeEvent);"/>
-                <smallButton name="planEvent" icon="startIcon16.png"
-                             state="disabled" action="#{grid}.changeState(planEvent);"/>
-                <smallButton name="closeEvent" icon="acceptIcon16.png"
-                             state="disabled" action="#{grid}.changeState(closeEvent);"/>
+				<smallButton name="planEvent" icon="startIcon16.png"
+                             state="disabled" action="#{form}.changeState(planEvent);"/>
+                <smallButton name="cancelEvent" icon="deleteIcon16.png"
+                             state="disabled" action="#{form}.changeState(cancelEvent);"/>
+                <smallButton name="plannedEvent" icon="startIcon16.png"
+                             state="disabled" action="#{form}.changeState(plannedEvent);"/>
+                <smallButton name="realizedEvent" icon="acceptIcon16.png"
+                             state="disabled" action="#{form}.changeState(realizedEvent);"/>
             </group>
         </ribbon>
 
@@ -171,10 +171,10 @@
 						for (var elementKey in toggleRibbonItems) {
 							getRibbonItem(toggleRibbonItems[elementKey]).disable();
 						}
-						getRibbonItem("status.startEvent").disable();
-						getRibbonItem("status.revokeEvent").disable();
 						getRibbonItem("status.planEvent").disable();
-						getRibbonItem("status.closeEvent").disable();
+						getRibbonItem("status.cancelEvent").disable();
+						getRibbonItem("status.plannedEvent").disable();
+						getRibbonItem("status.realizedEvent").disable();
 					}
 
 					function updateRibbon(selectedEntitiesArray) {
@@ -209,60 +209,61 @@
 						    getRibbonItem("actions.delete").disable();
 						}
 
-                            var startEvent = #{window}.getRibbonItem("status.startEvent");
                             var planEvent = #{window}.getRibbonItem("status.planEvent");
-                            var revokeEvent = #{window}.getRibbonItem("status.revokeEvent");
-                            var closeEvent = #{window}.getRibbonItem("status.closeEvent");
+                            var cancelEvent = #{window}.getRibbonItem("status.cancelEvent");
+                            var plannedEvent = #{window}.getRibbonItem("status.plannedEvent");
+                            var realizedEvent = #{window}.getRibbonItem("status.realizedEvent");
+                            var deleteButton = #{window}.getRibbonItem("actions.delete");
 
-							startEvent.forState="02inProgress";
-							startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.inProgress)}";
-							startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.startEvent)}");
+                            planEvent.forState="02inPlan";
+                            planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.inProgress)}";
 
-							closeEvent.forState="04closed";
-							closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
+                            cancelEvent.forState="06canceled";
+                            cancelEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
 
-							revokeEvent.forState="05revoked";
-							revokeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.revoked)}";
+                            plannedEvent.forState="03planned";
+                            plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.revoked)}";
 
-							planEvent.forState="06planned";
-							planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.planned)}";
+                            realizedEvent.forState="05realized";
+                            realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.planned)}";
 
 
-							if (state == "01new") {
-								startEvent.enable();
-								planEvent.enable();
-								revokeEvent.enable();
-								closeEvent.disable();
-								startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.startEvent)}");
-								startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.inProgress)}";
-							} else if (state == "02inProgress") {
-
-								startEvent.enable();
-								planEvent.enable();
-								revokeEvent.enable();
-								closeEvent.disable();
-
-							    startEvent.forState="03edited";
-							    startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.edited)}";
-							    startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.stopEvent)}");
-
-							} else if (state == "05revoked" || state == "06planned" || state == "04closed") {
-								startEvent.disable();
-								planEvent.disable();
-								revokeEvent.disable();
-								closeEvent.disable();
-							} else if ( state == "03edited") {
-								startEvent.disable();
-								planEvent.disable();
-								revokeEvent.disable();
-								closeEvent.enable();
-							}
-							else {
-							    startEvent.disable();
-								planEvent.disable();
-								revokeEvent.disable();
-								closeEvent.disable();
-							}
+                            if (state == "01new") {
+                                planEvent.enable();
+                                plannedEvent.enable();
+                                cancelEvent.enable();
+                                realizedEvent.disable();
+                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.plannedEvent)}");
+                                plannedEvent.forState="03planned";
+                            } else if (state == "02inPlan") {
+                                planEvent.disable();
+                                cancelEvent.enable();
+                                plannedEvent.enable();
+                                realizedEvent.disable();
+                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.plannedEvent)}");
+                                plannedEvent.forState="03planned";
+                            } else if (state == "03planned") {
+                                planEvent.enable();
+                                cancelEvent.enable();
+                                plannedEvent.enable();
+                                realizedEvent.enable();
+                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+                                plannedEvent.forState="04inRealization";
+                            } else if (state == "04inRealization") {
+                                planEvent.disable();
+                                cancelEvent.enable();
+                                plannedEvent.disable();
+                                realizedEvent.enable();
+                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+                                plannedEvent.forState="04inRealization";
+                            } else if (state == "05realized" || state == "06canceled") {
+                                planEvent.disable();
+                                cancelEvent.disable();
+                                plannedEvent.disable();
+                                realizedEvent.disable();
+                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+                                plannedEvent.forState="04inRealization";
+                            }
 					}
 
 					function getRibbonItem(ribbonPath) {
@@ -321,7 +322,7 @@
                 <option type="fullscreen" value="true"/>
 
                 <listener event="changeState"
-                          class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
+                          class="com.qcadoo.mes.cmmsMachineParts.states.PlannedEventStateChangeViewClient"
                           method="changeState"/>
 
                 <listener event="onSelectedEntityChange"

@@ -38,7 +38,7 @@
         <string name="ownerName"/>
 
         <enum name="state"
-              values="01new,02inProgress,03edited,04closed,05revoked,06planned" default="01new"/>
+              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled" default="01new"/>
 
         <belongsTo name="factory" model="factory" plugin="basic" required="true"/>
         <belongsTo name="division" model="division" plugin="basic" required="true"/>
@@ -93,11 +93,11 @@
 
         <hasMany name="attachments" model="plannedEventAttachment" joinField="plannedEvent" cascade="delete"/>
 
-
         <manyToMany name="relatedEvents" joinField="relatedEvents" columnName="relatedEvent" model="plannedEvent"
                     cascade="nullify"
                     copyable="false"/>
 
+		<hasMany name="stateChanges" joinField="plannedEvent" model="plannedEventStateChange" cascade="delete"/>
 
     </fields>
     <hooks>
