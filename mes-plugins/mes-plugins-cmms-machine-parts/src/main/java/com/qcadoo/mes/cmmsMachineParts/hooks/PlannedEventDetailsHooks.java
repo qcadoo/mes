@@ -21,7 +21,11 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class PlannedEventDetailsHooks {
@@ -36,6 +40,9 @@ public class PlannedEventDetailsHooks {
 
     private List<String> previouslyHiddenTabs = Lists.newArrayList();
 
+    private static final List<String> GRIDS = Lists.newArrayList(PlannedEventFields.RELATED_EVENTS, PlannedEventFields.ACTIONS,
+            PlannedEventFields.RESPONSIBLE_WORKERS, PlannedEventFields.REALIZATIONS, PlannedEventFields.MACHINE_PARTS_FOR_EVENT);
+
     public void plannedEventBeforeRender(final ViewDefinitionState view) {
 
         eventHooks.plannedEventBeforeRender(view);
@@ -45,6 +52,37 @@ public class PlannedEventDetailsHooks {
         FieldComponent type = (FieldComponent) view.getComponentByReference(PlannedEventFields.TYPE);
         type.setEnabled(plannedEvent.getId() == null);
         setCriteriaModifiers(view, plannedEvent);
+
+        // TODO dev_team - very very ugly way to fix issue GOODFOOD-742, should be fixed more properly
+        // if problem with manyToMany in related entity will happen once more
+        Object relatedEvents = plannedEvent.getField(PlannedEventFields.RELATED_EVENTS);
+        if (relatedEvents.getClass().equals(Integer.class)) {
+            lockView(view);
+        }
+    }
+
+    private void lockView(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup actions = ribbon.getGroupByName("actions");
+        RibbonGroup status = ribbon.getGroupByName("status");
+        List<RibbonActionItem> items = actions.getItems();
+        items.addAll(status.getItems());
+        for (RibbonActionItem item : items) {
+            item.setEnabled(false);
+            item.requestUpdate(true);
+        }
+        for (String reference : GRIDS) {
+            lockGrid(view, reference);
+        }
+
+        form.setFormEnabled(false);
+    }
+
+    private void lockGrid(final ViewDefinitionState view, final String reference) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(reference);
+        grid.setEnabled(false);
     }
 
     private void setCriteriaModifiers(final ViewDefinitionState view, final Entity plannedEvent) {
