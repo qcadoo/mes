@@ -101,8 +101,9 @@
                     copyable="false"/>
 
         <hasMany name="stateChanges" joinField="plannedEvent" model="plannedEventStateChange" cascade="delete"/>
-        
+
         <boolean name="afterReview" default="false"/>
+
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventValidators"
