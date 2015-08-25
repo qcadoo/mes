@@ -177,3 +177,17 @@ CREATE TABLE cmmsmachineparts_plannedeventattachment
 )
 
 --
+
+-- materialflowresources_document
+-- last touched 25.08.2015 by kasi
+ALTER TABLE materialflowresources_document ADD COLUMN plannedevent_id bigint;
+ALTER TABLE materialflowresources_document
+  ADD CONSTRAINT plannedevent_fkey FOREIGN KEY (plannedevent_id)
+      REFERENCES cmmsmachineparts_plannedevent (id) DEFERRABLE;
+
+ALTER TABLE states_message ADD COLUMN maintenanceeventstatechange_id bigint;
+ALTER TABLE states_message
+  ADD CONSTRAINT message_plannedeventstatechange_fkey FOREIGN KEY (plannedeventstatechange_id)
+      REFERENCES cmmsmachineparts_plannedeventstatechange (id) DEFERRABLE;
+-- end
+
