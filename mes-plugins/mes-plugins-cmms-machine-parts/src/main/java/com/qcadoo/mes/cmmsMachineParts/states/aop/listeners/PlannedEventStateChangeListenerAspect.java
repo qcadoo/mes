@@ -20,7 +20,6 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
-import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
@@ -50,35 +49,31 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
     }
 
     @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.CANCELED)
-    @Before(PHASE_EXECUTION_POINTCUT)
-    public void validationOnClosed(final StateChangeContext stateChangeContext, final int phase) {
-    }
-
-    @RunInPhase(PlannedEventStateChangePhase.DEFAULT)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.REALIZED)
-    @Before(PHASE_EXECUTION_POINTCUT)
-    public void createDocumentsForMachineParts(final StateChangeContext stateChangeContext, final int phase) {
-        eventDocumentsService.createDocumentsForMachineParts(stateChangeContext);
-    }
-
-    @RunInPhase(PlannedEventStateChangePhase.DEFAULT)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.PLANNED)
     @Before(PHASE_EXECUTION_POINTCUT)
-    public void onCancelled(final StateChangeContext stateChangeContext, final int phase) {
+    public void onPlanned(final StateChangeContext stateChangeContext, final int phase) {
+        validationService.validationOnPlanned(stateChangeContext);
+    }
+
+    @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.IN_REALIZATION)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onInRealization(final StateChangeContext stateChangeContext, final int phase) {
+        validationService.validationOnInRealization(stateChangeContext);
     }
 
     @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.REALIZED)
     @Before(PHASE_EXECUTION_POINTCUT)
-    public void validationOnRevoked(final StateChangeContext stateChangeContext, final int phase) {
+    public void onRealized(final StateChangeContext stateChangeContext, final int phase) {
+        validationService.validationOnRealized(stateChangeContext);
     }
 
-    @RunInPhase(PlannedEventStateChangePhase.SETUP)
-    @RunForStateTransition(targetState = PlannedEventStateStringValues.REALIZED)
-    @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
-    public void askForRevokeReason(final StateChangeContext stateChangeContext, final int phase,
-            final ViewContextHolder viewContext) {
+    @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.CANCELED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onCanceled(final StateChangeContext stateChangeContext, final int phase) {
+        validationService.validationOnCanceled(stateChangeContext);
     }
 
     @RunInPhase(PlannedEventStateChangePhase.LAST)

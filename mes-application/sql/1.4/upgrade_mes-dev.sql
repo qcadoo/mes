@@ -205,9 +205,33 @@ ALTER TABLE materialflowresources_document
   ADD CONSTRAINT plannedevent_fkey FOREIGN KEY (plannedevent_id)
       REFERENCES cmmsmachineparts_plannedevent (id) DEFERRABLE;
 
+-- end
+
+-- Planned event state change
+-- last touched 25.08.2015 by pako
+
+CREATE TABLE cmmsmachineparts_plannedeventstatechange
+(
+  id bigint NOT NULL,
+  dateandtime timestamp without time zone,
+  sourcestate character varying(255),
+  targetstate character varying(255),
+  status character varying(255),
+  phase integer,
+  worker character varying(255),
+  plannedevent_id bigint,
+  shift_id bigint,
+  comment character varying(255),
+  commentrequired boolean DEFAULT false,
+  CONSTRAINT cmmsmachineparts_plannedeventstatechange_pkey PRIMARY KEY (id),
+  CONSTRAINT plannedeventstatechange_plannedevent_fkey FOREIGN KEY (plannedevent_id)
+      REFERENCES cmmsmachineparts_plannedevent (id) DEFERRABLE,
+  CONSTRAINT plannedeventstatechange_shift_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE
+)
+
 ALTER TABLE states_message ADD COLUMN maintenanceeventstatechange_id bigint;
 ALTER TABLE states_message
   ADD CONSTRAINT message_plannedeventstatechange_fkey FOREIGN KEY (plannedeventstatechange_id)
       REFERENCES cmmsmachineparts_plannedeventstatechange (id) DEFERRABLE;
 -- end
-
