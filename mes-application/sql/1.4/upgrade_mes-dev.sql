@@ -199,4 +199,5 @@ DROP FUNCTION update_version();
 
 -- QCADOOCLS-4373
 alter table qcadooplugin_plugin add groupname character varying(255);
+update qcadooplugin_plugin set version = '1.3.0';
 -- end
