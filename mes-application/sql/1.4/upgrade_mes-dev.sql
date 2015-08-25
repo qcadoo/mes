@@ -196,3 +196,17 @@ CREATE OR REPLACE FUNCTION update_version() RETURNS VOID AS $$ DECLARE row recor
 SELECT * FROM update_version();
 DROP FUNCTION update_version();
 --end
+
+-- materialflowresources_document
+-- last touched 25.08.2015 by kasi
+ALTER TABLE materialflowresources_document ADD COLUMN plannedevent_id bigint;
+ALTER TABLE materialflowresources_document
+  ADD CONSTRAINT plannedevent_fkey FOREIGN KEY (plannedevent_id)
+      REFERENCES cmmsmachineparts_plannedevent (id) DEFERRABLE;
+
+ALTER TABLE states_message ADD COLUMN maintenanceeventstatechange_id bigint;
+ALTER TABLE states_message
+  ADD CONSTRAINT message_plannedeventstatechange_fkey FOREIGN KEY (plannedeventstatechange_id)
+      REFERENCES cmmsmachineparts_plannedeventstatechange (id) DEFERRABLE;
+-- end
+
