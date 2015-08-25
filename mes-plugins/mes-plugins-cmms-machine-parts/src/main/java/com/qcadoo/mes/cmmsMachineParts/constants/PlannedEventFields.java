@@ -74,6 +74,8 @@ public class PlannedEventFields {
 
     public static final String REALIZATIONS = "realizations";
 
+    public static final String AFTER_REVIEW = "afterReview";
+
     private PlannedEventFields() {
     }
 

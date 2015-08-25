@@ -4,7 +4,7 @@ import com.qcadoo.model.api.Entity;
 
 public enum PlannedEventType {
     REVIEW("01review"), REPAIRS("02repairs"), EXTERNAL_SERVICE("03externalService"), UDT_REVIEW("04udtReview"), METER_READING(
-            "05meterReading"), MANUAL("06manual"), ADDITIONAL_WORK("07additionalWork");
+            "05meterReading"), MANUAL("06manual"), ADDITIONAL_WORK("07additionalWork"), AFTER_REVIEW("08afterReview");
 
     private final String type;
 
@@ -35,6 +35,8 @@ public enum PlannedEventType {
             return MANUAL;
         } else if ("07additionalWork".equals(type)) {
             return ADDITIONAL_WORK;
+        } else if ("08afterReview".equals(type)) {
+            return AFTER_REVIEW;
         }
 
         throw new IllegalStateException("Unsupported type: " + type);

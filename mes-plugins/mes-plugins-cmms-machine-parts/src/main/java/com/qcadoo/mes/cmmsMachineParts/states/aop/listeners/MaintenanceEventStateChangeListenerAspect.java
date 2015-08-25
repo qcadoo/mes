@@ -90,7 +90,7 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
         validationService.validationOnRevoked(stateChangeContext);
     }
 
-    @RunInPhase(MaintenanceEventStateChangePhase.SETUP)
+    @RunInPhase(MaintenanceEventStateChangePhase.LAST)
     @RunForStateTransition(targetState = MaintenanceEventStateStringValues.REVOKED)
     @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
     public void askForRevokeReason(final StateChangeContext stateChangeContext, final int phase,

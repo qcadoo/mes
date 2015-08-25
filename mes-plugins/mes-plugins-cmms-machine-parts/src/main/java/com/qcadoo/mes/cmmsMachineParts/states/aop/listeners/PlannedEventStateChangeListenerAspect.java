@@ -2,6 +2,7 @@ package com.qcadoo.mes.cmmsMachineParts.states.aop.listeners;
 
 import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.states.AfterReviewEventsService;
 import com.qcadoo.mes.cmmsMachineParts.states.EventDocumentsService;
 import com.qcadoo.mes.cmmsMachineParts.states.PlannedEventStateValidationService;
 import com.qcadoo.mes.cmmsMachineParts.states.aop.PlannedEventStateChangeAspect;
@@ -28,6 +30,9 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
 
     @Autowired
     private EventDocumentsService eventDocumentsService;
+
+    @Autowired
+    private AfterReviewEventsService afterReviewEventsService;
 
     @Autowired
     PlannedEventStateValidationService validationService;
@@ -74,5 +79,12 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
     @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
     public void askForRevokeReason(final StateChangeContext stateChangeContext, final int phase,
             final ViewContextHolder viewContext) {
+    }
+
+    @RunInPhase(PlannedEventStateChangePhase.LAST)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.REALIZED)
+    @AfterReturning(PHASE_EXECUTION_POINTCUT)
+    public void createAfterReviewEvents(final StateChangeContext stateChangeContext, final int phase) {
+        afterReviewEventsService.createAfterReviewEvents(stateChangeContext);
     }
 }

@@ -42,6 +42,7 @@ CREATE TABLE cmmsmachineparts_plannedevent
   createuser character varying(255),
   updateuser character varying(255),
   plannedseparately boolean DEFAULT false,
+  afterreview boolean DEFAULT false,
   requiresshutdown boolean DEFAULT false,
   company_id bigint,
   basedon character varying(255) DEFAULT '01date'::character varying,

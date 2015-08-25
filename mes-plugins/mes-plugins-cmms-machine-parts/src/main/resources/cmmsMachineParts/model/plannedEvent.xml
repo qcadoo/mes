@@ -30,7 +30,7 @@
     <fields>
         <string name="number" required="true" unique="true"/>
         <enum name="type"
-              values="01review,02repairs,03externalService,04udtReview,05meterReading,06manual,07additionalWork"
+              values="01review,02repairs,03externalService,04udtReview,05meterReading,06manual,07additionalWork,08afterReview"
               default="01review" required="true"/>
         <string name="description"/>
         <belongsTo name="owner" model="staff" plugin="basic"/>
@@ -100,12 +100,15 @@
                     cascade="nullify"
                     copyable="false"/>
 
-		<hasMany name="stateChanges" joinField="plannedEvent" model="plannedEventStateChange" cascade="delete"/>
-
+        <hasMany name="stateChanges" joinField="plannedEvent" model="plannedEventStateChange" cascade="delete"/>
+        
+        <boolean name="afterReview" default="false"/>
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventValidators"
                        method="validatesWith"/>
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onSave"/>
+        <onCreate class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onCopy"/>
     </hooks>
 </model>

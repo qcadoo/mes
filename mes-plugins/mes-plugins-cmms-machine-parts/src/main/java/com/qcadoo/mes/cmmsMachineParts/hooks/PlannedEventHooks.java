@@ -12,6 +12,9 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventState;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventStateChangeDescriber;
+import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -19,7 +22,21 @@ import com.qcadoo.model.api.Entity;
 public class PlannedEventHooks {
 
     @Autowired
+    private PlannedEventStateChangeDescriber describer;
+
+    @Autowired
     private EventFieldsForTypeFactory fieldsForTypeFactory;
+
+    @Autowired
+    private StateChangeEntityBuilder stateChangeEntityBuilder;
+
+    public void onCreate(final DataDefinition eventDD, final Entity event) {
+        setInitialState(event);
+    }
+
+    public void onCopy(final DataDefinition eventDD, final Entity event) {
+        setInitialState(event);
+    }
 
     public void onSave(final DataDefinition eventDD, final Entity event) {
         Entity owner = event.getBelongsToField(PlannedEventFields.OWNER);
@@ -41,16 +58,16 @@ public class PlannedEventHooks {
             event.setField(fieldName, null);
         }
 
-        /*for (String fieldName : hasManyToClear) {
-            List<Entity> fields = event.getHasManyField(fieldName);
+        /*
+         * for (String fieldName : hasManyToClear) { List<Entity> fields = event.getHasManyField(fieldName); if
+         * (!fields.isEmpty()) { DataDefinition dataDefinition = fields.get(0).getDataDefinition(); Long[] ids =
+         * fields.stream().map(entity -> entity.getId()).toArray(size -> new Long[size]); dataDefinition.delete(ids);
+         * event.setField(fieldName, null); } }
+         */
 
-            if (!fields.isEmpty()) {
-                DataDefinition dataDefinition = fields.get(0).getDataDefinition();
-                Long[] ids = fields.stream().map(entity -> entity.getId()).toArray(size -> new Long[size]);
-                dataDefinition.delete(ids);
-                event.setField(fieldName, null);
-            }
-        }*/
+    }
 
+    private void setInitialState(final Entity event) {
+        stateChangeEntityBuilder.buildInitial(describer, event, PlannedEventState.NEW);
     }
 }
