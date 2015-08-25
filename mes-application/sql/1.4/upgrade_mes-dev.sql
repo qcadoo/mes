@@ -196,3 +196,7 @@ CREATE OR REPLACE FUNCTION update_version() RETURNS VOID AS $$ DECLARE row recor
 SELECT * FROM update_version();
 DROP FUNCTION update_version();
 --end
+
+-- QCADOOCLS-4373
+alter table qcadooplugin_plugin add groupname character varying(255);
+-- end
