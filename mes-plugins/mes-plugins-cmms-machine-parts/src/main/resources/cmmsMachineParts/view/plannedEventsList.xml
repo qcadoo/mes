@@ -51,13 +51,13 @@
             <template name="standardGridTemplate" excludeItems="actions.copy,actions.new"/>
             <group name="status">
 				<smallButton name="planEvent" icon="startIcon16.png"
-                             state="disabled" action="#{form}.changeState(planEvent);"/>
+                             state="disabled" action="#{grid}.changeState(planEvent);"/>
                 <smallButton name="cancelEvent" icon="deleteIcon16.png"
-                             state="disabled" action="#{form}.changeState(cancelEvent);"/>
+                             state="disabled" action="#{grid}.changeState(cancelEvent);"/>
                 <smallButton name="plannedEvent" icon="startIcon16.png"
-                             state="disabled" action="#{form}.changeState(plannedEvent);"/>
+                             state="disabled" action="#{grid}.changeState(plannedEvent);"/>
                 <smallButton name="realizedEvent" icon="acceptIcon16.png"
-                             state="disabled" action="#{form}.changeState(realizedEvent);"/>
+                             state="disabled" action="#{grid}.changeState(realizedEvent);"/>
             </group>
         </ribbon>
 
