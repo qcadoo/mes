@@ -156,7 +156,7 @@
 							if (selectedEntitiesArray && selectedEntitiesArray.length > 0) {
 								updateRibbon(selectedEntitiesArray);
 								if(selectedEntitiesArray.length > 1) {
-									getRibbonItem("status.revokeEvent").disable();
+									getRibbonItem("status.revokeEvent").disable("#{translate(cmmsMachineParts.eventsList.window.ribbon.status.cantRevokeMany)}");
 								}
 							} else {
 								resetRibbon();
