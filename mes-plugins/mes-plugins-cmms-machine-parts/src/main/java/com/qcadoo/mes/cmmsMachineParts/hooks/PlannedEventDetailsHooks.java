@@ -1,5 +1,6 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -59,6 +61,8 @@ public class PlannedEventDetailsHooks {
         if (relatedEvents != null && relatedEvents.getClass().equals(Integer.class)) {
             lockView(view);
         }
+
+        disableFieldsForState(view);
     }
 
     private void lockView(final ViewDefinitionState view) {
@@ -163,6 +167,25 @@ public class PlannedEventDetailsHooks {
         } else {
             basedOn.setEnabled(true);
         }
+    }
+
+    private void disableFieldsForState(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        PlannedEventState state = PlannedEventState.of(event);
+        if (state.compareTo(PlannedEventState.CANCELED) == 0 || state.compareTo(PlannedEventState.REALIZED) == 0) {
+            form.setFormEnabled(false);
+            lockGrids(view, Lists.newArrayList(PlannedEventFields.RESPONSIBLE_WORKERS, PlannedEventFields.ACTIONS,
+                    PlannedEventFields.RELATED_EVENTS, PlannedEventFields.REALIZATIONS,
+                    PlannedEventFields.MACHINE_PARTS_FOR_EVENT));
+        }
+    }
+
+    private void lockGrids(ViewDefinitionState view, ArrayList<String> gridNames) {
+        gridNames.stream().forEach(gridName -> {
+            GridComponent grid = (GridComponent) view.getComponentByReference(gridName);
+            grid.setEnabled(false);
+        });
     }
 
     public void setEventIdForMultiUploadField(final ViewDefinitionState view) {

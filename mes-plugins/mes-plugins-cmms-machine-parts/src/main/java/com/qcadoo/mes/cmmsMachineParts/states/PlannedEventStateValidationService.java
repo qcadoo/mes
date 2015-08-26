@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
+import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -30,6 +33,9 @@ public class PlannedEventStateValidationService {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private EventFieldsForTypeFactory eventFieldsForTypeFactory;
 
     public void validationOnInPlan(final StateChangeContext stateChangeContext) {
         Entity event = stateChangeContext.getOwner();
@@ -69,9 +75,11 @@ public class PlannedEventStateValidationService {
         }
         if (event.getIntegerField(PlannedEventFields.DURATION) == null
                 || event.getIntegerField(PlannedEventFields.DURATION).equals(0)) {
+            if (durationIsNotHidden(event)) {
             stateChangeContext.addFieldValidationError(PlannedEventFields.DURATION,
                     "cmmsMachineParts.plannedEvent.state.fieldRequired");
             areSet = false;
+            }
         }
         String basedOn = event.getStringField(PlannedEventFields.BASED_ON);
         if (basedOn.equals(PlannedEventBasedOn.DATE.getStringValue())) {
@@ -95,6 +103,12 @@ public class PlannedEventStateValidationService {
         if (!areSet) {
             stateChangeContext.addValidationError("cmmsMachineParts.plannedEvent.state.fillRequiredFields");
         }
+    }
+
+    private boolean durationIsNotHidden(Entity plannedEvent) {
+        PlannedEventType type = PlannedEventType.from(plannedEvent);
+        FieldsForType fieldsForType = eventFieldsForTypeFactory.createFieldsForType(type);
+        return !fieldsForType.getHiddenFields().contains(PlannedEventFields.DURATION);
     }
 
     public void validationOnCanceled(StateChangeContext stateChangeContext) {

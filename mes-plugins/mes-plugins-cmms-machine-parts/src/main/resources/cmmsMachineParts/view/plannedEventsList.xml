@@ -202,7 +202,7 @@
 							var state = selectedEntitiesArray[0].fields.state;
 						}
 
-						if (state && (state == "01new" || state == "05revoked")) {
+						if (state && (state == "01new" || state == "06canceled")) {
 							getRibbonItem("actions.delete").enable();
 						}
 						else {
@@ -274,7 +274,7 @@
 					}
 
 					function shouldLockStatusRibbonItems(selectedEntitiesArray) {
-						return selectedEntitiesArray[0].fields.state == '05revoked' || selectedEntitiesArray[0].fields.state == '06planned' || selectedEntitiesArray[0].fields.state == '04closed' ||
+						return selectedEntitiesArray[0].fields.state == '05realized' || selectedEntitiesArray[0].fields.state == '06canceled'
 								statesAreDifferent(selectedEntitiesArray);
 					}
 
