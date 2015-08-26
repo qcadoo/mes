@@ -155,6 +155,9 @@
 						onChange: function(selectedEntitiesArray) {
 							if (selectedEntitiesArray && selectedEntitiesArray.length > 0) {
 								updateRibbon(selectedEntitiesArray);
+								if(selectedEntitiesArray.length > 1) {
+									getRibbonItem("status.revokeEvent").disable();
+								}
 							} else {
 								resetRibbon();
 							}
