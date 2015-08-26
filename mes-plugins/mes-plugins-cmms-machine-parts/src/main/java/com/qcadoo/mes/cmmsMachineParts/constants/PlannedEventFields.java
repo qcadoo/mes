@@ -76,6 +76,8 @@ public class PlannedEventFields {
 
     public static final String AFTER_REVIEW = "afterReview";
 
+    public static final String DOCUMENTS_TAB = "documentsTab";
+
     private PlannedEventFields() {
     }
 

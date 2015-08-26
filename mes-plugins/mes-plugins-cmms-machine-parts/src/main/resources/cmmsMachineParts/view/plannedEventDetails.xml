@@ -649,7 +649,7 @@
             </component>
         </windowTab>
 
-        <windowTab name="documentsTab">
+        <windowTab name="documentsTab" reference="documentsTab">
             <component type="gridLayout" name="documentsGridLayout" columns="1"
                        rows="1">
                 <layoutElement column="1" row="1">
