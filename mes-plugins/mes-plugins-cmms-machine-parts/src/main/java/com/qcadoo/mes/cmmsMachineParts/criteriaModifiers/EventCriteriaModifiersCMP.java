@@ -1,8 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.criteriaModifiers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.DivisionFields;
@@ -10,8 +7,10 @@ import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangeFields;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventState;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -20,6 +19,8 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EventCriteriaModifiersCMP {
@@ -43,6 +44,10 @@ public class EventCriteriaModifiersCMP {
     public void filterRevokedAndPlannedEvents(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.ne(MaintenanceEventFields.STATE, MaintenanceEventState.REVOKED.getStringValue())).add(
                 SearchRestrictions.ne(MaintenanceEventFields.STATE, MaintenanceEventState.PLANNED.getStringValue()));
+    }
+
+    public void filterCanceledEvents(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.ne(PlannedEventFields.STATE, PlannedEventState.CANCELED.getStringValue()));
     }
 
     public void selectFactory(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {

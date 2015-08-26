@@ -63,7 +63,7 @@
                     <option type="fieldCode" value="number"/>
                     <criteriaModifier
                             class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
-                            method="filterRevokedAndPlannedEvents"/>
+                            method="filterCanceledEvents"/>
                 </component>
             </layoutElement>
         </component>
