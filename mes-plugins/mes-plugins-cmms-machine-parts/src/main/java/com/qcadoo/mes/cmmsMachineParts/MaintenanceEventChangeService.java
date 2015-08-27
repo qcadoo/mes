@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class MaintenanceEventChangeReasonService {
+public class MaintenanceEventChangeService {
     public void showReasonForm(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
 
         stateChangeContext.setStatus(StateChangeStatus.PAUSED);
@@ -38,6 +38,15 @@ public class MaintenanceEventChangeReasonService {
 
         viewContext.getViewDefinitionState().openModal(
                 "../page/cmmsMachineParts/maintenanceEventStateChangeReasonDialog.html?context={\"form.id\": "
+                        + stateChangeContext.getStateChangeEntity().getId() + "}");
+    }
+    public void showPlanEventForm(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
+
+        stateChangeContext.setStatus(StateChangeStatus.PAUSED);
+        stateChangeContext.save();
+
+        viewContext.getViewDefinitionState().openModal(
+                "../page/cmmsMachineParts/maintenanceEventToPlannedEventDialog.html?context={\"form.id\": "
                         + stateChangeContext.getStateChangeEntity().getId() + "}");
     }
 }

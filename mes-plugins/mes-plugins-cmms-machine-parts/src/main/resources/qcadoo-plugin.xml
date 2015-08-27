@@ -103,6 +103,8 @@
 
         <view:view resource="view/maintenanceEventStateChangeReasonDialog.xml"/>
 
+        <view:view resource="view/maintenanceEventToPlannedEventDialog.xml"/>
+
         <view:view resource="view/oldSolutionsSubassembly.xml"/>
         <view:view resource="view/oldSolutionsWorkstation.xml"/>
         <view:view resource="view/oldSolutionsLine.xml"/>
@@ -356,7 +358,7 @@
         <model:model-hook plugin="materialFlowResources" model="document">
             <model:validatesWith
                     class="com.qcadoo.mes.cmmsMachineParts.validators.DocumentValidatorsCMP"
-                    method="checkSelectedEvents" />
+                    method="checkSelectedEvents"/>
         </model:model-hook>
 
         <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"
@@ -373,12 +375,12 @@
                             method="clearEvents"/>
         <view:view-grid-column plugin="materialFlowResources" view="documentsList" component="grid">
             <view:column name="maintenanceEvent" fields="maintenanceEvent" expression="#maintenanceEvent['number']"
-                         searchable="true" orderable="true"  width="50"/>
+                         searchable="true" orderable="true" width="50"/>
         </view:view-grid-column>
 
         <view:view-grid-column plugin="materialFlowResources" view="documentsList" component="grid">
             <view:column name="plannedEvent" fields="plannedEvent" expression="#plannedEvent['number']"
-                         searchable="true" orderable="true"  width="67"/>
+                         searchable="true" orderable="true" width="67"/>
         </view:view-grid-column>
 
         <view:view-grid-column plugin="materialFlowResources"

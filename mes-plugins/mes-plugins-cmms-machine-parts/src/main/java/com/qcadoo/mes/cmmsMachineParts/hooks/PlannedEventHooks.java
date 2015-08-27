@@ -36,6 +36,7 @@ public class PlannedEventHooks {
 
     public void onCopy(final DataDefinition eventDD, final Entity event) {
         setInitialState(event);
+        event.setField(PlannedEventFields.MAINTENANCE_EVENT, null);
     }
 
     public void onSave(final DataDefinition eventDD, final Entity event) {
@@ -69,5 +70,13 @@ public class PlannedEventHooks {
 
     private void setInitialState(final Entity event) {
         stateChangeEntityBuilder.buildInitial(describer, event, PlannedEventState.NEW);
+    }
+
+    public boolean onDelete(final DataDefinition eventDD, final Entity event) {
+        if (event.getBelongsToField(PlannedEventFields.MAINTENANCE_EVENT) != null) {
+            event.addGlobalError("cmmsMachineParts.plannedEvent.error.cannotDeleteRelatedPlannedEvent");
+            return false;
+        }
+        return true;
     }
 }

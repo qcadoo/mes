@@ -78,6 +78,8 @@ public class PlannedEventFields {
 
     public static final String DOCUMENTS_TAB = "documentsTab";
 
+    public static final String MAINTENANCE_EVENT = "maintenanceEvent";
+
     private PlannedEventFields() {
     }
 

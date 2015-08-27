@@ -104,6 +104,8 @@
 
         <boolean name="afterReview" default="false"/>
 
+        <belongsTo name="maintenanceEvent" model="maintenanceEvent" plugin="cmmsMachineParts"/>
+
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventValidators"
@@ -111,5 +113,6 @@
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onSave"/>
         <onCreate class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onCreate"/>
         <onCopy class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onCopy"/>
+        <onDelete class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onDelete"/>
     </hooks>
 </model>

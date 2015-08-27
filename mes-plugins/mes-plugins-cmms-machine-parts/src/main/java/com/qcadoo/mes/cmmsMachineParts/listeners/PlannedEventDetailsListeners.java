@@ -3,6 +3,7 @@ package com.qcadoo.mes.cmmsMachineParts.listeners;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventAttachmentFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
@@ -138,5 +140,21 @@ public class PlannedEventDetailsListeners {
         }
         currentEvent.setField(PlannedEventFields.RELATED_EVENTS, relatedEventsForCurrentEvent);
         currentEvent.getDataDefinition().save(currentEvent);
+    }
+
+    public void showMaintenanceEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity plannedEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(form.getEntityId());
+
+        Entity maintenanceEvent = plannedEvent.getBelongsToField(PlannedEventFields.MAINTENANCE_EVENT);
+        if (maintenanceEvent != null) {
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", maintenanceEvent.getId());
+            view.redirectTo("../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html", false,
+                    true, parameters);
+        }
+
     }
 }

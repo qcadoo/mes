@@ -84,7 +84,7 @@ public class MaintenanceEventContextService {
         return maintenanceEventContextEntity;
     }
 
-    private Entity prepareContextEntity(Entity maintenanceEventContextEntity) {
+    public Entity prepareContextEntity(Entity maintenanceEventContextEntity) {
         SearchCriteriaBuilder searchCriteriaBuilder = maintenanceEventContextEntity.getDataDefinition().find();
         searchCriteriaBuilder.add(SearchRestrictions.belongsTo(MaintenanceEventContextFields.DIVISION,
                 maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.DIVISION)));

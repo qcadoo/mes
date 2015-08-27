@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventChangeReasonService;
+import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventChangeService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.states.EventDocumentsService;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeListenerService;
@@ -39,7 +39,7 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
     private MaintenanceEventStateChangeListenerService listenerService;
 
     @Autowired
-    private MaintenanceEventChangeReasonService stateChangeReasonService;
+    private MaintenanceEventChangeService maintenanceEventChangeService;
 
     @Autowired
     private EventDocumentsService eventDocumentsService;
@@ -77,10 +77,12 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
         eventDocumentsService.createDocumentsForMachineParts(stateChangeContext);
     }
 
-    @RunInPhase(MaintenanceEventStateChangePhase.DEFAULT)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.PLANNED)
-    @Before(PHASE_EXECUTION_POINTCUT)
-    public void onCancelled(final StateChangeContext stateChangeContext, final int phase) {
+    @RunInPhase(MaintenanceEventStateChangePhase.LAST)
+    @RunForStateTransition(targetState = MaintenanceEventStateStringValues.PLANNED)
+    @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
+    public void convertToPlannedEvent(final StateChangeContext stateChangeContext, final int phase,
+            final ViewContextHolder viewContext) {
+        maintenanceEventChangeService.showPlanEventForm(stateChangeContext, viewContext);
     }
 
     @RunInPhase(MaintenanceEventStateChangePhase.PRE_VALIDATION)
@@ -95,6 +97,6 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
     @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
     public void askForRevokeReason(final StateChangeContext stateChangeContext, final int phase,
             final ViewContextHolder viewContext) {
-        stateChangeReasonService.showReasonForm(stateChangeContext, viewContext);
+        maintenanceEventChangeService.showReasonForm(stateChangeContext, viewContext);
     }
 }

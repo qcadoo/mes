@@ -25,6 +25,10 @@ package com.qcadoo.mes.cmmsMachineParts.states.constants;
 
 public final class MaintenanceEventStateChangeFields {
 
+    public static final String PLANNED_EVENT_TYPE = "plannedEventType";
+
+    public static final String PLANNED_EVENT_TYPE_REQUIRED = "plannedEventTypeRequired";
+
     private MaintenanceEventStateChangeFields() {
     }
 

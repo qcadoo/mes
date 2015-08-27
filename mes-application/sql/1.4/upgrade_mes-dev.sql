@@ -235,3 +235,15 @@ ALTER TABLE states_message
   ADD CONSTRAINT message_plannedeventstatechange_fkey FOREIGN KEY (plannedeventstatechange_id)
       REFERENCES cmmsmachineparts_plannedeventstatechange (id) DEFERRABLE;
 -- end
+
+-- Changing events to planned
+-- last touched 26.08.2015 by kama
+ALTER TABLE cmmsmachineparts_maintenanceeventstatechange ADD COLUMN plannedeventtype character varying(255);
+ALTER TABLE cmmsmachineparts_maintenanceeventstatechange ADD COLUMN plannedeventtyperequired boolean;
+ALTER TABLE cmmsmachineparts_maintenanceeventstatechange ALTER COLUMN plannedeventtyperequired SET DEFAULT false;
+ALTER TABLE cmmsmachineparts_plannedevent ADD COLUMN maintenanceevent_id bigint;
+ALTER TABLE cmmsmachineparts_plannedevent
+  ADD CONSTRAINT plannedevent_maintenanceevent_fkey FOREIGN KEY (maintenanceevent_id)
+      REFERENCES cmmsmachineparts_maintenanceevent (id) DEFERRABLE;
+
+-- end

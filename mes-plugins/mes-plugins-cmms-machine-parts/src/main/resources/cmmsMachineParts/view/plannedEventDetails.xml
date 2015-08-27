@@ -59,6 +59,12 @@
                 </bigButton>
             </group>
 
+            <group name="maintenanceEvents">
+                <bigButton name="showMaintenanceEvent" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(showMaintenanceEvent);" state="disabled">
+                </bigButton>
+            </group>
+
         </ribbon>
 
         <windowTab name="mainTab">
@@ -409,6 +415,9 @@
                           method="fillFieldValues"/>
 
                 <listener event="downloadAttachment" method="downloadAttachment"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
+
+                <listener event="showMaintenanceEvent" method="showMaintenanceEvent"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
 
                 <listener event="showSolutions" method="showSolutions"

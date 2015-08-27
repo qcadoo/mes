@@ -6,6 +6,8 @@ public class MaintenanceEventFields {
 
     public static final String MACHINE_PARTS_FOR_EVENT = "machinePartsForEvent";
 
+    public static final String PLANNED_EVENTS = "plannedEvents";
+
     private MaintenanceEventFields() {
     }
 

@@ -2,6 +2,8 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 public class CmmsMachinePartsConstants {
 
+    public static final String MODEL_PLANNED_EVENT_CONTEXT = "plannedEventContext";
+
     private CmmsMachinePartsConstants() {
     }
 
