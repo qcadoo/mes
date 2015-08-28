@@ -306,7 +306,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 resource.getDataDefinition().delete(resource.getId());
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceQuantity));
-                BigDecimal givenResourceQuantity = convertToGivenUnit(quantity, position);
+                BigDecimal givenResourceQuantity = convertToGivenUnit(resourceQuantity, position);
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenResourceQuantity));
                 newPositions.add(newPosition);
 
