@@ -64,6 +64,7 @@ public class PlannedEventHooks {
         // event.setField(PlannedEventFields.RESPONSIBLE_WORKERS, null);
         event.setField(PlannedEventFields.START_DATE, null);
         event.setField(PlannedEventFields.SOLUTION_DESCRIPTION, null);
+        event.setField(PlannedEventFields.IS_DEADLINE, false);
     }
 
     private void clearHiddenFields(final Entity event) {
