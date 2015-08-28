@@ -40,6 +40,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -54,6 +55,8 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -63,6 +66,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     @Override
     @Transactional
@@ -300,7 +306,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 resource.getDataDefinition().delete(resource.getId());
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceQuantity));
-                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(resourceQuantity));
+                BigDecimal givenResourceQuantity = convertToGivenUnit(quantity, position);
+                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenResourceQuantity));
                 newPositions.add(newPosition);
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
@@ -314,7 +321,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 resource.getDataDefinition().save(resource);
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
-                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(quantity));
+                BigDecimal givenQuantity = convertToGivenUnit(quantity, position);
+                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenQuantity));
                 newPositions.add(newPosition);
                 return newPositions;
             }
@@ -323,6 +331,21 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.addError(position.getDataDefinition().getField(PositionFields.QUANTITY),
                 "materialFlow.error.position.quantity.notEnough");
         return Lists.newArrayList(position);
+    }
+
+    private BigDecimal convertToGivenUnit(BigDecimal quantity, Entity position) {
+        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+        String baseUnit = product.getStringField(ProductFields.UNIT);
+        String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
+        if (!baseUnit.equals(givenUnit)) {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
+                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                            UnitConversionItemFieldsB.PRODUCT, product)));
+            if (unitConversions.isDefinedFor(givenUnit)) {
+                return unitConversions.convertTo(quantity, givenUnit);
+            }
+        }
+        return quantity;
     }
 
     @Override
