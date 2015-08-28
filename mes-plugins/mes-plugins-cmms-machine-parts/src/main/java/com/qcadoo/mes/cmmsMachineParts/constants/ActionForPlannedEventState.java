@@ -26,7 +26,7 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 import com.qcadoo.model.api.Entity;
 
 public enum ActionForPlannedEventState {
-    CORRECT("01correct"), INCORRECT("02incorrect");
+    CORRECT("01correct"), INCORRECT("02incorrect"), NONE("");
 
     private final String state;
 
@@ -47,9 +47,10 @@ public enum ActionForPlannedEventState {
             return CORRECT;
         } else if ("02incorrect".equals(state)) {
             return INCORRECT;
+        } else {
+            return NONE;
         }
 
-        throw new IllegalStateException("Unsupported state" + ": " + state);
     }
 
 }
