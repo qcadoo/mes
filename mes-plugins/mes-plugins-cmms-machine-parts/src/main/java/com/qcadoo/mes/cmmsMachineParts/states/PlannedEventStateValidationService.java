@@ -1,9 +1,13 @@
 package com.qcadoo.mes.cmmsMachineParts.states;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.cmmsMachineParts.constants.ActionForPlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
@@ -64,6 +68,15 @@ public class PlannedEventStateValidationService {
     public void validationOnRealized(StateChangeContext stateChangeContext) {
         Entity event = stateChangeContext.getOwner();
         checkIfRequiredFieldsAreSet(event, stateChangeContext);
+        checkIfActionsHaveStatus(event, stateChangeContext);
+    }
+
+    private void checkIfActionsHaveStatus(final Entity event, StateChangeContext stateChangeContext) {
+        List<Entity> actionsForEvent = event.getHasManyField(PlannedEventFields.ACTIONS);
+        if (actionsForEvent.stream().anyMatch(
+                action -> StringUtils.isEmpty(action.getStringField(ActionForPlannedEventFields.STATE)))) {
+            stateChangeContext.addValidationError("cmmsMachineParts.plannedEvent.state.actionsWithoutState");
+        }
     }
 
     private void checkIfRequiredFieldsAreSet(Entity event, StateChangeContext stateChangeContext) {
@@ -76,9 +89,9 @@ public class PlannedEventStateValidationService {
         if (event.getIntegerField(PlannedEventFields.DURATION) == null
                 || event.getIntegerField(PlannedEventFields.DURATION).equals(0)) {
             if (durationIsNotHidden(event)) {
-            stateChangeContext.addFieldValidationError(PlannedEventFields.DURATION,
-                    "cmmsMachineParts.plannedEvent.state.fieldRequired");
-            areSet = false;
+                stateChangeContext.addFieldValidationError(PlannedEventFields.DURATION,
+                        "cmmsMachineParts.plannedEvent.state.fieldRequired");
+                areSet = false;
             }
         }
         String basedOn = event.getStringField(PlannedEventFields.BASED_ON);
