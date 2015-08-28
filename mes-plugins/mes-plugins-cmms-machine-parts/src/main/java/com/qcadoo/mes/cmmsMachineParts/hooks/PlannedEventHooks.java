@@ -36,7 +36,8 @@ public class PlannedEventHooks {
 
     public void onCopy(final DataDefinition eventDD, final Entity event) {
         setInitialState(event);
-        event.setField(PlannedEventFields.MAINTENANCE_EVENT, null);
+
+        clearFieldsInCopy(event);
     }
 
     public void onSave(final DataDefinition eventDD, final Entity event) {
@@ -49,6 +50,20 @@ public class PlannedEventHooks {
             event.setField(PlannedEventFields.OWNER_NAME, StringUtils.EMPTY);
         }
         clearHiddenFields(event);
+    }
+
+    private void clearFieldsInCopy(final Entity event) {
+
+        event.setField(PlannedEventFields.MAINTENANCE_EVENT, null);
+        event.setField(PlannedEventFields.RELATED_EVENTS, null);
+        event.setField(PlannedEventFields.ACTIONS, null);
+        // event.setField(PlannedEventFields.ATTACHMENTS, null);
+        event.setField(PlannedEventFields.FINISH_DATE, null);
+        // event.setField(PlannedEventFields.MACHINE_PARTS_FOR_EVENT, null);
+        // event.setField(PlannedEventFields.REALIZATIONS, null);
+        // event.setField(PlannedEventFields.RESPONSIBLE_WORKERS, null);
+        event.setField(PlannedEventFields.START_DATE, null);
+        event.setField(PlannedEventFields.SOLUTION_DESCRIPTION, null);
     }
 
     private void clearHiddenFields(final Entity event) {
