@@ -106,6 +106,8 @@ public class EventHooks {
 
         if (plannedEvent.isPresent()) {
             toggleRibbonButton(view, "plannedEvents", "showPlannedEvent", true);
+        } else {
+            toggleRibbonButton(view, "plannedEvents", "showPlannedEvent", false);
         }
     }
 
@@ -116,6 +118,8 @@ public class EventHooks {
         Entity maintenanceEvent = event.getBelongsToField(PlannedEventFields.MAINTENANCE_EVENT);
         if (maintenanceEvent != null) {
             toggleRibbonButton(view, "maintenanceEvents", "showMaintenanceEvent", true);
+        } else {
+            toggleRibbonButton(view, "maintenanceEvents", "showMaintenanceEvent", false);
         }
     }
 
@@ -205,7 +209,7 @@ public class EventHooks {
     }
 
     private void toggleEnabledForFactory(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
-                                         String contextField) {
+            String contextField) {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
         }
@@ -215,7 +219,7 @@ public class EventHooks {
     }
 
     private void toggleEnabledForDivision(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
-                                          String contextField) {
+            String contextField) {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
         }
