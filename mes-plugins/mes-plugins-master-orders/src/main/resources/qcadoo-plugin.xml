@@ -112,17 +112,12 @@
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>
 
-        <view:view-grid-column plugin="orders"
-                               view="ordersList" component="grid">
-            <view:column name="masterOrderNumber" fields="masterOrder"
-                         orderable="true" searchable="true" expression="#masterOrder['number']"
-                         width="50"/>
+        <view:view-grid-column plugin="orders"  view="ordersList" component="grid">
+            <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true" searchable="true"  width="50"/>
         </view:view-grid-column>
-        <view:view-grid-column plugin="orders"
-                               view="ordersList" component="grid">
-            <view:column name="masterOrderDefinitionNumber" fields="masterOrder"
-                         orderable="true" searchable="true" expression="#masterOrder['masterOrderDefinition']?.get('number')"
-                         width="50"/>
+        <view:view-grid-column plugin="orders" view="ordersList" component="grid">
+            <view:column name="masterOrderDefinitionNumber" fields="masterOrderDefinitionNumber"
+                         orderable="true" searchable="true" width="50" />
         </view:view-grid-column>
 
         <view:view-grid-column plugin="orders"
