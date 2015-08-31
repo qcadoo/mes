@@ -12,6 +12,7 @@ import com.qcadoo.mes.cmmsMachineParts.ActionsService;
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionForPlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -23,10 +24,24 @@ public class PlannedEventValidators {
 
     public boolean validatesWith(final DataDefinition plannedEventDD, final Entity plannedEvent) {
 
-        if (!checkOperatorWorkTime(plannedEventDD, plannedEvent) || !validateActions(plannedEvent)) {
+        if (!checkOperatorWorkTime(plannedEventDD, plannedEvent) || !validateActions(plannedEvent)
+                || !validateType(plannedEventDD, plannedEvent)) {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean validateType(final DataDefinition plannedEventDD, final Entity plannedEvent) {
+
+        if (!plannedEvent.getBooleanField(PlannedEventFields.AFTER_REVIEW)) {
+            if (PlannedEventType.AFTER_REVIEW.equals(PlannedEventType.from(plannedEvent))) {
+
+                plannedEvent.addError(plannedEventDD.getField(PlannedEventFields.TYPE),
+                        "cmmsMachineParts.plannedEvent.error.wrongType");
+                return false;
+            }
+        }
         return true;
     }
 

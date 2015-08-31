@@ -28,8 +28,8 @@ public class ActionForPlannedEventValidators {
                 correct = false;
             }
         }
-        String state = actionForPlannedEvent.getStringField(ActionForPlannedEventFields.STATE);
-        if (state.equals(ActionForPlannedEventState.INCORRECT.getStringValue())) {
+        ActionForPlannedEventState state = ActionForPlannedEventState.from(actionForPlannedEvent);
+        if (state.equals(ActionForPlannedEventState.INCORRECT)) {
             if (StringUtils.isEmpty(actionForPlannedEvent.getStringField(ActionForPlannedEventFields.REASON))) {
                 actionForPlannedEvent.addError(actionDD.getField(ActionForPlannedEventFields.REASON),
                         "cmmsMachineParts.actionForPlannedEvent.error.reasonRequired");

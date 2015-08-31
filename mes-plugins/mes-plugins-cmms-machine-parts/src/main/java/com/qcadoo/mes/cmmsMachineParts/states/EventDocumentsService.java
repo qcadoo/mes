@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,8 +16,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MachinePartForEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
@@ -29,7 +28,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class MaintenanceEventDocumentsService {
+public class EventDocumentsService {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
@@ -50,9 +49,11 @@ public class MaintenanceEventDocumentsService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void createDocuments(final Entity maintenanceEvent) {
+    private void createDocuments(final Entity event) {
 
-        List<Entity> machinePartsForEvent = maintenanceEvent.getHasManyField(MaintenanceEventFields.MACHINE_PARTS_FOR_EVENT);
+        EventType eventType = EventType.of(event);
+
+        List<Entity> machinePartsForEvent = event.getHasManyField(eventType.getMachinePartsName());
         if (machinePartsForEvent.isEmpty()) {
             return;
         }
@@ -71,7 +72,7 @@ public class MaintenanceEventDocumentsService {
             Map<Long, BigDecimal> quantitiesInWarehouse = materialFlowResourcesService.getQuantitiesForProductsAndLocation(
                     machineParts, warehouse);
 
-            if (!checkIfResourcesAreSufficient(maintenanceEvent, quantitiesInWarehouse, machinePartsForLocation, warehouse)) {
+            if (!checkIfResourcesAreSufficient(event, quantitiesInWarehouse, machinePartsForLocation, warehouse)) {
                 resourcesSufficient = false;
             }
         }
@@ -83,23 +84,32 @@ public class MaintenanceEventDocumentsService {
 
             Entity warehouse = warehouseDD.get(warehouseId);
 
-            Entity document = createDocumentForLocation(maintenanceEvent, warehouse, machinePartsForLocation);
+            Entity document = createDocumentForLocation(event, eventType, warehouse, machinePartsForLocation);
             if (!document.isValid()) {
-                maintenanceEvent.addGlobalError("cmmsMachineParts.maintenanceEvent.state.documentNotCreated");
+                event.addGlobalError("cmmsMachineParts.maintenanceEvent.state.documentNotCreated");
                 return;
             }
         }
 
     }
 
-    private Entity createDocumentForLocation(final Entity maintenanceEvent, final Entity warehouse,
+    private Entity createDocumentForLocation(final Entity event, final EventType eventType, final Entity warehouse,
             final Collection<Entity> machinePartsForLocation) {
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder().internalOutbound(warehouse);
         for (Entity machinePartForLocation : machinePartsForLocation) {
             documentBuilder.addPosition(machinePartForLocation.getBelongsToField(MachinePartForEventFields.MACHINE_PART),
                     machinePartForLocation.getDecimalField(MachinePartForEventFields.PLANNED_QUANTITY));
         }
-        documentBuilder.setField("maintenanceEvent", maintenanceEvent);
+        if(eventType.getModelName().equals(CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT)){
+            documentBuilder.setField(DocumentFieldsCMP.MAINTENANCE_EVENT, event);
+
+        }else if (eventType.getModelName().equals(CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)){
+            documentBuilder.setField(DocumentFieldsCMP.PLANNED_EVENT, event);
+
+        }
+        else{
+            throw new IllegalArgumentException(String.format("Unsupported model type: '%s'", eventType.getModelName()));
+        }
         return documentBuilder.setAccepted().build();
     }
 

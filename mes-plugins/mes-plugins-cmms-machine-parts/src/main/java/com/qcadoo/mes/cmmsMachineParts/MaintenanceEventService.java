@@ -1,6 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,7 +74,16 @@ public class MaintenanceEventService {
     }
 
     public DataDefinition getMaintenanceEventDD() {
-        return dataDefinitionService
-                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
+        return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
+    }
+
+    public Optional<Entity> getPlannedEventForMaintenanceEvent(final Entity maintenanceEvent) {
+        List<Entity> plannedEvents = maintenanceEvent.getHasManyField(MaintenanceEventFields.PLANNED_EVENTS);
+
+        if (plannedEvents.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(plannedEvents.get(0));
     }
 }

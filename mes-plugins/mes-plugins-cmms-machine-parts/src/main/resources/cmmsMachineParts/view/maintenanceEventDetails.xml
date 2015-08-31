@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="maintenanceEventDetails" modelName="maintenanceEvent" modelPlugin="cmmsMachineParts">
 
@@ -62,6 +63,12 @@
             <group name="solutions">
                 <bigButton name="showSolutions" icon="genealogyIcon24.png"
                            action="#{form}.fireEvent(showSolutions);">
+                </bigButton>
+            </group>
+
+            <group name="plannedEvents">
+                <bigButton name="showPlannedEvent" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(showPlannedEvent);" state="disabled">
                 </bigButton>
             </group>
 
@@ -365,6 +372,9 @@
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
 
                 <listener event="showSolutions" method="showSolutions"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+
+                <listener event="showPlannedEvent" method="showPlannedEvent"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
 
                 <listener event="save" method="validateIssueOrProposal"

@@ -7,7 +7,8 @@ public class FieldsForReview extends AbstractFieldsForType {
 
     public FieldsForReview() {
         super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.COMPANY), Lists.newArrayList(
-                PlannedEventFields.MACHINE_PARTS_TAB, PlannedEventFields.SOLUTION_DESCRIPTION_TAB), Lists
+                PlannedEventFields.MACHINE_PARTS_TAB, PlannedEventFields.SOLUTION_DESCRIPTION_TAB,
+                PlannedEventFields.DOCUMENTS_TAB), Lists
                 .newArrayList(PlannedEventFields.MACHINE_PARTS_FOR_EVENT));
     }
 }

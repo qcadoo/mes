@@ -35,14 +35,14 @@
 
 
             <group name="status">
-                <smallButton name="startEvent" icon="startIcon16.png"
-                             state="disabled" action="#{form}.changeState(startEvent);"/>
-                <smallButton name="revokeEvent" icon="deleteIcon16.png"
-                             state="disabled" action="#{form}.changeState(revokeEvent);"/>
                 <smallButton name="planEvent" icon="startIcon16.png"
                              state="disabled" action="#{form}.changeState(planEvent);"/>
-                <smallButton name="closeEvent" icon="acceptIcon16.png"
-                             state="disabled" action="#{form}.changeState(closeEvent);"/>
+                <smallButton name="cancelEvent" icon="deleteIcon16.png"
+                             state="disabled" action="#{form}.changeState(cancelEvent);"/>
+                <smallButton name="plannedEvent" icon="startIcon16.png"
+                             state="disabled" action="#{form}.changeState(plannedEvent);"/>
+                <smallButton name="realizedEvent" icon="acceptIcon16.png"
+                             state="disabled" action="#{form}.changeState(realizedEvent);"/>
             </group>
             <group name="attachments">
                 <bigButton name="downloadAttachment" icon="generateIcon24.png"
@@ -56,6 +56,12 @@
                             });
                         ]]>
                     </script>
+                </bigButton>
+            </group>
+
+            <group name="maintenanceEvents">
+                <bigButton name="showMaintenanceEvent" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(showMaintenanceEvent);" state="disabled">
                 </bigButton>
             </group>
 
@@ -89,14 +95,14 @@
                                     }
 
                                     if (! value.content.entityId) {
-                                        var startEvent = #{window}.getRibbonItem("status.startEvent");
                                         var planEvent = #{window}.getRibbonItem("status.planEvent");
-                                        var revokeEvent = #{window}.getRibbonItem("status.revokeEvent");
-                                        var closeEvent = #{window}.getRibbonItem("status.closeEvent");
-                                        startEvent.disable();
+                                        var cancelEvent = #{window}.getRibbonItem("status.cancelEvent");
+                                        var plannedEvent = #{window}.getRibbonItem("status.plannedEvent");
+                                        var realizedEvent = #{window}.getRibbonItem("status.realizedEvent");
                                         planEvent.disable();
-                                        revokeEvent.disable();
-                                        closeEvent.disable();
+                                        cancelEvent.disable();
+                                        plannedEvent.disable();
+                                        realizedEvent.disable();
                                         return;
                                     }
                                     updateRibbon(state);
@@ -127,61 +133,68 @@
 
 
                             function updateRibbon(state) {
-                                var startEvent = #{window}.getRibbonItem("status.startEvent");
-                                var planEvent = #{window}.getRibbonItem("status.planEvent");
-                                var revokeEvent = #{window}.getRibbonItem("status.revokeEvent");
-                                var closeEvent = #{window}.getRibbonItem("status.closeEvent");
+                            	var planEvent = #{window}.getRibbonItem("status.planEvent");
+                                var cancelEvent = #{window}.getRibbonItem("status.cancelEvent");
+                                var plannedEvent = #{window}.getRibbonItem("status.plannedEvent");
+                                var realizedEvent = #{window}.getRibbonItem("status.realizedEvent");
                                 var deleteButton = #{window}.getRibbonItem("actions.delete");
 
-                                startEvent.forState="02inProgress";
-                                startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.inProgress)}";
-                                startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.startEvent)}");
+                                planEvent.forState="02inPlan";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
 
-                                closeEvent.forState="04closed";
-                                closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
+                                cancelEvent.forState="06canceled";
+                                cancelEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.canceled)}";
 
-                                revokeEvent.forState="05revoked";
-                                revokeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.revoked)}";
+                                plannedEvent.forState="03planned";
+                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.planned)}";
 
-                                planEvent.forState="06planned";
-                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.planned)}";
+                                realizedEvent.forState="05realized";
+                                realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
 
 
                                 if (state == "01new") {
-                                    startEvent.enable();
                                     planEvent.enable();
-                                    revokeEvent.enable();
-                                    closeEvent.disable();
+                                    plannedEvent.enable();
+                                    cancelEvent.enable();
+                                    realizedEvent.disable();
+                                	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.plannedEvent)}");
+	                                plannedEvent.forState="03planned";
                                     toggleEditable(true, "");
-                                } else if (state == "02inProgress") {
-
-                                    startEvent.enable();
+                                } else if (state == "02inPlan") {
+                                    planEvent.disable();
+                                    cancelEvent.enable();
+                                    plannedEvent.enable();
+                                    realizedEvent.disable();
+                                	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.plannedEvent)}");
+	                                plannedEvent.forState="03planned";
+                                    toggleEditable(true, "");
+                                } else if (state == "03planned") {
                                     planEvent.enable();
-                                    revokeEvent.enable();
-                                    closeEvent.disable();
-
-                                    startEvent.forState="03edited";
-                                    startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.edited)}";
-                                    startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.stopEvent)}");
+                                    cancelEvent.enable();
+                                    plannedEvent.enable();
+                                    realizedEvent.enable();
+                                	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+	                                plannedEvent.forState="04inRealization";
+	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                     toggleEditable(true, "");
-                                    deleteButton.disable();
-
-                                } else if (state == "05revoked" || state == "06planned" || state == "04closed") {
-                                    startEvent.disable();
+                                } else if (state == "04inRealization") {
                                     planEvent.disable();
-                                    revokeEvent.disable();
-                                    closeEvent.disable();
-                                    toggleEditable(false);
-                                    if (state == "05revoked") {
-                                        deleteButton.enable();
-                                    }
-                                } else if ( state == "03edited"){
-                                    startEvent.disable();
-                                    planEvent.disable();
-                                    revokeEvent.disable();
-                                    closeEvent.enable();
+                                    cancelEvent.enable();
+                                    plannedEvent.disable();
+                                    realizedEvent.enable();
+                                	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+	                                plannedEvent.forState="04inRealization";
+	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                     toggleEditable(true, "");
-                                    deleteButton.disable();
+                                } else if (state == "05realized" || state == "06canceled") {
+                                    planEvent.disable();
+                                    cancelEvent.disable();
+                                    plannedEvent.disable();
+                                    realizedEvent.disable();
+                                	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+	                                plannedEvent.forState="04inRealization";
+	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+                                    toggleEditable(false, "");
                                 }
                             }
                              this.addOnChangeListener({
@@ -404,11 +417,14 @@
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
 
+                <listener event="showMaintenanceEvent" method="showMaintenanceEvent"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
+
                 <listener event="showSolutions" method="showSolutions"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
 
                 <listener event="changeState"
-                          class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
+                          class="com.qcadoo.mes.cmmsMachineParts.states.PlannedEventStateChangeViewClient"
                           method="changeState"/>
             </component>
         </windowTab>
@@ -514,6 +530,69 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="relatedEventsTab" reference="relatedEventsTab">
+            <component type="lookup" name="relatedEventLookup" reference="relatedEventLookup"
+                       field="#{form}.relatedEvents" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                <option type="column" name="type" fields="type"/>
+
+                <option type="searchable" value="number,type"/>
+                <option type="orderable" value="number,type"/>
+
+                <option type="expression" value="#number"/>
+                <option type="fieldCode" value="number"/>
+
+                <option type="multiselect" value="true"/>
+                <criteriaModifier
+                        class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.PlannedEventsCriteriaModifiers"
+                        method="filterRealizedAndCancelledEvents"/>
+            </component>
+            <component type="grid" name="relatedEvents" reference="relatedEvents"
+                       source="#{form}.relatedEvents">
+                <script>
+                    <![CDATA[
+                                var that = this;
+                                this.onDeleteButtonClicked = function () {
+                                    var selectedEntities = #{relatedEvents}.getValue().content.selectedEntities;
+
+                                    if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
+                                        #{relatedEvents}.fireEvent(null,'removeSelectedEntites',[selectedEntities]);
+                                    }
+                                };
+                            ]]>
+                </script>
+                <option type="column" name="number" fields="number" link="true"/>
+                <option type="column" name="type" fields="type" link="true"/>
+                <option type="column" name="description" fields="description" link="true"/>
+                <option type="column" name="ownerName" fields="ownerName"/>
+                <option type="column" name="state" fields="state"/>
+
+                <option type="order" column="number" direction="desc"/>
+
+                <option type="searchable" value="number,type,description,ownerName,state"/>
+                <option type="orderable" value="number,type,description,ownerName,state"/>
+
+                <option type="weakRelation" value="true"/>
+                <option type="correspondingLookup" value="relatedEventLookup"/>
+
+                <option type="correspondingView" value="cmmsMachineParts/plannedEventDetails"/>
+                <option type="correspondingComponent" value="form"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="creatable" value="true"/>
+
+                <option type="fixedHeight" value="true"/>
+
+                <listener event="addExistingEntity"
+                          method="onAddExistingRelatedEvent"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
+                <listener event="removeSelectedEntites"
+                          method="onRemoveRelatedEvents"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
+            </component>
+        </windowTab>
         <windowTab name="realizationTab">
             <component type="grid" name="realizations" reference="realizations"
                        source="#{form}.realizations">
@@ -578,6 +657,57 @@
                 </layoutElement>
             </component>
         </windowTab>
+
+        <windowTab name="documentsTab" reference="documentsTab">
+            <component type="gridLayout" name="documentsGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="documents" reference="documents"
+                               source="#{form}.documents">
+                        <option type="column" name="number" fields="number" link="true"
+                                width="50"/>
+                        <option type="column" name="type" fields="type"/>
+                        <option type="column" name="time" fields="time"/>
+                        <option type="column" name="locationFrom" fields="locationFrom"
+                                expression="#locationFrom['name']"/>
+                        <option type="column" name="user" fields="user"
+                                expression="#user['firstName'] + ' ' + #user['lastName']" width="150"/>
+                        <option type="column" name="state" fields="state" width="100"/>
+
+                        <option type="order" column="number" direction="desc" width="200"/>
+
+                        <option type="searchable"
+                                value="number,time,locationFrom,user,type,state"/>
+                        <option type="orderable"
+                                value="number,time,locationFrom,user,type,state"/>
+
+                        <option type="correspondingView" value="materialFlowResources/documentDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="false"/>
+                        <option type="fixedHeight" value="true"/>
+                        <option type="creatable" value="false"/>
+                        <option type="deletable" value="false"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="history">
+            <component type="grid" name="loggings" reference="grid"
+                       source="#{form}.stateChanges">
+                <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                <option type="column" name="previousState" fields="sourceState"/>
+                <option type="column" name="currentState" fields="targetState"/>
+                <option type="column" name="worker" fields="worker"/>
+
+                <option type="order" column="dateAndTime" direction="asc"/>
+                <option type="fixedHeight" value="true"/>
+                <option type="searchable" value="dateAndTime,previousState,currentState,worker,comment"/>
+                <option type="orderable" value="dateAndTime,previousState,currentState,worker"/>
+                <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                  method="hideFailedStateChanges"/>
+            </component>
+        </windowTab>
         <windowTab name="attachmentsTab">
             <component type="gridLayout" name="gridsLayout" columns="3"
                        rows="6" hasBorders="false">
@@ -612,10 +742,10 @@
     <hooks>
 
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventDetailsHooks"
-                      method="plannedEventBeforeRender"/>
+                      method="toggleFieldsVisible"/>
 
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventDetailsHooks"
-                      method="toggleFieldsVisible"/>
+                      method="plannedEventBeforeRender"/>
 
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventDetailsHooks"
                       method="setEventIdForMultiUploadField"/>

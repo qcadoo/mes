@@ -23,28 +23,25 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.states.constants;
 
-public final class MaintenanceEventStateChangeFields {
+import com.qcadoo.mes.states.aop.RunForStateTransitionAspect;
 
-    public static final String PLANNED_EVENT_TYPE = "plannedEventType";
+public final class PlannedEventStateStringValues {
 
-    public static final String PLANNED_EVENT_TYPE_REQUIRED = "plannedEventTypeRequired";
+    public static final String NEW = "01new";
 
-    private MaintenanceEventStateChangeFields() {
+    public static final String IN_PLAN = "02inPlan";
+
+    public static final String PLANNED = "03planned";
+
+    public static final String IN_REALIZATION = "04inRealization";
+
+    public static final String REALIZED = "05realized";
+
+    public static final String CANCELED = "06canceled";
+
+    public static final String WILDCARD_STATE = RunForStateTransitionAspect.WILDCARD_STATE;
+
+    private PlannedEventStateStringValues() {
     }
 
-    public static final String STATUS = "status";
-
-    public static final String MAINTENANCE_EVENT = "maintenanceEvent";
-
-    public static final String TARGET_STATE = "targetState";
-
-    public static final String SOURCE_STATE = "sourceState";
-
-    public static final String MESSAGES = "messages";
-
-    public static final String PHASE = "phase";
-
-    public static final String COMMENT = "comment";
-
-    public static final String COMMENT_REQUIRED = "commentRequired";
 }

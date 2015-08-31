@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForAdditionalWork;
+import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForAfterReview;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForExternalService;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForManual;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForMeterReading;
@@ -31,6 +32,8 @@ public class EventFieldsForTypeFactoryImpl implements EventFieldsForTypeFactory 
             return new FieldsForMeterReading();
         } else if (type.compareTo(PlannedEventType.UDT_REVIEW) == 0) {
             return new FieldsForUdtReview();
+        } else if (type.compareTo(PlannedEventType.AFTER_REVIEW) == 0) {
+            return new FieldsForAfterReview();
         }
         return null;
     }

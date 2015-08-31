@@ -8,9 +8,9 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventChangeReasonService;
+import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventChangeService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventDocumentsService;
+import com.qcadoo.mes.cmmsMachineParts.states.EventDocumentsService;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeListenerService;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateSetupService;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateValidationService;
@@ -39,10 +39,10 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
     private MaintenanceEventStateChangeListenerService listenerService;
 
     @Autowired
-    private MaintenanceEventChangeReasonService stateChangeReasonService;
+    private MaintenanceEventChangeService maintenanceEventChangeService;
 
     @Autowired
-    private MaintenanceEventDocumentsService maintenanceEventDocumentsService;
+    private EventDocumentsService eventDocumentsService;
 
     @Pointcut(MaintenanceEventStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
@@ -74,13 +74,15 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.CLOSED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void createDocumentsForMachineParts(final StateChangeContext stateChangeContext, final int phase) {
-        maintenanceEventDocumentsService.createDocumentsForMachineParts(stateChangeContext);
+        eventDocumentsService.createDocumentsForMachineParts(stateChangeContext);
     }
 
-    @RunInPhase(MaintenanceEventStateChangePhase.DEFAULT)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.PLANNED)
-    @Before(PHASE_EXECUTION_POINTCUT)
-    public void onCancelled(final StateChangeContext stateChangeContext, final int phase) {
+    @RunInPhase(MaintenanceEventStateChangePhase.LAST)
+    @RunForStateTransition(targetState = MaintenanceEventStateStringValues.PLANNED)
+    @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
+    public void convertToPlannedEvent(final StateChangeContext stateChangeContext, final int phase,
+            final ViewContextHolder viewContext) {
+        maintenanceEventChangeService.showPlanEventForm(stateChangeContext, viewContext);
     }
 
     @RunInPhase(MaintenanceEventStateChangePhase.PRE_VALIDATION)
@@ -90,11 +92,11 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
         validationService.validationOnRevoked(stateChangeContext);
     }
 
-    @RunInPhase(MaintenanceEventStateChangePhase.SETUP)
+    @RunInPhase(MaintenanceEventStateChangePhase.LAST)
     @RunForStateTransition(targetState = MaintenanceEventStateStringValues.REVOKED)
     @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
     public void askForRevokeReason(final StateChangeContext stateChangeContext, final int phase,
             final ViewContextHolder viewContext) {
-        stateChangeReasonService.showReasonForm(stateChangeContext, viewContext);
+        maintenanceEventChangeService.showReasonForm(stateChangeContext, viewContext);
     }
 }

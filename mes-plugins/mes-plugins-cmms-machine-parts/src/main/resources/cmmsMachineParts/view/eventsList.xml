@@ -23,7 +23,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="eventsList" modelName="maintenanceEventContext" modelPlugin="cmmsMachineParts" menuAccessible="true">
 
@@ -62,6 +63,12 @@
                              state="disabled" action="#{grid}.changeState(planEvent);"/>
                 <smallButton name="closeEvent" icon="acceptIcon16.png"
                              state="disabled" action="#{grid}.changeState(closeEvent);"/>
+            </group>
+
+            <group name="plannedEvents">
+                <bigButton name="showPlannedEvent" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(showPlannedEvent);" state="disabled">
+                </bigButton>
             </group>
         </ribbon>
 
@@ -182,6 +189,7 @@
 						getRibbonItem("status.revokeEvent").disable();
 						getRibbonItem("status.planEvent").disable();
 						getRibbonItem("status.closeEvent").disable();
+						getRibbonItem("plannedEvents.showPlannedEvent").disable();
 					}
 
 					function updateRibbon(selectedEntitiesArray) {
@@ -189,6 +197,7 @@
 						var lockedMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.cantModifyEvent)}";
 						var differentStatesMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.differentStates)}";
 						var differentStates = statesAreDifferent(selectedEntitiesArray);
+                        var showPlannedEvent = #{window}.getRibbonItem("plannedEvents.showPlannedEvent");
 
 						for (var elementKey in toggleRibbonItems) {
 							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
@@ -215,11 +224,17 @@
 						else {
 						    getRibbonItem("actions.delete").disable();
 						}
-
+                        if (state && state == "06planned" && selectedEntitiesArray.length == 1) {
+                            showPlannedEvent.enable();
+                        }
+                        else {
+                            showPlannedEvent.disable();
+                        }
                             var startEvent = #{window}.getRibbonItem("status.startEvent");
                             var planEvent = #{window}.getRibbonItem("status.planEvent");
                             var revokeEvent = #{window}.getRibbonItem("status.revokeEvent");
                             var closeEvent = #{window}.getRibbonItem("status.closeEvent");
+
 
 							startEvent.forState="02inProgress";
 							startEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.inProgress)}";
@@ -258,6 +273,7 @@
 								planEvent.disable();
 								revokeEvent.disable();
 								closeEvent.disable();
+
 							} else if ( state == "03edited") {
 								startEvent.disable();
 								planEvent.disable();
@@ -337,6 +353,10 @@
                 <listener event="onSelectedEntityChange"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
                           method="onSelectedEventChange"/>
+
+                <listener event="showPlannedEvent"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
+                          method="showPlannedEvent"/>
 
                 <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
                                   method="showEventsFromContext"/>

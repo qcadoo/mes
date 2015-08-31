@@ -42,6 +42,7 @@ CREATE TABLE cmmsmachineparts_plannedevent
   createuser character varying(255),
   updateuser character varying(255),
   plannedseparately boolean DEFAULT false,
+  afterreview boolean DEFAULT false,
   requiresshutdown boolean DEFAULT false,
   company_id bigint,
   basedon character varying(255) DEFAULT '01date'::character varying,
@@ -200,4 +201,54 @@ DROP FUNCTION update_version();
 -- QCADOOCLS-4373
 alter table qcadooplugin_plugin add groupname character varying(255);
 update qcadooplugin_plugin set version = '1.3.0';
+-- end
+
+-- materialflowresources_document
+-- last touched 25.08.2015 by kasi
+ALTER TABLE materialflowresources_document ADD COLUMN plannedevent_id bigint;
+ALTER TABLE materialflowresources_document
+  ADD CONSTRAINT plannedevent_fkey FOREIGN KEY (plannedevent_id)
+      REFERENCES cmmsmachineparts_plannedevent (id) DEFERRABLE;
+
+-- end
+
+-- Planned event state change
+-- last touched 25.08.2015 by pako
+
+CREATE TABLE cmmsmachineparts_plannedeventstatechange
+(
+  id bigint NOT NULL,
+  dateandtime timestamp without time zone,
+  sourcestate character varying(255),
+  targetstate character varying(255),
+  status character varying(255),
+  phase integer,
+  worker character varying(255),
+  plannedevent_id bigint,
+  shift_id bigint,
+  comment character varying(255),
+  commentrequired boolean DEFAULT false,
+  CONSTRAINT cmmsmachineparts_plannedeventstatechange_pkey PRIMARY KEY (id),
+  CONSTRAINT plannedeventstatechange_plannedevent_fkey FOREIGN KEY (plannedevent_id)
+      REFERENCES cmmsmachineparts_plannedevent (id) DEFERRABLE,
+  CONSTRAINT plannedeventstatechange_shift_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE
+)
+
+ALTER TABLE states_message ADD COLUMN maintenanceeventstatechange_id bigint;
+ALTER TABLE states_message
+  ADD CONSTRAINT message_plannedeventstatechange_fkey FOREIGN KEY (plannedeventstatechange_id)
+      REFERENCES cmmsmachineparts_plannedeventstatechange (id) DEFERRABLE;
+-- end
+
+-- Changing events to planned
+-- last touched 26.08.2015 by kama
+ALTER TABLE cmmsmachineparts_maintenanceeventstatechange ADD COLUMN plannedeventtype character varying(255);
+ALTER TABLE cmmsmachineparts_maintenanceeventstatechange ADD COLUMN plannedeventtyperequired boolean;
+ALTER TABLE cmmsmachineparts_maintenanceeventstatechange ALTER COLUMN plannedeventtyperequired SET DEFAULT false;
+ALTER TABLE cmmsmachineparts_plannedevent ADD COLUMN maintenanceevent_id bigint;
+ALTER TABLE cmmsmachineparts_plannedevent
+  ADD CONSTRAINT plannedevent_maintenanceevent_fkey FOREIGN KEY (maintenanceevent_id)
+      REFERENCES cmmsmachineparts_maintenanceevent (id) DEFERRABLE;
+
 -- end

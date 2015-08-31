@@ -1,5 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -56,6 +59,7 @@ public class EventHooks {
         toggleEnabledViewComponents(view, MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
         disableFieldsForState(view);
         toggleOldSolutionsButton(view);
+        enableShowPlannedEvent(view);
     }
 
     public void plannedEventBeforeRender(final ViewDefinitionState view) {
@@ -64,6 +68,8 @@ public class EventHooks {
         fillDefaultFieldsFromContext(view, PlannedEventFields.PLANNED_EVENT_CONTEXT);
         toggleEnabledViewComponents(view, PlannedEventFields.PLANNED_EVENT_CONTEXT);
         toggleEnabledFromBasedOn(view);
+        enableShowMaintenanceEvent(view);
+        disableCopyButtonForAfterReview(view);
     }
 
     public void toggleEnabledFromBasedOn(final ViewDefinitionState view) {
@@ -82,6 +88,45 @@ public class EventHooks {
             date.setFieldValue(null);
             counter.setEnabled(true);
         }
+    }
+
+    private void disableCopyButtonForAfterReview(final ViewDefinitionState view) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        if (PlannedEventType.from(event).equals(PlannedEventType.AFTER_REVIEW)) {
+            toggleRibbonButton(view, "actions", "copy", false);
+        }
+    }
+
+    private void enableShowPlannedEvent(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        Optional<Entity> plannedEvent = maintenanceEventService.getPlannedEventForMaintenanceEvent(event);
+
+        if (plannedEvent.isPresent()) {
+            toggleRibbonButton(view, "plannedEvents", "showPlannedEvent", true);
+        }
+    }
+
+    private void enableShowMaintenanceEvent(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+
+        Entity maintenanceEvent = event.getBelongsToField(PlannedEventFields.MAINTENANCE_EVENT);
+        if (maintenanceEvent != null) {
+            toggleRibbonButton(view, "maintenanceEvents", "showMaintenanceEvent", true);
+        }
+    }
+
+    private void toggleRibbonButton(final ViewDefinitionState view, String groupName, String itemName, boolean enabled) {
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup group = ribbon.getGroupByName(groupName);
+        RibbonActionItem item = group.getItemByName(itemName);
+        item.setEnabled(enabled);
+        item.requestUpdate(true);
     }
 
     private void disableFieldsForState(final ViewDefinitionState view) {
@@ -160,7 +205,7 @@ public class EventHooks {
     }
 
     private void toggleEnabledForFactory(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
-            String contextField) {
+                                         String contextField) {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
         }
@@ -170,7 +215,7 @@ public class EventHooks {
     }
 
     private void toggleEnabledForDivision(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
-            String contextField) {
+                                          String contextField) {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
         }

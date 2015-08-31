@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="maintenanceEventStateChange"
+<model name="plannedEventStateChange"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
         >
@@ -33,28 +33,24 @@
         <!-- generic state change fields -->
         <datetime name="dateAndTime"/>
         <enum name="sourceState"
-              values="01new,02inProgress,03edited,04closed,05revoked,06planned"/>
+              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled"/>
         <enum name="targetState"
-              values="01new,02inProgress,03edited,04closed,05revoked,06planned"
+              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled"
               required="true"/>
         <enum name="status" values="01inProgress,02paused,03successful,04failure,05canceled" required="true"/>
         <integer name="phase"/>
         <string name="worker"/>
-        <hasMany name="messages" joinField="maintenanceEventStateChange" model="message" plugin="states"
+        <hasMany name="messages" joinField="plannedEventStateChange" model="message" plugin="states"
                  cascade="delete"/>
         <!-- messages -->
-        <belongsTo name="maintenanceEvent" model="maintenanceEvent"/>
+        <belongsTo name="plannedEvent" model="plannedEvent"/>
         <!-- owner -->
         <belongsTo name="shift" model="shift" plugin="basic"/>
-        <string name="comment"/>
-        <boolean name="commentRequired" default="false"/>
+        <string name="comment" />
+        <boolean name="commentRequired" default="false" />
 
-        <enum name="plannedEventType"
-              values="01review,02repairs,03externalService,04udtReview,05meterReading,06manual,07additionalWork"/>
-        <boolean name="plannedEventTypeRequired" default="false"/>
     </fields>
     <hooks>
-        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventStateChangeValidators"
-                       method="validate"/>
+        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventStateChangeValidators" method="validate"/>
     </hooks>
 </model>

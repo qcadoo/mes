@@ -23,28 +23,21 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.states.constants;
 
-public final class MaintenanceEventStateChangeFields {
+public final class PlannedEventStateChangePhase {
 
-    public static final String PLANNED_EVENT_TYPE = "plannedEventType";
+    public static final int SETUP = 1;
 
-    public static final String PLANNED_EVENT_TYPE_REQUIRED = "plannedEventTypeRequired";
+    public static final int PRE_VALIDATION = 3;
 
-    private MaintenanceEventStateChangeFields() {
+    public static final int DEFAULT = 5;
+
+    public static final int LAST = DEFAULT + 1;
+
+    private PlannedEventStateChangePhase() {
     }
 
-    public static final String STATUS = "status";
+    public static int getNumOfPhases() {
+        return LAST;
+    }
 
-    public static final String MAINTENANCE_EVENT = "maintenanceEvent";
-
-    public static final String TARGET_STATE = "targetState";
-
-    public static final String SOURCE_STATE = "sourceState";
-
-    public static final String MESSAGES = "messages";
-
-    public static final String PHASE = "phase";
-
-    public static final String COMMENT = "comment";
-
-    public static final String COMMENT_REQUIRED = "commentRequired";
 }

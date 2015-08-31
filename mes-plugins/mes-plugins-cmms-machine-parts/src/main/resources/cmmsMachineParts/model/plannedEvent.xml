@@ -30,7 +30,7 @@
     <fields>
         <string name="number" required="true" unique="true"/>
         <enum name="type"
-              values="01review,02repairs,03externalService,04udtReview,05meterReading,06manual,07additionalWork"
+              values="01review,02repairs,03externalService,04udtReview,05meterReading,06manual,07additionalWork,08afterReview"
               default="01review" required="true"/>
         <string name="description"/>
         <belongsTo name="owner" model="staff" plugin="basic"/>
@@ -38,7 +38,7 @@
         <string name="ownerName"/>
 
         <enum name="state"
-              values="01new,02inProgress,03edited,04closed,05revoked,06planned" default="01new"/>
+              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled" default="01new"/>
 
         <belongsTo name="factory" model="factory" plugin="basic" required="true"/>
         <belongsTo name="division" model="division" plugin="basic" required="true"/>
@@ -77,7 +77,7 @@
         <datetime name="finishDate"/>
         <boolean name="isDeadline"/>
         <manyToMany name="responsibleWorkers" joinField="plannedEvents" model="staff" cascade="nullify" plugin="basic"
-                    copyable="true"/>
+                    copyable="false"/>
 
         <hasMany name="realizations" model="plannedEventRealization" joinField="plannedEvent" copyable="false"
                  cascade="delete"/>
@@ -85,18 +85,36 @@
         <belongsTo name="plannedEventContext" plugin="cmmsMachineParts" model="plannedEventContext"/>
 
         <hasMany name="actions" model="actionForPlannedEvent" joinField="plannedEvent" cascade="delete"
-                 copyable="true"/>
+                 copyable="false"/>
 
         <text name="solutionDescription"/>
         <hasMany name="machinePartsForEvent" model="machinePartForEvent" joinField="plannedEvent" cascade="delete"
-                 copyable="true"/>
+                 copyable="false"/>
 
         <hasMany name="attachments" model="plannedEventAttachment" joinField="plannedEvent" cascade="delete"/>
+
+        <hasMany name="documents" model="document" plugin="materialFlowResources" joinField="plannedEvent"
+                 copyable="false"
+                 cascade="nullify"/>
+
+        <manyToMany name="relatedEvents" joinField="relatedEvents" columnName="relatedEvent" model="plannedEvent"
+                    cascade="nullify"
+                    copyable="false"/>
+
+        <hasMany name="stateChanges" joinField="plannedEvent" model="plannedEventStateChange" cascade="delete"
+                 copyable="false"/>
+
+        <boolean name="afterReview" default="false"/>
+
+        <belongsTo name="maintenanceEvent" model="maintenanceEvent" plugin="cmmsMachineParts"/>
 
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventValidators"
                        method="validatesWith"/>
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onSave"/>
+        <onCreate class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onCopy"/>
+        <onDelete class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onDelete"/>
     </hooks>
 </model>

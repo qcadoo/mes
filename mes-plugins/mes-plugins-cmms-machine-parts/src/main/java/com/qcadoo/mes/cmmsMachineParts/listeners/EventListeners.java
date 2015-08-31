@@ -278,4 +278,20 @@ public class EventListeners {
         }
     }
 
+    public void showPlannedEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity maintenanceEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT).get(form.getEntityId());
+
+        Optional<Entity> plannedEvent = maintenanceEventService.getPlannedEventForMaintenanceEvent(maintenanceEvent);
+        if (plannedEvent.isPresent()) {
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", plannedEvent.get().getId());
+            view.redirectTo("../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/plannedEventDetails.html", false, true,
+                    parameters);
+        }
+
+    }
+
 }
