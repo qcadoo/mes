@@ -77,6 +77,8 @@ public class AfterReviewEventsService {
         afterReviewEvent.setField(PlannedEventFields.DESCRIPTION, description);
         afterReviewEvent.setField(PlannedEventFields.BASED_ON, PlannedEventBasedOn.DATE.getStringValue());
         afterReviewEvent.setField(PlannedEventFields.AFTER_REVIEW, true);
+        afterReviewEvent.setField(PlannedEventFields.PLANNED_EVENT_CONTEXT,
+                plannedEvent.getBelongsToField(PlannedEventFields.PLANNED_EVENT_CONTEXT));
         afterReviewEvent.getDataDefinition().save(afterReviewEvent);
         return number;
     }
