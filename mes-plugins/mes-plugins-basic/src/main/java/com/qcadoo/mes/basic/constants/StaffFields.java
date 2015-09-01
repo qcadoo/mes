@@ -31,6 +31,8 @@ public final class StaffFields {
 
     public static final String NAME = "name";
 
+    public static final String CREW = "crew";
+
     public static final String NUMBER = "number";
 
     public static final String SURNAME = "surname";
