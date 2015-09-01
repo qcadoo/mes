@@ -7,5 +7,11 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class ProductsCriteriaModifiers {
-	public void filterProducts(final SearchCriteriaBuilder searchCriteriaBuilder, final FilterValueHolder filterValueHolder ) {}
+
+    public void filterProducts(final SearchCriteriaBuilder searchCriteriaBuilder, final FilterValueHolder filterValueHolder) {
+    }
+
+    public void filterProductsInPosition(final SearchCriteriaBuilder searchCriteriaBuilder) {
+    }
+
 }

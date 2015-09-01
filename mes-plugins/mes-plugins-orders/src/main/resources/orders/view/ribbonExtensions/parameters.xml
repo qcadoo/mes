@@ -29,7 +29,7 @@
 	plugin="basic"
 	view="parameters">
 	
-	<group name="parameters">
+	<group name="parameters" defaultAuthorizationRole="ROLE_PARAMETERS">
 		<bigButton name="ordersParameters" icon="calendarIcon24.png">
 			<script>
 				<![CDATA[

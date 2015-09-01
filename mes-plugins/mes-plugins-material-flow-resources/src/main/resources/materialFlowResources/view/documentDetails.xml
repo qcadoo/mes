@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="documentDetails" modelName="document">
 
@@ -172,6 +173,9 @@
                                 <listener event="onSelectedEntityChange"
                                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                                           method="refreshView"/>
+                                <criteriaModifier
+                                        class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
+                                        method="filterProductsInPosition"/>
 
                             </component>
                         </layoutElement>

@@ -93,6 +93,11 @@
 
         <security:role identifier="ROLE_MACHINE_PARTS" description="Dostęp do części"/>
 
+        <security:role identifier="ROLE_COUNTRIES" description="Dostęp do listy krajów"/>
+
+        <security:role identifier="ROLE_PARAMETERS" description="Dostęp parametrów systemowych"/>
+
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="shift" resource="model/shift.xml"/>
@@ -132,7 +137,7 @@
                         view="companiesList" defaultAuthorizationRole="ROLE_COMPANY"/>
 
         <menu:menu-item name="countries" category="administration"
-                        view="countriesList" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
+                        view="countriesList" defaultAuthorizationRole="ROLE_COUNTRIES"/>
 
         <menu:menu-item name="staff" category="basic" view="staffsList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
         <menu:menu-item name="shifts" category="basic" view="shiftsList"/>
@@ -145,7 +150,7 @@
                             defaultAuthorizationRole="ROLE_DICTIONARY_VIEW"/>
 
         <menu:menu-item-url name="systemParameters"
-                            category="administration" url="/parameters.html" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
+                            category="administration" url="/parameters.html" defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
         <menu:menu-item-url name="conversion" category="basic"
                             url="/unitConversions.html" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>

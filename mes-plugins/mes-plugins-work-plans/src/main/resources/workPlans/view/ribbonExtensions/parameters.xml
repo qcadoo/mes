@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
 	plugin="basic" view="parameters">
 
-	<group name="parameters">
+	<group name="parameters" defaultAuthorizationRole="ROLE_PARAMETERS">
 		<bigButton name="workPlansParameters" icon="calendarIcon24.png">
 			<script>
 				<![CDATA[

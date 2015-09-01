@@ -12,6 +12,18 @@ public class MachinePartForEventFields {
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
+    public static final String MACHINE_PART_NAME = "machinePartName";
+
+    public static final String MACHINE_PART_NUMBER = "machinePartNumber";
+
+    public static final String MACHINE_PART_UNIT = "machinePartUnit";
+
+    public static final String WAREHOUSE_NUMBER = "warehouseNumber";
+
+    public static final String MAINTENANCE_EVENT = "maintenanceEvent";
+
+    public static final String PLANNED_EVENT = "plannedEvent";
+
     private MachinePartForEventFields() {
     }
 }

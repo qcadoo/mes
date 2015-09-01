@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.3
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="plannedEvent" auditable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true"/>
+        <enum name="type"
+              values="01review,02repairs,03externalService,04udtReview,05meterReading,06manual,07additionalWork,08afterReview"
+              default="01review" required="true"/>
+        <string name="description"/>
+        <belongsTo name="owner" model="staff" plugin="basic"/>
+        <!-- only for show in grid-->
+        <string name="ownerName"/>
+
+        <enum name="state"
+              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled" default="01new"/>
+
+        <belongsTo name="factory" model="factory" plugin="basic" required="true"/>
+        <belongsTo name="division" model="division" plugin="basic" required="true"/>
+        <belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
+        <belongsTo name="workstation" model="workstation" plugin="basic"/>
+        <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
+        <belongsTo name="company" model="company" plugin="basic"/>
+
+        <boolean name="plannedSeparately" default="false"/>
+        <boolean name="requiresShutdown" default="false"/>
+
+        <enum name="basedOn" values="01date,02counter" default="01date" required="true"/>
+        <date name="date"/>
+
+        <decimal name="counter">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="counterTolerance">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <integer name="duration" default="0"/>
+        <integer name="effectiveDuration" default="0"/>
+
+        <decimal name="effectiveCounter">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <datetime name="startDate"/>
+        <datetime name="finishDate"/>
+        <boolean name="isDeadline"/>
+        <manyToMany name="responsibleWorkers" joinField="plannedEvents" model="staff" cascade="nullify" plugin="basic"
+                    copyable="false"/>
+
+        <hasMany name="realizations" model="plannedEventRealization" joinField="plannedEvent" copyable="false"
+                 cascade="delete"/>
+
+        <belongsTo name="plannedEventContext" plugin="cmmsMachineParts" model="plannedEventContext"/>
+
+        <hasMany name="actions" model="actionForPlannedEvent" joinField="plannedEvent" cascade="delete"
+                 copyable="false"/>
+
+        <text name="solutionDescription"/>
+        <hasMany name="machinePartsForEvent" model="machinePartForEvent" joinField="plannedEvent" cascade="delete"
+                 copyable="false"/>
+
+        <hasMany name="attachments" model="plannedEventAttachment" joinField="plannedEvent" cascade="delete"/>
+
+        <hasMany name="documents" model="document" plugin="materialFlowResources" joinField="plannedEvent"
+                 copyable="false"
+                 cascade="nullify"/>
+
+        <manyToMany name="relatedEvents" joinField="relatedEvents" columnName="relatedEvent" model="plannedEvent"
+                    cascade="nullify"
+                    copyable="false"/>
+
+        <hasMany name="stateChanges" joinField="plannedEvent" model="plannedEventStateChange" cascade="delete"
+                 copyable="false"/>
+
+        <boolean name="afterReview" default="false"/>
+
+        <belongsTo name="maintenanceEvent" model="maintenanceEvent" plugin="cmmsMachineParts"/>
+
+    </fields>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventValidators"
+                       method="validatesWith"/>
+        <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onSave"/>
+        <onCreate class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onCopy"/>
+        <onDelete class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventHooks" method="onDelete"/>
+    </hooks>
+</model>

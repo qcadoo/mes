@@ -1,8 +1,14 @@
 package com.qcadoo.mes.cmmsMachineParts;
 
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -18,11 +24,8 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.internal.components.form.FormComponentState;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
 
 @Service
 public class MaintenanceEventContextService {
@@ -30,6 +33,8 @@ public class MaintenanceEventContextService {
     private static final String L_FORM = "form";
 
     private static final String L_GRID = "grid";
+
+    private static final String L_PLANNED_EVENT = "plannedEvent";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -41,7 +46,7 @@ public class MaintenanceEventContextService {
         if (maintenanceEventContextEntity.getBooleanField(MaintenanceEventContextFields.CONFIRMED)) {
             maintenanceEventContextEntity = changeContext(view, maintenanceEventContextEntity);
         } else {
-            maintenanceEventContextEntity = confirmContext(view, maintenanceEventContextEntity);
+            maintenanceEventContextEntity = confirmContext(view, maintenanceEventContextEntity, args);
         }
         formComponent.setEntity(maintenanceEventContextEntity);
     }
@@ -56,25 +61,35 @@ public class MaintenanceEventContextService {
         return maintenanceEventContextEntity;
     }
 
-    private Entity confirmContext(ViewDefinitionState view, Entity maintenanceEventContextEntity) {
+    private Entity confirmContext(ViewDefinitionState view, Entity maintenanceEventContextEntity, String[] args) {
         FormComponent formComponent = (FormComponentState) view.getComponentByReference(L_FORM);
 
         maintenanceEventContextEntity.setField(MaintenanceEventContextFields.CONFIRMED, true);
         maintenanceEventContextEntity = maintenanceEventContextEntity.getDataDefinition().save(maintenanceEventContextEntity);
         Long maintenanceEventContextEntityId = maintenanceEventContextEntity.getId();
-        dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT).find().list().getEntities().stream().forEach(event -> {
-            event.setField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT, maintenanceEventContextEntityId);
-            event.getDataDefinition().save(event);
-        });
-
+        if (args.length > 0 && args[0].equals(L_PLANNED_EVENT)) {
+            dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
+                    .find().list().getEntities().stream().forEach(event -> {
+                        event.setField(PlannedEventFields.PLANNED_EVENT_CONTEXT, maintenanceEventContextEntityId);
+                        event.getDataDefinition().save(event);
+                    });
+        } else {
+            dataDefinitionService
+                    .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT).find()
+                    .list().getEntities().stream().forEach(event -> {
+                        event.setField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT, maintenanceEventContextEntityId);
+                        event.getDataDefinition().save(event);
+                    });
+        }
         return maintenanceEventContextEntity;
     }
 
-    private Entity prepareContextEntity(Entity maintenanceEventContextEntity) {
+    public Entity prepareContextEntity(Entity maintenanceEventContextEntity) {
         SearchCriteriaBuilder searchCriteriaBuilder = maintenanceEventContextEntity.getDataDefinition().find();
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(MaintenanceEventContextFields.DIVISION, maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.DIVISION)));
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(MaintenanceEventContextFields.FACTORY, maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.FACTORY)));
-
+        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(MaintenanceEventContextFields.DIVISION,
+                maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.DIVISION)));
+        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(MaintenanceEventContextFields.FACTORY,
+                maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.FACTORY)));
 
         Entity maintenanceEventContextEntityFromDb = searchCriteriaBuilder.uniqueResult();
 
@@ -123,8 +138,8 @@ public class MaintenanceEventContextService {
     private void setEnableOfContextTab(ViewDefinitionState view, boolean enabled) {
         ComponentState contextTabComponent = view.getComponentByReference("contextTab");
 
-        view.<FieldComponent>tryFindComponentByReference(MaintenanceEventContextFields.FACTORY).orNull().setEnabled(enabled);
-        view.<FieldComponent>tryFindComponentByReference(MaintenanceEventContextFields.DIVISION).orNull().setEnabled(enabled);
+        view.<FieldComponent> tryFindComponentByReference(MaintenanceEventContextFields.FACTORY).orNull().setEnabled(enabled);
+        view.<FieldComponent> tryFindComponentByReference(MaintenanceEventContextFields.DIVISION).orNull().setEnabled(enabled);
     }
 
     private void setEnableOfMainTab(ViewDefinitionState view, boolean enabled) {
@@ -133,7 +148,8 @@ public class MaintenanceEventContextService {
     }
 
     private Entity prepareFilteredEvents(Entity maintenanceEventContextEntity) {
-        DataDefinition maintenanceEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
+        DataDefinition maintenanceEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
 
         SearchCriteriaBuilder searchCriteriaBuilder = maintenanceEventDD.find();
 
@@ -156,7 +172,11 @@ public class MaintenanceEventContextService {
         WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
         Ribbon ribbon = window.getRibbon();
 
-        for (RibbonActionItem ribbonActionItem : ribbon.getGroupByName("customActions").getItems()) {
+        RibbonGroup customActions = ribbon.getGroupByName("customActions");
+        if (customActions == null) {
+            return;
+        }
+        for (RibbonActionItem ribbonActionItem : customActions.getItems()) {
             ribbonActionItem.setEnabled(enabled);
             ribbonActionItem.requestUpdate(true);
         }
@@ -168,12 +188,12 @@ public class MaintenanceEventContextService {
         FilterValueHolder filterValueHolder = gridComponent.getFilterValue();
 
         Entity factoryEntity = maintenanceEventContext.getBelongsToField(MaintenanceEventContextFields.FACTORY);
-        if(factoryEntity != null) {
+        if (factoryEntity != null) {
             filterValueHolder.put(EventCriteriaModifiersCMP.EVENT_CONTEXT_FILTER_PARAMETER_FACTORY, factoryEntity.getId());
         }
 
         Entity divisionEntity = maintenanceEventContext.getBelongsToField(MaintenanceEventContextFields.DIVISION);
-        if(divisionEntity != null) {
+        if (divisionEntity != null) {
             filterValueHolder.put(EventCriteriaModifiersCMP.EVENT_CONTEXT_FILTER_PARAMETER_DIVISION, divisionEntity.getId());
         }
         gridComponent.setFilterValue(filterValueHolder);
@@ -182,7 +202,8 @@ public class MaintenanceEventContextService {
     public void onSelectedEventChange(ViewDefinitionState view) {
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        DataDefinition maintenanceEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
+        DataDefinition maintenanceEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
 
         for (Entity eventEntity : grid.getSelectedEntities()) {
             eventEntity.setField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT, form.getEntityId());
@@ -190,4 +211,3 @@ public class MaintenanceEventContextService {
         }
     }
 }
-

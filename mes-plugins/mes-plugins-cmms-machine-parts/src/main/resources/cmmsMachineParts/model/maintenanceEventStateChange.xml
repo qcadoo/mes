@@ -46,11 +46,15 @@
         <belongsTo name="maintenanceEvent" model="maintenanceEvent"/>
         <!-- owner -->
         <belongsTo name="shift" model="shift" plugin="basic"/>
-        <string name="comment" />
-        <boolean name="commentRequired" default="false" />
+        <string name="comment"/>
+        <boolean name="commentRequired" default="false"/>
 
+        <enum name="plannedEventType"
+              values="01review,02repairs,03externalService,04udtReview,05meterReading,06manual,07additionalWork"/>
+        <boolean name="plannedEventTypeRequired" default="false"/>
     </fields>
     <hooks>
-        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventStateChangeValidators" method="validate"/>
+        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventStateChangeValidators"
+                       method="validate"/>
     </hooks>
 </model>

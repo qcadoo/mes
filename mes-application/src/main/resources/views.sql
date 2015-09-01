@@ -66,3 +66,8 @@ DROP TABLE IF EXISTS ordersupplies_orderdto;
 CREATE OR REPLACE VIEW ordersupplies_orderdto AS SELECT id, number, name, state FROM orders_order;
 
 CREATE TABLE jointable_coverageorderhelper_orderdto (coverageorderhelper_id bigint NOT NULL, orderdto_id bigint NOT NULL, CONSTRAINT jointable_coverageorderhelper_orderdto_pkey PRIMARY KEY (coverageorderhelper_id, orderdto_id), CONSTRAINT jointable_coverageorderhelper_coverageorderhelper_fkey FOREIGN KEY (coverageorderhelper_id) REFERENCES ordersupplies_coverageorderhelper (id) DEFERRABLE);
+
+---
+DROP TABLE IF EXISTS orders_orderPlanningListDto;
+CREATE OR REPLACE VIEW orders_orderPlanningListDto as select o.id, o.active, o.number, o.name, o.dateFrom, o.dateTo, o.startDate, o.finishDate, o.state, o.externalNumber, o.externalSynchronized, o.isSubcontracted, o.plannedQuantity, o.workPlanDelivered, product.number as productNumber, tech.number as technologyNumber, product.unit, line.number as productionLineNumber, master.number as masterOrderNumber, division.name as divisionName from orders_order o join basic_product product on (o.product_id = product.id) left join technologies_technology tech on (o.technology_id = tech.id) join productionLines_productionLine line on (o.productionline_id = line.id) left join masterOrders_masterOrder  master on (o.masterorder_id = master.id) left join basic_division division on (tech.division_id = division.id)
+--- end

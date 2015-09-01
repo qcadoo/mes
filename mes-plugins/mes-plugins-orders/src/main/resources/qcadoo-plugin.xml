@@ -66,6 +66,7 @@
         <localization:translation path="locales"/>
 
         <model:model model="order" resource="model/order.xml"/>
+        <model:model model="orderPlanningListDto" resource="model/orderPlanningListDto.xml"/>
         <model:model model="orderStateChange" resource="model/orderStateChange.xml"/>
 
         <model:model model="typeOfCorrectionCauses" resource="model/typeOfCorrectionCauses.xml"/>

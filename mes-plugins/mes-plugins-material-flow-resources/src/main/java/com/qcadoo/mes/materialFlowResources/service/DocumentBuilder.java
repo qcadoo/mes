@@ -189,7 +189,7 @@ public class DocumentBuilder {
             final String givenUnit, final BigDecimal price, final String batch, final Date productionDate,
             final Date expirationDate, final Entity resource) {
         Entity position = createPosition(product, quantity, price, batch, productionDate, expirationDate, resource);
-        position.setField(PositionFields.GIVEN_QUANTITY, quantity);
+        position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
         position.setField(PositionFields.GIVEN_UNIT, givenUnit);
         return position;
     }

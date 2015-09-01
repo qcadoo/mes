@@ -84,7 +84,6 @@
 
                 <script>
                     <![CDATA[
->>>>>>> dev
 						this.addOnChangeListener({
 							onSetValue: function(value) {
 								var state = #{state}.getValue().content.value;
@@ -167,8 +166,8 @@
                 </script>
 
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="5">
-                    <layoutElement column="1" row="1" height="5">
+                           rows="10">
+                    <layoutElement column="1" row="1">
                         <component type="gridLayout" name="leftColGridLayout" columns="1"
                                    rows="5">
                             <layoutElement column="1" row="1">
@@ -209,17 +208,19 @@
                             </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="1" width="2" height="5">
+                    <layoutElement column="2" row="1" width="2" height="10">
                         <component type="grid" name="staffAssignmentToShifts"
                                    reference="staffAssignmentToShifts" source="#{form}.staffAssignmentToShifts">
-                            <option type="column" name="workerNumber" fields="worker"
-                                    expression="#worker['number']" link="true"/>
+                            <option type="column" name="occupationTypeValueForGrid"
+                                    fields="occupationTypeValueForGrid"/>
+                            <option type="column" name="masterOrder" fields="masterOrder"
+                                    expression="#masterOrder['number']" link="true"/>
                             <option type="column" name="workerName" fields="worker"
                                     expression="#worker['name']" link="true"/>
                             <option type="column" name="workerSurname" fields="worker"
                                     expression="#worker['surname']" link="true"/>
-                            <option type="column" name="occupationTypeValueForGrid"
-                                    fields="occupationTypeValueForGrid"/>
+                            <option type="column" name="workerNumber" fields="worker"
+                                    expression="#worker['number']" link="true"/>
 
                             <option type="order" column="workerNumber" direction="desc"/>
 
@@ -229,16 +230,15 @@
                             <option type="correspondingViewInModal" value="true"/>
 
                             <option type="searchable"
-                                    value="workerNumber,workerName,workerSurname,occupationTypeValueForGrid"/>
+                                    value="workerNumber,workerName,workerSurname,occupationTypeValueForGrid,masterOrder"/>
                             <option type="orderable"
-                                    value="workerNumber,workerName,workerSurname,occupationTypeValueForGrid"/>
+                                    value="workerNumber,workerName,workerSurname,occupationTypeValueForGrid,masterOrder"/>
                             <option type="creatable" value="true"/>
                             <option type="deletable" value="true"/>
                             <option type="paginable" value="false"/>
 
                             <option type="fullscreen" value="true"/>
                             <option type="multiselect" value="true"/>
-
                             <listener event="select"
                                   class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftDetailsListeners"
                                   method="changeCopyStaffAssignmentToShiftButtonState"/>
@@ -248,7 +248,6 @@
 
                 <option type="header" value="true"/>
                 <option type="expression" value="#name"/>
-
                 <listener event="changeState"
                           class="com.qcadoo.mes.assignmentToShift.states.client.AssignmentToShiftStateChangeViewClient"
                           method="changeState"/>
