@@ -32,7 +32,7 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardGridTemplate" excludeItems="actions.copy"/>
+            <template name="standardGridTemplate"/>
         </ribbon>
 
         <component type="grid" name="crews" reference="grid">
