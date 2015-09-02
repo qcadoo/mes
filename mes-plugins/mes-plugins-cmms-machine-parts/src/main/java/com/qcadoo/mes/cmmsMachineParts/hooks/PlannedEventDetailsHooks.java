@@ -46,10 +46,11 @@ public class PlannedEventDetailsHooks {
             PlannedEventFields.RESPONSIBLE_WORKERS, PlannedEventFields.REALIZATIONS, PlannedEventFields.MACHINE_PARTS_FOR_EVENT);
 
     public void plannedEventBeforeRender(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        form.setFormEnabled(true);
 
         eventHooks.plannedEventBeforeRender(view);
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity plannedEvent = form.getEntity();
         FieldComponent type = (FieldComponent) view.getComponentByReference(PlannedEventFields.TYPE);
         type.setEnabled(plannedEvent.getId() == null);

@@ -200,6 +200,7 @@ public class EventHooks {
         toggleEnabledForWorkstation(view, form, eventEntity);
         toggleEnabledForFactory(view, form, eventEntity, contextField);
         toggleEnabledForDivision(view, form, eventEntity, contextField);
+        toggleEnabledForSubassembly(view, form, eventEntity);
     }
 
     private void toggleEnabledForWorkstation(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
@@ -226,6 +227,12 @@ public class EventHooks {
         boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
         divisionLookup.setEnabled(enabled);
+    }
+
+    private void toggleEnabledForSubassembly(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
+        boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.WORKSTATION) != null;
+        LookupComponent subassemblyLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.SUBASSEMBLY);
+        subassemblyLookup.setEnabled(enabled);
     }
 
     private void setFieldsRequired(final ViewDefinitionState view) {
