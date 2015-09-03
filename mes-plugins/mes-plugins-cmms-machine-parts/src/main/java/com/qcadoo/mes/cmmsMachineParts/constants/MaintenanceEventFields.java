@@ -44,4 +44,6 @@ public class MaintenanceEventFields {
     public static final String STAFF_WORK_TIEMS = "staffWorkTimes";
 
     public static final String MAINTENANCE_EVENT_CONTEXT = "maintenanceEventContext";
+
+    public static final String SOURCE_COST = "sourceCost";
 }

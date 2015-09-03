@@ -1,53 +1,40 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.SourceCostService;
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
-@Service
-public class EventHooks {
+import java.util.Optional;
+
+@Service public class EventHooks {
 
     private static final String L_FORM = "form";
 
-    @Autowired
-    private MaintenanceEventService maintenanceEventService;
+    @Autowired private MaintenanceEventService maintenanceEventService;
 
-    @Autowired
-    private FaultTypesService faultTypesService;
+    @Autowired private FaultTypesService faultTypesService;
 
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    @Autowired private NumberGeneratorService numberGeneratorService;
 
-    @Autowired
-    private MaintenanceEventContextService maintenanceEventContextService;
+    @Autowired private MaintenanceEventContextService maintenanceEventContextService;
+
+    @Autowired private SourceCostService sourceCostService;
 
     public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
         setEventCriteriaModifiers(view);
@@ -164,8 +151,8 @@ public class EventHooks {
 
     private void generateNumber(final ViewDefinitionState view, String modelName, String fieldName) {
         if (numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, fieldName)) {
-            numberGeneratorService.generateAndInsertNumber(view, CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, modelName, L_FORM,
-                    fieldName);
+            numberGeneratorService
+                    .generateAndInsertNumber(view, CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, modelName, L_FORM, fieldName);
         }
     }
 
@@ -181,6 +168,16 @@ public class EventHooks {
                     FieldComponent factoryField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
                     factoryField.setFieldValue(factoryEntity.getId());
                     factoryField.requestComponentUpdateState();
+                    fillSourceCost(view, factoryEntity);
+                } else {
+                    Entity faEntity = form.getPersistedEntityWithIncludedFormValues()
+                            .getBelongsToField(MaintenanceEventFields.FACTORY);
+                    if (faEntity == null) {
+                        fillSourceCost(view);
+                    } else {
+                        fillSourceCost(view, faEntity);
+
+                    }
                 }
 
                 Entity divisionEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.DIVISION);
@@ -190,6 +187,30 @@ public class EventHooks {
                     divisionField.requestComponentUpdateState();
                 }
             }
+        }
+    }
+
+    public void fillSourceCost(final ViewDefinitionState view, final Entity factoryEntity) {
+        Optional<Entity> costForFactory = sourceCostService.findDefaultSourceCodeForFactory(factoryEntity);
+        if (costForFactory.isPresent()) {
+            FieldComponent costField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.SOURCE_COST);
+            costField.setFieldValue(costForFactory.get().getId());
+            costField.requestComponentUpdateState();
+        } else {
+            fillSourceCost(view);
+        }
+    }
+
+    public void fillSourceCost(final ViewDefinitionState view) {
+        Optional<Entity> costForFactory = sourceCostService.findDefaultSourceCode();
+        if (costForFactory.isPresent()) {
+            FieldComponent costField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.SOURCE_COST);
+            costField.setFieldValue(costForFactory.get().getId());
+            costField.requestComponentUpdateState();
+        } else {
+            FieldComponent costField = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.SOURCE_COST);
+            costField.setFieldValue(null);
+            costField.requestComponentUpdateState();
         }
     }
 
@@ -214,7 +235,8 @@ public class EventHooks {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
         }
-        boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
+        boolean enabled =
+                eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
         LookupComponent factoryLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
         factoryLookup.setEnabled(enabled);
     }
@@ -224,7 +246,8 @@ public class EventHooks {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
         }
-        boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
+        boolean enabled =
+                eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
         divisionLookup.setEnabled(enabled);
     }

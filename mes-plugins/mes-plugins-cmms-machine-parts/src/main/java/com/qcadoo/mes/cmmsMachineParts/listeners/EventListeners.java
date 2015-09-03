@@ -1,17 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
@@ -22,6 +10,7 @@ import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
+import com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks;
 import com.qcadoo.mes.cmmsMachineParts.hooks.FactoryStructureForEventHooks;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.mes.productionLines.constants.FactoryStructureElementFields;
@@ -40,6 +29,17 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventListeners {
@@ -68,6 +68,9 @@ public class EventListeners {
 
     @Autowired
     private FactoryStructureElementsService factoryStructureElementsService;
+
+    @Autowired
+    private EventHooks eventHooks;
 
     public void addEvent(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String args[]) {
         String eventType = args[0];
@@ -112,6 +115,17 @@ public class EventListeners {
 
     public void factoryChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         clearSelectionOnDivision(view);
+        fillSourceCost(view);
+    }
+
+    private void fillSourceCost(final ViewDefinitionState view) {
+        LookupComponent factoryComponent = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
+        if(factoryComponent.getEntity() == null){
+            clearFieldIfExists(view, MaintenanceEventFields.SOURCE_COST);
+            eventHooks.fillSourceCost(view);
+        } else {
+            eventHooks.fillSourceCost(view,factoryComponent.getEntity());
+        }
     }
 
     public void divisionChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {

@@ -352,9 +352,21 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="6">
-                        źródło kosztów...
-                    </layoutElement>
+                        <component type="lookup" name="sourceCost" field="sourceCost"
+                                   reference="sourceCost">
+                            <option type="column" name="name" fields="name"/>
 
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.SourceCostCriteriaModifiers"
+                                    method="selectActive"/>
+                        </component>
+                    </layoutElement>
 
                 </component>
 

@@ -36,6 +36,8 @@
         </string>
         <belongsTo name="factory" model="factory" plugin="basic"/>
         <boolean name="defaultCost" default="false" />
+        <hasMany name="maintenanceEvents" model="maintenanceEvent" cascade="nullify"
+                       joinField="sourceCost" copyable="false"/>
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.SourceCodeHooks" method="onSave"></onSave>

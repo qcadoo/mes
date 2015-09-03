@@ -22,4 +22,10 @@ CREATE TABLE cmmsmachineparts_sourcecost
       REFERENCES basic_factory (id) DEFERRABLE
 );
 
+ALTER TABLE cmmsmachineparts_maintenanceevent ADD COLUMN sourcecost_id bigint;
+
+ALTER TABLE cmmsmachineparts_maintenanceevent
+  ADD CONSTRAINT maintenanceevent_sourcecost_fkey FOREIGN KEY (sourcecost_id)
+      REFERENCES cmmsmachineparts_sourcecost (id) DEFERRABLE;
+
 -- end
