@@ -169,16 +169,8 @@ import java.util.Optional;
                     factoryField.setFieldValue(factoryEntity.getId());
                     factoryField.requestComponentUpdateState();
                     fillSourceCost(view, factoryEntity);
-                } else {
-                    Entity faEntity = form.getPersistedEntityWithIncludedFormValues()
-                            .getBelongsToField(MaintenanceEventFields.FACTORY);
-                    if (faEntity == null) {
-                        fillSourceCost(view);
-                    } else {
-                        fillSourceCost(view, faEntity);
-
-                    }
                 }
+
 
                 Entity divisionEntity = eventContext.getBelongsToField(MaintenanceEventContextFields.DIVISION);
                 if (divisionEntity != null) {

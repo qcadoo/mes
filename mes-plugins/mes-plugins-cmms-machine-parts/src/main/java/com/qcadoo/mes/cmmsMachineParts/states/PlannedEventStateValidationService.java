@@ -1,16 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.states;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.cmmsMachineParts.constants.ActionForPlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -18,6 +9,11 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.SecurityService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PlannedEventStateValidationService {
@@ -69,6 +65,14 @@ public class PlannedEventStateValidationService {
         Entity event = stateChangeContext.getOwner();
         checkIfRequiredFieldsAreSet(event, stateChangeContext);
         checkIfActionsHaveStatus(event, stateChangeContext);
+        checkSourceCost(event, stateChangeContext);
+    }
+
+    private void checkSourceCost(final Entity event, StateChangeContext stateChangeContext) {
+        if (event.getBelongsToField(MaintenanceEventFields.SOURCE_COST) == null) {
+            stateChangeContext.addFieldValidationError(MaintenanceEventFields.SOURCE_COST,
+                    "cmmsMachineParts.maintenanceEvent.state.fieldRequired");
+        }
     }
 
     private void checkIfActionsHaveStatus(final Entity event, StateChangeContext stateChangeContext) {

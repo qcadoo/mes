@@ -366,6 +366,7 @@
                                     class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.SourceCostCriteriaModifiers"
                                     method="selectActive"/>
                         </component>
+
                     </layoutElement>
 
                 </component>

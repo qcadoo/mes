@@ -115,7 +115,7 @@
 
                             <listener event="onSelectedEntityChange"
                                       method="factoryChanged"
-                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.ContextEventListeners"/>
                         </component>
                     </layoutElement>
 
