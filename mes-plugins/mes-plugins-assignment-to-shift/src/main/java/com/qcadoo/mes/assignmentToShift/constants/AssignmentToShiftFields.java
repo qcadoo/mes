@@ -25,6 +25,8 @@ package com.qcadoo.mes.assignmentToShift.constants;
 
 public final class AssignmentToShiftFields {
 
+    public static final String CREW = "crew";
+
     private AssignmentToShiftFields() {
 
     }

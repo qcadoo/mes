@@ -23,7 +23,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="staffAssignmentToShiftDetails" modelName="staffAssignmentToShift"
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="staffAssignmentToShiftDetails"
+      modelName="staffAssignmentToShift"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -43,9 +44,10 @@
                                    reference="worker">
                             <option type="column" name="name" fields="name" link="true"/>
                             <option type="column" name="number" fields="number" link="true"/>
+                            <option type="column" name="crew" fields="crew" expression="#crew['number']" link="true"/>
 
-                            <option type="searchable" value="number,surname,name"/>
-                            <option type="orderable" value="number"/>
+                            <option type="searchable" value="number,surname,name,crew"/>
+                            <option type="orderable" value="number,crew"/>
 
                             <option type="expression" value="#number + ' - ' + #surname + ' ' + #name"/>
                             <option type="fieldCode" value="surname"/>
