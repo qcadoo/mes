@@ -378,19 +378,37 @@
                         </component>
                     </layoutElement>
 
-                    <layoutElement row="6" column="3">
+
+                    <layoutElement column="3" row="6">
+                        <component type="lookup" name="sourceCost" field="sourceCost"
+                                   reference="sourceCost">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.SourceCostCriteriaModifiers"
+                                    method="selectActive"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement row="7" column="3">
                         <component type="input" name="effectiveCounter" reference="effectiveCounter"
                                    field="effectiveCounter"/>
                     </layoutElement>
 
-                    <layoutElement row="7" column="3">
+                    <layoutElement row="8" column="3">
                         <component type="time" name="effectiveDuration" reference="effectiveDuration"
                                    field="effectiveDuration">
                             <option type="noHours" value="4"/>
                         </component>
                     </layoutElement>
 
-                    <layoutElement column="3" row="8">
+                    <layoutElement column="3" row="9">
                         <component type="lookup" name="company" field="company"
                                    reference="company">
                             <option type="column" name="name" fields="name"/>

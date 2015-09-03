@@ -38,6 +38,8 @@
         <boolean name="defaultCost" default="false" />
         <hasMany name="maintenanceEvents" model="maintenanceEvent" cascade="nullify"
                        joinField="sourceCost" copyable="false"/>
+        <hasMany name="plannedEvents" model="plannedEvent" cascade="nullify"
+                 joinField="sourceCost" copyable="false"/>
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.SourceCodeHooks" method="onSave"></onSave>

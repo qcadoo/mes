@@ -46,6 +46,7 @@
         <belongsTo name="workstation" model="workstation" plugin="basic"/>
         <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
         <belongsTo name="company" model="company" plugin="basic"/>
+        <belongsTo name="sourceCost" model="sourceCost"/>
 
         <boolean name="plannedSeparately" default="false"/>
         <boolean name="requiresShutdown" default="false"/>
