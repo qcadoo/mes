@@ -212,19 +212,21 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 int maxLength = 0;
 
                 for (DateTime day : days) {
-                    Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
+                    List<Entity> assignmentsToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                             assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.SHIFT),
                             assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
 
-                    if (assignmentToShift == null) {
+                    if (assignmentsToShift == null || assignmentsToShift.isEmpty()) {
                         columnNumber += 3;
 
                         continue;
                     }
-
-                    List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
-                            dictionaryItem.getStringField(DictionaryItemFields.NAME), productionLine);
-
+                    List<Entity> staffs = Lists.newArrayList();
+                    for (Entity assignmentToShift : assignmentsToShift) {
+                        List<Entity> staffsForDay = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
+                                dictionaryItem.getStringField(DictionaryItemFields.NAME), productionLine);
+                        staffs.addAll(staffsForDay);
+                    }
                     if (staffs.isEmpty()) {
                         columnNumber += 3;
 
@@ -271,12 +273,15 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         int numberOfWorkers = 0;
 
         for (DateTime day : days) {
-            Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
+            List<Entity> assignmentsToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                     assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.SHIFT),
                     assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
 
-            List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
-                    dictionaryItem.getStringField(DictionaryItemFields.NAME), productionLine);
+            List<Entity> staffs = Lists.newArrayList();
+            for (Entity assignmentToShift : assignmentsToShift) {
+                staffs.addAll(assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
+                        dictionaryItem.getStringField(DictionaryItemFields.NAME), productionLine));
+            }
 
             List<String> workers = assignmentToShiftXlsHelper.getListOfWorker(staffs);
 
@@ -293,12 +298,15 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         int numberOfWorkers = 0;
 
         for (DateTime day : days) {
-            Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
+            List<Entity> assignmentsToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                     assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.SHIFT),
                     assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
 
-            List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
-                    dictionaryItem.getStringField(DictionaryItemFields.NAME), null);
+            List<Entity> staffs = Lists.newArrayList();
+            for (Entity assignmentToShift : assignmentsToShift) {
+                staffs.addAll(assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
+                        dictionaryItem.getStringField(DictionaryItemFields.NAME), null));
+            }
 
             List<String> workers = Lists.newArrayList();
 
@@ -349,19 +357,21 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             int maxLength = 0;
 
             for (DateTime day : days) {
-                Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
+                List<Entity> assignmentsToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                         assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.SHIFT),
                         assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
 
-                if (assignmentToShift == null) {
+                if (assignmentsToShift == null || assignmentsToShift.isEmpty()) {
                     columnNumber += 3;
 
                     continue;
                 }
 
-                List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
-                        dictionaryItem.getStringField(DictionaryItemFields.NAME), null);
-
+                List<Entity> staffs = Lists.newArrayList();
+                for (Entity assignmentToShift : assignmentsToShift) {
+                    staffs.addAll(assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
+                            dictionaryItem.getStringField(DictionaryItemFields.NAME), null));
+                }
                 List<String> workers = Lists.newArrayList();
 
                 if (OccupationType.OTHER_CASE.getStringValue().equals(
