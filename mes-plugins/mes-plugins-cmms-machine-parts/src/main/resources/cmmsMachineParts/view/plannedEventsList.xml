@@ -50,7 +50,7 @@
             </group>
             <template name="standardGridTemplate" excludeItems="actions.copy,actions.new"/>
             <group name="status">
-				<smallButton name="planEvent" icon="startIcon16.png"
+                <smallButton name="planEvent" icon="startIcon16.png"
                              state="disabled" action="#{grid}.changeState(planEvent);"/>
                 <smallButton name="cancelEvent" icon="deleteIcon16.png"
                              state="disabled" action="#{grid}.changeState(cancelEvent);"/>
@@ -58,6 +58,12 @@
                              state="disabled" action="#{grid}.changeState(plannedEvent);"/>
                 <smallButton name="realizedEvent" icon="acceptIcon16.png"
                              state="disabled" action="#{grid}.changeState(realizedEvent);"/>
+            </group>
+
+            <group name="maintenanceEvents">
+                <bigButton name="showMaintenanceEvent" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(showMaintenanceEvent);" state="disabled">
+                </bigButton>
             </group>
         </ribbon>
 
@@ -175,6 +181,7 @@
 						getRibbonItem("status.cancelEvent").disable();
 						getRibbonItem("status.plannedEvent").disable();
 						getRibbonItem("status.realizedEvent").disable();
+						getRibbonItem("maintenanceEvents.showMaintenanceEvent").disable();
 					}
 
 					function updateRibbon(selectedEntitiesArray) {
@@ -182,6 +189,7 @@
 						var lockedMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.cantModifyEvent)}";
 						var differentStatesMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.differentStates)}";
 						var differentStates = statesAreDifferent(selectedEntitiesArray);
+                        var showMaintenanceEvent = #{window}.getRibbonItem("maintenanceEvents.showMaintenanceEvent");
 
 						for (var elementKey in toggleRibbonItems) {
 							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
@@ -267,6 +275,13 @@
                                 plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                 plannedEvent.forState="04inRealization";
                             }
+
+                            if (selectedEntitiesArray.length == 1) {
+                                showMaintenanceEvent.enable();
+                            }
+                            else {
+                                showMaintenanceEvent.disable();
+                            }
 					}
 
 					function getRibbonItem(ribbonPath) {
@@ -331,6 +346,9 @@
                 <listener event="onSelectedEntityChange"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
                           method="onSelectedEventChange"/>
+
+                <listener event="showMaintenanceEvent" method="showMaintenanceEvent"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
 
                 <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
                                   method="showEventsFromContext"/>

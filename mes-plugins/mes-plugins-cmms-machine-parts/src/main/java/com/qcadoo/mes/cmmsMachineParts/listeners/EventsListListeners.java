@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -89,6 +90,28 @@ public class EventsListListeners {
             parameters.put("form.id", plannedEvent.get().getId());
             view.redirectTo("../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/plannedEventDetails.html", false, true,
                     parameters);
+        }
+
+    }
+
+    public void showMaintenanceEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+
+        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        List<Entity> selectedEntities = grid.getSelectedEntities();
+        if (selectedEntities.isEmpty()) {
+            return;
+        }
+        Entity plannedEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(selectedEntities.get(0).getId());
+
+        Entity maintenanceEvent = plannedEvent.getBelongsToField(PlannedEventFields.MAINTENANCE_EVENT);
+        if (maintenanceEvent != null) {
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", maintenanceEvent.getId());
+            view.redirectTo("../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html", false,
+                    true, parameters);
+        } else {
+            view.addMessage("cmmsMachineParts.plannedEventsList.eventWithoutMaintenanceEvent", ComponentState.MessageType.INFO);
         }
 
     }
