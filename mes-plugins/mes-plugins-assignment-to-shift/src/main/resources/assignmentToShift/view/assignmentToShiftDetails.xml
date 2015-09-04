@@ -212,7 +212,7 @@
                         <component type="grid" name="staffAssignmentToShifts"
                                    reference="staffAssignmentToShifts" source="#{form}.staffAssignmentToShifts">
                             <option type="column" name="occupationTypeValueForGrid"
-                                    fields="occupationTypeValueForGrid"/>
+                                    fields="occupationTypeValueForGrid" link="true"/>
                             <option type="column" name="masterOrder" fields="masterOrder"
                                     expression="#masterOrder['number']" link="true"/>
                             <option type="column" name="workerName" fields="worker"

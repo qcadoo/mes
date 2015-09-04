@@ -29,4 +29,6 @@ public class CmmsMachinePartsConstants {
 
     public static final String MODEL_MAINTENANCE_EVENT_CONTEXT = "maintenanceEventContext";
 
+    public static final String MODEL_SOURCE_COST = "sourceCost";
+
 }
