@@ -148,7 +148,7 @@
         </windowTab>
 
         <windowTab name="mainTab" reference="mainTab">
-            <component type="grid" name="grid" reference="grid" source="#{form}.plannedEvents">
+            <component type="grid" name="grid" reference="grid" field="#{form}.plannedEvents">
                 <script>
                     <![CDATA[
 					var toggleRibbonItems = ["actions.delete"];
