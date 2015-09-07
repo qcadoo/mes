@@ -76,10 +76,6 @@ public class AssignmentToShiftDataProvider {
     public SearchCriteriaBuilder createCriteriaBuilder(final AssignmentToShiftCriteria criteria) {
         SearchCriteriaBuilder scb = getAssignmentDD().find();
 
-        for (SearchCriterion searchCriterion : criteria.getCriteria().asSet()) {
-            scb.add(searchCriterion);
-        }
-
         SearchCriteriaBuilder shiftScb = scb.createCriteria(AssignmentToShiftFields.SHIFT, "shift_alias", JoinType.INNER);
 
         for (SearchCriterion searchCriterion : criteria.getShiftCriteria().asSet()) {
@@ -90,6 +86,18 @@ public class AssignmentToShiftDataProvider {
 
         for (SearchCriterion searchCriterion : criteria.getFactoryCriteria().asSet()) {
             factoryScb.add(searchCriterion);
+        }
+
+        if (criteria.getCrewCriteria().isPresent()) {
+            SearchCriteriaBuilder crewScb = scb.createCriteria(AssignmentToShiftFields.CREW, "crew_alias", JoinType.INNER);
+
+            for (SearchCriterion searchCriterion : criteria.getCrewCriteria().asSet()) {
+                crewScb.add(searchCriterion);
+            }
+        }
+
+        for (SearchCriterion searchCriterion : criteria.getCriteria().asSet()) {
+            scb.add(searchCriterion);
         }
 
         return scb;

@@ -25,53 +25,55 @@
 
 -->
 <model name="assignmentToShift" activable="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns="http://schema.qcadoo.org/model"
-	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-	<fields>
-		<date name="startDate" required="true"/>
-		<belongsTo name="shift" model="shift" plugin="basic"
-				   required="true"/>
-		<belongsTo name="factory" model="factory" plugin="basic"
-				   required="true"/>
+    <fields>
+        <date name="startDate" required="true"/>
+        <belongsTo name="shift" model="shift" plugin="basic"
+                   required="true"/>
+        <belongsTo name="factory" model="factory" plugin="basic"
+                   required="true"/>
 
-		<boolean name="approvedAttendanceList"/>
+        <belongsTo name="crew" model="crew" plugin="basic"/>
 
-		<hasMany name="staffAssignmentToShifts" joinField="assignmentToShift"
-				 model="staffAssignmentToShift"/>
-		<hasMany name="plannedStaffAssignmentToShifts" joinField="assignmentToShift"
-				 model="staffAssignmentToShift" persistent="false"/>
-		<hasMany name="correctedStaffAssignmentToShifts" joinField="assignmentToShift"
-				 model="staffAssignmentToShift" persistent="false"/>
+        <boolean name="approvedAttendanceList"/>
 
-		<integer name="externalNumber" unique="true" copyable="false"/>
-		<boolean name="externalSynchronized" default="true" copyable="false" />
+        <hasMany name="staffAssignmentToShifts" joinField="assignmentToShift"
+                 model="staffAssignmentToShift"/>
+        <hasMany name="plannedStaffAssignmentToShifts" joinField="assignmentToShift"
+                 model="staffAssignmentToShift" persistent="false"/>
+        <hasMany name="correctedStaffAssignmentToShifts" joinField="assignmentToShift"
+                 model="staffAssignmentToShift" persistent="false"/>
 
-		<enum name="state" values="01draft,02accepted,03duringCorrection,04corrected"
-			  default="01draft"/>
+        <integer name="externalNumber" unique="true" copyable="false"/>
+        <boolean name="externalSynchronized" default="true" copyable="false"/>
 
-		<hasMany name="assignmentToShiftStateChange" joinField="assignmentToShift"
-				 model="assignmentToShiftStateChange" cascade="delete"/>
+        <enum name="state" values="01draft,02accepted,03duringCorrection,04corrected"
+              default="01draft"/>
 
-		<boolean name="showLastStateChangeResult" default="false" copyable="false"/>
-		<boolean name="lastStateChangeFails" default="false" copyable="false" />
-		<string name="lastStateChangeFailCause" copyable="false">
-			<validatesLength max="2048" />
-		</string>
-	</fields>
+        <hasMany name="assignmentToShiftStateChange" joinField="assignmentToShift"
+                 model="assignmentToShiftStateChange" cascade="delete"/>
 
-	<hooks>
-		<validatesWith
-				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
-				method="onValidate"/>
-		<onCreate
-				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
-				method="onCreate"/>
-		<onCopy
-				class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
-				method="onCopy"/>
-	</hooks>
+        <boolean name="showLastStateChangeResult" default="false" copyable="false"/>
+        <boolean name="lastStateChangeFails" default="false" copyable="false"/>
+        <string name="lastStateChangeFailCause" copyable="false">
+            <validatesLength max="2048"/>
+        </string>
+    </fields>
 
-	<identifier expression="#number + ' - ' + #name"/>
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
+                method="onValidate"/>
+        <onCreate
+                class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
+                method="onCreate"/>
+        <onCopy
+                class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
+                method="onCopy"/>
+    </hooks>
+
+    <identifier expression="#number + ' - ' + #name"/>
 
 </model>

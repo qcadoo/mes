@@ -29,9 +29,8 @@
         xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
         xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
-        xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
-        xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
@@ -39,8 +38,8 @@
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
+
+
        http://schema.qcadoo.org/modules/menu
        http://schema.qcadoo.org/modules/menu.xsd 
 		http://schema.qcadoo.org/modules/custom 
@@ -115,6 +114,11 @@
                            joinField="masterOrder" cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="crew">
+            <model:hasMany name="assignmentsToShift" model="assignmentToShift" plugin="assignmentToShift"
+                           joinField="crew" cascade="nullify"
+                           copyable="false"/>
+        </model:model-field>
         <menu:menu-category name="orders"/>
         <menu:menu-item name="assignmentToShift" category="orders"
                         view="assignmentToShiftList"/>
