@@ -169,6 +169,11 @@ import java.util.Optional;
                     factoryField.setFieldValue(factoryEntity.getId());
                     factoryField.requestComponentUpdateState();
                     fillSourceCost(view, factoryEntity);
+                } else{
+                    LookupComponent sc = (LookupComponent) view.getComponentByReference("sourceCost");
+                    if(sc.isEmpty()) {
+                        fillSourceCost(view);
+                    }
                 }
 
 
