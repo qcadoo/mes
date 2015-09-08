@@ -197,9 +197,8 @@
                     expression="#shift['name']"/>
             <option type="column" name="factory" fields="factory" link="true"
                     expression="#factory['name']"/>
-            <option type="column" name="state" fields="state"/>
-
             <option type="column" name="crew" fields="crew" expression="#crew?.get('number')"/>
+            <option type="column" name="state" fields="state"/>
 
             <option type="order" column="startDate" direction="desc"/>
 

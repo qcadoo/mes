@@ -25,7 +25,6 @@ package com.qcadoo.mes.basic.constants;
 
 public final class BasicConstants {
 
-
     private BasicConstants() {
 
     }
@@ -33,6 +32,8 @@ public final class BasicConstants {
     public static final String PLUGIN_IDENTIFIER = "basic";
 
     // MODEL
+
+    public static final String MODEL_CREW = "crew";
 
     public static final String MODEL_PARAMETER = "parameter";
 
