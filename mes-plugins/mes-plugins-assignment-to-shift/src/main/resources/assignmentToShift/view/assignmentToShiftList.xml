@@ -24,18 +24,18 @@
 
 -->
 <view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="assignmentToShiftList" modelName="assignmentToShift"
-	  menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	  xmlns="http://schema.qcadoo.org/view"
-	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+      menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<template name="standardGridTemplate"/>
-			<group name="status">
-				<smallButton name="acceptAssignmentToShift" icon="startIcon16.png" state="disabled">
-					<script>
-						<![CDATA[
+        <ribbon>
+            <template name="standardGridTemplate"/>
+            <group name="status">
+                <smallButton name="acceptAssignmentToShift" icon="startIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(assignmentToShift.assignmentToShiftList.window.ribbon.status.accepted.confirm)}")) {
@@ -44,11 +44,11 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="correctAssignmentToShift" icon="deleteIcon16.png" state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="correctAssignmentToShift" icon="deleteIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(assignmentToShift.assignmentToShiftList.window.ribbon.status.duringCorrection.confirm)}")) {
@@ -57,11 +57,11 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="acceptCorrectedAssignmentToShift" icon="deleteIcon16.png" state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="acceptCorrectedAssignmentToShift" icon="deleteIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(assignmentToShift.assignmentToShiftList.window.ribbon.status.corrected.confirm)}")) {
@@ -70,15 +70,15 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-			</group>
-		</ribbon>
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
 
-		<component type="grid" name="assignmentToShiftList"
-				   reference="grid">
-			<script>
-				<![CDATA[
+        <component type="grid" name="assignmentToShiftList"
+                   reference="grid">
+            <script>
+                <![CDATA[
 					var buttonsStatus = ["status.acceptAssignmentToShift", "status.correctAssignmentToShift", "status.acceptCorrectedAssignmentToShift"];
 
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
@@ -189,34 +189,36 @@
 
 					#{grid}.addOnChangeListener(listener);
 				]]>
-			</script>
+            </script>
 
-			<option type="column" name="startDate" fields="startDate"
-					link="true"/>
-			<option type="column" name="shift" fields="shift" link="true"
-					expression="#shift['name']"/>
-			<option type="column" name="factory" fields="factory" link="true"
-					expression="#factory['name']"/>
-			<option type="column" name="state" fields="state"/>
+            <option type="column" name="startDate" fields="startDate"
+                    link="true"/>
+            <option type="column" name="shift" fields="shift" link="true"
+                    expression="#shift['name']"/>
+            <option type="column" name="factory" fields="factory" link="true"
+                    expression="#factory['name']"/>
+            <option type="column" name="state" fields="state"/>
 
-			<option type="order" column="startDate" direction="desc"/>
+            <option type="column" name="crew" fields="crew" expression="#crew?.get('number')"/>
 
-			<option type="correspondingView" value="assignmentToShift/assignmentToShiftDetails"/>
-			<option type="correspondingComponent" value="form"/>
+            <option type="order" column="startDate" direction="desc"/>
 
-			<option type="searchable" value="startDate,shift,factory,state"/>
-			<option type="orderable" value="startDate,shift,factory,state"/>
+            <option type="correspondingView" value="assignmentToShift/assignmentToShiftDetails"/>
+            <option type="correspondingComponent" value="form"/>
 
-			<option type="fullscreen" value="true"/>
-			<option type="multiselect" value="true"/>
+            <option type="searchable" value="startDate,shift,factory,state,crew"/>
+            <option type="orderable" value="startDate,shift,factory,state,crew"/>
 
-			<listener event="changeState"
-					  class="com.qcadoo.mes.assignmentToShift.states.client.AssignmentToShiftStateChangeViewClient"
-					  method="changeState"/>
-		</component>
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
 
-		<option type="fixedHeight" value="true"/>
-		<option type="header" value="false"/>
-	</component>
+            <listener event="changeState"
+                      class="com.qcadoo.mes.assignmentToShift.states.client.AssignmentToShiftStateChangeViewClient"
+                      method="changeState"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
 
 </view>
