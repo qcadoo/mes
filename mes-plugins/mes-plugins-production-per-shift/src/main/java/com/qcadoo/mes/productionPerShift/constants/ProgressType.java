@@ -24,7 +24,6 @@
 package com.qcadoo.mes.productionPerShift.constants;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.util.StringUtil;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Preconditions;
@@ -44,7 +43,7 @@ public enum ProgressType {
 
         @Override
         public DateTime extractStartDateTimeFrom(final OrderDates orderDates) {
-            return orderDates.getStart().correctedWithFallback();
+            return orderDates.getStart().effectiveWithFallback();
         }
     };
 
