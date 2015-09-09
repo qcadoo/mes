@@ -85,6 +85,7 @@ public class AssignmentToShiftHooks {
     }
 
     public void onCopy(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift) {
+        setExternalSynchronized(assignmentToShift);
         setNextDay(assignmentToShift);
         setInitialState(assignmentToShift);
     }
