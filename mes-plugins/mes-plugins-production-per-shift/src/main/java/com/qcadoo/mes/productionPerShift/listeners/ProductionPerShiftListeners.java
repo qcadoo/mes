@@ -225,16 +225,18 @@ public class ProductionPerShiftListeners {
 
             if (dayNum == null) {
                 final int maxDayNum = lastDay;
-                realizationDaysStream = realizationDaysStream.dropWhile(new Predicate<OrderRealizationDay>() {
+                if (realizationDaysStream != null) {
+                    realizationDaysStream = realizationDaysStream.dropWhile(new Predicate<OrderRealizationDay>() {
 
-                    @Override
-                    public boolean apply(final OrderRealizationDay input) {
-                        return input.getRealizationDayNumber() > maxDayNum;
-                    }
-                });
-                OrderRealizationDay realizationDay = realizationDaysStream.head();
-                setUpProgressForDayRow(progressForDayForm, realizationDay);
-                lastDay = realizationDay.getRealizationDayNumber();
+                        @Override
+                        public boolean apply(final OrderRealizationDay input) {
+                            return input.getRealizationDayNumber() > maxDayNum;
+                        }
+                    });
+                    OrderRealizationDay realizationDay = realizationDaysStream.head();
+                    setUpProgressForDayRow(progressForDayForm, realizationDay);
+                    lastDay = realizationDay.getRealizationDayNumber();
+                }
             } else {
                 lastDay = dayNum;
             }

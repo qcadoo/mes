@@ -200,8 +200,8 @@ public class ProgressDatesServiceTest {
         verifyProgressValues(planned1, 1, plannedStart, effectiveStart);
         verifyProgressValues(planned2, 2, plannedStart.plusDays(1), effectiveStart.plusDays(1));
         verifyProgressValues(planned3, 5, plannedStart.plusDays(4), effectiveStart.plusDays(2));
-        verifyProgressValues(corrected1, 3, correctedStart.plusDays(2), effectiveStart);
-        verifyProgressValues(corrected3, 4, correctedStart.plusDays(3), effectiveStart.plusDays(2));
+        verifyProgressValues(corrected1, 1, effectiveStart, effectiveStart);
+        verifyProgressValues(corrected3, 3, effectiveStart.plusDays(2), effectiveStart.plusDays(2));
     }
 
     @Test
