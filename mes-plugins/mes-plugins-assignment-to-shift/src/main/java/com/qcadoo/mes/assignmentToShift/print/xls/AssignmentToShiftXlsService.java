@@ -358,7 +358,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
             for (DateTime day : days) {
                 List<Entity> assignmentsToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
-                        assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.SHIFT),
+                        assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.SHIFT),
                         assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
 
                 if (assignmentsToShift == null || assignmentsToShift.isEmpty()) {
@@ -366,12 +366,18 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
                     continue;
                 }
-
                 List<Entity> staffs = Lists.newArrayList();
                 for (Entity assignmentToShift : assignmentsToShift) {
                     staffs.addAll(assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
                             dictionaryItem.getStringField(DictionaryItemFields.NAME), null));
                 }
+
+                if (staffs.isEmpty()) {
+                    columnNumber += 3;
+
+                    continue;
+                }
+
                 List<String> workers = Lists.newArrayList();
 
                 if (OccupationType.OTHER_CASE.getStringValue().equals(
