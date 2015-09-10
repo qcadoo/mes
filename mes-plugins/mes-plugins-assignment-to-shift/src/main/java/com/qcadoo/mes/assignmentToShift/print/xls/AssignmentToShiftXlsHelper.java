@@ -25,6 +25,8 @@ package com.qcadoo.mes.assignmentToShift.print.xls;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -40,6 +42,7 @@ import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
 import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -124,8 +127,32 @@ public class AssignmentToShiftXlsHelper {
     private List<Entity> findCurrentAssignmentsToShift(final Date date, List<Entity> assignmentsToShift) {
 
         List<Entity> currentAssignments = Lists.newArrayList();
+
+        Map<Entity, List<Entity>> assignmentsForCrews = assignmentsToShift.stream()
+                .filter(assignment -> assignment.getBelongsToField(AssignmentToShiftFields.CREW) != null)
+                .collect(Collectors.groupingBy(assignment -> assignment.getBelongsToField(AssignmentToShiftFields.CREW)));
+        assignmentsForCrews.put(
+                null,
+                assignmentsToShift.stream()
+                        .filter(assignment -> assignment.getBelongsToField(AssignmentToShiftFields.CREW) == null)
+                        .collect(Collectors.toList()));
+        List<Entity> crews = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CREW).find().list()
+                .getEntities();
+        for (Entity crew : crews) {
+            currentAssignments.addAll(findCurrentAssignmentsToShiftForCrew(date, assignmentsForCrews.get(crew)));
+        }
+        currentAssignments.addAll(findCurrentAssignmentsToShiftForCrew(date, assignmentsForCrews.get(null)));
+        return currentAssignments;
+    }
+
+    private List<Entity> findCurrentAssignmentsToShiftForCrew(final Date date, List<Entity> assignmentsToShiftForCrew) {
+
+        List<Entity> currentAssignments = Lists.newArrayList();
+        if (assignmentsToShiftForCrew == null) {
+            return currentAssignments;
+        }
         Date currentDate = date;
-        for (Entity assignmentToShift : assignmentsToShift) {
+        for (Entity assignmentToShift : assignmentsToShiftForCrew) {
             Date assignmentDate = assignmentToShift.getDateField(AssignmentToShiftFields.START_DATE);
             if (assignmentDate.before(currentDate)) {
                 if (currentAssignments.isEmpty()) {
