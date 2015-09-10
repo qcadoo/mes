@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="plannedEventDetails" modelName="plannedEvent" modelPlugin="cmmsMachineParts">
 
