@@ -33,9 +33,9 @@
         <!-- generic state change fields -->
         <datetime name="dateAndTime"/>
         <enum name="sourceState"
-              values="01new,02inProgress,03edited,04closed,05revoked,06planned"/>
+              values="01new,02inProgress,03edited,04closed,05revoked,06planned,07accepted"/>
         <enum name="targetState"
-              values="01new,02inProgress,03edited,04closed,05revoked,06planned"
+              values="01new,02inProgress,03edited,04closed,05revoked,06planned,07accepted"
               required="true"/>
         <enum name="status" values="01inProgress,02paused,03successful,04failure,05canceled" required="true"/>
         <integer name="phase"/>
