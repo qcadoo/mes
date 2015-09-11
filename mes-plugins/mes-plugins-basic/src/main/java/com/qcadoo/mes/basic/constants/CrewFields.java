@@ -23,32 +23,16 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public final class StaffFields {
+public final class CrewFields {
 
-    private StaffFields() {
+    private CrewFields() {
 
     }
 
-    public static final String NAME = "name";
-
     public static final String NUMBER = "number";
 
-    public static final String SURNAME = "surname";
+    public static final String LEADER = "leader";
 
-    public static final String PHONE = "phone";
-
-    public static final String EMAIL = "email";
-
-    public static final String POST = "post";
-
-    public static final String WORK_FOR = "workFor";
-
-    public static final String SHIFT = "shift";
-
-    public static final String DIVISION = "division";
-
-    public static final String CREW = "crew";
-
-    public static final String CREWS = "crews";
+    public static final String MEMBERS = "members";
 
 }
