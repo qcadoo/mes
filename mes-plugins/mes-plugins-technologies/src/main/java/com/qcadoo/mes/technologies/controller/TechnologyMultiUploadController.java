@@ -71,7 +71,7 @@ import java.util.List;
 
     private static final List<String> exts = Lists
             .newArrayList("JPG", "JPEG", "PNG", "PDF", "DOC", "DOCX", "XLS", "XLSX", "GIF", "DWG", "IPT", "IAM", "IDW", "ODT",
-                    "ODS", "TIFF");
+                    "ODS", "TIFF", "TIF");
 
     @ResponseBody @RequestMapping(value = "/multiUploadFiles", method = RequestMethod.POST) public void upload(
             MultipartHttpServletRequest request, HttpServletResponse response) {
