@@ -27,7 +27,7 @@ $(function() {
 					{
 						
 						dataType : 'json',
-						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods)$/i,
+						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods,tiff)$/i,
 
 						submit : function(e, data) {
 							var locale = window.mainController
@@ -74,7 +74,7 @@ $(function() {
 							.getComponentByReferenceName(
 								"technologyMultiUploadLocale")
 									.getValue().content.value;
-							var filetype = /(\.|\/)(gif|jpe?g|png|pdf)$/i;
+							var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods,tiff)$/i;
 
 							$.each(data.files, function(index, file) {
 								if (filetype.test(file.name)) {
@@ -111,7 +111,7 @@ $(function() {
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
-						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods)$/i;
+						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods,tiff)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
 							"technologyMultiUploadLocale")
