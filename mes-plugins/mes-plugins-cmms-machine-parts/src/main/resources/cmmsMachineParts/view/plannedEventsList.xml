@@ -303,7 +303,7 @@
                                     realizedEvent.enable();
                                     realizedEvent.forState="05realized";
                                     realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
-                                    realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+                                    realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizedEvent)}");
 
                                     deleteButton.disable();
                                 }
