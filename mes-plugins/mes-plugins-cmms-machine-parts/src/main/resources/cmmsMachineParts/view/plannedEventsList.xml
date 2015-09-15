@@ -23,7 +23,8 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="plannedEventsList" modelName="plannedEventContext" modelPlugin="cmmsMachineParts" menuAccessible="true">
 
@@ -50,7 +51,7 @@
             </group>
             <template name="standardGridTemplate" excludeItems="actions.copy,actions.new"/>
             <group name="status">
-				<smallButton name="planEvent" icon="startIcon16.png"
+                <smallButton name="planEvent" icon="startIcon16.png"
                              state="disabled" action="#{grid}.changeState(planEvent);"/>
                 <smallButton name="cancelEvent" icon="deleteIcon16.png"
                              state="disabled" action="#{grid}.changeState(cancelEvent);"/>
@@ -58,6 +59,12 @@
                              state="disabled" action="#{grid}.changeState(plannedEvent);"/>
                 <smallButton name="realizedEvent" icon="acceptIcon16.png"
                              state="disabled" action="#{grid}.changeState(realizedEvent);"/>
+            </group>
+
+            <group name="maintenanceEvents">
+                <bigButton name="showMaintenanceEvent" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(showMaintenanceEvent);" state="disabled">
+                </bigButton>
             </group>
         </ribbon>
 
@@ -104,7 +111,7 @@
 
                             <listener event="onSelectedEntityChange"
                                       method="factoryChanged"
-                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.ContextEventListeners"/>
                         </component>
                     </layoutElement>
 
@@ -142,7 +149,7 @@
         </windowTab>
 
         <windowTab name="mainTab" reference="mainTab">
-            <component type="grid" name="grid" reference="grid" source="#{form}.plannedEvents">
+            <component type="grid" name="grid" reference="grid" field="#{form}.plannedEvents">
                 <script>
                     <![CDATA[
 					var toggleRibbonItems = ["actions.delete"];
@@ -175,6 +182,7 @@
 						getRibbonItem("status.cancelEvent").disable();
 						getRibbonItem("status.plannedEvent").disable();
 						getRibbonItem("status.realizedEvent").disable();
+						getRibbonItem("maintenanceEvents.showMaintenanceEvent").disable();
 					}
 
 					function updateRibbon(selectedEntitiesArray) {
@@ -182,6 +190,9 @@
 						var lockedMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.cantModifyEvent)}";
 						var differentStatesMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.differentStates)}";
 						var differentStates = statesAreDifferent(selectedEntitiesArray);
+                        var showMaintenanceEvent = #{window}.getRibbonItem("maintenanceEvents.showMaintenanceEvent");
+                        var shouldShowAccept = shouldShowAcceptButton(selectedEntitiesArray);
+                        var differentTypes = typesAreDifferent(selectedEntitiesArray);
 
 						for (var elementKey in toggleRibbonItems) {
 							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
@@ -223,10 +234,11 @@
 
                             plannedEvent.forState="03planned";
                             plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.planned)}";
-
-                            realizedEvent.forState="05realized";
-                            realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
-
+                            if (shouldShowAccept) {
+                                realizedEvent.forState="07accepted";
+                                realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
+                            }
 
                             if (state == "01new") {
                                 planEvent.enable();
@@ -246,7 +258,11 @@
                                 planEvent.enable();
                                 cancelEvent.enable();
                                 plannedEvent.enable();
-                                realizedEvent.enable();
+                                if (!shouldShowAccept && differentTypes) {
+                                    realizedEvent.disable();
+                                } else {
+                                    realizedEvent.enable();
+                                }
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
                                 plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                 plannedEvent.forState="04inRealization";
@@ -254,10 +270,24 @@
                                 planEvent.disable();
                                 cancelEvent.enable();
                                 plannedEvent.disable();
-                                realizedEvent.enable();
+                                if (!shouldShowAccept && differentTypes) {
+                                    realizedEvent.disable();
+                                } else {
+                                    realizedEvent.enable();
+                                }
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
                                 plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                 plannedEvent.forState="04inRealization";
+                                if (shouldShowAccept) {
+                                        realizedEvent.forState="07accepted";
+                                        realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                        realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
+                                    }
+                                    else {
+                                        realizedEvent.forState="05realized";
+                                        realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
+                                        realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+                                    }
                             } else if (state == "05realized" || state == "06canceled") {
                                 planEvent.disable();
                                 cancelEvent.disable();
@@ -266,6 +296,29 @@
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
                                 plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                 plannedEvent.forState="04inRealization";
+                            } else if (state =="07accepted") {
+                                    planEvent.disable();
+                                    cancelEvent.disable();
+                                    plannedEvent.disable();
+                                    realizedEvent.enable();
+                                    realizedEvent.forState="05realized";
+                                    realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
+                                    realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizedEvent)}");
+
+                                    deleteButton.disable();
+                                }
+                            else {
+                                planEvent.disable();
+                                cancelEvent.disable();
+                                plannedEvent.disable();
+                                realizedEvent.disable();
+                            }
+
+                            if (selectedEntitiesArray.length == 1) {
+                                showMaintenanceEvent.enable();
+                            }
+                            else {
+                                showMaintenanceEvent.disable();
                             }
 					}
 
@@ -288,6 +341,28 @@
 							}
 						}
 						return false;
+					}
+					function typesAreDifferent(selectedEntitiesArray) {
+						if (selectedEntitiesArray.length < 2) {
+							return false;
+						}
+						for (var i = 1; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i-1].fields.type != selectedEntitiesArray[i].fields.type) {
+								return true;
+							}
+						}
+						return false;
+					}
+					function shouldShowAcceptButton(selectedEntitiesArray) {
+						if (selectedEntitiesArray.length < 2) {
+							return selectedEntitiesArray[0].fields.type !== "05meterReading";
+						}
+						for (var i = 1; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.type == "05meterReading") {
+								return false;
+							}
+						}
+						return true;
 					}
 
 				]]>
@@ -331,6 +406,9 @@
                 <listener event="onSelectedEntityChange"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
                           method="onSelectedEventChange"/>
+
+                <listener event="showMaintenanceEvent" method="showMaintenanceEvent"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
 
                 <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
                                   method="showEventsFromContext"/>

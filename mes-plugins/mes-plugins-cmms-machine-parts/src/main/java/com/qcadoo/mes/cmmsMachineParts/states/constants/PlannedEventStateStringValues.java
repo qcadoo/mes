@@ -39,6 +39,8 @@ public final class PlannedEventStateStringValues {
 
     public static final String CANCELED = "06canceled";
 
+    public static final String ACCEPTED = "07accepted";
+
     public static final String WILDCARD_STATE = RunForStateTransitionAspect.WILDCARD_STATE;
 
     private PlannedEventStateStringValues() {

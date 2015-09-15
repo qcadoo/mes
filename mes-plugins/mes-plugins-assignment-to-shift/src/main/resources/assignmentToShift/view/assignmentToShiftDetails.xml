@@ -75,7 +75,7 @@
             </group>
             <group name="copy">
                 <bigButton name="copyStaffAssignmentToShift" icon="copyIcon24.png" state="disabled"
-                           action="#{form}.fireEvent(copyStaffAssignmentToShift);" />
+                           action="#{form}.fireEvent(copyStaffAssignmentToShift);"/>
             </group>
         </ribbon>
 
@@ -199,6 +199,19 @@
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="4">
+                                <component type="lookup" name="crew" field="crew"
+                                           reference="crew">
+                                    <option type="column" name="leader" fields="leader"
+                                            expression="#leader['name'] + ' ' + #leader['surname']"/>
+
+                                    <option type="searchable" value="leader,number"/>
+                                    <option type="orderable" value="leader,number"/>
+
+                                    <option type="expression" value="#number"/>
+                                    <option type="fieldCode" value="number"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="5">
                                 <component type="select" name="state" field="state"
                                            reference="state" defaultEnabled="never" hasLabel="false"
                                            defaultVisible="false"/>
@@ -212,7 +225,7 @@
                         <component type="grid" name="staffAssignmentToShifts"
                                    reference="staffAssignmentToShifts" source="#{form}.staffAssignmentToShifts">
                             <option type="column" name="occupationTypeValueForGrid"
-                                    fields="occupationTypeValueForGrid"/>
+                                    fields="occupationTypeValueForGrid" link="true"/>
                             <option type="column" name="masterOrder" fields="masterOrder"
                                     expression="#masterOrder['number']" link="true"/>
                             <option type="column" name="workerName" fields="worker"
@@ -240,8 +253,8 @@
                             <option type="fullscreen" value="true"/>
                             <option type="multiselect" value="true"/>
                             <listener event="select"
-                                  class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftDetailsListeners"
-                                  method="changeCopyStaffAssignmentToShiftButtonState"/>
+                                      class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftDetailsListeners"
+                                      method="changeCopyStaffAssignmentToShiftButtonState"/>
                         </component>
                     </layoutElement>
                 </component>

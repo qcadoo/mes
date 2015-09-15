@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view name="plannedEventRealizationDetails" modelName="plannedEventRealization"
+<view defaultAuthorizationRole="ROLE_MAINTENANCE" name="plannedEventRealizationDetails"
+      modelName="plannedEventRealization"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -60,8 +61,9 @@
                             <option type="expression"
                                     value="#name"/>
                             <option type="fieldCode" value="name"/>
-                            <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.PlannedEventRealizationCriteriaModifiers"
-                            	method="showActionsForEvent" />
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.PlannedEventRealizationCriteriaModifiers"
+                                    method="showActionsForEvent"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
@@ -95,7 +97,7 @@
     </component>
 
     <hooks>
-		<beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventRealizationDetailsHooks"
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventRealizationDetailsHooks"
                       method="setFilterValues"/>
     </hooks>
 

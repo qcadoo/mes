@@ -24,34 +24,31 @@
     ***************************************************************************
 
 -->
-<model name="staff" deletable="true" activable="true"
+<model name="orderListDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <string name="number" required="true" unique="true">
-            <validatesLength max="255"/>
-        </string>
-        <string name="name" required="true">
-            <validatesLength max="255"/>
-        </string>
-        <string name="surname" required="true">
-            <validatesLength max="255"/>
-        </string>
-        <string name="email">
-            <validatesLength max="255"/>
-        </string>
-        <string name="phone">
-            <validatesLength max="255"/>
-        </string>
-        <string name="post"/>
-        <belongsTo name="workFor" model="company"/>
-        <belongsTo name="shift" model="shift"/>
-        <belongsTo name="division" model="division"/>
-        <belongsTo name="crew" model="crew"/>
-        <hasMany name="crews" model="crew" joinField="leader" copyable="false" cascade="nullify"/>
+        <string name="number" />
+        <string name="name" />
+        <enum name="state" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned" />
+        <datetime name="deadline"/>
+        <string name="technologyNumber" />
+        <string name="productNumber" />
+        <decimal name="plannedQuantity" />
+        <string name="unit" />
+        <string name="companyName" />
+        <string name="externalNumber" />
+        <boolean name="externalSynchronized" default="true"/>
+        <string name="divisionName" />
+        <boolean name="isSubcontracted" default="false"/>
+        <string name="masterOrderNumber" />
+        <string name="masterOrderDefinitionNumber" />
+        <boolean name="workPlanDelivered" default="false" />
+        <datetime name="dateFrom"/>
+        <datetime name="dateTo"/>
+        <datetime name="startDate" />
+        <datetime name="finishDate" />
     </fields>
-
-    <hooks/>
-
     <identifier expression="#number + ' - ' + #name"/>
+    <masterModel plugin="orders" model="order" />
 </model>

@@ -47,4 +47,8 @@ public final class StaffFields {
 
     public static final String DIVISION = "division";
 
+    public static final String CREW = "crew";
+
+    public static final String CREWS = "crews";
+
 }

@@ -25,7 +25,6 @@ package com.qcadoo.mes.assignmentToShift.hooks;
 
 import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.OTHER_CASE;
 import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
-
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.NUMBER;
 import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
 
@@ -33,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.assignmentToShift.constants.OccupationType;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -42,6 +42,12 @@ public class StaffAssignmentToShiftHooks {
 
     @Autowired
     private StaffAssignmentToShiftDetailsHooks assignmentToShiftDetailsHooks;
+
+    public void onSave(final DataDefinition staffAssignmentToShiftDD, final Entity staffAssignmentToShift) {
+        setOccupationTypeForGridValue(staffAssignmentToShiftDD, staffAssignmentToShift);
+        setOccupationTypeEnum(staffAssignmentToShiftDD, staffAssignmentToShift);
+        clearProductionLineForOtherTypes(staffAssignmentToShiftDD, staffAssignmentToShift);
+    }
 
     public void setOccupationTypeForGridValue(final DataDefinition staffAssignmentToShiftDD, final Entity staffAssignmentToShift) {
         String occupationType = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE);
@@ -58,17 +64,19 @@ public class StaffAssignmentToShiftHooks {
                 return;
             }
 
-            staffAssignmentToShift.setField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_VALUE_FOR_GRID, occupationType + ": "
-                    + staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE).getStringField(NUMBER));
+            staffAssignmentToShift.setField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_VALUE_FOR_GRID,
+                    occupationType
+                            + ": "
+                            + staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE)
+                                    .getStringField(NUMBER));
         } else if (technicalCode != null && technicalCode.equals(OTHER_CASE.getStringValue())) {
             String occupationTypeName = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME);
 
             if (StringUtils.isEmpty(occupationTypeName)) {
-                staffAssignmentToShift.setField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_VALUE_FOR_GRID,
-                        occupationType);
+                staffAssignmentToShift.setField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_VALUE_FOR_GRID, occupationType);
             } else {
-                staffAssignmentToShift.setField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_VALUE_FOR_GRID,
-                        occupationType + ": " + occupationTypeName);
+                staffAssignmentToShift.setField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_VALUE_FOR_GRID, occupationType
+                        + ": " + occupationTypeName);
             }
         } else {
             staffAssignmentToShift.setField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_VALUE_FOR_GRID, occupationType);
@@ -83,6 +91,14 @@ public class StaffAssignmentToShiftHooks {
         String technicalCode = dictionaryItem.getStringField(TECHNICAL_CODE);
 
         staffAssignmentToShift.setField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_ENUM, technicalCode);
+    }
+
+    private void clearProductionLineForOtherTypes(final DataDefinition staffAssignmentToShiftDD,
+            final Entity staffAssignmentToShift) {
+        String occupationTypeEnum = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_ENUM);
+        if (occupationTypeEnum == null || !occupationTypeEnum.equals(OccupationType.WORK_ON_LINE.getStringValue())) {
+            staffAssignmentToShift.setField(StaffAssignmentToShiftFields.PRODUCTION_LINE, null);
+        }
     }
 
 }

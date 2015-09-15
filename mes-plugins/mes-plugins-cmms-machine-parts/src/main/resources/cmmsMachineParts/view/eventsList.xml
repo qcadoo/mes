@@ -115,7 +115,7 @@
 
                             <listener event="onSelectedEntityChange"
                                       method="factoryChanged"
-                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.ContextEventListeners"/>
                         </component>
                     </layoutElement>
 
@@ -153,7 +153,7 @@
         </windowTab>
 
         <windowTab name="mainTab" reference="mainTab">
-            <component type="grid" name="grid" reference="grid" source="#{form}.events">
+            <component type="grid" name="grid" reference="grid" field="#{form}.events">
                 <script>
                     <![CDATA[
 					var toggleRibbonItems = ["actions.delete"];
@@ -279,6 +279,21 @@
 								planEvent.disable();
 								revokeEvent.disable();
 								closeEvent.enable();
+								closeEvent.forState="07accepted";
+							    closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.accepted)}";
+							    closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.acceptEvent)}");
+
+							}
+							else if ( state == "07accepted"){
+								startEvent.disable();
+								planEvent.disable();
+								revokeEvent.disable();
+								closeEvent.enable();
+
+                                closeEvent.forState="04closed";
+							    closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
+							    closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.closeEvent)}");
+
 							}
 							else {
 							    startEvent.disable();

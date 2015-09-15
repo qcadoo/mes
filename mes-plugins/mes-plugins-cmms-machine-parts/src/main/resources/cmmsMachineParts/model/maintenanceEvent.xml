@@ -36,7 +36,7 @@
         <string name="personReceivingName"/>
 
         <enum name="state"
-              values="01new,02inProgress,03edited,04closed,05revoked,06planned" default="01new"/>
+              values="01new,02inProgress,03edited,04closed,05revoked,06planned,07accepted" default="01new"/>
 
         <tree name="factoryStructure" model="factoryStructureElement"
               joinField="maintenanceEvent" cascade="delete" plugin="productionLines"/>
@@ -46,6 +46,7 @@
         <belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
         <belongsTo name="workstation" model="workstation" plugin="basic"/>
         <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
+        <belongsTo name="sourceCost" model="sourceCost"/>
 
         <belongsTo name="faultType" model="faultType" required="true"/>
 

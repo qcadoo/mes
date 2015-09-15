@@ -21,29 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.states.constants;
+package com.qcadoo.mes.basic.constants;
 
-import com.qcadoo.mes.states.aop.RunForStateTransitionAspect;
+public final class CrewFields {
 
-public final class MaintenanceEventStateStringValues {
+    private CrewFields() {
 
-    public static final String NEW = "01new";
-
-    public static final String IN_PROGRESS = "02inProgress";
-
-    public static final String EDITED = "03edited";
-
-    public static final String CLOSED = "04closed";
-
-    public static final String REVOKED = "05revoked";
-
-    public static final String PLANNED = "06planned";
-
-    public static final String ACCEPTED = "07accepted";
-
-    public static final String WILDCARD_STATE = RunForStateTransitionAspect.WILDCARD_STATE;
-
-    private MaintenanceEventStateStringValues() {
     }
+
+    public static final String NUMBER = "number";
+
+    public static final String LEADER = "leader";
+
+    public static final String MEMBERS = "members";
 
 }

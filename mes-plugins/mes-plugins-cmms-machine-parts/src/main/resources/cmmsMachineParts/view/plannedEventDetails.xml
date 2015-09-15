@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="plannedEventDetails" modelName="plannedEvent" modelPlugin="cmmsMachineParts">
 
@@ -139,6 +140,8 @@
                                 var realizedEvent = #{window}.getRibbonItem("status.realizedEvent");
                                 var deleteButton = #{window}.getRibbonItem("actions.delete");
 
+                                var type = #{type}.getValue().content.value;
+
                                 planEvent.forState="02inPlan";
                                 planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
 
@@ -148,9 +151,11 @@
                                 plannedEvent.forState="03planned";
                                 plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.planned)}";
 
-                                realizedEvent.forState="05realized";
-                                realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
-
+                                if (type !== "05meterReading") {
+                                    realizedEvent.forState="07accepted";
+                                    realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                    realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
+                                }
 
                                 if (state == "01new") {
                                     planEvent.enable();
@@ -172,7 +177,7 @@
                                     planEvent.enable();
                                     cancelEvent.enable();
                                     plannedEvent.enable();
-                                    realizedEvent.enable();
+                                    realizedEvent.disable();
                                 	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
 	                                plannedEvent.forState="04inRealization";
 	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
@@ -185,6 +190,16 @@
                                 	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
 	                                plannedEvent.forState="04inRealization";
 	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+                                    if (type !== "05meterReading") {
+                                        realizedEvent.forState="07accepted";
+                                        realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                        realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
+                                    }
+                                    else {
+                                        realizedEvent.forState="05realized";
+                                        realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
+                                        realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+                                    }
                                     toggleEditable(true, "");
                                 } else if (state == "05realized" || state == "06canceled") {
                                     planEvent.disable();
@@ -195,7 +210,19 @@
 	                                plannedEvent.forState="04inRealization";
 	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                     toggleEditable(false, "");
+                                } else if (state =="07accepted") {
+                                    planEvent.disable();
+                                    cancelEvent.disable();
+                                    plannedEvent.disable();
+                                    realizedEvent.enable();
+                                    realizedEvent.forState="05realized";
+                                    realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
+                                    realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizedEvent)}");
+                                    toggleEditable(true, "");
+
+                                    deleteButton.disable();
                                 }
+
                             }
                              this.addOnChangeListener({
                                     onSetValue: function() {
@@ -378,19 +405,37 @@
                         </component>
                     </layoutElement>
 
-                    <layoutElement row="6" column="3">
+
+                    <layoutElement column="3" row="6">
+                        <component type="lookup" name="sourceCost" field="sourceCost"
+                                   reference="sourceCost">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.SourceCostCriteriaModifiers"
+                                    method="selectActive"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement row="7" column="3">
                         <component type="input" name="effectiveCounter" reference="effectiveCounter"
                                    field="effectiveCounter"/>
                     </layoutElement>
 
-                    <layoutElement row="7" column="3">
+                    <layoutElement row="8" column="3">
                         <component type="time" name="effectiveDuration" reference="effectiveDuration"
                                    field="effectiveDuration">
                             <option type="noHours" value="4"/>
                         </component>
                     </layoutElement>
 
-                    <layoutElement column="3" row="8">
+                    <layoutElement column="3" row="9">
                         <component type="lookup" name="company" field="company"
                                    reference="company">
                             <option type="column" name="name" fields="name"/>

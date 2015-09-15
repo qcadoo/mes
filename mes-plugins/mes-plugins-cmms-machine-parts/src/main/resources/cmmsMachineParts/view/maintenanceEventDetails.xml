@@ -194,6 +194,24 @@
 								planEvent.disable();
 								revokeEvent.disable();
 								closeEvent.enable();
+
+                                closeEvent.forState="07accepted";
+							    closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.accepted)}";
+							    closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.acceptEvent)}");
+
+								toggleEditable(true, "");
+								deleteButton.disable();
+							}
+							else if ( state == "07accepted"){
+								startEvent.disable();
+								planEvent.disable();
+								revokeEvent.disable();
+								closeEvent.enable();
+
+                                closeEvent.forState="04closed";
+							    closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
+							    closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.closeEvent)}");
+
 								toggleEditable(true, "");
 								deleteButton.disable();
 							}
@@ -352,9 +370,22 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="6">
-                        źródło kosztów...
-                    </layoutElement>
+                        <component type="lookup" name="sourceCost" field="sourceCost"
+                                   reference="sourceCost">
+                            <option type="column" name="name" fields="name"/>
 
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.SourceCostCriteriaModifiers"
+                                    method="selectActive"/>
+                        </component>
+
+                    </layoutElement>
 
                 </component>
 

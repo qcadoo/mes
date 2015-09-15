@@ -77,13 +77,15 @@
         <localization:translation path="locales"
                                   basename="basic"/>
 
-        <security:role identifier="ROLE_PRODUCTS" description="Dostęp do produktów, rodzin produktów, numerów katalogowych"/>
+        <security:role identifier="ROLE_PRODUCTS"
+                       description="Dostęp do produktów, rodzin produktów, numerów katalogowych"/>
 
         <security:role identifier="ROLE_COMPANY" description="Dostęp do firmy"/>
 
         <security:role identifier="ROLE_COMPANY_STRUCTURE" description="Dostęp do struktury firmy"/>
 
-        <security:role identifier="ROLE_BASE_FUNCTIONALITY" description="Dostęp do funkcjonlności nie określonych innymi rolami"/>
+        <security:role identifier="ROLE_BASE_FUNCTIONALITY"
+                       description="Dostęp do funkcjonlności nie określonych innymi rolami"/>
 
         <security:role identifier="ROLE_REQUIREMENTS" description="Dostęp do zaopatrzenia"/>
 
@@ -100,6 +102,7 @@
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
+        <model:model model="crew" resource="model/crew.xml"/>
         <model:model model="shift" resource="model/shift.xml"/>
         <model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml"/>
         <model:model model="product" resource="model/product.xml"/>
@@ -121,7 +124,7 @@
         <model:model model="factory" resource="model/factory.xml"/>
         <model:model model="subassembly" resource="model/subassembly.xml"/>
         <model:model model="subassemblyAttachment" resource="model/subassemblyAttachment.xml"/>
-        <model:model model="subassemblyToWorkstationHelper" resource="model/subassemblyToWorkstationHelper.xml" />
+        <model:model model="subassemblyToWorkstationHelper" resource="model/subassemblyToWorkstationHelper.xml"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
@@ -140,6 +143,7 @@
                         view="countriesList" defaultAuthorizationRole="ROLE_COUNTRIES"/>
 
         <menu:menu-item name="staff" category="basic" view="staffsList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
+        <menu:menu-item name="crews" category="basic" view="crewsList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
         <menu:menu-item name="shifts" category="basic" view="shiftsList"/>
         <menu:menu-item name="products" category="basic" view="productsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
         <menu:menu-item name="productsFamilies" category="basic"
@@ -150,7 +154,8 @@
                             defaultAuthorizationRole="ROLE_DICTIONARY_VIEW"/>
 
         <menu:menu-item-url name="systemParameters"
-                            category="administration" url="/parameters.html" defaultAuthorizationRole="ROLE_PARAMETERS"/>
+                            category="administration" url="/parameters.html"
+                            defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
         <menu:menu-item-url name="conversion" category="basic"
                             url="/unitConversions.html" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
@@ -179,6 +184,8 @@
         <view:view resource="view/countryDetails.xml"/>
         <view:view resource="view/staffsList.xml"/>
         <view:view resource="view/staffDetails.xml"/>
+        <view:view resource="view/crewsList.xml"/>
+        <view:view resource="view/crewDetails.xml"/>
         <view:view resource="view/shiftsList.xml"/>
         <view:view resource="view/shiftDetails.xml"/>
         <view:view resource="view/shiftTimetableExceptionDetails.xml"/>

@@ -104,7 +104,6 @@ public class AssignmentToShiftHooksTest {
         given(shift.copy()).willReturn(shift);
         given(shiftsFactory.buildFrom(any(Entity.class))).willReturn(shiftPojo);
 
-
         stubDateField(assignmentToShift, AssignmentToShiftFields.START_DATE, START_DATE.toDate());
         stubBelongsToField(assignmentToShift, AssignmentToShiftFields.SHIFT, shift);
         stubBelongsToField(assignmentToShift, AssignmentToShiftFields.FACTORY, factory);
@@ -153,7 +152,7 @@ public class AssignmentToShiftHooksTest {
 
         // then
         Assert.assertFalse(result);
-        verify(assignmentToShift, times(3)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
+        verify(assignmentToShift, times(4)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
     }
 
     @Test
@@ -166,7 +165,7 @@ public class AssignmentToShiftHooksTest {
 
         // then
         Assert.assertFalse(result);
-        verify(assignmentToShift, times(3)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
+        verify(assignmentToShift, times(4)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
     }
 
     @Test

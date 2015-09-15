@@ -51,8 +51,15 @@ public class MaintenanceEventStateValidationService {
         Entity event = stateChangeContext.getOwner();
         checkIfSolutionDescriptionIsSet(event, stateChangeContext);
         checkIfWorkerTimeIsFilled(event, stateChangeContext);
-
         checkWorkerTimesDeviation(event, stateChangeContext);
+        checkSourceCost(event, stateChangeContext);
+    }
+
+    private void checkSourceCost(final Entity event, StateChangeContext stateChangeContext) {
+        if (event.getBelongsToField(MaintenanceEventFields.SOURCE_COST) == null) {
+            stateChangeContext.addFieldValidationError(MaintenanceEventFields.SOURCE_COST,
+                    "cmmsMachineParts.maintenanceEvent.state.fieldRequired");
+        }
     }
 
     public void validationOnRevoked(final StateChangeContext stateChangeContext) {

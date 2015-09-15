@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.states.service;
 
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
@@ -35,6 +30,10 @@ import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public final class StateChangeEntityBuilderImpl implements StateChangeEntityBuilder {
@@ -71,6 +70,8 @@ public final class StateChangeEntityBuilderImpl implements StateChangeEntityBuil
     private Entity internalBuild(final StateChangeEntityDescriber describer, final StateEnum initialState) {
         final Entity stateChangeEntity = describer.getDataDefinition().create();
         final Entity shift = shiftsService.getShiftFromDateWithTime(new Date());
+
+        stateChangeEntity.setField(describer.getDateTimeFieldName(), new Date());
 
         stateChangeEntity.setField(describer.getTargetStateFieldName(), initialState.getStringValue());
 

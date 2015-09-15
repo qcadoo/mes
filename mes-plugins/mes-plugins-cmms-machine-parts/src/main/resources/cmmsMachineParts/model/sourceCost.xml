@@ -24,33 +24,25 @@
     ***************************************************************************
 
 -->
-<model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="staffAssignmentToShift"
-       xmlns="http://schema.qcadoo.org/model"
+<model name="sourceCost" activable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-
     <fields>
-        <belongsTo name="assignmentToShift" model="assignmentToShift"/>
-        <belongsTo name="worker" model="staff" plugin="basic"
-                   required="true"/>
-        <belongsTo name="productionLine" model="productionLine"
-                   plugin="productionLines"/>
-        <dictionary dictionary="occupationType" name="occupationType"
-                    required="true"/>
-        <string name="occupationTypeName"/>
-        <enum name="occupationTypeEnum" values="01workOnLine,02otherCase"/>
-        <string name="occupationTypeValueForGrid"/>
-        <belongsTo name="masterOrder" model="masterOrder"
-                   plugin="masterOrders"/>
-        <enum name="state" values="01simple,02accepted,03corrected"
-              default="01simple"/>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name">
+            <validatesLength max="1024"/>
+        </string>
+        <belongsTo name="factory" model="factory" plugin="basic"/>
+        <boolean name="defaultCost" default="false" />
+        <hasMany name="maintenanceEvents" model="maintenanceEvent" cascade="nullify"
+                       joinField="sourceCost" copyable="false"/>
+        <hasMany name="plannedEvents" model="plannedEvent" cascade="nullify"
+                 joinField="sourceCost" copyable="false"/>
     </fields>
-
     <hooks>
-        <onSave
-                class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks"
-                method="onSave"/>
+        <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.SourceCodeHooks" method="onSave"></onSave>
+        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.SourceCostValidators" method="validatesWith" />
     </hooks>
-
-    <identifier expression="#number + ' - ' + #name"/>
-
 </model>

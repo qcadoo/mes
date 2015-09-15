@@ -25,10 +25,11 @@
 
 -->
 <plugin plugin="costCalculation" group="calculations" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xsi:schemaLocation="
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
 		http://schema.qcadoo.org/plugin.xsd 
 		http://schema.qcadoo.org/modules/model 
@@ -40,69 +41,79 @@
 		http://schema.qcadoo.org/modules/menu 
 		http://schema.qcadoo.org/modules/menu.xsd">
 
-	<information>
-		<name>MES - Cost calculation</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-		<description>Calculate the estimated cost of a production order.</description>
-		<license>AGPL</license>
-	</information>
+    <information>
+        <name>MES - Cost calculation</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Calculate the estimated cost of a production order.</description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>costNormsForMaterials</plugin>
-			<version>[0.4.1</version>
-		</dependency>
-		<dependency>
-			<plugin>operationCostCalculations</plugin>
-			<version>[0.4.1</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <plugin>costNormsForMaterials</plugin>
+            <version>[0.4.1</version>
+        </dependency>
+        <dependency>
+            <plugin>operationCostCalculations</plugin>
+            <version>[0.4.1</version>
+        </dependency>
+    </dependencies>
 
-	<modules>
-		<localization:translation path="locales" />
+    <modules>
+        <localization:translation path="locales"/>
 
-		<model:model model="costCalculation" resource="model/costCalculation.xml" />
+        <model:model model="costCalculation" resource="model/costCalculation.xml"/>
 
-		<menu:menu-category name="calculations" />
+        <menu:menu-category name="calculations"/>
 
-		<menu:menu-item name="costCalculation" category="calculations"
-			view="costCalculationList" />
+        <menu:menu-item name="costCalculation" category="calculations"
+                        view="costCalculationList"/>
 
-		<model:model-field model="calculationOperationComponent"
-			plugin="costNormsForOperation">
-			<model:belongsTo name="costCalculation" model="costCalculation"
-				plugin="costCalculation" required="true" />
-		</model:model-field>
+        <model:model-field model="calculationOperationComponent"
+                           plugin="costNormsForOperation">
+            <model:belongsTo name="costCalculation" model="costCalculation"
+                             plugin="costCalculation" required="true"/>
+        </model:model-field>
+        <model:model-field plugin="technologies" model="technology">
+            <model:hasMany name="costCalculations" model="costCalculation" plugin="costCalculation" copyable="false"
+                           cascade="delete" joinField="technology"/>
+        </model:model-field>
 
-		<view:view resource="view/costCalculationList.xml" />
-		<view:view resource="view/costCalculationDetails.xml" />
+        <model:model-field plugin="technologies" model="technology">
+            <model:hasMany name="costCalculationsDefault" model="costCalculation" plugin="costCalculation"
+                           copyable="false"
+                           cascade="delete" joinField="defaultTechnology"/>
+        </model:model-field>
 
-		<view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml" />
-		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
+        <view:view resource="view/costCalculationList.xml"/>
+        <view:view resource="view/costCalculationDetails.xml"/>
 
-		<view:view-hook plugin="technologies" view="technologyDetails"
-			type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologyDetailsHooksCC"
-			method="updateViewCostsCalculationButtonState" />
+        <view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
 
-		<view:view-hook plugin="orders" view="orderDetails"
-		                type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.OrderDetailsHooksCC"
-		                method="onBeforeRender" />
+        <view:view-hook plugin="technologies" view="technologyDetails"
+                        type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologyDetailsHooksCC"
+                        method="updateViewCostsCalculationButtonState"/>
 
-		<view:view-listener plugin="technologies" view="technologyDetails"
-			component="form" event="showCostCalculateFromTechnology"
-			class="com.qcadoo.mes.costCalculation.listeners.TechnologyDetailsListenersCC"
-			method="showCostCalculateFromTechnology" />
+        <view:view-hook plugin="orders" view="orderDetails"
+                        type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.OrderDetailsHooksCC"
+                        method="onBeforeRender"/>
 
-		<view:view-listener plugin="orders" view="orderDetails"
-		                    component="form" event="showCostCalculateFromOrder"
-		                    class="com.qcadoo.mes.costCalculation.listeners.OrderDetailsListenersCC"
-		                    method="showCostCalculateFromOrder" />
-	</modules>
+        <view:view-listener plugin="technologies" view="technologyDetails"
+                            component="form" event="showCostCalculateFromTechnology"
+                            class="com.qcadoo.mes.costCalculation.listeners.TechnologyDetailsListenersCC"
+                            method="showCostCalculateFromTechnology"/>
 
-	<features>
-		<end-user />
-	</features>
+        <view:view-listener plugin="orders" view="orderDetails"
+                            component="form" event="showCostCalculateFromOrder"
+                            class="com.qcadoo.mes.costCalculation.listeners.OrderDetailsListenersCC"
+                            method="showCostCalculateFromOrder"/>
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
 </plugin>
