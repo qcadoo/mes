@@ -36,7 +36,7 @@
         <string name="personReceivingName"/>
 
         <enum name="state"
-              values="01new,02inProgress,03edited,04closed,05revoked,06planned" default="01new"/>
+              values="01new,02inProgress,03edited,04closed,05revoked,06planned,07accepted" default="01new"/>
 
         <tree name="factoryStructure" model="factoryStructureElement"
               joinField="maintenanceEvent" cascade="delete" plugin="productionLines"/>

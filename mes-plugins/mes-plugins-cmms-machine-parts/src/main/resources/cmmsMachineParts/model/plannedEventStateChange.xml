@@ -33,9 +33,9 @@
         <!-- generic state change fields -->
         <datetime name="dateAndTime"/>
         <enum name="sourceState"
-              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled"/>
+              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled,07accepted"/>
         <enum name="targetState"
-              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled"
+              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled,07accepted"
               required="true"/>
         <enum name="status" values="01inProgress,02paused,03successful,04failure,05canceled" required="true"/>
         <integer name="phase"/>
@@ -46,11 +46,12 @@
         <belongsTo name="plannedEvent" model="plannedEvent"/>
         <!-- owner -->
         <belongsTo name="shift" model="shift" plugin="basic"/>
-        <string name="comment" />
-        <boolean name="commentRequired" default="false" />
+        <string name="comment"/>
+        <boolean name="commentRequired" default="false"/>
 
     </fields>
     <hooks>
-        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventStateChangeValidators" method="validate"/>
+        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventStateChangeValidators"
+                       method="validate"/>
     </hooks>
 </model>

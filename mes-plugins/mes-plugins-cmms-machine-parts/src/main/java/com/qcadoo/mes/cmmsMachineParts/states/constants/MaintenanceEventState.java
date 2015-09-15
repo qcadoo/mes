@@ -48,7 +48,7 @@ public enum MaintenanceEventState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return CLOSED.equals(targetState);
+            return ACCEPTED.equals(targetState);
         }
 
     },
@@ -76,6 +76,14 @@ public enum MaintenanceEventState implements StateEnum {
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
             return false;
+        }
+
+    },
+    ACCEPTED(MaintenanceEventStateStringValues.ACCEPTED) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return CLOSED.equals(targetState);
         }
 
     };
