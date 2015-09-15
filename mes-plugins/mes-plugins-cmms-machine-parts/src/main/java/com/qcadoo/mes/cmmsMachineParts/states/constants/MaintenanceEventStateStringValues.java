@@ -39,6 +39,8 @@ public final class MaintenanceEventStateStringValues {
 
     public static final String PLANNED = "06planned";
 
+    public static final String ACCEPTED = "07accepted";
+
     public static final String WILDCARD_STATE = RunForStateTransitionAspect.WILDCARD_STATE;
 
     private MaintenanceEventStateStringValues() {

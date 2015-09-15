@@ -194,6 +194,24 @@
 								planEvent.disable();
 								revokeEvent.disable();
 								closeEvent.enable();
+
+                                closeEvent.forState="07accepted";
+							    closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.accepted)}";
+							    closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.acceptEvent)}");
+
+								toggleEditable(true, "");
+								deleteButton.disable();
+							}
+							else if ( state == "07accepted"){
+								startEvent.disable();
+								planEvent.disable();
+								revokeEvent.disable();
+								closeEvent.enable();
+
+                                closeEvent.forState="04closed";
+							    closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
+							    closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.closeEvent)}");
+
 								toggleEditable(true, "");
 								deleteButton.disable();
 							}

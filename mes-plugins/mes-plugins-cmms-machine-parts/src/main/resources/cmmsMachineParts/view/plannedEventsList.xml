@@ -191,6 +191,8 @@
 						var differentStatesMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.differentStates)}";
 						var differentStates = statesAreDifferent(selectedEntitiesArray);
                         var showMaintenanceEvent = #{window}.getRibbonItem("maintenanceEvents.showMaintenanceEvent");
+                        var shouldShowAccept = shouldShowAcceptButton(selectedEntitiesArray);
+                        var differentTypes = typesAreDifferent(selectedEntitiesArray);
 
 						for (var elementKey in toggleRibbonItems) {
 							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
@@ -232,10 +234,11 @@
 
                             plannedEvent.forState="03planned";
                             plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.planned)}";
-
-                            realizedEvent.forState="05realized";
-                            realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
-
+                            if (shouldShowAccept) {
+                                realizedEvent.forState="07accepted";
+                                realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
+                            }
 
                             if (state == "01new") {
                                 planEvent.enable();
@@ -255,7 +258,11 @@
                                 planEvent.enable();
                                 cancelEvent.enable();
                                 plannedEvent.enable();
-                                realizedEvent.enable();
+                                if (!shouldShowAccept && differentTypes) {
+                                    realizedEvent.disable();
+                                } else {
+                                    realizedEvent.enable();
+                                }
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
                                 plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                 plannedEvent.forState="04inRealization";
@@ -263,10 +270,24 @@
                                 planEvent.disable();
                                 cancelEvent.enable();
                                 plannedEvent.disable();
-                                realizedEvent.enable();
+                                if (!shouldShowAccept && differentTypes) {
+                                    realizedEvent.disable();
+                                } else {
+                                    realizedEvent.enable();
+                                }
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
                                 plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                 plannedEvent.forState="04inRealization";
+                                if (shouldShowAccept) {
+                                        realizedEvent.forState="07accepted";
+                                        realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                        realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
+                                    }
+                                    else {
+                                        realizedEvent.forState="05realized";
+                                        realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
+                                        realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+                                    }
                             } else if (state == "05realized" || state == "06canceled") {
                                 planEvent.disable();
                                 cancelEvent.disable();
@@ -275,6 +296,22 @@
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
                                 plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                 plannedEvent.forState="04inRealization";
+                            } else if (state =="07accepted") {
+                                    planEvent.disable();
+                                    cancelEvent.disable();
+                                    plannedEvent.disable();
+                                    realizedEvent.enable();
+                                    realizedEvent.forState="05realized";
+                                    realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
+                                    realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+
+                                    deleteButton.disable();
+                                }
+                            else {
+                                planEvent.disable();
+                                cancelEvent.disable();
+                                plannedEvent.disable();
+                                realizedEvent.disable();
                             }
 
                             if (selectedEntitiesArray.length == 1) {
@@ -304,6 +341,28 @@
 							}
 						}
 						return false;
+					}
+					function typesAreDifferent(selectedEntitiesArray) {
+						if (selectedEntitiesArray.length < 2) {
+							return false;
+						}
+						for (var i = 1; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i-1].fields.type != selectedEntitiesArray[i].fields.type) {
+								return true;
+							}
+						}
+						return false;
+					}
+					function shouldShowAcceptButton(selectedEntitiesArray) {
+						if (selectedEntitiesArray.length < 2) {
+							return selectedEntitiesArray[0].fields.type !== "05meterReading";
+						}
+						for (var i = 1; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.type == "05meterReading") {
+								return false;
+							}
+						}
+						return true;
 					}
 
 				]]>
