@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="technologyDetails" modelName="technology">
 
@@ -320,14 +321,13 @@
         </windowTab>
 
         <windowTab name="treeTab">
-            <component type="gridLayout" name="gridsLayout" columns="2"
-                       rows="14" hasBorders="false">
+            <component type="flowGridLayout" name="gridsLayout" columns="2" rows="6" hasBorders="false">
                 <layoutElement column="1" row="1" height="1">
                     <component type="label" name="description">
                         <option type="labelStyle" value="text"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="2" height="12">
+                <layoutElement column="1" row="2" minHeight="3">
                     <component type="tree" name="technologyTree" reference="technologyTree"
                                field="#{form}.operationComponents">
                         <dataType name="operation">
@@ -397,7 +397,7 @@
                         <option type="filtersDefaultVisible" value="false"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="2" row="4" height="10">
+                <layoutElement column="2" row="4" minHeight="3">
                     <component type="grid" name="inProducts" reference="inProducts"
                                source="#{technologyTree}.operationProductInComponents"
                                defaultEnabled="false">
@@ -433,19 +433,21 @@
         </windowTab>
 
         <windowTab name="history">
-            <component type="grid" name="loggings" reference="grid"
-                       source="#{form}.stateChanges">
-                <option type="column" name="dateAndTime" fields="dateAndTime"/>
-                <option type="column" name="previousState" fields="sourceState"/>
-                <option type="column" name="currentState" fields="targetState"/>
-                <option type="column" name="shift" fields="shift"
-                        expression="#shift != null ? #shift['name'] : ''"/>
-                <option type="column" name="worker" fields="worker"/>
+            <component type="flowGridLayout" name="loggingsLayout" columns="1" rows="3" hasBorders="false">
+                <layoutElement column="1" row="1" minHeight="3">
+                    <component type="grid" name="loggings" reference="grid" source="#{form}.stateChanges">
+                        <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                        <option type="column" name="previousState" fields="sourceState"/>
+                        <option type="column" name="currentState" fields="targetState"/>
+                        <option type="column" name="shift" fields="shift" expression="#shift != null ? #shift['name'] : ''"/>
+                        <option type="column" name="worker" fields="worker"/>
 
-                <option type="order" column="dateAndTime" direction="asc"/>
+                        <option type="order" column="dateAndTime" direction="asc"/>
 
-                <option type="searchable" value="dateAndTime,sourceState,targetState"/>
-                <option type="orderable" value="dateAndTime,sourceState,targetState"/>
+                        <option type="searchable" value="dateAndTime,sourceState,targetState"/>
+                        <option type="orderable" value="dateAndTime,sourceState,targetState"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
 
@@ -481,8 +483,8 @@
         </windowTab>
         <windowTab name="productStructure">
             <component type="form" name="productStructureForm" reference="productStructureForm">
-                <component type="gridLayout" name="gridsLayout" rows="11" columns="1">
-                    <layoutElement row="1" column="1" height="10">
+                <component type="flowGridLayout" name="gridsLayout" rows="3" columns="1">
+                    <layoutElement row="1" column="1" minHeight="3">
                         <component type="tree" name="productStructureTree" reference="productStructureTree"
                                    field="productStructureTree">
                             <dataType name="finalProduct">
