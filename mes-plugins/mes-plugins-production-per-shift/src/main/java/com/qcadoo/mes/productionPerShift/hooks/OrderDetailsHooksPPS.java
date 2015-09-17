@@ -85,7 +85,12 @@ public class OrderDetailsHooksPPS {
     }
 
     private void checkOrderDates(final ViewDefinitionState view, final Entity order) {
-        Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if(technology == null){
+            return;
+        }
+
+        Long technologyId = technology.getId();
         boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
         Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(technologyId,
                 shouldBeCorrected);
