@@ -80,7 +80,7 @@ public class CopyOfTechnologyDetailsListeners {
                 if (copyOfTechnology.isValid()) {
                     order.setField(OrderFields.TECHNOLOGY, null);
 
-                    order.getDataDefinition().save(order);
+                    order = order.getDataDefinition().save(order);
 
                     deleteTechnology(technology);
 
@@ -119,7 +119,7 @@ public class CopyOfTechnologyDetailsListeners {
                 order.setField(OrderFields.TECHNOLOGY, null);
                 order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
 
-                order.getDataDefinition().save(order);
+                order = order.getDataDefinition().save(order);
 
                 deleteTechnology(technology);
 

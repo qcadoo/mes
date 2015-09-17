@@ -58,7 +58,7 @@ public class TechnologyStateChangeListenerService {
                 ordersNumberList.append(", ");
             }
             order.setField(TECHNOLOGY, null);
-            orderDD.save(order);
+            order = orderDD.save(order);
             ordersNumberList.append("{");
             ordersNumberList.append(order.getStringField(NUMBER));
             ordersNumberList.append("}");
