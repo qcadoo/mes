@@ -56,7 +56,7 @@ public class OperationDetailsHooks {
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         disableWorkstationsTabFieldsIfOperationIsNotSaved(view);
-        setProductionLineCriteriaModifiers(view);
+        // setProductionLineCriteriaModifiers(view);
         setWorkstationsCriteriaModifiers(view);
     }
 
