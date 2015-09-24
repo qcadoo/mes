@@ -321,13 +321,13 @@
         </windowTab>
 
         <windowTab name="treeTab">
-            <component type="flowGridLayout" name="gridsLayout" columns="2" rows="6" hasBorders="false">
+            <component type="flowGridLayout" name="gridsLayout" columns="2" rows="7">
                 <layoutElement column="1" row="1" height="1">
                     <component type="label" name="description">
                         <option type="labelStyle" value="text"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="2" minHeight="3">
+                <layoutElement column="1" row="2" minHeight="6">
                     <component type="tree" name="technologyTree" reference="technologyTree"
                                field="#{form}.operationComponents">
                         <dataType name="operation">
@@ -433,7 +433,7 @@
         </windowTab>
 
         <windowTab name="history">
-            <component type="flowGridLayout" name="loggingsLayout" columns="1" rows="3" hasBorders="false">
+            <component type="flowGridLayout" name="loggingsLayout" columns="1" rows="3">
                 <layoutElement column="1" row="1" minHeight="3">
                     <component type="grid" name="loggings" reference="grid" source="#{form}.stateChanges">
                         <option type="column" name="dateAndTime" fields="dateAndTime"/>
@@ -483,8 +483,8 @@
         </windowTab>
         <windowTab name="productStructure">
             <component type="form" name="productStructureForm" reference="productStructureForm">
-                <component type="flowGridLayout" name="gridsLayout" rows="3" columns="1">
-                    <layoutElement row="1" column="1" minHeight="3">
+                <component type="flowGridLayout" name="gridsLayout" rows="6" columns="1">
+                    <layoutElement row="1" column="1" minHeight="6">
                         <component type="tree" name="productStructureTree" reference="productStructureTree"
                                    field="productStructureTree">
                             <dataType name="finalProduct">
