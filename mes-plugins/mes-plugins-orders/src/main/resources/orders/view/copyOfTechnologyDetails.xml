@@ -247,14 +247,13 @@
 		</windowTab>
 
 		<windowTab name="treeTab">
-			<component type="gridLayout" name="gridsLayout" columns="2"
-				rows="8" hasBorders="false">
+			<component type="flowGridLayout" name="gridsLayout" columns="2" rows="7">
 				<layoutElement column="1" row="1" height="1">
 					<component type="label" name="description">
 						<option type="labelStyle" value="text" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="2" height="7">
+				<layoutElement column="1" row="2" minHeight="6">
 					<component type="tree" name="technologyTree" reference="technologyTree"
 						field="#{form}.operationComponents">
 						<dataType name="operation">
@@ -291,7 +290,7 @@
 							method="setGridEditable" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="1" height="4">
+				<layoutElement column="2" row="1" height="3">
 					<component type="grid" name="outProducts" reference="outProducts"
 						source="#{technologyTree}.operationProductOutComponents"
 						defaultEnabled="false">
@@ -323,7 +322,7 @@
 						<option type="filtersDefaultVisible" value="false" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="5" height="4">
+				<layoutElement column="2" row="5" minHeight="3">
 					<component type="grid" name="inProducts" reference="inProducts"
 						source="#{technologyTree}.operationProductInComponents"
 						defaultEnabled="false">
@@ -359,19 +358,23 @@
 		</windowTab>
 
 		<windowTab name="history">
-			<component type="grid" name="loggings" reference="grid"
-				source="#{form}.stateChanges">
-				<option type="column" name="dateAndTime" fields="dateAndTime" />
-				<option type="column" name="previousState" fields="sourceState" />
-				<option type="column" name="currentState" fields="targetState" />
-				<option type="column" name="shift" fields="shift"
-					expression="#shift != null ? #shift['name'] : ''" />
-				<option type="column" name="worker" fields="worker" />
+			<component type="flowGridLayout" name="loggingsLayout" columns="1" rows="6">
+				<layoutElement column="1" row="1" minHeight="6">
+					<component type="grid" name="loggings" reference="grid"
+						source="#{form}.stateChanges">
+						<option type="column" name="dateAndTime" fields="dateAndTime" />
+						<option type="column" name="previousState" fields="sourceState" />
+						<option type="column" name="currentState" fields="targetState" />
+						<option type="column" name="shift" fields="shift"
+							expression="#shift != null ? #shift['name'] : ''" />
+						<option type="column" name="worker" fields="worker" />
 
-				<option type="order" column="dateAndTime" direction="asc" />
+						<option type="order" column="dateAndTime" direction="asc" />
 
-				<option type="searchable" value="dateAndTime,sourceState,targetState" />
-				<option type="orderable" value="dateAndTime,sourceState,targetState" />
+						<option type="searchable" value="dateAndTime,sourceState,targetState" />
+						<option type="orderable" value="dateAndTime,sourceState,targetState" />
+					</component>
+				</layoutElement>
 			</component>
 		</windowTab>
 	</component>
