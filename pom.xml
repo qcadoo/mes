@@ -11,7 +11,7 @@
   
   <groupId>com.qcadoo.mes</groupId>
   <artifactId>mes</artifactId>
-  <version>1.4</version>
+  <version>1.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Qcadoo MES</name>
@@ -200,7 +200,7 @@
     <connection>scm:git:ssh://github.com/qcadoo/mes.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/qcadoo/mes.git</developerConnection>
     <url>http://github.com/qcadoo/mes</url>
-    <tag>1.4</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <distributionManagement>
