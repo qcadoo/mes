@@ -97,6 +97,9 @@ public class CostCalculationDetailsListeners {
 
         costCalculation = costCalculationService.calculateTotalCost(costCalculation);
 
+        costCalculationService.calculateSellPriceOverhead(costCalculation);
+        costCalculationService.calculateSellPrice(costCalculation);
+
         fillFields(view, costCalculation);
 
         costCalculationReportService.generateCostCalculationReport(view, state, args);
@@ -145,7 +148,9 @@ public class CostCalculationDetailsListeners {
                 CostCalculationFields.TOTAL_MATERIAL_COSTS, CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS,
                 CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS, CostCalculationFields.TOTAL_PIECEWORK_COSTS,
                 CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS, CostCalculationFields.TOTAL_COSTS,
-                CostCalculationFields.TOTAL_COST_PER_UNIT, CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE);
+                CostCalculationFields.TOTAL_COST_PER_UNIT, CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE,
+                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD_VALUE, CostCalculationFields.PROFIT_VALUE,
+                CostCalculationFields.SELL_PRICE_VALUE);
 
         for (String costField : costFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(costField);

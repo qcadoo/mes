@@ -43,7 +43,7 @@
 					<layoutElement column="1" row="2" height="3">
 						<component type="borderLayout" name="parametersBorderLayout">
 							<component type="gridLayout" name="parametersGidLayout"
-								columns="1" rows="3">
+								columns="1" rows="4">
 								<layoutElement column="1" row="1">
 									<component type="select" name="calculateOperationsCostsModePB"
 										field="#{form}.calculateOperationCostsModePB" reference="calculateOperationCostsModePB">
@@ -53,10 +53,15 @@
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
+									<component type="select" name="sourceOfOperationCostsPB"
+										reference="sourceOfOperationCostsPB" field="#{form}.sourceOfOperationCostsPB">
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="3">
 									<component type="checkbox" name="includeTPZPB"
 										field="#{form}.includeTPZPB" reference="includeTPZPB" />
 								</layoutElement>
-								<layoutElement column="1" row="3">
+								<layoutElement column="1" row="4">
 									<component type="checkbox" name="includeAdditionalTimePB"
 										field="#{form}.includeAdditionalTimePB" reference="includeAdditionalTimePB" />
 								</layoutElement>
@@ -142,55 +147,94 @@
 			</layoutElement>
 
 			<layoutElement column="3" row="1">
-				<component type="borderLayout" name="overheadsBorderLayout"
-					reference="overheadsBorderLayout">
-					<component type="gridLayout" name="overheadsGridLayout"
-						reference="overheadsGridLayout" columns="4" rows="3" hasBorders="false">
-						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="productionCostMarginPB"
-								field="#{form}.productionCostMarginPB" reference="productionCostMarginPB">
-								<option type="alignment" value="right" />
+				<component type="gridLayout" name="overheadsOuterGridLayout"
+						reference="overheadsOuterGridLayout" columns="1" rows="2">
+					<layoutElement column="1" row="1">
+						<component type="borderLayout" name="overheadsBorderLayout"
+							reference="overheadsBorderLayout">
+							<component type="gridLayout" name="overheadsGridLayout"
+								reference="overheadsGridLayout" columns="4" rows="3" hasBorders="false">
+								<layoutElement column="1" row="1" width="3">
+									<component type="input" name="productionCostMarginPB"
+										field="#{form}.productionCostMarginPB" reference="productionCostMarginPB">
+										<option type="alignment" value="right" />
+									</component>
+								</layoutElement>
+								<layoutElement column="4" row="1">
+									<component type="input" name="productionCostMarginPBProc"
+										reference="productionCostMarginPBProc" defaultEnabled="false"
+										hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2" width="3">
+									<component type="input" name="materialCostMarginPB"
+										field="#{form}.materialCostMarginPB" reference="materialCostMarginPB">
+										<option type="alignment" value="right" />
+									</component>
+								</layoutElement>
+								<layoutElement column="4" row="2">
+									<component type="input" name="materialCostMarginPBProc"
+										reference="materialCostMarginPBProc" defaultEnabled="false"
+										hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="3" width="3">
+									<component type="input" name="additionalOverheadPB"
+										field="#{form}.additionalOverheadPB" reference="additionalOverheadPB">
+										<option type="alignment" value="right" />
+									</component>
+								</layoutElement>
+								<layoutElement column="4" row="3">
+									<component type="input" name="additionalOverheadPBCurrency"
+										reference="additionalOverheadPBCurrency" defaultEnabled="false"
+										hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
 							</component>
-						</layoutElement>
-						<layoutElement column="4" row="1">
-							<component type="input" name="productionCostMarginPBProc"
-								reference="productionCostMarginPBProc" defaultEnabled="false"
-								hasLabel="false">
-								<option type="textRepresentationOnDisabled" value="true" />
+		
+							<option type="label" value="overheads" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="borderLayout" name="borderLayoutSellPriceOverheads"
+							reference="borderLayoutSellPriceOverheads">
+							<option type="label" value="sellPriceOverheads" />
+							<component type="gridLayout" name="sellPriceOverheads"
+								reference="sellPriceOverheads" columns="4" rows="2" hasBorders="false">
+								<layoutElement column="1" row="1" width="3">
+									<component type="input" name="registrationPriceOverheadPB"
+										field="#{form}.registrationPriceOverheadPB" reference="registrationPriceOverheadPB">
+										<option type="labelWidth" value="60" />
+										<option type="alignment" value="right" />
+									</component>
+								</layoutElement>
+								<layoutElement column="4" row="1">
+									<component type="input" name="registrationPriceOverheadPBProc"
+										defaultEnabled="false" hasLabel="false" reference="registrationPriceOverheadPBProc">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2" width="3">
+									<component type="input" name="profitPB"
+										field="#{form}.profitPB" reference="profitPB">
+										<option type="labelWidth" value="60" />
+										<option type="alignment" value="right" />
+									</component>
+								</layoutElement>
+								<layoutElement column="4" row="2">
+									<component type="input" name="profitPBProc"
+										defaultEnabled="false" hasLabel="false" reference="profitPBProc">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
 							</component>
-						</layoutElement>
-						<layoutElement column="1" row="2" width="3">
-							<component type="input" name="materialCostMarginPB"
-								field="#{form}.materialCostMarginPB" reference="materialCostMarginPB">
-								<option type="alignment" value="right" />
-							</component>
-						</layoutElement>
-						<layoutElement column="4" row="2">
-							<component type="input" name="materialCostMarginPBProc"
-								reference="materialCostMarginPBProc" defaultEnabled="false"
-								hasLabel="false">
-								<option type="textRepresentationOnDisabled" value="true" />
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="3" width="3">
-							<component type="input" name="additionalOverheadPB"
-								field="#{form}.additionalOverheadPB" reference="additionalOverheadPB">
-								<option type="alignment" value="right" />
-							</component>
-						</layoutElement>
-						<layoutElement column="4" row="3">
-							<component type="input" name="additionalOverheadPBCurrency"
-								reference="additionalOverheadPBCurrency" defaultEnabled="false"
-								hasLabel="false">
-								<option type="textRepresentationOnDisabled" value="true" />
-							</component>
-						</layoutElement>
-					</component>
-
-					<option type="label" value="overheads" />
+						</component>
+					</layoutElement>
 				</component>
 			</layoutElement>
-
 		</component>
 	</windowTab>
 </windowTabExtension>

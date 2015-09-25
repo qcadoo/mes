@@ -77,4 +77,20 @@ public interface CostCalculationService {
      */
     void calculateTotalOverhead(final Entity entity);
 
+    /**
+     * Calculated sell price overhead
+     * 
+     * @param entity
+     *            entity
+     */
+    public void calculateSellPriceOverhead(final Entity entity);
+
+    /**
+     * Calculated sell price
+     * 
+     * @param entity
+     *            entity
+     */
+    public void calculateSellPrice(final Entity entity);
+
 }

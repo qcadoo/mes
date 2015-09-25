@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.operationCostCalculations.OperationsCostCalculationService;
@@ -59,6 +60,8 @@ public class CostCalculationServiceImpl implements CostCalculationService {
     @Autowired
     private NumberService numberService;
 
+    private final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
+
     @Override
     public Entity calculateTotalCost(final Entity entity) {
         entity.setField(CostCalculationFields.DATE, new Date());
@@ -75,7 +78,13 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
     @Override
     public void calculateOperationsAndProductsCosts(final Entity entity) {
-        operationsCostCalculationService.calculateOperationsCost(entity);
+        boolean hourlyCostFromOperation = true;
+        String sourceOfOperationCosts = entity.getStringField("sourceOfOperationCosts");
+        if (sourceOfOperationCosts != null
+                && SourceOfOperationCosts.PARAMETERS.equals(SourceOfOperationCosts.parseString(sourceOfOperationCosts))) {
+            hourlyCostFromOperation = false;
+        }
+        operationsCostCalculationService.calculateOperationsCost(entity, hourlyCostFromOperation);
 
         final String sourceOfMaterialCosts = entity.getStringField(CostCalculationFields.SOURCE_OF_MATERIAL_COSTS);
 
@@ -131,9 +140,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
                 .getDecimalField(CostCalculationFields.TOTAL_MATERIAL_COSTS));
 
         final BigDecimal productionCostMarginValue = productionCosts.multiply(productionCostMargin,
-                numberService.getMathContext()).divide(BigDecimal.valueOf(100), numberService.getMathContext());
+                numberService.getMathContext()).divide(ONE_HUNDRED, numberService.getMathContext());
         final BigDecimal materialCostMarginValue = materialCosts.multiply(materialCostMargin, numberService.getMathContext())
-                .divide(BigDecimal.valueOf(100), numberService.getMathContext());
+                .divide(ONE_HUNDRED, numberService.getMathContext());
 
         entity.setField(CostCalculationFields.PRODUCTION_COST_MARGIN_VALUE, numberService.setScale(productionCostMarginValue));
         entity.setField(CostCalculationFields.MATERIAL_COST_MARGIN_VALUE, numberService.setScale(materialCostMarginValue));
@@ -180,4 +189,38 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         return productionCosts;
     }
 
+    @Override
+    public void calculateSellPriceOverhead(final Entity entity) {
+        final BigDecimal totalCostPerUnit = BigDecimalUtils.convertNullToZero(entity
+                .getDecimalField(CostCalculationFields.TOTAL_COST_PER_UNIT));
+        final BigDecimal registrationPriceOverhead = BigDecimalUtils.convertNullToZero(entity
+                .getDecimalField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD));
+        final BigDecimal profit = BigDecimalUtils.convertNullToZero(entity.getDecimalField(CostCalculationFields.PROFIT));
+
+        final BigDecimal registrationPriceOverheadValue = totalCostPerUnit.multiply(registrationPriceOverhead,
+                numberService.getMathContext()).divide(ONE_HUNDRED, numberService.getMathContext());
+
+        final BigDecimal profitValue = totalCostPerUnit.add(registrationPriceOverheadValue, numberService.getMathContext())
+                .multiply(profit, numberService.getMathContext()).divide(ONE_HUNDRED, numberService.getMathContext());
+
+        entity.setField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD_VALUE,
+                numberService.setScale(registrationPriceOverheadValue));
+        entity.setField(CostCalculationFields.PROFIT_VALUE, numberService.setScale(profitValue));
+    }
+
+    @Override
+    public void calculateSellPrice(final Entity entity) {
+        final BigDecimal totalCostPerUnit = BigDecimalUtils.convertNullToZero(entity
+                .getDecimalField(CostCalculationFields.TOTAL_COST_PER_UNIT));
+        final BigDecimal registrationPriceOverheadValue = BigDecimalUtils.convertNullToZero(entity
+                .getDecimalField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD_VALUE));
+        final BigDecimal profitValue = BigDecimalUtils.convertNullToZero(entity
+                .getDecimalField(CostCalculationFields.PROFIT_VALUE));
+
+        final BigDecimal sellPriceValue = totalCostPerUnit
+                .add(registrationPriceOverheadValue, numberService.getMathContext())
+                .add(profitValue, numberService.getMathContext());
+
+        entity.setField(CostCalculationFields.SELL_PRICE_VALUE, numberService.setScale(sellPriceValue));
+    }
 }

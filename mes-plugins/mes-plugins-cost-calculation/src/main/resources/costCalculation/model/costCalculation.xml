@@ -64,7 +64,7 @@
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="productionCostMargin" default="0">
+		<decimal name="productionCostMargin">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
@@ -72,7 +72,7 @@
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="materialCostMargin" default="0">
+		<decimal name="materialCostMargin">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
@@ -80,11 +80,31 @@
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="additionalOverhead" default="0">
+		<decimal name="additionalOverhead">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="additionalOverheadValue" default="0" />
+		<decimal name="registrationPriceOverhead" >
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="registrationPriceOverheadValue" >
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="profit">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="profitValue">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="sellPriceValue">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+		</decimal>
 		<decimal name="totalOverhead">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
@@ -113,6 +133,10 @@
 		<enum name="calculateMaterialCostsMode"
 			values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
 			required="true" default="01nominal" />
+
+		<enum name="sourceOfOperationCosts"
+			values="01technologyOperation,02parameters"
+			required="true" default="01technologyOperation" />
 
 		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"
 			required="true" default="01hourly" />

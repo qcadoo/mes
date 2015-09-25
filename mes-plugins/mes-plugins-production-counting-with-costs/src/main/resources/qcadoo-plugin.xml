@@ -409,6 +409,12 @@
 		</model:model-field>
 
 		<model:model-field model="parameter" plugin="basic">
+			<model:enum name="sourceOfOperationCostsPB"
+				values="01technologyOperation,02parameters"
+				required="true" default="01technologyOperation" />
+		</model:model-field>
+
+		<model:model-field model="parameter" plugin="basic">
 			<model:decimal name="averageMachineHourlyCostPB">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
@@ -438,6 +444,20 @@
 
 		<model:model-field model="parameter" plugin="basic">
 			<model:decimal name="additionalOverheadPB" default="0">
+				<model:validatesUnscaledValue max="7" />
+				<model:validatesScale max="5" />
+			</model:decimal>
+		</model:model-field>
+
+		<model:model-field model="parameter" plugin="basic">
+			<model:decimal name="registrationPriceOverheadPB" default="0">
+				<model:validatesUnscaledValue max="7" />
+				<model:validatesScale max="5" />
+			</model:decimal>
+		</model:model-field>
+
+		<model:model-field model="parameter" plugin="basic">
+			<model:decimal name="profitPB" default="0">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
