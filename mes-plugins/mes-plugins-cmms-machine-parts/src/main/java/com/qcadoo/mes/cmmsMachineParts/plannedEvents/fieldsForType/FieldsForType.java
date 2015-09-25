@@ -34,4 +34,10 @@ public interface FieldsForType {
     public List<String> getGridsToClear();
 
     public boolean shouldLockBasedOn();
+
+    public void addHiddenField(String hiddenField);
+
+    public void addHiddenTab(String hiddenTab);
+
+    public void addGridToClear(String gridToClear);
 }
