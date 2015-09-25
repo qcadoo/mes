@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.3
+    Version: 1.4
 
     This file is part of Qcadoo.
 
@@ -639,6 +639,12 @@
             </component>
         </windowTab>
         <windowTab name="realizationTab">
+        	<component type="lookup" name="realizationsLookup" reference="realizationsLookup"
+                       field="#{form}.realizations" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                       <option type="fieldCode" value="duration"/>
+                       <option type="expression" value="duration"/>
+            </component>
             <component type="grid" name="realizations" reference="realizations"
                        source="#{form}.realizations">
                 <option type="column" name="worker" fields="worker"

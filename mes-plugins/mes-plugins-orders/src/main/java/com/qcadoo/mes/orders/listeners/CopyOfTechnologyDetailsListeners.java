@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.3
+ * Version: 1.4
  *
  * This file is part of Qcadoo.
  *
@@ -80,7 +80,7 @@ public class CopyOfTechnologyDetailsListeners {
                 if (copyOfTechnology.isValid()) {
                     order.setField(OrderFields.TECHNOLOGY, null);
 
-                    order.getDataDefinition().save(order);
+                    order = order.getDataDefinition().save(order);
 
                     deleteTechnology(technology);
 
@@ -119,7 +119,7 @@ public class CopyOfTechnologyDetailsListeners {
                 order.setField(OrderFields.TECHNOLOGY, null);
                 order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
 
-                order.getDataDefinition().save(order);
+                order = order.getDataDefinition().save(order);
 
                 deleteTechnology(technology);
 

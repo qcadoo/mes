@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.3
+ * Version: 1.4
  *
  * This file is part of Qcadoo.
  *
@@ -59,7 +59,7 @@ public class TOCDetailsHooks {
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         disableWorkstationsTabFieldsIfOperationIsNotSaved(view);
-        setProductionLineCriteriaModifiers(view);
+        // setProductionLineCriteriaModifiers(view);
         setWorkstationsCriteriaModifiers(view);
     }
 

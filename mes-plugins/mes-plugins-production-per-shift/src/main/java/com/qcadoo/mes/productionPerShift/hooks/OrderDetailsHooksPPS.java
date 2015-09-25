@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.3
+ * Version: 1.4
  *
  * This file is part of Qcadoo.
  *
@@ -85,13 +85,23 @@ public class OrderDetailsHooksPPS {
     }
 
     private void checkOrderDates(final ViewDefinitionState view, final Entity order) {
-        Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if(technology == null){
+            return;
+        }
+
+        Long technologyId = technology.getId();
         boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
         Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(technologyId,
                 shouldBeCorrected);
         DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
-        Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
+        Optional<OrderDates> maybeOrderDates = null;
+        try {
+            maybeOrderDates = OrderDates.of(order);
+        }catch(IllegalArgumentException e){
+            return;
+        }
         DataDefinition orderDD = order.getDataDefinition();
         Entity dbOrder = orderDD.get(order.getId());
         boolean areDatesCorrect = true;

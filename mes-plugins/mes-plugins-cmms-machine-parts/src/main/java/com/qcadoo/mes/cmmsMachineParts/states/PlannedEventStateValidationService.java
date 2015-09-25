@@ -1,38 +1,46 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 1.4
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
 package com.qcadoo.mes.cmmsMachineParts.states;
 
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.cmmsMachineParts.constants.*;
-import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
-import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
-import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.security.api.SecurityService;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.qcadoo.mes.cmmsMachineParts.constants.ActionForPlannedEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
+import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class PlannedEventStateValidationService {
-
-    @Autowired
-    private ParameterService parameterService;
-
-    private static final String QCADOO_SECURITY = "qcadooSecurity";
-
-    private static final String USER = "user";
-
-    @Autowired
-    private SecurityService securityService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberService numberService;
 
     @Autowired
     private EventFieldsForTypeFactory eventFieldsForTypeFactory;
@@ -63,9 +71,29 @@ public class PlannedEventStateValidationService {
 
     public void validationOnRealized(StateChangeContext stateChangeContext) {
         Entity event = stateChangeContext.getOwner();
-        checkIfRequiredFieldsAreSet(event, stateChangeContext);
         checkIfActionsHaveStatus(event, stateChangeContext);
         checkSourceCost(event, stateChangeContext);
+        checkIfRealizationExists(event, stateChangeContext);
+        checkIfSolutionDescriptionExists(event, stateChangeContext);
+        checkIfRequiredFieldsAreSet(event, stateChangeContext);
+    }
+
+    private void checkIfSolutionDescriptionExists(Entity event, StateChangeContext stateChangeContext) {
+        if (event.getStringField(PlannedEventFields.SOLUTION_DESCRIPTION) == null
+                || event.getStringField(PlannedEventFields.SOLUTION_DESCRIPTION).isEmpty()) {
+            if (solutionDescriptionIsNotHidden(event)) {
+                stateChangeContext.addFieldValidationError(PlannedEventFields.SOLUTION_DESCRIPTION,
+                        "cmmsMachineParts.plannedEvent.state.fieldRequired");
+            }
+        }
+    }
+
+    private void checkIfRealizationExists(Entity event, StateChangeContext stateChangeContext) {
+        if (event.getHasManyField(PlannedEventFields.REALIZATIONS) == null
+                || event.getHasManyField(PlannedEventFields.REALIZATIONS).isEmpty()) {
+            stateChangeContext.addFieldValidationError(PlannedEventFields.REALIZATIONS,
+                    "cmmsMachineParts.plannedEvent.state.fieldRequired");
+        }
     }
 
     private void checkSourceCost(final Entity event, StateChangeContext stateChangeContext) {
@@ -123,9 +151,23 @@ public class PlannedEventStateValidationService {
     }
 
     private boolean durationIsNotHidden(Entity plannedEvent) {
+        return fieldIsNotHidden(plannedEvent, PlannedEventFields.DURATION);
+    }
+
+    private boolean solutionDescriptionIsNotHidden(Entity plannedEvent) {
+        return tabIsNotHidden(plannedEvent, PlannedEventFields.SOLUTION_DESCRIPTION_TAB);
+    }
+
+    private boolean fieldIsNotHidden(Entity plannedEvent, String fieldName) {
         PlannedEventType type = PlannedEventType.from(plannedEvent);
         FieldsForType fieldsForType = eventFieldsForTypeFactory.createFieldsForType(type);
-        return !fieldsForType.getHiddenFields().contains(PlannedEventFields.DURATION);
+        return !fieldsForType.getHiddenFields().contains(fieldName);
+    }
+
+    private boolean tabIsNotHidden(Entity plannedEvent, String tabName) {
+        PlannedEventType type = PlannedEventType.from(plannedEvent);
+        FieldsForType fieldsForType = eventFieldsForTypeFactory.createFieldsForType(type);
+        return !fieldsForType.getHiddenTabs().contains(tabName);
     }
 
     public void validationOnCanceled(StateChangeContext stateChangeContext) {

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.3
+ * Version: 1.4
  *
  * This file is part of Qcadoo.
  *
@@ -51,6 +51,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.print.utils.CostCalculationMaterial;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
@@ -111,6 +112,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private CostCalculationMaterialsService costCalculationMaterialsService;
 
     @Autowired
     private ProductsCostCalculationService productsCostCalculationService;
@@ -386,40 +390,21 @@ public class CostCalculationPdfService extends PdfDocumentService {
         // neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
 
         MathContext mathContext = numberService.getMathContext();
+        List<CostCalculationMaterial> sortedMaterials = costCalculationMaterialsService.getSortedMaterialsFromProductQuantities(
+                costCalculation, neededProductQuantities, order);
+        for (CostCalculationMaterial material : sortedMaterials) {
 
-        for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
-            Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
-
-            Entity productEntity = productsCostCalculationService.getAppropriateCostNormForProduct(product, order,
-                    costCalculation.getStringField(CostCalculationFields.SOURCE_OF_MATERIAL_COSTS));
-
-            BigDecimal productQuantity = neededProductQuantity.getValue();
-
-            materialsTable.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+            materialsTable.addCell(new Phrase(material.getProductNumber(), material.getFont()));
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            materialsTable.addCell(new Phrase(numberService.format(productQuantity), FontUtils.getDejavuRegular7Dark()));
+            materialsTable.addCell(new Phrase(numberService.format(material.getProductQuantity()), material.getFont()));
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            materialsTable.addCell(new Phrase(product.getStringField(ProductFields.UNIT), FontUtils.getDejavuRegular7Dark()));
+            materialsTable.addCell(new Phrase(material.getUnit(), material.getFont()));
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
-            BigDecimal costForGivenQuantity = productsCostCalculationService.calculateProductCostForGivenQuantity(productEntity,
-                    productQuantity, costCalculation.getStringField(CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE));
+            materialsTable.addCell(new Phrase(numberService.format(material.getCostForGivenQuantity()), material.getFont()));
 
-            materialsTable.addCell(new Phrase(numberService.format(costForGivenQuantity), FontUtils.getDejavuRegular7Dark()));
-
-            BigDecimal materialCostMargin = costCalculation.getDecimalField(CostCalculationFields.MATERIAL_COST_MARGIN);
-
-            if (materialCostMargin == null) {
-                materialsTable.addCell(new Phrase(numberService.format(0.0), FontUtils.getDejavuRegular7Dark()));
-                materialsTable.addCell(new Phrase(numberService.format(costForGivenQuantity), FontUtils.getDejavuRegular7Dark()));
-            } else {
-                BigDecimal toAdd = costForGivenQuantity.multiply(materialCostMargin.divide(new BigDecimal(100), mathContext),
-                        mathContext);
-                BigDecimal totalCosts = costForGivenQuantity.add(toAdd, mathContext);
-
-                materialsTable.addCell(new Phrase(numberService.format(toAdd), FontUtils.getDejavuRegular7Dark()));
-                materialsTable.addCell(new Phrase(numberService.format(totalCosts), FontUtils.getDejavuRegular7Dark()));
-            }
+            materialsTable.addCell(new Phrase(numberService.format(material.getToAdd()), material.getFont()));
+            materialsTable.addCell(new Phrase(numberService.format(material.getTotalCost()), material.getFont()));
 
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }

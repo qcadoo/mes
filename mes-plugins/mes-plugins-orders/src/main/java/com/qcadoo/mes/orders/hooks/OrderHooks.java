@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.3
+ * Version: 1.4
  *
  * This file is part of Qcadoo.
  *
@@ -222,10 +222,11 @@ public class OrderHooks {
 
     private void backupTechnology(final DataDefinition orderDD, final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if (technology != null){
-            String bNumber = BACKUP_TECHNOLOGY_PREFIX + new Date().getTime()+"_"+technology.getStringField(TechnologyFields.NUMBER);
+        if (technology != null) {
+            String bNumber = BACKUP_TECHNOLOGY_PREFIX + new Date().getTime() + "_"
+                    + technology.getStringField(TechnologyFields.NUMBER);
             bNumber = bNumber.substring(0, Math.min(bNumber.length(), 255));
-            technology.setField(TechnologyFields.NUMBER,bNumber);
+            technology.setField(TechnologyFields.NUMBER, bNumber);
             technology.getDataDefinition().save(technology);
         }
     }
@@ -612,7 +613,7 @@ public class OrderHooks {
         String number = generateTechnologyNumberFor(order).orNull();
         Entity copyOfTechnology = technology.getDataDefinition().copy(technology.getId()).get(0);
         copyOfTechnology.setField(TechnologyFields.NUMBER, number);
-        copyOfTechnology.getDataDefinition().save(copyOfTechnology);
+        copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
         if (OrderType.of(order) == OrderType.WITH_PATTERN_TECHNOLOGY) {
             technologyServiceO.changeTechnologyState(copyOfTechnology, TechnologyStateStringValues.CHECKED);
         }

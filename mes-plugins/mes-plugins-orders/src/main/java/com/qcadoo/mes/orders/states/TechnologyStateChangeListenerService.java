@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.3
+ * Version: 1.4
  *
  * This file is part of Qcadoo.
  *
@@ -58,7 +58,7 @@ public class TechnologyStateChangeListenerService {
                 ordersNumberList.append(", ");
             }
             order.setField(TECHNOLOGY, null);
-            orderDD.save(order);
+            order = orderDD.save(order);
             ordersNumberList.append("{");
             ordersNumberList.append(order.getStringField(NUMBER));
             ordersNumberList.append("}");

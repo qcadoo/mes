@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.3
+ * Version: 1.4
  *
  * This file is part of Qcadoo.
  *
@@ -23,21 +23,20 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
+import java.util.List;
 
 @Service
 public class OrderDetailsListenersPC {
@@ -79,18 +78,17 @@ public class OrderDetailsListenersPC {
         for (String fieldComponentName : L_TECHNOLOGY_FIELD_NAMES) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldComponentName);
 
+            if(technology != null) {
                 fieldComponent.setFieldValue(getDefaultValueForProductionCounting(technology, fieldComponentName));
                 fieldComponent.requestComponentUpdateState();
-
+            }
 
             fieldComponent.setEnabled(false);
         }
-        FieldComponent typeOfProductionRecordingField = (FieldComponent) view
-                .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-            typeOfProductionRecordingField
-                    .setFieldValue(getDefaultValueForTypeOfProductionRecording(technology,
-                            TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
-
+        if(technology != null) {
+            FieldComponent typeOfProductionRecordingField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+            typeOfProductionRecordingField.setFieldValue(getDefaultValueForTypeOfProductionRecording(technology, TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
+        }
     }
 
     private boolean getDefaultValueForProductionCounting(final Entity technology, final String fieldName) {
