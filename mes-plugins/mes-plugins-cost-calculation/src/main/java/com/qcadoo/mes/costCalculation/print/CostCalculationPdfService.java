@@ -407,7 +407,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         panelColumn.addCell(leftCell);
         PdfPTable rightPanelColumn = pdfHelper.createPanelTable(1);
 
-        reportData = costCalculation.getDecimalField(CostCalculationFields.TOTAL_COSTS);
+        reportData = costCalculation.getDecimalField(CostCalculationFields.SELL_PRICE_VALUE);
         rightPanelColumn.addCell(new Phrase(translationService.translate(
                 "costCalculation.costCalculationDetails.window.mainTab.form.totalCost", locale) + ":", FontUtils
                 .getDejavuBold9Dark()));
@@ -415,7 +415,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
         rightPanelColumn.getDefaultCell().setVerticalAlignment(Element.ALIGN_BOTTOM);
 
         pdfHelper.addTableCellAsTable(rightPanelColumn,
-                L_TAB_IN_TEXT + translationService.translate("costCalculation.costCalculation.totalCosts.label", locale) + ":",
+                L_TAB_IN_TEXT + translationService.translate("costCalculation.costCalculation.sellPriceValue.label", locale)
+                        + ":",
                 (reportData == null ? "" : numberService.format(reportData)) + " " + currencyService.getCurrencyAlphabeticCode(),
                 FontUtils.getDejavuBold10Dark(), FontUtils.getDejavuRegular10Dark(), 2);
 

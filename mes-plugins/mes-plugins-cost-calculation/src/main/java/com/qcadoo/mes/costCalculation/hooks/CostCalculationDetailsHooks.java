@@ -292,13 +292,15 @@ public class CostCalculationDetailsHooks {
 
     private void fillWithPropertyOrZero(String componentName, String propertyName, ViewDefinitionState view) {
         FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
-        BigDecimal propertyValue = parameterService.getParameter().getDecimalField(propertyName);
+        if (component.getFieldValue() != null) {
+            BigDecimal propertyValue = parameterService.getParameter().getDecimalField(propertyName);
 
-        if (propertyValue != null) {
-            String formattedProductionCostMargin = numbersService.formatWithMinimumFractionDigits(propertyValue, 0);
-            component.setFieldValue(formattedProductionCostMargin);
-        } else {
-            component.setFieldValue(0);
+            if (propertyValue != null) {
+                String formattedProductionCostMargin = numbersService.formatWithMinimumFractionDigits(propertyValue, 0);
+                component.setFieldValue(formattedProductionCostMargin);
+            } else {
+                component.setFieldValue(0);
+            }
         }
     }
 }
