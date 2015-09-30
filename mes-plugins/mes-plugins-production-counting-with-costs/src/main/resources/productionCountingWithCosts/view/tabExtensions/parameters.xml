@@ -54,7 +54,8 @@
 								</layoutElement>
 								<layoutElement column="1" row="2">
 									<component type="select" name="sourceOfOperationCostsPB"
-										reference="sourceOfOperationCostsPB" field="#{form}.sourceOfOperationCostsPB">
+										reference="sourceOfOperationCostsPB" field="#{form}.sourceOfOperationCostsPB"
+										hasDescription="true">
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3">

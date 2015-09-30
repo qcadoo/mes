@@ -67,6 +67,7 @@
 		<decimal name="productionCostMargin">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
+            <validatesRange from="0" exclusively="false"/>
 		</decimal>
 		<decimal name="productionCostMarginValue">
 			<validatesUnscaledValue max="14" />
@@ -75,6 +76,7 @@
 		<decimal name="materialCostMargin">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
+            <validatesRange from="0" exclusively="false"/>
 		</decimal>
 		<decimal name="materialCostMarginValue">
 			<validatesUnscaledValue max="14" />
@@ -83,11 +85,13 @@
 		<decimal name="additionalOverhead">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
+            <validatesRange from="0" exclusively="false"/>
 		</decimal>
 		<decimal name="additionalOverheadValue" default="0" />
 		<decimal name="registrationPriceOverhead" >
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
+            <validatesRange from="0" exclusively="false"/>
 		</decimal>
 		<decimal name="registrationPriceOverheadValue" >
 			<validatesUnscaledValue max="14" />
@@ -96,6 +100,7 @@
 		<decimal name="profit">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
+            <validatesRange from="0" exclusively="false"/>
 		</decimal>
 		<decimal name="profitValue">
 			<validatesUnscaledValue max="14" />
