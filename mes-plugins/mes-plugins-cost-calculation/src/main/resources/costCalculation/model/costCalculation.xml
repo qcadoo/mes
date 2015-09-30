@@ -149,6 +149,7 @@
 		<datetime name="date" />
 		<boolean name="generated" />
 		<string name="fileName" />
+		<boolean name="justCreated" persistent="false" default="true"/>
 	</fields>
 	<hooks>
 		<validatesWith

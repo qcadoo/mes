@@ -418,6 +418,7 @@
 			<model:decimal name="averageMachineHourlyCostPB">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
+            	<model:validatesRange from="0" exclusively="false"/>
 			</model:decimal>
 		</model:model-field>
 
@@ -425,6 +426,7 @@
 			<model:decimal name="averageLaborHourlyCostPB">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
+            	<model:validatesRange from="0" exclusively="false"/>
 			</model:decimal>
 		</model:model-field>
 

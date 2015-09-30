@@ -322,7 +322,12 @@
 									<component type="select" name="sourceOfOperationCosts"
 										reference="sourceOfOperationCosts" field="#{form}.sourceOfOperationCosts"
 										hasDescription="true">
+										<listener event="onSelectedEntityChange"
+											class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
+											method="sourceOfOperationCostsChanged" />
 									</component>
+									<component type="checkbox" name="justCreated"
+										field="#{form}.justCreated" reference="justCreated" defaultVisible="false"/>
 								</layoutElement>
 								<layoutElement column="1" row="4">
 									<component type="select" name="calculateOperationCostsMode"

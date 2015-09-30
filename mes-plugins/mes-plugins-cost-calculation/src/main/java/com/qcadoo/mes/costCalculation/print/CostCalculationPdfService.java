@@ -48,10 +48,12 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costCalculation.print.utils.CostCalculationMaterial;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
@@ -65,6 +67,7 @@ import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -119,6 +122,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     private ProductsCostCalculationService productsCostCalculationService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
@@ -949,13 +955,27 @@ public class CostCalculationPdfService extends PdfDocumentService {
                             "costCalculation.costCalculationDetails.report.columnHeader.additionalTime.label", locale) + ":",
                     timeConverterService.convertTimeToString(technologyOperationComponent
                             .getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION)) + " (g:m:s)");
+            BigDecimal machineHourlyCost = BigDecimal.ZERO;
+            BigDecimal laborHourlyCost = BigDecimal.ZERO;
+
+            if (SourceOfOperationCosts.PARAMETERS.getStringValue().equals(
+                    costCalculation.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS))) {
+                machineHourlyCost = BigDecimalUtils.convertNullToZero(parameterService.getParameter().getDecimalField(
+                        "averageMachineHourlyCostPB"));
+                laborHourlyCost = BigDecimalUtils.convertNullToZero(parameterService.getParameter().getDecimalField(
+                        "averageLaborHourlyCostPB"));
+            } else {
+                machineHourlyCost = technologyOperationComponent
+                        .getDecimalField(TechnologyOperationComponentFieldsCNFO.MACHINE_HOURLY_COST);
+                laborHourlyCost = technologyOperationComponent
+                        .getDecimalField(TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST);
+            }
 
             addTableCellAsTwoColumnsTable(
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.machineHourlyCost.label", locale) + ":",
-                    numberService.format(technologyOperationComponent
-                            .getDecimalField(TechnologyOperationComponentFieldsCNFO.MACHINE_HOURLY_COST)));
+                    numberService.format(machineHourlyCost));
 
             addTableCellAsTwoColumnsTable(panelTableContent, "", "");
 
@@ -963,8 +983,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.laborHourlyCost.label", locale) + ":",
-                    numberService.format(technologyOperationComponent
-                            .getDecimalField(TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST)));
+                    numberService.format(laborHourlyCost));
 
             document.add(panelTableHeader);
             document.add(panelTableContent);

@@ -38,6 +38,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
@@ -132,6 +133,21 @@ public class CostCalculationDetailsHooks {
         fillCurrencyFields(view);
         disableCheckboxIfPieceworkIsSelected(view);
         fillOverheadsFromParameters(view);
+        toggleCalculateOperationCostsModeComponent(view);
+    }
+
+    private void toggleCalculateOperationCostsModeComponent(ViewDefinitionState view) {
+        FieldComponent sourceOfOperationCostsComponent = (FieldComponent) view.getComponentByReference("sourceOfOperationCosts");
+        if (sourceOfOperationCostsComponent.isEnabled()) {
+            String source = (String) sourceOfOperationCostsComponent.getFieldValue();
+            FieldComponent calculateOperationCostsModeComponent = (FieldComponent) view
+                    .getComponentByReference("calculateOperationCostsMode");
+            if (SourceOfOperationCosts.PARAMETERS.getStringValue().equals(source)) {
+                calculateOperationCostsModeComponent.setEnabled(false);
+            } else {
+                calculateOperationCostsModeComponent.setEnabled(true);
+            }
+        }
     }
 
     public void setFieldsEnabled(final ViewDefinitionState view) {
@@ -276,7 +292,8 @@ public class CostCalculationDetailsHooks {
 
     private void fillOverheadsFromParameters(ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form.getEntityId() == null) {
+        Boolean justCreated = form.getEntity().getBooleanField("justCreated");
+        if (form.getEntityId() == null && justCreated) {
             FieldComponent sourceOfOperationCosts = (FieldComponent) view.getComponentByReference("sourceOfOperationCosts");
             String paramSourceOfOperationCosts = parameterService.getParameter().getStringField("sourceOfOperationCostsPB");
             if (paramSourceOfOperationCosts != null) {
@@ -287,12 +304,13 @@ public class CostCalculationDetailsHooks {
             fillWithPropertyOrZero("additionalOverhead", "additionalOverheadPB", view);
             fillWithPropertyOrZero("registrationPriceOverhead", "registrationPriceOverheadPB", view);
             fillWithPropertyOrZero("profit", "profitPB", view);
+            view.getComponentByReference("justCreated").setFieldValue(false);
         }
     }
 
     private void fillWithPropertyOrZero(String componentName, String propertyName, ViewDefinitionState view) {
         FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
-        if (component.getFieldValue() != null) {
+        if (component.getFieldValue() == null) {
             BigDecimal propertyValue = parameterService.getParameter().getDecimalField(propertyName);
 
             if (propertyValue != null) {

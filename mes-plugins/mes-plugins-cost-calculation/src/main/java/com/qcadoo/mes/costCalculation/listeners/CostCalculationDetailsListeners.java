@@ -38,8 +38,10 @@ import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costCalculation.hooks.CostCalculationDetailsHooks;
 import com.qcadoo.mes.costCalculation.print.CostCalculationReportService;
+import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -398,6 +400,16 @@ public class CostCalculationDetailsListeners {
     public void disableCheckboxIfPieceworkIsSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         costCalculationDetailsHooks.disableCheckboxIfPieceworkIsSelected(viewDefinitionState);
+    }
+
+    public void sourceOfOperationCostsChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        String source = (String) state.getFieldValue();
+        FieldComponent calculateOperationCostsModeComponent = (FieldComponent) viewDefinitionState
+                .getComponentByReference("calculateOperationCostsMode");
+        if (SourceOfOperationCosts.PARAMETERS.getStringValue().equals(source)) {
+            calculateOperationCostsModeComponent.setFieldValue(CalculateOperationCostMode.HOURLY.getStringValue());
+        }
     }
 
 }
