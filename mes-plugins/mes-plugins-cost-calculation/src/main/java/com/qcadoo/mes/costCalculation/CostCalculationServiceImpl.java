@@ -102,12 +102,12 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
         entity.setField(CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS,
                 numberService.setScale(totalTechnicalProductionCosts));
-        entity.setField(CostCalculationFields.TOTAL_COSTS, numberService.setScale(totalCosts));
+        entity.setField(CostCalculationFields.TOTAL_COSTS, numberService.setScale(totalCosts, 2));
 
         if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(quantity)) != 0) {
             final BigDecimal totalCostsPerUnit = totalCosts.divide(quantity, numberService.getMathContext());
 
-            entity.setField(CostCalculationFields.TOTAL_COST_PER_UNIT, numberService.setScale(totalCostsPerUnit));
+            entity.setField(CostCalculationFields.TOTAL_COST_PER_UNIT, numberService.setScale(totalCostsPerUnit, 2));
         }
     }
 
@@ -221,6 +221,6 @@ public class CostCalculationServiceImpl implements CostCalculationService {
                 .add(registrationPriceOverheadValue, numberService.getMathContext())
                 .add(profitValue, numberService.getMathContext());
 
-        entity.setField(CostCalculationFields.SELL_PRICE_VALUE, numberService.setScale(sellPriceValue));
+        entity.setField(CostCalculationFields.SELL_PRICE_VALUE, numberService.setScale(sellPriceValue, 2));
     }
 }

@@ -197,7 +197,8 @@ public class CostCalculationDetailsHooks {
         Set<String> referenceNames = Sets.newHashSet("totalCostsCurrency", "totalOverheadCurrency",
                 "additionalOverheadValueCurrency", "materialCostMarginValueCurrency", "productionCostMarginValueCurrency",
                 "totalTechnicalProductionCostsCurrency", L_TOTAL_PIECEWORK_COSTS_CURRENCY, L_TOTAL_LABOR_HOURLY_COSTS_CURRENCY,
-                L_TOTAL_MACHINE_HOURLY_COSTS_CURRENCY, "totalMaterialCostsCurrency", L_ADDITIONAL_OVERHEAD_CURRENCY);
+                L_TOTAL_MACHINE_HOURLY_COSTS_CURRENCY, "totalMaterialCostsCurrency", L_ADDITIONAL_OVERHEAD_CURRENCY,
+                "profitValueCurrency", "registrationPriceOverheadValueCurrency");
 
         for (String referenceName : referenceNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
@@ -225,6 +226,7 @@ public class CostCalculationDetailsHooks {
         final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
 
         FieldComponent totalCostPerUnitUnit = (FieldComponent) view.getComponentByReference(L_TOTAL_COST_PER_UNIT_UNIT);
+        FieldComponent sellPriceValueCurrency = (FieldComponent) view.getComponentByReference("sellPriceValueCurrency");
         LookupComponent productField = (LookupComponent) view.getComponentByReference(CostCalculationFields.PRODUCT);
 
         Entity product = productField.getEntity();
@@ -235,6 +237,8 @@ public class CostCalculationDetailsHooks {
 
         totalCostPerUnitUnit.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField(ProductFields.UNIT));
         totalCostPerUnitUnit.requestComponentUpdateState();
+        sellPriceValueCurrency.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField(ProductFields.UNIT));
+        sellPriceValueCurrency.requestComponentUpdateState();
     }
 
     public void disableCheckboxIfPieceworkIsSelected(final ViewDefinitionState viewDefinitionState) {
@@ -294,17 +298,24 @@ public class CostCalculationDetailsHooks {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Boolean justCreated = form.getEntity().getBooleanField("justCreated");
         if (form.getEntityId() == null && justCreated) {
-            FieldComponent sourceOfOperationCosts = (FieldComponent) view.getComponentByReference("sourceOfOperationCosts");
-            String paramSourceOfOperationCosts = parameterService.getParameter().getStringField("sourceOfOperationCostsPB");
-            if (paramSourceOfOperationCosts != null) {
-                sourceOfOperationCosts.setFieldValue(paramSourceOfOperationCosts);
-            }
+            fillWithProperty("sourceOfMaterialCosts", "sourceOfMaterialCostsPB", view);
+            fillWithProperty("calculateMaterialCostsMode", "calculateMaterialCostsModePB", view);
+            fillWithProperty("sourceOfOperationCosts", "sourceOfOperationCostsPB", view);
+
             fillWithPropertyOrZero("productionCostMargin", "productionCostMarginPB", view);
             fillWithPropertyOrZero("materialCostMargin", "materialCostMarginPB", view);
             fillWithPropertyOrZero("additionalOverhead", "additionalOverheadPB", view);
             fillWithPropertyOrZero("registrationPriceOverhead", "registrationPriceOverheadPB", view);
             fillWithPropertyOrZero("profit", "profitPB", view);
             view.getComponentByReference("justCreated").setFieldValue(false);
+        }
+    }
+
+    private void fillWithProperty(String componentName, String propertyName, ViewDefinitionState view) {
+        FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
+        String propertyValue = parameterService.getParameter().getStringField(propertyName);
+        if (propertyValue != null) {
+            component.setFieldValue(propertyValue);
         }
     }
 

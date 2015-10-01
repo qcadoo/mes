@@ -338,7 +338,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
         panelColumn.addCell(leftCell);
         PdfPTable rightPanelColumn = pdfHelper.createPanelTable(1);
 
-        reportData = costCalculation.getDecimalField(CostCalculationFields.TOTAL_COSTS);
         rightPanelColumn.addCell(new Phrase(translationService.translate(
                 "costCalculation.costCalculationDetails.window.mainTab.form.totalCost", locale) + ":", FontUtils
                 .getDejavuBold9Dark()));
@@ -356,24 +355,32 @@ public class CostCalculationPdfService extends PdfDocumentService {
         PdfPTable cellTable = new PdfPTable(2);
         cellTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
+        reportData = costCalculation.getDecimalField(CostCalculationFields.TOTAL_COSTS);
         cellTable.addCell(new Phrase(L_TAB_IN_TEXT
                 + translationService.translate("costCalculation.costCalculation.totalCosts.label", locale) + ":", FontUtils
                 .getDejavuBold10Dark()));
-        cellTable.addCell(new Phrase((reportData == null ? "" : numberService.format(reportData)) + " "
-                + currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular10Dark()));
+        addRightAlignedAmountCell(cellTable, reportData);
 
         reportData = costCalculation.getDecimalField(CostCalculationFields.TOTAL_COST_PER_UNIT);
         cellTable.addCell(new Phrase(L_TAB_IN_TEXT
                 + translationService.translate("costCalculation.costCalculation.totalCostPerUnit.label", locale) + ":", FontUtils
                 .getDejavuBold10Dark()));
-        cellTable.addCell(new Phrase((reportData == null ? "" : numberService.format(reportData)) + " "
-                + currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular10Dark()));
+        addRightAlignedAmountCell(cellTable, reportData);
 
         rightPanelColumn.addCell(cellTable);
         PdfPCell rightCell = new PdfPCell(rightPanelColumn);
         rightCell.setBorder(PdfPCell.NO_BORDER);
         panelColumn.addCell(rightCell);
         return panelColumn;
+    }
+
+    private void addRightAlignedAmountCell(PdfPTable table, Object reportData) {
+        BigDecimal reportValue = numberService.setScale((BigDecimal) reportData, 2);
+        PdfPCell cell = new PdfPCell(new Phrase((reportData == null ? "" : numberService.format(reportValue)) + " "
+                + currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular10Dark()));
+        cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cell.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cell);
     }
 
     public PdfPTable addBottomPanelToReport(final Entity costCalculation, final Locale locale) {
@@ -420,11 +427,14 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         rightPanelColumn.getDefaultCell().setVerticalAlignment(Element.ALIGN_BOTTOM);
 
-        pdfHelper.addTableCellAsTable(rightPanelColumn,
-                L_TAB_IN_TEXT + translationService.translate("costCalculation.costCalculation.sellPriceValue.label", locale)
-                        + ":",
-                (reportData == null ? "" : numberService.format(reportData)) + " " + currencyService.getCurrencyAlphabeticCode(),
-                FontUtils.getDejavuBold10Dark(), FontUtils.getDejavuRegular10Dark(), 2);
+        PdfPTable cellTable = new PdfPTable(2);
+        cellTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        reportData = costCalculation.getDecimalField(CostCalculationFields.SELL_PRICE_VALUE);
+        cellTable.addCell(new Phrase(L_TAB_IN_TEXT
+                + translationService.translate("costCalculation.costCalculation.sellPriceValue.label", locale) + ":", FontUtils
+                .getDejavuBold10Dark()));
+        addRightAlignedAmountCell(cellTable, reportData);
+        rightPanelColumn.addCell(cellTable);
 
         PdfPCell rightCell = new PdfPCell(rightPanelColumn);
         rightCell.setBorder(PdfPCell.NO_BORDER);
