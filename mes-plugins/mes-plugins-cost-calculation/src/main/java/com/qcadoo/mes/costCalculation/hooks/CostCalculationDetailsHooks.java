@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -32,17 +33,21 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -55,6 +60,10 @@ public class CostCalculationDetailsHooks {
     private static final String L_PRODUCTION_COST_MARGIN_PROC = "productionCostMarginProc";
 
     private static final String L_MATERIAL_COST_MARGIN_PROC = "materialCostMarginProc";
+
+    private static final String L_REGISTRATION_PRICE_OVERHEAD_PROC = "registrationPriceOverheadProc";
+
+    private static final String L_PROFIT_PROC = "profitProc";
 
     private static final String L_ADDITIONAL_OVERHEAD_CURRENCY = "additionalOverheadCurrency";
 
@@ -71,6 +80,12 @@ public class CostCalculationDetailsHooks {
 
     @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private NumberService numbersService;
 
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.ORDER);
@@ -111,6 +126,30 @@ public class CostCalculationDetailsHooks {
         technologyLookup.setFilterValue(filterValueHolder);
     }
 
+    public void onBeforeRender(final ViewDefinitionState view) {
+        setCriteriaModifierParameters(view);
+        setFieldsEnabled(view);
+        generateNumber(view);
+        fillCurrencyFields(view);
+        disableCheckboxIfPieceworkIsSelected(view);
+        fillOverheadsFromParameters(view);
+        toggleCalculateOperationCostsModeComponent(view);
+    }
+
+    private void toggleCalculateOperationCostsModeComponent(ViewDefinitionState view) {
+        FieldComponent sourceOfOperationCostsComponent = (FieldComponent) view.getComponentByReference("sourceOfOperationCosts");
+        if (sourceOfOperationCostsComponent.isEnabled()) {
+            String source = (String) sourceOfOperationCostsComponent.getFieldValue();
+            FieldComponent calculateOperationCostsModeComponent = (FieldComponent) view
+                    .getComponentByReference("calculateOperationCostsMode");
+            if (SourceOfOperationCosts.PARAMETERS.getStringValue().equals(source)) {
+                calculateOperationCostsModeComponent.setEnabled(false);
+            } else {
+                calculateOperationCostsModeComponent.setEnabled(true);
+            }
+        }
+    }
+
     public void setFieldsEnabled(final ViewDefinitionState view) {
         Set<String> referenceNames = Sets.newHashSet(CostCalculationFields.PRODUCT, CostCalculationFields.ORDER,
                 CostCalculationFields.QUANTITY, CostCalculationFields.TECHNOLOGY, CostCalculationFields.NUMBER,
@@ -120,6 +159,8 @@ public class CostCalculationDetailsHooks {
                 CostCalculationFields.ADDITIONAL_OVERHEAD, CostCalculationFields.PRINT_COST_NORMS_OF_MATERIALS,
                 CostCalculationFields.PRINT_OPERATION_NORMS, CostCalculationFields.INCLUDE_TPZ,
                 CostCalculationFields.INCLUDE_ADDITIONAL_TIME, CostCalculationFields.SOURCE_OF_MATERIAL_COSTS,
+                CostCalculationFields.SOURCE_OF_OPERATION_COSTS, CostCalculationFields.REGISTRATION_PRICE_OVERHEAD,
+                CostCalculationFields.PROFIT,
                 L_PRODUCTION_COST_MARGIN_PROC, L_MATERIAL_COST_MARGIN_PROC, L_ADDITIONAL_OVERHEAD_CURRENCY);
 
         Map<String, FieldComponent> componentsMap = Maps.newHashMap();
@@ -156,7 +197,8 @@ public class CostCalculationDetailsHooks {
         Set<String> referenceNames = Sets.newHashSet("totalCostsCurrency", "totalOverheadCurrency",
                 "additionalOverheadValueCurrency", "materialCostMarginValueCurrency", "productionCostMarginValueCurrency",
                 "totalTechnicalProductionCostsCurrency", L_TOTAL_PIECEWORK_COSTS_CURRENCY, L_TOTAL_LABOR_HOURLY_COSTS_CURRENCY,
-                L_TOTAL_MACHINE_HOURLY_COSTS_CURRENCY, "totalMaterialCostsCurrency", L_ADDITIONAL_OVERHEAD_CURRENCY);
+                L_TOTAL_MACHINE_HOURLY_COSTS_CURRENCY, "totalMaterialCostsCurrency", L_ADDITIONAL_OVERHEAD_CURRENCY,
+                "profitValueCurrency", "registrationPriceOverheadValueCurrency");
 
         for (String referenceName : referenceNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
@@ -165,23 +207,26 @@ public class CostCalculationDetailsHooks {
             fieldComponent.requestComponentUpdateState();
         }
 
-        FieldComponent productionCostMarginProc = (FieldComponent) viewDefinitionState
-                .getComponentByReference(L_PRODUCTION_COST_MARGIN_PROC);
-        productionCostMarginProc.setFieldValue("%");
-        productionCostMarginProc.requestComponentUpdateState();
-
-        FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
-                .getComponentByReference(L_MATERIAL_COST_MARGIN_PROC);
-        materialCostMarginProc.setFieldValue("%");
-        materialCostMarginProc.requestComponentUpdateState();
+        fillComponentWithPercent(L_PRODUCTION_COST_MARGIN_PROC, viewDefinitionState);
+        fillComponentWithPercent(L_MATERIAL_COST_MARGIN_PROC, viewDefinitionState);
+        fillComponentWithPercent(L_REGISTRATION_PRICE_OVERHEAD_PROC, viewDefinitionState);
+        fillComponentWithPercent(L_PROFIT_PROC, viewDefinitionState);
 
         fillCostPerUnitUnitField(viewDefinitionState);
+    }
+
+    private void fillComponentWithPercent(String componentName, ViewDefinitionState viewDefinitionState) {
+        FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
+.getComponentByReference(componentName);
+        materialCostMarginProc.setFieldValue("%");
+        materialCostMarginProc.requestComponentUpdateState();
     }
 
     public void fillCostPerUnitUnitField(final ViewDefinitionState view) {
         final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
 
         FieldComponent totalCostPerUnitUnit = (FieldComponent) view.getComponentByReference(L_TOTAL_COST_PER_UNIT_UNIT);
+        FieldComponent sellPriceValueCurrency = (FieldComponent) view.getComponentByReference("sellPriceValueCurrency");
         LookupComponent productField = (LookupComponent) view.getComponentByReference(CostCalculationFields.PRODUCT);
 
         Entity product = productField.getEntity();
@@ -192,6 +237,8 @@ public class CostCalculationDetailsHooks {
 
         totalCostPerUnitUnit.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField(ProductFields.UNIT));
         totalCostPerUnitUnit.requestComponentUpdateState();
+        sellPriceValueCurrency.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField(ProductFields.UNIT));
+        sellPriceValueCurrency.requestComponentUpdateState();
     }
 
     public void disableCheckboxIfPieceworkIsSelected(final ViewDefinitionState viewDefinitionState) {
@@ -247,4 +294,42 @@ public class CostCalculationDetailsHooks {
         }
     }
 
+    private void fillOverheadsFromParameters(ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Boolean justCreated = form.getEntity().getBooleanField("justCreated");
+        if (form.getEntityId() == null && justCreated) {
+            fillWithProperty("sourceOfMaterialCosts", "sourceOfMaterialCostsPB", view);
+            fillWithProperty("calculateMaterialCostsMode", "calculateMaterialCostsModePB", view);
+            fillWithProperty("sourceOfOperationCosts", "sourceOfOperationCostsPB", view);
+
+            fillWithPropertyOrZero("productionCostMargin", "productionCostMarginPB", view);
+            fillWithPropertyOrZero("materialCostMargin", "materialCostMarginPB", view);
+            fillWithPropertyOrZero("additionalOverhead", "additionalOverheadPB", view);
+            fillWithPropertyOrZero("registrationPriceOverhead", "registrationPriceOverheadPB", view);
+            fillWithPropertyOrZero("profit", "profitPB", view);
+            view.getComponentByReference("justCreated").setFieldValue(false);
+        }
+    }
+
+    private void fillWithProperty(String componentName, String propertyName, ViewDefinitionState view) {
+        FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
+        String propertyValue = parameterService.getParameter().getStringField(propertyName);
+        if (propertyValue != null) {
+            component.setFieldValue(propertyValue);
+        }
+    }
+
+    private void fillWithPropertyOrZero(String componentName, String propertyName, ViewDefinitionState view) {
+        FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
+        if (component.getFieldValue() == null) {
+            BigDecimal propertyValue = parameterService.getParameter().getDecimalField(propertyName);
+
+            if (propertyValue != null) {
+                String formattedProductionCostMargin = numbersService.formatWithMinimumFractionDigits(propertyValue, 0);
+                component.setFieldValue(formattedProductionCostMargin);
+            } else {
+                component.setFieldValue(0);
+            }
+        }
+    }
 }

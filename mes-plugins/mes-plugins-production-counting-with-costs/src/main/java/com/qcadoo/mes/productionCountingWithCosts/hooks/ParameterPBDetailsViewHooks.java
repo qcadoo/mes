@@ -58,16 +58,18 @@ public class ParameterPBDetailsViewHooks {
             fieldComponent.requestComponentUpdateState();
         }
 
-        FieldComponent productionCostMarginProc = (FieldComponent) viewDefinitionState
-                .getComponentByReference("productionCostMarginPBProc");
-        productionCostMarginProc.setFieldValue("%");
-        productionCostMarginProc.requestComponentUpdateState();
+        fillComponentWithPercent("productionCostMarginPBProc", viewDefinitionState);
+        fillComponentWithPercent("materialCostMarginPBProc", viewDefinitionState);
+        fillComponentWithPercent("registrationPriceOverheadPBProc", viewDefinitionState);
+        fillComponentWithPercent("profitPBProc", viewDefinitionState);
 
+    }
+
+    private void fillComponentWithPercent(String componentName, ViewDefinitionState viewDefinitionState) {
         FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
-                .getComponentByReference("materialCostMarginPBProc");
+.getComponentByReference(componentName);
         materialCostMarginProc.setFieldValue("%");
         materialCostMarginProc.requestComponentUpdateState();
-
     }
 
     public void disableCheckboxes(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

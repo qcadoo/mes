@@ -64,27 +64,52 @@
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="productionCostMargin" default="0">
+		<decimal name="productionCostMargin">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
+            <validatesRange from="0" exclusively="false"/>
 		</decimal>
 		<decimal name="productionCostMarginValue">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="materialCostMargin" default="0">
+		<decimal name="materialCostMargin">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
+            <validatesRange from="0" exclusively="false"/>
 		</decimal>
 		<decimal name="materialCostMarginValue">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="additionalOverhead" default="0">
+		<decimal name="additionalOverhead">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+            <validatesRange from="0" exclusively="false"/>
+		</decimal>
+		<decimal name="additionalOverheadValue" default="0" />
+		<decimal name="registrationPriceOverhead" >
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+            <validatesRange from="0" exclusively="false"/>
+		</decimal>
+		<decimal name="registrationPriceOverheadValue" >
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="additionalOverheadValue" default="0" />
+		<decimal name="profit">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+            <validatesRange from="0" exclusively="false"/>
+		</decimal>
+		<decimal name="profitValue">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="sellPriceValue">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+		</decimal>
 		<decimal name="totalOverhead">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
@@ -114,12 +139,17 @@
 			values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
 			required="true" default="01nominal" />
 
+		<enum name="sourceOfOperationCosts"
+			values="01technologyOperation,02parameters"
+			required="true" default="01technologyOperation" />
+
 		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"
 			required="true" default="01hourly" />
 
 		<datetime name="date" />
 		<boolean name="generated" />
 		<string name="fileName" />
+		<boolean name="justCreated" persistent="false" default="true"/>
 	</fields>
 	<hooks>
 		<validatesWith

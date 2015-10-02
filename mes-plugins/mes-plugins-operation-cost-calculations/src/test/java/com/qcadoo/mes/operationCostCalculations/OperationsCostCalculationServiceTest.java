@@ -99,7 +99,7 @@ public class OperationsCostCalculationServiceTest {
         when(wrongDataDefinition.getName()).thenReturn("incorrectModel");
 
         // when
-        operationCostCalculationService.calculateOperationsCost(wrongEntity);
+        operationCostCalculationService.calculateOperationsCost(wrongEntity, true);
     }
 
 }
