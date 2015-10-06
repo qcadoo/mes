@@ -880,6 +880,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         costCalculation.setField("productionCostMargin", values.get("productioncostmargin"));
         costCalculation.setField("materialCostMargin", values.get("materialcostmargin"));
         costCalculation.setField("productionLine", getProductionLineByNumber(values.get("productionlines")));
+        costCalculation.setField("sourceOfOperationCosts", values.get("sourceofoperationcosts"));
         costCalculation.getDataDefinition().save(costCalculation);
     }
 
