@@ -29,6 +29,8 @@ public final class ProductFields {
 
     }
 
+    public static final String ADDITIONAL_UNIT = "additionalUnit";
+
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";

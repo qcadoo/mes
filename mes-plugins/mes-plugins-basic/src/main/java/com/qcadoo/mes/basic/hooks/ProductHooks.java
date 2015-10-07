@@ -30,16 +30,21 @@ import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ProductService;
+import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.tree.ProductNumberingService;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.constants.UnitConversionItemFields;
 
 @Service
 public class ProductHooks {
@@ -49,6 +54,9 @@ public class ProductHooks {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void generateNodeNumber(final DataDefinition productDD, final Entity product) {
         productNumberingService.generateNodeNumber(product);
@@ -132,4 +140,37 @@ public class ProductHooks {
         productService.conversionForProductUnit(product);
     }
 
+    public boolean validateAdditionalUnit(final DataDefinition productDD, final Entity product) {
+
+        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+        String defaultUnit = product.getStringField(ProductFields.UNIT);
+        if (!StringUtils.isEmpty(additionalUnit)) {
+            if (additionalUnit.equals(defaultUnit)) {
+                product.addError(productDD.getField(ProductFields.ADDITIONAL_UNIT),
+                        "basic.product.additionalUnit.error.sameUnits");
+                return false;
+            }
+
+            List<Entity> conversions = product.getHasManyField(ProductFields.CONVERSION_ITEMS);
+            if (!conversions.stream().anyMatch(
+                    conversionItem -> conversionItem.getStringField(UnitConversionItemFields.UNIT_TO).equals(additionalUnit)
+                            && conversionItem.getStringField(UnitConversionItemFields.UNIT_FROM).equals(defaultUnit))) {
+                product.addGlobalError("basic.product.additionalUnit.error.unitConversionMissing");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean validateCodeUniqueness(final DataDefinition productDD, final Entity product) {
+        Entity duplicateCode = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ADDITIONAL_CODE)
+                .find().add(SearchRestrictions.eq(AdditionalCodeFields.CODE, product.getStringField(ProductFields.NUMBER)))
+                .setMaxResults(1).uniqueResult();
+
+        if (duplicateCode != null) {
+            product.addError(productDD.getField(ProductFields.NUMBER), "qcadooView.validate.field.error.duplicated");
+            return false;
+        }
+        return true;
+    }
 }

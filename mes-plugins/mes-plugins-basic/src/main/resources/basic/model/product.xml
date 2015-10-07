@@ -69,6 +69,9 @@
               default="01particularProduct" required="true"/>
 
         <belongsTo name="producer" model="company" plugin="basic"/>
+
+        <dictionary name="additionalUnit" dictionary="units"/>
+        <hasMany name="additionalCodes" model="additionalCode" joinField="product" cascade="delete"/>
     </fields>
 
     <hooks>
@@ -76,6 +79,12 @@
                        method="checkIfNotBelongsToSameFamily"/>
         <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
                        method="checkIfParentIsFamily"/>
+
+        <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
+                       method="validateAdditionalUnit"/>
+
+        <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
+                       method="validateCodeUniqueness"/>
 
         <onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
                   method="generateNodeNumber"/>
