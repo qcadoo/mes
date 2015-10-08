@@ -39,8 +39,9 @@ public interface OperationsCostCalculationService {
      * 
      * @param costCalculationOrProductionBalance
      *            cost calculation or production balance
+     * @param hourlyCostFromOperation
      */
-    void calculateOperationsCost(final Entity costCalculationOrProductionBalance);
+    void calculateOperationsCost(final Entity costCalculationOrProductionBalance, boolean hourlyCostFromOperation);
 
     /**
      * 
@@ -56,7 +57,8 @@ public interface OperationsCostCalculationService {
      * @return cost
      */
     Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode calculationOperationComponent,
-            final BigDecimal productionCostMargin, final BigDecimal quantity, final OperationTimesContainer operationTimes);
+            final BigDecimal productionCostMargin, final BigDecimal quantity, final OperationTimesContainer operationTimes,
+            final boolean hourlyCostFromOperation);
 
     /**
      * 

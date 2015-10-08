@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
@@ -52,17 +64,6 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class EventListeners {
@@ -143,11 +144,11 @@ public class EventListeners {
 
     private void fillSourceCost(final ViewDefinitionState view) {
         LookupComponent factoryComponent = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
-        if(factoryComponent.getEntity() == null){
+        if (factoryComponent.getEntity() == null) {
             clearFieldIfExists(view, MaintenanceEventFields.SOURCE_COST);
             eventHooks.fillSourceCost(view);
         } else {
-            eventHooks.fillSourceCost(view,factoryComponent.getEntity());
+            eventHooks.fillSourceCost(view, factoryComponent.getEntity());
         }
     }
 
@@ -207,12 +208,14 @@ public class EventListeners {
 
     private void clearFilterForFaultType(final ViewDefinitionState view, final String field) {
         LookupComponent faultType = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
-        FilterValueHolder filter = faultType.getFilterValue();
-        if (filter.has(field)) {
-            filter.remove(field);
-            filter.remove(WorkstationFields.WORKSTATION_TYPE);
+        if (faultType != null) {
+            FilterValueHolder filter = faultType.getFilterValue();
+            if (filter.has(field)) {
+                filter.remove(field);
+                filter.remove(WorkstationFields.WORKSTATION_TYPE);
+            }
+            faultType.setFilterValue(filter);
         }
-        faultType.setFilterValue(filter);
     }
 
     private void fillEventFieldsFromSelectedElement(Entity event, final Entity selectedElement) {

@@ -24,7 +24,24 @@
     ***************************************************************************
 
 -->
-<costCalculation>
-	<row NUMBER="1" DESCRIPTION="" ORDERNO="ZL-T-S-1-2012.04-01" DEFTECHNO="T-S-1-2012.04-01" TECHNO="T-S-1-2012.04-01" PRODNO="S-1" QUANTITY="15" INCLUDETPZ="true" SOURCEOFMATERIALCOSTS="01currentGlobalDefinitionsInProduct" CALCULATEMATERIALCOSTMODE="01nominal" CALCULATEOPERATIONCOSTMODE="01hourly" ADDITIONALOVERHEAD="" PRODUCTIONCOSTMARGIN="" MATERIALCOSTMARGIN="" PRODUCTIONLINES="000001" SOURCEOFOPERATIONCOSTS="01technologyOperation"/>
-	<row NUMBER="2" DESCRIPTION="Kalkulacja kosztów z uwzględnionymi narzutami" ORDERNO="ZL-T-ST-P4-OP-2012.04-01" DEFTECHNO="T-ST-P4-OP-2012.04-01" TECHNO="T-ST-P4-OP-2012.04-01" PRODNO="ST-P4-OP" QUANTITY="10" INCLUDETPZ="true" SOURCEOFMATERIALCOSTS="01currentGlobalDefinitionsInProduct" CALCULATEMATERIALCOSTMODE="01nominal" CALCULATEOPERATIONCOSTMODE="01hourly" ADDITIONALOVERHEAD="200" PRODUCTIONCOSTMARGIN="10" MATERIALCOSTMARGIN="15" PRODUCTIONLINES="000001" SOURCEOFOPERATIONCOSTS="01technologyOperation"/>
-</costCalculation>
+<model name="storageLocation" activable="false" auditable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="1024"/>
+        </string>
+
+        <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
+        <belongsTo name="product" model="product" plugin="basic"/>
+        <boolean name="placeStorageLocation" default="false"/>
+        <decimal name="maximumNumberOfPallets">
+            <validatesRange from="0" exclusively="true"/>
+        </decimal>
+    </fields>
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.materialFlowResources.validators.StorageLocationModelValidators"
+                method="validate" />
+    </hooks>
+</model>

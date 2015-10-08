@@ -35,13 +35,13 @@ public abstract class AbstractFieldsForType implements FieldsForType {
 
     protected List<String> gridsToClear;
 
-    protected AbstractFieldsForType() {
+    public AbstractFieldsForType() {
         this.hiddenFields = Lists.newArrayList();
         this.hiddenTabs = Lists.newArrayList();
         this.gridsToClear = Lists.newArrayList();
     }
 
-    protected AbstractFieldsForType(List<String> hiddenFields, List<String> hiddenTabs, List<String> gridsToClear) {
+    public AbstractFieldsForType(List<String> hiddenFields, List<String> hiddenTabs, List<String> gridsToClear) {
         this.hiddenTabs = hiddenTabs;
         this.hiddenFields = hiddenFields;
         this.gridsToClear = gridsToClear;
@@ -65,5 +65,20 @@ public abstract class AbstractFieldsForType implements FieldsForType {
     @Override
     public List<String> getGridsToClear() {
         return gridsToClear;
+    }
+
+    @Override
+    public void addHiddenField(String hiddenField) {
+        hiddenFields.add(hiddenField);
+    }
+
+    @Override
+    public void addHiddenTab(String hiddenTab) {
+        hiddenTabs.add(hiddenTab);
+    }
+
+    @Override
+    public void addGridToClear(String gridToClear) {
+        gridsToClear.add(gridToClear);
     }
 }

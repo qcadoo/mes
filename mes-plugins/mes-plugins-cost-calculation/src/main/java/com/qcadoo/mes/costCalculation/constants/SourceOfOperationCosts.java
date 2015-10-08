@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.4
+ * Version: 1.3
  *
  * This file is part of Qcadoo.
  *
@@ -21,28 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.constants;
+package com.qcadoo.mes.costCalculation.constants;
 
-public interface MaterialFlowResourcesConstants {
+import org.apache.commons.lang3.StringUtils;
 
-    String PLUGIN_IDENTIFIER = "materialFlowResources";
+public enum SourceOfOperationCosts {
+    TECHNOLOGY_OPERATION("01technologyOperation"), PARAMETERS("02parameters");
 
-    // MODEL
+    private final String sourceOfOperationCosts;
 
-    public static final String MODEL_RESOURCE = "resource";
+    private SourceOfOperationCosts(final String sourceOfOperationCosts) {
+        this.sourceOfOperationCosts = sourceOfOperationCosts;
+    }
 
-    public static final String MODEL_DOCUMENT = "document";
+    public String getStringValue() {
+        return sourceOfOperationCosts;
+    }
 
-    public static final String MODEL_POSITION = "position";
-
-    public static final String MODEL_RESOURCE_CORRECTION = "resourceCorrection";
-
-    public static final String MODEL_GLOBAL_ATTRIBUTE = "globalAttribute";
-
-    public static final String MODEL_ATTRIBUTE = "attribute";
-
-    public static final String MODEL_ATTRIBUTE_VALUE = "attributeValue";
-
-    public static final String MODEL_STORAGE_LOCATION = "storageLocation";
+    public static SourceOfOperationCosts parseString(final String rawStringValue) {
+        for (SourceOfOperationCosts sourceOfOperationCosts : values()) {
+            if (StringUtils.equalsIgnoreCase(rawStringValue, sourceOfOperationCosts.getStringValue())) {
+                return sourceOfOperationCosts;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Cannot parse SourceOfOperationCosts from '%s'", rawStringValue));
+    }
 
 }

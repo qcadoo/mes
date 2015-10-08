@@ -54,4 +54,7 @@ public class CmmsMachinePartsConstants {
 
     public static final String MODEL_SOURCE_COST = "sourceCost";
 
+    public static final String MODEL_ACTION_PLANNED_EVENT = "actionForPlannedEvent";
+
+
 }

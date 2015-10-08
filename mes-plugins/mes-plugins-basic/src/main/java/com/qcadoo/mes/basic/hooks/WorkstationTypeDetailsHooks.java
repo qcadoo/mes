@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
@@ -38,6 +33,10 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class WorkstationTypeDetailsHooks {
@@ -67,6 +66,10 @@ public class WorkstationTypeDetailsHooks {
     }
 
     private boolean hasWorkstations(final Entity workstationType) {
+        if(workstationType == null || workstationType.getId() == null){
+            return false;
+        }
+
         List<Entity> workstations = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION)
                 .find().add(SearchRestrictions.belongsTo(WorkstationFields.WORKSTATION_TYPE, workstationType)).list()
                 .getEntities();

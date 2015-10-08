@@ -55,4 +55,10 @@ public final class ParameterFieldsPCWC {
 
     public static final String PRICE_BASED_ON = "priceBasedOn";
 
+    public static final String SOURCE_OF_OPERATION_COSTS_PB = "sourceOfOperationCostsPB";
+
+    public static final String REGISTRATION_PRICE_OVERHEAD_PB = "registrationPriceOverheadPB";
+
+    public static final String PROFIT_PB = "profitPB";
+
 }

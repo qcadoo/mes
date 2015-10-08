@@ -134,7 +134,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     private ParameterService parameterService;
 
     @Override
-    public void calculateOperationsCost(final Entity costCalculationOrProductionBalance) {
+    public void calculateOperationsCost(final Entity costCalculationOrProductionBalance, boolean hourlyCostFromOperation) {
         checkArgument(costCalculationOrProductionBalance != null, "entity is null");
         String modelName = costCalculationOrProductionBalance.getDataDefinition().getName();
         checkArgument(L_COST_CALCULATION.equals(modelName) || L_PRODUCTION_BALANCE.equals(modelName), "unsupported entity type");
@@ -149,7 +149,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         CalculateOperationCostMode calculateOperationCostMode = CalculateOperationCostMode
                 .parseString(costCalculationOrProductionBalance.getStringField(L_CALCULATE_OPERATION_COSTS_MODE));
-
+        
         if (order != null) {
             Entity technologyFromOrder = order.getBelongsToField(L_TECHNOLOGY);
 
@@ -203,7 +203,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                     includeAdditionalTime, workstations, true);
 
             Map<String, BigDecimal> resultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
-                    productionCostMargin, quantity, operationTimes);
+                    productionCostMargin, quantity, operationTimes, hourlyCostFromOperation);
 
             costCalculationOrProductionBalance.setField(L_TOTAL_MACHINE_HOURLY_COSTS,
                     numberService.setScale(resultsMap.get(CalculationOperationComponentFields.MACHINE_HOURLY_COST)));
@@ -224,7 +224,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     @Override
     public Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode calculationOperationComponent,
             final BigDecimal productionCostMargin, final BigDecimal plannedQuantity,
-            final OperationTimesContainer realizationTimes) {
+            final OperationTimesContainer realizationTimes, final boolean hourlyCostFromOperation) {
         checkArgument(calculationOperationComponent != null, "given operationComponent is empty");
 
         Map<String, BigDecimal> costs = Maps.newHashMapWithExpectedSize(L_COST_KEYS.size());
@@ -237,7 +237,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         for (EntityTreeNode child : calculationOperationComponent.getChildren()) {
             Map<String, BigDecimal> unitCosts = estimateCostCalculationForHourly(child, productionCostMargin, plannedQuantity,
-                    realizationTimes);
+                    realizationTimes, hourlyCostFromOperation);
 
             for (String costKey : L_COST_KEYS) {
                 BigDecimal unitCost = costs.get(costKey).add(unitCosts.get(costKey), mathContext);
@@ -248,7 +248,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         OperationTimes operationTimes = realizationTimes.get(calculationOperationComponent.getId());
         Map<String, BigDecimal> costsForSingleOperation = estimateHourlyCostCalculationForSingleOperation(operationTimes,
-                productionCostMargin);
+                productionCostMargin, hourlyCostFromOperation);
         saveGeneratedValues(costsForSingleOperation, calculationOperationComponent, true, operationTimes.getTimes(), null);
 
         costs.put(L_MACHINE_HOURLY_COST,
@@ -260,7 +260,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private Map<String, BigDecimal> estimateHourlyCostCalculationForSingleOperation(final OperationTimes operationTimes,
-            final BigDecimal productionCostMargin) {
+            final BigDecimal productionCostMargin, boolean hourlyCostFromOperation) {
         Map<String, BigDecimal> costs = Maps.newHashMap();
 
         MathContext mathContext = numberService.getMathContext();
@@ -271,10 +271,19 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         OperationWorkTime operationWorkTimes = operationTimes.getTimes();
 
-        BigDecimal machineHourlyCost = BigDecimalUtils.convertNullToZero(technologyOperationComponent
+        BigDecimal machineHourlyCost = BigDecimal.ZERO;
+        BigDecimal laborHourlyCost = BigDecimal.ZERO;
+        if (hourlyCostFromOperation) {
+            machineHourlyCost = BigDecimalUtils.convertNullToZero(technologyOperationComponent
                 .getField(TechnologyOperationComponentFieldsCNFO.MACHINE_HOURLY_COST));
-        BigDecimal laborHourlyCost = BigDecimalUtils.convertNullToZero(technologyOperationComponent
+            laborHourlyCost = BigDecimalUtils.convertNullToZero(technologyOperationComponent
                 .getField(TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST));
+        } else {
+            machineHourlyCost = BigDecimalUtils.convertNullToZero(parameterService.getParameter().getDecimalField(
+                    "averageMachineHourlyCostPB"));
+            laborHourlyCost = BigDecimalUtils.convertNullToZero(parameterService.getParameter()
+                    .getDecimalField("averageLaborHourlyCostPB"));
+        }
 
         BigDecimal durationMachine = BigDecimal.valueOf(operationWorkTimes.getMachineWorkTime());
         BigDecimal durationLabor = BigDecimal.valueOf(operationWorkTimes.getLaborWorkTime());

@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.productionScheduling.listeners;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
@@ -59,6 +48,16 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class OperationDurationDetailsInOrderListeners {
@@ -194,7 +193,8 @@ public class OperationDurationDetailsInOrderListeners {
                 orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", MessageType.INFO, false);
             }
 
-            order.getDataDefinition().save(order);
+            order = order.getDataDefinition().save(order);
+            orderForm.setEntity(order);
         }
 
         generatedEndDateField.requestComponentUpdateState();

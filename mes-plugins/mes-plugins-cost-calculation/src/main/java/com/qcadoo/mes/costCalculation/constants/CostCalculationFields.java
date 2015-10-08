@@ -45,6 +45,8 @@ public final class CostCalculationFields {
 
     public static final String CALCULATE_MATERIAL_COSTS_MODE = "calculateMaterialCostsMode";
 
+    public static final String SOURCE_OF_OPERATION_COSTS = "sourceOfOperationCosts";
+
     public static final String CALCULATION_OPERATION_COMPONENTS = "calculationOperationComponents";
 
     public static final String MATERIAL_COST_MARGIN = "materialCostMargin";
@@ -68,6 +70,16 @@ public final class CostCalculationFields {
     public static final String ADDITIONAL_OVERHEAD = "additionalOverhead";
 
     public static final String ADDITIONAL_OVERHEAD_VALUE = "additionalOverheadValue";
+
+    public static final String REGISTRATION_PRICE_OVERHEAD = "registrationPriceOverhead";
+
+    public static final String REGISTRATION_PRICE_OVERHEAD_VALUE = "registrationPriceOverheadValue";
+
+    public static final String PROFIT = "profit";
+
+    public static final String PROFIT_VALUE = "profitValue";
+
+    public static final String SELL_PRICE_VALUE = "sellPriceValue";
 
     public static final String TOTAL_OVERHEAD = "totalOverhead";
 

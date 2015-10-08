@@ -198,7 +198,7 @@
                                     else {
                                         realizedEvent.forState="05realized";
                                         realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
-                                        realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
+                                        realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizedEvent)}");
                                     }
                                     toggleEditable(true, "");
                                 } else if (state == "05realized" || state == "06canceled") {
@@ -639,6 +639,12 @@
             </component>
         </windowTab>
         <windowTab name="realizationTab">
+        	<component type="lookup" name="realizationsLookup" reference="realizationsLookup"
+                       field="#{form}.realizations" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                       <option type="fieldCode" value="duration"/>
+                       <option type="expression" value="duration"/>
+            </component>
             <component type="grid" name="realizations" reference="realizations"
                        source="#{form}.realizations">
                 <option type="column" name="worker" fields="worker"

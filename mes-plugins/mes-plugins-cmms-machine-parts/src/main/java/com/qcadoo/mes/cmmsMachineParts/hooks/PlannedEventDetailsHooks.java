@@ -137,7 +137,7 @@ public class PlannedEventDetailsHooks {
         setAndLockBasedOn(view, fieldsForType);
     }
 
-    private void hideFields(final ViewDefinitionState view, final Entity plannedEvent, final FieldsForType fieldsForType) {
+    public void hideFields(final ViewDefinitionState view, final Entity plannedEvent, final FieldsForType fieldsForType) {
         Set<String> allFields = plannedEvent.getDataDefinition().getFields().keySet();
 
         List<String> hiddenFields = fieldsForType.getHiddenFields();
@@ -183,7 +183,7 @@ public class PlannedEventDetailsHooks {
         }
     }
 
-    private void setAndLockBasedOn(final ViewDefinitionState view, final FieldsForType fieldsForType) {
+    public void setAndLockBasedOn(final ViewDefinitionState view, final FieldsForType fieldsForType) {
         FieldComponent basedOn = (FieldComponent) view.getComponentByReference(PlannedEventFields.BASED_ON);
         if (fieldsForType.shouldLockBasedOn()) {
             basedOn.setFieldValue(PlannedEventBasedOn.DATE.getStringValue());

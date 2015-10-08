@@ -96,7 +96,12 @@ public class OrderDetailsHooksPPS {
                 shouldBeCorrected);
         DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
-        Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
+        Optional<OrderDates> maybeOrderDates = null;
+        try {
+            maybeOrderDates = OrderDates.of(order);
+        }catch(IllegalArgumentException e){
+            return;
+        }
         DataDefinition orderDD = order.getDataDefinition();
         Entity dbOrder = orderDD.get(order.getId());
         boolean areDatesCorrect = true;

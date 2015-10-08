@@ -38,8 +38,10 @@ import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costCalculation.hooks.CostCalculationDetailsHooks;
 import com.qcadoo.mes.costCalculation.print.CostCalculationReportService;
+import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -97,6 +99,9 @@ public class CostCalculationDetailsListeners {
 
         costCalculation = costCalculationService.calculateTotalCost(costCalculation);
 
+        costCalculationService.calculateSellPriceOverhead(costCalculation);
+        costCalculationService.calculateSellPrice(costCalculation);
+
         fillFields(view, costCalculation);
 
         costCalculationReportService.generateCostCalculationReport(view, state, args);
@@ -145,7 +150,9 @@ public class CostCalculationDetailsListeners {
                 CostCalculationFields.TOTAL_MATERIAL_COSTS, CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS,
                 CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS, CostCalculationFields.TOTAL_PIECEWORK_COSTS,
                 CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS, CostCalculationFields.TOTAL_COSTS,
-                CostCalculationFields.TOTAL_COST_PER_UNIT, CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE);
+                CostCalculationFields.TOTAL_COST_PER_UNIT, CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE,
+                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD_VALUE, CostCalculationFields.PROFIT_VALUE,
+                CostCalculationFields.SELL_PRICE_VALUE);
 
         for (String costField : costFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(costField);
@@ -393,6 +400,16 @@ public class CostCalculationDetailsListeners {
     public void disableCheckboxIfPieceworkIsSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         costCalculationDetailsHooks.disableCheckboxIfPieceworkIsSelected(viewDefinitionState);
+    }
+
+    public void sourceOfOperationCostsChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        String source = (String) state.getFieldValue();
+        FieldComponent calculateOperationCostsModeComponent = (FieldComponent) viewDefinitionState
+                .getComponentByReference("calculateOperationCostsMode");
+        if (SourceOfOperationCosts.PARAMETERS.getStringValue().equals(source)) {
+            calculateOperationCostsModeComponent.setFieldValue(CalculateOperationCostMode.HOURLY.getStringValue());
+        }
     }
 
 }
