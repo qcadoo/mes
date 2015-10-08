@@ -43,4 +43,6 @@ public interface MaterialFlowResourcesConstants {
 
     public static final String MODEL_ATTRIBUTE_VALUE = "attributeValue";
 
+    public static final String MODEL_STORAGE_LOCATION = "storageLocation";
+
 }
