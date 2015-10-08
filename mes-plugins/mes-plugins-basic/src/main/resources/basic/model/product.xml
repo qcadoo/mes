@@ -96,8 +96,7 @@
         <onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged"/>
 
         <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber"/>
-        <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearExternalIdOnCopy"/>
-        <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearEanOnCopy"/>
+        <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFieldsOnCopy"/>
 
         <onUpdate class="com.qcadoo.mes.basic.hooks.ProductHooks"
                   method="calculateConversionIfUnitChanged"/>

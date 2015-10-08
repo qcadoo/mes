@@ -24,6 +24,7 @@
 package com.qcadoo.mes.basic.hooks;
 
 import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PARTICULAR_PRODUCT;
+import static com.qcadoo.mes.basic.constants.ProductFields.ADDITIONAL_UNIT;
 import static com.qcadoo.mes.basic.constants.ProductFields.EAN;
 import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
 import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
@@ -116,18 +117,13 @@ public class ProductHooks {
         }
     }
 
-    public void clearEanOnCopy(final DataDefinition dataDefinition, final Entity product) {
+    public void clearFieldsOnCopy(final DataDefinition dataDefinition, final Entity product) {
         if (product == null) {
             return;
         }
         product.setField(EAN, null);
-    }
-
-    public void clearExternalIdOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity == null) {
-            return;
-        }
-        entity.setField("externalNumber", null);
+        product.setField("externalNumber", null);
+        product.setField(ADDITIONAL_UNIT, null);
     }
 
     public void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
