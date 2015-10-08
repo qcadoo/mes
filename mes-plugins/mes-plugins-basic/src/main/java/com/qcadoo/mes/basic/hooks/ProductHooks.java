@@ -121,9 +121,16 @@ public class ProductHooks {
         if (product == null) {
             return;
         }
-        product.setField(EAN, null);
-        product.setField("externalNumber", null);
         product.setField(ADDITIONAL_UNIT, null);
+
+        product.setField(EAN, null);
+    }
+
+    public void clearExternalIdOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+        if (entity == null) {
+            return;
+        }
+        entity.setField("externalNumber", null);
     }
 
     public void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
