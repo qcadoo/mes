@@ -33,6 +33,8 @@ public final class BasicConstants {
 
     // MODEL
 
+    public static final String MODEL_ADDITIONAL_CODE = "additionalCode";
+
     public static final String MODEL_CREW = "crew";
 
     public static final String MODEL_PARAMETER = "parameter";

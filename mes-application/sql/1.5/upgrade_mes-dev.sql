@@ -12,3 +12,19 @@ ALTER TABLE costcalculation_costcalculation ADD COLUMN profitvalue numeric(19,5)
 ALTER TABLE costcalculation_costcalculation ADD COLUMN sellpricevalue numeric(19,5);
 
 -- end
+
+-- Changes in products (additional codes, unit)
+-- last touched 07.10.2015 by kama
+
+ALTER TABLE basic_product ADD COLUMN additionalunit character varying(255);
+
+CREATE TABLE basic_additionalcode
+(
+  id bigint NOT NULL,
+  code character varying(255),
+  product_id bigint,
+  CONSTRAINT basic_additionalcode_pkey PRIMARY KEY (id),
+  CONSTRAINT additionalcode_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE
+);
+-- end

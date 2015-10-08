@@ -85,6 +85,8 @@ public class ProductDetailsHooks {
         for (FormComponent formComponent : conversionItemsAdl.getFormComponents()) {
             formComponent.findFieldComponentByName(UNIT_FROM).setEnabled(formComponent.getEntityId() == null);
         }
+        FieldComponent additionalUnit = (FieldComponent) view.getComponentByReference(ProductFields.ADDITIONAL_UNIT);
+        additionalUnit.setEnabled(productForm.getEntityId() != null);
     }
 
     public void disableProductFormForExternalItems(final ViewDefinitionState state) {

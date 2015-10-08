@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="productDetails" modelName="product">
 
@@ -100,7 +101,7 @@
 					]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="5">
+                           rows="6">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number"
                                    reference="number">
@@ -118,6 +119,10 @@
                     <layoutElement column="1" row="5">
                         <component type="select" name="unit" field="unit"
                                    reference="unit" hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="select" name="additionalUnit" field="additionalUnit"
+                                   reference="additionalUnit" defaultEnabled="false"/>
                     </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="input" name="ean" field="ean"/>
@@ -313,6 +318,34 @@
                         </component>
 
                         <option type="label" value="conversionItems"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="additionalCodes">
+            <component type="gridLayout" name="additionalCodesGridLayout"
+                       columns="3" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="borderLayout" name="additionalCodesBorderLayout">
+                        <component type="awesomeDynamicList" name="additionalCodes"
+                                   source="#{form}.additionalCodes" reference="additionalCodes">
+                            <option type="hasBorder" value="false"/>
+                            <option type="hasButtons" value="true"/>
+
+                            <components>
+                                <component type="gridLayout" name="additionalCodeGridLayout"
+                                           columns="1" rows="1">
+                                    <layoutElement column="1" row="1">
+                                        <component type="input" name="code" field="code"
+                                                   reference="code" hasLabel="false">
+                                        </component>
+                                    </layoutElement>
+                                </component>
+
+                            </components>
+                        </component>
+
+                        <option type="label" value="additionalCodes"/>
                     </component>
                 </layoutElement>
             </component>
