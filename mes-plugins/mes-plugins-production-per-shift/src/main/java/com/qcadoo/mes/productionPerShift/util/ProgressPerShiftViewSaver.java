@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.util;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Optional;
@@ -54,6 +44,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class ProgressPerShiftViewSaver {
@@ -97,10 +96,17 @@ public class ProgressPerShiftViewSaver {
 
     public boolean save(final ViewDefinitionState view) {
         Optional<Entity> maybeToc = getEntityFromLookup(view, OPERATION_LOOKUP_REF);
-        if (maybeToc.isPresent()) {
-            return saveProgressesAndForm(view, maybeToc.get());
-        } else {
-            return saveForm(view);
+
+        try {
+
+            if (maybeToc.isPresent()) {
+                return saveProgressesAndForm(view, maybeToc.get());
+            } else {
+                return saveForm(view);
+            }
+        } catch (IllegalStateException e){
+            getFormComponent(view).addMessage("qcadooView.validate.global.optimisticLock", ComponentState.MessageType.FAILURE);
+            return false;
         }
     }
 
