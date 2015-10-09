@@ -43,4 +43,6 @@ public final class PlannedEventStateChangeFields {
     public static final String COMMENT = "comment";
 
     public static final String COMMENT_REQUIRED = "commentRequired";
+
+    public static final String DATE_AND_TIME = "dateAndTime";
 }
