@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="technologyDetails" modelName="technology">
@@ -439,7 +439,8 @@
                         <option type="column" name="dateAndTime" fields="dateAndTime"/>
                         <option type="column" name="previousState" fields="sourceState"/>
                         <option type="column" name="currentState" fields="targetState"/>
-                        <option type="column" name="shift" fields="shift" expression="#shift != null ? #shift['name'] : ''"/>
+                        <option type="column" name="shift" fields="shift"
+                                expression="#shift != null ? #shift['name'] : ''"/>
                         <option type="column" name="worker" fields="worker"/>
 
                         <option type="order" column="dateAndTime" direction="asc"/>

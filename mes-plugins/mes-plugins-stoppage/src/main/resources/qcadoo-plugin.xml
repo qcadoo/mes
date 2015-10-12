@@ -68,7 +68,7 @@
 		</model:model-field>
 
 		<menu:menu-item name="stoppages" category="ordersTracking"
-			view="allStoppages" />
+			view="allStoppages" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 
 		<view:view resource="view/allStoppages.xml" />
 		<view:view resource="view/allStoppagesForm.xml" />
@@ -84,7 +84,7 @@
 
 		<view:resource uri="public/**/*" />
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>

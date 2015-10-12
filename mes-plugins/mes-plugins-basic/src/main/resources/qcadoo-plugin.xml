@@ -97,6 +97,17 @@
 
         <security:role identifier="ROLE_PARAMETERS" description="Dostęp parametrów systemowych"/>
 
+        <security:role identifier="ROLE_BASIC" description="Dostęp do kategorii z danymi podstawowymi"/>
+
+        <security:role identifier="ROLE_TECHNOLOGIES" description="Dostęp do technologii"/>
+
+        <security:role identifier="ROLE_PLANNING" description="Dostęp do planowania zleceń"/>
+
+        <security:role identifier="ROLE_PRODUCTION_COUNTING"
+                       description="Dostęp do rejestracji i rozliczenia produkcji"/>
+
+        <security:role identifier="ROLE_ORDERS_TRACKING" description="Dostęp do rejestracji"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -133,7 +144,7 @@
 
         <model:dictionary name="typeOfPallet"/>
 
-        <menu:menu-category name="basic"/>
+        <menu:menu-category name="basic" defaultAuthorizationRole="ROLE_BASIC"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
 
         <menu:menu-item-url name="home" category="home"

@@ -29,7 +29,7 @@
 	plugin="basic"
 	view="productDetails">
 	
-	<group name="orders" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY">
+	<group name="orders" defaultAuthorizationRole="ROLE_PLANNING">
 		<bigButton name="showOrdersWithProductMain" icon="genealogyIcon24.png">
 			<script>
 				<![CDATA[

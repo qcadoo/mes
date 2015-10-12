@@ -25,12 +25,11 @@
 
 -->
 <plugin plugin="operationalTasks" group="planning" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
-	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
@@ -38,46 +37,44 @@
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
+
+
        http://schema.qcadoo.org/modules/menu
        http://schema.qcadoo.org/modules/menu.xsd">
 
-	<information>
-		<name>MES - Operational tasks</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-		<description>Detailed production plan on the operation and workstation level.</description>
-		<license>AGPL</license>
-	</information>
+    <information>
+        <name>MES - Operational tasks</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Detailed production plan on the operation and workstation level.</description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>technologies</plugin>
-			<version>[1.4.0</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <plugin>technologies</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+    </dependencies>
 
-	<modules>
-		<localization:translation path="locales" />
-		
-		<model:model model="operationalTask" resource="model/operationalTask.xml" />
-		
-		<menu:menu-category name="orders" />
+    <modules>
+        <localization:translation path="locales"/>
 
-		<menu:menu-item name="operationalTasks" category="orders"
-			view="operationalTasksList" />
+        <model:model model="operationalTask" resource="model/operationalTask.xml"/>
 
-		<view:view resource="view/operationalTasksList.xml" />
-		<view:view resource="view/operationalTaskDetails.xml" />
-		
-		<view:resource uri="public/**/*" />
-	</modules>
-	
-	<features>
-		<end-user />
-	</features>
+        <menu:menu-item name="operationalTasks" category="orders"
+                        view="operationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
+
+        <view:view resource="view/operationalTasksList.xml"/>
+        <view:view resource="view/operationalTaskDetails.xml"/>
+
+        <view:resource uri="public/**/*"/>
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
 
 </plugin>

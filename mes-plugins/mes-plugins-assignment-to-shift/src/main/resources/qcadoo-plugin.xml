@@ -119,11 +119,11 @@
                            joinField="crew" cascade="nullify"
                            copyable="false"/>
         </model:model-field>
-        <menu:menu-category name="orders"/>
+
         <menu:menu-item name="assignmentToShift" category="orders"
-                        view="assignmentToShiftList"/>
+                        view="assignmentToShiftList" defaultAuthorizationRole="ROLE_PLANNING"/>
         <menu:menu-item name="assignmentToShiftReportList"
-                        category="orders" view="assignmentToShiftReportList"/>
+                        category="orders" view="assignmentToShiftReportList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
         <view:view resource="view/assignmentToShiftList.xml"/>
         <view:view resource="view/assignmentToShiftReportList.xml"/>

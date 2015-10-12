@@ -24,17 +24,17 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="technologyReferenceTechnologyComponentDetails"
 	modelName="technologyOperationComponent">
-	
+
 	<component type="window" name="window">
-	
+
 		<ribbon>
 			<template name="standardFormTemplate" excludeItems="actions.save, actions.copy, actions.saveNew"/>
 		</ribbon>
-		
+
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="2">
@@ -43,10 +43,10 @@
 						field="referenceTechnology">
 						<option type="column" name="name" fields="name" link="true"
 							width="300" />
-							
+
 						<option type="searchable" value="name,number" />
 						<option type="orderable" value="name,number" />
-						
+
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
@@ -64,13 +64,13 @@
 					</component>
 				</layoutElement>
 			</component>
-			
+
 			<option type="header" value="true" />
 			<option type="expression" value="#technology['name']" />
 		</component>
-		
+
 	</component>
-	
+
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyReferenceTechnologyComponentDetailsHooks"
 			method="hideReferenceMode" />

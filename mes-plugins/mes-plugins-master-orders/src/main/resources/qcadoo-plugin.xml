@@ -101,7 +101,7 @@
         </model:model-hook>
 
         <menu:menu-item name="masterOrders" category="orders"
-                        view="masterOrdersList"/>
+                        view="masterOrdersList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
         <view:view resource="view/masterOrdersList.xml"/>
         <view:view resource="view/masterOrderDetails.xml"/>
@@ -112,17 +112,19 @@
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>
 
-        <view:view-grid-column plugin="orders"  view="ordersList" component="grid">
-            <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true" searchable="true"  width="50"/>
+        <view:view-grid-column plugin="orders" view="ordersList" component="grid">
+            <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true" searchable="true"
+                         width="50"/>
         </view:view-grid-column>
         <view:view-grid-column plugin="orders" view="ordersList" component="grid">
             <view:column name="masterOrderDefinitionNumber" fields="masterOrderDefinitionNumber"
-                         orderable="true" searchable="true" width="50" />
+                         orderable="true" searchable="true" width="50"/>
         </view:view-grid-column>
 
         <view:view-grid-column plugin="orders"
                                view="ordersPlanningList" component="grid">
-            <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true" searchable="true"  width="50"/>
+            <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true" searchable="true"
+                         width="50"/>
         </view:view-grid-column>
 
         <view:view-hook plugin="orders" view="orderDetails"

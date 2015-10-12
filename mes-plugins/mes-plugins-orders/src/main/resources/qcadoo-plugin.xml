@@ -216,13 +216,13 @@
                     method="checkIfTechnologyIsPrototypeForOrders"/>
         </model:model-hook>
 
-        <menu:menu-category name="orders"/>
-        <menu:menu-category name="ordersTracking"/>
+        <menu:menu-category name="orders" defaultAuthorizationRole="ROLE_PLANNING"/>
+        <menu:menu-category name="ordersTracking" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 
         <menu:menu-item name="productionOrders" category="orders"
-                        view="ordersList"/>
+                        view="ordersList" defaultAuthorizationRole="ROLE_PLANNING"/>
         <menu:menu-item name="productionOrdersPlanning" category="orders"
-                        view="ordersPlanningList"/>
+                        view="ordersPlanningList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
         <view:view resource="view/ordersList.xml"/>
         <view:view resource="view/ordersPlanningList.xml"/>
