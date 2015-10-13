@@ -131,6 +131,8 @@ public class MaintenanceEventToPlannedEventListeners {
         plannedEvent.setField(PlannedEventFields.MAINTENANCE_EVENT, maintenanceEvent);
         plannedEvent.setField(PlannedEventFields.BASED_ON, PlannedEventBasedOn.DATE.getStringValue());
 
+        plannedEvent.setField(PlannedEventFields.PLANNED_SEPARATELY, false);
+        plannedEvent.setField(PlannedEventFields.REQUIRES_SHUTDOWN, false);
         Entity context = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
                 CmmsMachinePartsConstants.MODEL_PLANNED_EVENT_CONTEXT).create();
         Entity preparedContext = maintenanceEventContextService.prepareContextEntity(context);

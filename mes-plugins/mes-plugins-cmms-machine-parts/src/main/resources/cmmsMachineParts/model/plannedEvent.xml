@@ -48,8 +48,8 @@
         <belongsTo name="company" model="company" plugin="basic"/>
         <belongsTo name="sourceCost" model="sourceCost"/>
 
-        <boolean name="plannedSeparately" default="false" required="true"/>
-        <boolean name="requiresShutdown" default="false" required="true"/>
+        <boolean name="plannedSeparately" default="false"/>
+        <boolean name="requiresShutdown" default="false"/>
 
         <enum name="basedOn" values="01date,02counter" default="01date" required="true"/>
         <date name="date"/>
