@@ -108,6 +108,12 @@
 
         <security:role identifier="ROLE_ORDERS_TRACKING" description="Dostęp do rejestracji"/>
 
+        <security:role identifier="ROLE_GENEALOGY" description="Dostęp do kategorii z genealogią"/>
+
+        <security:role identifier="ROLE_ADVANCED_GENEALOGY" description="Dostęp do zaawansowanej genealogii"/>
+
+        <security:role identifier="ROLE_BATCHES" description="Dostęp do partii"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
