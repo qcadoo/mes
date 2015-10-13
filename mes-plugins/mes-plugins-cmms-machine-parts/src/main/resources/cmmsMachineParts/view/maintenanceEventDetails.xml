@@ -223,14 +223,21 @@
                                     var maintenanceEventContextId = json['window.mainTab.maintenanceEventForm.gridLayout.maintenanceEventContext'];
                                     var currentMaintenanceEventContextId = #{maintenanceEventContext}.getValue().content.value;
 
-                                    if (maintenanceEventContextId != null && currentMaintenanceEventContextId != maintenanceEventContextId) {
-                                       #{form}.fireEvent(this, 'fillFieldValues', ['maintenanceEventContext', maintenanceEventContextId]);
-                                    }
-
                                     var currentType = #{type}.getValue().content.value;
                                     var eventType = json['window.mainTab.eventType'];
+                                    var args = [];
+
+                                    if (maintenanceEventContextId != null && currentMaintenanceEventContextId != maintenanceEventContextId) {
+                                       args.push('maintenanceEventContext');
+                                       args.push(maintenanceEventContextId);
+                                    }
+
                                     if (eventType != null && currentType !== eventType) {
-                                       #{form}.fireEvent(this, 'fillFieldValues', ['type', eventType]);
+                                       args.push('type');
+                                       args.push(eventType);
+                                    }
+                                    if (args.length > 0) {
+                                        #{form}.fireEvent(this, 'fillFieldValues', args);
                                     }
                                 }
                         });
