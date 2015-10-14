@@ -156,7 +156,9 @@ public class ProductionTrackingDetailsHooks {
 
         isDisabledField.setFieldValue(false);
 
-        productionTrackingService.setTimeAndPieceworkComponentsVisible(view, order);
+        if (order != null) {
+            productionTrackingService.setTimeAndPieceworkComponentsVisible(view, order);
+        }
     }
 
     private void showLastStateChangeFailNotification(final FormComponent productionTrackingForm, final Entity productionTracking) {
