@@ -35,13 +35,13 @@ import com.qcadoo.model.api.Entity;
 public class MaintenanceEventStateChangeValidators {
 
     public boolean validate(final DataDefinition evenStateChangetDD, final Entity eventStateChange) {
-        String eventStatus = eventStateChange.getStringField(MaintenanceEventStateChangeFields.TARGET_STATE);
+        String targetState = eventStateChange.getStringField(MaintenanceEventStateChangeFields.TARGET_STATE);
 
-        switch (eventStatus) {
+        switch (targetState) {
             case MaintenanceEventStateStringValues.REVOKED:
                 return validateForRevokedStatus(evenStateChangetDD, eventStateChange);
             case MaintenanceEventStateStringValues.PLANNED:
-                return validateForPlannedtatus(evenStateChangetDD, eventStateChange);
+                return validateForPlannedStatus(evenStateChangetDD, eventStateChange);
         }
 
         return true;
@@ -60,7 +60,7 @@ public class MaintenanceEventStateChangeValidators {
         return true;
     }
 
-    private boolean validateForPlannedtatus(final DataDefinition evenStateChangetDD, final Entity eventStateChange) {
+    private boolean validateForPlannedStatus(final DataDefinition evenStateChangetDD, final Entity eventStateChange) {
         String type = eventStateChange.getStringField(MaintenanceEventStateChangeFields.PLANNED_EVENT_TYPE);
 
         if (eventStateChange.getBooleanField(MaintenanceEventStateChangeFields.PLANNED_EVENT_TYPE_REQUIRED)

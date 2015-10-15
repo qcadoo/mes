@@ -35,6 +35,7 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient;
 import com.qcadoo.mes.cmmsMachineParts.states.aop.MaintenanceEventStateChangeAspect;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangeFields;
+import com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventStateChangeValidators;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
@@ -71,8 +72,18 @@ public class MaintenanceEventToPlannedEventListeners {
     @Autowired
     private MaintenanceEventContextService maintenanceEventContextService;
 
+    @Autowired
+    private MaintenanceEventStateChangeValidators maintenanceEventStateChangeValidators;
+
     public void continueStateChange(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         final FormComponent form = (FormComponent) component;
+        Entity eventStateChange = form.getPersistedEntityWithIncludedFormValues();
+        maintenanceEventStateChangeValidators.validate(eventStateChange.getDataDefinition(), eventStateChange);
+        form.setEntity(eventStateChange);
+        if (!eventStateChange.getErrors().isEmpty()) {
+            return;
+        }
+
         form.performEvent(view, "save");
         if (!form.isValid()) {
             return;

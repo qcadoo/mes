@@ -54,7 +54,5 @@
         <boolean name="plannedEventTypeRequired" default="false"/>
     </fields>
     <hooks>
-        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventStateChangeValidators"
-                       method="validate"/>
     </hooks>
 </model>
