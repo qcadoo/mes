@@ -95,7 +95,11 @@ public class PlannedEventHooks {
         List<String> fieldsToClear = fieldsForType.getHiddenFields();
         List<String> hasManyToClear = fieldsForType.getGridsToClear();
         for (String fieldName : fieldsToClear) {
-            event.setField(fieldName, null);
+            if (fieldName.equals(PlannedEventFields.REQUIRES_SHUTDOWN) || fieldName.equals(PlannedEventFields.PLANNED_SEPARATELY)) {
+                event.setField(fieldName, false);
+            } else {
+                event.setField(fieldName, null);
+            }
         }
 
         /*

@@ -50,7 +50,7 @@ public class StaffWorkTimeDetailsListenersCMMS {
         Date start = DateUtils.parseDate(startDateFieldComponent.getFieldValue());
         Date end = DateUtils.parseDate(endDateFieldComponent.getFieldValue());
 
-        if (start.before(end)) {
+        if (start != null && end != null && start.before(end)) {
             Seconds seconds = Seconds.secondsBetween(new DateTime(start), new DateTime(end));
             laborTimeFieldComponent.setFieldValue(Integer.valueOf(seconds.getSeconds()));
         }
