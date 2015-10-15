@@ -33,10 +33,12 @@
         </string>
 
         <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
-        <belongsTo name="product" model="product" plugin="basic"/>
+        <belongsTo name="product" model="product" plugin="basic" copyable="false"/>
         <boolean name="placeStorageLocation" default="false"/>
         <decimal name="maximumNumberOfPallets">
             <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="0"/>
         </decimal>
     </fields>
     <hooks>
