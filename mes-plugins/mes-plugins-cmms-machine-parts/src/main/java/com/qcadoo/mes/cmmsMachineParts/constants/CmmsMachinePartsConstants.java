@@ -56,5 +56,7 @@ public class CmmsMachinePartsConstants {
 
     public static final String MODEL_ACTION_PLANNED_EVENT = "actionForPlannedEvent";
 
+    public static final String MODEL_MACHINE_PART_FOR_EVENT = "machinePartForEvent";
+
 
 }

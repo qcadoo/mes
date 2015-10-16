@@ -103,6 +103,10 @@ public class PlannedEventFields {
 
     public static final String MAINTENANCE_EVENT = "maintenanceEvent";
 
+    public static final String COUNTER_TOLERANCE = "counterTolerance";
+
+    public static final String SOURCE_COST = "sourceCost";
+
     private PlannedEventFields() {
     }
 
