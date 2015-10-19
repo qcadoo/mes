@@ -25,7 +25,9 @@ package com.qcadoo.mes.materialFlowResources.service;
 
 import java.math.BigDecimal;
 
+import com.qcadoo.model.api.Entity;
+
 public interface ResourceCorrectionService {
 
-    boolean createCorrectionForResource(final Long resourceId, final BigDecimal newQuantity, final String newStorageLocation);
+    boolean createCorrectionForResource(final Long resourceId, final BigDecimal newQuantity, final Entity newStorageLocation);
 }

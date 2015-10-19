@@ -46,8 +46,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     NumberGeneratorService numberGeneratorService;
 
     @Override
-    public boolean createCorrectionForResource(final Long resourceId, final BigDecimal newQuantity,
-            final String newStorageLocation) {
+    public boolean createCorrectionForResource(final Long resourceId, final BigDecimal newQuantity, Entity newStorageLocation) {
 
         Entity resource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE).get(resourceId);
@@ -74,13 +73,12 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         return false;
     }
 
-    private boolean isCorrectionNeeded(final Entity resource, final BigDecimal newQuantity, final String newStorageLocation) {
-        String oldStorageLocation = oldStorageLocation(resource);
+    private boolean isCorrectionNeeded(final Entity resource, final BigDecimal newQuantity, final Entity newStorageLocation) {
+        Entity oldStorageLocation = oldStorageLocation(resource);
         boolean quantityChanged = newQuantity.compareTo(oldQuantity(resource)) != 0;
 
-        boolean storageLocationChanged = (newStorageLocation != null && oldStorageLocation != null) ? (newStorageLocation
-                .compareTo(oldStorageLocation) != 0)
-                : !(((newStorageLocation != null && newStorageLocation.isEmpty()) || newStorageLocation == null) && oldStorageLocation == null);
+        boolean storageLocationChanged = (newStorageLocation != null && oldStorageLocation != null) ? (newStorageLocation.getId()
+                .compareTo(oldStorageLocation.getId()) != 0) : !(newStorageLocation == null && oldStorageLocation == null);
         return quantityChanged || storageLocationChanged;
     }
 
@@ -104,7 +102,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         return resource.getStringField(ResourceFields.BATCH);
     }
 
-    private String oldStorageLocation(final Entity resource) {
-        return resource.getStringField(ResourceFields.STORAGE_LOCATION);
+    private Entity oldStorageLocation(final Entity resource) {
+        return resource.getBelongsToField(ResourceFields.STORAGE_LOCATION);
     }
 }

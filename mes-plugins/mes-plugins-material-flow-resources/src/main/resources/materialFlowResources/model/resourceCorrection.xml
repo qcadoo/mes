@@ -24,20 +24,23 @@
     ***************************************************************************
 
 -->
-<model name="resourceCorrection" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd" auditable="true">
-	<fields>
-		<string name="number" />
-		<belongsTo name="product" model="product" plugin="basic" />
-		<decimal name="newQuantity" />
-		<decimal name="oldQuantity" />
-		<belongsTo name="location" model="location" plugin="materialFlow" />
-		<datetime name="time" />
-		<string name="batch" />
-		<belongsTo name="resource" model="resource"/>
-		<dictionary name="oldStorageLocation" dictionary="storageLocations" />
-		<dictionary name="newStorageLocation" dictionary="storageLocations" />
-	</fields>
-	<hooks/>
+<model name="resourceCorrection"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd" auditable="true">
+    <fields>
+        <string name="number"/>
+        <belongsTo name="product" model="product" plugin="basic"/>
+        <decimal name="newQuantity"/>
+        <decimal name="oldQuantity"/>
+        <belongsTo name="location" model="location" plugin="materialFlow"/>
+        <datetime name="time"/>
+        <string name="batch"/>
+        <belongsTo name="resource" model="resource"/>
+        <!--<dictionary name="oldStorageLocation" dictionary="storageLocations" />-->
+        <!--<dictionary name="newStorageLocation" dictionary="storageLocations" />-->
+
+        <belongsTo name="oldStorageLocation" model="storageLocation"/>
+        <belongsTo name="newStorageLocation" model="storageLocation"/>
+    </fields>
+    <hooks/>
 </model>

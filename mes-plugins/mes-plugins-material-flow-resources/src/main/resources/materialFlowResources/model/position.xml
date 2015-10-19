@@ -53,7 +53,9 @@
         <priority name="number" scope="document"/>
         <belongsTo name="resource" model="resource"/>
         <hasMany name="attributeValues" joinField="position" model="attributeValue" cascade="delete"/>
-        <dictionary name="storageLocation" dictionary="storageLocations"/>
+        <!--<dictionary name="storageLocation" dictionary="storageLocations"/>-->
+
+        <belongsTo name="storageLocation" model="storageLocation"/>
 
         <enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
         <enum name="state" values="01draft,02accepted" default="01draft"/>

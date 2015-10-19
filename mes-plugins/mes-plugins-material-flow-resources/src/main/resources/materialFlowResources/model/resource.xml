@@ -24,41 +24,43 @@
     ***************************************************************************
 
 -->
-<model name="resource" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="location" model="location" plugin="materialFlow"
-			required="true" />
-		<belongsTo name="product" model="product" plugin="basic"
-			required="true" />
-		<decimal name="quantity" required="true" >
-            <validatesRange from="0" exclusively="true" />
-            <validatesUnscaledValue max="9" />
-            <validatesScale max="5" />
+<model name="resource"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="location" model="location" plugin="materialFlow"
+                   required="true"/>
+        <belongsTo name="product" model="product" plugin="basic"
+                   required="true"/>
+        <decimal name="quantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
         </decimal>
-		<decimal name="price" default="0" />
-		<decimal name="value" persistent="false" />
-		<string name="batch" />
-		<datetime name="time" required="true" />
-        <date name="productionDate" />
-        <date name="expirationDate" />
+        <decimal name="price" default="0"/>
+        <decimal name="value" persistent="false"/>
+        <string name="batch"/>
+        <datetime name="time" required="true"/>
+        <date name="productionDate"/>
+        <date name="expirationDate"/>
         <hasMany name="positions" joinField="resource" model="position" cascade="nullify"/>
         <hasMany name="resourceCorrections" joinField="resource" model="resourceCorrection" cascade="nullify"/>
         <boolean name="isCorrected" default="false"/>
-        <hasMany name="attributeValues" joinField="resource" model="attributeValue" cascade="nullify" />
-		<dictionary name="storageLocation" dictionary="storageLocations" />
-	</fields>
-	<hooks>
-		<validatesWith
-			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelValidators"
-			method="checkIfLocationIsWarehouse" />
-		<onView
-			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
-			method="onView" />
- 		<onCreate 
- 			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" 
- 			method="onCreate" /> 
-<!-- 		<onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" method="onDelete"/> -->
-	</hooks>
+        <hasMany name="attributeValues" joinField="resource" model="attributeValue" cascade="nullify"/>
+
+        <!--<dictionary name="storageLocation" dictionary="storageLocations" />-->
+        <belongsTo name="storageLocation" model="storageLocation"/>
+    </fields>
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelValidators"
+                method="checkIfLocationIsWarehouse"/>
+        <onView
+                class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
+                method="onView"/>
+        <onCreate
+                class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
+                method="onCreate"/>
+        <!-- 		<onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" method="onDelete"/> -->
+    </hooks>
 </model>

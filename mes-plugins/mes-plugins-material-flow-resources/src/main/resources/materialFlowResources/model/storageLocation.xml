@@ -40,10 +40,18 @@
             <validatesUnscaledValue max="7"/>
             <validatesScale max="0"/>
         </decimal>
+
+        <hasMany name="positions" model="position" cascade="nullify" copyable="false" joinField="storageLocation"/>
+        <hasMany name="resources" model="resource" cascade="nullify" copyable="false" joinField="storageLocation"/>
+        <hasMany name="oldResourceCorrections" model="resourceCorrection" cascade="nullify" copyable="false"
+                 joinField="oldStorageLocation"/>
+        <hasMany name="newResourceCorrections" model="resourceCorrection" cascade="nullify" copyable="false"
+                 joinField="newStorageLocation"/>
+
     </fields>
     <hooks>
         <validatesWith
                 class="com.qcadoo.mes.materialFlowResources.validators.StorageLocationModelValidators"
-                method="validate" />
+                method="validate"/>
     </hooks>
 </model>
