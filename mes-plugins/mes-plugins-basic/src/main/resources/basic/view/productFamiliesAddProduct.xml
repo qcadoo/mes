@@ -24,12 +24,12 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="productFamiliesAddProduct" modelName="product">
-	
+
 	<component type="window" name="window" reference="window">
-	
+
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 			<group name="add">
@@ -38,7 +38,7 @@
 				</bigButton>
 			</group>
 		</ribbon>
-		
+
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="5">
@@ -49,28 +49,28 @@
 							width="200" />
 						<option type="column" name="parent" fields="parent"
 							expression="#parent['number'] + ' - ' + #parent['name']" />
-							
+
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
-						
+
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
-						
+
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.basic.listeners.ProductFamiliesAddProductListeners"
 							method="changeProductInLookup" />
 					</component>
 				</layoutElement>
 			</component>
-			
+
 			<listener event="addSelectedProductToFamily"
 				class="com.qcadoo.mes.basic.listeners.ProductFamiliesAddProductListeners"
 				method="addSelectedProductToFamily" />
 		</component>
-		
+
 	</component>
-	
+
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.basic.hooks.ProductFamiliesAddProductHooks"

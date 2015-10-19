@@ -29,7 +29,7 @@
     plugin="technologies"
     view="technologyDetails">
 
-	<group name="materials">
+	<group name="materials" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY">
 		<bigButton name="viewCosts" icon="calculateTimeIcon24.png">
 			<script>
 				<![CDATA[
