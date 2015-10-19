@@ -7,3 +7,11 @@ VALUES ('materialFlowResources', 'storageLocationList', true, (SELECT id FROM qc
 		SELECT max(succession) + 1 FROM qcadooview_item WHERE category_id = (SELECT id FROM qcadooview_category WHERE name = 'administration' LIMIT 1)),'ROLE_MATERIAL_FLOW',0);
 
 -- end
+
+
+-- table: qcadoomodel_dictionary
+-- last touched: 18.10.2015 by lupo
+
+UPDATE qcadoomodel_dictionary SET pluginidentifier = 'basic' WHERE name = 'typeOfPallet' AND pluginidentifier = 'goodFood';
+
+-- end

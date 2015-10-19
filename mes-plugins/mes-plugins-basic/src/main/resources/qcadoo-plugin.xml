@@ -42,9 +42,7 @@
 		http://schema.qcadoo.org/modules/view.xsd 
 		http://schema.qcadoo.org/modules/localization 
 		http://schema.qcadoo.org/modules/localization.xsd
-
-
-		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu
 		http://schema.qcadoo.org/modules/menu.xsd
 		http://schema.qcadoo.org/modules/custom
 		http://schema.qcadoo.org/modules/custom.xsd">
@@ -99,7 +97,6 @@
 
         <security:role identifier="ROLE_PARAMETERS" description="Dostęp parametrów systemowych"/>
 
-
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -132,6 +129,10 @@
         <model:dictionary name="posts"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 
+        <model:dictionary name="typeOfSubassembly"/>
+
+        <model:dictionary name="typeOfPallet"/>
+
         <menu:menu-category name="basic"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
 
@@ -162,7 +163,6 @@
         <menu:menu-item-url name="conversion" category="basic"
                             url="/unitConversions.html" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
 
-
         <menu:menu-item name="subassemblies" category="companyStructure"
                         view="subassembliesList" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
 
@@ -177,7 +177,6 @@
 
         <menu:menu-item name="factories" category="companyStructure"
                         view="factoriesList" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
-
 
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
@@ -247,8 +246,6 @@
 
         <view:resource uri="public/**/*"/>
 
-
-        <model:dictionary name="typeOfSubassembly"/>
     </modules>
 
     <features>

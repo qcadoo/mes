@@ -13,6 +13,7 @@ ALTER TABLE costcalculation_costcalculation ADD COLUMN sellpricevalue numeric(19
 
 -- end
 
+
 -- Changes in products (additional codes, unit)
 -- last touched 07.10.2015 by kama
 
@@ -27,6 +28,7 @@ CREATE TABLE basic_additionalcode
   CONSTRAINT additionalcode_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE
 );
+
 -- end
 
 
