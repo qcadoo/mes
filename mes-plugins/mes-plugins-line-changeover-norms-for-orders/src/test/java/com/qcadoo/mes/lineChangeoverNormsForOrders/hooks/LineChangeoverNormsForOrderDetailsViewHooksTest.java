@@ -461,6 +461,8 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
                 null);
         given(lineChangeoverNormsForOrdersService.getTechnologyByNumberFromDB(L_TECHNOLOGY_NUMBER)).willReturn(null);
 
+        given(productionLine.getId()).willReturn(L_ID);
+
         given(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(null, null, null))
                 .willReturn(null);
 
@@ -517,6 +519,13 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(technologyGroupNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
         given(previousOrderTechnologyNumberField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER);
         given(technologyNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_NUMBER);
+
+        given(fromTechnology.getId()).willReturn(L_ID);
+        given(toTechnology.getId()).willReturn(L_ID);
+        given(fromTechnologyGroup.getId()).willReturn(L_ID);
+        given(toTechnologyGroup.getId()).willReturn(L_ID);
+
+        given(productionLine.getId()).willReturn(L_ID);
 
         given(lineChangeoverNormsForOrdersService.getTechnologyGroupByNumberFromDB(L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER))
                 .willReturn(fromTechnologyGroup);
