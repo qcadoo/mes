@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.NUMBER;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
-import static com.qcadoo.mes.orders.states.constants.OrderState.DECLINED;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +36,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -67,6 +57,10 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     private static final String L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_CORRECTED = "lineChangeoverNormsForOrders.dateIs.corrected";
 
     private static final String L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE = "lineChangeoverNormsForOrders.dateIs.effective";
+
+    public static final String L_PREVIOUS_ORDER_DATE_TO = "previousOrderDateTo";
+
+    public static final String L_DATE_FROM = "dateFrom";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -95,10 +89,10 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
         Date dateToFrom = null;
         String dateIs = null;
 
-        if ("previousOrderDateTo".equals(orderFields.get(3))) {
-            Date effectiveDateTo = (Date) order.getField(EFFECTIVE_DATE_TO);
-            Date correctedDateTo = (Date) order.getField(CORRECTED_DATE_TO);
-            Date dateTo = (Date) order.getField(DATE_TO);
+        if (L_PREVIOUS_ORDER_DATE_TO.equals(orderFields.get(3))) {
+            Date effectiveDateTo = order.getDateField(OrderFields.EFFECTIVE_DATE_TO);
+            Date correctedDateTo = order.getDateField(OrderFields.CORRECTED_DATE_TO);
+            Date dateTo = order.getDateField(OrderFields.DATE_TO);
 
             if (effectiveDateTo != null) {
                 dateToFrom = effectiveDateTo;
@@ -110,10 +104,10 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                 dateToFrom = dateTo;
                 dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_PLANNED;
             }
-        } else if ("dateFrom".equals(orderFields.get(3))) {
-            Date effectiveDateFrom = (Date) order.getField(EFFECTIVE_DATE_FROM);
-            Date correctedDateFrom = (Date) order.getField(CORRECTED_DATE_FROM);
-            Date dateFrom = (Date) order.getField(DATE_FROM);
+        } else if (L_DATE_FROM.equals(orderFields.get(3))) {
+            Date effectiveDateFrom = order.getDateField(OrderFields.EFFECTIVE_DATE_FROM);
+            Date correctedDateFrom = order.getDateField(OrderFields.CORRECTED_DATE_FROM);
+            Date dateFrom = order.getDateField(OrderFields.DATE_FROM);
 
             if (effectiveDateFrom != null) {
                 dateToFrom = effectiveDateFrom;
@@ -157,10 +151,13 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
         if (technology == null) {
             return null;
         }
+        
         Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
+        
         if (technologyGroup == null) {
             return null;
         }
+        
         return technologyGroup.getStringField(TechnologyGroupFields.NUMBER);
     }
 
@@ -168,12 +165,14 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
         if (technology == null) {
             return null;
         }
+        
         return technology.getStringField(TechnologyFields.NUMBER);
     }
 
     @Override
     public boolean previousOrderEndsBeforeOrIsWithdrawed(final Entity previousOrder, final Entity order) {
-        boolean bothOrdersAreNotNull = previousOrder != null && order != null;
+        boolean bothOrdersAreNotNull = ((previousOrder != null) && (order != null));
+        
         if (bothOrdersAreNotNull && (isDeclinedOrAbandoned(previousOrder) || areDatesCorrect(previousOrder, order))) {
             return false;
         }
@@ -182,15 +181,16 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     private boolean isDeclinedOrAbandoned(final Entity previousOrder) {
-        return ABANDONED.getStringValue().equals(previousOrder.getStringField(STATE))
-                || DECLINED.getStringValue().equals(previousOrder.getStringField(STATE));
+        return (OrderState.ABANDONED.getStringValue().equals(previousOrder.getStringField(OrderFields.STATE))
+                || OrderState.DECLINED.getStringValue().equals(previousOrder.getStringField(OrderFields.STATE)));
     }
 
     private boolean areDatesCorrect(final Entity previousOrder, final Entity order) {
-        if (previousOrder.getField(DATE_TO) == null || order.getField(DATE_FROM) == null) {
+        if ((previousOrder.getField(OrderFields.FINISH_DATE) == null) || (order.getField(OrderFields.START_DATE) == null)) {
             return true;
         }
-        return previousOrder.getDateField(DATE_TO).after(order.getDateField(DATE_FROM));
+        
+        return previousOrder.getDateField(OrderFields.FINISH_DATE).after(order.getDateField(OrderFields.START_DATE));
     }
 
     @Override
@@ -202,13 +202,13 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     @Override
     public Entity getTechnologyByNumberFromDB(final String number) {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).find()
-                .add(SearchRestrictions.eq(NUMBER, number)).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(TechnologyFields.NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     @Override
     public Entity getTechnologyGroupByNumberFromDB(final String number) {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_GROUP)
-                .find().add(SearchRestrictions.eq(NUMBER, number)).setMaxResults(1).uniqueResult();
+                .find().add(SearchRestrictions.eq(TechnologyGroupFields.NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     @Override
@@ -216,10 +216,10 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
         return dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
                 .find()
-                .add(SearchRestrictions.or(SearchRestrictions.ne(STATE, DECLINED.getStringValue()),
-                        SearchRestrictions.ne(STATE, ABANDONED.getStringValue())))
-                .add(SearchRestrictions.lt(DATE_TO, order.getDateField(DATE_FROM))).addOrder(SearchOrders.desc(DATE_TO))
-                .setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.or(SearchRestrictions.ne(OrderFields.STATE, OrderState.DECLINED.getStringValue()),
+                        SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue())))
+                .add(SearchRestrictions.lt(OrderFields.FINISH_DATE, order.getDateField(OrderFields.START_DATE)))
+                .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
     }
 
 }
