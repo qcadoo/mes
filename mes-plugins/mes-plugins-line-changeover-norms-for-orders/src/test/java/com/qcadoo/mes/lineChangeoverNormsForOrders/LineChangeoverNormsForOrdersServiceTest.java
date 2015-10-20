@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders;
 
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants.ORDER_FIELDS;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS;
 import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
@@ -43,6 +41,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -101,17 +100,17 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubStringField(technologyPrototype, TechnologyFields.NUMBER, NOT_EMPTY_NUMBER);
         stubStringField(technologyGroup, TechnologyGroupFields.NUMBER, NOT_EMPTY_NUMBER);
 
-        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(0))).willReturn(orderLookup);
-        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
-        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
-        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(3))).willReturn(dateToFromField);
-        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(4))).willReturn(dateIsField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(0))).willReturn(orderLookup);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(4))).willReturn(dateIsField);
 
-        given(view.getComponentByReference(ORDER_FIELDS.get(0))).willReturn(orderLookup);
-        given(view.getComponentByReference(ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateToFromField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateIsField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(0))).willReturn(orderLookup);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(4))).willReturn(dateIsField);
     }
 
     private void stubOrderLookupEntity(final Entity order) {
@@ -125,7 +124,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubOrderLookupEntity(null);
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
 
         // then
         verify(orderLookup, never()).setFieldValue(Mockito.any());
@@ -141,7 +140,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubOrderLookupEntity(null);
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
 
         // then
         verify(orderLookup, never()).setFieldValue(Mockito.any());
@@ -158,7 +157,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, null);
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
 
         // then
         verify(orderLookup).setFieldValue(Mockito.notNull());
@@ -178,7 +177,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubBelongsToField(technologyPrototype, TechnologyFields.TECHNOLOGY_GROUP, null);
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
 
         // then
         verify(orderLookup).setFieldValue(Mockito.any());
@@ -197,7 +196,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubBelongsToField(technologyPrototype, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
 
         // then
         verify(orderLookup).setFieldValue(Mockito.any());
@@ -217,7 +216,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_FROM, DATE_TIME_EARLY.toDate());
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
 
         // then
         verify(orderLookup).setFieldValue(Mockito.any());
@@ -237,7 +236,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubDateField(order, OrderFields.CORRECTED_DATE_FROM, DATE_TIME_EARLY.toDate());
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
 
         // then
         verify(orderLookup).setFieldValue(Mockito.any());
@@ -257,7 +256,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubDateField(order, OrderFields.DATE_FROM, DATE_TIME_EARLY.toDate());
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
 
         // then
         verify(orderLookup).setFieldValue(Mockito.any());
@@ -277,7 +276,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_TO, DATE_TIME_LATE.toDate());
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS);
 
         // then
         verify(orderLookup).setFieldValue(Mockito.any());
@@ -297,7 +296,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubDateField(order, OrderFields.CORRECTED_DATE_TO, DATE_TIME_LATE.toDate());
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS);
 
         // then
         verify(orderLookup).setFieldValue(Mockito.any());
@@ -317,7 +316,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubDateField(order, OrderFields.DATE_TO, DATE_TIME_LATE.toDate());
 
         // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS);
 
         // then
         verify(orderLookup).setFieldValue(Mockito.any());
@@ -340,8 +339,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldReturnTrueWhenOrdersAreNotNullAndPreviousOrderIsCorrectAndPrevious() {
         // given
         stubStringField(previousOrder, OrderFields.STATE, OrderStateStringValues.ACCEPTED);
-        stubDateField(previousOrder, OrderFields.DATE_TO, DATE_TIME_EARLY.toDate());
-        stubDateField(order, OrderFields.DATE_FROM, DATE_TIME_LATE.toDate());
+        stubDateField(previousOrder, OrderFields.FINISH_DATE, DATE_TIME_EARLY.toDate());
+        stubDateField(order, OrderFields.START_DATE, DATE_TIME_LATE.toDate());
 
         // when
         boolean result = lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(previousOrder, order);
@@ -354,8 +353,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldReturnFalseWhenOrdersAreNotNullAndPreviousOrderIsNotCorrectAndPrevious() {
         // given
         stubStringField(previousOrder, OrderFields.STATE, OrderStateStringValues.ACCEPTED);
-        stubDateField(previousOrder, OrderFields.DATE_TO, DATE_TIME_LATE.toDate());
-        stubDateField(order, OrderFields.DATE_FROM, DATE_TIME_EARLY.toDate());
+        stubDateField(previousOrder, OrderFields.START_DATE, DATE_TIME_LATE.toDate());
+        stubDateField(order, OrderFields.START_DATE, DATE_TIME_EARLY.toDate());
 
         // when
         boolean result = lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(previousOrder, order);
@@ -368,8 +367,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldReturnFalseWhenOrdersAreNotNullAndPreviousOrderDateToIsAndOrderDateFromIsNull() {
         // given
         stubStringField(previousOrder, OrderFields.STATE, OrderStateStringValues.ACCEPTED);
-        stubDateField(previousOrder, OrderFields.DATE_TO, null);
-        stubDateField(order, OrderFields.DATE_FROM, null);
+        stubDateField(previousOrder, OrderFields.FINISH_DATE, null);
+        stubDateField(order, OrderFields.START_DATE, null);
 
         // when
         boolean result = lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(previousOrder, order);
