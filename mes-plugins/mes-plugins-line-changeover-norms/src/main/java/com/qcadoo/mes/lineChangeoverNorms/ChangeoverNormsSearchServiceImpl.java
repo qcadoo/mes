@@ -72,6 +72,7 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
     private SearchCriterion getProductionLineRestrictions(final Long productionLineId) {
         SearchCriterion matchProductionLine = eq(LineChangeoverNormsFields.PRODUCTION_LINE + DOT_ID, productionLineId);
         SearchCriterion productionLineIsNull = isNull(LineChangeoverNormsFields.PRODUCTION_LINE);
+
         return or(matchProductionLine, productionLineIsNull);
     }
 
@@ -86,12 +87,15 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
                 "you have to provide pair of technologies or pair of technology groups.");
 
         SearchDisjunction disjunction = SearchRestrictions.disjunction();
+
         if (matchTechnologies != null) {
             disjunction.add(matchTechnologies);
         }
+
         if (matchTechnologyGroups != null) {
             disjunction.add(matchTechnologyGroups);
         }
+
         return disjunction;
     }
 
@@ -100,21 +104,37 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
         if (leftId == null || rightId == null) {
             return null;
         }
+
         return and(eq(leftFieldName + DOT_ID, leftId), eq(rightFieldName + DOT_ID, rightId));
     }
 
     @Override
-    @Deprecated
     public Entity searchMatchingChangeroverNormsForTechnologyWithLine(final Entity fromTechnology, final Entity toTechnology,
             final Entity productionLine) {
-        return findBestMatching(fromTechnology.getId(), null, toTechnology.getId(), null, productionLine.getId());
+        if ((fromTechnology != null) && (toTechnology != null)) {
+            if (productionLine == null) {
+                return findBestMatching(fromTechnology.getId(), null, toTechnology.getId(), null, null);
+            } else {
+                return findBestMatching(fromTechnology.getId(), null, toTechnology.getId(), null, productionLine.getId());
+            }
+        }
+
+        return null;
     }
 
     @Override
-    @Deprecated
     public Entity searchMatchingChangeroverNormsForTechnologyGroupWithLine(final Entity fromTechnologyGroup,
             final Entity toTechnologyGroup, final Entity productionLine) {
-        return findBestMatching(null, fromTechnologyGroup.getId(), null, toTechnologyGroup.getId(), productionLine.getId());
+        if ((fromTechnologyGroup != null) && (toTechnologyGroup != null)) {
+            if (productionLine == null) {
+                return findBestMatching(null, fromTechnologyGroup.getId(), null, toTechnologyGroup.getId(), null);
+            } else {
+                return findBestMatching(null, fromTechnologyGroup.getId(), null, toTechnologyGroup.getId(),
+                        productionLine.getId());
+            }
+        }
+
+        return null;
     }
 
     private DataDefinition getChangeoverDataDef() {
