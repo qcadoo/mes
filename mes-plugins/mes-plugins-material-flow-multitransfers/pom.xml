@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.qcadoo.mes</groupId>
         <artifactId>mes-plugins</artifactId>
-        <version>1.5-SNAPSHOT-DEV</version>
+        <version>1.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>mes-plugins-material-flow-multitransfers</artifactId>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-material-flow-resources</artifactId>
-            <version>1.5-SNAPSHOT-DEV</version>
+            <version>1.5-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
