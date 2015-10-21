@@ -216,6 +216,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
         return dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
                 .find()
+                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, order.getBelongsToField(OrderFields.PRODUCTION_LINE)))
                 .add(SearchRestrictions.or(SearchRestrictions.ne(OrderFields.STATE, OrderState.DECLINED.getStringValue()),
                         SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue())))
                 .add(SearchRestrictions.lt(OrderFields.FINISH_DATE, order.getDateField(OrderFields.START_DATE)))
