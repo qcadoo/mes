@@ -151,13 +151,13 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
         if (technology == null) {
             return null;
         }
-        
+
         Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
-        
+
         if (technologyGroup == null) {
             return null;
         }
-        
+
         return technologyGroup.getStringField(TechnologyGroupFields.NUMBER);
     }
 
@@ -165,14 +165,14 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
         if (technology == null) {
             return null;
         }
-        
+
         return technology.getStringField(TechnologyFields.NUMBER);
     }
 
     @Override
     public boolean previousOrderEndsBeforeOrIsWithdrawed(final Entity previousOrder, final Entity order) {
         boolean bothOrdersAreNotNull = ((previousOrder != null) && (order != null));
-        
+
         if (bothOrdersAreNotNull && (isDeclinedOrAbandoned(previousOrder) || areDatesCorrect(previousOrder, order))) {
             return false;
         }
@@ -181,15 +181,15 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     private boolean isDeclinedOrAbandoned(final Entity previousOrder) {
-        return (OrderState.ABANDONED.getStringValue().equals(previousOrder.getStringField(OrderFields.STATE))
-                || OrderState.DECLINED.getStringValue().equals(previousOrder.getStringField(OrderFields.STATE)));
+        return (OrderState.ABANDONED.getStringValue().equals(previousOrder.getStringField(OrderFields.STATE)) || OrderState.DECLINED
+                .getStringValue().equals(previousOrder.getStringField(OrderFields.STATE)));
     }
 
     private boolean areDatesCorrect(final Entity previousOrder, final Entity order) {
         if ((previousOrder.getField(OrderFields.FINISH_DATE) == null) || (order.getField(OrderFields.START_DATE) == null)) {
             return true;
         }
-        
+
         return previousOrder.getDateField(OrderFields.FINISH_DATE).after(order.getDateField(OrderFields.START_DATE));
     }
 
@@ -216,6 +216,8 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
         return dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
                 .find()
+                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE,
+                        order.getBelongsToField(OrderFields.PRODUCTION_LINE)))
                 .add(SearchRestrictions.or(SearchRestrictions.ne(OrderFields.STATE, OrderState.DECLINED.getStringValue()),
                         SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue())))
                 .add(SearchRestrictions.lt(OrderFields.FINISH_DATE, order.getDateField(OrderFields.START_DATE)))
