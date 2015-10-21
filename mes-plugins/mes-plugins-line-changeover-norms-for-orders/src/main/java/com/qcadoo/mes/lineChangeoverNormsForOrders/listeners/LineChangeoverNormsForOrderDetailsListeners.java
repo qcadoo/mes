@@ -147,8 +147,7 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void checkIfOrderHasCorrectStateAndIsPrevious(final ViewDefinitionState view,
-
-    final ComponentState componentState, final String[] args) {
+            final ComponentState componentState, final String[] args) {
         LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.PREVIOUS_ORDER);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.ORDER);
 
