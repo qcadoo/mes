@@ -42,6 +42,9 @@ public class BasicOnStartupService extends Module {
     private ReportColumnWidthLoader reportColumnWidthLoader;
 
     @Autowired
+    private TypeOfPalletLoader typeOfPalletLoader;
+
+    @Autowired
     private ExchangeRatesUpdateService exchangeRatesUpdateService;
 
     @Override
@@ -50,6 +53,7 @@ public class BasicOnStartupService extends Module {
         countryLoader.loadCountries();
         currencyLoader.loadCurrencies();
         reportColumnWidthLoader.loadReportColumnWidths();
+        typeOfPalletLoader.loadTypeOfPallets();
         exchangeRatesUpdateService.update();
     }
 

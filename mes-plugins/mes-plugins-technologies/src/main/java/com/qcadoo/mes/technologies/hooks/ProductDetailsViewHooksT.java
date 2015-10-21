@@ -23,13 +23,13 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.security.constants.QcadooSecurityConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.constants.QcadooSecurityConstants;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -49,11 +49,10 @@ public class ProductDetailsViewHooksT {
 
     // TODO lupo fix when problem with navigation will be done
     public void updateRibbonState(final ViewDefinitionState view) {
-        Entity loggedUser = dataDefinitionService
-                .get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER).get(
-                        securityService.getCurrentUserId());
+        Entity loggedUser = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER,
+                QcadooSecurityConstants.MODEL_USER).get(securityService.getCurrentUserId());
 
-        if (!securityService.hasRole(loggedUser, "ROLE_BASE_FUNCTIONALITY")) {
+        if (!securityService.hasRole(loggedUser, "ROLE_TECHNOLOGIES")) {
             view.getComponentByReference("technologyTab").setVisible(false);
         }
         FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);

@@ -71,7 +71,11 @@
                     </layoutElement>
                     <layoutElement column="1" row="4">
                         <component type="checkbox" name="placeStorageLocation" field="placeStorageLocation"
-                                   reference="placeStorageLocation"/>
+                                   reference="placeStorageLocation">
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsDetailsListeners"
+                                      method="updateFields"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
                         <component type="input" name="maximumNumberOfPallets"
@@ -82,6 +86,7 @@
                 </component>
 
                 <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
             </component>
         </windowTab>
 
@@ -90,6 +95,8 @@
 
 
     <hooks>
-
+        <beforeRender
+                class="com.qcadoo.mes.materialFlowResources.hooks.StorageLocationsDetailsHooks"
+                method="onBeforeRender"/>
     </hooks>
 </view>

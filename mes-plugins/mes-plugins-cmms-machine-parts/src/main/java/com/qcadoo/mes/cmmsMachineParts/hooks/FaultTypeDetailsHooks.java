@@ -50,15 +50,16 @@ public class FaultTypeDetailsHooks {
         GridComponent workstationsGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.WORKSTATIONS);
         GridComponent subassembliesGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.SUBASSEMBLIES);
         GridComponent workstationTypesGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.WORKSTATION_TYPES);
-
-        if (appliesTo.compareTo(FaultTypeAppliesTo.WORKSTATION_OR_SUBASSEMBLY) == 0) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        boolean idNotNull = form.getEntityId() != null;
+        if (appliesTo.compareTo(FaultTypeAppliesTo.WORKSTATION_OR_SUBASSEMBLY) == 0 && idNotNull) {
             workstationsGrid.setEnabled(true);
             subassembliesGrid.setEnabled(true);
             workstationTypesGrid.setEnabled(false);
             if (shouldClear) {
                 workstationTypesGrid.setEntities(Lists.newArrayList());
             }
-        } else if (appliesTo.compareTo(FaultTypeAppliesTo.WORKSTATION_TYPE) == 0) {
+        } else if (appliesTo.compareTo(FaultTypeAppliesTo.WORKSTATION_TYPE) == 0 && idNotNull) {
             workstationsGrid.setEnabled(false);
             subassembliesGrid.setEnabled(false);
             workstationTypesGrid.setEnabled(true);

@@ -24,10 +24,10 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
     xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
         name="stoppageForm" modelName="stoppage">
- 
+
         <component type="window" name="window">
             <ribbon>
                 <group template="navigation" />
@@ -39,11 +39,11 @@
             		<layoutElement column="1" row="1">
                 		<component type="input" name="duration" field="duration" />
                 	</layoutElement>
-                	<layoutElement column="1" row="2">	
+                	<layoutElement column="1" row="2">
                 		<component type="textarea" name="reason" field="reason" />
                 	</layoutElement>
                 </component>
-                
+
                 <option type="expression" value="#reason + ' (' + #duration +' min)'" />
                 <option type="header" value="true" />
             </component>

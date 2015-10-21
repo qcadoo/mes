@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="masterOrderProductDetails" modelName="masterOrderProduct"
+<view defaultAuthorizationRole="ROLE_PLANNING" name="masterOrderProductDetails" modelName="masterOrderProduct"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -76,8 +76,9 @@
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
-                            <criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-                                              method="showPatternTechnology"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+                                    method="showPatternTechnology"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">

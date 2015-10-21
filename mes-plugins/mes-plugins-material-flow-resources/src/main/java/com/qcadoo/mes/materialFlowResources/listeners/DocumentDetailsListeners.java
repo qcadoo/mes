@@ -215,6 +215,10 @@ public class DocumentDetailsListeners {
         documentDetailsHooks.setCriteriaModifiersParameters(view);
     }
 
+    public void setCriteriaModifiersParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        documentDetailsHooks.setCriteriaModifiersParameters(view);
+    }
+
     private void showResourceLookupOrBatchInput(final ViewDefinitionState view, boolean visible, boolean shouldClear) {
         AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
         for (FormComponent positionForm : positionsADL.getFormComponents()) {

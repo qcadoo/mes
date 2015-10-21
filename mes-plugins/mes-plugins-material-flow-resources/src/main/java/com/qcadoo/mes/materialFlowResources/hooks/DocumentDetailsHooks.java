@@ -85,7 +85,7 @@ public class DocumentDetailsHooks {
     public void onBeforeRender(final ViewDefinitionState view) {
         initializeDocument(view);
         documentDetailsListeners.calculateQuantity(view, null, new String[0]);
-        // setCriteriaModifiersParameters(view);
+        setCriteriaModifiersParameters(view);
     }
 
     // fixme: refactor
@@ -271,20 +271,29 @@ public class DocumentDetailsHooks {
         Entity document = form.getPersistedEntityWithIncludedFormValues();
         if (!DocumentState.of(document).equals(DocumentState.ACCEPTED)) {
             Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+            Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
             AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
             for (FormComponent positionForm : positionsADL.getFormComponents()) {
                 Entity position = positionForm.getPersistedEntityWithIncludedFormValues();
                 Entity product = position.getBelongsToField(PositionFields.PRODUCT);
                 LookupComponent resourcesLookup = (LookupComponent) positionForm
                         .findFieldComponentByName(PositionFields.RESOURCE);
+                LookupComponent storageLocationLookup = (LookupComponent) positionForm
+                        .findFieldComponentByName(PositionFields.STORAGE_LOCATION);
                 FilterValueHolder filter = resourcesLookup.getFilterValue();
+                FilterValueHolder storageLocationFilter = storageLocationLookup.getFilterValue();
                 if (warehouseFrom != null) {
                     filter.put("locationFrom", warehouseFrom.getId());
                 }
                 if (product != null) {
                     filter.put("product", product.getId());
+                    storageLocationFilter.put("product", product.getId());
+                }
+                if (warehouseTo != null) {
+                    storageLocationFilter.put("location", warehouseTo.getId());
                 }
                 resourcesLookup.setFilterValue(filter);
+                storageLocationLookup.setFilterValue(storageLocationFilter);
             }
         }
     }

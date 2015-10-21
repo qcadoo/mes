@@ -50,7 +50,7 @@ public class ProductDetailsListenersD {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         DataDefinition productDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
         Entity formProduct = form.getPersistedEntityWithIncludedFormValues();
-        Entity product = productDD.get(formProduct.getId());
+        Entity product = formProduct.getId() != null ? productDD.get(formProduct.getId()) : formProduct;
         Entity formParent = formProduct.getBelongsToField(ProductFields.PARENT);
         if (formParent != null) {
             Entity parent = productDD.get(formParent.getId());

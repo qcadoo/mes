@@ -24,54 +24,56 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="resourcesList" 
-	modelName="resource" 
-	menuAccessible="true">
+<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="resourcesList"
+      modelName="resource"
+      menuAccessible="true">
 
-	<component type="window" name="window">
-		<ribbon>
-			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
-		</ribbon>
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
+        </ribbon>
 
-		<component type="grid" name="resourceGrid" reference="grid">
-			<option type="column" name="locationNumber" fields="location"
-				expression="#location['number']" link="true" width="40" />
-			<option type="column" name="locationName" fields="location"
-				expression="#location['name']" link="true" />
-			<option type="column" name="productNumber" fields="product"
-				expression="#product['number']" link="true" width="100" />
-			<option type="column" name="productName" fields="product"
-				expression="#product['name']" link="true" width="110" />
-			<option type="column" name="quantity" fields="quantity" width="30" />
-			<option type="column" name="productUnit" fields="product" 
-				expression="#product['unit']" width="50"/>
-			<option type="column" name="price" fields="price" width="60" />
-			<option type="column" name="value" fields="value" width="60" />
-            <option type="column" name="time" fields="time" />
-            <option type="column" name="productionDate" fields="productionDate" />
-            <option type="column" name="expirationDate" fields="expirationDate" />
-            <option type="column" name="batch" fields="batch" />
-            <option type="column" name="storageLocation" fields="storageLocation" />
-            <option type="column" name="isCorrected" fields="isCorrected" width="50" />
+        <component type="grid" name="resourceGrid" reference="grid">
+            <option type="column" name="locationNumber" fields="location"
+                    expression="#location['number']" link="true" width="40"/>
+            <option type="column" name="locationName" fields="location"
+                    expression="#location['name']" link="true"/>
+            <option type="column" name="productNumber" fields="product"
+                    expression="#product['number']" link="true" width="100"/>
+            <option type="column" name="productName" fields="product"
+                    expression="#product['name']" link="true" width="110"/>
+            <option type="column" name="quantity" fields="quantity" width="30"/>
+            <option type="column" name="productUnit" fields="product"
+                    expression="#product['unit']" width="50"/>
+            <option type="column" name="price" fields="price" width="60"/>
+            <option type="column" name="value" fields="value" width="60"/>
+            <option type="column" name="time" fields="time"/>
+            <option type="column" name="productionDate" fields="productionDate"/>
+            <option type="column" name="expirationDate" fields="expirationDate"/>
+            <option type="column" name="batch" fields="batch"/>
+            <option type="column" name="storageLocation" fields="storageLocation"
+                    expression="#storageLocation['number']"/>
+            <option type="column" name="isCorrected" fields="isCorrected" width="50"/>
 
-			<option type="order" column="productNumber" direction="asc" />
+            <option type="order" column="productNumber" direction="asc"/>
 
-			<option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation" />
-			<option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation" />
+            <option type="searchable"
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation"/>
+            <option type="orderable"
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation"/>
 
-			<option type="correspondingView" value="materialFlowResources/resourceDetails" />
-			<option type="correspondingViewInModal" value="true" />
-			<option type="correspondingComponent" value="form" />
+            <option type="correspondingView" value="materialFlowResources/resourceDetails"/>
+            <option type="correspondingViewInModal" value="true"/>
+            <option type="correspondingComponent" value="form"/>
 
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
-		</component>
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+        </component>
 
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-	</component>
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
 </view>

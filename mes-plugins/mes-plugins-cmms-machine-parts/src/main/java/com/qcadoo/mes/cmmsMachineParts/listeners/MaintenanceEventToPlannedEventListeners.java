@@ -35,6 +35,7 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient;
 import com.qcadoo.mes.cmmsMachineParts.states.aop.MaintenanceEventStateChangeAspect;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangeFields;
+import com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventStateChangeValidators;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
@@ -71,8 +72,18 @@ public class MaintenanceEventToPlannedEventListeners {
     @Autowired
     private MaintenanceEventContextService maintenanceEventContextService;
 
+    @Autowired
+    private MaintenanceEventStateChangeValidators maintenanceEventStateChangeValidators;
+
     public void continueStateChange(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         final FormComponent form = (FormComponent) component;
+        Entity eventStateChange = form.getPersistedEntityWithIncludedFormValues();
+        maintenanceEventStateChangeValidators.validate(eventStateChange.getDataDefinition(), eventStateChange);
+        form.setEntity(eventStateChange);
+        if (!eventStateChange.getErrors().isEmpty()) {
+            return;
+        }
+
         form.performEvent(view, "save");
         if (!form.isValid()) {
             return;
@@ -131,6 +142,8 @@ public class MaintenanceEventToPlannedEventListeners {
         plannedEvent.setField(PlannedEventFields.MAINTENANCE_EVENT, maintenanceEvent);
         plannedEvent.setField(PlannedEventFields.BASED_ON, PlannedEventBasedOn.DATE.getStringValue());
 
+        plannedEvent.setField(PlannedEventFields.PLANNED_SEPARATELY, false);
+        plannedEvent.setField(PlannedEventFields.REQUIRES_SHUTDOWN, false);
         Entity context = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
                 CmmsMachinePartsConstants.MODEL_PLANNED_EVENT_CONTEXT).create();
         Entity preparedContext = maintenanceEventContextService.prepareContextEntity(context);

@@ -36,30 +36,30 @@
 		http://schema.qcadoo.org/modules/menu
 		http://schema.qcadoo.org/modules/menu.xsd">
 
-	<information>
-		<name>MES - Deviation causes reporting</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-		<description>Reporting causes for plan's deviation.</description>
-		<license>AGPL</license>
-	</information>
+    <information>
+        <name>MES - Deviation causes reporting</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Reporting causes for plan's deviation.</description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>productionPerShift</plugin>
-			<version>[1.3.0</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <plugin>productionPerShift</plugin>
+            <version>[1.3.0</version>
+        </dependency>
+    </dependencies>
 
-	<modules>
-		<localization:translation path="locales" />
+    <modules>
+        <localization:translation path="locales"/>
 
-		<menu:menu-item name="deviationsReport" category="orders"
-		                view="deviationsReportGenerator" />
+        <menu:menu-item name="deviationsReport" category="orders"
+                        view="deviationsReportGenerator" defaultAuthorizationRole="ROLE_PLANNING"/>
 
-		<view:view resource="view/deviationsReportGenerator.xml" />
-	</modules>
+        <view:view resource="view/deviationsReportGenerator.xml"/>
+    </modules>
 
 </plugin>

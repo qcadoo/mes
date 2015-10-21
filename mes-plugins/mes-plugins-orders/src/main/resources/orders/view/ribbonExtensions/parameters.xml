@@ -24,12 +24,12 @@
     ***************************************************************************
 
 -->
-<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
 	plugin="basic"
 	view="parameters">
-	
-	<group name="parameters" defaultAuthorizationRole="ROLE_PARAMETERS">
+
+	<group name="parameters" defaultAuthorizationRole="ROLE_PLANNING">
 		<bigButton name="ordersParameters" icon="calendarIcon24.png">
 			<script>
 				<![CDATA[
@@ -41,8 +41,8 @@
 						}
 					});	
 				]]>
-			</script>	
+			</script>
 		</bigButton>
 	</group>
-	
+
 </ribbonExtension>

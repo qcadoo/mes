@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="documentPositionsList"
       modelName="position"
@@ -70,7 +71,8 @@
 
             <option type="column" name="productionDate" fields="productionDate" width="60"/>
 
-            <option type="column" name="storageLocation" fields="storageLocation" width="70"/>
+            <option type="column" name="storageLocation" fields="storageLocation" width="70"
+                    expression="#storageLocation['number']"/>
 
             <option type="column" name="state" fields="state"/>
 

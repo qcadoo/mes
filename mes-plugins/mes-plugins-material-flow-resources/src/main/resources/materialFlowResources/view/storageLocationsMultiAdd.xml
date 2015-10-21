@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="storageLocationsMultiAdd" modelName="storageLocationHelper" modelPlugin="materialFlowResources">
 
@@ -32,7 +33,7 @@
 
         <ribbon>
             <group name="navigation">
-                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
             </group>
             <group name="action">
                 <bigButton name="createStorageLocations" icon="iconProducts24.png" state="enabled">
@@ -87,7 +88,11 @@
                     </layoutElement>
                     <layoutElement column="1" row="5">
                         <component type="checkbox" name="placeStorageLocation" field="placeStorageLocation"
-                                   reference="placeStorageLocation"/>
+                                   reference="placeStorageLocation">
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsDetailsListeners"
+                                      method="updateFields"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="1" row="6">
                         <component type="input" name="maximumNumberOfPallets"
@@ -98,7 +103,8 @@
                 </component>
                 <option type="header" value="true"/>
                 <option type="expression" value="' '"/>
-                <listener event="createStorageLocations" class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListener"
+                <listener event="createStorageLocations"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListener"
                           method="createStorageLocations"/>
             </component>
         </windowTab>
@@ -107,6 +113,8 @@
     </component>
 
     <hooks>
-
+        <beforeRender
+                class="com.qcadoo.mes.materialFlowResources.hooks.StorageLocationsMultiAddHooks"
+                method="onBeforeRender"/>
     </hooks>
 </view>

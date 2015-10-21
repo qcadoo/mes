@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="staffWorkTimeDetails" modelName="staffWorkTime"
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="staffWorkTimeDetails" modelName="staffWorkTime"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -53,7 +53,8 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="calendar" name="effectiveExecutionTimeStart" field="effectiveExecutionTimeStart"
+                        <component type="calendar" name="effectiveExecutionTimeStart"
+                                   field="effectiveExecutionTimeStart"
                                    reference="effectiveExecutionTimeStart">
                             <option type="withTimePicker" value="true"/>
                             <listener event="onChange"

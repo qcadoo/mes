@@ -23,17 +23,16 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.util.Date;
-
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventRealizationFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import org.joda.time.DateTime;
+import org.joda.time.Seconds;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class PlannedEventRealizationDetailsListeners {
@@ -46,14 +45,15 @@ public class PlannedEventRealizationDetailsListeners {
         FieldComponent durationFieldComponent = (FieldComponent) view
                 .getComponentByReference(PlannedEventRealizationFields.DURATION);
 
-        if (startDateFieldComponent.getFieldValue() == null || finishDateFieldComponent.getFieldValue() == null) {
+        if ((startDateFieldComponent.getFieldValue() == null || startDateFieldComponent.getFieldValue().toString().isEmpty())
+                || (finishDateFieldComponent.getFieldValue() == null || finishDateFieldComponent.getFieldValue().toString().isEmpty()) ) {
             return;
         }
 
         Date start = DateUtils.parseDate(startDateFieldComponent.getFieldValue());
         Date end = DateUtils.parseDate(finishDateFieldComponent.getFieldValue());
 
-        if (start.before(end)) {
+        if (start != null && end != null && start.before(end)) {
             Seconds seconds = Seconds.secondsBetween(new DateTime(start), new DateTime(end));
             durationFieldComponent.setFieldValue(Integer.valueOf(seconds.getSeconds()));
         }

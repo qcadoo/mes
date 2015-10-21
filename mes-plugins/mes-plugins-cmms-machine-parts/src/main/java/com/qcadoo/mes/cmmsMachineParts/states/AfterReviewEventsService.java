@@ -102,6 +102,8 @@ public class AfterReviewEventsService {
         afterReviewEvent.setField(PlannedEventFields.AFTER_REVIEW, true);
         afterReviewEvent.setField(PlannedEventFields.PLANNED_EVENT_CONTEXT,
                 plannedEvent.getBelongsToField(PlannedEventFields.PLANNED_EVENT_CONTEXT));
+        afterReviewEvent.setField(PlannedEventFields.REQUIRES_SHUTDOWN, false);
+        afterReviewEvent.setField(PlannedEventFields.PLANNED_SEPARATELY, false);
         afterReviewEvent.getDataDefinition().save(afterReviewEvent);
         return number;
     }

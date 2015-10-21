@@ -118,6 +118,10 @@
                                    reference="unit"/>
                     </layoutElement>
                     <layoutElement column="1" row="5">
+                        <component type="select" name="additionalUnit" field="additionalUnit"
+                                   reference="additionalUnit" defaultEnabled="false"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
                         <component type="checkbox" name="machinePart" field="#{form}.machinePart"
                                    reference="machinePart" defaultVisible="false" defaultEnabled="never"/>
                     </layoutElement>

@@ -42,9 +42,7 @@
 		http://schema.qcadoo.org/modules/view.xsd 
 		http://schema.qcadoo.org/modules/localization 
 		http://schema.qcadoo.org/modules/localization.xsd
-
-
-		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu
 		http://schema.qcadoo.org/modules/menu.xsd
 		http://schema.qcadoo.org/modules/custom
 		http://schema.qcadoo.org/modules/custom.xsd">
@@ -78,7 +76,10 @@
                                   basename="basic"/>
 
         <security:role identifier="ROLE_PRODUCTS"
-                       description="Dostęp do produktów, rodzin produktów, numerów katalogowych"/>
+                       description="Dostęp do produktów"/>
+
+        <security:role identifier="ROLE_PRODUCT_FAMILIES"
+                       description="Dostęp do rodzin produktów"/>
 
         <security:role identifier="ROLE_COMPANY" description="Dostęp do firmy"/>
 
@@ -99,6 +100,29 @@
 
         <security:role identifier="ROLE_PARAMETERS" description="Dostęp parametrów systemowych"/>
 
+        <security:role identifier="ROLE_BASIC" description="Dostęp do kategorii z danymi podstawowymi"/>
+
+        <security:role identifier="ROLE_TECHNOLOGIES" description="Dostęp do technologii"/>
+
+        <security:role identifier="ROLE_TECHNOLOGIES_ADVANCED"
+                       description="Dostęp do grup technologii, operacji i grup operacji"/>
+
+        <security:role identifier="ROLE_PLANNING" description="Dostęp do planowania zleceń"/>
+
+        <security:role identifier="ROLE_PRODUCTION_COUNTING"
+                       description="Dostęp do  rozliczenia produkcji"/>
+
+        <security:role identifier="ROLE_PRODUCTION_TRACKING"
+                       description="Dostęp do rejestracji i rozliczenia produkcji"/>
+
+        <security:role identifier="ROLE_ORDERS_TRACKING"
+                       description="Dostęp do kategorii z rejestracją i rozliczeniem produkcji"/>
+
+        <security:role identifier="ROLE_GENEALOGY" description="Dostęp do kategorii z genealogią"/>
+
+        <security:role identifier="ROLE_ADVANCED_GENEALOGY" description="Dostęp do zaawansowanej genealogii"/>
+
+        <security:role identifier="ROLE_BATCHES" description="Dostęp do partii"/>
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
@@ -132,7 +156,11 @@
         <model:dictionary name="posts"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 
-        <menu:menu-category name="basic"/>
+        <model:dictionary name="typeOfSubassembly"/>
+
+        <model:dictionary name="typeOfPallet"/>
+
+        <menu:menu-category name="basic" defaultAuthorizationRole="ROLE_BASIC"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
 
         <menu:menu-item-url name="home" category="home"
@@ -149,7 +177,7 @@
         <menu:menu-item name="shifts" category="basic" view="shiftsList"/>
         <menu:menu-item name="products" category="basic" view="productsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
         <menu:menu-item name="productsFamilies" category="basic"
-                        view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+                        view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES"/>
 
         <menu:menu-item-url name="dictionariesInBasic"
                             category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
@@ -161,7 +189,6 @@
 
         <menu:menu-item-url name="conversion" category="basic"
                             url="/unitConversions.html" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
-
 
         <menu:menu-item name="subassemblies" category="companyStructure"
                         view="subassembliesList" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
@@ -177,7 +204,6 @@
 
         <menu:menu-item name="factories" category="companyStructure"
                         view="factoriesList" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
-
 
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
@@ -247,8 +273,6 @@
 
         <view:resource uri="public/**/*"/>
 
-
-        <model:dictionary name="typeOfSubassembly"/>
     </modules>
 
     <features>

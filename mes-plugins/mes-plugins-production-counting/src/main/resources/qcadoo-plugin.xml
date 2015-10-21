@@ -254,11 +254,11 @@
 		</model:model-hook>
 
 		<menu:menu-item name="productionTracking" category="ordersTracking"
-			view="productionTrackingsList" />
+			view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
 		<menu:menu-item name="productionBalance" category="ordersTracking"
-			view="productionBalancesList" />
+			view="productionBalancesList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 		<menu:menu-item name="productionTrackingReports"
-			category="ordersTracking" view="productionTrackingReportsList" />
+			category="ordersTracking" view="productionTrackingReportsList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 
 		<view:view resource="view/productionTrackingsList.xml" />
 		<view:view resource="view/productionTrackingDetails.xml" />

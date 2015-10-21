@@ -50,7 +50,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Define what catalog numbers do suppliers have for certain products.</description>
-		<license>AGPL</license>	
+		<license>AGPL</license>
 	</information>
 	<dependencies>
 		<dependency>
@@ -61,17 +61,17 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="productCatalogNumbers" resource="model/productCatalogNumbers.xml" />
-		
+
 		<menu:menu-item name="productCatalogNumbers" category="basic"
-			view="productCatalogNumbersList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+			view="productCatalogNumbersList" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
 
 		<view:view resource="view/productCatalogNumbersList.xml" />
 		<view:view resource="view/productCatalogNumbersDetails.xml" />
-		
+
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>

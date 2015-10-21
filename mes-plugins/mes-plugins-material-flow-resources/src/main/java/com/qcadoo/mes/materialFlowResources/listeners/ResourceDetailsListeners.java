@@ -44,6 +44,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ResourceDetailsListeners {
@@ -58,8 +59,8 @@ public class ResourceDetailsListeners {
         FieldComponent quantityInput = (FieldComponent) view.getComponentByReference(ResourceFields.QUANTITY);
         String newQuantity = (String) quantityInput.getFieldValue();
 
-        FieldComponent storageLocationSelect = (FieldComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
-        String newStorageLocation = (String) storageLocationSelect.getFieldValue();
+        LookupComponent storageLocation = (LookupComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
+        Entity newStorageLocation = storageLocation.getEntity();
         Either<Exception, Optional<BigDecimal>> quantity = BigDecimalUtils.tryParse(newQuantity, view.getLocale());
 
         if (quantity.isRight() && quantity.getRight().isPresent()) {

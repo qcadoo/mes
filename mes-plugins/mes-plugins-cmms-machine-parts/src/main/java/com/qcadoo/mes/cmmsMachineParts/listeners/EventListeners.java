@@ -233,17 +233,20 @@ public class EventListeners {
         if (args.length < 2) {
             return;
         }
-        String field = args[0];
-        String value = args[1];
-        if (field.equals(MaintenanceEventFields.TYPE)) {
-            FieldComponent type = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.TYPE);
-            type.setFieldValue(value);
-        } else if (field.equals(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT)) {
-            FieldComponent type = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
-            type.setFieldValue(value);
-        } else if (field.equals(PlannedEventFields.PLANNED_EVENT_CONTEXT)) {
-            FieldComponent type = (FieldComponent) view.getComponentByReference(PlannedEventFields.PLANNED_EVENT_CONTEXT);
-            type.setFieldValue(value);
+        for (int i = 0; i < args.length - 1; i = i + 2) {
+            String field = args[i];
+            String value = args[i + 1];
+            if (field.equals(MaintenanceEventFields.TYPE)) {
+                FieldComponent type = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.TYPE);
+                type.setFieldValue(value);
+            } else if (field.equals(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT)) {
+                FieldComponent type = (FieldComponent) view
+                        .getComponentByReference(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
+                type.setFieldValue(value);
+            } else if (field.equals(PlannedEventFields.PLANNED_EVENT_CONTEXT)) {
+                FieldComponent type = (FieldComponent) view.getComponentByReference(PlannedEventFields.PLANNED_EVENT_CONTEXT);
+                type.setFieldValue(value);
+            }
         }
     }
 
