@@ -42,7 +42,8 @@ public class OrderModelValidatorsLCNFO {
         Entity orderDB = order.getBelongsToField(OrderFieldsLCNFO.ORDER);
 
         if (!lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(previousOrderDB, orderDB)) {
-            order.addError(orderDD.getField(OrderFieldsLCNFO.PREVIOUS_ORDER), "orders.order.previousOrder.message.orderIsIncorrect");
+            order.addError(orderDD.getField(OrderFieldsLCNFO.PREVIOUS_ORDER),
+                    "orders.order.previousOrder.message.orderIsIncorrect");
 
             return false;
         }

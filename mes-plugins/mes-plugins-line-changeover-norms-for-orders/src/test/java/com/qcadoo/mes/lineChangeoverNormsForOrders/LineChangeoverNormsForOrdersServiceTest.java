@@ -100,16 +100,24 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubStringField(technologyPrototype, TechnologyFields.NUMBER, NOT_EMPTY_NUMBER);
         stubStringField(technologyGroup, TechnologyGroupFields.NUMBER, NOT_EMPTY_NUMBER);
 
-        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(0))).willReturn(orderLookup);
-        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
-        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
-        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(3))).willReturn(dateToFromField);
-        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(4))).willReturn(dateIsField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(0))).willReturn(
+                orderLookup);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(1))).willReturn(
+                technologyNumberField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(2))).willReturn(
+                technologyGroupNumberField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(3))).willReturn(
+                dateToFromField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(4))).willReturn(
+                dateIsField);
 
         given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(0))).willReturn(orderLookup);
-        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
-        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
-        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(1))).willReturn(
+                technologyNumberField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(2))).willReturn(
+                technologyGroupNumberField);
+        given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(3)))
+                .willReturn(dateToFromField);
         given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.ORDER_FIELDS.get(4))).willReturn(dateIsField);
     }
 
