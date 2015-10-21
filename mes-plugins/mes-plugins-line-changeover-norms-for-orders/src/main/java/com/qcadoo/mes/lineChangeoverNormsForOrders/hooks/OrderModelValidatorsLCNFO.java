@@ -23,13 +23,11 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.ORDER;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.PREVIOUS_ORDER;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
+import com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -40,11 +38,11 @@ public class OrderModelValidatorsLCNFO {
     private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
 
     public final boolean checkIfOrderHasCorrectStateAndIsPrevious(final DataDefinition orderDD, final Entity order) {
-        Entity previousOrderDB = order.getBelongsToField(PREVIOUS_ORDER);
-        Entity orderDB = order.getBelongsToField(ORDER);
+        Entity previousOrderDB = order.getBelongsToField(OrderFieldsLCNFO.PREVIOUS_ORDER);
+        Entity orderDB = order.getBelongsToField(OrderFieldsLCNFO.ORDER);
 
         if (!lineChangeoverNormsForOrdersService.previousOrderEndsBeforeOrIsWithdrawed(previousOrderDB, orderDB)) {
-            order.addError(orderDD.getField(PREVIOUS_ORDER), "orders.order.previousOrder.message.orderIsIncorrect");
+            order.addError(orderDD.getField(OrderFieldsLCNFO.PREVIOUS_ORDER), "orders.order.previousOrder.message.orderIsIncorrect");
 
             return false;
         }

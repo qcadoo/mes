@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.listeners;
 
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.LINE_CHANGEOVER_NORM;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.ORDER;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.OWN_LINE_CHANGEOVER;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.PREVIOUS_ORDER;
-
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +31,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
+import com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants;
+import com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -61,7 +56,7 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
 
     public final void showPreviousOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(PREVIOUS_ORDER);
+        LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.PREVIOUS_ORDER);
 
         Long previousOrderId = (Long) previousOrderLookup.getFieldValue();
         if (previousOrderId == null) {
@@ -76,8 +71,9 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void showBestFittingLineChangeoverNorm(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        FieldComponent lineChangeoverNormField = (FieldComponent) view.getComponentByReference(LINE_CHANGEOVER_NORM);
+                                                        final String[] args) {
+        FieldComponent lineChangeoverNormField = (FieldComponent) view
+                .getComponentByReference(OrderFieldsLCNFO.LINE_CHANGEOVER_NORM);
 
         Long lineChangeoverNormId = (Long) lineChangeoverNormField.getFieldValue();
 
@@ -93,7 +89,7 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void showLineChangeoverNormForGroup(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+                                                     final String[] args) {
         FieldComponent previousOrderTechnologyGroupNumberField = (FieldComponent) view
                 .getComponentByReference("previousOrderTechnologyGroupNumber");
         FieldComponent technologyGroupNumberField = (FieldComponent) view.getComponentByReference("technologyGroupNumber");
@@ -122,7 +118,7 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void showLineChangeoverNormForTechnology(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+                                                          final String[] args) {
         FieldComponent previousOrderTechnologyNumberField = (FieldComponent) view
                 .getComponentByReference("previousOrderTechnologyNumber");
         FieldComponent technologyNumberField = (FieldComponent) view.getComponentByReference("technologyNumber");
@@ -151,9 +147,9 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void checkIfOrderHasCorrectStateAndIsPrevious(final ViewDefinitionState view,
-            final ComponentState componentState, final String[] args) {
-        LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(PREVIOUS_ORDER);
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ORDER);
+                                                               final ComponentState componentState, final String[] args) {
+        LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.PREVIOUS_ORDER);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.ORDER);
 
         Entity previousOrder = previousOrderLookup.getEntity();
         Entity order = orderLookup.getEntity();
@@ -165,13 +161,13 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void fillPreviousOrderForm(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
+                                            final String[] args) {
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS);
     }
 
     public void showOwnLineChangeoverDurationField(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        orderService.changeFieldState(view, OWN_LINE_CHANGEOVER, OWN_LINE_CHANGEOVER_DURATION);
+                                                   final String[] args) {
+        orderService.changeFieldState(view, OrderFieldsLCNFO.OWN_LINE_CHANGEOVER, OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION);
     }
 
 }
