@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.basic.shift;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSetMultimap;
@@ -48,6 +35,15 @@ import com.qcadoo.commons.functional.BiFunction;
 import com.qcadoo.commons.functional.Fold;
 import com.qcadoo.mes.basic.constants.TimetableExceptionType;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Shift with some common methods for checking its work time.
@@ -68,12 +64,42 @@ public class Shift {
 
     private final ShiftTimetableExceptions timetableExceptions;
 
+    private DateTime shiftStartDate;
+
+    private DateTime shiftEndDate;
+
     public Shift(final Entity shiftEntity) {
         Entity shiftEntityCopy = shiftEntity.copy();
         this.shift = shiftEntityCopy;
         this.shiftId = shiftEntityCopy.getId();
         this.workingHoursPerDay = getWorkingHoursPerDay(shiftEntityCopy);
         this.timetableExceptions = new ShiftTimetableExceptions(shiftEntityCopy);
+    }
+
+    public Shift(final Entity shiftEntity, final DateTime day) {
+        Entity shiftEntityCopy = shiftEntity.copy();
+        this.shift = shiftEntityCopy;
+        this.shiftId = shiftEntityCopy.getId();
+        this.workingHoursPerDay = getWorkingHoursPerDay(shiftEntityCopy);
+        this.timetableExceptions = new ShiftTimetableExceptions(shiftEntityCopy);
+        DateTime dateTime = day.withTimeAtStartOfDay();
+        Optional<TimeRange> orange = findWorkTimeAt(dateTime.getDayOfWeek());
+        if(orange.isPresent()) {
+            TimeRange range = orange.get();
+            shiftStartDate = dateTime;
+            shiftStartDate = shiftStartDate.withHourOfDay(range.getFrom().getHourOfDay());
+            shiftStartDate = shiftStartDate.withMinuteOfHour(range.getFrom().getMinuteOfHour());
+            shiftEndDate = dateTime;
+            shiftEndDate = shiftEndDate.withHourOfDay(range.getTo().getHourOfDay());
+            shiftEndDate = shiftEndDate.withMinuteOfHour(range.getTo().getMinuteOfHour());
+            if(shiftStartDate.isAfter(shiftEndDate)){
+                shiftEndDate = shiftEndDate.plusDays(1);
+            }
+        } else {
+            shiftStartDate = null;
+            shiftEndDate = null;
+        }
+
     }
 
     private Multimap<Integer, WorkingHours> getWorkingHoursPerDay(final Entity shiftEntity) {
@@ -209,6 +235,14 @@ public class Shift {
         return Optional.absent();
     }
 
+
+    public Optional<TimeRange> findWorkTimeAt(final int dayOfWeek) {
+        for (WorkingHours workingHours : workingHoursPerDay.get(dayOfWeek)) {
+           return Optional.of(workingHours.getTimeRanges().iterator().next());
+        }
+        return Optional.absent();
+    }
+
     /**
      * Returns a list with shift work time ranges for whole given day (of the week, to be precise). This method IS NOT AWARE of
      * timetable exceptions, it just check if shift works at given day of week and returns working hours.
@@ -246,6 +280,22 @@ public class Shift {
      */
     public Long getId() {
         return shiftId;
+    }
+
+    public DateTime getShiftStartDate() {
+        return shiftStartDate;
+    }
+
+    public void setShiftStartDate(DateTime shiftStartDate) {
+        this.shiftStartDate = shiftStartDate;
+    }
+
+    public DateTime getShiftEndDate() {
+        return shiftEndDate;
+    }
+
+    public void setShiftEndDate(DateTime shiftEndDate) {
+        this.shiftEndDate = shiftEndDate;
     }
 
     @Override
