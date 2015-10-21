@@ -71,7 +71,7 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void showBestFittingLineChangeoverNorm(final ViewDefinitionState view, final ComponentState componentState,
-                                                        final String[] args) {
+            final String[] args) {
         FieldComponent lineChangeoverNormField = (FieldComponent) view
                 .getComponentByReference(OrderFieldsLCNFO.LINE_CHANGEOVER_NORM);
 
@@ -89,7 +89,7 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void showLineChangeoverNormForGroup(final ViewDefinitionState view, final ComponentState componentState,
-                                                     final String[] args) {
+            final String[] args) {
         FieldComponent previousOrderTechnologyGroupNumberField = (FieldComponent) view
                 .getComponentByReference("previousOrderTechnologyGroupNumber");
         FieldComponent technologyGroupNumberField = (FieldComponent) view.getComponentByReference("technologyGroupNumber");
@@ -118,7 +118,7 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void showLineChangeoverNormForTechnology(final ViewDefinitionState view, final ComponentState componentState,
-                                                          final String[] args) {
+            final String[] args) {
         FieldComponent previousOrderTechnologyNumberField = (FieldComponent) view
                 .getComponentByReference("previousOrderTechnologyNumber");
         FieldComponent technologyNumberField = (FieldComponent) view.getComponentByReference("technologyNumber");
@@ -147,7 +147,7 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void checkIfOrderHasCorrectStateAndIsPrevious(final ViewDefinitionState view,
-                                                               final ComponentState componentState, final String[] args) {
+            final ComponentState componentState, final String[] args) {
         LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.PREVIOUS_ORDER);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.ORDER);
 
@@ -161,12 +161,12 @@ public class LineChangeoverNormsForOrderDetailsListeners {
     }
 
     public final void fillPreviousOrderForm(final ViewDefinitionState view, final ComponentState componentState,
-                                            final String[] args) {
+            final String[] args) {
         lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS);
     }
 
     public void showOwnLineChangeoverDurationField(final ViewDefinitionState view, final ComponentState componentState,
-                                                   final String[] args) {
+            final String[] args) {
         orderService.changeFieldState(view, OrderFieldsLCNFO.OWN_LINE_CHANGEOVER, OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION);
     }
 

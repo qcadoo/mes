@@ -135,7 +135,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     private void setUpTechnologyFields(final Entity order, final FieldComponent technologyNumberField,
-                                       final FieldComponent technologyGroupNumberField) {
+            final FieldComponent technologyGroupNumberField) {
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
         String technologyNumber = extractTechnologyNumberFrom(technologyPrototype);
@@ -181,8 +181,8 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     private boolean isDeclinedOrAbandoned(final Entity previousOrder) {
-        return (OrderState.ABANDONED.getStringValue().equals(previousOrder.getStringField(OrderFields.STATE))
-                || OrderState.DECLINED.getStringValue().equals(previousOrder.getStringField(OrderFields.STATE)));
+        return (OrderState.ABANDONED.getStringValue().equals(previousOrder.getStringField(OrderFields.STATE)) || OrderState.DECLINED
+                .getStringValue().equals(previousOrder.getStringField(OrderFields.STATE)));
     }
 
     private boolean areDatesCorrect(final Entity previousOrder, final Entity order) {
@@ -216,7 +216,8 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
         return dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
                 .find()
-                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, order.getBelongsToField(OrderFields.PRODUCTION_LINE)))
+                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE,
+                        order.getBelongsToField(OrderFields.PRODUCTION_LINE)))
                 .add(SearchRestrictions.or(SearchRestrictions.ne(OrderFields.STATE, OrderState.DECLINED.getStringValue()),
                         SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue())))
                 .add(SearchRestrictions.lt(OrderFields.FINISH_DATE, order.getDateField(OrderFields.START_DATE)))
