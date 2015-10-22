@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 @Service public class StorageLocationsListener {
 
+    private static final String L_ZERO = "0";
+
     @Autowired private DataDefinitionService dataDefinitionService;
 
     public void redirectToAddManyStorageLocations(final ViewDefinitionState view, final ComponentState state,
@@ -56,17 +58,21 @@ import org.springframework.stereotype.Service;
         DataDefinition dd = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, "storageLocation");
         int numberOfLocatons = entity.getDecimalField(StorageLocationHelperFields.NUMBER_OF_STORAGE_LOCATIONS).intValue();
         String number = entity.getStringField(StorageLocationHelperFields.NUMBER);
-        String lastChar = number.substring(number.length() - 1, number.length());
-        int last = Integer.valueOf(lastChar);
-        String restOfNumber = number.substring(0, number.length() - 1);
-        for (int i = last; i < numberOfLocatons + last; i++) {
+
+        //number length
+        Integer numberLength = number.length();
+        //trim 0
+        Integer currentNumber = Integer.valueOf(number);
+
+
+        for (int i = currentNumber; i < numberOfLocatons + currentNumber; i++) {
             Entity sl = dd.create();
             sl.setField(StorageLocationFields.LOCATION, entity.getBelongsToField(StorageLocationHelperFields.LOCATION));
             sl.setField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS,
                     entity.getDecimalField(StorageLocationHelperFields.MAXIMUM_NUMBER_OF_PALLETS));
             sl.setField(StorageLocationFields.PLACE_STORAGE_LOCATION,
                     entity.getBooleanField(StorageLocationHelperFields.PLACE_STORAGE_LOCATION));
-            sl.setField(StorageLocationFields.NUMBER, fillNumber(i, restOfNumber, entity));
+            sl.setField(StorageLocationFields.NUMBER, fillNumber(i, numberLength, entity));
             sl = sl.getDataDefinition().save(sl);
             if (!sl.isValid()) {
                 state.addMessage("materialFlowResources.storageLocationsHelper.error.locationExist",
@@ -75,8 +81,20 @@ import org.springframework.stereotype.Service;
         }
     }
 
-    private String fillNumber(int i, String restOfNumber, Entity entity) {
-        return entity.getStringField(StorageLocationHelperFields.PREFIX) + restOfNumber + i;
+    private String fillNumber(final Integer nextNumber, int numberLength, Entity entity) {
+        String restOfNumber = "";
+
+        if(nextNumber.toString().length() > numberLength){
+            restOfNumber = nextNumber.toString();
+        } else {
+            Integer positonToAdd = numberLength - nextNumber.toString().length();
+            for(int i = 0; i < positonToAdd; i++){
+                restOfNumber = restOfNumber + L_ZERO;
+            }
+            restOfNumber = restOfNumber + nextNumber;
+        }
+
+        return entity.getStringField(StorageLocationHelperFields.PREFIX) + restOfNumber;
     }
 
     private boolean validate(Entity entity, ComponentState state) {
