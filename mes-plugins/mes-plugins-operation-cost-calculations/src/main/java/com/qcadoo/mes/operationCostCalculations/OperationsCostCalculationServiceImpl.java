@@ -43,7 +43,7 @@ import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimes;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
-import com.qcadoo.mes.productionLines.ProductionLinesService;
+import com.qcadoo.mes.technologies.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
