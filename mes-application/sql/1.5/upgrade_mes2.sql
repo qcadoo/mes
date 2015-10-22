@@ -1,6 +1,6 @@
 -- menu storage locations by kasi 08.10.2015
 
-INSERT INTO qcadooview_view(pluginidentifier, name, view, entityversion) VALUES ('materialFlowResources', 'storageLocations', 'storageLocationList', 0);
+INSERT INTO qcadooview_view(pluginidentifier, name, view, entityversion) VALUES ('materialFlowResources', 'storageLocationList', 'storageLocations', 0);
 INSERT INTO qcadooview_item(pluginidentifier, name, active, category_id, view_id, succession, authrole, entityversion)
 VALUES ('materialFlowResources', 'storageLocations', true, (SELECT id FROM qcadooview_category WHERE name = 'materialFlow' LIMIT 1), (
 		SELECT id FROM qcadooview_view WHERE name = 'storageLocations' LIMIT 1),(
