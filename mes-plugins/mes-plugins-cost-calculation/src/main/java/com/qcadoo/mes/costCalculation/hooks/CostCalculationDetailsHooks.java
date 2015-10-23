@@ -160,8 +160,8 @@ public class CostCalculationDetailsHooks {
                 CostCalculationFields.PRINT_OPERATION_NORMS, CostCalculationFields.INCLUDE_TPZ,
                 CostCalculationFields.INCLUDE_ADDITIONAL_TIME, CostCalculationFields.SOURCE_OF_MATERIAL_COSTS,
                 CostCalculationFields.SOURCE_OF_OPERATION_COSTS, CostCalculationFields.REGISTRATION_PRICE_OVERHEAD,
-                CostCalculationFields.PROFIT,
-                L_PRODUCTION_COST_MARGIN_PROC, L_MATERIAL_COST_MARGIN_PROC, L_ADDITIONAL_OVERHEAD_CURRENCY);
+                CostCalculationFields.PROFIT, L_PRODUCTION_COST_MARGIN_PROC, L_MATERIAL_COST_MARGIN_PROC,
+                L_ADDITIONAL_OVERHEAD_CURRENCY);
 
         Map<String, FieldComponent> componentsMap = Maps.newHashMap();
 
@@ -216,8 +216,7 @@ public class CostCalculationDetailsHooks {
     }
 
     private void fillComponentWithPercent(String componentName, ViewDefinitionState viewDefinitionState) {
-        FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
-.getComponentByReference(componentName);
+        FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
         materialCostMarginProc.setFieldValue("%");
         materialCostMarginProc.requestComponentUpdateState();
     }
@@ -227,6 +226,8 @@ public class CostCalculationDetailsHooks {
 
         FieldComponent totalCostPerUnitUnit = (FieldComponent) view.getComponentByReference(L_TOTAL_COST_PER_UNIT_UNIT);
         FieldComponent sellPriceValueCurrency = (FieldComponent) view.getComponentByReference("sellPriceValueCurrency");
+        FieldComponent technicalProductionCostsCurrency = (FieldComponent) view
+                .getComponentByReference("technicalProductionCostsCurrency");
         LookupComponent productField = (LookupComponent) view.getComponentByReference(CostCalculationFields.PRODUCT);
 
         Entity product = productField.getEntity();
@@ -234,11 +235,13 @@ public class CostCalculationDetailsHooks {
         if (product == null) {
             return;
         }
-
-        totalCostPerUnitUnit.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField(ProductFields.UNIT));
+        String unit = currencyAlphabeticCode + " / " + product.getStringField(ProductFields.UNIT);
+        totalCostPerUnitUnit.setFieldValue(unit);
         totalCostPerUnitUnit.requestComponentUpdateState();
-        sellPriceValueCurrency.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField(ProductFields.UNIT));
+        sellPriceValueCurrency.setFieldValue(unit);
         sellPriceValueCurrency.requestComponentUpdateState();
+        technicalProductionCostsCurrency.setFieldValue(unit);
+        technicalProductionCostsCurrency.requestComponentUpdateState();
     }
 
     public void disableCheckboxIfPieceworkIsSelected(final ViewDefinitionState viewDefinitionState) {

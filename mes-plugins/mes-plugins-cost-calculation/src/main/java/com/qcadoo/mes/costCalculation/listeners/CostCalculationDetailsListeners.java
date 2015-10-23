@@ -152,7 +152,7 @@ public class CostCalculationDetailsListeners {
                 CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS, CostCalculationFields.TOTAL_COSTS,
                 CostCalculationFields.TOTAL_COST_PER_UNIT, CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE,
                 CostCalculationFields.REGISTRATION_PRICE_OVERHEAD_VALUE, CostCalculationFields.PROFIT_VALUE,
-                CostCalculationFields.SELL_PRICE_VALUE);
+                CostCalculationFields.SELL_PRICE_VALUE, CostCalculationFields.TECHNICAL_PRODUCTION_COSTS);
 
         for (String costField : costFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(costField);

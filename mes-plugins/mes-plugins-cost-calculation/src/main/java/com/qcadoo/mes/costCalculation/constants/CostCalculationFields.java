@@ -29,6 +29,8 @@ public final class CostCalculationFields {
 
     }
 
+    public static final String TECHNICAL_PRODUCTION_COSTS = "technicalProductionCosts";
+
     public static final String NUMBER = "number";
 
     public static final String PRODUCT = "product";
