@@ -21,20 +21,35 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.listeners;
+package com.qcadoo.mes.basic.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.mes.basic.PalletNumberGenerator;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
-public class PalletNumbersListListeners {
+public class PalletNumberDetailsHooks {
 
-    public void createPalletNumbers(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        String url = "../page/basic/palletNumberHelperDetails.html";
+    @Autowired
+    private PalletNumberGenerator palletNumberGenerator;
 
-        view.openModal(url);
+    public void onBeforeRender(final ViewDefinitionState view) {
+        generatePalletNumber(view);
+    }
+
+    private void generatePalletNumber(final ViewDefinitionState view) {
+        FieldComponent numberField = (FieldComponent) view.getComponentByReference(PalletNumberFields.NUMBER);
+
+        if (palletNumberGenerator.checkIfShouldInsertNumber(view)) {
+            String number = palletNumberGenerator.generate();
+
+            numberField.setFieldValue(number);
+            numberField.requestComponentUpdateState();
+        }
     }
 
 }

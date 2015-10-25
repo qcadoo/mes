@@ -21,20 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.listeners;
+package com.qcadoo.mes.basic.constants;
 
-import org.springframework.stereotype.Service;
+public final class PalletNumberFields {
 
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
+    private PalletNumberFields() {
 
-@Service
-public class PalletNumbersListListeners {
-
-    public void createPalletNumbers(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        String url = "../page/basic/palletNumberHelperDetails.html";
-
-        view.openModal(url);
     }
+
+    public static final String NUMBER = "number";
 
 }

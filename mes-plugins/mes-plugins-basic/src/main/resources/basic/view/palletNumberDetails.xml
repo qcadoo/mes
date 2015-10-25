@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PALLET_NUMBERS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" defaultAuthorizationRole="ROLE_PALLET_NUMBERS"
 	  xmlns="http://schema.qcadoo.org/view"
 	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	  name="palletNumberDetails" modelName="palletNumber">
@@ -61,5 +61,10 @@
 		</component>
 
 	</component>
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.hooks.PalletNumberDetailsHooks"
+					  method="onBeforeRender"/>
+	</hooks>
 
 </view>

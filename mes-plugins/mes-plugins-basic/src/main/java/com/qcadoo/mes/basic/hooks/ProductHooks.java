@@ -176,4 +176,5 @@ public class ProductHooks {
         }
         return true;
     }
+
 }

@@ -155,7 +155,7 @@
         <model:model model="additionalCode" resource="model/additionalCode.xml"/>
 
         <model:model model="palletNumber" resource="model/palletNumber.xml"/>
-        <model:model model="palletNumberReport" resource="model/palletNumberReport.xml"/>
+        <model:model model="palletNumberHelper" resource="model/palletNumberHelper.xml"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
@@ -184,9 +184,10 @@
         <menu:menu-item name="productsFamilies" category="basic"
                         view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES"/>
 
-        <menu:menu-item name="palletNumbers" category="basic" view="palletNumbersList" defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
-        <menu:menu-item name="palletNumbers" category="basic" view="palletNumbersList" defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
-
+        <menu:menu-item name="palletNumbers" category="basic" view="palletNumbersList"
+                        defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
+        <menu:menu-item name="palletNumberHelpers" category="basic" view="palletNumberHelpersList"
+                        defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
 
         <menu:menu-item-url name="dictionariesInBasic"
                             category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
@@ -253,6 +254,9 @@
 
         <view:view resource="view/palletNumbersList.xml"/>
         <view:view resource="view/palletNumberDetails.xml"/>
+
+        <view:view resource="view/palletNumberHelpersList.xml"/>
+        <view:view resource="view/palletNumberHelperDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
 

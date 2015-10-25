@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_PALLET_NUMBERS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	  xmlns="http://schema.qcadoo.org/view"
 	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	  name="palletNumberReportDetails" modelName="palletNumberReport">
+	  name="palletNumberHelperDetails" modelName="palletNumberHelper">
 
 	<component type="window" name="window">
 
@@ -35,17 +35,21 @@
 			<template name="standardFormTemplate"/>
 		</ribbon>
 
-		<component type="form" name="palletNumberReport" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="3"
-					   rows="7" hasBorders="false">
+		<component type="form" name="palletNumberHelper" reference="form">
+			<component type="gridLayout" name="gridLayout" columns="2"
+					   rows="8" hasBorders="false">
 				<layoutElement column="1" row="1">
-					<component type="integer" name="quantity" field="quantity"
+					<component type="input" name="quantity" field="quantity"
 							   reference="quantity">
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" height="6">
 					<component type="textarea" name="palletNumbers" field="palletNumbers"
 							   reference="palletNumbers" defaultEnabled="never"/>
+				</layoutElement>
+				<layoutElement column="1" row="8">
+					<component type="input" name="firstNumber" field="firstNumber"
+							   reference="firstNumber" defaultEnabled="never" defaultVisible="false"/>
 				</layoutElement>
 			</component>
 
@@ -54,5 +58,10 @@
 		</component>
 
 	</component>
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.hooks.PalletNumberHelperDetailsHooks"
+					  method="onBeforeRender"/>
+	</hooks>
 
 </view>

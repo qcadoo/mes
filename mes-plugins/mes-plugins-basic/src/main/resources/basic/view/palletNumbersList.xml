@@ -35,8 +35,8 @@
 			<template name="standardGridTemplate"/>
 
 			<group name="palletNumbers">
-				<bigButton name="createOwnPalletNumbers" icon="genealogyIcon24.png"
-						   state="enabled" action="#{grid}.fireEvent(createOwnPalletNumbers);"/>
+				<bigButton name="createPalletNumbers" icon="genealogyIcon24.png"
+						   state="enabled" action="#{grid}.fireEvent(createPalletNumbers);"/>
 			</group>
 		</ribbon>
 
@@ -45,10 +45,10 @@
 			<option type="column" name="createUser" fields="createUser" link="true"/>
 			<option type="column" name="createDate" fields="createDate" link="true"/>
 
-			<option type="order" column="name" direction="asc"/>
+			<option type="order" column="number" direction="asc"/>
 
-			<option type="searchable" value="name"/>
-			<option type="orderable" value="name"/>
+			<option type="searchable" value="number,createUser,createDate"/>
+			<option type="orderable" value="number,createUser,createDate"/>
 
 			<option type="correspondingView" value="basic/palletNumberDetails"/>
 			<option type="correspondingComponent" value="form"/>
@@ -56,8 +56,8 @@
 			<option type="fullscreen" value="true"/>
 			<option type="multiselect" value="true"/>
 
-			<listener event="createOwnPalletNumbers" class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
-					  method="createOwnPalletNumbers"/>
+			<listener event="createPalletNumbers" class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
+					  method="createPalletNumbers"/>
 		</component>
 
 		<option type="fixedHeight" value="true"/>
