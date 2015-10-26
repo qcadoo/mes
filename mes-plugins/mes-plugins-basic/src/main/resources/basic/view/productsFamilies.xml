@@ -63,9 +63,9 @@
 
 		<windowTab name="mainTab">
 			<component type="form" name="product" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="7">
-					<layoutElement column="1" row="1" height="6">
+				<component type="flowGridLayout" name="gridLayout" columns="3"
+					rows="4">
+					<layoutElement column="1" row="1" minHeight="4">
 						<component type="grid" name="parents" reference="parents">
 							<script>
 				 				<![CDATA[
@@ -99,7 +99,7 @@
 							<option type="multiselect" value="false" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="1" width="2" height="6">
+					<layoutElement column="2" row="1" width="2" minHeight="4">
 						<component type="tree" name="productFamilyChildrenTree"
 							reference="productFamilyChildrenTree" field="productFamilyChildrenTree">
 							<dataType name="01particularProduct">

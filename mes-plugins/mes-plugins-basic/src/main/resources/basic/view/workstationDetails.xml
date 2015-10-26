@@ -182,9 +182,9 @@
             </component>
         </windowTab>
         <windowTab name="subassembliesTab" reference="subassembliesTab">
-            <component type="gridLayout" name="subassembliesGridLayout"
-                       columns="2" rows="1">
-                <layoutElement column="1" row="1">
+            <component type="flowGridLayout" name="subassembliesGridLayout"
+                       columns="2" rows="3">
+                <layoutElement column="1" row="1" minHeight="3">
                     <component type="grid" name="subassemblies" reference="subassemblies"
                                source="#{form}.subassembliesHelpers">
                         <option type="column" name="number" fields="subassembly" expression="#subassembly['number']" width="50" link="true" />
