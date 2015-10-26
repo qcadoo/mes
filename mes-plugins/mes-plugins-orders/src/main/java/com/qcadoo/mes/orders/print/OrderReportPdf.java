@@ -23,9 +23,25 @@
  */
 package com.qcadoo.mes.orders.print;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.*;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -43,14 +59,6 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
 
 @Component(value = "ordersOrderReportPdf")
 public class OrderReportPdf extends ReportPdfView {
@@ -90,6 +98,7 @@ public class OrderReportPdf extends ReportPdfView {
         PdfPTable table = pdfHelper.createPanelTable(3);
 
         List<HeaderPair> headerValues = getDocumentHeaderTableContent(orderEntity, locale);
+
         for (HeaderPair pair : headerValues) {
             if (pair.getValue() != null && !pair.getValue().isEmpty()) {
                 pdfHelper.addTableCellAsOneColumnTable(table, pair.getLabel(), pair.getValue());
@@ -104,7 +113,8 @@ public class OrderReportPdf extends ReportPdfView {
     }
 
     private void addPlannedDateTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
-        Map<String, String> values = new LinkedHashMap<>();
+        Map<String, String> values = Maps.newLinkedHashMap();
+
         values.put("plannedDateFrom", DateUtils.toDateTimeString(orderEntity.getDateField(OrderFields.DATE_FROM)));
         values.put("plannedDateTo", DateUtils.toDateTimeString(orderEntity.getDateField(OrderFields.DATE_TO)));
 
@@ -112,7 +122,8 @@ public class OrderReportPdf extends ReportPdfView {
     }
 
     private void addProductQuantityTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
-        Map<String, String> values = new LinkedHashMap<>();
+        Map<String, String> values = Maps.newLinkedHashMap();
+
         String unit = orderEntity.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT);
         String plannedQuantity = orderEntity.getField(OrderFields.PLANNED_QUANTITY) == null ? " - " : numberService.format(orderEntity.getDecimalField(OrderFields.PLANNED_QUANTITY)) + " " + unit;
         String doneQuantity = orderEntity.getField(OrderFields.DONE_QUANTITY) == null ? " - " : numberService.format(orderEntity.getDecimalField(OrderFields.DONE_QUANTITY)) + " " + unit;
@@ -124,22 +135,27 @@ public class OrderReportPdf extends ReportPdfView {
     }
 
     private void addOwnTechnologyTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
-        Map<String, String> values = new LinkedHashMap<>();
+        Map<String, String> values = Maps.newLinkedHashMap();
+
         Entity technologyEntity = orderEntity.getBelongsToField(OrderFields.TECHNOLOGY);
         values.put("technologyNumber", technologyEntity.getStringField(TechnologyFields.NUMBER));
         values.put("technologyName", technologyEntity.getStringField(TechnologyFields.NAME));
 
         String tableLabelKey = "orders.order.report.technology.own";
+
         if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderEntity.getStringField(OrderFields.ORDER_TYPE))) {
             tableLabelKey = "orders.order.report.technology.label";
         }
+
         addTableToDocument(document, orderEntity, locale, tableLabelKey, values);
     }
 
     private void addTechnologyTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
         if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderEntity.getStringField(OrderFields.ORDER_TYPE))) {
-            Map<String, String> values = new LinkedHashMap<>();
+            Map<String, String> values = Maps.newLinkedHashMap();
+
             Entity technologyEntity = orderEntity.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+
             values.put("technologyNumber", technologyEntity.getStringField(TechnologyFields.NUMBER));
             values.put("technologyName", technologyEntity.getStringField(TechnologyFields.NAME));
 
@@ -149,8 +165,9 @@ public class OrderReportPdf extends ReportPdfView {
 
     private void addMasterOrderTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
         Entity masterOrderEntity = orderEntity.getBelongsToField("masterOrder");
+
         if (masterOrderEntity != null) {
-            Map<String, String> values = new LinkedHashMap<>();
+            Map<String, String> values = Maps.newLinkedHashMap();
 
             values.put("masterOrderNumber", masterOrderEntity.getStringField(OrderFields.NUMBER));
             values.put("masterOrderName", masterOrderEntity.getStringField(OrderFields.NAME));
@@ -163,6 +180,7 @@ public class OrderReportPdf extends ReportPdfView {
         document.add(new Paragraph(translationService.translate(headerKey, locale), FontUtils.getDejavuBold10Dark()));
 
         Map<String, HeaderAlignment> headerValues = Maps.newLinkedHashMap();
+
         for (String key : values.keySet()) {
             headerValues.put(translationService.translate(String.format(L_TRANSLATION_PATH, key), locale), HeaderAlignment.LEFT);
         }
@@ -183,13 +201,16 @@ public class OrderReportPdf extends ReportPdfView {
 
     private PdfPCell createCell(String content, int alignment) {
         PdfPCell cell = new PdfPCell();
+
         float border = 0.2f;
+
         cell.setPhrase(new Phrase(content, FontUtils.getDejavuRegular7Dark()));
         cell.setHorizontalAlignment(alignment);
         cell.setBorderWidth(border);
         cell.disableBorderSide(PdfPCell.RIGHT);
         cell.disableBorderSide(PdfPCell.LEFT);
         cell.setPadding(5);
+
         return cell;
     }
 
@@ -203,8 +224,11 @@ public class OrderReportPdf extends ReportPdfView {
         super.prepareWriter(model, writer, request);
 
         Long orderId = Long.valueOf(model.get("id").toString());
+
         orderEntity = getOrderEntity(orderId);
     }
+
+
 
     @Override
     protected void addTitle(Document document, Locale locale) {
@@ -213,11 +237,13 @@ public class OrderReportPdf extends ReportPdfView {
 
     private List<HeaderPair> getDocumentHeaderTableContent(final Entity orderEntity, final Locale locale) {
         List<HeaderPair> headerValues = Lists.newLinkedList();
+
         headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.NUMBER), locale), orderEntity.getStringField(OrderFields.NUMBER)));
         headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.NAME), locale), orderEntity.getStringField(OrderFields.NAME)));
         headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.STATE), locale), translationService.translate("orders.order.state.value." + orderEntity.getStringField(OrderFields.STATE), locale)));
 
         Entity productEntity = orderEntity.getBelongsToField(OrderFields.PRODUCT);
+
         headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.PRODUCT), locale), productEntity == null ? "" : productEntity.getStringField(ProductFields.NUMBER)));
 
         headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.DATE_FROM), locale), DateUtils.toDateTimeString(orderEntity.getDateField(OrderFields.DATE_FROM))));
@@ -225,4 +251,5 @@ public class OrderReportPdf extends ReportPdfView {
 
         return headerValues;
     }
+
 }

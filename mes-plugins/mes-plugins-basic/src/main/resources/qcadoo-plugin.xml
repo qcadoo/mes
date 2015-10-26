@@ -124,6 +124,8 @@
 
         <security:role identifier="ROLE_BATCHES" description="Dostęp do partii"/>
 
+        <security:role identifier="ROLE_PALLET_NUMBERS" description="Dostęp do numerów własnych palet"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -152,6 +154,9 @@
 
         <model:model model="additionalCode" resource="model/additionalCode.xml"/>
 
+        <model:model model="palletNumber" resource="model/palletNumber.xml"/>
+        <model:model model="palletNumberHelper" resource="model/palletNumberHelper.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
@@ -178,6 +183,11 @@
         <menu:menu-item name="products" category="basic" view="productsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
         <menu:menu-item name="productsFamilies" category="basic"
                         view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES"/>
+
+        <menu:menu-item name="palletNumbers" category="basic" view="palletNumbersList"
+                        defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
+        <menu:menu-item name="palletNumberHelpers" category="basic" view="palletNumberHelpersList"
+                        defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
 
         <menu:menu-item-url name="dictionariesInBasic"
                             category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
@@ -241,6 +251,12 @@
 
         <view:view resource="view/subassembliesList.xml"/>
         <view:view resource="view/subassemblyDetails.xml"/>
+
+        <view:view resource="view/palletNumbersList.xml"/>
+        <view:view resource="view/palletNumberDetails.xml"/>
+
+        <view:view resource="view/palletNumberHelpersList.xml"/>
+        <view:view resource="view/palletNumberHelperDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
 

@@ -60,9 +60,9 @@ public class ProductDetailsHooks {
     @Autowired
     private UnitService unitService;
 
-    public void generateProductNumber(final ViewDefinitionState state) {
-        numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
-                L_FORM, "number");
+    public void generateProductNumber(final ViewDefinitionState view) {
+        numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
+                L_FORM, ProductFields.NUMBER);
     }
 
     public void fillUnit(final ViewDefinitionState view) {

@@ -21,38 +21,42 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.basic.hooks;
 
-import java.util.Locale;
-import java.util.Map;
-
-import org.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.stereotype.Service;
 
-import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.basic.PalletNumberGenerator;
+import com.qcadoo.mes.basic.PalletNumbersService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.view.api.crud.CrudService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
-@Controller
-public class BasicController {
+@Service
+public class PalletNumberHooks {
 
     @Autowired
-    private CrudService crudService;
+    private PalletNumberGenerator palletNumberGenerator;
 
-    @Autowired
-    private ParameterService parameterService;
+    public void onCreate(final DataDefinition palletNumberDD, final Entity palletNumber) {
+        generateNumber(palletNumber);
+    }
 
-    @RequestMapping(value = "parameters", method = RequestMethod.GET)
-    public ModelAndView getParameterPageView(final Locale locale) {
-        JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
+    public void onCopy(final DataDefinition palletNumberDD, final Entity palletNumber) {
+        generateNumber(palletNumber);
+    }
 
-        Map<String, String> arguments = ImmutableMap.of("context", json.toString());
+    private void generateNumber(final Entity palletNumber) {
+        String number = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
-        return crudService.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_PARAMETERS, arguments, locale);
+        if (StringUtils.isEmpty(number)) {
+            number = palletNumberGenerator.generate();
+        }
+
+        palletNumber.setField(PalletNumberFields.NUMBER, number);
     }
 
 }
