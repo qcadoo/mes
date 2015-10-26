@@ -21,38 +21,38 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.basic.controllers;
 
-import java.util.Locale;
-import java.util.Map;
-
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
-public class BasicController {
+@RequestMapping(value = BasicConstants.PLUGIN_IDENTIFIER, method = RequestMethod.GET)
+public class PalletNumbersController {
 
-    @Autowired
-    private CrudService crudService;
+    @RequestMapping(value = "palletNumberReport.pdf")
+    public final ModelAndView palletNumberReportPdf(@RequestParam("id") final String id) {
+        ModelAndView mav = new ModelAndView();
 
-    @Autowired
-    private ParameterService parameterService;
+        mav.setViewName("palletNumberReportPdf");
+        mav.addObject("id", id);
 
-    @RequestMapping(value = "parameters", method = RequestMethod.GET)
-    public ModelAndView getParameterPageView(final Locale locale) {
-        JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
+        return mav;
+    }
 
-        Map<String, String> arguments = ImmutableMap.of("context", json.toString());
+    @RequestMapping(value = "palletNumberHelperReport.pdf")
+    public final ModelAndView palletNumberHelperReportPdf(@RequestParam("id") final String id) {
+        ModelAndView mav = new ModelAndView();
 
-        return crudService.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_PARAMETERS, arguments, locale);
+        mav.setViewName("palletNumberHelperReportPdf");
+        mav.addObject("id", id);
+
+        return mav;
     }
 
 }

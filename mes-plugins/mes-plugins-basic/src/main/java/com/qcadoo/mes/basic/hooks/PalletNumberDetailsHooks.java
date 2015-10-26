@@ -30,15 +30,30 @@ import com.qcadoo.mes.basic.PalletNumberGenerator;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class PalletNumberDetailsHooks {
+
+    public static final String L_FORM = "form";
+
+    public static final String L_WINDOW = "window";
+
+    public static final String L_PRINT = "print";
+
+    public static final String L_PRINT_PALLET_NUMBER_REPORT = "printPalletNumberReport";
 
     @Autowired
     private PalletNumberGenerator palletNumberGenerator;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         generatePalletNumber(view);
+
+        disableButtonsWhenNotSaved(view);
     }
 
     private void generatePalletNumber(final ViewDefinitionState view) {
@@ -49,6 +64,27 @@ public class PalletNumberDetailsHooks {
 
             numberField.setFieldValue(number);
             numberField.requestComponentUpdateState();
+        }
+    }
+
+    public void disableButtonsWhenNotSaved(final ViewDefinitionState view) {
+        FormComponent palletNumberForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+
+        RibbonGroup printRibbonGroup = ribbon.getGroupByName(L_PRINT);
+
+        RibbonActionItem printPalletNumberReportRibbonActionItem = printRibbonGroup.getItemByName(L_PRINT_PALLET_NUMBER_REPORT);
+
+        Long palletNumberId = palletNumberForm.getEntityId();
+
+        boolean isEnabled = (palletNumberId != null);
+
+        if (printPalletNumberReportRibbonActionItem != null) {
+            printPalletNumberReportRibbonActionItem.setEnabled(isEnabled);
+
+            printPalletNumberReportRibbonActionItem.requestUpdate(true);
         }
     }
 

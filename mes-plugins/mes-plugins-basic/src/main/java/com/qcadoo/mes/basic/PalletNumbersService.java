@@ -53,12 +53,34 @@ public interface PalletNumbersService {
     List<Entity> createPalletNumbers(final List<String> numbers);
 
     /**
+     * Gets pallet number entity
+     *
+     * @param palletNumberId
+     *            Pallet Number Id
+     *
+     * @return palletNumber
+     *
+     */
+    Entity getPalletNumber(final Long palletNumberId);
+
+    /**
      * Gets pallet number data definition
      *
      * @return palletNumberDD
      *
      */
     DataDefinition getPalletNumberDD();
+
+    /**
+     * Gets pallet number helper entity
+     *
+     * @param palletNumberHelperId
+     *            Pallet Number Helper Id
+     *
+     * @return palletNumberHelper
+     *
+     */
+    Entity getPalletNumberHelper(final Long palletNumberHelperId);
 
     /***
      * Gets pallet number helper data definition

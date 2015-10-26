@@ -66,8 +66,18 @@ public class PalletNumbersServiceImpl implements PalletNumbersService {
     }
 
     @Override
+    public Entity getPalletNumber(final Long palletNumberId) {
+        return getPalletNumberDD().get(palletNumberId);
+    }
+
+    @Override
     public DataDefinition getPalletNumberDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PALLET_NUMBER);
+    }
+
+    @Override
+    public Entity getPalletNumberHelper(final Long palletNumberHelperId) {
+        return getPalletNumberHelperDD().get(palletNumberHelperId);
     }
 
     @Override

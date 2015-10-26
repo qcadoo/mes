@@ -34,12 +34,21 @@ import com.qcadoo.mes.basic.constants.PalletNumberHelperFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class PalletNumberHelperDetailsHooks {
 
-    private static final String L_FORM = "form";
+    public static final String L_FORM = "form";
+
+    public static final String L_WINDOW = "window";
+
+    public static final String L_PRINT = "print";
+
+    public static final String L_PRINT_PALLET_NUMBER_HELPER_REPORT = "printPalletNumberHelperReport";
 
     @Autowired
     private PalletNumberGenerator palletNumberGenerator;
@@ -48,20 +57,23 @@ public class PalletNumberHelperDetailsHooks {
         fillPalletNumbers(view);
 
         disableFields(view);
+
+        disableButtonsWhenNotSaved(view);
     }
 
     private void fillPalletNumbers(final ViewDefinitionState view) {
         FormComponent palletNumberHelperForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent quantityField = (FieldComponent) view.getComponentByReference(PalletNumberHelperFields.QUANTITY);
         FieldComponent firstNumberField = (FieldComponent) view.getComponentByReference(PalletNumberHelperFields.FIRST_NUMBER);
-        FieldComponent palletNumbersField = (FieldComponent) view.getComponentByReference(PalletNumberHelperFields.PALLET_NUMBERS);
+        FieldComponent palletNumbersField = (FieldComponent) view
+                .getComponentByReference(PalletNumberHelperFields.PALLET_NUMBERS);
 
         String quantity = (String) quantityField.getFieldValue();
         String firstNumber = (String) firstNumberField.getFieldValue();
 
-        boolean areGenerated = (palletNumberHelperForm.getEntityId() != null);
+        boolean isSaved = (palletNumberHelperForm.getEntityId() != null);
 
-        if (areGenerated && StringUtils.isNotEmpty(quantity) && StringUtils.isNotEmpty(firstNumber)) {
+        if (isSaved && StringUtils.isNotEmpty(quantity) && StringUtils.isNotEmpty(firstNumber)) {
             List<String> palletNumbers = palletNumberGenerator.list(firstNumber, Integer.valueOf(quantity));
 
             palletNumbersField.setFieldValue(buildPalletNumbersString(palletNumbers));
@@ -95,6 +107,28 @@ public class PalletNumberHelperDetailsHooks {
 
         quantityField.setEnabled(isEnabled);
         quantityField.requestComponentUpdateState();
+    }
+
+    private void disableButtonsWhenNotSaved(final ViewDefinitionState view) {
+        FormComponent palletNumberHelperForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+
+        RibbonGroup printRibbonGroup = ribbon.getGroupByName(L_PRINT);
+
+        RibbonActionItem printPalletNumberReportHelperRibbonActionItem = printRibbonGroup
+                .getItemByName(L_PRINT_PALLET_NUMBER_HELPER_REPORT);
+
+        Long palletNumberHelperId = palletNumberHelperForm.getEntityId();
+
+        boolean isEnabled = (palletNumberHelperId != null);
+
+        if (printPalletNumberReportHelperRibbonActionItem != null) {
+            printPalletNumberReportHelperRibbonActionItem.setEnabled(isEnabled);
+
+            printPalletNumberReportHelperRibbonActionItem.requestUpdate(true);
+        }
     }
 
 }

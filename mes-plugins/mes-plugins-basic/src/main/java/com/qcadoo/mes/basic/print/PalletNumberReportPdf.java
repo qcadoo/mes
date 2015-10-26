@@ -27,7 +27,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -45,9 +44,8 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.PalletNumberGenerator;
 import com.qcadoo.mes.basic.PalletNumbersService;
-import com.qcadoo.mes.basic.constants.PalletNumberHelperFields;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.ColorUtils;
 import com.qcadoo.report.api.FontUtils;
@@ -56,8 +54,8 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.PdfPageNumbering;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 
-@Component(value = "palletNumberHelperReportPdf")
-public class PalletNumberHelperReportPdf extends ReportPdfView {
+@Component(value = "palletNumberReportPdf")
+public class PalletNumberReportPdf extends ReportPdfView {
 
     @Autowired
     private TranslationService translationService;
@@ -68,9 +66,6 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
     @Autowired
     private PalletNumbersService palletNumbersService;
 
-    @Autowired
-    private PalletNumberGenerator palletNumberGenerator;
-
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
             LocaleContextHolder.getLocale());
 
@@ -79,60 +74,32 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
             final PdfWriter writer) throws DocumentException, IOException {
         checkState(model.get("id") != null, "Unable to generate report for unsaved offer! (missing id)");
 
-        Long palletNumberHelperId = Long.valueOf(model.get("id").toString());
+        Long palletNumberId = Long.valueOf(model.get("id").toString());
 
-        Entity palletNumberHelper = palletNumbersService.getPalletNumberHelper(palletNumberHelperId);
+        Entity palletNumber = palletNumbersService.getPalletNumber(palletNumberId);
 
-        if (palletNumberHelper != null) {
-            String firstNumber = palletNumberHelper.getStringField(PalletNumberHelperFields.FIRST_NUMBER);
-            Integer quantity = palletNumberHelper.getIntegerField(PalletNumberHelperFields.QUANTITY);
+        if (palletNumber != null) {
+            String number = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
-            List<String> numbers = palletNumberGenerator.list(firstNumber, quantity);
-
-            addPalletNumbers(document, numbers);
+            addPalletNumber(document, number);
         }
 
-        return translationService.translate("basic.palletNumberHelper.report.fileName", locale, palletNumberHelperId.toString());
+        return translationService.translate("basic.palletNumber.report.fileName", locale, palletNumberId.toString());
     }
 
-    private void addPalletNumbers(final Document document, final List<String> numbers) throws DocumentException {
-        int i = 0;
+    private void addPalletNumber(final Document document, final String number) throws DocumentException {
+        LineSeparator lineSeparator = new LineSeparator(1, 100f, ColorUtils.getLineDarkColor(), Element.ALIGN_LEFT, 0);
+        Paragraph numberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold70Dark()));
 
-        for (String number : numbers) {
-            if (i % 2 == 0) {
-                Paragraph firstNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold70Dark()));
+        numberParagraph.setAlignment(Element.ALIGN_CENTER);
 
-                firstNumberParagraph.setAlignment(Element.ALIGN_CENTER);
+        numberParagraph.setSpacingBefore(70F);
+        numberParagraph.setSpacingAfter(180F);
 
-                firstNumberParagraph.setSpacingBefore(70F);
-                firstNumberParagraph.setSpacingAfter(180F);
+        document.add(Chunk.NEWLINE);
+        document.add(numberParagraph);
 
-                document.add(Chunk.NEWLINE);
-                document.add(firstNumberParagraph);
-
-                LineSeparator lineSeparator = new LineSeparator(1, 100f, ColorUtils.getLineDarkColor(), Element.ALIGN_LEFT, 0);
-
-                document.add(lineSeparator);
-            }
-            if (i % 2 == 1) {
-                Paragraph secondNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold70Dark()));
-
-                secondNumberParagraph.setAlignment(Element.ALIGN_CENTER);
-
-                secondNumberParagraph.setSpacingBefore(50F);
-                secondNumberParagraph.setSpacingAfter(50F);
-
-                document.add(Chunk.NEWLINE);
-                document.add(secondNumberParagraph);
-
-                if (i != numbers.size()) {
-                    // document.add(Chunk.NEWLINE);
-                    // document.add(Chunk.NEXTPAGE);
-                }
-            }
-
-            i++;
-        }
+        document.add(lineSeparator);
     }
 
     @Override

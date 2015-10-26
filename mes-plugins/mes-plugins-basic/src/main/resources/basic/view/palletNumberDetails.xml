@@ -33,6 +33,23 @@
 
 		<ribbon>
 			<template name="standardFormTemplate"/>
+			<group name="print">
+				<bigButton name="printPalletNumberReport" icon="pdfIcon24.png"
+						   state="enabled">
+					<script>
+						<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										#{form}.performEvent({
+											name : 'printPalletNumberReport',
+											args : ['pdf']
+										});
+									}
+								});
+							]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 
 		<component type="form" name="palletNumber" reference="form">
@@ -58,6 +75,10 @@
 
 			<option type="header" value="true"/>
 			<option type="expression" value="#number"/>
+
+			<listener event="printPalletNumberReport"
+					  class="com.qcadoo.mes.basic.listeners.PalletNumberDetailsListeners"
+					  method="printPalletNumberReport" />
 		</component>
 
 	</component>

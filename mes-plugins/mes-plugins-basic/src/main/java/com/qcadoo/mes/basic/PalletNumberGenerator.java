@@ -46,7 +46,7 @@ public class PalletNumberGenerator {
      * Check if should insert number
      *
      * @param view
-     * View
+     *            View
      *
      * @return true/false
      *
