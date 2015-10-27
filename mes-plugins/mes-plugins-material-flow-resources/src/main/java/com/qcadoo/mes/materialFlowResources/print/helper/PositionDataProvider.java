@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.Entity;
 
 public class PositionDataProvider {
@@ -65,9 +66,9 @@ public class PositionDataProvider {
 
     public static String batch(final Entity position) {
         String batch = position.getStringField(PositionFields.BATCH);
-        String storageLocation = position.getStringField(PositionFields.STORAGE_LOCATION);
+        Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
         return batch != null ? (storageLocation != null ? batch + "\n" + storageLocation : batch)
-                : (storageLocation != null ? storageLocation : StringUtils.EMPTY);
+                : (storageLocation != null ? storageLocation.getStringField(StorageLocationFields.NUMBER) : StringUtils.EMPTY);
     }
 
     public static String productionDate(final Entity position) {
