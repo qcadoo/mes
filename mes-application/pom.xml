@@ -380,6 +380,7 @@
                                     buildApplicationName = Qcadoo MES
                                     buildApplicationVersion = ${project.version}
                                     buildFrameworkVersion = ${qcadoo.version}
+                                    buildVersionForUser = ${qcadoo.buildVersionForUser}
                                     buildTime =
                                     ${buildNumber}
                                     buildRevision = ${buildRevision}
