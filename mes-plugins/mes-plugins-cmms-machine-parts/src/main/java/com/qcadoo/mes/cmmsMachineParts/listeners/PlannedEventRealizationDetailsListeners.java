@@ -53,7 +53,7 @@ public class PlannedEventRealizationDetailsListeners {
         Date start = DateUtils.parseDate(startDateFieldComponent.getFieldValue());
         Date end = DateUtils.parseDate(finishDateFieldComponent.getFieldValue());
 
-        if (start.before(end)) {
+        if (start != null && end != null && start.before(end)) {
             Seconds seconds = Seconds.secondsBetween(new DateTime(start), new DateTime(end));
             durationFieldComponent.setFieldValue(Integer.valueOf(seconds.getSeconds()));
         }

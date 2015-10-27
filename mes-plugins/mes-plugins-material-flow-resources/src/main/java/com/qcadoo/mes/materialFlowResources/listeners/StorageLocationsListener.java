@@ -38,12 +38,14 @@ import org.springframework.stereotype.Service;
     public void createStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
-        entity.isActive();
         boolean valid = validate(entity, state);
         if (!valid) {
             return;
         }
         state.performEvent(view, "save", new String[0]);
+        if (state.isHasError()) {
+            return;
+        }
         state.performEvent(view, "reset", new String[0]);
         entity = getStorageLocationtDD().get(entity.getId());
         generateLocations(entity, state);
@@ -53,14 +55,18 @@ import org.springframework.stereotype.Service;
     private void generateLocations(Entity entity, ComponentState state) {
         DataDefinition dd = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, "storageLocation");
         int numberOfLocatons = entity.getDecimalField(StorageLocationHelperFields.NUMBER_OF_STORAGE_LOCATIONS).intValue();
-        for (int i = 1; i < numberOfLocatons + 1; i++) {
+        String number = entity.getStringField(StorageLocationHelperFields.NUMBER);
+        String lastChar = number.substring(number.length() - 1, number.length());
+        int last = Integer.valueOf(lastChar);
+        String restOfNumber = number.substring(0, number.length() - 1);
+        for (int i = last; i < numberOfLocatons + last; i++) {
             Entity sl = dd.create();
             sl.setField(StorageLocationFields.LOCATION, entity.getBelongsToField(StorageLocationHelperFields.LOCATION));
             sl.setField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS,
                     entity.getDecimalField(StorageLocationHelperFields.MAXIMUM_NUMBER_OF_PALLETS));
             sl.setField(StorageLocationFields.PLACE_STORAGE_LOCATION,
                     entity.getBooleanField(StorageLocationHelperFields.PLACE_STORAGE_LOCATION));
-            sl.setField(StorageLocationFields.NUMBER, fillNumber(i, entity));
+            sl.setField(StorageLocationFields.NUMBER, fillNumber(i, restOfNumber, entity));
             sl = sl.getDataDefinition().save(sl);
             if (!sl.isValid()) {
                 state.addMessage("materialFlowResources.storageLocationsHelper.error.locationExist",
@@ -69,9 +75,8 @@ import org.springframework.stereotype.Service;
         }
     }
 
-    private String fillNumber(int i, Entity entity) {
-        return entity.getStringField(StorageLocationHelperFields.PREFIX) + entity
-                .getStringField(StorageLocationHelperFields.NUMBER) + i;
+    private String fillNumber(int i, String restOfNumber, Entity entity) {
+        return entity.getStringField(StorageLocationHelperFields.PREFIX) + restOfNumber + i;
     }
 
     private boolean validate(Entity entity, ComponentState state) {
@@ -80,7 +85,16 @@ import org.springframework.stereotype.Service;
             state.addMessage("materialFlowResources.storageLocationsHelper.error.requiredNumberOf",
                     ComponentState.MessageType.FAILURE);
             valid = false;
+        } else {
+            String number = entity.getStringField(StorageLocationHelperFields.NUMBER);
+            String lastSign = number.substring(number.length() - 1, number.length());
+            if (!StringUtils.isNumeric(number)) {
+                state.addMessage("materialFlowResources.storageLocationsHelper.error.lastCharNotNumeric",
+                        ComponentState.MessageType.FAILURE);
+                valid = false;
+            }
         }
+
         if (StringUtils.isBlank(entity.getStringField(StorageLocationHelperFields.NUMBER))) {
             state.addMessage("materialFlowResources.storageLocationsHelper.error.requiredNumber",
                     ComponentState.MessageType.FAILURE);
