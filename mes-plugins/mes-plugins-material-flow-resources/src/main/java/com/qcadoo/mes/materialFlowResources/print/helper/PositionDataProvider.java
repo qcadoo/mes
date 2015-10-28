@@ -67,7 +67,8 @@ public class PositionDataProvider {
     public static String batch(final Entity position) {
         String batch = position.getStringField(PositionFields.BATCH);
         Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
-        return batch != null ? (storageLocation != null ? batch + "\n" + storageLocation : batch)
+        return batch != null ? (storageLocation != null ? batch + "\n"
+                + storageLocation.getStringField(StorageLocationFields.NUMBER) : batch)
                 : (storageLocation != null ? storageLocation.getStringField(StorageLocationFields.NUMBER) : StringUtils.EMPTY);
     }
 
