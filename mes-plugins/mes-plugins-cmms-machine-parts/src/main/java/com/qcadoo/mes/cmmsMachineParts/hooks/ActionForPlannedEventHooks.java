@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import com.qcadoo.mes.cmmsMachineParts.constants.ActionFields;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -42,6 +43,11 @@ public class ActionForPlannedEventHooks {
                     + Strings.nullToEmpty(actionForPlannedEvent.getBelongsToField(ActionForPlannedEventFields.RESPONSIBLE_WORKER)
                             .getStringField(StaffFields.SURNAME));
             actionForPlannedEvent.setField(ActionForPlannedEventFields.RESPONSIBLE_WORKER_NAME, person);
+        }
+
+        Entity action = actionForPlannedEvent.getBelongsToField(ActionForPlannedEventFields.ACTION);
+        if(action!=null){
+            actionForPlannedEvent.setField(ActionForPlannedEventFields.ACTION_NAME, action.getStringField(ActionFields.NAME));
         }
     }
 

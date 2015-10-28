@@ -647,17 +647,16 @@
             </component>
             <component type="grid" name="realizations" reference="realizations"
                        source="#{form}.realizations">
-                <option type="column" name="worker" fields="worker"
-                        expression="#worker['name'] + ' ' + #worker['surname']" link="true"/>
-                <option type="column" name="action" fields="action"
-                        expression="#action['name']" link="true"/>
+                <option type="column" name="workerName" fields="worker" expression="#worker['name']" link="true"/>
+                <option type="column" name="workerSurname" fields="worker" expression="#worker['surname']" link="true"/>
+                <option type="column" name="action" fields="action" expression="#action['actionName']" link="true"/>
                 <option type="column" name="startDate" fields="startDate"/>
                 <option type="column" name="finishDate" fields="finishDate"/>
                 <option type="column" name="duration" fields="duration"
                         expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
 
-                <option type="searchable" value="worker,action,startDate,finishDate,duration"/>
-                <option type="orderable" value="worker,action,startDate,finishDate,duration"/>
+                <option type="searchable" value="workerName,workerSurname,action,startDate,finishDate,duration"/>
+                <option type="orderable" value="workerName,workerSurname,action,startDate,finishDate,duration"/>
 
                 <option type="order" column="startDate" direction="asc"/>
 

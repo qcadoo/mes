@@ -35,6 +35,7 @@
         <belongsTo name="action" model="action" required="true"/>
         <belongsTo name="responsibleWorker" model="staff" plugin="basic"/>
         <string name="responsibleWorkerName"/>
+        <string name="actionName" />
         <enum name="state" values="01correct,02incorrect"/>
 
         <string name="reason">
