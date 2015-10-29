@@ -157,7 +157,7 @@ public class CostCalculationDetailsHooks {
             if (eitherValue.isRight()) {
                 Optional<BigDecimal> maybeValue = eitherValue.getRight();
                 if (maybeValue.isPresent()) {
-                    component.setFieldValue(maybeValue.get().setScale(2));
+                    component.setFieldValue(numbersService.setScale(maybeValue.get(), 2));
                     component.requestComponentUpdateState();
                 }
             }
