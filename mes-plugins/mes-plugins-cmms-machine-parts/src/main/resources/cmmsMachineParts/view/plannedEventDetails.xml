@@ -182,6 +182,7 @@
 	                                plannedEvent.forState="04inRealization";
 	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                     toggleEditable(true, "");
+                                    deleteButton.disable();
                                 } else if (state == "04inRealization") {
                                     planEvent.disable();
                                     cancelEvent.enable();
@@ -201,6 +202,7 @@
                                         realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizedEvent)}");
                                     }
                                     toggleEditable(true, "");
+                                    deleteButton.disable();
                                 } else if (state == "05realized" || state == "06canceled") {
                                     planEvent.disable();
                                     cancelEvent.disable();
@@ -210,6 +212,7 @@
 	                                plannedEvent.forState="04inRealization";
 	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                     toggleEditable(false, "");
+                                    deleteButton.disable();
                                 } else if (state =="07accepted") {
                                     planEvent.disable();
                                     cancelEvent.disable();
@@ -640,11 +643,11 @@
             </component>
         </windowTab>
         <windowTab name="realizationTab">
-        	<component type="lookup" name="realizationsLookup" reference="realizationsLookup"
+            <component type="lookup" name="realizationsLookup" reference="realizationsLookup"
                        field="#{form}.realizations" defaultVisible="false" persistent="false"
                        hasLabel="false">
-                       <option type="fieldCode" value="duration"/>
-                       <option type="expression" value="duration"/>
+                <option type="fieldCode" value="duration"/>
+                <option type="expression" value="duration"/>
             </component>
             <component type="grid" name="realizations" reference="realizations"
                        source="#{form}.realizations">
