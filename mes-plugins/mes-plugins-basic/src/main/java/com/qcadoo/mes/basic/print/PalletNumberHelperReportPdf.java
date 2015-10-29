@@ -124,7 +124,7 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
 
 
                 document.add(secondNumberParagraph);
-                if(i<numbers.size()){
+                if(i<numbers.size()-1){
                     document.newPage();
                     document.add(new Phrase("\n"));
                 }
