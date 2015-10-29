@@ -23,24 +23,7 @@
  */
 package com.qcadoo.mes.basic.print;
 
-import static com.google.common.base.Preconditions.checkState;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
-
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.localization.api.TranslationService;
@@ -55,6 +38,17 @@ import com.qcadoo.report.api.Footer;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.PdfPageNumbering;
 import com.qcadoo.report.api.pdf.ReportPdfView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkState;
 
 @Component(value = "palletNumberHelperReportPdf")
 public class PalletNumberHelperReportPdf extends ReportPdfView {
@@ -104,10 +98,16 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
 
                 firstNumberParagraph.setAlignment(Element.ALIGN_CENTER);
 
-                firstNumberParagraph.setSpacingBefore(70F);
+
+
+                //firstNumberParagraph.setSpacingBefore(70F);
                 firstNumberParagraph.setSpacingAfter(180F);
 
-                document.add(Chunk.NEWLINE);
+                if(i==0) {
+                    Paragraph p = new Paragraph(new Phrase("\n"));
+                    p.setSpacingAfter(80f);
+                    document.add(p);
+                }
                 document.add(firstNumberParagraph);
 
                 LineSeparator lineSeparator = new LineSeparator(1, 100f, ColorUtils.getLineDarkColor(), Element.ALIGN_LEFT, 0);
@@ -119,15 +119,14 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
 
                 secondNumberParagraph.setAlignment(Element.ALIGN_CENTER);
 
-                secondNumberParagraph.setSpacingBefore(50F);
-                secondNumberParagraph.setSpacingAfter(50F);
+                secondNumberParagraph.setSpacingBefore(100f);
 
-                document.add(Chunk.NEWLINE);
+
+
                 document.add(secondNumberParagraph);
-
-                if (i != numbers.size()) {
-                    // document.add(Chunk.NEWLINE);
-                    // document.add(Chunk.NEXTPAGE);
+                if(i<numbers.size()){
+                    document.newPage();
+                    document.add(new Phrase("\n"));
                 }
             }
 
