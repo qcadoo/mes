@@ -38,7 +38,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -57,8 +56,11 @@ import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductFieldsT;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.tree.builder.api.TechnologyOperationComponent;
+import com.qcadoo.mes.workPlans.constants.OperationProductInComponentFieldsWP;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
@@ -187,7 +189,7 @@ public class WorkPlanPdfForDivision {
 
         addOrderSummary(headerCell, order, product, operationComponent);
 
-        addOperationProductsTable(inputCell, operationProductInComponents(operationComponent, order),
+        addOperationProductsTable(inputCell, addMaterialComponents(operationProductInComponents(operationComponent, order)),
                 inputProductColumnAlignmentMap, ProductDirection.IN, locale);
         addOperationProductsTable(outputCell, operationProductOutComponents(operationComponent, order),
                 outputProductColumnAlignmentMap, ProductDirection.OUT, locale);
@@ -307,6 +309,32 @@ public class WorkPlanPdfForDivision {
 
         }
         cell.addElement(table);
+    }
+
+    private List<Entity> addMaterialComponents(List<Entity> productComponents) {
+        for (Entity productComponent : productComponents) {
+            if (productComponent.getBooleanField(OperationProductInComponentFieldsWP.SHOW_MATERIAL_COMPONENT)) {
+                Entity product = productComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+                EntityList technologies = product.getHasManyField(ProductFieldsT.TECHNOLOGIES);
+                if (technologies != null && !technologies.isEmpty()) {
+                Entity technology = technologies.get(0);
+                    EntityList operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+                    for (Entity operationComponent : operationComponents) {
+                        EntityList operationProductInComponents = operationComponent
+                                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+                    String name = product.getStringField(ProductFields.NAME);
+                        for (Entity operationProductInComponent : operationProductInComponents) {
+                            Entity opicProduct = operationProductInComponent
+                                    .getBelongsToField(OperationProductInComponentFields.PRODUCT);
+                        name = name + "\n" + opicProduct.getStringField(ProductFields.NAME);
+                        }
+                    product.setField(ProductFields.NAME, name);
+                    }
+                }
+                productComponent.setField(OperationProductInComponentFields.PRODUCT, product);
+            }
+        }
+        return productComponents;
     }
 
     private List<Entity> operationProductOutComponents(Entity operationComponent, Entity order) {
