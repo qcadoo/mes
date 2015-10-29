@@ -24,20 +24,20 @@
     ***************************************************************************
 
 -->
-<model name="plannedEventRealization"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="plannedEvent" model="plannedEvent" required="true"/>
-		<belongsTo name="worker" model="staff" plugin="basic" required="true"/>
-		<belongsTo name="action" model="actionForPlannedEvent"/>
-		<datetime name="startDate" required="true"/>
-        <datetime name="finishDate" required="true"/>
-        <integer name="duration" default="0"/>
-	</fields>
-	<hooks>
-		<validatesWith
-                class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventRealizationValidators"
-                method="validatesWith" />
-	</hooks>
-</model>
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="technologies" view="operationProductInComponentDetails">
+
+	<windowTab name="workPlansShowMaterialTab" reference="workPlansShowMaterialTab">
+		<component type="gridLayout" name="workPlansShowMaterialGridLayout"
+			columns="2" rows="1">
+			<layoutElement column="1" row="1">
+				<component type="checkbox" name="showMaterialComponent"
+					field="#{form}.showMaterialComponent" reference="showMaterialComponent" hasDescription="true">
+				</component>
+			</layoutElement>
+		</component>
+	</windowTab>
+
+</windowTabExtension>

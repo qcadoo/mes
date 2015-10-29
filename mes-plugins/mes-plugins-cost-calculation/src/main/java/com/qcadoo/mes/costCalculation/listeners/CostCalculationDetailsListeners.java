@@ -156,7 +156,8 @@ public class CostCalculationDetailsListeners {
 
         for (String costField : costFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(costField);
-            fieldComponent.setFieldValue(BigDecimalUtils.convertNullToZero(costCalculation.getDecimalField(costField)));
+            fieldComponent.setFieldValue(BigDecimalUtils.convertNullToZero(costCalculation.getDecimalField(costField))
+                    .setScale(2));
         }
     }
 

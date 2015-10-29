@@ -31,8 +31,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -42,6 +44,7 @@ import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -134,6 +137,31 @@ public class CostCalculationDetailsHooks {
         disableCheckboxIfPieceworkIsSelected(view);
         fillOverheadsFromParameters(view);
         toggleCalculateOperationCostsModeComponent(view);
+        roundResults(view);
+    }
+
+    private void roundResults(final ViewDefinitionState view) {
+        Set<String> referenceNames = Sets.newHashSet(CostCalculationFields.TOTAL_MATERIAL_COSTS,
+                CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS, CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS,
+                CostCalculationFields.TOTAL_PIECEWORK_COSTS, CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS,
+                CostCalculationFields.PRODUCTION_COST_MARGIN_VALUE, CostCalculationFields.MATERIAL_COST_MARGIN_VALUE,
+                CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE, CostCalculationFields.TOTAL_OVERHEAD,
+                CostCalculationFields.TOTAL_COSTS, CostCalculationFields.TOTAL_COST_PER_UNIT,
+                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD_VALUE, CostCalculationFields.TECHNICAL_PRODUCTION_COSTS,
+                CostCalculationFields.PROFIT_VALUE, CostCalculationFields.SELL_PRICE_VALUE);
+
+        for (String name : referenceNames) {
+            FieldComponent component = (FieldComponent) view.getComponentByReference(name);
+            String value = (String) component.getFieldValue();
+            Either<Exception, Optional<BigDecimal>> eitherValue = BigDecimalUtils.tryParse(value, view.getLocale());
+            if (eitherValue.isRight()) {
+                Optional<BigDecimal> maybeValue = eitherValue.getRight();
+                if (maybeValue.isPresent()) {
+                    component.setFieldValue(maybeValue.get().setScale(2));
+                    component.requestComponentUpdateState();
+                }
+            }
+        }
     }
 
     private void toggleCalculateOperationCostsModeComponent(ViewDefinitionState view) {
@@ -328,7 +356,8 @@ public class CostCalculationDetailsHooks {
             BigDecimal propertyValue = parameterService.getParameter().getDecimalField(propertyName);
 
             if (propertyValue != null) {
-                String formattedProductionCostMargin = numbersService.formatWithMinimumFractionDigits(propertyValue, 0);
+                String formattedProductionCostMargin = numbersService.formatWithMinimumFractionDigits(propertyValue.setScale(2),
+                        0);
                 component.setFieldValue(formattedProductionCostMargin);
             } else {
                 component.setFieldValue(0);

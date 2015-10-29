@@ -53,14 +53,14 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="lookup" name="action" field="action"
-                                   reference="action">
+                        <component type="lookup" name="action" field="action" reference="action">
+                            <option type="searchable" value="actionName,responsibleWorkerName"/>
+                            <option type="orderable" value="actionName,responsibleWorkerName"/>
+                            <option type="expression" value="#actionName" fields="actionName" />
+                            <option type="fieldCode" value="actionName"/>
 
-                            <option type="searchable" value="name"/>
-                            <option type="orderable" value="name"/>
-                            <option type="expression"
-                                    value="#name"/>
-                            <option type="fieldCode" value="name"/>
+                            <option type="column" name="responsibleWorkerName" fields="responsibleWorkerName" link="true" />
+
                             <criteriaModifier
                                     class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.PlannedEventRealizationCriteriaModifiers"
                                     method="showActionsForEvent"/>

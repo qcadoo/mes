@@ -126,3 +126,11 @@ CREATE TABLE basic_palletnumberhelper
 );
 
 --
+-- end
+
+-- add showmaterialcomponent parameter in operation component
+-- last touched 28.10.2015 by pako
+
+ALTER TABLE technologies_operationproductincomponent ADD COLUMN showmaterialcomponent boolean;
+
+-- end

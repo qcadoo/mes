@@ -39,3 +39,29 @@ ALTER TABLE materialflowresources_resourcecorrection
       REFERENCES materialflowresources_storagelocation (id) DEFERRABLE;
 
 -- end
+
+// #GOODFOOD-960
+alter table cmmsmachineparts_plannedeventrealization drop constraint plannedeventrealization_action;
+
+alter table cmmsmachineparts_plannedeventrealization add
+  CONSTRAINT plannedeventrealization_actionforplannedevent FOREIGN KEY (action_id)
+      REFERENCES cmmsmachineparts_actionforplannedevent (id) DEFERRABLE;
+
+
+update cmmsmachineparts_plannedeventrealization set action_id=null;
+
+alter table cmmsmachineparts_actionforplannedevent add actionname character varying(255);
+
+
+CREATE OR REPLACE FUNCTION updateEventActionName() RETURNS VOID AS $$ DECLARE row record;
+BEGIN FOR row IN select actionevent.id, action.name from cmmsmachineparts_actionforplannedevent actionevent join cmmsmachineparts_action action on (actionevent.action_id = action.id)
+    LOOP
+        update cmmsmachineparts_actionforplannedevent set actionname = row.name where id = row.id;
+    END LOOP;
+END;
+$$ LANGUAGE 'plpgsql';
+
+SELECT * FROM updateEventActionName();
+drop function updateEventActionName();
+
+
