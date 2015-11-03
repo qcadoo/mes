@@ -97,6 +97,7 @@ public class AfterReviewEventsService {
                 plannedEvent.getBelongsToField(PlannedEventFields.PRODUCTION_LINE));
         afterReviewEvent.setField(PlannedEventFields.WORKSTATION, plannedEvent.getBelongsToField(PlannedEventFields.WORKSTATION));
         afterReviewEvent.setField(PlannedEventFields.SUBASSEMBLY, plannedEvent.getBelongsToField(PlannedEventFields.SUBASSEMBLY));
+        afterReviewEvent.setField(PlannedEventFields.SOURCE_COST, plannedEvent.getBelongsToField(PlannedEventFields.SOURCE_COST));
         afterReviewEvent.setField(PlannedEventFields.DESCRIPTION, description);
         afterReviewEvent.setField(PlannedEventFields.BASED_ON, PlannedEventBasedOn.DATE.getStringValue());
         afterReviewEvent.setField(PlannedEventFields.AFTER_REVIEW, true);
