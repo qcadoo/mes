@@ -313,6 +313,19 @@
                           method="setCriteriaModifiersParameters"/>
             </component>
         </windowTab>
+
+        <windowTab name="positionsGridTab" reference="positionsGridTab">
+
+            <component type="flowGridLayout" name="flowGridLayout" columns="1" rows="6">
+                <layoutElement column="1" row="1" minHeight="6">
+                    <component type="staticPage" name="editableGrid" reference="editableGrid">
+                        <option type="page" value="materialFlowResources/positionsGrid.jsp"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+
         <windowTab name="auditTab">
             <component type="gridLayout" name="gridLayout" columns="3"
                        rows="4">
