@@ -61,7 +61,7 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="warehouseState">
+            <group name="warehouseState" defaultAuthorizationRole="ROLE_WAREHOUSE_STATES">
                 <bigButton name="warehouseState" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[

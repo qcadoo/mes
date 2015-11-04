@@ -121,9 +121,9 @@
         </model:model-field>
 
         <menu:menu-item name="assignmentToShift" category="orders"
-                        view="assignmentToShiftList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="assignmentToShiftList" defaultAuthorizationRole="ROLE_ASSIGNMENT_TO_SHIFT"/>
         <menu:menu-item name="assignmentToShiftReportList"
-                        category="orders" view="assignmentToShiftReportList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        category="orders" view="assignmentToShiftReportList" defaultAuthorizationRole="ROLE_ASSIGNMENT_TO_SHIFT"/>
 
         <view:view resource="view/assignmentToShiftList.xml"/>
         <view:view resource="view/assignmentToShiftReportList.xml"/>

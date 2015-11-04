@@ -116,7 +116,7 @@
         <menu:menu-category name="maintenance" defaultAuthorizationRole="ROLE_MAINTENANCE"/>
 
         <menu:menu-item name="sourceCostList" category="maintenance" view="sourceCostList"
-                        defaultAuthorizationRole="ROLE_MAINTENANCE"/>
+                        defaultAuthorizationRole="ROLE_SOURCE_COST"/>
 
         <menu:menu-item name="events" category="maintenance" view="eventsList"
                         defaultAuthorizationRole="ROLE_MAINTENANCE"/>
@@ -124,7 +124,7 @@
         <menu:menu-item name="machineParts" category="basic" view="machinePartsList"
                         defaultAuthorizationRole="ROLE_MACHINE_PARTS"/>
         <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"
-                        defaultAuthorizationRole="ROLE_MAINTENANCE"/>
+                        defaultAuthorizationRole="ROLE_FAULT_TYPES"/>
 
         <menu:menu-item name="plannedEvents" category="maintenance" view="plannedEventsList"
                         defaultAuthorizationRole="ROLE_MAINTENANCE"/>

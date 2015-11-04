@@ -69,7 +69,7 @@
         <component type="flowGridLayout" name="factoryStructureLayout" rows="4" columns="1">
             <layoutElement column="1" row="1" minHeight="4">
                 <component type="tree" name="factoryStructure" reference="factoryStructure"
-                           field="#{form}.factoryStructure">
+                           field="#{form}.factoryStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                     <script>
                         <![CDATA[
 
