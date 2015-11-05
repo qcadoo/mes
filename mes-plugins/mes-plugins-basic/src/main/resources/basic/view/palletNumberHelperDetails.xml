@@ -32,7 +32,8 @@
 	<component type="window" name="window">
 
 		<ribbon>
-			<template name="standardFormTemplate"/>
+			<template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
+
 			<group name="print">
 				<bigButton name="printPalletNumberHelperReport" icon="pdfIcon24.png"
 						   state="enabled">
@@ -54,19 +55,15 @@
 
 		<component type="form" name="palletNumberHelper" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="2"
-					   rows="8" hasBorders="false">
+					   rows="7" hasBorders="false">
 				<layoutElement column="1" row="1">
 					<component type="input" name="quantity" field="quantity"
 							   reference="quantity">
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" height="6">
-					<component type="textarea" name="palletNumbers" field="palletNumbers"
-							   reference="palletNumbers" defaultEnabled="never"/>
-				</layoutElement>
-				<layoutElement column="1" row="8">
-					<component type="input" name="firstNumber" field="firstNumber"
-							   reference="firstNumber" defaultEnabled="never" defaultVisible="false"/>
+					<component type="textarea" name="numbers" field="numbers"
+							   reference="numbers" defaultEnabled="never"/>
 				</layoutElement>
 			</component>
 
@@ -75,7 +72,7 @@
 
 			<listener event="printPalletNumberHelperReport"
 					  class="com.qcadoo.mes.basic.listeners.PalletNumberHelperDetailsListeners"
-					  method="printPalletNumberHelperReport" />
+					  method="printPalletNumberHelperReport"/>
 		</component>
 
 	</component>

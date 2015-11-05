@@ -23,37 +23,34 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.PalletNumberGenerator;
-import com.qcadoo.mes.basic.constants.PalletNumberFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.mes.basic.constants.PalletNumberHelperFields;
+import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
-public class PalletNumberHooks {
+public class PalletNumberHelpersListHooks {
 
-    @Autowired
-    private PalletNumberGenerator palletNumberGenerator;
+    public static final String L_GRID = "grid";
 
-    public void onCreate(final DataDefinition palletNumberDD, final Entity palletNumber) {
-        generateNumber(palletNumber);
+    public void onBeforeRender(final ViewDefinitionState view) {
+        addDiscriminatorRestrictionToGrid(view);
     }
 
-    public void onCopy(final DataDefinition palletNumberDD, final Entity palletNumber) {
-        generateNumber(palletNumber);
+    public final void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view) {
+        GridComponent palletNumberHelpersGrid = (GridComponent) view.getComponentByReference(L_GRID);
+
+        palletNumberHelpersGrid.setCustomRestriction(new CustomRestriction() {
+
+            @Override
+            public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
+                searchBuilder.add(SearchRestrictions.eq(PalletNumberHelperFields.TEMPORARY, false));
+            }
+
+        });
     }
-
-    private void generateNumber(final Entity palletNumber) {
-        String number = palletNumber.getStringField(PalletNumberFields.NUMBER);
-
-        if (StringUtils.isEmpty(number)) {
-            number = palletNumberGenerator.generate();
-        }
-
-        palletNumber.setField(PalletNumberFields.NUMBER, number);
-    }
-
 }

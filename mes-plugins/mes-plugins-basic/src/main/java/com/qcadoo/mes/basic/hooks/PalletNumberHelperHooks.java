@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,22 +44,26 @@ public class PalletNumberHelperHooks {
     private PalletNumberGenerator palletNumberGenerator;
 
     public void onCreate(final DataDefinition palletNumberHelperDD, final Entity palletNumberHelper) {
-        createPalletNumbers(palletNumberHelperDD, palletNumberHelper);
+        generatePalletNumbers(palletNumberHelper);
     }
 
     public void onCopy(final DataDefinition palletNumberHelperDD, final Entity palletNumberHelper) {
-        createPalletNumbers(palletNumberHelperDD, palletNumberHelper);
+        generatePalletNumbers(palletNumberHelper);
     }
 
-    private void createPalletNumbers(final DataDefinition palletNumberHelperDD, final Entity palletNumberHelper) {
+    private void generatePalletNumbers(final Entity palletNumberHelper) {
         Integer quantity = getQuantity(palletNumberHelper);
 
-        if (quantity != null) {
+        List<Entity> palletNumbers = palletNumberHelper.getManyToManyField(PalletNumberHelperFields.PALLET_NUMBERS);
+
+        if ((quantity != null) && palletNumbers.isEmpty()) {
             String firstNumber = palletNumberGenerator.generate();
 
-            palletNumberHelper.setField(PalletNumberHelperFields.FIRST_NUMBER, firstNumber);
+            palletNumbers = palletNumbersService.createPalletNumbers(palletNumberGenerator.list(firstNumber, quantity));
 
-            palletNumbersService.createPalletNumbers(palletNumberGenerator.list(firstNumber, quantity));
+            palletNumberHelper.setField(PalletNumberHelperFields.TEMPORARY, false);
+
+            palletNumberHelper.setField(PalletNumberHelperFields.PALLET_NUMBERS, palletNumbers);
         }
     }
 

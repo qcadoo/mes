@@ -37,6 +37,25 @@
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 
+    <bean id="schedulerFactoryBeanBasic" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="deleteTemporaryPalletNumberHelpersTrigger" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="deleteTemporaryPalletNumberHelpersTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail" ref="deleteTemporaryPalletNumberHelpers" />
+        <property name="cronExpression" value="0 0 4 * * ?" />
+    </bean>
+
+    <bean id="deleteTemporaryPalletNumberHelpers"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="palletNumbersServiceImpl" />
+        <property name="targetMethod" value="deleteTemporaryPalletNumberHelpersTrigger" />
+    </bean>
+
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
 </beans>

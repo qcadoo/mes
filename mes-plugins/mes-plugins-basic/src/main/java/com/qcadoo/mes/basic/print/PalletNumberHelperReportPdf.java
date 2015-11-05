@@ -23,7 +23,24 @@
  */
 package com.qcadoo.mes.basic.print;
 
-import com.lowagie.text.*;
+import static com.google.common.base.Preconditions.checkState;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.localization.api.TranslationService;
@@ -38,17 +55,6 @@ import com.qcadoo.report.api.Footer;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.PdfPageNumbering;
 import com.qcadoo.report.api.pdf.ReportPdfView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkState;
 
 @Component(value = "palletNumberHelperReportPdf")
 public class PalletNumberHelperReportPdf extends ReportPdfView {
@@ -78,12 +84,9 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
         Entity palletNumberHelper = palletNumbersService.getPalletNumberHelper(palletNumberHelperId);
 
         if (palletNumberHelper != null) {
-            String firstNumber = palletNumberHelper.getStringField(PalletNumberHelperFields.FIRST_NUMBER);
-            Integer quantity = palletNumberHelper.getIntegerField(PalletNumberHelperFields.QUANTITY);
+            List<Entity> palletNumbers = palletNumberHelper.getManyToManyField(PalletNumberHelperFields.PALLET_NUMBERS);
 
-            List<String> numbers = palletNumberGenerator.list(firstNumber, quantity);
-
-            addPalletNumbers(document, numbers);
+            addPalletNumbers(document, palletNumbersService.getNumbers(palletNumbers));
         }
 
         return translationService.translate("basic.palletNumberHelper.report.fileName", locale, palletNumberHelperId.toString());
@@ -97,35 +100,34 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
                 Paragraph firstNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold70Dark()));
 
                 firstNumberParagraph.setAlignment(Element.ALIGN_CENTER);
-
-
-
-                //firstNumberParagraph.setSpacingBefore(70F);
                 firstNumberParagraph.setSpacingAfter(180F);
 
-                if(i==0) {
-                    Paragraph p = new Paragraph(new Phrase("\n"));
-                    p.setSpacingAfter(80f);
-                    document.add(p);
+                if (i == 0) {
+                    Paragraph newLineParagraph = new Paragraph(new Phrase("\n"));
+
+                    newLineParagraph.setSpacingAfter(80f);
+
+                    document.add(newLineParagraph);
                 }
+
                 document.add(firstNumberParagraph);
 
                 LineSeparator lineSeparator = new LineSeparator(1, 100f, ColorUtils.getLineDarkColor(), Element.ALIGN_LEFT, 0);
 
                 document.add(lineSeparator);
             }
+
             if (i % 2 == 1) {
                 Paragraph secondNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold70Dark()));
 
                 secondNumberParagraph.setAlignment(Element.ALIGN_CENTER);
-
                 secondNumberParagraph.setSpacingBefore(100f);
 
-
-
                 document.add(secondNumberParagraph);
-                if(i<numbers.size()-1){
+
+                if (i < numbers.size() - 1) {
                     document.newPage();
+
                     document.add(new Phrase("\n"));
                 }
             }

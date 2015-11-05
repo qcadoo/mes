@@ -29,9 +29,11 @@ public final class PalletNumberHelperFields {
 
     }
 
-    public static final String FIRST_NUMBER = "firstNumber";
-
     public static final String QUANTITY = "quantity";
+
+    public static final String NUMBERS = "numbers";
+
+    public static final String TEMPORARY = "temporary";
 
     public static final String PALLET_NUMBERS = "palletNumbers";
 

@@ -24,6 +24,7 @@
 package com.qcadoo.mes.basic;
 
 import java.util.List;
+import java.util.Set;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -53,6 +54,23 @@ public interface PalletNumbersService {
     List<Entity> createPalletNumbers(final List<String> numbers);
 
     /**
+     * Creates pallet number helper
+     *
+     * @param quantity
+     *            Quantity
+     * 
+     * @param temporary
+     *            Temporary
+     *
+     * @param palletNumbers
+     *            Pallet Numbers
+     *
+     * @return palletNumber
+     *
+     */
+    Entity createPalletNumberHelper(final Integer quantity, final boolean temporary, final List<Entity> palletNumbers);
+
+    /**
      * Gets pallet number entity
      *
      * @param palletNumberId
@@ -62,6 +80,28 @@ public interface PalletNumbersService {
      *
      */
     Entity getPalletNumber(final Long palletNumberId);
+
+    /**
+     * Gets pallet number entities
+     *
+     * @param palletNumberIds
+     *            Pallet Number Ids
+     *
+     * @return palletNumbers
+     *
+     */
+    List<Entity> getPalletNumbers(final Set<Long> palletNumberIds);
+
+    /***
+     * Gets numbers from pallet numbers
+     *
+     * @param palletNumbers
+     *            Pallet Numbers
+     *
+     * @return numbers
+     *
+     */
+    List<String> getNumbers(final List<Entity> palletNumbers);
 
     /**
      * Gets pallet number data definition
@@ -89,5 +129,12 @@ public interface PalletNumbersService {
      *
      */
     DataDefinition getPalletNumberHelperDD();
+
+
+    /**
+     * Deletes temporary pallet number helpers
+     *
+     */
+    void deleteTemporaryPalletNumberHelpersTrigger();
 
 }

@@ -29,16 +29,14 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="firstNumber" required="true" unique="true" copyable="false">
-            <validatesLength is="6"
-                             message="basic.palletNumberHelper.firstNumber.error.invalidLength"/>
-            <validatesRegex pattern="[0-9]+"
-                            message="basic.palletNumberHelper.firstNumber.error.shouldContainOnlyNumbers"/>
-        </string>
         <integer name="quantity" required="true">
             <validatesRange from="0"/>
         </integer>
-        <string name="palletNumbers" persistent="false"/>
+        <string name="numbers" persistent="false"/>
+        <boolean name="temporary" required="true" default="false"/>
+
+        <manyToMany name="palletNumbers" model="palletNumber" joinField="palletNumberHelpers"
+                    cascade="nullify" plugin="basic" />
     </fields>
 
     <hooks>

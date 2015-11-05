@@ -23,14 +23,15 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.PalletNumberGenerator;
+import com.qcadoo.mes.basic.PalletNumbersService;
 import com.qcadoo.mes.basic.constants.PalletNumberHelperFields;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -46,12 +47,16 @@ public class PalletNumberHelperDetailsHooks {
 
     public static final String L_WINDOW = "window";
 
+    public static final String L_ACTIONS = "actions";
+
     public static final String L_PRINT = "print";
+
+    public static final String L_SAVE = "save";
 
     public static final String L_PRINT_PALLET_NUMBER_HELPER_REPORT = "printPalletNumberHelperReport";
 
     @Autowired
-    private PalletNumberGenerator palletNumberGenerator;
+    private PalletNumbersService palletNumbersService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         fillPalletNumbers(view);
@@ -63,47 +68,50 @@ public class PalletNumberHelperDetailsHooks {
 
     private void fillPalletNumbers(final ViewDefinitionState view) {
         FormComponent palletNumberHelperForm = (FormComponent) view.getComponentByReference(L_FORM);
-        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(PalletNumberHelperFields.QUANTITY);
-        FieldComponent firstNumberField = (FieldComponent) view.getComponentByReference(PalletNumberHelperFields.FIRST_NUMBER);
-        FieldComponent palletNumbersField = (FieldComponent) view
-                .getComponentByReference(PalletNumberHelperFields.PALLET_NUMBERS);
+        FieldComponent numbersField = (FieldComponent) view.getComponentByReference(PalletNumberHelperFields.NUMBERS);
 
-        String quantity = (String) quantityField.getFieldValue();
-        String firstNumber = (String) firstNumberField.getFieldValue();
+        Long palletNumberHelperId = palletNumberHelperForm.getEntityId();
 
-        boolean isSaved = (palletNumberHelperForm.getEntityId() != null);
+        boolean isSaved = (palletNumberHelperId != null);
 
-        if (isSaved && StringUtils.isNotEmpty(quantity) && StringUtils.isNotEmpty(firstNumber)) {
-            List<String> palletNumbers = palletNumberGenerator.list(firstNumber, Integer.valueOf(quantity));
+        if (isSaved) {
+            Entity palletNumberHelper = palletNumbersService.getPalletNumberHelper(palletNumberHelperId);
 
-            palletNumbersField.setFieldValue(buildPalletNumbersString(palletNumbers));
-            palletNumbersField.requestComponentUpdateState();
+            List<Entity> palletNumbers = palletNumberHelper.getManyToManyField(PalletNumberHelperFields.PALLET_NUMBERS);
+
+            numbersField.setFieldValue(buildNumbersString(palletNumbers));
+            numbersField.requestComponentUpdateState();
         }
     }
 
-    private String buildPalletNumbersString(final List<String> palletNumbers) {
-        StringBuilder palletNumbersString = new StringBuilder();
+    private String buildNumbersString(final List<Entity> palletNumbers) {
+        StringBuilder numbersString = new StringBuilder();
 
-        int i = 0;
+        if (!palletNumbers.isEmpty()) {
+            List<String> numbers = palletNumbersService.getNumbers(palletNumbers);
 
-        for (String palletNumber : palletNumbers) {
-            palletNumbersString.append(palletNumber);
+            int i = 0;
 
-            if (i != (palletNumbers.size() - 1)) {
-                palletNumbersString.append("\n");
+            for (String number : numbers) {
+                numbersString.append(number);
+
+                if (i != (palletNumbers.size() - 1)) {
+                    numbersString.append("\n");
+                }
+
+                i++;
             }
-
-            i++;
         }
-
-        return palletNumbersString.toString();
+        return numbersString.toString();
     }
 
     private void disableFields(final ViewDefinitionState view) {
         FormComponent palletNumberHelperForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent quantityField = (FieldComponent) view.getComponentByReference(PalletNumberHelperFields.QUANTITY);
 
-        boolean isEnabled = (palletNumberHelperForm.getEntityId() == null);
+        Long palletNumberHelperId = palletNumberHelperForm.getEntityId();
+
+        boolean isEnabled = (palletNumberHelperId == null);
 
         quantityField.setEnabled(isEnabled);
         quantityField.requestComponentUpdateState();
@@ -115,14 +123,22 @@ public class PalletNumberHelperDetailsHooks {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
+        RibbonGroup actionsRibbonGroup = ribbon.getGroupByName(L_ACTIONS);
         RibbonGroup printRibbonGroup = ribbon.getGroupByName(L_PRINT);
 
+        RibbonActionItem saveRibbonActionItem = actionsRibbonGroup.getItemByName(L_SAVE);
         RibbonActionItem printPalletNumberReportHelperRibbonActionItem = printRibbonGroup
                 .getItemByName(L_PRINT_PALLET_NUMBER_HELPER_REPORT);
 
         Long palletNumberHelperId = palletNumberHelperForm.getEntityId();
 
         boolean isEnabled = (palletNumberHelperId != null);
+
+        if (saveRibbonActionItem != null) {
+            saveRibbonActionItem.setEnabled(!isEnabled);
+
+            saveRibbonActionItem.requestUpdate(true);
+        }
 
         if (printPalletNumberReportHelperRibbonActionItem != null) {
             printPalletNumberReportHelperRibbonActionItem.setEnabled(isEnabled);

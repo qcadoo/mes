@@ -23,18 +23,48 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.PalletNumbersService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class PalletNumbersListListeners {
+
+    public static final String L_GRID = "grid";
+
+    @Autowired
+    private PalletNumbersService palletNumbersService;
 
     public void createPalletNumbers(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         String url = "../page/basic/palletNumberHelperDetails.html";
 
         view.openModal(url);
+    }
+
+    public void printPalletNumbersReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent palletNumbersGrid = (GridComponent) view.getComponentByReference(L_GRID);
+
+        Set<Long> palletNumberIds = palletNumbersGrid.getSelectedEntitiesIds();
+
+        List<Entity> palletNumbers = palletNumbersService.getPalletNumbers(palletNumberIds);
+
+        if (!palletNumbers.isEmpty()) {
+            Entity palletNumbersHelper = palletNumbersService.createPalletNumberHelper(palletNumbers.size(), true, palletNumbers);
+
+            if (palletNumbersHelper != null) {
+                Long labelsHelperId = palletNumbersHelper.getId();
+
+                view.redirectTo("/basic/palletNumberHelperReport.pdf?id=" + labelsHelperId, true, false);
+            }
+        }
     }
 
 }

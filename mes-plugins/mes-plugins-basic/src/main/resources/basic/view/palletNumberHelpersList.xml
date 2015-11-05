@@ -36,7 +36,6 @@
 		</ribbon>
 
 		<component type="grid" name="palletNumberHelpers" reference="grid">
-			<option type="column" name="firstNumber" fields="firstNumber" link="true"/>
 			<option type="column" name="quantity" fields="quantity" link="true"/>
 			<option type="column" name="createUser" fields="createUser" link="true"/>
 			<option type="column" name="createDate" fields="createDate" link="true"/>
@@ -56,5 +55,10 @@
 		<option type="fixedHeight" value="true"/>
 		<option type="header" value="false"/>
 	</component>
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.hooks.PalletNumberHelpersListHooks"
+					  method="onBeforeRender"/>
+	</hooks>
 
 </view>

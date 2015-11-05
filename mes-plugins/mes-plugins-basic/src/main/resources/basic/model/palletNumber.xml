@@ -35,6 +35,9 @@
             <validatesRegex pattern="[0-9]+"
                             message="basic.palletNumber.number.error.shouldContainOnlyNumbers"/>
         </string>
+
+        <manyToMany name="palletNumberHelpers" model="palletNumberHelper" joinField="palletNumbers"
+                    cascade="nullify" plugin="basic"/>
     </fields>
 
     <hooks>

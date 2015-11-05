@@ -33,6 +33,7 @@
 
 		<ribbon>
 			<template name="standardFormTemplate"/>
+
 			<group name="print">
 				<bigButton name="printPalletNumberReport" icon="pdfIcon24.png"
 						   state="enabled">
@@ -78,7 +79,7 @@
 
 			<listener event="printPalletNumberReport"
 					  class="com.qcadoo.mes.basic.listeners.PalletNumberDetailsListeners"
-					  method="printPalletNumberReport" />
+					  method="printPalletNumberReport"/>
 		</component>
 
 	</component>

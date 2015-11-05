@@ -38,6 +38,11 @@
 				<bigButton name="createPalletNumbers" icon="genealogyIcon24.png"
 						   state="enabled" action="#{grid}.fireEvent(createPalletNumbers);"/>
 			</group>
+
+			<group name="print">
+				<bigButton name="printPalletNumbersReport" icon="pdfIcon24.png"
+						   state="enabled" action="#{grid}.fireEvent(printPalletNumbersReport);"/>
+			</group>
 		</ribbon>
 
 		<component type="grid" name="palletNumbers" reference="grid">
@@ -58,10 +63,18 @@
 
 			<listener event="createPalletNumbers" class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
 					  method="createPalletNumbers"/>
+
+			<listener event="printPalletNumbersReport" class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
+					  method="printPalletNumbersReport"/>
 		</component>
 
 		<option type="fixedHeight" value="true"/>
 		<option type="header" value="false"/>
 	</component>
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.hooks.PalletNumbersListHooks"
+					  method="onBeforeRender"/>
+	</hooks>
 
 </view>

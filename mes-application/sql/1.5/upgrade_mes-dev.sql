@@ -1,5 +1,13 @@
+-- table: qcadoosecurity_role
+-- last touched: 02.11.2015 by lupo
+
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PALLET_NUMBERS', 'Dostęp do numerów własnych palet');
+
+-- end
+
+
 -- table: qcadooview_view, qcadooview_item
--- last touched: 25.10.2015 by lupo
+-- last touched: 02.11.2015 by lupo
 
 INSERT INTO qcadooview_view (pluginidentifier, name, view)
 VALUES (
@@ -92,7 +100,7 @@ VALUES ('basic', 'palletNumbers', TRUE,
 
 
 -- table: basic_palletnumber
--- last touched: 25.10.2015 by lupo
+-- last touched: 02.11.2015 by lupo
 
 CREATE TABLE basic_palletnumber
 (
@@ -110,23 +118,40 @@ CREATE TABLE basic_palletnumber
 
 
 -- table: basic_palletnumberhelper
--- last touched: 25.10.2015 by lupo
+-- last touched: 02.11.2015 by lupo
 
 CREATE TABLE basic_palletnumberhelper
 (
   id bigint NOT NULL,
-  firstnumber character varying(6),
   quantity integer,
   active boolean DEFAULT true,
   createdate timestamp without time zone,
   updatedate timestamp without time zone,
   createuser character varying(255),
   updateuser character varying(255),
+  temporary boolean DEFAULT false,
   CONSTRAINT basic_palletnumberhelper_pkey PRIMARY KEY (id)
 );
 
---
 -- end
+
+
+-- table: basic_palletnumberhelper
+-- last touched: 02.11.2015 by lupo
+
+CREATE TABLE jointable_palletnumber_palletnumberhelper
+(
+  palletnumberhelper_id bigint NOT NULL,
+  palletnumber_id bigint NOT NULL,
+  CONSTRAINT jointable_palletnumber_palletnumberhelper_pkey PRIMARY KEY (palletnumber_id, palletnumberhelper_id),
+  CONSTRAINT palletnumber_palletnumberhelper_palletnumberhelper_fkey FOREIGN KEY (palletnumberhelper_id)
+      REFERENCES basic_palletnumberhelper (id) DEFERRABLE,
+  CONSTRAINT palletnumber_palletnumberhelper_palletnumber_fkey FOREIGN KEY (palletnumber_id)
+      REFERENCES basic_palletnumber (id) DEFERRABLE
+);
+
+-- end
+
 
 -- add showmaterialcomponent parameter in operation component
 -- last touched 28.10.2015 by pako
