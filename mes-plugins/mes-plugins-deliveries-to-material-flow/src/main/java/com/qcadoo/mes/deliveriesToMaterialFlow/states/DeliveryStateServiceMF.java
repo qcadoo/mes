@@ -29,6 +29,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -46,8 +48,10 @@ import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
 public class DeliveryStateServiceMF {
@@ -64,11 +68,19 @@ public class DeliveryStateServiceMF {
     public void createDocumentsForTheReceivedProducts(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
 
+        createDocuments(delivery);
+        if (!delivery.isValid()) {
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    private void createDocuments(final Entity delivery) {
+
         Entity location = location(delivery);
         if (location == null) {
             return;
         }
-
         Entity currency = currency(delivery);
 
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
@@ -89,7 +101,14 @@ public class DeliveryStateServiceMF {
                         batch(deliveredProduct), productionDate(deliveredProduct), expirationDate(deliveredProduct));
             }
         }
-        documentBuilder.setAccepted().build();
+        Entity createdDocument = documentBuilder.setAccepted().build();
+        if (!createdDocument.isValid()) {
+            delivery.addGlobalError("deliveriesToMaterialFlow.deliveryStateValidator.error.document", true);
+            for (ErrorMessage error : createdDocument.getGlobalErrors()) {
+                delivery.addGlobalError(error.getMessage(), error.getAutoClose());
+            }
+        }
+
     }
 
     private Entity currency(Entity delivery) {
