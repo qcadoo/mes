@@ -119,7 +119,7 @@
                         defaultAuthorizationRole="ROLE_MAINTENANCE"/>
 
         <menu:menu-item name="events" category="maintenance" view="eventsList"
-                        defaultAuthorizationRole="ROLE_MAINTENANCE"/>
+                        defaultAuthorizationRole="ROLE_EVENTS"/>
 
         <menu:menu-item name="machineParts" category="basic" view="machinePartsList"
                         defaultAuthorizationRole="ROLE_MACHINE_PARTS"/>
