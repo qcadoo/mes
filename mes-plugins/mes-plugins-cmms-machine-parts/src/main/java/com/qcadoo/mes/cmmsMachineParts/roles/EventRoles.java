@@ -136,7 +136,7 @@ public enum EventRoles {
             }
         }
     },
-    ROLE_EVENTS_EXPORT {
+    ROLE_EVENTS_LIST_EXPORT {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {

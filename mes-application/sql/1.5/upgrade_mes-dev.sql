@@ -178,6 +178,7 @@ INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_S
 INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_DELETE_ATTACHMENT', 'Dostęp do dodawania załączników');
 INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_EDIT_AFTER_SAVE', 'Dostęp do edycji tylko przed zapisem');
 INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_VIEW_PARTS_TIME_DESCRIPTION', 'Dostęp do zakładek części, czas pracy, opis rozwiązania');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_LIST_EXPORT', 'Dostęp do eksportu zdarzeń');
 
 UPDATE qcadooview_item SET authrole = 'ROLE_EVENTS' WHERE name = 'eventsList';
 UPDATE qcadooview_item SET authrole = 'ROLE_EVENTS' WHERE name = 'maintenanceEventDetails';
