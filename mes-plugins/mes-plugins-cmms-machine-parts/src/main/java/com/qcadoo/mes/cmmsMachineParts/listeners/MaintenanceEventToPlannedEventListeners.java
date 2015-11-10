@@ -138,6 +138,8 @@ public class MaintenanceEventToPlannedEventListeners {
                 maintenanceEvent.getBelongsToField(PlannedEventFields.PRODUCTION_LINE));
         plannedEvent.setField(PlannedEventFields.WORKSTATION, maintenanceEvent.getBelongsToField(PlannedEventFields.WORKSTATION));
         plannedEvent.setField(PlannedEventFields.SUBASSEMBLY, maintenanceEvent.getBelongsToField(PlannedEventFields.SUBASSEMBLY));
+        plannedEvent.setField(PlannedEventFields.SOURCE_COST,
+                maintenanceEvent.getBelongsToField(MaintenanceEventFields.SOURCE_COST));
         plannedEvent.setField(PlannedEventFields.DESCRIPTION, description);
         plannedEvent.setField(PlannedEventFields.MAINTENANCE_EVENT, maintenanceEvent);
         plannedEvent.setField(PlannedEventFields.BASED_ON, PlannedEventBasedOn.DATE.getStringValue());
