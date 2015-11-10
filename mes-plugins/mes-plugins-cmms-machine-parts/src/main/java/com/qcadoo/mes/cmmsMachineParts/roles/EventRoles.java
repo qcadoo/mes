@@ -63,21 +63,21 @@ public enum EventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            lockFromRibbonGroup(view, "customActions", "addFailure", "addFailure");
+            lockFromRibbonGroup(view, "customActions", "addFailure");
         }
     },
     ROLE_EVENTS_ADD_ISSUE {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            lockFromRibbonGroup(view, "customActions", "addFailure", "addIssue");
+            lockFromRibbonGroup(view, "customActions", "addIssue");
         }
     },
     ROLE_EVENTS_ADD_PROPOSAL {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            lockFromRibbonGroup(view, "customActions", "addFailure", "addProposal");
+            lockFromRibbonGroup(view, "customActions", "addProposal");
         }
     },
     ROLE_EVENTS_TAB_DOCUMENTS {
@@ -144,23 +144,6 @@ public enum EventRoles {
         }
     };
 
-    /*
-     * ROLE_EVENTS_PLANNER {
-     * @Override public void disableFieldsForRole(ViewDefinitionState view) { WindowComponent window = (WindowComponent)
-     * view.getComponentByReference("window"); Ribbon ribbon = window.getRibbon(); lockFromGroup(ribbon, "actions", "delete",
-     * "accept"); } }, ROLE_EVENTS_ADMIN, ROLE_EVENTS_MAINTENANCE_WORKER {
-     * @Override public void disableFieldsForRole(ViewDefinitionState view) { WindowComponent window = (WindowComponent)
-     * view.getComponentByReference("window"); Ribbon ribbon = window.getRibbon(); lockFromGroup(ribbon, "actions", "delete",
-     * "accept"); lockFromGroup(ribbon, "customActions", "addFailure", "addIssue"); lockFromGroup(ribbon, "status", "planEvent",
-     * "revokeEvent"); hideTabs(view, "documentsTab", "history"); lockComponents(view, "sourceCost", "attachments"); } },
-     * ROLE_EVENTS_PRODUCTION {
-     * @Override public void disableFieldsForRole(ViewDefinitionState view) { WindowComponent window = (WindowComponent)
-     * view.getComponentByReference("window"); Ribbon ribbon = window.getRibbon(); lockFromGroup(ribbon, "actions", "delete",
-     * "accept"); lockFromGroup(ribbon, "customActions", "addFailure", "addIssue"); lockFromGroup(ribbon, "status", "startEvent",
-     * "stopEvent", "acceptEvent", "planEvent", "revokeEvent"); hideTabs(view, "documentsTab", "history"); lockTabs(view,
-     * "machinePartsTab"); lockComponents(view, "sourceCost", "attachments"); } }, ROLE_EVENTS_SHIFT_LEADER,
-     * ROLE_EVENTS_QUALITY_ASSURANCE, ROLE_EVENTS_PALLET, ROLE_EVENTS_HR_WORKER;
-     */
     public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
 
     }
