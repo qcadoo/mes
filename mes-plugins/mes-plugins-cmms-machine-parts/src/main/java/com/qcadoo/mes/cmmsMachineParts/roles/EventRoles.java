@@ -1,11 +1,14 @@
 package com.qcadoo.mes.cmmsMachineParts.roles;
 
+import java.util.List;
+
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
@@ -196,6 +199,11 @@ public enum EventRoles {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity event = form.getEntity();
         String eventState = event.getStringField(MaintenanceEventFields.STATE);
+        if (eventState == null) {
+            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            List<Entity> entities = grid.getSelectedEntities();
+            return entities.stream().allMatch(e -> state.getStringValue().equals(e.getStringField(MaintenanceEventFields.STATE)));
+        }
         return state.getStringValue().equals(eventState);
     }
 }
