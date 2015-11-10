@@ -1,5 +1,8 @@
 package com.qcadoo.mes.cmmsMachineParts.roles;
 
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -21,14 +24,18 @@ public enum EventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            lockFromRibbonGroup(view, "status", "startEvent");
+            if (!eventInState(view, MaintenanceEventState.IN_PROGRESS)) {
+                lockFromRibbonGroup(view, "status", "startEvent");
+            }
         }
     },
     ROLE_EVENTS_STOP {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            lockFromRibbonGroup(view, "status", "stopEvent");
+            if (eventInState(view, MaintenanceEventState.IN_PROGRESS)) {
+                lockFromRibbonGroup(view, "status", "startEvent");
+            }
         }
     },
     ROLE_EVENTS_PLAN {
@@ -49,14 +56,18 @@ public enum EventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            lockFromRibbonGroup(view, "status", "closeEvent");
+            if (!eventInState(view, MaintenanceEventState.EDITED)) {
+                lockFromRibbonGroup(view, "status", "closeEvent");
+            }
         }
     },
     ROLE_EVENTS_ACCEPT {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            lockFromRibbonGroup(view, "status", "acceptEvent");
+            if (eventInState(view, MaintenanceEventState.EDITED)) {
+                lockFromRibbonGroup(view, "status", "closeEvent");
+            }
         }
     },
     ROLE_EVENTS_ADD_FAILURE {
@@ -172,15 +183,6 @@ public enum EventRoles {
         }
     }
 
-    protected void lockTabs(ViewDefinitionState view, String... tabs) {
-        for (String tab : tabs) {
-            ComponentState tabComponent = view.getComponentByReference(tab);
-            if (tabComponent != null) {
-                tabComponent.setEnabled(false);
-            }
-        }
-    }
-
     protected void lockComponents(ViewDefinitionState view, String... components) {
         for (String component : components) {
             ComponentState componentState = view.getComponentByReference(component);
@@ -188,5 +190,12 @@ public enum EventRoles {
                 componentState.setEnabled(false);
             }
         }
+    }
+
+    protected boolean eventInState(ViewDefinitionState view, MaintenanceEventState state) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity event = form.getEntity();
+        String eventState = event.getStringField(MaintenanceEventFields.STATE);
+        return state.getStringValue().equals(eventState);
     }
 }
