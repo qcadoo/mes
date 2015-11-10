@@ -132,7 +132,7 @@ public enum EventRoles {
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
             FormComponent form = (FormComponent) view.getComponentByReference("form");
             if (form != null && form.getEntity().getId() != null) {
-                lockComponents(view, "number", "staffWorkTimes", "solutionDescription");
+                lockComponents(view, "machinePartsForEvent", "staffWorkTimes", "solutionDescription");
             }
         }
     },
