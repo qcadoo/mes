@@ -92,6 +92,8 @@
 
         <security:role identifier="ROLE_STAFF_WAGES" description="Dostęp pracowników, płac, grup płacowych"/>
 
+        <security:role identifier="ROLE_MAINTENANCE_MENU" description="Dostęp do utrzymania ruchu w menu"/>
+
         <security:role identifier="ROLE_MAINTENANCE" description="Dostęp do utrzymania ruchu, typów usterek"/>
 
         <security:role identifier="ROLE_MACHINE_PARTS" description="Dostęp do części"/>
@@ -125,6 +127,74 @@
         <security:role identifier="ROLE_BATCHES" description="Dostęp do partii"/>
 
         <security:role identifier="ROLE_PALLET_NUMBERS" description="Dostęp do numerów własnych palet"/>
+
+        <!-- Event roles -->
+        <security:role identifier="ROLE_EVENTS" description="Dostęp do zdarzeń"/>
+
+        <security:role identifier="ROLE_EVENTS_DELETE" description="Dostęp do usuwania zdarzeń"/>
+        <security:role identifier="ROLE_EVENTS_START" description="Dostęp do rozpoczynania zdarzeń"/>
+        <security:role identifier="ROLE_EVENTS_STOP" description="Dostęp do zatrzymywania zdarzeń"/>
+        <security:role identifier="ROLE_EVENTS_REVOKE" description="Dostęp do unieważniania zdarzeń"/>
+        <security:role identifier="ROLE_EVENTS_CLOSE" description="Dostęp do zamykania zdarzeń"/>
+        <security:role identifier="ROLE_EVENTS_PLAN" description="Dostęp do planowania zdarzeń"/>
+        <security:role identifier="ROLE_EVENTS_ACCEPT" description="Dostęp do akceptowania zdarzeń"/>
+
+        <security:role identifier="ROLE_EVENTS_ADD_FAILURE" description="Dostęp do dodawnia awarii"/>
+        <security:role identifier="ROLE_EVENTS_ADD_ISSUE" description="Dostęp do dodawania problemu"/>
+        <security:role identifier="ROLE_EVENTS_ADD_PROPOSAL" description="Dostęp do dodawania wniosku"/>
+
+        <security:role identifier="ROLE_EVENTS_TAB_DOCUMENTS" description="Dostęp do dokumentów zdarzenia"/>
+        <security:role identifier="ROLE_EVENTS_TAB_HISTORY" description="Dostęp do historii zdarzenia"/>
+        <security:role identifier="ROLE_EVENTS_TAB_ATTACHMENTS" description="Dostęp do załączników zdarzenia"/>
+
+        <security:role identifier="ROLE_EVENTS_SOURCE_COST_CHANGE" description="Dostęp do zmiany źródła kosztów"/>
+        <security:role identifier="ROLE_EVENTS_DELETE_ATTACHMENT" description="Dostęp do dodawania załączników"/>
+        <security:role identifier="ROLE_EVENTS_EDIT_AFTER_SAVE" description="Dostęp do edycji tylko przed zapisem"/>
+        <security:role identifier="ROLE_EVENTS_VIEW_PARTS_TIME_DESCRIPTION"
+                       description="Dostęp do zakładek części, czas pracy, opis rozwiązania"/>
+        <security:role identifier="ROLE_EVENTS_LIST_EXPORT" description="Dostęp do eksportu"/>
+
+        <!-- end -->
+
+        <!-- roles for planned events -->
+        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_ADD"
+                       description="Dostęp do dodawania zdarzeń planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_REMOVE"
+                       description="Dostęp do usuwania zdarzeń planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_EDIT"
+                       description="Dostęp do akcji edycji zdarzeń planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_VIEW"
+                       description="Dostęp do wyświetlania zdarzeń planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_BASIC_EDIT"
+                       description="Dostęp do edycji lokalizacji i rzeczywistego stanu licznika w zdarzeniach planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_ADVANCED_EDIT"
+                       description="Dostęp do edycji definicji (numer, rodzaj, planowany termin itd.) w zdarzeniach planowanych"/>
+
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_DOCUMENTS"
+                       description="Dostęp do dokumentów w zdarzeniach planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_HISTORY"
+                       description="Dostęp do historii w zdarzeniach planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_OTHER"
+                       description="Dostęp do zmian statusów (bez akceptacji) w zdarzeniach planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_ACCEPT"
+                       description="Dostęp do akceptacji w zdarzeniach planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS"
+                       description="Dostęp do załączników w zdarzeniach planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS_REMOVE"
+                       description="Dostęp do usuwania załączników w zdarzeniach planowanych"/>
+
+        <!-- end -->
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>

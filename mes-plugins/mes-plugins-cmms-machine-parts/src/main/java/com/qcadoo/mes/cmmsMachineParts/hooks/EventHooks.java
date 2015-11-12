@@ -42,8 +42,11 @@ import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.roles.EventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -76,6 +79,12 @@ public class EventHooks {
     @Autowired
     private SourceCostService sourceCostService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private SecurityService securityService;
+
     public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
         setEventCriteriaModifiers(view);
         setUpFaultTypeLookup(view);
@@ -87,6 +96,7 @@ public class EventHooks {
         disableFieldsForState(view);
         toggleOldSolutionsButton(view);
         enableShowPlannedEvent(view);
+        hideAccordingToRole(view);
     }
 
     public void plannedEventBeforeRender(final ViewDefinitionState view) {
@@ -379,5 +389,15 @@ public class EventHooks {
 
     public final void onBeforeRenderListView(final ViewDefinitionState view) {
         maintenanceEventContextService.beforeRenderListView(view);
+        hideAccordingToRole(view);
+    }
+
+    public void hideAccordingToRole(ViewDefinitionState view) {
+        Entity user = userService.getCurrentUserEntity();
+        for (EventRoles role : EventRoles.values()) {
+            if (!securityService.hasRole(user, role.toString())) {
+                role.disableFieldsWhenNotInRole(view);
+            }
+        }
     }
 }
