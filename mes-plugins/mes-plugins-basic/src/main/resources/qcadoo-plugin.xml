@@ -191,7 +191,7 @@
 
         <model:dictionary name="typeOfPallet"/>
 
-        <menu:menu-category name="basic" defaultAuthorizationRole="ROLE_BASIC"/>
+        <menu:menu-category name="basic"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
 
         <menu:menu-item-url name="home" category="home"
