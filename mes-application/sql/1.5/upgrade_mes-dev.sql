@@ -1,4 +1,4 @@
-﻿-- table: qcadoosecurity_role
+-- table: qcadoosecurity_role
 -- last touched: 02.11.2015 by lupo
 
 INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PALLET_NUMBERS', 'Dostęp do numerów własnych palet');
@@ -159,26 +159,3 @@ CREATE TABLE jointable_palletnumber_palletnumberhelper
 ALTER TABLE technologies_operationproductincomponent ADD COLUMN showmaterialcomponent boolean;
 
 -- end
-
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS', 'Dostęp do zdarzeń');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_DELETE', 'Dostęp do usuwania zdarzeń');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_START', 'Dostęp do rozpoczynania zdarzeń');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_STOP', 'Dostęp do zatrzymywania zdarzeń');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_REVOKE', 'Dostęp do unieważniania zdarzeń');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_CLOSE', 'Dostęp do zamykania zdarzeń');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_PLAN', 'Dostęp do planowania zdarzeń');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_ACCEPT', 'Dostęp do akceptowania zdarzeń');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_ADD_FAILURE', 'Dostęp do dodawania awarii');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_ADD_ISSUE', 'Dostęp do dodawania problemu');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_ADD_PROPOSAL', 'Dostęp do dodawania wniosku');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_TAB_DOCUMENTS', 'Dostęp do dokumentów zdarzenia');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_TAB_HISTORY', 'Dostęp do historii zdarzenia');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_TAB_ATTACHMENTS', 'Dostęp do załączników zdarzenia');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_SOURCE_COST_CHANGE', 'Dostęp do zmiany źródła kosztów');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_DELETE_ATTACHMENT', 'Dostęp do usuwania załączników w zdarzeniach');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_EDIT_AFTER_SAVE', 'Dostęp do edycji tylko przed zapisem');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_VIEW_PARTS_TIME_DESCRIPTION', 'Dostęp do zakładek części, czas pracy, opis rozwiązania');
-INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_LIST_EXPORT', 'Dostęp do eksportu zdarzeń');
-
-UPDATE qcadooview_item SET authrole = 'ROLE_EVENTS' WHERE name = 'eventsList';
-UPDATE qcadooview_item SET authrole = 'ROLE_EVENTS' WHERE name = 'maintenanceEventDetails';
