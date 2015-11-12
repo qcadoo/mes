@@ -216,7 +216,7 @@
                     method="checkIfTechnologyIsPrototypeForOrders"/>
         </model:model-hook>
 
-        <menu:menu-category name="orders" defaultAuthorizationRole="ROLE_PLANNING"/>
+        <menu:menu-category name="orders"/>
         <menu:menu-category name="ordersTracking" defaultAuthorizationRole="ROLE_ORDERS_TRACKING"/>
 
         <menu:menu-item name="productionOrders" category="orders"

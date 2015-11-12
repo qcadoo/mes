@@ -113,7 +113,7 @@
         <view:view resource="view/sourceCostDetails.xml"/>
         <view:view resource="view/sourceCostList.xml"/>
 
-        <menu:menu-category name="maintenance" defaultAuthorizationRole="ROLE_MAINTENANCE"/>
+        <menu:menu-category name="maintenance"/>
 
         <menu:menu-item name="sourceCostList" category="maintenance" view="sourceCostList"
                         defaultAuthorizationRole="ROLE_SOURCE_COST"/>
