@@ -205,10 +205,10 @@
         <menu:menu-item name="documents" category="materialFlow"
                         view="documentsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
         <menu:menu-item name="warehouseStock" category="materialFlow"
-                        view="warehouseStocksList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+                        view="warehouseStocksList" defaultAuthorizationRole="ROLE_WAREHOUSE_STATES"/>
 
         <menu:menu-item name="documentPositions" category="materialFlow"
-                        view="documentPositionsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+                        view="documentPositionsList" defaultAuthorizationRole="ROLE_DOCUMENT_POSITIONS"/>
 
         <menu:menu-item name="storageLocations" category="materialFlow"
                         view="storageLocationList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>

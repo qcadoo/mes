@@ -83,7 +83,9 @@
 
         <security:role identifier="ROLE_COMPANY" description="Dostęp do firmy"/>
 
-        <security:role identifier="ROLE_COMPANY_STRUCTURE" description="Dostęp do struktury firmy"/>
+        <security:role identifier="ROLE_COMPANY_STRUCTURE" description="Dostęp do struktury firmy - podgląd"/>
+
+        <security:role identifier="ROLE_COMPANY_STRUCTURE_EDIT" description="Dostęp do struktury firmy - akcje"/>
 
         <security:role identifier="ROLE_BASE_FUNCTIONALITY"
                        description="Dostęp do funkcjonlności nie określonych innymi rolami"/>
@@ -110,6 +112,10 @@
                        description="Dostęp do grup technologii, operacji i grup operacji"/>
 
         <security:role identifier="ROLE_PLANNING" description="Dostęp do planowania zleceń"/>
+
+        <security:role identifier="ROLE_PLANNING_ON_LINE_VIEW" description="Dostęp do planowania na linie - podgląd"/>
+
+        <security:role identifier="ROLE_PLANNING_ON_LINE_ACTIONS" description="Dostęp do planowania na linie - akcje"/>
 
         <security:role identifier="ROLE_PRODUCTION_COUNTING"
                        description="Dostęp do  rozliczenia produkcji"/>
@@ -196,6 +202,26 @@
 
         <!-- end -->
 
+        <security:role identifier="ROLE_SHIFTS" description="Dostęp do zmian"/>
+
+        <security:role identifier="ROLE_CREW" description="Dostęp do załóg"/>
+
+        <security:role identifier="ROLE_FAULT_TYPES" description="Dostęp do typów usterek"/>
+
+        <security:role identifier="ROLE_DOCUMENT_POSITIONS" description="Dostęp do pozycji dokumentów"/>
+
+        <security:role identifier="ROLE_WAREHOUSE_STATES" description="Dostęp do stanów magazynowych"/>
+
+        <security:role identifier="ROLE_ASSIGNMENT_TO_SHIFT" description="Dostęp do przydziału do zmian"/>
+
+        <security:role identifier="ROLE_SOURCE_COST" description="Dostęp do źródeł kosztów"/>
+
+        <security:role identifier="ROLE_CMMS_SCHEDULER" description="Dostęp do kalendarza zdarzeń"/>
+
+        <security:role identifier="ROLE_RECURRING_EVENTS" description="Dostęp do zdarzeń cyklicznych"/>
+
+        <security:role identifier="ROLE_CALCULATIONS" description="Dostęp do kalkulacji"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -235,7 +261,7 @@
 
         <model:dictionary name="typeOfPallet"/>
 
-        <menu:menu-category name="basic" defaultAuthorizationRole="ROLE_BASIC"/>
+        <menu:menu-category name="basic"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
 
         <menu:menu-item-url name="home" category="home"
@@ -248,8 +274,8 @@
                         view="countriesList" defaultAuthorizationRole="ROLE_COUNTRIES"/>
 
         <menu:menu-item name="staff" category="basic" view="staffsList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
-        <menu:menu-item name="crews" category="basic" view="crewsList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
-        <menu:menu-item name="shifts" category="basic" view="shiftsList"/>
+        <menu:menu-item name="crews" category="basic" view="crewsList" defaultAuthorizationRole="ROLE_CREW"/>
+        <menu:menu-item name="shifts" category="basic" view="shiftsList" defaultAuthorizationRole="ROLE_SHIFTS"/>
         <menu:menu-item name="products" category="basic" view="productsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
         <menu:menu-item name="productsFamilies" category="basic"
                         view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES"/>

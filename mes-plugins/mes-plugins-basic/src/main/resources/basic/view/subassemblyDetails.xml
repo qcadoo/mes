@@ -31,9 +31,85 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
+            </group>
 
-            <group name="atachments">
+            <group name="actions" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;" accesskey="s" />
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled" action="#{form}.performSave; #{window}.performBack;" />
+                <smallButton name="saveNew" icon="saveNewIcon16.png" state="enabled" action="#{form}.performSaveAndClear;" />
+                <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{form}.performCopy;" accesskey="c">
+                    <script><![CDATA[
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{form}.performDelete;" accesskey="d">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;" accesskey="x" />
+            </group>
+
+            <group name="actions" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;" accesskey="r" />
+            </group>
+
+            <group name="states" if="#view.getComponentByReference('form').dataDefinition.activable" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+                <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled" action="#{form}.performActivate;">
+                    <script><![CDATA[
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId && !value.content.isActive) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled" action="#{form}.performDeactivate;">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId && value.content.isActive) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+            </group>
+
+            <group name="atachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                 <bigButton name="downloadAtachment" icon="generateIcon24.png"
                            state="enabled">
                     <script>
@@ -49,7 +125,7 @@
             </group>
         </ribbon>
         <windowTab name="mainTab" reference="mainTab">
-            <component type="form" name="subassembly" reference="form">
+            <component type="form" name="subassembly" reference="form" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="6">
                     <layoutElement column="1" row="1">
@@ -139,7 +215,7 @@
                         <option type="multiselect" value="true"/>
                     </component>
                     <component type="grid" name="companies" reference="companies"
-                               source="#{form}.companies">
+                               source="#{form}.companies" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                         <option type="column" name="number" fields="number" width="50"/>
                         <option type="column" name="name" fields="name" width="100"/>
                         <option type="column" name="city" fields="city" link="true"
@@ -178,7 +254,7 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="2" row="1" width="2" height="6">
-                    <component type="grid" name="attachments"
+                    <component type="grid" name="attachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT"
                                reference="attachments" source="#{form}.attachments">
                         <option type="column" name="attachment" fields="name"/>
                         <option type="column" name="size" fields="size"/>
