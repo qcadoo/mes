@@ -1,4 +1,4 @@
-﻿-- table: qcadoosecurity_role
+﻿a-- table: qcadoosecurity_role
 -- last touched: 02.11.2015 by lupo
 
 INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PALLET_NUMBERS', 'Dostęp do numerów własnych palet');
@@ -182,3 +182,24 @@ INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_EVENTS_L
 
 UPDATE qcadooview_item SET authrole = 'ROLE_EVENTS' WHERE name = 'eventsList';
 UPDATE qcadooview_item SET authrole = 'ROLE_EVENTS' WHERE name = 'maintenanceEventDetails';
+
+
+-- added roles for planned events
+-- last touched 10.11.2015 by kama
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_ACTIONS_ADD', 'Dostęp do dodawania zdarzeń planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_ACTIONS_REMOVE', 'Dostęp do usuwania zdarzeń planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_ACTIONS_VIEW', 'Dostęp do wyświetlania zdarzeń planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_BASIC_EDIT', 'Dostęp do edycji lokalizacji i rzeczywistego stanu licznika w zdarzeniach planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_ADVANCED_EDIT', 'Dostęp do edycji definicji (numer, rodzaj, planowany termin itd.) w zdarzeniach planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_DATES_EDIT', 'Dostęp do edycji dat i osób w zdarzeniach planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_DOCUMENTS', 'Dostęp do dokumentów w zdarzeniach planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_HISTORY', 'Dostęp do historii w zdarzeniach planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_STATES_OTHER', 'Dostęp do zmian statusów (bez akceptacji) w zdarzeniach planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_STATES_ACCEPT', 'Dostęp do akceptacji w zdarzeniach planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_STATES_REALIZED', 'Dostęp do realizacji w zdarzeniach planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_ATTACHMENTS', 'Dostęp do załączników w zdarzeniach planowanych');
+INSERT INTO qcadoosecurity_role (identifier, description) VALUES ('ROLE_PLANNED_EVENTS_ATTACHMENTS_REMOVE', 'Dostęp do usuwania załączników w zdarzeniach planowanych');
+
+UPDATE qcadooview_item SET authrole = 'ROLE_PLANNED_EVENTS_ACTIONS_VIEW' WHERE name = 'plannedEventsList';
+
+-- end

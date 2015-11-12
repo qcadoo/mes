@@ -38,8 +38,11 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
+import com.qcadoo.mes.cmmsMachineParts.roles.PlannedEventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventState;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -62,6 +65,12 @@ public class PlannedEventDetailsHooks {
 
     @Autowired
     private EventHooks eventHooks;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private SecurityService securityService;
 
     private List<String> previouslyHiddenTabs = Lists.newArrayList();
 
@@ -86,6 +95,7 @@ public class PlannedEventDetailsHooks {
             lockView(view);
         }
 
+        processRoles(view);
         disableFieldsForState(view);
     }
 
@@ -227,5 +237,14 @@ public class PlannedEventDetailsHooks {
         plannedEventMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
         plannedEventMultiUploadLocale.requestComponentUpdateState();
 
+    }
+
+    public void processRoles(ViewDefinitionState view) {
+        Entity user = userService.getCurrentUserEntity();
+        for (PlannedEventRoles role : PlannedEventRoles.values()) {
+            if (!securityService.hasRole(user, role.toString())) {
+                role.disableFieldsWhenNotInRole(view);
+            }
+        }
     }
 }

@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_PLANNED_EVENTS_ACTIONS_VIEW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="plannedEventsList" modelName="plannedEventContext" modelPlugin="cmmsMachineParts" menuAccessible="true">
@@ -45,7 +45,7 @@
                 </bigButton>
             </group>
 
-            <group name="customActions">
+            <group name="customActions" defaultAuthorizationRole="ROLE_PLANNED_EVENTS_ACTIONS_ADD">
                 <bigButton name="addPlannedEvent" icon="newIcon24.png" action="#{window}.fireEvent(addPlannedEvent);"
                            state="disabled"/>
             </group>
@@ -61,7 +61,7 @@
                              state="disabled" action="#{grid}.changeState(realizedEvent);"/>
             </group>
 
-            <group name="maintenanceEvents">
+            <group name="maintenanceEvents" defaultAuthorizationRole="ROLE_EVENTS">
                 <bigButton name="showMaintenanceEvent" icon="genealogyIcon24.png"
                            action="#{grid}.fireEvent(showMaintenanceEvent);" state="disabled">
                 </bigButton>
@@ -433,5 +433,7 @@
         <beforeRender
                 class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
                 method="onBeforeRenderListView"/>
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventDetailsHooks"
+                      method="processRoles"/>
     </hooks>
 </view>
