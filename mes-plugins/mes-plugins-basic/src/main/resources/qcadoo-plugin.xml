@@ -222,6 +222,15 @@
 
         <security:role identifier="ROLE_CALCULATIONS" description="Dostęp do kalkulacji"/>
 
+        <security:role identifier="ROLE_DELIVERIES_EDIT"
+                       description="Dostęp do usuwania i aktywowania dostaw"/>
+
+        <security:role identifier="ROLE_DELIVERIES_STATES_DECLINE"
+                       description="Dostęp do odrzucania dostaw"/>
+
+        <security:role identifier="ROLE_DELIVERIES_STATES_OTHER"
+                       description="Dostęp do zmian statusów dostaw"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
