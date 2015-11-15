@@ -64,6 +64,10 @@
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
+        <decimal name="technicalProductionCosts">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
 		<decimal name="productionCostMargin">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
@@ -125,7 +129,7 @@
 		<string name="description">
 			<validatesLength max="2024" />
 		</string>
-		
+
 		<boolean name="includeTPZ" default="true" />
 		<boolean name="includeAdditionalTime" default="true" />
 		<boolean name="printCostNormsOfMaterials" default="true" />

@@ -120,6 +120,10 @@ public class PlannedEventHooks {
             event.addGlobalError("cmmsMachineParts.plannedEvent.error.cannotDeleteRelatedPlannedEvent");
             return false;
         }
+        if (!event.getHasManyField(PlannedEventFields.RELATED_EVENTS).isEmpty()) {
+            event.addGlobalError("cmmsMachineParts.plannedEvent.error.cannotDeleteEventWithRelatedEvents");
+            return false;
+        }
         return true;
     }
 }

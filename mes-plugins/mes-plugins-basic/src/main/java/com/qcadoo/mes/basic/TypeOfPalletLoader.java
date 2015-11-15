@@ -134,7 +134,8 @@ public class TypeOfPalletLoader {
         Entity dictionaryItem = dictionariesService.getDictionaryItemDD().create();
 
         dictionaryItem.setField(DictionaryItemFields.NAME, typeOfPalletAttributes.get(L_NAME.toLowerCase(Locale.ENGLISH)));
-        dictionaryItem.setField(DictionaryItemFields.TECHNICAL_CODE, typeOfPalletAttributes.get(L_TECHNICAL_CODE.toLowerCase(Locale.ENGLISH)));
+        dictionaryItem.setField(DictionaryItemFields.TECHNICAL_CODE,
+                typeOfPalletAttributes.get(L_TECHNICAL_CODE.toLowerCase(Locale.ENGLISH)));
         dictionaryItem.setField(DictionaryItemFields.DICTIONARY, getTypeOfPalletDictionary());
 
         dictionaryItem = dictionaryItem.getDataDefinition().save(dictionaryItem);
@@ -158,10 +159,12 @@ public class TypeOfPalletLoader {
     }
 
     private boolean databaseHasToBePrepared() {
-        return dictionariesService.getDictionaryItemDD().find()
+        return dictionariesService
+                .getDictionaryItemDD()
+                .find()
                 .add(belongsTo(DictionaryItemFields.DICTIONARY, getTypeOfPalletDictionary()))
-                .add(SearchRestrictions.or(eq(DictionaryItemFields.TECHNICAL_CODE, "01epal"), eq(DictionaryItemFields.TECHNICAL_CODE, "02cheapEur"))).list()
-                .getTotalNumberOfEntities() == 0;
+                .add(SearchRestrictions.or(eq(DictionaryItemFields.TECHNICAL_CODE, "01epal"),
+                        eq(DictionaryItemFields.TECHNICAL_CODE, "02cheapEur"))).list().getTotalNumberOfEntities() == 0;
     }
 
     private InputStream getTypeOfPalletXmlFile() throws IOException {
@@ -170,7 +173,8 @@ public class TypeOfPalletLoader {
     }
 
     public Entity getTypeOfPalletDictionary() {
-        return dictionariesService.getDictionaryDD().find().add(SearchRestrictions.eq(DictionaryItemFields.NAME, L_TYPE_OF_PALLET)).setMaxResults(1).uniqueResult();
+        return dictionariesService.getDictionaryDD().find()
+                .add(SearchRestrictions.eq(DictionaryItemFields.NAME, L_TYPE_OF_PALLET)).setMaxResults(1).uniqueResult();
     }
 
 }

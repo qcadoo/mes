@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_EVENTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="maintenanceEventDetails" modelName="maintenanceEvent" modelPlugin="cmmsMachineParts">
@@ -454,7 +454,7 @@
             </component>
         </windowTab>
 
-        <windowTab name="machinePartsTab">
+        <windowTab name="machinePartsTab" reference="machinePartsTab">
             <component type="gridLayout" name="machinePartsGridLayout" columns="1"
                        rows="1">
                 <layoutElement column="1" row="1">
@@ -488,7 +488,7 @@
                 </layoutElement>
             </component>
         </windowTab>
-        <windowTab name="documentsTab">
+        <windowTab name="documentsTab" reference="documentsTab">
             <component type="gridLayout" name="documentsGridLayout" columns="1"
                        rows="1">
                 <layoutElement column="1" row="1">
@@ -531,7 +531,7 @@
                 </layoutElement>
             </component>
         </windowTab>
-        <windowTab name="history">
+        <windowTab name="history" reference="history">
             <component type="grid" name="loggings" reference="grid"
                        source="#{form}.stateChanges">
                 <option type="column" name="dateAndTime" fields="dateAndTime"/>
@@ -549,7 +549,7 @@
             </component>
         </windowTab>
 
-        <windowTab name="attachmentsTab">
+        <windowTab name="attachmentsTab" reference="attachmentsTab">
             <component type="gridLayout" name="gridsLayout" columns="3"
                        rows="6" hasBorders="false">
                 <layoutElement column="1" row="1" height="6">

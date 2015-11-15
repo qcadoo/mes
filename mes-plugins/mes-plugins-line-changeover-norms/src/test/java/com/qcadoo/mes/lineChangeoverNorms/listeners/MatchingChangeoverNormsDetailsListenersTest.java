@@ -151,6 +151,7 @@ public class MatchingChangeoverNormsDetailsListenersTest {
         when(view.getComponentByReference("window")).thenReturn((ComponentState) window);
         when(window.getRibbon()).thenReturn(ribbon);
         when(ribbon.getGroupByName("matching")).thenReturn(matching);
+        when(ribbon.getGroupByName("editing")).thenReturn(matching);
         when(matching.getItemByName("edit")).thenReturn(edit);
 
         // when

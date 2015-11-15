@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PALLET_NUMBERS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns="http://schema.qcadoo.org/view"
+	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	  name="palletNumberHelperDetails" modelName="palletNumberHelper">
+
+	<component type="window" name="window">
+
+		<ribbon>
+			<template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
+
+			<group name="print">
+				<bigButton name="printPalletNumberHelperReport" icon="pdfIcon24.png"
+						   state="enabled">
+					<script>
+						<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										#{form}.performEvent({
+											name : 'printPalletNumberHelperReport',
+											args : ['pdf']
+										});
+									}
+								});
+							]]>
+					</script>
+				</bigButton>
+			</group>
+		</ribbon>
+
+		<component type="form" name="palletNumberHelper" reference="form">
+			<component type="gridLayout" name="gridLayout" columns="2"
+					   rows="7" hasBorders="false">
+				<layoutElement column="1" row="1">
+					<component type="input" name="quantity" field="quantity"
+							   reference="quantity">
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2" height="6">
+					<component type="textarea" name="numbers" field="numbers"
+							   reference="numbers" defaultEnabled="never"/>
+				</layoutElement>
+			</component>
+
+			<option type="header" value="true"/>
+			<option type="expression" value="#number"/>
+
+			<listener event="printPalletNumberHelperReport"
+					  class="com.qcadoo.mes.basic.listeners.PalletNumberHelperDetailsListeners"
+					  method="printPalletNumberHelperReport"/>
+		</component>
+
+	</component>
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.hooks.PalletNumberHelperDetailsHooks"
+					  method="onBeforeRender"/>
+	</hooks>
+
+</view>

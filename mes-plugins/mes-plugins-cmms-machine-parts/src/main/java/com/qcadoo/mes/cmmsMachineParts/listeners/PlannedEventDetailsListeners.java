@@ -173,7 +173,7 @@ public class PlannedEventDetailsListeners {
         if (maintenanceEvent != null) {
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.id", maintenanceEvent.getId());
-            view.redirectTo("../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html", false,
+            view.redirectTo("/page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html", false,
                     true, parameters);
         }
     }
@@ -187,7 +187,7 @@ public class PlannedEventDetailsListeners {
         if (maintenanceEvent != null) {
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.id", maintenanceEvent.getId());
-            view.redirectTo("../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html", false,
+            view.redirectTo("/page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/recurringEventDetails.html", false,
                     true, parameters);
         }
     }

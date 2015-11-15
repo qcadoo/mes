@@ -23,23 +23,21 @@
  */
 package com.qcadoo.mes.basic;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Preconditions;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CharType;
 import com.qcadoo.mes.basic.constants.ReportColumnWidthFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Service for accessing parameters
@@ -75,12 +73,16 @@ public class ParameterService {
      */
     @Transactional
     public Entity getParameter() {
-        DataDefinition parameterDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_PARAMETER);
-        Entity parameter = parameterDD.find("SELECT p FROM #basic_parameter p").setMaxResults(1).setCacheable(true).uniqueResult();
+        Entity parameter = null;
 
-        if (parameter == null) {
-            parameter = createParameter(parameterDD);
+        DataDefinition parameterDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER);
+
+        if (parameterDD != null) {
+            parameter = parameterDD.find("SELECT p FROM #basic_parameter p").setMaxResults(1).setCacheable(true).uniqueResult();
+
+            if (parameter == null) {
+                parameter = createParameter(parameterDD);
+            }
         }
 
         return parameter;
@@ -89,7 +91,7 @@ public class ParameterService {
     private Entity createParameter(final DataDefinition dataDefinition) {
         Entity parameter = dataDefinition.create();
         parameter = dataDefinition.save(parameter);
-        checkState(parameter.isValid(), "Parameter entity has validation errors! " + parameter);
+        Preconditions.checkState(parameter.isValid(), "Parameter entity has validation errors! " + parameter);
 
         return parameter;
     }

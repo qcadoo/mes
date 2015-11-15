@@ -43,24 +43,24 @@
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="worker" field="worker"
                                    reference="worker">
+                            <option type="column" name="name" fields="name" link="true"/>
 
-                            <option type="column" name="name" fields="name"/>
-                            <option type="searchable" value="surname, name"/>
-                            <option type="orderable" value="surname, name"/>
-                            <option type="expression"
-                                    value="'&lt;b&gt;' + #name + '&lt;/b&gt; ' + #surname"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression" value="#name + ' ' + #surname"/>
                             <option type="fieldCode" value="surname"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="lookup" name="action" field="action"
-                                   reference="action">
+                        <component type="lookup" name="action" field="action" reference="action">
+                            <option type="searchable" value="actionName,responsibleWorkerName"/>
+                            <option type="orderable" value="actionName,responsibleWorkerName"/>
+                            <option type="expression" value="#actionName" fields="actionName" />
+                            <option type="fieldCode" value="actionName"/>
 
-                            <option type="searchable" value="name"/>
-                            <option type="orderable" value="name"/>
-                            <option type="expression"
-                                    value="#name"/>
-                            <option type="fieldCode" value="name"/>
+                            <option type="column" name="responsibleWorkerName" fields="responsibleWorkerName" link="true" />
+
                             <criteriaModifier
                                     class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.PlannedEventRealizationCriteriaModifiers"
                                     method="showActionsForEvent"/>

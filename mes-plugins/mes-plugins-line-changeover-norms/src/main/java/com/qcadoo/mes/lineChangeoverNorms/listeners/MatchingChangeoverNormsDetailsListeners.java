@@ -105,7 +105,7 @@ public class MatchingChangeoverNormsDetailsListeners {
 
     public void changeStateEditButton(final ViewDefinitionState view, final boolean enabled) {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonActionItem edit = window.getRibbon().getGroupByName("matching").getItemByName("edit");
+        RibbonActionItem edit = window.getRibbon().getGroupByName("editing").getItemByName("edit");
         edit.setEnabled(enabled);
         edit.requestUpdate(true);
     }

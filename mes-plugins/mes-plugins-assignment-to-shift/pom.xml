@@ -22,7 +22,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-production-lines</artifactId>
+			<artifactId>mes-plugins-technologies</artifactId>
 			<version>1.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>

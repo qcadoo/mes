@@ -108,6 +108,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
             final BigDecimal totalCostsPerUnit = totalCosts.divide(quantity, numberService.getMathContext());
 
             entity.setField(CostCalculationFields.TOTAL_COST_PER_UNIT, numberService.setScale(totalCostsPerUnit, 2));
+
         }
     }
 
@@ -206,6 +207,12 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         entity.setField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD_VALUE,
                 numberService.setScale(registrationPriceOverheadValue));
         entity.setField(CostCalculationFields.PROFIT_VALUE, numberService.setScale(profitValue));
+
+        final BigDecimal totalCostsPerUnit = BigDecimalUtils.convertNullToZero(entity
+                .getDecimalField(CostCalculationFields.TOTAL_COST_PER_UNIT));
+        final BigDecimal technicalProductionCosts = totalCostsPerUnit.add(registrationPriceOverheadValue,
+                numberService.getMathContext());
+        entity.setField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS, numberService.setScale(technicalProductionCosts, 2));
     }
 
     @Override
@@ -217,8 +224,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         final BigDecimal profitValue = BigDecimalUtils.convertNullToZero(entity
                 .getDecimalField(CostCalculationFields.PROFIT_VALUE));
 
-        final BigDecimal sellPriceValue = totalCostPerUnit
-                .add(registrationPriceOverheadValue, numberService.getMathContext())
+        final BigDecimal sellPriceValue = totalCostPerUnit.add(registrationPriceOverheadValue, numberService.getMathContext())
                 .add(profitValue, numberService.getMathContext());
 
         entity.setField(CostCalculationFields.SELL_PRICE_VALUE, numberService.setScale(sellPriceValue, 2));

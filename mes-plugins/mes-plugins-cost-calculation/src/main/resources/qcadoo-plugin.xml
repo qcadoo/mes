@@ -67,9 +67,9 @@
 
         <model:model model="costCalculation" resource="model/costCalculation.xml"/>
 
-        <menu:menu-category name="calculations"/>
+        <menu:menu-category name="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"/>
 
-        <menu:menu-item name="costCalculation" category="calculations"
+        <menu:menu-item name="costCalculation" category="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"
                         view="costCalculationList"/>
 
         <model:model-field model="calculationOperationComponent"

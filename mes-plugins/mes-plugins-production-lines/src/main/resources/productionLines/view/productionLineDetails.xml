@@ -24,17 +24,105 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="productionLineDetails"
       modelName="productionLine">
 
     <component type="window" name="window">
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
+            </group>
+
+            <group name="actions" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;"
+                           accesskey="s"/>
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled"
+                             action="#{form}.performSave; #{window}.performBack;"/>
+                <smallButton name="saveNew" icon="saveNewIcon16.png" state="enabled"
+                             action="#{form}.performSaveAndClear;"/>
+                <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{form}.performCopy;"
+                             accesskey="c">
+                    <script><![CDATA[
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{form}.performDelete;"
+                             accesskey="d">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;"
+                             accesskey="x"/>
+            </group>
+
+            <group name="actions" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"
+                           accesskey="r"/>
+            </group>
+
+            <group name="states" if="#view.getComponentByReference('form').dataDefinition.activable"
+                   defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+                <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled"
+                             action="#{form}.performActivate;">
+                    <script><![CDATA[
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId && !value.content.isActive) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled"
+                             action="#{form}.performDeactivate;">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId && value.content.isActive) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+            </group>
         </ribbon>
         <windowTab name="mainTab">
-            <component type="form" name="productionLine" reference="form">
+            <component type="form" name="productionLine" reference="form"
+                       defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                 <component type="gridLayout" name="mainTabGridLayout" columns="3"
                            rows="5">
                     <layoutElement column="1" row="1">
@@ -63,7 +151,8 @@
                        columns="2" rows="5">
                 <layoutElement column="1" row="1" height="5">
                     <component type="grid" name="workstationTypeComponentGrid"
-                               reference="grid" source="#{form}.workstationTypeComponents">
+                               reference="grid" source="#{form}.workstationTypeComponents"
+                               defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                         <option type="column" name="workstationTypeNumber" fields="workstationType"
                                 expression="#workstationType['number']" link="true" width="50"/>
                         <option type="column" name="workstationTypeName" fields="workstationType"
@@ -116,7 +205,7 @@
 
                     </component>
                     <component type="grid" name="divisions" reference="divisions"
-                               source="#{form}.divisions">
+                               source="#{form}.divisions" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                         <script>
                             <![CDATA[
                                 var that = this;
@@ -172,7 +261,8 @@
 
                     </component>
                     <component type="grid" name="workstations" reference="workstations"
-                               source="#{divisions}.workstations" field="#{form}.workstations">
+                               source="#{divisions}.workstations" field="#{form}.workstations"
+                               defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                         <script>
                             <![CDATA[
                                 var that = this;

@@ -46,8 +46,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
@@ -123,8 +123,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     public Map<Entity, Integer> estimateMaxOperationTimeConsumptionsForWorkstations(final Entity entity,
             final BigDecimal plannedQuantity, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine) {
-        return estimateOperationTimeConsumptions(entity, plannedQuantity, includeTpz, includeAdditionalTime, productionLine,
-                true);
+        return estimateOperationTimeConsumptions(entity, plannedQuantity, includeTpz, includeAdditionalTime, productionLine, true);
     }
 
     private Map<Entity, Integer> estimateOperationTimeConsumptions(final Entity entity, final BigDecimal plannedQuantity,
@@ -200,8 +199,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
             List<Entity> childs = Lists.newArrayList(operationComponent.getHasManyField("children"));
             for (Entity child : childs) {
-                int childTime = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
-                        productionLine,
+                int childTime = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns, productionLine,
                         maxForWorkstation, productComponentQuantities);
 
                 if ("02specified".equals(child.getStringField("nextOperationAfterProducedType"))) {
@@ -267,8 +265,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
 
             OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
-                    .getProductComponentQuantities(
-                            operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY),
+                    .getProductComponentQuantities(operationComponent
+                            .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY),
                             new BigDecimal("56", numberService.getMathContext()), operationRunsFromProductionQuantities);
             cycles = operationRunsFromProductionQuantities.get(operationComponent.getId());
         }

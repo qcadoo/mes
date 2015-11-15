@@ -25,12 +25,14 @@
 
 -->
 <ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
-	plugin="basic" view="shiftsList">
+                 xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
+                 xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
+                 plugin="basic" view="shiftsList">
 
-	<group name="calendar">
-		<bigButton name="showCalendar" state="enabled" icon="calendarIcon24.png" action="#{grid}.fireEvent(showGanttShiftCalendar);" />
-	</group>
+    <!-- TODO should get separate role -->
+    <group name="calendar" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY">
+        <bigButton name="showCalendar" state="enabled" icon="calendarIcon24.png"
+                   action="#{grid}.fireEvent(showGanttShiftCalendar);"/>
+    </group>
 
 </ribbonExtension>

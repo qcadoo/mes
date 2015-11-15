@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
-import com.qcadoo.mes.productionLines.ProductionLinesService;
+import com.qcadoo.mes.technologies.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;

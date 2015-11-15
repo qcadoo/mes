@@ -30,9 +30,9 @@
 	plugin="basic" view="companyDetails">
 
 	<windowTab name="sellsTab" reference="sellsTab">
-		<component type="gridLayout" name="sellsTabGridLayout"
-			columns="2" rows="1">
-			<layoutElement column="1" row="1">
+		<component type="flowGridLayout" name="sellsTabGridLayout"
+			columns="2" rows="3">
+			<layoutElement column="1" row="1" minHeight='3'>
 				<component type="grid" name="productsFamilies" reference="productsFamilies"
 					source="#{form}.productsFamilies">
 					<option type="column" name="number" fields="product"
@@ -56,7 +56,7 @@
 					<option type="multiselect" value="true" />
 				</component>
 			</layoutElement>
-			<layoutElement column="2" row="1">
+			<layoutElement column="2" row="1" minHeight='3'>
 				<component type="grid" name="products" reference="products"
 					source="#{form}.products">
 					<option type="column" name="number" fields="product"

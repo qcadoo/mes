@@ -64,6 +64,8 @@
 
         <model:model model="operationalTask" resource="model/operationalTask.xml"/>
 
+        <menu:menu-category name="orders"/>
+
         <menu:menu-item name="operationalTasks" category="orders"
                         view="operationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
 

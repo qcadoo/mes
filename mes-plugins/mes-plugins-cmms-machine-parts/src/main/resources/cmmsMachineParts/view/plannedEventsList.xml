@@ -213,7 +213,7 @@
 							var state = selectedEntitiesArray[0].fields.state;
 						}
 
-						if (state && (state == "01new" || state == "06canceled")) {
+						if (state && (state == "01new" || state == "02inPlan")) {
 							getRibbonItem("actions.delete").enable();
 						}
 						else {
@@ -266,6 +266,7 @@
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
                                 plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                 plannedEvent.forState="04inRealization";
+                                deleteButton.disable();
                             } else if (state == "04inRealization") {
                                 planEvent.disable();
                                 cancelEvent.enable();
@@ -288,6 +289,7 @@
                                         realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
                                         realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
                                     }
+                                deleteButton.disable();
                             } else if (state == "05realized" || state == "06canceled") {
                                 planEvent.disable();
                                 cancelEvent.disable();
@@ -296,6 +298,7 @@
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
                                 plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
                                 plannedEvent.forState="04inRealization";
+                                deleteButton.disable();
                             } else if (state =="07accepted") {
                                     planEvent.disable();
                                     cancelEvent.disable();
@@ -371,7 +374,8 @@
                 <option type="column" name="type" fields="type" link="true"/>
                 <option type="column" name="ownerName" fields="ownerName" link="true"/>
                 <option type="column" name="description" fields="description" link="true"/>
-                <option type="column" name="factory" fields="factory" expression="#factory['number']" link="true" width="80"/>
+                <option type="column" name="factory" fields="factory" expression="#factory['number']" link="true"
+                        width="80"/>
                 <option type="column" name="division" fields="division" expression="#division['number']" link="true"/>
                 <option type="column" name="productionLine" fields="productionLine"
                         expression="#productionLine['number']"

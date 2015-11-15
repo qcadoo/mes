@@ -29,7 +29,7 @@
                  xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
                  plugin="basic"
                  view="workstationDetails">
-    <group name="factoryStructure">
+    <group name="factoryStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
         <bigButton name="generate" icon="generateIcon24.png"
                    action="#{form}.fireEvent(generateFactoryStructure);" state="enabled"/>
     </group>

@@ -146,28 +146,28 @@ public class AssignmentToShiftDetailsHooks {
                 AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT).get(assignmentToShiftFormId);
     }
 
-    public final void addDiscriminatorRestrictionToStaffAssignmentGrid(final ViewDefinitionState view) {
+    private final void addDiscriminatorRestrictionToStaffAssignmentGrid(final ViewDefinitionState view) {
         GridComponent staffAssignmentToShiftsGrid = (GridComponent) view
                 .getComponentByReference(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS);
 
         staffAssignmentToShiftsGrid.setCustomRestriction(customRestrictionSimple);
     }
 
-    public final void addDiscriminatorRestrictionToCorrectedStaffAssignmentGrid(final ViewDefinitionState view) {
+    private final void addDiscriminatorRestrictionToCorrectedStaffAssignmentGrid(final ViewDefinitionState view) {
         GridComponent correctedStaffAssignmentToShiftsGrid = (GridComponent) view
                 .getComponentByReference(AssignmentToShiftFields.CORRECTED_STAFF_ASSIGNMENT_TO_SHIFTS);
 
         correctedStaffAssignmentToShiftsGrid.setCustomRestriction(customRestrictionCorrected);
     }
 
-    public final void addDiscriminatorRestrictionToAcceptedStaffAssignmentGrid(final ViewDefinitionState view) {
+    private final void addDiscriminatorRestrictionToAcceptedStaffAssignmentGrid(final ViewDefinitionState view) {
         GridComponent plannedStaffAssignmentToShiftsGrid = (GridComponent) view
                 .getComponentByReference(AssignmentToShiftFields.PLANNED_STAFF_ASSIGNMENT_TO_SHIFTS);
 
         plannedStaffAssignmentToShiftsGrid.setCustomRestriction(customRestrictionAccepted);
     }
 
-    public void disableButtonsWhenNotExternalSynchronized(final ViewDefinitionState view, Entity assignmentToShift) {
+    private void disableButtonsWhenNotExternalSynchronized(final ViewDefinitionState view, Entity assignmentToShift) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
@@ -253,7 +253,7 @@ public class AssignmentToShiftDetailsHooks {
         }
     }
 
-    public void disableFormWhenStateIsAcceptedOrCorrected(final ViewDefinitionState view, final Entity assignmentToShift) {
+    private void disableFormWhenStateIsAcceptedOrCorrected(final ViewDefinitionState view, final Entity assignmentToShift) {
         FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
         GridComponent staffAssignmentToShiftsGrid = (GridComponent) view
                 .getComponentByReference(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS);
@@ -272,7 +272,7 @@ public class AssignmentToShiftDetailsHooks {
         }
     }
 
-    public void showExternalSyncNotification(final FormComponent assignmentToShiftForm, final Entity assignmentToShift) {
+    private void showExternalSyncNotification(final FormComponent assignmentToShiftForm, final Entity assignmentToShift) {
         boolean isExternalSynchronized = assignmentToShift.getBooleanField(AssignmentToShiftFields.EXTERNAL_SYNCHRONIZED);
 
         if (!isExternalSynchronized) {
@@ -281,7 +281,7 @@ public class AssignmentToShiftDetailsHooks {
         }
     }
 
-    public void showLastStateChangeFailNotification(final FormComponent assignmentToShiftForm, final Entity assignmentToShift) {
+    private void showLastStateChangeFailNotification(final FormComponent assignmentToShiftForm, final Entity assignmentToShift) {
         boolean showLastStateChangeResults = assignmentToShift
                 .getBooleanField(AssignmentToShiftFields.SHOW_LAST_STATE_CHANGE_RESULT);
 

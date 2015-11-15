@@ -70,7 +70,7 @@
 
 		<menu:menu-item name="lineChangeoverNorms" category="technology"
 			view="lineChangeoverNormsList" />
-		<menu:menu-item name="matchingChangeoverNorms"
+		<menu:menu-item name="matchingChangeoverNorms" defaultAuthorizationRole="ROLE_CALCULATIONS"
 			category="calculations" view="matchingChangeoverNormsDetails" />
 
 		<view:view resource="view/lineChangeoverNormsList.xml" />

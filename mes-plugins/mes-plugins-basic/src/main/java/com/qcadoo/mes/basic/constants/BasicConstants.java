@@ -75,6 +75,10 @@ public final class BasicConstants {
 
     public static final String MODEL_FACTORY = "factory";
 
+    public static final String MODEL_PALLET_NUMBER = "palletNumber";
+
+    public static final String MODEL_PALLET_NUMBER_HELPER = "palletNumberHelper";
+
     // VIEW
 
     public static final String VIEW_MACHINE_DETAILS = "machineDetails";

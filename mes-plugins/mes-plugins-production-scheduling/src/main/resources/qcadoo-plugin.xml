@@ -99,7 +99,7 @@
 		<menu:menu-category name="calculations" />
 
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
-			category="calculations" />
+			category="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"/>
 
 		<view:view resource="view/orderTimePrediction.xml" />
 		<view:view resource="view/operationDurationDetailsInOrder.xml" />

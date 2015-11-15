@@ -30,7 +30,7 @@
 	<fields>
 		<belongsTo name="plannedEvent" model="plannedEvent" required="true"/>
 		<belongsTo name="worker" model="staff" plugin="basic" required="true"/>
-		<belongsTo name="action" model="action"/>
+		<belongsTo name="action" model="actionForPlannedEvent"/>
 		<datetime name="startDate" required="true"/>
         <datetime name="finishDate" required="true"/>
         <integer name="duration" default="0"/>

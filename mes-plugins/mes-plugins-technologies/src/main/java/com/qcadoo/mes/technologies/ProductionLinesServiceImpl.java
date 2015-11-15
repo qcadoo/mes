@@ -21,12 +21,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionLines;
+package com.qcadoo.mes.technologies;
 
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.QUANTITY_FOR_OTHER_WORKSTATION_TYPES;
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.WORKSTATION_TYPE_COMPONENTS;
-import static com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields.QUANTITY;
-import static com.qcadoo.mes.technologies.constants.OperationFields.WORKSTATION_TYPE;
 import static com.qcadoo.model.api.search.SearchOrders.asc;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.list;
@@ -41,8 +37,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -58,23 +56,23 @@ public class ProductionLinesServiceImpl implements ProductionLinesService {
 
     @Override
     public Integer getWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
-        List<Entity> workstationTypeComponents = productionLine.getHasManyField(WORKSTATION_TYPE_COMPONENTS);
+        List<Entity> workstationTypeComponents = productionLine.getHasManyField(ProductionLineFields.WORKSTATION_TYPE_COMPONENTS);
 
         Entity desiredWorkstation = operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
-                .getBelongsToField(WORKSTATION_TYPE);
+                .getBelongsToField(OperationFields.WORKSTATION_TYPE);
 
         if (desiredWorkstation != null) {
             for (Entity workstationTypeComponent : workstationTypeComponents) {
-                Entity workstation = workstationTypeComponent.getBelongsToField(WORKSTATION_TYPE);
+                Entity workstation = workstationTypeComponent.getBelongsToField(OperationFields.WORKSTATION_TYPE);
 
                 // FIXME dev_team, proxy entity equals thing
                 if (desiredWorkstation.getId().equals(workstation.getId())) {
-                    return (Integer) workstationTypeComponent.getField(QUANTITY);
+                    return (Integer) workstationTypeComponent.getField(WorkstationTypeComponentFields.QUANTITY);
                 }
             }
         }
 
-        return productionLine.getIntegerField(QUANTITY_FOR_OTHER_WORKSTATION_TYPES);
+        return productionLine.getIntegerField(ProductionLineFields.QUANTITY_FOR_OTHER_WORKSTATION_TYPES);
     }
 
     @Override

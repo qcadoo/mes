@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
 	plugin="orders" view="orderDetails">
 
-	<group name="costCalculate" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY">
+	<group name="costCalculate" defaultAuthorizationRole="ROLE_CALCULATIONS">
 		<bigButton name="costCalculate" icon="calculateTimeIcon24.png"
 			action="#{form}.fireEvent(showCostCalculateFromOrder);"
 			state="disabled" />

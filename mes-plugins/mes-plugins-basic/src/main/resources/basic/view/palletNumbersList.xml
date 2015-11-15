@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PALLET_NUMBERS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns="http://schema.qcadoo.org/view"
+	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	  name="palletNumbersList" modelName="palletNumber" menuAccessible="true">
+
+	<component type="window" name="window">
+
+		<ribbon>
+			<template name="standardGridTemplate"/>
+
+			<group name="palletNumbers">
+				<bigButton name="createPalletNumbers" icon="genealogyIcon24.png"
+						   state="enabled" action="#{grid}.fireEvent(createPalletNumbers);"/>
+			</group>
+
+			<group name="print">
+				<bigButton name="printPalletNumbersReport" icon="pdfIcon24.png"
+						   state="enabled" action="#{grid}.fireEvent(printPalletNumbersReport);"/>
+			</group>
+		</ribbon>
+
+		<component type="grid" name="palletNumbers" reference="grid">
+			<option type="column" name="number" fields="number" link="true"/>
+			<option type="column" name="createUser" fields="createUser" link="true"/>
+			<option type="column" name="createDate" fields="createDate" link="true"/>
+
+			<option type="order" column="number" direction="asc"/>
+
+			<option type="searchable" value="number,createUser,createDate"/>
+			<option type="orderable" value="number,createUser,createDate"/>
+
+			<option type="correspondingView" value="basic/palletNumberDetails"/>
+			<option type="correspondingComponent" value="form"/>
+
+			<option type="fullscreen" value="true"/>
+			<option type="multiselect" value="true"/>
+
+			<listener event="createPalletNumbers" class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
+					  method="createPalletNumbers"/>
+
+			<listener event="printPalletNumbersReport" class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
+					  method="printPalletNumbersReport"/>
+		</component>
+
+		<option type="fixedHeight" value="true"/>
+		<option type="header" value="false"/>
+	</component>
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.hooks.PalletNumbersListHooks"
+					  method="onBeforeRender"/>
+	</hooks>
+
+</view>
