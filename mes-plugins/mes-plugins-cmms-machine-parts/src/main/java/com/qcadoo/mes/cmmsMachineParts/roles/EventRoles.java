@@ -133,8 +133,9 @@ public enum EventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
+            ComponentState contextTab = view.getComponentByReference("contextTab");
             FormComponent form = (FormComponent) view.getComponentByReference("form");
-            if (form != null && form.getEntity().getId() != null) {
+            if (contextTab == null && form != null && form.getEntity().getId() != null) {
                 lockComponents(view, "number", "type", "factory", "division", "productionLine", "workstation", "subassembly",
                         "faultType", "description", "personReceiving", "sourceCost");
             }
