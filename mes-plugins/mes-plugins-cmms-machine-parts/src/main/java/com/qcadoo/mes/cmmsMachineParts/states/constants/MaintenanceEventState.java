@@ -48,7 +48,7 @@ public enum MaintenanceEventState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return ACCEPTED.equals(targetState);
+            return ACCEPTED.equals(targetState) || IN_PROGRESS.equals(targetState);
         }
 
     },

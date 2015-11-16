@@ -122,4 +122,12 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
             final ViewContextHolder viewContext) {
         maintenanceEventChangeService.showReasonForm(stateChangeContext, viewContext);
     }
+
+    @RunInPhase(MaintenanceEventStateChangePhase.LAST)
+    @RunForStateTransition(sourceState = MaintenanceEventStateStringValues.EDITED, targetState = MaintenanceEventStateStringValues.IN_PROGRESS)
+    @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
+    public void askForNotAcceptReason(final StateChangeContext stateChangeContext, final int phase,
+            final ViewContextHolder viewContext) {
+        maintenanceEventChangeService.showReasonForm(stateChangeContext, viewContext);
+    }
 }
