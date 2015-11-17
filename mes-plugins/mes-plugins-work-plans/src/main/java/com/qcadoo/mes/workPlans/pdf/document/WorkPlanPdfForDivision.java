@@ -57,6 +57,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -101,6 +102,9 @@ public class WorkPlanPdfForDivision {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+    
+    @Autowired
+    private TechnologyService technologyService;
 
     public void print(PdfWriter pdfWriter, GroupingContainer groupingContainer, Entity workPlan, Document document, Locale locale)
             throws DocumentException {
@@ -323,23 +327,29 @@ public class WorkPlanPdfForDivision {
     private List<Entity> addMaterialComponents(List<Entity> productComponents, Entity order) {
         for (Entity productComponent : productComponents) {
             if (productComponent.getBooleanField(OperationProductInComponentFieldsWP.SHOW_MATERIAL_COMPONENT)) {
-            Entity product = productComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+                Entity product = productComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 
-            Entity technology = getTechnologyForComponent(productComponent, order);
-            EntityList operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
-            for (Entity operationComponent : operationComponents) {
-                EntityList operationProductInComponents = operationComponent
-                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-                Set<String> componentNames = new HashSet<>();
-                for (Entity operationProductInComponent : operationProductInComponents) {
-                    Entity opicProduct = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
-                    componentNames.add(opicProduct.getStringField(ProductFields.NAME));
+                Entity technology = getTechnologyForComponent(productComponent, order);
+                if (technology != null) {
+                    Set<String> distinctProductNames = new HashSet<>();
+                    EntityList operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+                    for (Entity operationComponent : operationComponents) {
+                        EntityList operationProductsInComponents = operationComponent
+                                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+                        List<String> ProductNames = operationProductsInComponents.stream()
+                                .filter(opic -> !technologyService.isIntermediateProduct(opic))
+                                .map(opic -> opic.getBelongsToField(OperationProductInComponentFields.PRODUCT))
+                                .map(p -> p.getStringField(ProductFields.NAME)).collect(Collectors.toList());
+
+                        distinctProductNames.addAll(ProductNames);
+                    }
+                    if (!distinctProductNames.isEmpty()) {
+                        String name = product.getStringField(ProductFields.NAME) + "\n- "
+                                + String.join("\n- ", distinctProductNames);
+                        product.setField(ProductFields.NAME, name);
+                        productComponent.setField(OperationProductInComponentFields.PRODUCT, product);
+                    }
                 }
-                String name = product.getStringField(ProductFields.NAME) + String.join("\n- ", componentNames);
-                product.setField(ProductFields.NAME, name);
-            }
-            productComponent.setField(OperationProductInComponentFields.PRODUCT, product);
-
             }
         }
         return productComponents;
