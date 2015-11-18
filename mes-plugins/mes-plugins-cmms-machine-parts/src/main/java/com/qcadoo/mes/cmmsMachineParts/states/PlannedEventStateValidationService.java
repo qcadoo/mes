@@ -73,6 +73,7 @@ public class PlannedEventStateValidationService {
         Entity event = stateChangeContext.getOwner();
         checkIfActionsHaveStatus(event, stateChangeContext);
         checkSourceCost(event, stateChangeContext);
+        checkEffectiveCounter(event, stateChangeContext);
         checkIfRealizationExists(event, stateChangeContext);
         checkIfSolutionDescriptionExists(event, stateChangeContext);
         checkIfRequiredFieldsAreSet(event, stateChangeContext);
@@ -99,6 +100,15 @@ public class PlannedEventStateValidationService {
     private void checkSourceCost(final Entity event, StateChangeContext stateChangeContext) {
         if (event.getBelongsToField(MaintenanceEventFields.SOURCE_COST) == null) {
             stateChangeContext.addFieldValidationError(MaintenanceEventFields.SOURCE_COST,
+                    "cmmsMachineParts.maintenanceEvent.state.fieldRequired");
+        }
+    }
+
+    private void checkEffectiveCounter(final Entity event, StateChangeContext stateChangeContext) {
+        String basedOn = event.getStringField(PlannedEventFields.BASED_ON);
+        if (event.getBelongsToField(PlannedEventFields.EFFECTIVE_COUNTER) == null
+                && PlannedEventBasedOn.COUNTER.getStringValue().equals(basedOn)) {
+            stateChangeContext.addFieldValidationError(PlannedEventFields.EFFECTIVE_COUNTER,
                     "cmmsMachineParts.maintenanceEvent.state.fieldRequired");
         }
     }
