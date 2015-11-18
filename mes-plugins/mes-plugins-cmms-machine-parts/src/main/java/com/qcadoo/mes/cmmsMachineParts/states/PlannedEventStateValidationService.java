@@ -106,8 +106,10 @@ public class PlannedEventStateValidationService {
 
     private void checkEffectiveCounter(final Entity event, StateChangeContext stateChangeContext) {
         String basedOn = event.getStringField(PlannedEventFields.BASED_ON);
+        String type = event.getStringField(PlannedEventFields.TYPE);
         if (event.getDecimalField(PlannedEventFields.EFFECTIVE_COUNTER) == null
-                && PlannedEventBasedOn.COUNTER.getStringValue().equals(basedOn)) {
+                && (PlannedEventBasedOn.COUNTER.getStringValue().equals(basedOn) || PlannedEventType.METER_READING
+                        .getStringValue().equals(type))) {
             stateChangeContext.addFieldValidationError(PlannedEventFields.EFFECTIVE_COUNTER,
                     "cmmsMachineParts.maintenanceEvent.state.fieldRequired");
         }
