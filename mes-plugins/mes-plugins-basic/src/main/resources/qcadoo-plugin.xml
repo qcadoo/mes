@@ -181,6 +181,8 @@
         <security:role identifier="ROLE_PLANNED_EVENTS_ADVANCED_EDIT"
                        description="Dostęp do edycji definicji (numer, rodzaj, planowany termin itd.) w zdarzeniach planowanych"/>
 
+        <security:role identifier="ROLE_PLANNED_EVENTS_DATES_EDIT"
+                       description="Dostęp do edycji dat i osób w zdarzeniach planowanych"/>
 
         <security:role identifier="ROLE_PLANNED_EVENTS_DOCUMENTS"
                        description="Dostęp do dokumentów w zdarzeniach planowanych"/>
@@ -193,6 +195,9 @@
 
         <security:role identifier="ROLE_PLANNED_EVENTS_STATES_ACCEPT"
                        description="Dostęp do akceptacji w zdarzeniach planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_REALIZED"
+                       description="Dostęp do realizacji w zdarzeniach planowanych"/>
 
         <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS"
                        description="Dostęp do załączników w zdarzeniach planowanych"/>
