@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
@@ -54,6 +55,7 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.internal.components.select.SelectComponentState;
 
 @Service
 public class PlannedEventDetailsHooks {
@@ -71,6 +73,9 @@ public class PlannedEventDetailsHooks {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private TranslationService translationService;
 
     private List<String> previouslyHiddenTabs = Lists.newArrayList();
 
@@ -97,6 +102,7 @@ public class PlannedEventDetailsHooks {
 
         processRoles(view);
         disableFieldsForState(view);
+        setUnit(view);
     }
 
     private void lockView(final ViewDefinitionState view) {
@@ -245,6 +251,21 @@ public class PlannedEventDetailsHooks {
             if (!securityService.hasRole(user, role.toString())) {
                 role.disableFieldsWhenNotInRole(view);
             }
+        }
+    }
+
+    public void setUnit(final ViewDefinitionState view) {
+        SelectComponentState basedOnSelect = (SelectComponentState) view.getComponentByReference(PlannedEventFields.BASED_ON);
+        FieldComponent unitLabel = (FieldComponent) view.getComponentByReference("toleranceUnit");
+        switch (PlannedEventBasedOn.parseString((String) basedOnSelect.getFieldValue())) {
+            case COUNTER:
+                unitLabel.setFieldValue(translationService.translate("cmmsMachineParts.plannedEvent.toleranceUnit.mh",
+                        view.getLocale()));
+                break;
+            case DATE:
+                unitLabel.setFieldValue(translationService.translate("cmmsMachineParts.plannedEvent.toleranceUnit.days",
+                        view.getLocale()));
+                break;
         }
     }
 }

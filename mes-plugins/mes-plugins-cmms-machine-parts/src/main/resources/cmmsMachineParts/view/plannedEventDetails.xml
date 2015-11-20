@@ -395,8 +395,21 @@
                                 </layoutElement>
 
                                 <layoutElement row="4" column="1">
-                                    <component type="input" name="counterTolerance" reference="counterTolerance"
-                                               field="counterTolerance"/>
+                                    <component type="gridLayout" name="gridLayoutCounterTolerance"
+									hasBorders="false" columns="4" rows="1">
+										<layoutElement column="1" row="1" width="3">
+		                                    <component type="input" name="counterTolerance" reference="counterTolerance"
+		                                               field="counterTolerance">
+												<option type="labelWidth" value="40" />
+                                            </component>
+										</layoutElement>
+                                        <layoutElement column="4" row="1">
+											<component type="input" name="toleranceUnit"
+												 reference="toleranceUnit" required="false" hasLabel="false">
+                                            	<option type="textRepresentationOnDisabled" value="true"/>
+											</component>
+										</layoutElement>
+									</component>
                                 </layoutElement>
 
                                 <layoutElement row="5" column="1">
