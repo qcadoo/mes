@@ -66,6 +66,11 @@
                            action="#{grid}.fireEvent(showMaintenanceEvent);" state="disabled">
                 </bigButton>
             </group>
+            <group name="export">
+                <bigButton name="xls" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(printXlsReport);"
+                           state="enabled"/>
+            </group>
         </ribbon>
 
         <windowTab name="contextTab" reference="contextTab">
@@ -426,6 +431,10 @@
 
         <listener event="addPlannedEvent" method="addPlannedEvent"
                   class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
+
+        <listener event="printXlsReport" method="printXlsReport"
+                  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
+
 
     </component>
 
