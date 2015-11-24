@@ -23,19 +23,13 @@
  */
 package com.qcadoo.mes.basic;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-import static com.qcadoo.model.api.search.SearchRestrictions.in;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.Maps;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.constants.DictionaryItemFields;
+import com.qcadoo.plugins.dictionaries.DictionariesService;
+import com.qcadoo.tenant.api.DefaultLocaleResolver;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -46,13 +40,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.constants.DictionaryItemFields;
-import com.qcadoo.plugins.dictionaries.DictionariesService;
-import com.qcadoo.tenant.api.DefaultLocaleResolver;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Component
 public class TypeOfPalletLoader {
@@ -168,7 +161,7 @@ public class TypeOfPalletLoader {
     }
 
     private InputStream getTypeOfPalletXmlFile() throws IOException {
-        return TypeOfPalletLoader.class.getResourceAsStream("/goodFood/model/data/typeOfPallet" + "_"
+        return TypeOfPalletLoader.class.getResourceAsStream("/basic/model/data/typeOfPallet" + "_"
                 + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }
 
