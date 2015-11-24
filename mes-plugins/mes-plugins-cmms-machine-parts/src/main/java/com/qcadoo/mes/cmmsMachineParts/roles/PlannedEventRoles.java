@@ -45,23 +45,7 @@ public enum PlannedEventRoles {
             }
         }
     },
-    ROLE_PLANNED_EVENTS_STATES_ACCEPT {
 
-        @Override
-        public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            FormComponent form = (FormComponent) view.getComponentByReference("form");
-            Entity plannedEvent = form.getEntity();
-            if (plannedEvent.getDataDefinition().getName().equals(CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)) {
-                PlannedEventState state = PlannedEventState.of(plannedEvent);
-                PlannedEventType type = PlannedEventType.from(plannedEvent);
-                if (state.compareTo(PlannedEventState.IN_REALIZATION) == 0 && type.compareTo(PlannedEventType.METER_READING) != 0) {
-                    lockFromRibbonGroup(view, "status", "realizedEvent");
-                }
-            } else {
-                lockFromRibbonGroup(view, "status", "realizedEvent");
-            }
-        }
-    },
     ROLE_PLANNED_EVENTS_STATES_REALIZED {
 
         @Override
@@ -74,6 +58,23 @@ public enum PlannedEventRoles {
                 if ((state.compareTo(PlannedEventState.ACCEPTED) == 0 && type.compareTo(PlannedEventType.METER_READING) != 0)
                         || (state.compareTo(PlannedEventState.IN_REALIZATION) == 0 && type
                                 .compareTo(PlannedEventType.METER_READING) == 0)) {
+                    lockFromRibbonGroup(view, "status", "realizedEvent");
+                }
+            } else {
+                lockFromRibbonGroup(view, "status", "realizedEvent");
+            }
+        }
+    },
+    ROLE_PLANNED_EVENTS_STATES_ACCEPT {
+
+        @Override
+        public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
+            FormComponent form = (FormComponent) view.getComponentByReference("form");
+            Entity plannedEvent = form.getEntity();
+            if (plannedEvent.getDataDefinition().getName().equals(CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)) {
+                PlannedEventState state = PlannedEventState.of(plannedEvent);
+                PlannedEventType type = PlannedEventType.from(plannedEvent);
+                if (state.compareTo(PlannedEventState.IN_REALIZATION) == 0 && type.compareTo(PlannedEventType.METER_READING) != 0) {
                     lockFromRibbonGroup(view, "status", "realizedEvent");
                 }
             } else {

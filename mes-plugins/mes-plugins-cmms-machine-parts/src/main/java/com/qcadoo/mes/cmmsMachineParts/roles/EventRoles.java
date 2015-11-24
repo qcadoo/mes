@@ -157,6 +157,12 @@ public enum EventRoles {
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
             lockFromRibbonGroup(view, "genericExport", "csv", "pdf");
         }
+    },
+    ROLE_PLANNED_EVENTS_ACTIONS_VIEW {
+        @Override
+        public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
+            lockFromRibbonGroup(view, "plannedEvents", "showPlannedEvent");
+        }
     };
 
     public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
