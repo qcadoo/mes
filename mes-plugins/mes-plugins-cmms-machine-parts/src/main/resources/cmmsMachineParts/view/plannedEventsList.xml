@@ -61,7 +61,7 @@
                              state="disabled" action="#{grid}.changeState(realizedEvent);"/>
             </group>
 
-            <group name="maintenanceEvents" defaultAuthorizationRole="ROLE_EVENTS">
+            <group name="maintenanceEvents">
                 <bigButton name="showMaintenanceEvent" icon="genealogyIcon24.png"
                            action="#{grid}.fireEvent(showMaintenanceEvent);" state="disabled">
                 </bigButton>

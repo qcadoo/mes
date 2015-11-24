@@ -150,6 +150,13 @@ public enum PlannedEventRoles {
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
             lockFromRibbonGroup(view, "actions", "copy");
         }
+    },
+    ROLE_EVENTS {
+
+        @Override
+        public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
+            lockFromRibbonGroup(view, "maintenanceEvents", "showMaintenanceEvent");
+        }
     };
 
     public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
