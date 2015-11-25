@@ -237,7 +237,8 @@
                        description="Dostęp do zmian statusów dostaw"/>
         <security:role identifier="ROLE_TIME_GAPS" description="Dostęp do przerw na liniach"/>
 
-        <security:role identifier="ROLE_LINE_CHANGEOVER_NORMS" description="Dostęp do przezbrojeń"/>
+        <security:role identifier="ROLE_LINE_CHANGEOVER_NORMS_IN_ORDERS"
+                       description="Dostęp do przezbrojeń w zleceniach"/>
 
         <security:role identifier="ROLE_PRODUCTION_PER_SHIFT" description="Dostęp do produkcji na zmianę"/>
 

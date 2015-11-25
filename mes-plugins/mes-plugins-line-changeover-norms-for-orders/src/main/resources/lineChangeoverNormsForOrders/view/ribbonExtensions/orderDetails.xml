@@ -29,7 +29,7 @@
     plugin="orders"
     view="orderDetails">
 
-	<group name="changeover" defaultAuthorizationRole="ROLE_LINE_CHANGEOVER_NORMS">
+	<group name="changeover" defaultAuthorizationRole="ROLE_LINE_CHANGEOVER_NORMS_IN_ORDERS">
 		<bigButton name="showChangeover" icon="genealogyClockIcon24.png" state="disabled">
 			<script>
 				<![CDATA[
