@@ -42,6 +42,8 @@ public class MaintenanceEventStateChangeValidators {
                 return validateForRevokedStatus(evenStateChangetDD, eventStateChange);
             case MaintenanceEventStateStringValues.PLANNED:
                 return validateForPlannedStatus(evenStateChangetDD, eventStateChange);
+            case MaintenanceEventStateStringValues.IN_PROGRESS:
+                return validateForRevokedStatus(evenStateChangetDD, eventStateChange);
         }
 
         return true;

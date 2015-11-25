@@ -27,9 +27,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,9 +57,10 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductFieldsT;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.workPlans.constants.OperationProductInComponentFieldsWP;
@@ -66,9 +69,12 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.Groupi
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -93,6 +99,12 @@ public class WorkPlanPdfForDivision {
 
     @Autowired
     private BarcodeOperationComponentService barcodeOperationComponentService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+    
+    @Autowired
+    private TechnologyService technologyService;
 
     public void print(PdfWriter pdfWriter, GroupingContainer groupingContainer, Entity workPlan, Document document, Locale locale)
             throws DocumentException {
@@ -189,7 +201,8 @@ public class WorkPlanPdfForDivision {
 
         addOrderSummary(headerCell, order, product, operationComponent);
 
-        addOperationProductsTable(inputCell, addMaterialComponents(operationProductInComponents(operationComponent, order)),
+        addOperationProductsTable(inputCell,
+                addMaterialComponents(operationProductInComponents(operationComponent, order), order),
                 inputProductColumnAlignmentMap, ProductDirection.IN, locale);
         addOperationProductsTable(outputCell, operationProductOutComponents(operationComponent, order),
                 outputProductColumnAlignmentMap, ProductDirection.OUT, locale);
@@ -311,30 +324,49 @@ public class WorkPlanPdfForDivision {
         cell.addElement(table);
     }
 
-    private List<Entity> addMaterialComponents(List<Entity> productComponents) {
+    private List<Entity> addMaterialComponents(List<Entity> productComponents, Entity order) {
         for (Entity productComponent : productComponents) {
             if (productComponent.getBooleanField(OperationProductInComponentFieldsWP.SHOW_MATERIAL_COMPONENT)) {
                 Entity product = productComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
-                EntityList technologies = product.getHasManyField(ProductFieldsT.TECHNOLOGIES);
-                if (technologies != null && !technologies.isEmpty()) {
-                Entity technology = technologies.get(0);
+
+                Entity technology = getTechnologyForComponent(productComponent, order);
+                if (technology != null) {
+                    Set<String> distinctProductNames = new HashSet<>();
                     EntityList operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
                     for (Entity operationComponent : operationComponents) {
-                        EntityList operationProductInComponents = operationComponent
+                        EntityList operationProductsInComponents = operationComponent
                                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-                    String name = product.getStringField(ProductFields.NAME);
-                        for (Entity operationProductInComponent : operationProductInComponents) {
-                            Entity opicProduct = operationProductInComponent
-                                    .getBelongsToField(OperationProductInComponentFields.PRODUCT);
-                        name = name + "\n" + opicProduct.getStringField(ProductFields.NAME);
-                        }
-                    product.setField(ProductFields.NAME, name);
+                        List<String> ProductNames = operationProductsInComponents.stream()
+                                .filter(opic -> !technologyService.isIntermediateProduct(opic))
+                                .map(opic -> opic.getBelongsToField(OperationProductInComponentFields.PRODUCT))
+                                .map(p -> p.getStringField(ProductFields.NAME)).collect(Collectors.toList());
+
+                        distinctProductNames.addAll(ProductNames);
+                    }
+                    if (!distinctProductNames.isEmpty()) {
+                        String name = product.getStringField(ProductFields.NAME) + "\n- "
+                                + String.join("\n- ", distinctProductNames);
+                        product.setField(ProductFields.NAME, name);
+                        productComponent.setField(OperationProductInComponentFields.PRODUCT, product);
                     }
                 }
-                productComponent.setField(OperationProductInComponentFields.PRODUCT, product);
             }
         }
         return productComponents;
+    }
+
+    private Entity getTechnologyForComponent(Entity productComponent, Entity order) {
+        Entity product = productComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+        List<Entity> productOrders = order.getDataDefinition().find().add(SearchRestrictions.belongsTo("parent", order))
+                .add(SearchRestrictions.belongsTo("product", product)).list().getEntities();
+        if (productOrders != null && !productOrders.isEmpty()) {
+            return productOrders.get(0).getBelongsToField(OrderFields.TECHNOLOGY);
+        } else {
+            DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY);
+            return technologyDD.find().add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
+                    .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).setMaxResults(1).uniqueResult();
+        }
     }
 
     private List<Entity> operationProductOutComponents(Entity operationComponent, Entity order) {

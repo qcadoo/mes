@@ -36,12 +36,15 @@ import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.roles.DeliveryRole;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -85,6 +88,12 @@ public class DeliveryDetailsHooks {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private UserService userService;
 
     public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
@@ -299,6 +308,16 @@ public class DeliveryDetailsHooks {
         copyWith.requestUpdate(true);
         copyWithout.requestUpdate(true);
 
+    }
+
+    public void processRoles(final ViewDefinitionState view) {
+
+        Entity currentUser = userService.getCurrentUserEntity();
+        for (DeliveryRole role : DeliveryRole.values()) {
+            if (!securityService.hasRole(currentUser, role.toString())) {
+                role.processRole(view);
+            }
+        }
     }
 
 }
