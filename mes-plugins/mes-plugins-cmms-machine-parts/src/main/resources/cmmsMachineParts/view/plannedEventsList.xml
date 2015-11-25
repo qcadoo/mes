@@ -432,7 +432,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
-                method="onBeforeRenderListView"/>
+                method="onBeforeRenderPlannedListView"/>
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventDetailsHooks"
                       method="processRoles"/>
     </hooks>
