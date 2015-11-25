@@ -235,6 +235,11 @@
 
         <security:role identifier="ROLE_DELIVERIES_STATES_OTHER"
                        description="Dostęp do zmian statusów dostaw"/>
+        <security:role identifier="ROLE_TIME_GAPS" description="Dostęp do przerw na liniach"/>
+
+        <security:role identifier="ROLE_LINE_CHANGEOVER_NORMS" description="Dostęp do przezbrojeń"/>
+
+        <security:role identifier="ROLE_PRODUCTION_PER_SHIFT" description="Dostęp do produkcji na zmianę"/>
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
