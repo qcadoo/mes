@@ -26,9 +26,9 @@ public class DocumentPositionsController {
     private DocumentPositionRepository documentPositionRepository;
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findAll(@RequestParam String sidx, @RequestParam String sord) {
-        return documentPositionRepository.findAll(sidx, sord);
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "{id}")
+    public List<DocumentPositionVO> findAll(@PathVariable Long id, @RequestParam String sidx, @RequestParam String sord) {
+        return documentPositionRepository.findAll(id, sidx, sord);
     }
 
     @ResponseBody
@@ -53,5 +53,11 @@ public class DocumentPositionsController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/types")
     public List<Map<String, String>> getTypes() {
         return documentPositionRepository.getTypes();
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/units")
+    public List<Map<String, String>> getUnits() {
+        return documentPositionRepository.getUnits();
     }
 }

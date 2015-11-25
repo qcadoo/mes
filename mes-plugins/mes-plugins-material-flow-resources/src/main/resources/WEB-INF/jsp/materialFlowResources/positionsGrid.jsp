@@ -61,6 +61,9 @@ String ctx = request.getContextPath();
                 <table id="grid"></table>
                 <div id="jqGridPager"></div>
             </div>
+    
+    <br /><br />
+    <button style="position: absolute; top: 10px; z-index: 100;" onclick='jQuery("#grid").jqGrid("addRow",{});'>Add row</button>
 </div>
 
 
