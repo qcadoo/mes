@@ -3,7 +3,6 @@ package com.qcadoo.mes.materialFlowResources;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.mappers.DocumentPositionMapper;
 import com.qcadoo.model.api.DictionaryService;
-import com.qcadoo.model.api.JdbcStream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,6 +78,16 @@ public class DocumentPositionRepository {
 
     public List<Map<String, String>> getUnits() {
         return dictionaryService.getKeys("units").stream().map(unit -> {
+            Map<String, String> type = new HashMap<>();
+            type.put("value", unit);
+            type.put("key", unit);
+
+            return type;
+        }).collect(Collectors.toList());
+    }
+
+    public List<Map<String, String>> getTypeOfPallets() {
+        return dictionaryService.getKeys("typeOfPallet").stream().map(unit -> {
             Map<String, String> type = new HashMap<>();
             type.put("value", unit);
             type.put("key", unit);

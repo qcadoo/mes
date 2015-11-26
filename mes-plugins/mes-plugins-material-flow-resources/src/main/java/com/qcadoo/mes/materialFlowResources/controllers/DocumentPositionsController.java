@@ -60,4 +60,10 @@ public class DocumentPositionsController {
     public List<Map<String, String>> getUnits() {
         return documentPositionRepository.getUnits();
     }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/typeOfPallets")
+    public List<Map<String, String>> getTypeOfPallets() {
+        return documentPositionRepository.getTypeOfPallets();
+    }
 }

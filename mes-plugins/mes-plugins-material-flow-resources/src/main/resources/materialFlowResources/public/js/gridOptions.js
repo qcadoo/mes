@@ -74,7 +74,8 @@ $(function () {
         width: 1500,
         rowNum: 150,
         sortname: 'id',
-        colNames: ['ID', 'product_id', 'additional_code_id', 'quantity', 'givenquantity', 'givenunit', 'expirationdate', 'type'],
+        colNames: ['ID', 'product_id', 'additional_code_id', 'quantity', 'givenquantity', 'givenunit', 'conversion', 'expirationdate', 
+            'pallet_id', 'type_of_pallet', 'storage_location_id', 'resource_id'],
         colModel: [
             {
                 name: 'id',
@@ -143,6 +144,11 @@ $(function () {
                 },
             },
             {
+                name: 'conversion',
+                index: 'conversion',
+                editable: true,
+            },            
+            {
                 name: 'expirationdate',
                 index: 'expirationdate',
                 width: 150,
@@ -158,11 +164,22 @@ $(function () {
                 }
             },
             {
-                name: 'type',
-                index: 'type',
+                name: 'pallet_id',
+                index: 'pallet_id',
+                editable: true,
+                edittype: 'custom',
+                editoptions: {
+                    // TODO
+                    custom_element: editProductId_createElement,
+                    custom_value: editProductId_value
+                }
+            },
+            {
+                name: 'type_of_pallet',
+                index: 'type_of_pallet',
                 editable: true,
                 edittype: 'select',
-                editoptions: {aysnc: false, dataUrl: '../../integration/rest/documentPositions/types.html',
+                editoptions: {aysnc: false, dataUrl: '../../integration/rest/documentPositions/typeOfPallets.html',
                     buildSelect: function (response) {
                         var data = $.parseJSON(response);
                         var s = "<select>";
@@ -175,31 +192,29 @@ $(function () {
                         return s + "</select>";
                     }
                 },
+            },
+            {
+                name: 'storage_location_id',
+                index: 'storage_location_id',
+                editable: true,
+                edittype: 'custom',
+                editoptions: {
+                    // TODO
+                    custom_element: editProductId_createElement,
+                    custom_value: editProductId_value
+                }
+            },
+            {
+                name: 'resource_id',
+                index: 'resource_id',
+                editable: true,
+                edittype: 'custom',
+                editoptions: {
+                    // TODO
+                    custom_element: editProductId_createElement,
+                    custom_value: editProductId_value
+                }
             }
-
-            /*,
-             {
-             name: 'number',
-             index: 'number',
-             editable: true,
-             sorttype:"text",
-             },{
-             name: 'ean',
-             index: 'ean',
-             editable: true,
-             sorttype:"text",
-             }, {
-             name: 'active',
-             index: 'active',
-             edittype: "checkbox",
-             formatter: "checkbox",
-             editoptions: {
-             value:"true:false"
-             },
-             sorttype:"boolean",
-             
-             editable: true,
-             }*/
         ],
         pager: "#jqGridPager",
         onSelectRow: function (id) {
