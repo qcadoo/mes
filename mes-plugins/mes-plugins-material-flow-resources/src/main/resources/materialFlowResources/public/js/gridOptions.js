@@ -108,6 +108,7 @@ $(function () {
                 name: 'quantity',
                 index: 'quantity',
                 editable: true,
+                formatter: 'number',
                 editrules: {
                     custom_func: validatePositive,
                     custom: true,
@@ -118,6 +119,7 @@ $(function () {
                 name: 'givenquantity',
                 index: 'givenquantity',
                 editable: true,
+                formatter: 'number',
                 editrules: {
                     custom_func: validatePositive,
                     custom: true,
@@ -129,6 +131,7 @@ $(function () {
                 index: 'givenunit',
                 editable: true,
                 edittype: 'select',
+                formatter: 'number',
                 editoptions: {aysnc: false, dataUrl: '../../integration/rest/documentPositions/units.html',
                     buildSelect: function (response) {
                         var data = $.parseJSON(response);

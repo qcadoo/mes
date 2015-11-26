@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DocumentPositionMapper implements RowMapper {
 
@@ -17,7 +19,7 @@ public class DocumentPositionMapper implements RowMapper {
         // nowe pole
         positionVO.setAdditional_code_id(resultSet.getLong("additionalcode_id"));
         positionVO.setQuantity(resultSet.getBigDecimal("quantity"));
-        positionVO.setGivenquantity(resultSet.getBigDecimal("givenquantity"));   
+        positionVO.setGivenquantity(resultSet.getBigDecimal("givenquantity"));
         positionVO.setGivenunit(resultSet.getString("givenunit"));
         // nowe pole
         positionVO.setConversion(resultSet.getBigDecimal("conversion"));
@@ -27,10 +29,8 @@ public class DocumentPositionMapper implements RowMapper {
         // nowe pole
         positionVO.setType_of_pallet(resultSet.getString("typeofpallet"));
         positionVO.setStorage_location_id(resultSet.getLong("storagelocation_id"));
-      
+
 //        <belongsTo name="document" model="document"/>
-
-
 //        <decimal name="price" default="0">
 //            <validatesRange from="0"/>
 //        </decimal>
@@ -44,7 +44,24 @@ public class DocumentPositionMapper implements RowMapper {
 //
 //        <enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
 //        <enum name="state" values="01draft,02accepted" default="01draft"/>    
-    
         return positionVO;
+    }
+
+    public Map<String, Object> mapVoToParams(DocumentPositionVO vo) {
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("id", vo.getId());
+        params.put("product_id", vo.getProduct_id());
+        params.put("additionalcode_id", vo.getAdditional_code_id());
+        params.put("quantity", vo.getQuantity());
+        params.put("givenquantity", vo.getGivenquantity());
+        params.put("givenunit", vo.getGivenunit());
+        params.put("conversion", vo.getConversion());
+        params.put("expirationdate", vo.getExpirationdate());
+        params.put("palletnumber_id", vo.getPallet_id());
+        params.put("typeofpallet", vo.getType_of_pallet());
+        params.put("storagelocation_id", vo.getStorage_location_id());
+
+        return params;
     }
 }

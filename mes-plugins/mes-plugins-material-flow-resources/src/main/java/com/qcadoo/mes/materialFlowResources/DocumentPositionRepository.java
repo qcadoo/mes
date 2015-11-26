@@ -29,7 +29,7 @@ public class DocumentPositionRepository {
         String query = "SELECT * FROM materialflowresources_position WHERE document_id = :documentId ORDER BY " + sidx + " " + sord;
 
         List<DocumentPositionVO> list = jdbcTemplate.query(query, Collections.singletonMap("documentId", documentId), new DocumentPositionMapper());
-        
+
         return list;
     }
 
@@ -40,27 +40,27 @@ public class DocumentPositionRepository {
     }
 
     public void create(DocumentPositionVO documentPositionVO) {
-        Map<String, Object> params = new HashMap<>(new BeanMap(documentPositionVO));
-        params.remove("id");
-        params.remove("class");
+        Map<String, Object> params = new DocumentPositionMapper().mapVoToParams(documentPositionVO);
 
-        StringBuilder queryBuilder = new StringBuilder("INSERT INTO materialflowresources_position( ");
-        queryBuilder.append(params.keySet().stream().collect(Collectors.joining(", ")) + ") ");
-        queryBuilder.append("VALUES (" + params.keySet().stream().map(key -> {
+        String keys = params.keySet().stream().collect(Collectors.joining(", "));
+        String values = params.keySet().stream().map(key -> {
             return ":" + key;
-        }).collect(Collectors.joining(", ")) + ") RETURNING id ");
+        }).collect(Collectors.joining(", "));
 
-        jdbcTemplate.queryForObject(queryBuilder.toString(), params, Long.class);
+        String query = String.format("INSERT INTO materialflowresources_position (%s) VALUES (%s) RETURNING id", keys, values);
+
+        jdbcTemplate.queryForObject(query, params, Long.class);
     }
 
     public void update(Long id, DocumentPositionVO documentPositionVO) {
-        Map<String, Object> params = new HashMap<>(new BeanMap(documentPositionVO));
-        params.remove("class");
+        Map<String, Object> params = new DocumentPositionMapper().mapVoToParams(documentPositionVO);
 
-        jdbcTemplate
-                .update("UPDATE materialflowresources_position SET " + params.keySet().stream().map(key -> {
-                    return key + "=:" + key;
-                }).collect(Collectors.joining(", ")) + " WHERE id = :id ", params);
+        String set = params.keySet().stream().map(key -> {
+            return key + "=:" + key;
+        }).collect(Collectors.joining(", "));
+        String query = String.format("UPDATE materialflowresources_position SET %s WHERE id = :id ", set);
+
+        jdbcTemplate.update(query, params);
     }
 
     public List<Map<String, String>> getTypes() {
