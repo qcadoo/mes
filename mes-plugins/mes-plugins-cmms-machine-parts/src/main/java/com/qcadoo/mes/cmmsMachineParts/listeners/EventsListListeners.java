@@ -27,10 +27,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.PlannedEventsXLSDataProvider;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.PlannedEventsXlsService;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -93,22 +90,47 @@ import java.util.Optional;
     }
 
     public void printXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
+
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
         Map<String, String> filter = grid.getFilters();
-        String filterQ="";
+        String filterQ = "";
         try {
-            filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(), dataDefinitionService
+            filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(), "event", dataDefinitionService
                     .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT));
         } catch (GridComponentFilterException e) {
             filterQ = "";
         }
 
-        Entity plannedEventXLSHelper = dataDefinitionService .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                "plannedEventXLSHelper").create();
+        String contextFilter = "";
+        Entity context = maintenanceEventContextService.getCurrentContext(view, state, args);
+        if (context.getBooleanField(MaintenanceEventContextFields.CONFIRMED)) {
+            Entity factory = context.getBelongsToField(MaintenanceEventContextFields.FACTORY);
+            if (factory != null) {
+                contextFilter += " factory.id = " + factory.getId();
+            }
+            Entity division = context.getBelongsToField(MaintenanceEventContextFields.DIVISION);
+            if (division != null) {
+                if (contextFilter.length() > 1) {
+                    contextFilter += " AND";
+                }
+                contextFilter += " division.id = " + division.getId();
+
+            }
+            if (filterQ.length() > 1) {
+                if (contextFilter.length() > 1) {
+                    filterQ = contextFilter + " AND " + filterQ;
+                }
+            } else {
+                filterQ = contextFilter;
+            }
+        }
+
+        Entity plannedEventXLSHelper = dataDefinitionService
+                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "plannedEventXLSHelper").create();
         plannedEventXLSHelper.setField("query", filterQ);
         plannedEventXLSHelper = plannedEventXLSHelper.getDataDefinition().save(plannedEventXLSHelper);
 
-        Map <String, Long> filters = Maps.newHashMap();
+        Map<String, Long> filters = Maps.newHashMap();
         filters.put("PLANED_EVENT_FILTER", plannedEventXLSHelper.getId());
 
         String filtersInJson = new JSONObject(filters).toString();

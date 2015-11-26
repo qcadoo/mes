@@ -69,7 +69,7 @@
             <group name="export">
                 <bigButton name="xls" icon="xlsIcon24.png"
                            action="#{window}.fireEvent(printXlsReport);"
-                           state="enabled"/>
+                           state="disabled"/>
             </group>
         </ribbon>
 
@@ -87,13 +87,16 @@
 						});
 
 						function updateRibbon() {
+						    var xlsButton = #{window}.getRibbonItem("export.xls");
 							var confirmed = #{confirmed}.getValue().content.value,
 							    confirmContextButton = #{window}.getRibbonItem("contextActions.confirmContext"),
 							    confirmContextButtonLabel;
 
 							if (confirmed == 'true' || confirmed == '1') {
+							    xlsButton.enable();
 								confirmContextButtonLabel = "#{translate(cmmsMachineParts.eventsList.window.ribbon.contextActions.changeContext)}";
 							} else {
+							    xlsButton.disable();
 							    confirmContextButtonLabel = "#{translate(cmmsMachineParts.eventsList.window.ribbon.contextActions.confirmContext)}";
 							}
 

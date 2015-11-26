@@ -1,6 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.MachinePartForEventDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventRealizationDTO;
@@ -241,7 +242,7 @@ import java.util.*;
         if (date == null) {
             return "";
         }
-        return date.toString();
+        return DateUtils.toDateTimeString(date);
     }
 
     private Object getValue(Object value) {

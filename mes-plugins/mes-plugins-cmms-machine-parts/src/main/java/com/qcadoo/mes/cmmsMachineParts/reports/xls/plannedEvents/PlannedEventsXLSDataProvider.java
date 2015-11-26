@@ -9,6 +9,7 @@ import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEven
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventStateChangeDTO;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -54,9 +55,13 @@ import java.util.stream.Collectors;
         List<PlannedEventDTO> events = Lists.newArrayList();
         Map<String, String> _filter = (Map<String, String>) filters.get("filtersMap");
         Long helperModelId = Long.valueOf(_filter.get("PLANED_EVENT_FILTER"));
-        Entity helperEntity =  dataDefinitionService .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                "plannedEventXLSHelper").get(helperModelId);
-        events = jdbcTemplate.query(query + " where " + helperEntity.getStringField("query"), new BeanPropertyRowMapper(PlannedEventDTO.class));
+        Entity helperEntity = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "plannedEventXLSHelper")
+                .get(helperModelId);
+        String _query = query;
+        if (StringUtils.isNoneBlank(helperEntity.getStringField("query")) && helperEntity.getStringField("query").length() > 1) {
+            _query = query + " where " + helperEntity.getStringField("query");
+        }
+        events = jdbcTemplate.query(_query, new BeanPropertyRowMapper(PlannedEventDTO.class));
 
         Multimap<Long, PlannedEventDTO> eventsMap = ArrayListMultimap.create();
         eventsMap = Multimaps.index(events, new Function<PlannedEventDTO, Long>() {

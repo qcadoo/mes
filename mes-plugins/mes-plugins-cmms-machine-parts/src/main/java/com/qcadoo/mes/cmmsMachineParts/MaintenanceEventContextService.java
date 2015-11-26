@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts;
 
-import java.util.Arrays;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
@@ -49,6 +44,10 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.internal.components.form.FormComponentState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 @Service
 public class MaintenanceEventContextService {
@@ -232,5 +231,11 @@ public class MaintenanceEventContextService {
             eventEntity.setField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT, form.getEntityId());
             maintenanceEventDD.save(eventEntity);
         }
+    }
+
+    public Entity getCurrentContext(ViewDefinitionState viewDefinitionState, ComponentState triggerState, String[] args) {
+        FormComponent formComponent = (FormComponentState) viewDefinitionState.getComponentByReference(L_FORM);
+        Entity context = prepareContextEntity(formComponent.getEntity());
+        return context;
     }
 }
