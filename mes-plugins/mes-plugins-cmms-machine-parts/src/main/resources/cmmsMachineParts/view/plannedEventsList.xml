@@ -266,7 +266,7 @@
                                 planEvent.enable();
                                 cancelEvent.enable();
                                 plannedEvent.enable();
-                                if (!shouldShowAccept && differentTypes) {
+                                if (!shouldShowAccept &&g differentTypes) {
                                     realizedEvent.disable();
                                 } else {
                                     realizedEvent.enable();
