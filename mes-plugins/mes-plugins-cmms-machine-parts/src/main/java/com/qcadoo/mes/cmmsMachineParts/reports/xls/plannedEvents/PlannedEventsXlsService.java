@@ -91,20 +91,20 @@ import java.util.*;
         HSSFCell requiresShutdownCell = eventLine.createCell(10);
         requiresShutdownCell.setCellValue(event.getRequiresShutdown());
 
-        HSSFCell dateCell = eventLine.createCell(11);
+        HSSFCell basedOnCell = eventLine.createCell(11);
+        basedOnCell.setCellValue(translationService.translate(event.getBasedOn(), locale));
+
+        HSSFCell dateCell = eventLine.createCell(12);
         dateCell.setCellValue(getDateValue(event.getDate()));
 
-        HSSFCell counterCell = eventLine.createCell(12);
+        HSSFCell counterCell = eventLine.createCell(13);
         counterCell.setCellValue(getDecimalValue(event.getCounter()));
 
-        HSSFCell counterToleranceCell = eventLine.createCell(13);
+        HSSFCell counterToleranceCell = eventLine.createCell(14);
         counterToleranceCell.setCellValue(getDecimalValue(event.getCounterTolerance()));
 
-        HSSFCell sourceCostNumberCell = eventLine.createCell(14);
+        HSSFCell sourceCostNumberCell = eventLine.createCell(15);
         sourceCostNumberCell.setCellValue(event.getSourceCostNumber());
-
-        HSSFCell basedOnCell = eventLine.createCell(15);
-        basedOnCell.setCellValue(translationService.translate(event.getBasedOn(), locale));
 
         HSSFCell durationCell = eventLine.createCell(16);
         durationCell.setCellValue(getIntValue(event.getDuration()));
