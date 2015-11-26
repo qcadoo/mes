@@ -1,6 +1,10 @@
 package com.qcadoo.mes.cmmsMachineParts.roles;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventState;
@@ -50,36 +54,33 @@ public enum PlannedEventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            FormComponent form = (FormComponent) view.getComponentByReference("form");
-            Entity plannedEvent = form.getEntity();
-            if (plannedEvent.getDataDefinition().getName().equals(CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)) {
-                PlannedEventState state = PlannedEventState.of(plannedEvent);
-                PlannedEventType type = PlannedEventType.from(plannedEvent);
-                if ((state.compareTo(PlannedEventState.ACCEPTED) == 0 && type.compareTo(PlannedEventType.METER_READING) != 0)
-                        || (state.compareTo(PlannedEventState.IN_REALIZATION) == 0 && type
-                                .compareTo(PlannedEventType.METER_READING) == 0)) {
-                    lockFromRibbonGroup(view, "status", "realizedEvent");
-                }
-            } else {
+            if (shouldBeActive(view, PlannedEventState.ACCEPTED, Optional.of(PlannedEventType.METER_READING), false, false)
+                    || shouldBeActive(view, PlannedEventState.IN_REALIZATION, Optional.of(PlannedEventType.METER_READING), true,
+                            false)) {
                 lockFromRibbonGroup(view, "status", "realizedEvent");
             }
+
         }
     },
     ROLE_PLANNED_EVENTS_STATES_ACCEPT {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            FormComponent form = (FormComponent) view.getComponentByReference("form");
-            Entity plannedEvent = form.getEntity();
-            if (plannedEvent.getDataDefinition().getName().equals(CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)) {
-                PlannedEventState state = PlannedEventState.of(plannedEvent);
-                PlannedEventType type = PlannedEventType.from(plannedEvent);
-                if (state.compareTo(PlannedEventState.IN_REALIZATION) == 0 && type.compareTo(PlannedEventType.METER_READING) != 0) {
-                    lockFromRibbonGroup(view, "status", "realizedEvent");
-                }
-            } else {
+            if (shouldBeActive(view, PlannedEventState.IN_REALIZATION, Optional.of(PlannedEventType.METER_READING), false, false)) {
                 lockFromRibbonGroup(view, "status", "realizedEvent");
             }
+            // FormComponent form = (FormComponent) view.getComponentByReference("form");
+            // Entity plannedEvent = form.getEntity();
+            // if (plannedEvent.getDataDefinition().getName().equals(CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)) {
+            // PlannedEventState state = PlannedEventState.of(plannedEvent);
+            // PlannedEventType type = PlannedEventType.from(plannedEvent);
+            // if (state.compareTo(PlannedEventState.IN_REALIZATION) == 0 && type.compareTo(PlannedEventType.METER_READING) != 0)
+            // {
+            // lockFromRibbonGroup(view, "status", "realizedEvent");
+            // }
+            // } else {
+            // lockFromRibbonGroup(view, "status", "realizedEvent");
+            // }
         }
     },
     ROLE_PLANNED_EVENTS_STATES_OTHER {
@@ -195,6 +196,58 @@ public enum PlannedEventRoles {
                 componentState.setEnabled(false);
             }
         }
+    }
+
+    protected boolean shouldBeActive(ViewDefinitionState view, PlannedEventState state, Optional<PlannedEventType> type,
+            boolean typeEquals, boolean singleRow) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity event = form.getEntity();
+        String eventState = event.getStringField(PlannedEventFields.STATE);
+
+        if (eventState == null) {
+            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            List<Entity> entities = grid.getSelectedEntities();
+            if (singleRow) {
+                if (entities.size() == 1) {
+                    event = entities.get(0);
+                    eventState = event.getStringField(PlannedEventFields.STATE);
+                    return state.getStringValue().equals(eventState) && checkEventType(event, type, typeEquals);
+
+                } else {
+                    return false;
+                }
+            }
+            boolean statesEquals = entities.stream().allMatch(
+                    e -> state.getStringValue().equals(e.getStringField(MaintenanceEventFields.STATE)));
+            if (type.isPresent()) {
+                if (typeEquals) {
+                    return statesEquals
+                            && entities.stream().allMatch(
+                                    e -> type.get().getStringValue().equals(e.getStringField(PlannedEventFields.TYPE)));
+                } else {
+                    return statesEquals
+                            && entities.stream().noneMatch(
+                                    e -> type.get().getStringValue().equals(e.getStringField(PlannedEventFields.TYPE)));
+                }
+            }
+            return statesEquals;
+        }
+
+        return state.getStringValue().equals(eventState) && checkEventType(event, type, typeEquals);
+    }
+
+    private boolean checkEventType(final Entity event, Optional<PlannedEventType> type, boolean typeEquals) {
+        String eventType = event.getStringField(PlannedEventFields.TYPE);
+        boolean isType = true;
+        if (type.isPresent()) {
+            if (typeEquals) {
+                isType = type.get().getStringValue().endsWith(eventType);
+            } else {
+                isType = !type.get().getStringValue().endsWith(eventType);
+            }
+        }
+        return isType;
+
     }
 
 }
