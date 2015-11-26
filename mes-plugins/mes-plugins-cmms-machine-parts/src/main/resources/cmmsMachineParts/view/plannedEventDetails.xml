@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_PLANNED_EVENTS_ACTIONS_VIEW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="plannedEventDetails" modelName="plannedEvent" modelPlugin="cmmsMachineParts">
@@ -32,8 +32,8 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
-            <template name="standardFormTemplate" excludeItems="actions.saveNew"/>
 
+            <template name="standardFormTemplate" excludeItems="actions.saveNew"/>
 
             <group name="status">
                 <smallButton name="planEvent" icon="startIcon16.png"
@@ -45,7 +45,7 @@
                 <smallButton name="realizedEvent" icon="acceptIcon16.png"
                              state="disabled" action="#{form}.changeState(realizedEvent);"/>
             </group>
-            <group name="attachments">
+            <group name="attachments" defaultAuthorizationRole="ROLE_PLANNED_EVENTS_ATTACHMENTS">
                 <bigButton name="downloadAttachment" icon="generateIcon24.png"
                            state="enabled">
                     <script>
@@ -60,7 +60,7 @@
                 </bigButton>
             </group>
 
-            <group name="maintenanceEvents">
+            <group name="maintenanceEvents" defaultAuthorizationRole="ROLE_EVENTS">
                 <bigButton name="showMaintenanceEvent" icon="genealogyIcon24.png"
                            action="#{form}.fireEvent(showMaintenanceEvent);" state="disabled">
                 </bigButton>
@@ -70,7 +70,8 @@
 
         <windowTab name="mainTab">
 
-            <component type="form" name="form" reference="form">
+            <component type="form" name="form" reference="form"
+                       defaultAuthorizationRole="ROLE_PLANNED_EVENTS_BASIC_EDIT">
                 <script>
                     <![CDATA[
                            this.changeState = function(eventPerformer, ribbonItemName) {
@@ -394,8 +395,21 @@
                                 </layoutElement>
 
                                 <layoutElement row="4" column="1">
-                                    <component type="input" name="counterTolerance" reference="counterTolerance"
-                                               field="counterTolerance"/>
+                                    <component type="gridLayout" name="gridLayoutCounterTolerance"
+									hasBorders="false" columns="4" rows="1">
+										<layoutElement column="1" row="1" width="3">
+		                                    <component type="input" name="counterTolerance" reference="counterTolerance"
+		                                               field="counterTolerance">
+												<option type="labelWidth" value="40" />
+                                            </component>
+										</layoutElement>
+                                        <layoutElement column="4" row="1">
+											<component type="input" name="toleranceUnit"
+												 reference="toleranceUnit" required="false" hasLabel="false">
+                                            	<option type="textRepresentationOnDisabled" value="true"/>
+											</component>
+										</layoutElement>
+									</component>
                                 </layoutElement>
 
                                 <layoutElement row="5" column="1">
@@ -477,7 +491,7 @@
             </component>
         </windowTab>
 
-        <windowTab name="datesTab">
+        <windowTab name="datesTab" reference="datesTab">
             <component type="gridLayout" name="datesGridLayout" columns="2" rows="1">
                 <layoutElement column="1" row="1">
                     <component type="borderLayout" name="datesBorderLayout">
@@ -505,7 +519,7 @@
             </component>
         </windowTab>
 
-        <windowTab name="responsibleWorkersTab">
+        <windowTab name="responsibleWorkersTab" reference="responsibleWorkersTab">
             <component type="lookup" name="staffLookup" reference="staffLookup"
                        field="#{form}.responsibleWorkers" defaultVisible="false" persistent="false"
                        hasLabel="false">
@@ -642,7 +656,7 @@
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
             </component>
         </windowTab>
-        <windowTab name="realizationTab">
+        <windowTab name="realizationTab" reference="realizationTab">
             <component type="lookup" name="realizationsLookup" reference="realizationsLookup"
                        field="#{form}.realizations" defaultVisible="false" persistent="false"
                        hasLabel="false">
@@ -746,7 +760,7 @@
             </component>
         </windowTab>
 
-        <windowTab name="history">
+        <windowTab name="history" reference="historyTab">
             <component type="grid" name="loggings" reference="grid"
                        source="#{form}.stateChanges">
                 <option type="column" name="dateAndTime" fields="dateAndTime"/>
@@ -781,7 +795,7 @@
                 <layoutElement column="2" row="1" width="2" height="6">
                     <component type="grid" name="attachments"
                                reference="attachments" source="#{form}.attachments">
-                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="attachment" fields="name" link="true"/>
                         <option type="column" name="size" fields="size"/>
                         <option type="order" column="attachment" direction="desc"/>
 

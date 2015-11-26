@@ -392,6 +392,10 @@ public class EventHooks {
         hideAccordingToRole(view);
     }
 
+
+    public final void onBeforeRenderPlannedListView(final ViewDefinitionState view) {
+        maintenanceEventContextService.beforeRenderListView(view);
+    }
     public void hideAccordingToRole(ViewDefinitionState view) {
         Entity user = userService.getCurrentUserEntity();
         for (EventRoles role : EventRoles.values()) {

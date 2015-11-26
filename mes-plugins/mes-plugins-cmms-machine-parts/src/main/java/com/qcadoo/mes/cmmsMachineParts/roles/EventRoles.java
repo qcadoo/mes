@@ -45,7 +45,9 @@ public enum EventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            lockFromRibbonGroup(view, "status", "planEvent");
+            if (!eventInState(view, MaintenanceEventState.EDITED)) {
+                lockFromRibbonGroup(view, "status", "planEvent");
+            }
         }
     },
     ROLE_EVENTS_REVOKE {
@@ -69,7 +71,7 @@ public enum EventRoles {
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
             if (eventInState(view, MaintenanceEventState.EDITED)) {
-                lockFromRibbonGroup(view, "status", "closeEvent");
+                lockFromRibbonGroup(view, "status", "closeEvent", "planEvent");
             }
         }
     },
@@ -133,8 +135,9 @@ public enum EventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
+            ComponentState contextTab = view.getComponentByReference("contextTab");
             FormComponent form = (FormComponent) view.getComponentByReference("form");
-            if (form != null && form.getEntity().getId() != null) {
+            if (contextTab == null && form != null && form.getEntity().getId() != null) {
                 lockComponents(view, "number", "type", "factory", "division", "productionLine", "workstation", "subassembly",
                         "faultType", "description", "personReceiving", "sourceCost");
             }
@@ -155,6 +158,12 @@ public enum EventRoles {
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
             lockFromRibbonGroup(view, "genericExport", "csv", "pdf");
+        }
+    },
+    ROLE_PLANNED_EVENTS_ACTIONS_VIEW {
+        @Override
+        public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
+            lockFromRibbonGroup(view, "plannedEvents", "showPlannedEvent");
         }
     };
 

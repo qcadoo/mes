@@ -181,6 +181,8 @@
         <security:role identifier="ROLE_PLANNED_EVENTS_ADVANCED_EDIT"
                        description="Dostęp do edycji definicji (numer, rodzaj, planowany termin itd.) w zdarzeniach planowanych"/>
 
+        <security:role identifier="ROLE_PLANNED_EVENTS_DATES_EDIT"
+                       description="Dostęp do edycji dat i osób w zdarzeniach planowanych"/>
 
         <security:role identifier="ROLE_PLANNED_EVENTS_DOCUMENTS"
                        description="Dostęp do dokumentów w zdarzeniach planowanych"/>
@@ -193,6 +195,9 @@
 
         <security:role identifier="ROLE_PLANNED_EVENTS_STATES_ACCEPT"
                        description="Dostęp do akceptacji w zdarzeniach planowanych"/>
+
+        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_REALIZED"
+                       description="Dostęp do realizacji w zdarzeniach planowanych"/>
 
         <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS"
                        description="Dostęp do załączników w zdarzeniach planowanych"/>
@@ -221,6 +226,15 @@
         <security:role identifier="ROLE_RECURRING_EVENTS" description="Dostęp do zdarzeń cyklicznych"/>
 
         <security:role identifier="ROLE_CALCULATIONS" description="Dostęp do kalkulacji"/>
+
+        <security:role identifier="ROLE_DELIVERIES_EDIT"
+                       description="Dostęp do usuwania i aktywowania dostaw"/>
+
+        <security:role identifier="ROLE_DELIVERIES_STATES_DECLINE"
+                       description="Dostęp do odrzucania dostaw"/>
+
+        <security:role identifier="ROLE_DELIVERIES_STATES_OTHER"
+                       description="Dostęp do zmian statusów dostaw"/>
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
