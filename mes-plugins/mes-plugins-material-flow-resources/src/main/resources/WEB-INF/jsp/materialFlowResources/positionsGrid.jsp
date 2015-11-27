@@ -60,7 +60,7 @@ String ctx = request.getContextPath();
     </div>
     
     <br /><br />
-    <button style="position: absolute; top: 10px; z-index: 100;" onclick='jQuery("#grid").jqGrid("addRow",{});'>Add row</button>
+    <button style="position: absolute; top: 10px; z-index: 100;" id="add-new-row">Add row</button>
 </div>
 
 

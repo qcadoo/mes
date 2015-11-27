@@ -3,6 +3,12 @@ $(function () {
     var lookupWindow;
     var productIdElement;
 
+    var messagesController = new QCD.MessagesController();
+
+    function showMessage(message) {
+        messagesController.addMessage(message);
+    }
+
     function getContextParamFromUrl() {
         var query = location.search.substr(1);
         var context = {};
@@ -10,9 +16,9 @@ $(function () {
             var item = part.split("=");
             context[item[0]] = decodeURIComponent(item[1]);
         });
-        
+
         context = JSON.parse(context.context);
-        
+
         return context;
     }
 
@@ -64,18 +70,27 @@ $(function () {
         }
     }
 
+    function errorfunc(rowID, response) {
+        showMessage({
+            type: "failure",
+            content: response.responseText// QCD.translate("")
+        });
+
+        return true;
+    }
+
     var template = "<div style='margin-left:15px;'>";
     template += "<div> Nazwa: </div><div>{name} </div>";
     template += "<hr style='width:100%;'/>";
 
     $("#grid").jqGrid({
-        url: '../../integration/rest/documentPositions/'+getContextParamFromUrl()['form.id']+'.html',
+        url: '../../integration/rest/documentPositions/' + getContextParamFromUrl()['form.id'] + '.html',
         datatype: "json",
     	height: '100%',
     	autowidth: true,
         rowNum: 150,
         sortname: 'id',
-        colNames: ['ID', 'product_id', 'additional_code_id', 'quantity', 'givenquantity', 'givenunit', 'conversion', 'expirationdate', 
+        colNames: ['ID', 'product_id', 'additional_code_id', 'quantity', 'givenquantity', 'givenunit', 'conversion', 'expirationdate',
             'pallet_id', 'type_of_pallet', 'storage_location_id', 'resource_id'],
         colModel: [
             {
@@ -151,7 +166,7 @@ $(function () {
                 name: 'conversion',
                 index: 'conversion',
                 editable: true,
-            },            
+            },
             {
                 name: 'expirationdate',
                 index: 'expirationdate',
@@ -224,8 +239,9 @@ $(function () {
         onSelectRow: function (id) {
             jQuery('#grid').editRow(id, {
                 keys: true,
-                "url": '../../integration/rest/documentPositions/' + id + ".html",
+                url: '../../integration/rest/documentPositions/' + id + ".html",
                 mtype: 'PUT',
+                errorfunc: errorfunc
             });
         },
         ajaxRowOptions: {contentType: "application/json"},
@@ -288,9 +304,13 @@ $(function () {
             });
 
     $(window).bind('resize', function() {
-        $("#grid").setGridWidth($("#gridContainer").width(), true);
+        $("#grid").setGridWidth($("#window\\.positionsGridTab").width()-20, true);
     }).trigger('resize');
     $(window).bind('load', function() {
-        $("#grid").setGridWidth($("#gridContainer").width(), true);
+        $("#grid").setGridWidth($("#window\\.positionsGridTab").width()-20, true);
     });
 });
+
+jQuery('#add-new-row').bind('click', function () {
+    jQuery("#grid").jqGrid("addRow", {errorfunc: errorfunc});
+});     
