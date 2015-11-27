@@ -935,6 +935,9 @@
 
                 <option type="searchable" value="dateAndTime,previousState,currentState,datesChanged"/>
                 <option type="orderable" value="dateAndTime,previousState,currentState,datesChanged"/>
+                
+                <option type="fullscreen" value="true" />
+                <option type="fixedHeight" value="true"/>
 
                 <option type="correspondingView" value="orders/orderStateChangeDetails"/>
                 <option type="correspondingComponent" value="form"/>
