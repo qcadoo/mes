@@ -32,14 +32,16 @@ String ctx = request.getContextPath();
 %>
 
 <script src="/basic/public/js/jquery.jqGrid.min.js"></script>
+<script src="/materialFlowResources/public/js/angular.js"></script>
 <script src="/materialFlowResources/public/js/gridOptions.js"></script>
+
 <script type="text/ecmascript" src="/basic/public/js/grid.locale-en.js"></script>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/custom.css">
+<link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
+<link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/custom.css">
 
 
 
@@ -48,17 +50,21 @@ String ctx = request.getContextPath();
     <div class="windowContainerRibbon tabWindowRibbon">
         <div id="window_windowContainerRibbon">
             <div id="q_row3_out_container">
-                    <div id="q_menu_row3"></div>
+                <div id="q_menu_row3"></div>
             </div>
             <div id="q_row4_out"></div>
         </div>
     </div>
+
+    <div ng-app="gridApp" ng-controller="GridController" id="gridContainer">
+        <ng-jq-grid config="config" data="data"></ng-jq-grid>
+    </div>    
     
     <div id="gridContainer">
         <table id="grid"></table>
         <div id="jqGridPager"></div>
     </div>
-    
+
     <br /><br />
     <button style="position: absolute; top: 10px; z-index: 100;" id="add-new-row">Add row</button>
 </div>
