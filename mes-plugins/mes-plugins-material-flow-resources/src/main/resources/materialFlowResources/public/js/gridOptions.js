@@ -73,7 +73,7 @@ $(function () {
     function errorfunc(rowID, response) {
         showMessage({
             type: "failure",
-            content: response.responseText// QCD.translate("")
+            content: JSON.parse(response.responseText).message// QCD.translate("")
         });
 
         return true;
