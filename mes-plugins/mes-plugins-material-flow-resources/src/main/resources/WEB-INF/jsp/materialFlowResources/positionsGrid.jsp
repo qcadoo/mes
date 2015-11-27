@@ -38,12 +38,9 @@ String ctx = request.getContextPath();
     <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/custom.css">
 
-<style type="text/css">
-    .ui-jqgrid {
-        margin-top: -65px;
-    }
-</style>
 
 
 <div class="windowContainer" style="background:#9b9b9b;">
@@ -56,11 +53,11 @@ String ctx = request.getContextPath();
             <div id="q_row4_out"></div>
         </div>
     </div>
-
-            <div class="windowContent" style="margin:50px;position:absolute;top:90px;">
-                <table id="grid"></table>
-                <div id="jqGridPager"></div>
-            </div>
+    
+    <div id="gridContainer">
+        <table id="grid"></table>
+        <div id="jqGridPager"></div>
+    </div>
     
     <br /><br />
     <button style="position: absolute; top: 10px; z-index: 100;" onclick='jQuery("#grid").jqGrid("addRow",{});'>Add row</button>

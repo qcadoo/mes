@@ -1,0 +1,46 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo Framework
+ * Version: 1.4
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
+#gridContainer {
+    background: #fafafa;
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    width: 100%;
+    margin-top: 90px;
+	position:absolute;
+}
+
+#gridContainer .ui-th-column, #gridContainer .ui-search-toolbar  {
+    background: transparent url('/qcadooView/public/css/crud/images/grid/gradientygrid/gradient_header.png') repeat-x 0 0;
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #e8e8e8;
+    font-weight: normal;
+}
+
+#gridContainer .ui-state-highlight {
+    background: #ffdb67;
+    border-color: #dba700;
+}
+#gridContainer .ui-state-highlight .ui-state-hover {
+    background: #F8C426;
+}

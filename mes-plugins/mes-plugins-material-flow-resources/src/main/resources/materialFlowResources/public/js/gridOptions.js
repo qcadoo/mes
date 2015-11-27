@@ -66,12 +66,13 @@ $(function () {
 
     var template = "<div style='margin-left:15px;'>";
     template += "<div> Nazwa: </div><div>{name} </div>";
+    template += "<hr style='width:100%;'/>";
 
     $("#grid").jqGrid({
         url: '../../integration/rest/documentPositions/'+getContextParamFromUrl()['form.id']+'.html',
         datatype: "json",
-        height: 500,
-        width: 1500,
+    	height: '100%',
+    	autowidth: true,
         rowNum: 150,
         sortname: 'id',
         colNames: ['ID', 'product_id', 'additional_code_id', 'quantity', 'givenquantity', 'givenunit', 'conversion', 'expirationdate', 
@@ -234,8 +235,6 @@ $(function () {
         }
     });
 
-
-
     $('#grid').jqGrid('filterToolbar');
 
     $('#grid').navGrid('#jqGridPager',
@@ -287,4 +286,11 @@ $(function () {
                     return 'Error: ' + data.responseText
                 }
             });
-        });
+
+    $(window).bind('resize', function() {
+        $("#grid").setGridWidth($("#gridContainer").width(), true);
+    }).trigger('resize');
+    $(window).bind('load', function() {
+        $("#grid").setGridWidth($("#gridContainer").width(), true);
+    });
+});
