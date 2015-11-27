@@ -1,5 +1,5 @@
 
-var myApp = angular.module('gridApp', []);
+var myApp = angular.module('gridApp', ['ui.bootstrap']);
 
 myApp.directive('ngJqGrid', function () {
     return {

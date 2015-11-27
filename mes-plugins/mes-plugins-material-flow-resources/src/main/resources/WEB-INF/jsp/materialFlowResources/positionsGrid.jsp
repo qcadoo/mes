@@ -33,6 +33,10 @@ String ctx = request.getContextPath();
 
 <script src="/basic/public/js/jquery.jqGrid.min.js"></script>
 <script src="/materialFlowResources/public/js/angular.js"></script>
+<script src="/materialFlowResources/public/js/ui-bootstrap-custom-0.14.3.js"></script>
+<script src="/materialFlowResources/public/js/ui-bootstrap-custom-tpls-0.14.3.js"></script>
+<script src="/materialFlowResources/public/js/bootstrap-dropdown.js"></script>
+
 <script src="/materialFlowResources/public/js/gridOptions.js"></script>
 
 <script type="text/ecmascript" src="/basic/public/js/grid.locale-en.js"></script>
@@ -42,6 +46,7 @@ String ctx = request.getContextPath();
 <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
 <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/custom.css">
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
 
 
