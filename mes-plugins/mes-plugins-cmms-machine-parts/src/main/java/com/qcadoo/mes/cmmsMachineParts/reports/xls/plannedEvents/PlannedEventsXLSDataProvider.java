@@ -32,11 +32,11 @@ import java.util.stream.Collectors;
                     + "event.date as date, event.counter as counter, event.countertolerance as counterTolerance, event.effectivecounter as effectiveCounter, \n"
                     + "event.duration as duration, event.effectiveduration as effectiveDuration, event.isdeadline as isDeadline, \n"
                     + "event.startdate as startDate, event.finishdate as finishDate, event.countertolerance as countertolerance, event.createuser as createuser, \n"
-                    + "factory.number as factoryNumber, division.number as divisionNumber, productionline.number as productionLineNumber, workstation.number as workstatioNnumber, subassembly.number as subassemblynumber,\n"
+                    + "factory.number as factoryNumber, division.number as divisionNumber, productionline.number as productionLineNumber, workstation.number as workstatioNnumber, subassembly.number as subassemblynumber, \n"
                     + "company.number as companyNumber, sourcecost.number as sourceCostNumber,\n"
-                    + "part.id as machinePartId, product.name as machinePartName, product.number as machinePartNumber, product.unit as machinePartUnit, part.plannedquantity as machinePartPlannedQuantity,\n"
-                    + "realization.id as realizationId, worker.name as realizationWorkerName, worker.surname as realizationWorkerSurname, realization.duration as realizationDuration,\n"
-                    + "hist.id as stateChangeId, hist.dateandtime as stateChangeDateAndTime, hist.sourcestate as stateChangeSourceState, hist.targetstate as stateChangeTargetState\n"
+                    + "part.id as machinePartId, product.name as machinePartName, product.number as machinePartNumber, product.unit as machinePartUnit, part.plannedquantity as machinePartPlannedQuantity, \n"
+                    + "realization.id as realizationId, worker.name as realizationWorkerName, worker.surname as realizationWorkerSurname, realization.duration as realizationDuration, \n"
+                    + "hist.id as stateChangeId, hist.dateandtime as stateChangeDateAndTime, hist.sourcestate as stateChangeSourceState, hist.targetstate as stateChangeTargetState , hist.status as stateStatus \n"
                     + "  FROM cmmsmachineparts_plannedevent event\n"
                     + "   LEFT JOIN cmmsmachineparts_plannedeventstatechange hist ON event.id = hist.plannedevent_id\n"
                     + "   LEFT JOIN cmmsmachineparts_plannedeventrealization realization ON event.id = realization.plannedevent_id\n"
@@ -93,7 +93,8 @@ import java.util.stream.Collectors;
     }
 
     private List<PlannedEventStateChangeDTO> fillHist(Object plannedEventDTO, List<PlannedEventDTO> subEvents) {
-        return subEvents.stream().map(e -> toHist(e)).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+        return subEvents.stream().map(e -> toHist(e)).filter(Objects::nonNull)
+                .filter(e -> "03successful".equals(e.getStateStatus())).distinct().collect(Collectors.toList());
 
     }
 
@@ -106,6 +107,8 @@ import java.util.stream.Collectors;
         state.setStateChangeId(e.getStateChangeId());
         state.setStateChangeSourceState(e.getStateChangeSourceState());
         state.setStateChangeTargetState(e.getStateChangeTargetState());
+        state.setStateStatus(e.getStateStatus());
+
         return state;
     }
 

@@ -10,6 +10,7 @@ public class PlannedEventStateChangeDTO {
     private Date stateChangeDateAndTime;
     private String stateChangeSourceState;
     private String stateChangeTargetState;
+    private String stateStatus;
 
     public Long getStateChangeId() {
         return stateChangeId;
@@ -43,6 +44,14 @@ public class PlannedEventStateChangeDTO {
         this.stateChangeTargetState = stateChangeTargetState;
     }
 
+    public String getStateStatus() {
+        return stateStatus;
+    }
+
+    public void setStateStatus(String stateStatus) {
+        this.stateStatus = stateStatus;
+    }
+
     @Override public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -52,10 +61,12 @@ public class PlannedEventStateChangeDTO {
         return Objects.equal(stateChangeId, that.stateChangeId) &&
                 Objects.equal(stateChangeDateAndTime, that.stateChangeDateAndTime) &&
                 Objects.equal(stateChangeSourceState, that.stateChangeSourceState) &&
-                Objects.equal(stateChangeTargetState, that.stateChangeTargetState);
+                Objects.equal(stateChangeTargetState, that.stateChangeTargetState) &&
+                Objects.equal(stateStatus, that.stateStatus);
     }
 
     @Override public int hashCode() {
-        return Objects.hashCode(stateChangeId, stateChangeDateAndTime, stateChangeSourceState, stateChangeTargetState);
+        return Objects
+                .hashCode(stateChangeId, stateChangeDateAndTime, stateChangeSourceState, stateChangeTargetState, stateStatus);
     }
 }

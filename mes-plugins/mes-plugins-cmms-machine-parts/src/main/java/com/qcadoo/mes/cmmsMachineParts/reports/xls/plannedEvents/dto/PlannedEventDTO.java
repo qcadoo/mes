@@ -94,6 +94,8 @@ public class PlannedEventDTO {
 
     private String stateChangeTargetState;
 
+    private String stateStatus;
+
     public int subListSize() {
         return realizations.size() > parts.size() ? realizations.size() : parts.size();
     }
@@ -432,5 +434,13 @@ public class PlannedEventDTO {
 
     public void setCreateuser(String createuser) {
         this.createuser = createuser;
+    }
+
+    public String getStateStatus() {
+        return stateStatus;
+    }
+
+    public void setStateStatus(String stateStatus) {
+        this.stateStatus = stateStatus;
     }
 }
