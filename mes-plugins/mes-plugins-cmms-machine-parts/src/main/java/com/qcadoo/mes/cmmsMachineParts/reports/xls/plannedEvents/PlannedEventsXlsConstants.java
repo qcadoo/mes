@@ -88,7 +88,7 @@ public final class PlannedEventsXlsConstants {
             .newArrayList(COLUMN_number, COLUMN_type, COLUMN_factoryNumber, COLUMN_divisionNumber, COLUMN_productionLineNumber,
                     COLUMN_workstationNumber, COLUMN_subassemblyNumber, COLUMN_description, COLUMN_ownerName,
                     COLUMN_plannedSeparately, COLUMN_requiresShutdown,  COLUMN_basedOn, COLUMN_date, COLUMN_counter, COLUMN_counterTolerance,
-                    COLUMN_sourceCostNumber, COLUMN_duration, COLUMN_effectiveDuration, COLUMN_effectiveCounter,
+                    COLUMN_sourceCostNumber, COLUMN_duration, COLUMN_effectiveCounter,
                     COLUMN_startDate, COLUMN_finishDate, COLUMN_machinePartName, COLUMN_machinePartNumber,
                     COLUMN_machinePartPlannedQuantity, COLUMN_machinePartUnit, COLUMN_realizationWorkerSurname,
                     COLUMN_realizationDuration, COLUMN_stateAuthor, COLUMN_stateStartDate, COLUMN_stateStopDate,

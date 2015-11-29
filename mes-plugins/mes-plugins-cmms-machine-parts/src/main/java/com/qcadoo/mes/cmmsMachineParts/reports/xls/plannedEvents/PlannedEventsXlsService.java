@@ -7,14 +7,15 @@ import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEven
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventRealizationDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventStateChangeDTO;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventStateStringValues;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
+import com.qcadoo.model.api.NumberService;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Font;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service public class PlannedEventsXlsService {
@@ -22,6 +23,8 @@ import java.util.*;
     @Autowired private TranslationService translationService;
 
     @Autowired private PlannedEventsXLSDataProvider plannedEventsXLSDataProvider;
+
+    @Autowired private NumberService numberService;
 
     private static final int REALIZATIONS_COLUMN_POSITION_START = 25;
 
@@ -31,27 +34,40 @@ import java.util.*;
         return translationService.translate(PlannedEventsXlsConstants.REPORT_TITLE, locale);
     }
 
-    public void buildExcelContent(final HSSFSheet sheet, final Map<String, Object> filters, final Locale locale) {
+    public void buildExcelContent(final HSSFWorkbook workbook, final HSSFSheet sheet, final Map<String, Object> filters, final Locale locale) {
         List<PlannedEventDTO> events = plannedEventsXLSDataProvider.getEvents(filters);
-        fillHeaderRow(sheet, 0, locale);
+        fillHeaderRow(workbook, sheet, 0, locale);
         int rowCounter = 1;
         for (PlannedEventDTO plannedEventDTO : events) {
-            rowCounter = fillEventsRows(sheet, plannedEventDTO, rowCounter++, locale);
+            rowCounter = fillEventsRows(workbook, sheet, plannedEventDTO, rowCounter++, locale);
         }
     }
 
-    private void fillHeaderRow(final HSSFSheet sheet, Integer rowNum, final Locale locale) {
+    private void fillHeaderRow(final HSSFWorkbook workbook, final HSSFSheet sheet, Integer rowNum, final Locale locale) {
         HSSFRow headerLine = sheet.createRow(rowNum);
+        Font font = workbook.createFont();
+        font.setFontName(HSSFFont.FONT_ARIAL);
+        font.setFontHeightInPoints((short) 10);
+        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        HSSFCellStyle style = workbook.createCellStyle();
+
+            style.setFont(font);
 
         int colNumber = 0;
         for (String column : PlannedEventsXlsConstants.ALL_COLUMNS) {
             HSSFCell headerCell = headerLine.createCell(colNumber);
             headerCell.setCellValue(translationService.translate(column, locale));
+            headerCell.setCellStyle(style);
             colNumber++;
         }
     }
 
-    private int fillEventsRows(final HSSFSheet sheet, final PlannedEventDTO event, int rowCounter, final Locale locale) {
+    private int fillEventsRows(final HSSFWorkbook workbook, final HSSFSheet sheet, final PlannedEventDTO event, int rowCounter, final Locale locale) {
+        Font font = workbook.createFont();
+        font.setFontName(HSSFFont.FONT_ARIAL);
+        font.setFontHeightInPoints((short) 10);
+        font.setBoldweight(Font.BOLDWEIGHT_NORMAL);
+
         int rowCounterCopy = rowCounter;
         int partsCounter = rowCounterCopy;
         int realizationsCounter = rowCounterCopy;
@@ -60,7 +76,7 @@ import java.util.*;
 
         HSSFCell numberCell = eventLine.createCell(0);
         numberCell.setCellValue(event.getNumber());
-
+        numberCell.getCellStyle().setFont(font);
         HSSFCell typeCell = eventLine.createCell(1);
         typeCell.setCellValue(translationService.translate(event.getType(), locale));
 
@@ -86,16 +102,16 @@ import java.util.*;
         ownerNameCell.setCellValue(event.getOwnerName());
 
         HSSFCell plannedSeparatelyCell = eventLine.createCell(9);
-        plannedSeparatelyCell.setCellValue((Boolean) getValue(event.getPlannedSeparately()));
+        plannedSeparatelyCell.setCellValue(getValue(event.getPlannedSeparately()));
 
         HSSFCell requiresShutdownCell = eventLine.createCell(10);
-        requiresShutdownCell.setCellValue(event.getRequiresShutdown());
+        requiresShutdownCell.setCellValue(getValue(event.getRequiresShutdown()));
 
         HSSFCell basedOnCell = eventLine.createCell(11);
         basedOnCell.setCellValue(translationService.translate(event.getBasedOn(), locale));
 
         HSSFCell dateCell = eventLine.createCell(12);
-        dateCell.setCellValue(getDateValue(event.getDate()));
+        dateCell.setCellValue(getDateOnly(event.getDate()));
 
         HSSFCell counterCell = eventLine.createCell(13);
         counterCell.setCellValue(getDecimalValue(event.getCounter()));
@@ -107,18 +123,15 @@ import java.util.*;
         sourceCostNumberCell.setCellValue(event.getSourceCostNumber());
 
         HSSFCell durationCell = eventLine.createCell(16);
-        durationCell.setCellValue(getIntValue(event.getDuration()));
+        durationCell.setCellValue(getTime(event.getDuration()));
 
-        HSSFCell effectiveDurationCell = eventLine.createCell(17);
-        effectiveDurationCell.setCellValue(getIntValue(event.getEffectiveDuration()));
-
-        HSSFCell effectiveCounterCell = eventLine.createCell(18);
+        HSSFCell effectiveCounterCell = eventLine.createCell(17);
         effectiveCounterCell.setCellValue(getDecimalValue(event.getEffectiveCounter()));
 
-        HSSFCell startDateCell = eventLine.createCell(19);
+        HSSFCell startDateCell = eventLine.createCell(18);
         startDateCell.setCellValue(getDateValue(event.getStartDate()));
 
-        HSSFCell finishDateCell = eventLine.createCell(20);
+        HSSFCell finishDateCell = eventLine.createCell(19);
         finishDateCell.setCellValue(getDateValue(event.getFinishDate()));
         //dodanie sub wierszy
         int rowsToAdd = event.subListSize();
@@ -131,26 +144,26 @@ import java.util.*;
             boolean first = true;
             for (MachinePartForEventDTO part : event.getParts()) {
                 if (first) {
-                    HSSFCell machinePartNameCell = eventLine.createCell(21);
+                    HSSFCell machinePartNameCell = eventLine.createCell(20);
                     machinePartNameCell.setCellValue(part.getMachinePartName());
-                    HSSFCell machinePartNumberCell = eventLine.createCell(22);
+                    HSSFCell machinePartNumberCell = eventLine.createCell(21);
                     machinePartNumberCell.setCellValue(part.getMachinePartNumber());
-                    HSSFCell machinePartQuantityCell = eventLine.createCell(23);
+                    HSSFCell machinePartQuantityCell = eventLine.createCell(22);
                     machinePartQuantityCell.setCellValue(getDecimalValue(part.getMachinePartPlannedQuantity()));
-                    HSSFCell machinePartUnitCell = eventLine.createCell(24);
+                    HSSFCell machinePartUnitCell = eventLine.createCell(23);
                     machinePartUnitCell.setCellValue(part.getMachinePartUnit());
                     first = false;
 
                 } else {
                     partsCounter++;
                     HSSFRow subEventLine = sheet.getRow(partsCounter);
-                    HSSFCell machinePartNameCell = subEventLine.createCell(21);
+                    HSSFCell machinePartNameCell = subEventLine.createCell(20);
                     machinePartNameCell.setCellValue(part.getMachinePartName());
-                    HSSFCell machinePartNumberCell = subEventLine.createCell(22);
+                    HSSFCell machinePartNumberCell = subEventLine.createCell(21);
                     machinePartNumberCell.setCellValue(part.getMachinePartNumber());
-                    HSSFCell machinePartQuantityCell = subEventLine.createCell(23);
+                    HSSFCell machinePartQuantityCell = subEventLine.createCell(22);
                     machinePartQuantityCell.setCellValue(getDecimalValue(part.getMachinePartPlannedQuantity()));
-                    HSSFCell machinePartUnitCell = subEventLine.createCell(24);
+                    HSSFCell machinePartUnitCell = subEventLine.createCell(23);
                     machinePartUnitCell.setCellValue(part.getMachinePartUnit());
                 }
             }
@@ -158,21 +171,21 @@ import java.util.*;
             for (PlannedEventRealizationDTO realization : event.getRealizations()) {
 
                 if (first) {
-                    HSSFCell realizationWorkerNameCell = eventLine.createCell(25);
+                    HSSFCell realizationWorkerNameCell = eventLine.createCell(24);
                     realizationWorkerNameCell.setCellValue(
                             realization.getRealizationWorkerName() + " " + realization.getRealizationWorkerSurname());
-                    HSSFCell realizationDurationNumberCell = eventLine.createCell(26);
-                    realizationDurationNumberCell.setCellValue(realization.getRealizationDuration());
+                    HSSFCell realizationDurationNumberCell = eventLine.createCell(25);
+                    realizationDurationNumberCell.setCellValue(getTime(realization.getRealizationDuration()));
                     first = false;
 
                 } else {
                     realizationsCounter++;
                     HSSFRow subEventLine = sheet.getRow(realizationsCounter);
-                    HSSFCell realizationWorkerNameCell = subEventLine.createCell(25);
+                    HSSFCell realizationWorkerNameCell = subEventLine.createCell(24);
                     realizationWorkerNameCell.setCellValue(
                             realization.getRealizationWorkerName() + " " + realization.getRealizationWorkerSurname());
-                    HSSFCell realizationDurationNumberCell = subEventLine.createCell(26);
-                    realizationDurationNumberCell.setCellValue(realization.getRealizationDuration());
+                    HSSFCell realizationDurationNumberCell = subEventLine.createCell(25);
+                    realizationDurationNumberCell.setCellValue(getTime(realization.getRealizationDuration()));
                 }
             }
         }
@@ -189,25 +202,25 @@ import java.util.*;
     private void fillStateChange(HSSFRow eventLine, PlannedEventDTO event) {
         List<PlannedEventStateChangeDTO> states = event.getStateChanges();
 
-        HSSFCell stateAuthorCell = eventLine.createCell(27);
+        HSSFCell stateAuthorCell = eventLine.createCell(26);
         stateAuthorCell.setCellValue(event.getCreateuser());
 
-        HSSFCell stateStartDateCell = eventLine.createCell(28);
+        HSSFCell stateStartDateCell = eventLine.createCell(27);
         stateStartDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.IN_PLAN, states));
 
-        HSSFCell stateStopDateCell = eventLine.createCell(29);
+        HSSFCell stateStopDateCell = eventLine.createCell(28);
         stateStopDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.PLANNED, states));
 
-        HSSFCell stateInRealizationDateCell = eventLine.createCell(30);
+        HSSFCell stateInRealizationDateCell = eventLine.createCell(29);
         stateInRealizationDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.IN_REALIZATION, states));
 
-        HSSFCell stateAcceptedDateDateCell = eventLine.createCell(31);
+        HSSFCell stateAcceptedDateDateCell = eventLine.createCell(30);
         stateAcceptedDateDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.ACCEPTED, states));
 
-        HSSFCell stateRealizationDateCell = eventLine.createCell(32);
+        HSSFCell stateRealizationDateCell = eventLine.createCell(31);
         stateRealizationDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.REALIZED, states));
 
-        HSSFCell stateCell = eventLine.createCell(33);
+        HSSFCell stateCell = eventLine.createCell(32);
         stateCell.setCellValue(translationService.translate(event.getState(), LocaleContextHolder.getLocale()));
     }
 
@@ -215,7 +228,7 @@ import java.util.*;
         Optional<PlannedEventStateChangeDTO> op = states.stream().filter(e -> state.equals(e.getStateChangeTargetState()))
                 .sorted((e1, e2) -> e1.getStateChangeDateAndTime().compareTo(e1.getStateChangeDateAndTime())).reduce((a, b) -> b);
         if (op.isPresent()) {
-            return op.get().getStateChangeDateAndTime().toString();
+            return DateUtils.toDateTimeString(op.get().getStateChangeDateAndTime());
         }
         return "";
     }
@@ -231,11 +244,23 @@ import java.util.*;
         return value.toString();
     }
 
+    private String getTime(Integer value) {
+        if (value == null) {
+            return "";
+        }
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        SimpleDateFormat df = new SimpleDateFormat("HHHH:mm:ss");
+        df.setTimeZone(tz);
+        String time = df.format(new Date(value*1000L*100L));
+
+        return time;
+    }
+
     private String getDecimalValue(BigDecimal value) {
         if (value == null) {
             return "";
         }
-        return value.toString();
+        return numberService.formatWithMinimumFractionDigits(value,0);
     }
 
     private String getDateValue(Date date) {
@@ -245,11 +270,25 @@ import java.util.*;
         return DateUtils.toDateTimeString(date);
     }
 
-    private Object getValue(Object value) {
-        if (value == null) {
-            return false;
+    private String getDateOnly(Date date) {
+        if (date == null) {
+            return "";
         }
-        return value;
+        SimpleDateFormat df = new SimpleDateFormat(DateUtils.L_DATE_FORMAT);
+        String time = df.format(date);
+
+        return time;
+    }
+
+    private String getValue(Object value) {
+        if (value == null) {
+            return translationService.translate("qcadooView.false", LocaleContextHolder.getLocale());
+        }
+        if ((Boolean) value) {
+            return translationService.translate("qcadooView.true", LocaleContextHolder.getLocale());
+        } else {
+            return translationService.translate("qcadooView.false", LocaleContextHolder.getLocale());
+        }
 
     }
 }

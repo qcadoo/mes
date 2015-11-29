@@ -21,6 +21,6 @@ public class PlannedEventsXlsView  extends AbstractExcelView {
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
         filters.size();
         HSSFSheet sheet = hssfWorkbook.createSheet( plannedEventsXlsService.getReportTitle(LocaleContextHolder.getLocale()));
-        plannedEventsXlsService.buildExcelContent(sheet,filters, LocaleContextHolder.getLocale());
+        plannedEventsXlsService.buildExcelContent(hssfWorkbook, sheet,filters, LocaleContextHolder.getLocale());
     }
 }
