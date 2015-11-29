@@ -44,3 +44,8 @@
 #gridContainer .ui-state-highlight .ui-state-hover {
     background: #F8C426;
 }
+.eac-square input {
+  background-image: url("icon_search.png");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}

@@ -1,5 +1,5 @@
 
-var myApp = angular.module('gridApp', ['ui.bootstrap']);
+var myApp = angular.module('gridApp', []);
 
 myApp.directive('ngJqGrid', function () {
     return {
@@ -136,6 +136,50 @@ myApp.controller('GridController', function ($scope) {
         lookupWindow = mainController.openModal('body', 'materialFlowResources/productsLookup.html', null, onModalClose, onModalRender, {width: 1000, height: 560})
     }
 
+    function additionalCodeLookup_createElement(value, options) {
+        var $ac = $('<input id="additionalCode" class="eac-square"/>');
+        $ac.val(value);
+        $ac.autoComplete({
+        source: function(query, response){
+            try { xhr.abort(); } catch(e){}
+                 xhr = $.getJSON('/rest/additionalcodes', { query: query }, function(data){ response(data); });
+        }
+        });
+        return $ac;
+    }
+
+    function palletNumbersLookup_createElement(value, options) {
+        var $ac = $('<input id="palletnumber" class="eac-square"/>');
+        $ac.val(value);
+        $ac.autoComplete({
+        source: function(query, response){
+            try { xhr.abort(); } catch(e){}
+                 xhr = $.getJSON('/rest/palletnumbers', { query: query }, function(data){ response(data); });
+        }
+        });
+        return $ac;
+    }
+    function productsLookup_createElement(value, options) {
+        var $ac = $('<input id="square" class="eac-square"/>');
+          $ac.val(value);
+
+        $ac.autoComplete({
+        source: function(query, response){
+            try { xhr.abort(); } catch(e){}
+            xhr = $.getJSON('/rest/products', { query: query }, function(data){ response(data); });
+        }
+         });
+          return $ac;
+    }
+
+    function lookup_value(elem, operation, value) {
+        if (operation === 'get') {
+            return $(elem).val();
+
+        } else if (operation === 'set') {
+            $('input', elem).val(value);
+        }
+    }
     function editProductId_createElement(value, options) {
         productIdElement = $('<input type="text" readonly="true" />');
         productIdElement.val(value);
@@ -194,8 +238,8 @@ myApp.controller('GridController', function ($scope) {
                 editable: true,
                 edittype: 'custom',
                 editoptions: {
-                    custom_element: editProductId_createElement,
-                    custom_value: editProductId_value
+                    custom_element: productsLookup_createElement,
+                    custom_value: lookup_value
                 }
             },
             {
@@ -204,9 +248,8 @@ myApp.controller('GridController', function ($scope) {
                 editable: true,
                 edittype: 'custom',
                 editoptions: {
-                    // TODO
-                    custom_element: editProductId_createElement,
-                    custom_value: editProductId_value
+                    custom_element: additionalCodeLookup_createElement,
+                    custom_value: lookup_value
                 }
             },
             {
@@ -277,9 +320,8 @@ myApp.controller('GridController', function ($scope) {
                 editable: true,
                 edittype: 'custom',
                 editoptions: {
-                    // TODO
-                    custom_element: editProductId_createElement,
-                    custom_value: editProductId_value
+                    custom_element: palletNumbersLookup_createElement,
+                    custom_value: lookup_value
                 }
             },
             {
