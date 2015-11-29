@@ -25,17 +25,107 @@
 
 -->
 <view defaultAuthorizationRole="ROLE_REQUIREMENTS" name="deliveriesList" modelName="delivery" menuAccessible="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
-	
-	<component type="window" name="window" reference="window">
-	
-		<ribbon>
-			<template name="standardGridTemplate" />
-			<group name="status">
-				<smallButton name="accept" icon="startIcon16.png" state="disabled">
-					<script>
-						<![CDATA[
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="actions">
+                <bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.performNew;" accesskey="n"/>
+                <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{grid}.performCopy;"
+                             accesskey="c">
+                    <script><![CDATA[
+                #{grid}.addOnChangeListener({
+                	onChange: function(selectedArray) {
+                		if (selectedArray.length == 0) {
+                			this.disable();
+                		} else {
+                			this.enable();
+                		}
+                	}
+                });
+			]]></script>
+                </smallButton>
+                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{grid}.performDelete;"
+                             accesskey="d">
+                    <script><![CDATA[
+                #{grid}.addOnChangeListener({
+                	onChange: function(selectedArray) {
+                		if (selectedArray.length == 0) {
+                			this.disable();
+                		} else {
+                			this.enable();
+                		}
+                	}
+                });
+			]]></script>
+                </smallButton>
+            </group>
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;"
+                           accesskey="r"
+                        />
+            </group>
+            <group name="states" if="#view.getComponentByReference('grid').dataDefinition.activable"
+                   defaultAuthorizationRole="ROLE_DELIVERIES_EDIT">
+                <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled"
+                             action="#{grid}.performActivate;">
+                    <script><![CDATA[
+                #{grid}.addOnChangeListener({
+                	onChange: function(selectedArray) {
+                		if (selectedArray.length == 0) {
+                			this.disable();
+                		} else {
+                			this.enable();
+                		}
+                	}
+                });
+			]]></script>
+                </smallButton>
+                <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled"
+                             action="#{grid}.performDeactivate;">
+                    <script><![CDATA[
+                #{grid}.addOnChangeListener({
+                	onChange: function(selectedArray) {
+                		if (selectedArray.length == 0) {
+                			this.disable();
+                		} else {
+                			this.enable();
+                		}
+                	}
+                });
+			]]></script>
+                </smallButton>
+            </group>
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							#{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+						}
+					});
+				]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							#{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+						}
+					});
+				]]>
+                    </script>
+                </smallButton>
+            </group>
+            <group name="status">
+                <smallButton name="accept" icon="startIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (this.state == "draft") {
@@ -58,12 +148,12 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="declineDelivery" icon="deleteIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="declineDelivery" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery.confirm)}")) {
@@ -72,12 +162,12 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="approveDelivery" icon="acceptIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="approveDelivery" icon="acceptIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
@@ -86,17 +176,17 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-			</group>
-		</ribbon>
-		
-		<windowTab name="mainTab" reference="mainTab">
-			<component type="form" name="delivery" reference="delivery" />
-				
-			<component type="grid" name="deliveriesList" reference="grid">
-				<script>
-	 				<![CDATA[ 
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="form" name="delivery" reference="delivery"/>
+
+            <component type="grid" name="deliveriesList" reference="grid">
+                <script>
+                    <![CDATA[
 						var copyBtn = #{window}.getRibbonItem("actions.copy");
 						var deleteBtn = #{window}.getRibbonItem("actions.delete");
 						
@@ -196,54 +286,59 @@
 						
 						this.addOnChangeListener(listener);
 					]]>
-				</script>
-				
-				<option type="column" name="number" fields="number" link="true" width="50" />
-				<option type="column" name="name" fields="name" link="true" width="100" />
-				<option type="column" name="supplierName" fields="supplier"
-					expression="#supplier['name']" />
-				<option type="column" name="deliveryDate" fields="deliveryDate" width="100"/>
-				<option type="column" name="state" fields="state" />
-				<option type="column" name="createDate" fields="createDate" width="100"/>
-				
-				<option type="order" column="number" direction="asc" />
-				
-				<option type="searchable" value="name,number,supplierName,deliveryDate,state,createDate" />
-				<option type="orderable" value="name,number,supplierName,deliveryDate,state,createDate" />
-				
-				<option type="correspondingView" value="deliveries/deliveryDetails" />
-				<option type="correspondingComponent" value="form" />
-				
-				<option type="fullscreen" value="true" />
-				<option type="multiselect" value="true" />
-				
-				<option type="hasPredefinedFilters" value="true" />
-			
-				<predefinedFilters>
-					<predefinedFilter name="all">
-					</predefinedFilter>
-					<predefinedFilter name="notReceived">
-						<filterRestriction column="state" value="[01draft,02prepared,03duringCorrection,04declined,05approved,07receiveConfirmWaiting]" />
-					</predefinedFilter>
-					<predefinedFilter name="notDeclined">
-						<filterRestriction column="state" value="[01draft,02prepared,03duringCorrection,05approved,06received,07receiveConfirmWaiting]" />
-					</predefinedFilter>
-				</predefinedFilters>
-				
-				<listener event="changeState"
-					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
-					method="changeState" />
-			</component>
-		</windowTab>
-		
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-	</component>
-	
-	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.deliveries.hooks.DeliveriesListHooks"
-			method="fillGridWithRelatedDeliveries" />
-	</hooks>
-	
+                </script>
+
+                <option type="column" name="number" fields="number" link="true" width="50"/>
+                <option type="column" name="name" fields="name" link="true" width="100"/>
+                <option type="column" name="supplierName" fields="supplier"
+                        expression="#supplier['name']"/>
+                <option type="column" name="deliveryDate" fields="deliveryDate" width="100"/>
+                <option type="column" name="state" fields="state"/>
+                <option type="column" name="createDate" fields="createDate" width="100"/>
+
+                <option type="order" column="number" direction="asc"/>
+
+                <option type="searchable" value="name,number,supplierName,deliveryDate,state,createDate"/>
+                <option type="orderable" value="name,number,supplierName,deliveryDate,state,createDate"/>
+
+                <option type="correspondingView" value="deliveries/deliveryDetails"/>
+                <option type="correspondingComponent" value="form"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+
+                <option type="hasPredefinedFilters" value="true"/>
+
+                <predefinedFilters>
+                    <predefinedFilter name="all">
+                    </predefinedFilter>
+                    <predefinedFilter name="notReceived">
+                        <filterRestriction column="state"
+                                           value="[01draft,02prepared,03duringCorrection,04declined,05approved,07receiveConfirmWaiting]"/>
+                    </predefinedFilter>
+                    <predefinedFilter name="notDeclined">
+                        <filterRestriction column="state"
+                                           value="[01draft,02prepared,03duringCorrection,05approved,06received,07receiveConfirmWaiting]"/>
+                    </predefinedFilter>
+                </predefinedFilters>
+
+                <listener event="changeState"
+                          class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
+                          method="changeState"/>
+            </component>
+        </windowTab>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.deliveries.hooks.DeliveriesListHooks"
+                method="fillGridWithRelatedDeliveries"/>
+
+        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+                      method="processRoles"/>
+    </hooks>
+
 </view>
