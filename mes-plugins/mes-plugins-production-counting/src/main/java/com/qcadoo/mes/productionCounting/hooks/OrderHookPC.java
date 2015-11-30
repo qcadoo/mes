@@ -57,4 +57,13 @@ public class OrderHookPC {
         }
     }
 
+    public boolean validatesWith(final DataDefinition parameterDD, final Entity order) {
+        if (order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING) == null) {
+            order.addError(parameterDD.getField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING),
+                    "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        return true;
+    }
+
 }
