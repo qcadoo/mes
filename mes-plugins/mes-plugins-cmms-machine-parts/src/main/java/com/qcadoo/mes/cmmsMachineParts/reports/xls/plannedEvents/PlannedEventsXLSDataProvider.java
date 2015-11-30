@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 
     private final static String query =
             "SELECT event.id as id, event.\"number\" as number, event.type as type, event.description as description, event.state as state, event.ownername as ownerName,\n"
-                    + "event.plannedseparately as plannedSeparately, event.requiresshutdown as requiresShutdown, event.basedon as basedOn, \n"
+                    + "event.plannedseparately as plannedSeparately, event.requiresshutdown as requiresShutdown, event.basedon as basedOn, event.solutiondescription as solutionDescription, \n"
                     + "event.date as date, event.counter as counter, event.countertolerance as counterTolerance, event.effectivecounter as effectiveCounter, \n"
-                    + "event.duration as duration, event.effectiveduration as effectiveDuration, event.isdeadline as isDeadline, \n"
+                    + "event.duration as duration, event.effectiveduration as effectiveDuration, event.isdeadline as isDeadline, event.createdate as createdate, \n"
                     + "event.startdate as startDate, event.finishdate as finishDate, event.countertolerance as countertolerance, event.createuser as createuser, \n"
                     + "factory.number as factoryNumber, division.number as divisionNumber, productionline.number as productionLineNumber, workstation.number as workstatioNnumber, subassembly.number as subassemblynumber, \n"
                     + "company.number as companyNumber, sourcecost.number as sourceCostNumber,\n"

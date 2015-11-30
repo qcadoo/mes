@@ -84,13 +84,17 @@ public final class PlannedEventsXlsConstants {
 
     public static final String COLUMN_stateRealizationDate = "cmmsMachineParts.plannedEventsList.report.culumn.stateRealizationDate";
 
+    public static final String COLUMN_solutionDescription = "cmmsMachineParts.plannedEventsList.report.culumn.solutionDescription";
+
+    public static final String COLUMN_createdate = "cmmsMachineParts.plannedEventsList.report.culumn.createdate";
+
     public static final List<String> ALL_COLUMNS = Lists
             .newArrayList(COLUMN_number, COLUMN_type, COLUMN_factoryNumber, COLUMN_divisionNumber, COLUMN_productionLineNumber,
                     COLUMN_workstationNumber, COLUMN_subassemblyNumber, COLUMN_description, COLUMN_ownerName,
-                    COLUMN_plannedSeparately, COLUMN_requiresShutdown,  COLUMN_basedOn, COLUMN_date, COLUMN_counter, COLUMN_counterTolerance,
-                    COLUMN_sourceCostNumber, COLUMN_duration, COLUMN_effectiveCounter,
-                    COLUMN_startDate, COLUMN_finishDate, COLUMN_machinePartName, COLUMN_machinePartNumber,
-                    COLUMN_machinePartPlannedQuantity, COLUMN_machinePartUnit, COLUMN_realizationWorkerSurname,
-                    COLUMN_realizationDuration, COLUMN_stateAuthor, COLUMN_stateStartDate, COLUMN_stateStopDate,
+                    COLUMN_plannedSeparately, COLUMN_requiresShutdown, COLUMN_basedOn, COLUMN_date, COLUMN_counter,
+                    COLUMN_counterTolerance, COLUMN_sourceCostNumber, COLUMN_duration, COLUMN_effectiveCounter, COLUMN_startDate,
+                    COLUMN_finishDate, COLUMN_solutionDescription, COLUMN_realizationWorkerSurname, COLUMN_realizationDuration,
+                    COLUMN_machinePartNumber, COLUMN_machinePartName, COLUMN_machinePartPlannedQuantity, COLUMN_machinePartUnit,
+                    COLUMN_createdate, COLUMN_stateAuthor, COLUMN_stateStartDate, COLUMN_stateStopDate,
                     COLUMN_stateInRealizationDate, COLUMN_stateAcceptedDate, COLUMN_stateRealizationDate, COLUMN_state);
 }

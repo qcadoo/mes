@@ -58,6 +58,10 @@ public class PlannedEventDTO {
 
     private Boolean isDeadline;
 
+    private String solutionDescription;
+
+    private Date createdate;
+
     private List<PlannedEventStateChangeDTO> stateChanges = Lists.newArrayList();
 
     private List<PlannedEventRealizationDTO> realizations = Lists.newArrayList();
@@ -442,5 +446,21 @@ public class PlannedEventDTO {
 
     public void setStateStatus(String stateStatus) {
         this.stateStatus = stateStatus;
+    }
+
+    public String getSolutionDescription() {
+        return solutionDescription;
+    }
+
+    public void setSolutionDescription(String solutionDescription) {
+        this.solutionDescription = solutionDescription;
+    }
+
+    public Date getCreatedate() {
+        return createdate;
+    }
+
+    public void setCreatedate(Date createdate) {
+        this.createdate = createdate;
     }
 }
