@@ -38,26 +38,26 @@ resultSet = getResultSet();
     }
 
     private static DocumentPositionVO getDocumentPositionVO() {
-        try {
+//        try {
             DocumentPositionVO vo = new DocumentPositionVO();
-            vo.setAdditional_code_id(101L);
-            vo.setConversion(BigDecimal.valueOf(102L));
-            vo.setExpirationdate(new SimpleDateFormat().parse("2001-11-12"));
-            vo.setGivenquantity(BigDecimal.valueOf(103L));
-            vo.setGivenunit("givenUnit");
-            vo.setId(104L);
-            vo.setPallet_id(105L);
-            vo.setProduct_id(106L);
-            vo.setQuantity(BigDecimal.valueOf(107L));
-            vo.setResource_id(108L);
-            vo.setStorage_location_id(109L);
-            vo.setType_of_pallet("type_of_pallet");
+//            vo.setAdditional_code_id(101L);
+//            vo.setConversion(BigDecimal.valueOf(102L));
+//            vo.setExpirationdate(new SimpleDateFormat().parse("2001-11-12"));
+//            vo.setGivenquantity(BigDecimal.valueOf(103L));
+//            vo.setGivenunit("givenUnit");
+//            vo.setId(104L);
+//            vo.setPallet_id(105L);
+//            vo.setProduct(106L);
+//            vo.setQuantity(BigDecimal.valueOf(107L));
+//            vo.setResource_id(108L);
+//            vo.setStorage_location_id(109L);
+//            vo.setType_of_pallet("type_of_pallet");
 
             return vo;
 
-        } catch (ParseException ex) {
-            throw new RuntimeException(ex);
-        }
+//        } catch (ParseException ex) {
+//            throw new RuntimeException(ex);
+//        }
     }
 
     private static MockedResultSet getResultSet() {

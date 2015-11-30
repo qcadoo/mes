@@ -15,9 +15,9 @@ public class DocumentPositionMapper implements RowMapper {
         DocumentPositionVO positionVO = new DocumentPositionVO();
 
         positionVO.setId(resultSet.getLong("id"));
-        positionVO.setProduct_id(resultSet.getLong("product_id"));
+        positionVO.setProduct(resultSet.getString("product_number"));
         // nowe pole
-        positionVO.setAdditional_code_id(resultSet.getLong("additionalcode_id"));
+        positionVO.setAdditional_code(resultSet.getString("additionalcode_code"));
         positionVO.setQuantity(resultSet.getBigDecimal("quantity"));
         positionVO.setGivenquantity(resultSet.getBigDecimal("givenquantity"));
         positionVO.setGivenunit(resultSet.getString("givenunit"));
@@ -25,11 +25,13 @@ public class DocumentPositionMapper implements RowMapper {
         positionVO.setConversion(resultSet.getBigDecimal("conversion"));
         positionVO.setExpirationdate(resultSet.getDate("expirationdate"));
         // nowe pole
-        positionVO.setPallet_id(resultSet.getLong("palletnumber_id"));
+        positionVO.setPallet(resultSet.getString("palletnumber_number"));
         // nowe pole
         positionVO.setType_of_pallet(resultSet.getString("typeofpallet"));
-        positionVO.setStorage_location_id(resultSet.getLong("storagelocation_id"));
+//        positionVO.setStorage_location_id(resultSet.getLong("storagelocation_id"));
 
+        
+        
 //        <belongsTo name="document" model="document"/>
 //        <decimal name="price" default="0">
 //            <validatesRange from="0"/>
@@ -45,23 +47,5 @@ public class DocumentPositionMapper implements RowMapper {
 //        <enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
 //        <enum name="state" values="01draft,02accepted" default="01draft"/>    
         return positionVO;
-    }
-
-    public Map<String, Object> mapVoToParams(DocumentPositionVO vo) {
-        Map<String, Object> params = new HashMap<>();
-
-        params.put("id", vo.getId());
-        params.put("product_id", vo.getProduct_id());
-        params.put("additionalcode_id", vo.getAdditional_code_id());
-        params.put("quantity", vo.getQuantity());
-        params.put("givenquantity", vo.getGivenquantity());
-        params.put("givenunit", vo.getGivenunit());
-        params.put("conversion", vo.getConversion());
-        params.put("expirationdate", vo.getExpirationdate());
-        params.put("palletnumber_id", vo.getPallet_id());
-        params.put("typeofpallet", vo.getType_of_pallet());
-        params.put("storagelocation_id", vo.getStorage_location_id());
-
-        return params;
     }
 }
