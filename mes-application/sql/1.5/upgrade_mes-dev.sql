@@ -17,3 +17,9 @@ select
     on event.subassemblyId = s.id;
 
 -- end
+
+-- changed description length in maintenance event
+-- last touched 01.12.2015 by kama
+alter table cmmsmachineparts_maintenanceevent alter column description character varying(600);
+
+-- end
