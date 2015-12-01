@@ -1,12 +1,10 @@
 package com.qcadoo.mes.materialFlowResources.controllers;
 
-import com.qcadoo.mes.basic.ProductRepository;
-import com.qcadoo.mes.basic.ProductVO;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionRepository;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionVO;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
+import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,13 +25,13 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "{id}")
-    public List<DocumentPositionVO> findAll(@PathVariable Long id, @RequestParam String sidx, @RequestParam String sord) {
+    public List<DocumentPositionDTO> findAll(@PathVariable Long id, @RequestParam String sidx, @RequestParam String sord) {
         return documentPositionRepository.findAll(id, sidx, sord);
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void create(@RequestBody DocumentPositionVO documentPositionVO) {
+    @RequestMapping(method = RequestMethod.PUT)
+    public void create(@RequestBody DocumentPositionDTO documentPositionVO) {
         documentPositionRepository.create(documentPositionVO);
     }
 
@@ -45,25 +43,14 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-    public void update(@PathVariable Long id, @RequestBody DocumentPositionVO documentPositionVO) {
+    public void update(@PathVariable Long id, @RequestBody DocumentPositionDTO documentPositionVO) {
         documentPositionRepository.update(id, documentPositionVO);
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/types")
-    public List<Map<String, String>> getTypes() {
-        return documentPositionRepository.getTypes();
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storagelocations")
+    public List<StorageLocationDTO> getStorageLocations(@RequestParam("query") String query) {
+        return documentPositionRepository.getStorageLocations(query);
     }
 
-    @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/units")
-    public List<Map<String, String>> getUnits() {
-        return documentPositionRepository.getUnits();
-    }
-
-    @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/typeOfPallets")
-    public List<Map<String, String>> getTypeOfPallets() {
-        return documentPositionRepository.getTypeOfPallets();
-    }
 }

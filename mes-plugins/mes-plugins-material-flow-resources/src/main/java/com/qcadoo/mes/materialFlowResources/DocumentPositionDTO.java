@@ -5,7 +5,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class DocumentPositionVO {
+public class DocumentPositionDTO {
 
     private Long id;
     private String product;
@@ -17,6 +17,6 @@ public class DocumentPositionVO {
     private Date expirationdate;
     private String pallet;
     private String type_of_pallet;
-//    private Long storage_location_id;
+    private String storage_location;
 //    private Long resource_id;
 }

@@ -1,20 +1,18 @@
 package com.qcadoo.mes.materialFlowResources;
 
 import com.google.common.base.Strings;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
 import com.qcadoo.mes.materialFlowResources.mappers.DocumentPositionMapper;
-import com.qcadoo.model.api.DictionaryService;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.BeanMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -24,17 +22,15 @@ public class DocumentPositionRepository {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private DictionaryService dictionaryService;
-
-    public List<DocumentPositionVO> findAll(final Long documentId, final String sidx, final String sord) {
-        String query = "SELECT position.*, product.number as product_number, additionalcode.code as additionalcode_code, palletnumber.number as palletnumber_number\n"
+    public List<DocumentPositionDTO> findAll(final Long documentId, final String sidx, final String sord) {
+        String query = "SELECT position.*, product.number as product_number, additionalcode.code as additionalcode_code, palletnumber.number as palletnumber_number, location.number as storagelocation_number\n"
                 + "	FROM materialflowresources_position position\n"
                 + "	left join basic_product product on (position.product_id = product.id)\n"
                 + "	left join basic_additionalcode additionalcode on (position.additionalcode_id = additionalcode.id)\n"
-                + "	left join basic_palletnumber palletnumber on (position.palletnumber_id = palletnumber.id) WHERE position.document_id = :documentId ORDER BY " + sidx + " " + sord;
+                + "	left join basic_palletnumber palletnumber on (position.palletnumber_id = palletnumber.id)\n"
+                + "	left join materialflowresources_storagelocation location on (position.storagelocation_id = location.id) WHERE position.document_id = :documentId ORDER BY " + sidx + " " + sord;
 
-        List<DocumentPositionVO> list = jdbcTemplate.query(query, Collections.singletonMap("documentId", documentId), new DocumentPositionMapper());
+        List<DocumentPositionDTO> list = jdbcTemplate.query(query, Collections.singletonMap("documentId", documentId), new DocumentPositionMapper());
 
         return list;
     }
@@ -45,7 +41,7 @@ public class DocumentPositionRepository {
         jdbcTemplate.update(queryBuilder.toString(), Collections.singletonMap("id", id));
     }
 
-    public void create(DocumentPositionVO documentPositionVO) {
+    public void create(DocumentPositionDTO documentPositionVO) {
         Map<String, Object> params = tryMapDocumentPositionVOToParams(documentPositionVO);
 
         String keys = params.keySet().stream().collect(Collectors.joining(", "));
@@ -58,7 +54,7 @@ public class DocumentPositionRepository {
         jdbcTemplate.queryForObject(query, params, Long.class);
     }
 
-    public void update(Long id, DocumentPositionVO documentPositionVO) {
+    public void update(Long id, DocumentPositionDTO documentPositionVO) {
         Map<String, Object> params = tryMapDocumentPositionVOToParams(documentPositionVO);
 
         String set = params.keySet().stream().map(key -> {
@@ -69,40 +65,7 @@ public class DocumentPositionRepository {
         jdbcTemplate.update(query, params);
     }
 
-    public List<Map<String, String>> getTypes() {
-        List<Map<String, String>> types = new ArrayList<>();
-
-        for (DocumentType documentType : DocumentType.values()) {
-            Map<String, String> type = new HashMap<>();
-            type.put("value", documentType.name());
-            type.put("key", documentType.getStringValue());
-            types.add(type);
-        }
-
-        return types;
-    }
-
-    public List<Map<String, String>> getUnits() {
-        return dictionaryService.getKeys("units").stream().map(unit -> {
-            Map<String, String> type = new HashMap<>();
-            type.put("value", unit);
-            type.put("key", unit);
-
-            return type;
-        }).collect(Collectors.toList());
-    }
-
-    public List<Map<String, String>> getTypeOfPallets() {
-        return dictionaryService.getKeys("typeOfPallet").stream().map(unit -> {
-            Map<String, String> type = new HashMap<>();
-            type.put("value", unit);
-            type.put("key", unit);
-
-            return type;
-        }).collect(Collectors.toList());
-    }
-
-    private Map<String, Object> tryMapDocumentPositionVOToParams(DocumentPositionVO vo) {
+    private Map<String, Object> tryMapDocumentPositionVOToParams(DocumentPositionDTO vo) {
         Map<String, Object> params = new HashMap<>();
 
         params.put("id", vo.getId());
@@ -115,16 +78,16 @@ public class DocumentPositionRepository {
         params.put("expirationdate", vo.getExpirationdate());
         params.put("palletnumber_id", tryGetPalletNumberIdByNumber(vo.getPallet()));
         params.put("typeofpallet", vo.getType_of_pallet());
-
-//        params.put("storagelocation_id", vo.getStorage_location_id());
+        params.put("storagelocation_id", tryGetStorageLocationIdByNumber(vo.getStorage_location()));
+        
         return params;
     }
 
     private Long tryGetProductIdByNumber(String productNumber) {
-        if(Strings.isNullOrEmpty(productNumber)){
+        if (Strings.isNullOrEmpty(productNumber)) {
             return null;
         }
-        
+
         try {
             Long productId = jdbcTemplate.queryForObject("SELECT product.id FROM basic_product product WHERE product.number = :number", Collections.singletonMap("number", productNumber), Long.class);
 
@@ -136,10 +99,10 @@ public class DocumentPositionRepository {
     }
 
     private Long tryGetAdditionalCodeIdByCode(String additionalCode) {
-        if(Strings.isNullOrEmpty(additionalCode)){
+        if (Strings.isNullOrEmpty(additionalCode)) {
             return null;
         }
-        
+
         try {
             Long additionalCodeId = jdbcTemplate.queryForObject("SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code",
                     Collections.singletonMap("code", additionalCode), Long.class);
@@ -152,10 +115,10 @@ public class DocumentPositionRepository {
     }
 
     private Long tryGetPalletNumberIdByNumber(String palletNumber) {
-        if(Strings.isNullOrEmpty(palletNumber)){
+        if (Strings.isNullOrEmpty(palletNumber)) {
             return null;
         }
-        
+
         try {
             Long palletNumberId = jdbcTemplate.queryForObject("SELECT palletnumber.id FROM basic_palletnumber palletnumber WHERE palletnumber.number = :number",
                     Collections.singletonMap("number", palletNumber), Long.class);
@@ -164,6 +127,32 @@ public class DocumentPositionRepository {
 
         } catch (EmptyResultDataAccessException e) {
             throw new RuntimeException(String.format("Nie znaleziono takiego numeru palety: '%s'.", palletNumber));
+        }
+    }
+
+    private Long tryGetStorageLocationIdByNumber(String storageLocationNumber) {
+        if (Strings.isNullOrEmpty(storageLocationNumber)) {
+            return null;
+        }
+
+        try {
+            Long storageLocationId = jdbcTemplate.queryForObject("SELECT storagelocation.id FROM materialflowresources_storagelocation storagelocation WHERE storagelocation.number = :number",
+                    Collections.singletonMap("number", storageLocationNumber), Long.class);
+
+            return storageLocationId;
+
+        } catch (EmptyResultDataAccessException e) {
+            throw new RuntimeException(String.format("Nie znaleziono takiego miejsca składowania: '%s'.", storageLocationNumber));
+        }
+    }
+
+    public List<StorageLocationDTO> getStorageLocations(String q) {
+        if (Strings.isNullOrEmpty(q)) {
+            return Lists.newArrayList();
+            
+        } else {
+            String query = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :q LIMIT 15;";
+            return jdbcTemplate.query(query, Collections.singletonMap("q", '%' + q + '%'), new BeanPropertyRowMapper(StorageLocationDTO.class));
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.mappers;
 
-import com.qcadoo.mes.materialFlowResources.DocumentPositionVO;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.text.ParseException;
@@ -21,7 +21,7 @@ import org.springframework.jdbc.support.JdbcUtils;
 public class DocumentPositionMapperTest {
 
     private static DocumentPositionMapper documentPositionMapper;
-    private static DocumentPositionVO documentPositionVO;
+    private static DocumentPositionDTO documentPositionVO;
     private static MockedResultSet resultSet;
     
 
@@ -37,9 +37,9 @@ resultSet = getResultSet();
     public static void tearDownClass() {
     }
 
-    private static DocumentPositionVO getDocumentPositionVO() {
+    private static DocumentPositionDTO getDocumentPositionVO() {
 //        try {
-            DocumentPositionVO vo = new DocumentPositionVO();
+            DocumentPositionDTO vo = new DocumentPositionDTO();
 //            vo.setAdditional_code_id(101L);
 //            vo.setConversion(BigDecimal.valueOf(102L));
 //            vo.setExpirationdate(new SimpleDateFormat().parse("2001-11-12"));
@@ -92,15 +92,15 @@ resultSet = getResultSet();
     public void testMapRow() throws Exception {
 //        ResultSet resultSet = null;
 //
-//        DocumentPositionVO expResult = null;
-//        DocumentPositionVO result = documentPositionMapper.mapRow(resultSet, i);
+//        DocumentPositionDTO expResult = null;
+//        DocumentPositionDTO result = documentPositionMapper.mapRow(resultSet, i);
 //
 //        assertEquals(expResult, result);
     }
 
 //    @Test
     public void testMapVoToParams() {
-//        DocumentPositionVO vo = null;
+//        DocumentPositionDTO vo = null;
 //        Map<String, Object> expResult = null;
 //        Map<String, Object> result = instance.mapVoToParams(vo);
 //        assertEquals(expResult, result);

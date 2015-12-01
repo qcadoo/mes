@@ -6,7 +6,61 @@
  * Dual licensed under the MIT and GPL licenses.
  * http://benalman.com/about/license/
  */
-(function($,h,c){var a=$([]),e=$.resize=$.extend($.resize,{}),i,k="setTimeout",j="resize",d=j+"-special-event",b="delay",f="throttleWindow";e[b]=250;e[f]=true;$.event.special[j]={setup:function(){if(!e[f]&&this[k]){return false}var l=$(this);a=a.add(l);$.data(this,d,{w:l.width(),h:l.height()});if(a.length===1){g()}},teardown:function(){if(!e[f]&&this[k]){return false}var l=$(this);a=a.not(l);l.removeData(d);if(!a.length){clearTimeout(i)}},add:function(l){if(!e[f]&&this[k]){return false}var n;function m(s,o,p){var q=$(this),r=$.data(this,d);r.w=o!==c?o:q.width();r.h=p!==c?p:q.height();n.apply(this,arguments)}if($.isFunction(l)){n=l;return m}else{n=l.handler;l.handler=m}}};function g(){i=h[k](function(){a.each(function(){var n=$(this),m=n.width(),l=n.height(),o=$.data(this,d);if(m!==o.w||l!==o.h){n.trigger(j,[o.w=m,o.h=l])}});g()},e[b])}})(jQuery,this);
+(function ($, h, c) {
+    var a = $([]), e = $.resize = $.extend($.resize, {}), i, k = "setTimeout", j = "resize", d = j + "-special-event", b = "delay", f = "throttleWindow";
+    e[b] = 250;
+    e[f] = true;
+    $.event.special[j] = {setup: function () {
+            if (!e[f] && this[k]) {
+                return false
+            }
+            var l = $(this);
+            a = a.add(l);
+            $.data(this, d, {w: l.width(), h: l.height()});
+            if (a.length === 1) {
+                g()
+            }
+        }, teardown: function () {
+            if (!e[f] && this[k]) {
+                return false
+            }
+            var l = $(this);
+            a = a.not(l);
+            l.removeData(d);
+            if (!a.length) {
+                clearTimeout(i)
+            }
+        }, add: function (l) {
+            if (!e[f] && this[k]) {
+                return false
+            }
+            var n;
+            function m(s, o, p) {
+                var q = $(this), r = $.data(this, d);
+                r.w = o !== c ? o : q.width();
+                r.h = p !== c ? p : q.height();
+                n.apply(this, arguments)
+            }
+            if ($.isFunction(l)) {
+                n = l;
+                return m
+            } else {
+                n = l.handler;
+                l.handler = m
+            }
+        }};
+    function g() {
+        i = h[k](function () {
+            a.each(function () {
+                var n = $(this), m = n.width(), l = n.height(), o = $.data(this, d);
+                if (m !== o.w || l !== o.h) {
+                    n.trigger(j, [o.w = m, o.h = l])
+                }
+            });
+            g()
+        }, e[b])
+    }}
+)(jQuery, this);
 
 var myApp = angular.module('gridApp', []);
 
@@ -44,14 +98,14 @@ myApp.directive('ngJqGrid', function ($window) {
                             onclickSubmit: function (params, postdata) {
                                 params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
                             },
-                            errorTextFormat: function (data) {
-                                return 'Error: ' + data.responseText
+                            errorTextFormat: function (response) {
+                                return JSON.parse(response.responseText).message;
                             }
                         },
                         // options for the Add Dialog
                         {
                             ajaxEditOptions: {contentType: "application/json"},
-                            mtype: "POST",
+                            mtype: "PUT",
                             closeAfterEdit: true,
                             serializeEditData: function (data) {
                                 delete data.oper;
@@ -61,8 +115,8 @@ myApp.directive('ngJqGrid', function ($window) {
                             onclickSubmit: function (params, postdata) {
                                 params.url = '../../integration/rest/documentPositions.html';
                             },
-                            errorTextFormat: function (data) {
-                                return 'Error: ' + data.responseText
+                            errorTextFormat: function (response) {
+                                return JSON.parse(response.responseText).message;
                             }
                         },
                         // options for the Delete Dailog
@@ -74,8 +128,8 @@ myApp.directive('ngJqGrid', function ($window) {
                             onclickSubmit: function (params, postdata) {
                                 params.url = '../../integration/rest/documentPositions/' + encodeURIComponent(postdata) + ".html";
                             },
-                            errorTextFormat: function (data) {
-                                return 'Error: ' + data.responseText
+                            errorTextFormat: function (response) {
+                                return JSON.parse(response.responseText).message;
                             }
                         });
                     });
@@ -157,7 +211,7 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                     });
                 },
                 renderItem: function (item, search) {
-                    var code = item.code;
+                    var code = item.code || item.number;
                     var id = item.id;
                     // escape special characters
                     search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -165,9 +219,6 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                     return '<div class="autocomplete-suggestion" data-id="' + id + '" data-val="' + code + '">' + code.replace(re, "<b>$1</b>") + '</div>';
                 },
                 onSelect: function (e, term, item) {
-                    console.log(e)
-                    console.log(term)
-                    console.log(item)
                 }
             });
 
@@ -178,6 +229,10 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
 //            button.insertAfter($ac);
 
             return $ac;
+        }
+
+        function storageLocationLookup_createElement(value, options){            
+            return createLookupElement('storageLocation', value, '/integration/rest/documentPositions/storagelocations.html');
         }
 
         function palletNumbersLookup_createElement(value, options) {
@@ -225,20 +280,38 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
         function errorfunc(rowID, response) {
             showMessage({
                 type: "failure",
-                content: JSON.parse(response.responseText).message// QCD.translate("")
+                content: JSON.parse(response.responseText).message
             });
 
             return true;
         }
 
-        //var w = angular.element($window);
-        $scope.resize = function() {
+        function successfunc(rowID, response) {
+            showMessage({
+                type: 'success',
+                content: QCD.translate('qcadooView.message.saveMessage')
+            });
+
+            return true;
+        }
+
+        $scope.resize = function () {
             console.log('resize');
             jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 20, true);
             jQuery('#grid').setGridHeight($("#window\\.positionsGridTab").height() - 200);
         }
-        //w.bind('resize', $scope.resize);
         $("#window\\.positionsGridTab").resize($scope.resize);
+
+        var gridEditOptions = {
+            keys: true,
+            url: '../../integration/rest/documentPositions.html',
+            mtype: 'PUT',
+            errorfunc: errorfunc,
+            successfunc: successfunc
+        };
+
+        var gridAddOptions = angular.copy(gridEditOptions);
+        gridAddOptions.rowID = 'new_row';
 
         $scope.config = {
             url: '../../integration/rest/documentPositions/' + getContextParamFromUrl()['form.id'] + '.html',
@@ -253,7 +326,7 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                 return JSON.parse(response.responseText).message;
             },
             colNames: ['ID', 'product', 'additional_code', 'quantity', 'givenquantity', 'givenunit', 'conversion', 'expirationdate',
-                'pallet', 'type_of_pallet'/*, 'storage_location_id', 'resource_id'*/],
+                'pallet', 'type_of_pallet', 'storage_location'/*, 'resource_id'*/],
             colModel: [
                 {
                     name: 'id',
@@ -265,6 +338,7 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                     name: 'product',
                     index: 'product',
                     editable: true,
+                    required: true,
                     edittype: 'custom',
                     editoptions: {
                         custom_element: productsLookup_createElement,
@@ -275,6 +349,7 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                     name: 'additional_code',
                     index: 'additional_code',
                     editable: true,
+                    required: true,
                     edittype: 'custom',
                     editoptions: {
                         custom_element: additionalCodeLookup_createElement,
@@ -285,6 +360,7 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                     name: 'quantity',
                     index: 'quantity',
                     editable: true,
+                    required: true,
                     formatter: 'number',
                     editrules: {
                         custom_func: validatePositive,
@@ -296,6 +372,7 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                     name: 'givenquantity',
                     index: 'givenquantity',
                     editable: true,
+                    required: true,
                     formatter: 'number',
                     editrules: {
                         custom_func: validatePositive,
@@ -307,8 +384,9 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                     name: 'givenunit',
                     index: 'givenunit',
                     editable: true,
+                    required: true,
                     edittype: 'select',
-                    editoptions: {aysnc: false, dataUrl: '../../integration/rest/documentPositions/units.html',
+                    editoptions: {aysnc: false, dataUrl: '../../rest/units',
                         buildSelect: function (response) {
                             var data = $.parseJSON(response);
                             var s = "<select>";
@@ -326,12 +404,14 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                     name: 'conversion',
                     index: 'conversion',
                     editable: true,
+                    required: true,
                 },
                 {
                     name: 'expirationdate',
                     index: 'expirationdate',
                     width: 150,
                     editable: true,
+                    required: true,
                     edittype: "text",
                     editoptions: {
                         dataInit: function (element) {
@@ -346,6 +426,7 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                     name: 'pallet',
                     index: 'pallet',
                     editable: true,
+                    required: true,
                     edittype: 'custom',
                     editoptions: {
                         custom_element: palletNumbersLookup_createElement,
@@ -356,8 +437,9 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                     name: 'type_of_pallet',
                     index: 'type_of_pallet',
                     editable: true,
+                    required: true,
                     edittype: 'select',
-                    editoptions: {aysnc: false, dataUrl: '../../integration/rest/documentPositions/typeOfPallets.html',
+                    editoptions: {aysnc: false, dataUrl: '../../rest/typeOfPallets',
                         buildSelect: function (response) {
                             var data = $.parseJSON(response);
                             var s = "<select>";
@@ -370,19 +452,17 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                             return s + "</select>";
                         }
                     },
-                }
-                /*,
-                 {
-                 name: 'storage_location_id',
-                 index: 'storage_location_id',
-                 editable: true,
-                 edittype: 'custom',
-                 editoptions: {
-                 // TODO
-                 custom_element: editProductId_createElement,
-                 custom_value: editProductId_value
-                 }
-                 },
+                },
+                {
+                    name: 'storage_location',
+                    index: 'storage_location',
+                    editable: true,
+                    edittype: 'custom',
+                    editoptions: {
+                        custom_element: storageLocationLookup_createElement,
+                        custom_value: lookup_value
+                    }
+                }/*,
                  {
                  name: 'resource_id',
                  index: 'resource_id',
@@ -400,12 +480,8 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                 //setTimeout(function() { $scope.resize(); }, 1000);                
             },
             onSelectRow: function (id) {
-                jQuery('#grid').editRow(id, {
-                    keys: true,
-                    url: '../../integration/rest/documentPositions/' + id + ".html",
-                    mtype: 'PUT',
-                    errorfunc: errorfunc
-                });
+                gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
+                jQuery('#grid').editRow(id, gridEditOptions);
             },
             ajaxRowOptions: {contentType: "application/json"},
             serializeRowData: function (postdata) {
@@ -417,6 +493,6 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
         $scope.data = [];
 
         $scope.addNewRow = function () {
-            jQuery('#grid').jqGrid("addRow", {errorfunc: errorfunc});
+            jQuery('#grid').jqGrid("addRow", gridAddOptions);
         }
     }]);

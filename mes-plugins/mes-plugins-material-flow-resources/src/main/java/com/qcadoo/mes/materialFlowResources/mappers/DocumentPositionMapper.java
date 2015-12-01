@@ -1,6 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.mappers;
 
-import com.qcadoo.mes.materialFlowResources.DocumentPositionVO;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -11,8 +11,8 @@ import java.util.Map;
 public class DocumentPositionMapper implements RowMapper {
 
     @Override
-    public DocumentPositionVO mapRow(ResultSet resultSet, int i) throws SQLException {
-        DocumentPositionVO positionVO = new DocumentPositionVO();
+    public DocumentPositionDTO mapRow(ResultSet resultSet, int i) throws SQLException {
+        DocumentPositionDTO positionVO = new DocumentPositionDTO();
 
         positionVO.setId(resultSet.getLong("id"));
         positionVO.setProduct(resultSet.getString("product_number"));
@@ -28,7 +28,7 @@ public class DocumentPositionMapper implements RowMapper {
         positionVO.setPallet(resultSet.getString("palletnumber_number"));
         // nowe pole
         positionVO.setType_of_pallet(resultSet.getString("typeofpallet"));
-//        positionVO.setStorage_location_id(resultSet.getLong("storagelocation_id"));
+        positionVO.setStorage_location(resultSet.getString("storagelocation_number"));
 
         
         
