@@ -265,6 +265,7 @@
 
         <model:model model="factory" resource="model/factory.xml"/>
         <model:model model="subassembly" resource="model/subassembly.xml"/>
+        <model:model model="subassemblyListDto" resource="model/subassemblyListDto.xml"/>
         <model:model model="subassemblyAttachment" resource="model/subassemblyAttachment.xml"/>
         <model:model model="subassemblyToWorkstationHelper" resource="model/subassemblyToWorkstationHelper.xml"/>
 
