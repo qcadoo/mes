@@ -76,3 +76,9 @@ CREATE OR REPLACE VIEW orders_orderPlanningListDto as select o.id, o.active, o.n
 DROP TABLE IF EXISTS orders_orderlistdto;
 CREATE OR REPLACE VIEW orders_orderlistdto AS SELECT o.id, o.active, o.number, o.name,  o.datefrom,  o.dateto, o.startdate,  o.finishdate, o.state, o.externalnumber, o.externalsynchronized, o.issubcontracted,  o.plannedquantity, o.workplandelivered,  o.deadline,  product.number AS productnumber,  tech.number AS technologynumber,  product.unit,  master.number AS masterordernumber, division.name AS divisionname,  company.name AS companyname, masterdefinition.number AS masterorderdefinitionnumber FROM orders_order o JOIN basic_product product ON o.product_id = product.id LEFT JOIN technologies_technology tech ON o.technology_id = tech.id LEFT JOIN basic_company company ON o.company_id = company.id LEFT JOIN masterorders_masterorder master ON o.masterorder_id = master.id LEFT JOIN masterorders_masterorderdefinition masterdefinition ON master.masterorderdefinition_id = masterdefinition.id LEFT JOIN basic_division division ON tech.division_id = division.id;
 -- end
+
+-- subassemblies view
+DROP TABLE IF EXISTS basic_subassemblylistdto;
+create or replace view basic_subassemblyListDto as select s.id, s.active, s.number, s.name, workstation.number as workstationNumber, workstationType.number as workstationTypeNumber, s.productionDate, event.maxDate as lastRepairsDate from basic_subassembly s left join basic_workstation workstation on (s.workstation_id = workstation.id) join basic_workstationType workstationType on (s.workstationtype_id = workstationType.id) left join ( select subassembly_id as subassemblyId, max(date) as maxDate from cmmsmachineparts_plannedevent e where e.state = '05realized' and e.basedon = '01date' group by subassemblyId ) event on event.subassemblyId = s.id;
+
+-- end
