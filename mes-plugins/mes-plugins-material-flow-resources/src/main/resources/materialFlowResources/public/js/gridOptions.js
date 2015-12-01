@@ -1,7 +1,16 @@
+/*
+ * jQuery resize event - v1.1 - 3/14/2010
+ * http://benalman.com/projects/jquery-resize-plugin/
+ * 
+ * Copyright (c) 2010 "Cowboy" Ben Alman
+ * Dual licensed under the MIT and GPL licenses.
+ * http://benalman.com/about/license/
+ */
+(function($,h,c){var a=$([]),e=$.resize=$.extend($.resize,{}),i,k="setTimeout",j="resize",d=j+"-special-event",b="delay",f="throttleWindow";e[b]=250;e[f]=true;$.event.special[j]={setup:function(){if(!e[f]&&this[k]){return false}var l=$(this);a=a.add(l);$.data(this,d,{w:l.width(),h:l.height()});if(a.length===1){g()}},teardown:function(){if(!e[f]&&this[k]){return false}var l=$(this);a=a.not(l);l.removeData(d);if(!a.length){clearTimeout(i)}},add:function(l){if(!e[f]&&this[k]){return false}var n;function m(s,o,p){var q=$(this),r=$.data(this,d);r.w=o!==c?o:q.width();r.h=p!==c?p:q.height();n.apply(this,arguments)}if($.isFunction(l)){n=l;return m}else{n=l.handler;l.handler=m}}};function g(){i=h[k](function(){a.each(function(){var n=$(this),m=n.width(),l=n.height(),o=$.data(this,d);if(m!==o.w||l!==o.h){n.trigger(j,[o.w=m,o.h=l])}});g()},e[b])}})(jQuery,this);
 
 var myApp = angular.module('gridApp', []);
 
-myApp.directive('ngJqGrid', function () {
+myApp.directive('ngJqGrid', function ($window) {
     return {
         restrict: 'E',
         scope: {
@@ -17,7 +26,6 @@ myApp.directive('ngJqGrid', function () {
                 element.append(table);
                 element.append(angular.element('<div id="jqGridPager"></div>'));
                 $(table).jqGrid(newValue);
-
 
                 $(table).jqGrid('filterToolbar');
 
@@ -223,6 +231,15 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
             return true;
         }
 
+        //var w = angular.element($window);
+        $scope.resize = function() {
+            console.log('resize');
+            jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 20, true);
+            jQuery('#grid').setGridHeight($("#window\\.positionsGridTab").height() - 200);
+        }
+        //w.bind('resize', $scope.resize);
+        $("#window\\.positionsGridTab").resize($scope.resize);
+
         $scope.config = {
             url: '../../integration/rest/documentPositions/' + getContextParamFromUrl()['form.id'] + '.html',
             datatype: "json",
@@ -232,7 +249,7 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
             sortname: 'id',
             errorTextFormat: function (response) {
                 console.log(response)
-                
+
                 return JSON.parse(response.responseText).message;
             },
             colNames: ['ID', 'product', 'additional_code', 'quantity', 'givenquantity', 'givenunit', 'conversion', 'expirationdate',
@@ -379,6 +396,9 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                  }*/
             ],
             pager: "#jqGridPager",
+            gridComplete: function () {
+                //setTimeout(function() { $scope.resize(); }, 1000);                
+            },
             onSelectRow: function (id) {
                 jQuery('#grid').editRow(id, {
                     keys: true,
@@ -395,16 +415,6 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
         };
 
         $scope.data = [];
-
-        var w = angular.element($window);
-        function resize() {
-            console.log('resize');
-            jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 20, true);
-            jQuery('#grid').setGridHeight($("#window\\.positionsGridTab").height() - 200);
-        }
-
-        w.bind('resize', resize());
-        resize();
 
         $scope.addNewRow = function () {
             jQuery('#grid').jqGrid("addRow", {errorfunc: errorfunc});
