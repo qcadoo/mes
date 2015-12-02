@@ -79,7 +79,7 @@ public class DocumentPositionRepository {
         params.put("palletnumber_id", tryGetPalletNumberIdByNumber(vo.getPallet()));
         params.put("typeofpallet", vo.getType_of_pallet());
         params.put("storagelocation_id", tryGetStorageLocationIdByNumber(vo.getStorage_location()));
-        
+
         return params;
     }
 
@@ -149,10 +149,15 @@ public class DocumentPositionRepository {
     public List<StorageLocationDTO> getStorageLocations(String q) {
         if (Strings.isNullOrEmpty(q)) {
             return Lists.newArrayList();
-            
+
         } else {
             String query = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :q LIMIT 15;";
             return jdbcTemplate.query(query, Collections.singletonMap("q", '%' + q + '%'), new BeanPropertyRowMapper(StorageLocationDTO.class));
         }
+    }
+
+    public Map<String, String> getGridConfig() {
+        String query = "select showstoragelocation from materialflowresources_documentpositionparameters";
+        return jdbcTemplate.queryForMap(query, Collections.EMPTY_MAP);
     }
 }

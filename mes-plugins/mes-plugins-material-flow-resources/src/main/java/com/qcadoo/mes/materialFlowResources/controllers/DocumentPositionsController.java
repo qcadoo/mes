@@ -5,6 +5,7 @@ import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -53,4 +54,9 @@ public class DocumentPositionsController {
         return documentPositionRepository.getStorageLocations(query);
     }
 
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "gridConfig")
+    public Map<String, String> gridConfig(){
+        return documentPositionRepository.getGridConfig();
+    }
 }

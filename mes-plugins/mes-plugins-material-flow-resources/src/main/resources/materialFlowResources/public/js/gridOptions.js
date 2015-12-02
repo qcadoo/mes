@@ -147,7 +147,7 @@ myApp.directive('ngJqGrid', function ($window) {
     };
 });
 
-myApp.controller('GridController', ['$scope', '$window', function ($scope, $window) {
+myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
         var _this = this;
         var lookupWindow;
         var productIdElement;
@@ -323,7 +323,7 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
         var gridAddOptions = angular.copy(gridEditOptions);
         gridAddOptions.rowID = 'new_row';
 
-        $scope.config = {
+        var config = {
             url: '../../integration/rest/documentPositions/' + getContextParamFromUrl()['form.id'] + '.html',
             datatype: "json",
             height: '100%',
@@ -499,6 +499,38 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
                 return JSON.stringify(postdata);
             }
         };
+
+        prepareGridConfig(config);
+
+        function prepareGridConfig(config) {
+            $http({
+                method: 'GET',
+                url: '../../integration/rest/documentPositions/gridConfig.html'
+
+            }).then(function successCallback(response) {
+                function filterCol(index) {
+                    if (index === 'storage_location') {
+                        return response.data.showstoragelocation;
+                    }
+
+                    return true;
+                }
+                config.colModel = config.colModel.filter(function (col) {
+                    return filterCol(col.index);
+                });
+
+                config.colNames = config.colNames.filter(function (col) {
+                    return filterCol(col);
+                });
+
+                $scope.config = config;
+
+            }, function errorCallback(response) {
+                errorfunc(null, response);
+            });
+
+            return config;
+        }
 
         $scope.data = [];
 
