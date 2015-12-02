@@ -231,7 +231,7 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
             return $ac;
         }
 
-        function storageLocationLookup_createElement(value, options){            
+        function storageLocationLookup_createElement(value, options) {
             return createLookupElement('storageLocation', value, '/integration/rest/documentPositions/storagelocations.html');
         }
 
@@ -240,7 +240,17 @@ myApp.controller('GridController', ['$scope', '$window', function ($scope, $wind
         }
 
         function productsLookup_createElement(value, options) {
-            return createLookupElement('square', value, '/rest/products');
+            var lookup = createLookupElement('square', value, '/rest/products');
+
+            $(lookup).bind('change keydown paste input', function () {
+                var t = $(this);
+                window.clearTimeout(t.data("timeout"));
+                $(this).data("timeout", setTimeout(function () {
+                    console.log(t.val());
+                }, 2000));
+            });
+
+            return lookup;
         }
 
         function additionalCodeLookup_createElement(value, options) {
