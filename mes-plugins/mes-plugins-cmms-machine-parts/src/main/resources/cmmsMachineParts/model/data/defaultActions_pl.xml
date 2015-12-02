@@ -25,5 +25,5 @@
 
 -->
 <action>
-    <row NAME="Inne" APPLIESTO=""/>
+    <row NAME="Inne" APPLIESTO="" ISDEFAULT="true"/>
 </action>

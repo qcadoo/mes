@@ -376,6 +376,22 @@
                 <option type="order" column="number" direction="desc"/>
                 <option type="fullscreen" value="true"/>
 
+                <option type="hasPredefinedFilters" value="true"/>
+
+                <predefinedFilters>
+                    <predefinedFilter name="all">
+                    </predefinedFilter>
+                    <predefinedFilter name="open">
+                        <filterRestriction column="state"
+                                           value="[01new,02inProgress,03edited,07accepted]"/>
+                    </predefinedFilter>
+                    <predefinedFilter name="finished">
+                        <filterRestriction column="state"
+                                           value="[04closed,05revoked,06planned]"/>
+                    </predefinedFilter>
+
+                </predefinedFilters>
+
                 <listener event="changeState"
                           class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"
                           method="changeState"/>

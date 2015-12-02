@@ -23,3 +23,21 @@ select
 alter table cmmsmachineparts_maintenanceevent alter column description character varying(600);
 
 -- end
+
+-- is default for actions and fault types
+-- last touched 02.12.2015 by kama
+
+ALTER TABLE cmmsmachineparts_action ADD COLUMN isdefault boolean;
+ALTER TABLE cmmsmachineparts_action ALTER COLUMN isdefault SET DEFAULT false;
+
+UPDATE cmmsmachineparts_action SET isdefault = true WHERE name = 'Inne';
+UPDATE cmmsmachineparts_action SET isdefault = false WHERE name != 'Inne';
+
+
+ALTER TABLE cmmsmachineparts_faulttype ADD COLUMN isdefault boolean;
+ALTER TABLE cmmsmachineparts_faulttype ALTER COLUMN isdefault SET DEFAULT false;
+
+UPDATE cmmsmachineparts_faulttype SET isdefault = true WHERE name = 'Inne';
+UPDATE cmmsmachineparts_faulttype SET isdefault = false WHERE name != 'Inne';
+
+-- end

@@ -24,7 +24,6 @@
 package com.qcadoo.mes.cmmsMachineParts;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
@@ -80,8 +79,7 @@ public class ActionsService {
     }
 
     public Entity getDefaultAction() {
-        String other = translationService.translate("cmmsMachineParts.action.name.other", LocaleContextHolder.getLocale());
         return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_ACTION)
-                .find().add(SearchRestrictions.eq(ActionFields.NAME, other)).setMaxResults(1).uniqueResult();
+                .find().add(SearchRestrictions.eq(ActionFields.IS_DEFAULT, true)).setMaxResults(1).uniqueResult();
     }
 }

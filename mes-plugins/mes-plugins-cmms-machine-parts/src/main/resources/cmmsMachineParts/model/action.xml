@@ -40,6 +40,7 @@
 
         <hasMany name="actionsForPlannedEvent" joinField="action" model="actionForPlannedEvent" cascade="nullify"
                  copyable="false"/>
+        <boolean name="isDefault" default="false"/>
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.ActionHooks" method="onSave"/>

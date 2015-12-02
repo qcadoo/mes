@@ -28,6 +28,8 @@ public class ActionFields {
     private ActionFields() {
     }
 
+    public static final String IS_DEFAULT = "isDefault";
+
     public static final String NAME = "name";
 
     public static final String APPLIES_TO = "appliesTo";

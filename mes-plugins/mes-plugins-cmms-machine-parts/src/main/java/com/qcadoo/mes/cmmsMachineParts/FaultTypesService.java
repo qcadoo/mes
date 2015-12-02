@@ -24,7 +24,6 @@
 package com.qcadoo.mes.cmmsMachineParts;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
@@ -82,8 +81,7 @@ public class FaultTypesService {
     }
 
     public Entity getDefaultFaultType() {
-        String other = translationService.translate("cmmsMachineParts.faultType.name.other", LocaleContextHolder.getLocale());
         return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_FAULT_TYPE)
-                .find().add(SearchRestrictions.eq(FaultTypeFields.NAME, other)).setMaxResults(1).uniqueResult();
+                .find().add(SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)).setMaxResults(1).uniqueResult();
     }
 }
