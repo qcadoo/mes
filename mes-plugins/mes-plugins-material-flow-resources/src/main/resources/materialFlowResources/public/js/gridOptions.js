@@ -508,19 +508,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 url: '../../integration/rest/documentPositions/gridConfig.html'
 
             }).then(function successCallback(response) {
-                function filterCol(index) {
-                    if (index === 'storage_location') {
-                        return response.data.showstoragelocation;
-                    }
-
-                    return true;
-                }
-                config.colModel = config.colModel.filter(function (col) {
-                    return filterCol(col.index);
-                });
-
-                config.colNames = config.colNames.filter(function (col) {
-                    return filterCol(col);
+                angular.forEach(config.colModel, function (value, key) {
+                    if (value.index === 'storage_location' && !response.data.showstoragelocation) {
+                        config.colModel[key].hidden = true;                        
+                        config.colModel[key].editrules = config.colModel[key].editrules||{};
+                        config.colModel[key].editrules.edithidden = true;
+                    }                    
                 });
 
                 $scope.config = config;
