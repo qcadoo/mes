@@ -78,9 +78,6 @@ String ctx = request.getContextPath();
 
     <div id="gridContainer">
         <ng-jq-grid config="config" data="data"></ng-jq-grid>
-    </div>    
-    
-    <div id="gridContainer">
         <table id="grid"></table>
         <div id="jqGridPager"></div>
     </div>

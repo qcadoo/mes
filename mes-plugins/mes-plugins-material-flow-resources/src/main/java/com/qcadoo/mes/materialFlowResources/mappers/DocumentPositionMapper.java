@@ -1,10 +1,12 @@
 package com.qcadoo.mes.materialFlowResources.mappers;
 
-import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
-import org.springframework.jdbc.core.RowMapper;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
+
+import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
+
 
 public class DocumentPositionMapper implements RowMapper {
 
@@ -14,6 +16,7 @@ public class DocumentPositionMapper implements RowMapper {
 
         positionVO.setId(resultSet.getLong("id"));
         positionVO.setProduct(resultSet.getString("product_number"));
+        positionVO.setUnit(resultSet.getString("product_unit"));
         // nowe pole
         positionVO.setAdditional_code(resultSet.getString("additionalcode_code"));
         positionVO.setQuantity(resultSet.getBigDecimal("quantity"));

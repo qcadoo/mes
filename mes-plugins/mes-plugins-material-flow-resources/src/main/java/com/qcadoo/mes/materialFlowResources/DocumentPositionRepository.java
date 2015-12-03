@@ -23,7 +23,7 @@ public class DocumentPositionRepository {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     public List<DocumentPositionDTO> findAll(final Long documentId, final String sidx, final String sord) {
-        String query = "SELECT position.*, product.number as product_number, additionalcode.code as additionalcode_code, palletnumber.number as palletnumber_number, location.number as storagelocation_number\n"
+        String query = "SELECT position.*, product.number as product_number, product.unit as product_unit, additionalcode.code as additionalcode_code, palletnumber.number as palletnumber_number, location.number as storagelocation_number\n"
                 + "	FROM materialflowresources_position position\n"
                 + "	left join basic_product product on (position.product_id = product.id)\n"
                 + "	left join basic_additionalcode additionalcode on (position.additionalcode_id = additionalcode.id)\n"
@@ -161,5 +161,10 @@ public class DocumentPositionRepository {
     public Map<String, String> getGridConfig() {
         String query = "select showstoragelocation from materialflowresources_documentpositionparameters";
         return jdbcTemplate.queryForMap(query, Collections.EMPTY_MAP);
+    }
+
+    public String unitOfProduct(String number) {
+        String query = "SELECT unit FROM basic_product WHERE number = :number";
+        return jdbcTemplate.queryForObject(query, Collections.singletonMap("number", number), String.class);
     }
 }

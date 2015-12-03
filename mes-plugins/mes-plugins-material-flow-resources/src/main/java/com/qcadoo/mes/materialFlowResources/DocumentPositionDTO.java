@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlowResources;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
 import lombok.Data;
 
 @Data
@@ -12,6 +13,7 @@ public class DocumentPositionDTO {
     private String product;
     private String additional_code;
     private BigDecimal quantity;
+    private String unit;
     private BigDecimal givenquantity;
     private String givenunit;
     private BigDecimal conversion;

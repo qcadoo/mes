@@ -106,6 +106,13 @@ myApp.directive('ngJqGrid', function ($window) {
                         {
                             ajaxEditOptions: {contentType: "application/json"},
                             mtype: "PUT",
+                            resize:false,
+                            drag:false,
+                            top:100,
+                            left: function() {
+                            	return $(window).width()/2-250;
+                            },
+                            width: 500,
                             closeAfterEdit: true,
                             reloadAfterSubmit: true,
                             serializeEditData: function (data) {
@@ -247,10 +254,20 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
-                    console.log(t.val());
-                }, 2000));
+                	$.get('/integration/rest/documentPositions/unit/'+t.val()+".html", function(data) {
+                		console.log(data);
+                		$.each($("#grid").jqGrid('getRowData'), function(i,entry) {
+                			var row = $("#grid").getRowData(entry.id);
+                			if(row.product == t.val()) {
+                				$("#grid").setRowData(entry.id, {unit : data});
+                				//entry.unit = data;
+                				// "<span class="editable"><input id="23_product" class="eac-square customelement" autocomplete="off" name="product"></span>"
+                			}
+                		});
+            		});
+                    
+                }, 500));
             });
-
             return lookup;
         }
 
@@ -350,7 +367,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                 return JSON.parse(response.responseText).message;
             },
-            colNames: ['ID', 'document', 'product', 'additional_code', 'quantity', 'givenquantity', 'givenunit', 'conversion', 'expirationdate',
+
+            colNames: ['ID', 'document', 'product', 'additional_code', 'quantity', 'unit', 'givenquantity', 'givenunit', 'conversion', 'expirationdate',
                 'pallet', 'type_of_pallet', 'storage_location'/*, 'resource_id'*/],
             colModel: [
                 {
@@ -377,7 +395,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     edittype: 'custom',
                     editoptions: {
                         custom_element: productsLookup_createElement,
-                        custom_value: lookup_value
+                        custom_value: lookup_value,
                     }
                 },
                 {
@@ -402,6 +420,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         custom: true,
                         required: false
                     },
+                },
+                {
+                    name: 'unit',
+                    index: 'unit',
+                    editable: true,
+                    editoptions: {readonly: 'readonly'},
+                    width: 60
                 },
                 {
                     name: 'givenquantity',
