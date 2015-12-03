@@ -8,6 +8,7 @@ import lombok.Data;
 public class DocumentPositionDTO {
 
     private Long id;
+    private Long document;
     private String product;
     private String additional_code;
     private BigDecimal quantity;

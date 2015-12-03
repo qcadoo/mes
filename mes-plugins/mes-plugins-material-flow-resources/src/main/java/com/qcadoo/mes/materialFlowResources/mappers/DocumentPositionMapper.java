@@ -5,8 +5,6 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DocumentPositionMapper implements RowMapper {
 
@@ -29,6 +27,7 @@ public class DocumentPositionMapper implements RowMapper {
         // nowe pole
         positionVO.setType_of_pallet(resultSet.getString("typeofpallet"));
         positionVO.setStorage_location(resultSet.getString("storagelocation_number"));
+        positionVO.setDocument(resultSet.getLong("document_id"));
 
         
         

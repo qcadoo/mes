@@ -43,6 +43,7 @@ public class DocumentPositionRepository {
 
     public void create(DocumentPositionDTO documentPositionVO) {
         Map<String, Object> params = tryMapDocumentPositionVOToParams(documentPositionVO);
+        params.remove("id");
 
         String keys = params.keySet().stream().collect(Collectors.joining(", "));
         String values = params.keySet().stream().map(key -> {
@@ -79,6 +80,7 @@ public class DocumentPositionRepository {
         params.put("palletnumber_id", tryGetPalletNumberIdByNumber(vo.getPallet()));
         params.put("typeofpallet", vo.getType_of_pallet());
         params.put("storagelocation_id", tryGetStorageLocationIdByNumber(vo.getStorage_location()));
+        params.put("document_id", vo.getDocument());
 
         return params;
     }

@@ -107,6 +107,7 @@ myApp.directive('ngJqGrid', function ($window) {
                             ajaxEditOptions: {contentType: "application/json"},
                             mtype: "PUT",
                             closeAfterEdit: true,
+                            reloadAfterSubmit: true,
                             serializeEditData: function (data) {
                                 delete data.oper;
                                 delete data.id;
@@ -305,6 +306,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return true;
         }
 
+        function aftersavefunc() {
+            $("#grid").trigger("reloadGrid");
+        }
+
         $scope.resize = function () {
             console.log('resize');
             jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 20, true);
@@ -317,11 +322,21 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             url: '../../integration/rest/documentPositions.html',
             mtype: 'PUT',
             errorfunc: errorfunc,
-            successfunc: successfunc
+            successfunc: successfunc,
+            aftersavefunc: aftersavefunc
         };
 
-        var gridAddOptions = angular.copy(gridEditOptions);
-        gridAddOptions.rowID = 'new_row';
+        var gridAddOptions = {
+            rowID: "0",
+            initdata: {
+            },
+            position: "first",
+            useDefValues: true,
+            useFormatter: false,
+            addRowParams: angular.extend({
+                extraparam: {}
+            }, gridEditOptions)
+        };
 
         var config = {
             url: '../../integration/rest/documentPositions/' + getContextParamFromUrl()['form.id'] + '.html',
@@ -335,14 +350,24 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                 return JSON.parse(response.responseText).message;
             },
-            colNames: ['ID', 'product', 'additional_code', 'quantity', 'givenquantity', 'givenunit', 'conversion', 'expirationdate',
+            colNames: ['ID', 'document', 'product', 'additional_code', 'quantity', 'givenquantity', 'givenunit', 'conversion', 'expirationdate',
                 'pallet', 'type_of_pallet', 'storage_location'/*, 'resource_id'*/],
             colModel: [
                 {
                     name: 'id',
+                    index: 'id',
                     key: true,
-                    width: 75,
                     hidden: true
+                },
+                {
+                    name: 'document',
+                    index: 'document',
+                    hidden: true,
+                    editable: true,
+                    editoptions: {
+                        defaultValue: getContextParamFromUrl()['form.id']
+                    }
+
                 },
                 {
                     name: 'product',
@@ -510,10 +535,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }).then(function successCallback(response) {
                 angular.forEach(config.colModel, function (value, key) {
                     if (value.index === 'storage_location' && !response.data.showstoragelocation) {
-                        config.colModel[key].hidden = true;                        
-                        config.colModel[key].editrules = config.colModel[key].editrules||{};
+                        config.colModel[key].hidden = true;
+                        config.colModel[key].editrules = config.colModel[key].editrules || {};
                         config.colModel[key].editrules.edithidden = true;
-                    }                    
+                    }
                 });
 
                 $scope.config = config;
@@ -528,6 +553,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $scope.data = [];
 
         $scope.addNewRow = function () {
-            jQuery('#grid').jqGrid("addRow", gridAddOptions);
+            jQuery('#grid').addRow(gridAddOptions);
         }
     }]);
