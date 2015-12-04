@@ -255,15 +255,16 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
                     $.get('/integration/rest/documentPositions/unit/' + t.val() + ".html", function (data) {
-                        console.log(data);
-                        $.each($("#grid").jqGrid('getRowData'), function (i, entry) {
-                            var row = $("#grid").getRowData(entry.id);
-                            if (row.product == t.val()) {
-                                $("#grid").setRowData(entry.id, {unit: data});
-                                //entry.unit = data;
-                                // "<span class="editable"><input id="23_product" class="eac-square customelement" autocomplete="off" name="product"></span>"
+                        var gridData = $('#grid').jqGrid('getRowData');
+                        var pattern = /(id=\".+_unit\")/ig;
+                        for (var j = 0; j < gridData.length; j++) {
+                            var unit = gridData[j]['unit'];
+                            if (unit.toLowerCase().indexOf('<input') >= 0) {
+                                var matched = unit.match(pattern)[0];
+                                var numberOfInput = matched.toUpperCase().replace("ID=\"", "").replace("_UNIT\"", "");
+                                unit = $('#' + numberOfInput + '_unit').val(data);
                             }
-                        });
+                        }
                     });
 
                 }, 500));
@@ -276,27 +277,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function lookup_value(elem, operation, value) {
-            if (operation === 'get') {
-                return $(elem).val();
-
-            } else if (operation === 'set') {
-                $('input', elem).val(value);
-            }
-        }
-        function editProductId_createElement(value, options) {
-            productIdElement = $('<input type="text" readonly="true" />');
-            productIdElement.val(value);
-
-            var button = productIdElement.after('<button>Produkt</button>');
-
-            button.bind('click', function () {
-                editProductId_openLookup();
-            });
-
-            return productIdElement;
-        }
-
-        function editProductId_value(elem, operation, value) {
             if (operation === 'get') {
                 return $(elem).val();
 
