@@ -106,11 +106,11 @@ myApp.directive('ngJqGrid', function ($window) {
                         {
                             ajaxEditOptions: {contentType: "application/json"},
                             mtype: "PUT",
-                            resize:false,
-                            drag:false,
-                            top:100,
-                            left: function() {
-                            	return $(window).width()/2-250;
+                            resize: false,
+                            drag: false,
+                            top: 100,
+                            left: function () {
+                                return $(window).width() / 2 - 250;
                             },
                             width: 500,
                             closeAfterEdit: true,
@@ -254,18 +254,18 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
-                	$.get('/integration/rest/documentPositions/unit/'+t.val()+".html", function(data) {
-                		console.log(data);
-                		$.each($("#grid").jqGrid('getRowData'), function(i,entry) {
-                			var row = $("#grid").getRowData(entry.id);
-                			if(row.product == t.val()) {
-                				$("#grid").setRowData(entry.id, {unit : data});
-                				//entry.unit = data;
-                				// "<span class="editable"><input id="23_product" class="eac-square customelement" autocomplete="off" name="product"></span>"
-                			}
-                		});
-            		});
-                    
+                    $.get('/integration/rest/documentPositions/unit/' + t.val() + ".html", function (data) {
+                        console.log(data);
+                        $.each($("#grid").jqGrid('getRowData'), function (i, entry) {
+                            var row = $("#grid").getRowData(entry.id);
+                            if (row.product == t.val()) {
+                                $("#grid").setRowData(entry.id, {unit: data});
+                                //entry.unit = data;
+                                // "<span class="editable"><input id="23_product" class="eac-square customelement" autocomplete="off" name="product"></span>"
+                            }
+                        });
+                    });
+
                 }, 500));
             });
             return lookup;
@@ -367,7 +367,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                 return JSON.parse(response.responseText).message;
             },
-
             colNames: ['ID', 'document', 'product', 'additional_code', 'quantity', 'unit', 'givenquantity', 'givenunit', 'conversion', 'expirationdate',
                 'pallet', 'type_of_pallet', 'storage_location'/*, 'resource_id'*/],
             colModel: [
@@ -569,7 +568,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $scope.config = config;
 
             }, function errorCallback(response) {
-                errorfunc(null, response);
+
+                showMessage({
+                    type: "failure",
+                    content: response.data.message
+                });
             });
 
             return config;

@@ -159,12 +159,22 @@ public class DocumentPositionRepository {
     }
 
     public Map<String, String> getGridConfig() {
-        String query = "select showstoragelocation from materialflowresources_documentpositionparameters";
-        return jdbcTemplate.queryForMap(query, Collections.EMPTY_MAP);
+        try {
+            String query = "select showstoragelocation from materialflowresources_documentpositionparameters";
+            return jdbcTemplate.queryForMap(query, Collections.EMPTY_MAP);
+
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.EMPTY_MAP;
+        }
     }
 
     public String unitOfProduct(String number) {
-        String query = "SELECT unit FROM basic_product WHERE number = :number";
-        return jdbcTemplate.queryForObject(query, Collections.singletonMap("number", number), String.class);
+        try {
+            String query = "SELECT unit FROM basic_product WHERE number = :number";
+            return jdbcTemplate.queryForObject(query, Collections.singletonMap("number", number), String.class);
+
+        } catch (EmptyResultDataAccessException e) {
+            return "";
+        }
     }
 }
