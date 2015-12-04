@@ -38,8 +38,14 @@ String ctx = request.getContextPath();
 
 <script src="/materialFlowResources/public/js/gridOptions.js"></script>
 
-
-<script type="text/ecmascript" src="/basic/public/js/grid.locale-en.js"></script>
+<c:choose>
+    <c:when test="${pageContext.request.locale.language == 'pl'}">
+        <script type="text/ecmascript" src="/basic/public/js/grid.locale-pl.js"></script>
+    </c:when>
+    <c:otherwise>
+        <script type="text/ecmascript" src="/basic/public/js/grid.locale-en.js"></script>
+    </c:otherwise>
+</c:choose>
 
 <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css" />
 <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />

@@ -564,6 +564,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         config.colModel[key].editrules.edithidden = true;
                     }
                 });
+                
+                angular.forEach(config.colNames, function(value, key){
+                    config.colNames[key] = QCD.translate('qcadooView.gridColumn.'+value);
+                });
 
                 $scope.config = config;
 
