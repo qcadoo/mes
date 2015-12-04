@@ -11,7 +11,7 @@ select
     left join (
         select subassembly_id as subassemblyId, max(date) as maxDate
         from cmmsmachineparts_plannedevent e
-        where e.state = '05realized' and e.basedon = '01date'
+        where e.state = '05realized' and e.basedon = '01date' and e.type = '02repairs'
         group by subassemblyId
     ) event
     on event.subassemblyId = s.id;
