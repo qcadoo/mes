@@ -323,6 +323,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return true;
         }
 
+        function errorCallback(response) {
+            showMessage({
+                type: "failure",
+                content: response.data.message
+            });
+        }
+
         function aftersavefunc() {
             $("#grid").trigger("reloadGrid");
         }
@@ -355,6 +362,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }, gridEditOptions)
         };
 
+        var selectOptionsTypeOfPallets = [];
+        var selectOptionsUnits = [];
         var config = {
             url: '../../integration/rest/documentPositions/' + getContextParamFromUrl()['form.id'] + '.html',
             datatype: "json",
@@ -445,18 +454,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: true,
                     required: true,
                     edittype: 'select',
-                    editoptions: {aysnc: false, dataUrl: '../../rest/units',
-                        buildSelect: function (response) {
-                            var data = $.parseJSON(response);
-                            var s = "<select>";
-
-                            s += '<option value="0">--</option>';
-                            $.each(data, function () {
-                                s += '<option value="' + this.key + '">' + this.value + '</option>';
-                            });
-
-                            return s + "</select>";
-                        }
+                    editoptions: {
+                        value: selectOptionsUnits
                     },
                 },
                 {
@@ -498,19 +497,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: true,
                     required: true,
                     edittype: 'select',
-                    editoptions: {aysnc: false, dataUrl: '../../rest/typeOfPallets',
-                        buildSelect: function (response) {
-                            var data = $.parseJSON(response);
-                            var s = "<select>";
-
-                            s += '<option value="0">--</option>';
-                            $.each(data, function () {
-                                s += '<option value="' + this.key + '">' + this.value + '</option>';
-                            });
-
-                            return s + "</select>";
-                        }
-                    },
+                    editoptions: {
+                        value: selectOptionsTypeOfPallets
+                    }
                 },
                 {
                     name: 'storage_location',
@@ -564,20 +553,37 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         config.colModel[key].editrules.edithidden = true;
                     }
                 });
-                
-                angular.forEach(config.colNames, function(value, key){
-                    config.colNames[key] = QCD.translate('qcadooView.gridColumn.'+value);
+
+                angular.forEach(config.colNames, function (value, key) {
+                    config.colNames[key] = QCD.translate('qcadooView.gridColumn.' + value);
                 });
 
-                $scope.config = config;
+                $http({
+                    method: 'GET',
+                    url: '../../rest/units'
 
-            }, function errorCallback(response) {
+                }).then(function successCallback(response) {
+                    selectOptionsUnits = [];
+                    angular.forEach(response.data, function (value, key) {
+                        selectOptionsUnits[value.key] = value.value;
+                    });
 
-                showMessage({
-                    type: "failure",
-                    content: response.data.message
-                });
-            });
+                    $http({
+                        method: 'GET',
+                        url: '../../rest/typeOfPallets'
+
+                    }).then(function successCallback(response) {
+                        selectOptionsTypeOfPallets = [];
+                        angular.forEach(response.data, function (value, key) {
+                            selectOptionsTypeOfPallets[value.key] = value.value;
+                        });
+                        $scope.config = config;
+
+                    }, errorCallback);
+
+                }, errorCallback);
+
+            }, errorCallback);
 
             return config;
         }
