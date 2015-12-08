@@ -109,7 +109,7 @@ public class DefaultActionsLoaderModule extends Module {
 
         action.setField(ActionFields.NAME, values.get(ActionFields.NAME.toLowerCase(Locale.ENGLISH)));
         action.setField(ActionFields.APPLIES_TO, values.get(ActionFields.APPLIES_TO.toLowerCase(Locale.ENGLISH)));
-
+        action.setField(ActionFields.IS_DEFAULT, values.get(ActionFields.IS_DEFAULT.toLowerCase(Locale.ENGLISH)));
         action = actionDD.save(action);
 
         if (action.isValid()) {

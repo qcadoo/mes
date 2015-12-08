@@ -166,6 +166,8 @@
         <model:model model="actionForPlannedEvent" resource="model/actionForPlannedEvent.xml"/>
 
         <model:model model="sourceCost" resource="model/sourceCost.xml"/>
+        <model:model model="plannedEventXLSHelper" resource="model/plannedEventXLSHelper.xml"/>
+
 
         <!-- model extensions -->
 

@@ -216,9 +216,9 @@
         </windowTab>
 
         <windowTab name="substitutesTab">
-            <component type="gridLayout" name="gridsLayout" columns="5"
+            <component type="flowGridLayout" name="gridsLayout" columns="5"
                        rows="6" hasBorders="false">
-                <layoutElement column="1" row="1" width="3" height="6">
+                <layoutElement column="1" row="1" width="3" minHeight="6">
                     <component type="grid" name="substituteComponents"
                                source="#{form}.substituteComponents" defaultAuthorizationRole="ROLE_PRODUCTS">
                         <option type="column" name="number" fields="product"

@@ -66,6 +66,11 @@
                            action="#{grid}.fireEvent(showMaintenanceEvent);" state="disabled">
                 </bigButton>
             </group>
+            <group name="export">
+                <bigButton name="xls" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(printXlsReport);"
+                           state="disabled"/>
+            </group>
         </ribbon>
 
         <windowTab name="contextTab" reference="contextTab">
@@ -82,13 +87,16 @@
 						});
 
 						function updateRibbon() {
+						    var xlsButton = #{window}.getRibbonItem("export.xls");
 							var confirmed = #{confirmed}.getValue().content.value,
 							    confirmContextButton = #{window}.getRibbonItem("contextActions.confirmContext"),
 							    confirmContextButtonLabel;
 
 							if (confirmed == 'true' || confirmed == '1') {
+							    xlsButton.enable();
 								confirmContextButtonLabel = "#{translate(cmmsMachineParts.eventsList.window.ribbon.contextActions.changeContext)}";
 							} else {
+							    xlsButton.disable();
 							    confirmContextButtonLabel = "#{translate(cmmsMachineParts.eventsList.window.ribbon.contextActions.confirmContext)}";
 							}
 
@@ -404,6 +412,26 @@
 
                 <option type="order" column="number" direction="desc"/>
                 <option type="fullscreen" value="true"/>
+                <option type="hasPredefinedFilters" value="true"/>
+                <option type="defaultPredefinedFilterName" value="open"/>
+
+                <predefinedFilters>
+
+                    <predefinedFilter name="all">
+                    </predefinedFilter>
+
+                    <predefinedFilter name="open">
+                        <filterRestriction column="state"
+                                           value="[01new,02inPlan,03planned,04inRealization,07accepted]"/>
+                    </predefinedFilter>
+
+                    <predefinedFilter name="finished">
+                        <filterRestriction column="state"
+                                           value="[05realized,06canceled]"/>
+                    </predefinedFilter>
+
+
+                </predefinedFilters>
 
                 <listener event="changeState"
                           class="com.qcadoo.mes.cmmsMachineParts.states.PlannedEventStateChangeViewClient"
@@ -417,7 +445,7 @@
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
 
                 <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
-                                  method="showEventsFromContext"/>
+                                  method="showPlannedEventsFromContext"/>
             </component>
         </windowTab>
 
@@ -426,6 +454,10 @@
 
         <listener event="addPlannedEvent" method="addPlannedEvent"
                   class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
+
+        <listener event="printXlsReport" method="printXlsReport"
+                  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
+
 
     </component>
 

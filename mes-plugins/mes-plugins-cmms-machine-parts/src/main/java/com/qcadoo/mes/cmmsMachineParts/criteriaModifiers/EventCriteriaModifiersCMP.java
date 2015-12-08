@@ -153,6 +153,19 @@ import org.springframework.stereotype.Service;
             scb.add(SearchRestrictions
                     .eq(MaintenanceEventFields.DIVISION + ".id", filterValue.getLong(EVENT_CONTEXT_FILTER_PARAMETER_DIVISION)));
         }
+
+    }
+
+    public void showPlannedEventsFromContext(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        if (filterValue.has(EVENT_CONTEXT_FILTER_PARAMETER_FACTORY)) {
+            scb.add(SearchRestrictions
+                    .eq(MaintenanceEventFields.FACTORY + ".id", filterValue.getLong(EVENT_CONTEXT_FILTER_PARAMETER_FACTORY)));
+        }
+
+        if (filterValue.has(EVENT_CONTEXT_FILTER_PARAMETER_DIVISION)) {
+            scb.add(SearchRestrictions
+                    .eq(MaintenanceEventFields.DIVISION + ".id", filterValue.getLong(EVENT_CONTEXT_FILTER_PARAMETER_DIVISION)));
+        }
     }
 
 }

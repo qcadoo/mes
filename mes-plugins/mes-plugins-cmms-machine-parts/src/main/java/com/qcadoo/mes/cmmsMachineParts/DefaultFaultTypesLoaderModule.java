@@ -58,7 +58,7 @@ public class DefaultFaultTypesLoaderModule extends Module {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
- 
+
     @Override
     public void enable() {
         if (databaseHasToBePrepared()) {
@@ -109,6 +109,7 @@ public class DefaultFaultTypesLoaderModule extends Module {
 
         faultType.setField(FaultTypeFields.NAME, values.get(FaultTypeFields.NAME.toLowerCase(Locale.ENGLISH)));
         faultType.setField(FaultTypeFields.APPLIES_TO, values.get(FaultTypeFields.APPLIES_TO.toLowerCase(Locale.ENGLISH)));
+        faultType.setField(FaultTypeFields.IS_DEFAULT, values.get(FaultTypeFields.IS_DEFAULT.toLowerCase(Locale.ENGLISH)));
 
         faultType = faultTypeDataDefinition.save(faultType);
 

@@ -65,4 +65,13 @@ public class ParameterHooksPC {
         }
     }
 
+    public boolean validatesWith(final DataDefinition parameterDD, final Entity parameter) {
+        if (parameter.getStringField(ParameterFieldsPC.TYPE_OF_PRODUCTION_RECORDING) == null) {
+            parameter.addError(parameterDD.getField(ParameterFieldsPC.TYPE_OF_PRODUCTION_RECORDING),
+                    "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        return true;
+    }
+
 }

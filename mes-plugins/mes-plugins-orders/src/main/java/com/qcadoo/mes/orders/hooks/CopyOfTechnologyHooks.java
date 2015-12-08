@@ -23,9 +23,12 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
@@ -66,6 +69,9 @@ public class CopyOfTechnologyHooks {
 
     private static final String L_CHECK_TECHNOLOGY = "checkTechnology";
 
+    private static final List<String> STATES_TO_EDIT_GROUP = Lists.newArrayList(OrderState.IN_PROGRESS.getStringValue(),
+            OrderState.ACCEPTED.getStringValue(), OrderState.PENDING.getStringValue(), OrderState.INTERRUPTED.getStringValue());
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -101,6 +107,7 @@ public class CopyOfTechnologyHooks {
         technologyDetailsViewHooks.setTreeTabEditable(view);
         technologyDetailsListeners.setGridEditable(view);
         disableForm(view, order, technology);
+        enableGroupField(view, order);
     }
 
     private Entity getOrderForTechnology(Entity technology) {
@@ -202,6 +209,16 @@ public class CopyOfTechnologyHooks {
 
     public boolean lockTechnologyTree() {
         return parameterService.getParameter().getBooleanField(ParameterFieldsO.LOCK_TECHNOLOGY_TREE);
+    }
+
+    private void enableGroupField(final ViewDefinitionState view, final Entity order) {
+        String orderState = order.getStringField(OrderFields.STATE);
+
+        if (STATES_TO_EDIT_GROUP.contains(orderState)) {
+            LookupComponent technologyGroup = (LookupComponent) view.getComponentByReference(TechnologyFields.TECHNOLOGY_GROUP);
+            technologyGroup.setEnabled(true);
+            technologyGroup.requestComponentUpdateState();
+        }
     }
 
 }

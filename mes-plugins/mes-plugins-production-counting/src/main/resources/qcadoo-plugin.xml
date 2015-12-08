@@ -25,12 +25,12 @@
 
 -->
 <plugin plugin="productionCounting" group="tracking"
-	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
-	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
-	xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:custom="http://schema.qcadoo.org/modules/custom"
-	xsi:schemaLocation="
+        version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+        xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
 		http://schema.qcadoo.org/plugin.xsd 
 		http://schema.qcadoo.org/modules/model 
@@ -44,277 +44,297 @@
 		http://schema.qcadoo.org/modules/custom 
 		http://schema.qcadoo.org/modules/custom.xsd">
 
-	<information>
-		<name>MES - Production Counting and Balance</name>
-		<vendor>
-			<name>Qcadoo Limited</name>
-			<url>http://www.qcadoo.com/</url>
-		</vendor>
-		<description>Use production records to track how much products did you really produce/use and how much work did you put into them. Sum them all up and analyse in the production balance report.</description>
-		<license>AGPL</license>
-	</information>
+    <information>
+        <name>MES - Production Counting and Balance</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Use production records to track how much products did you really produce/use and how much work did
+            you put into them. Sum them all up and analyse in the production balance report.
+        </description>
+        <license>AGPL</license>
+    </information>
 
-	<dependencies>
-		<dependency>
-			<plugin>operationTimeCalculations</plugin>
-			<version>[0.4.1</version>
-		</dependency>
-		<dependency>
-			<plugin>orders</plugin>
-			<version>[0.4.1</version>
-		</dependency>
-		<dependency>
-			<plugin>basicProductionCounting</plugin>
-			<version>[0.4.0</version>
-		</dependency>
-		<dependency>
-			<plugin>states</plugin>
-			<version>[1.1.7</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <plugin>operationTimeCalculations</plugin>
+            <version>[0.4.1</version>
+        </dependency>
+        <dependency>
+            <plugin>orders</plugin>
+            <version>[0.4.1</version>
+        </dependency>
+        <dependency>
+            <plugin>basicProductionCounting</plugin>
+            <version>[0.4.0</version>
+        </dependency>
+        <dependency>
+            <plugin>states</plugin>
+            <version>[1.1.7</version>
+        </dependency>
+    </dependencies>
 
-	<modules>
-		<localization:translation path="locales" />
+    <modules>
+        <localization:translation path="locales"/>
 
-		<model:model model="productionTracking" resource="model/productionTracking.xml" />
-		<model:model model="productionTrackingStateChange" resource="model/productionTrackingStateChange.xml" />
-		<model:model model="productionBalance" resource="model/productionBalance.xml" />
-		<model:model model="productionTrackingReport" resource="model/productionTrackingReport.xml" />
-		<model:model model="trackingOperationProductInComponent"
-			resource="model/trackingOperationProductInComponent.xml" />
-		<model:model model="trackingOperationProductOutComponent"
-			resource="model/trackingOperationProductOutComponent.xml" />
-		<model:model model="balanceOperationProductInComponent"
-			resource="model/balanceOperationProductInComponent.xml" />
-		<model:model model="balanceOperationProductOutComponent"
-			resource="model/balanceOperationProductOutComponent.xml" />
-		<model:model model="operationTimeComponent" resource="model/operationTimeComponent.xml" />
-		<model:model model="operationPieceworkComponent" resource="model/operationPieceworkComponent.xml" />
-        <model:model model="staffWorkTime" resource="model/staffWorkTime.xml" />
+        <model:model model="productionTracking" resource="model/productionTracking.xml"/>
+        <model:model model="productionTrackingStateChange" resource="model/productionTrackingStateChange.xml"/>
+        <model:model model="productionBalance" resource="model/productionBalance.xml"/>
+        <model:model model="productionTrackingReport" resource="model/productionTrackingReport.xml"/>
+        <model:model model="trackingOperationProductInComponent"
+                     resource="model/trackingOperationProductInComponent.xml"/>
+        <model:model model="trackingOperationProductOutComponent"
+                     resource="model/trackingOperationProductOutComponent.xml"/>
+        <model:model model="balanceOperationProductInComponent"
+                     resource="model/balanceOperationProductInComponent.xml"/>
+        <model:model model="balanceOperationProductOutComponent"
+                     resource="model/balanceOperationProductOutComponent.xml"/>
+        <model:model model="operationTimeComponent" resource="model/operationTimeComponent.xml"/>
+        <model:model model="operationPieceworkComponent" resource="model/operationPieceworkComponent.xml"/>
+        <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
 
-		<model:model-field model="parameter" plugin="basic">
-			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
-				default="02cumulated" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerProductionTime" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerPiecework" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerQuantityInProduct" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerQuantityOutProduct" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="justOne" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="allowToClose" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="autoCloseOrder" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
- 			<model:boolean name="validateProductionRecordTimes" />
- 		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="allowMultipleRegisteringTimeForWorker" />
-		</model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
+                        default="02cumulated" required="true"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="registerProductionTime"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="registerPiecework"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="registerQuantityInProduct"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="registerQuantityOutProduct"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="justOne"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="allowToClose"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="autoCloseOrder"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="validateProductionRecordTimes"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="allowMultipleRegisteringTimeForWorker"/>
+        </model:model-field>
 
-		<model:model-field model="staff" plugin="basic">
-			<model:hasMany name="productionTrackings" model="productionTracking"
-				joinField="staff" plugin="productionCounting" />
-		</model:model-field>
+        <model:model-field model="staff" plugin="basic">
+            <model:hasMany name="productionTrackings" model="productionTracking"
+                           joinField="staff" plugin="productionCounting"/>
+        </model:model-field>
 
-		<model:model-field model="workstationType" plugin="basic">
-			<model:hasMany name="productionTrackings" model="productionTracking"
-				joinField="workstationType" plugin="productionCounting" />
-		</model:model-field>
+        <model:model-field model="workstationType" plugin="basic">
+            <model:hasMany name="productionTrackings" model="productionTracking"
+                           joinField="workstationType" plugin="productionCounting"/>
+        </model:model-field>
 
-		<model:model-field model="division" plugin="basic">
-			<model:hasMany name="productionTrackings" model="productionTracking"
-				joinField="division" plugin="productionCounting" />
-		</model:model-field>
+        <model:model-field model="division" plugin="basic">
+            <model:hasMany name="productionTrackings" model="productionTracking"
+                           joinField="division" plugin="productionCounting"/>
+        </model:model-field>
 
-		<model:model-field model="message" plugin="states">
-			<model:belongsTo name="productionTrackingStateChange"
-				plugin="productionCounting" model="productionTrackingStateChange" />
-		</model:model-field>
+        <model:model-field model="message" plugin="states">
+            <model:belongsTo name="productionTrackingStateChange"
+                             plugin="productionCounting" model="productionTrackingStateChange"/>
+        </model:model-field>
 
-		<model:model-field plugin="basic" model="shift">
-			<model:hasMany name="productionTrackingStateChanges"
-				plugin="productionCounting" model="productionTrackingStateChange"
-				joinField="shift" cascade="nullify" />
-		</model:model-field>
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="productionTrackingStateChanges"
+                           plugin="productionCounting" model="productionTrackingStateChange"
+                           joinField="shift" cascade="nullify"/>
+        </model:model-field>
 
-		<model:model-field model="order" plugin="orders">
-			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:boolean name="registerProductionTime" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:boolean name="registerPiecework" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:boolean name="registerQuantityInProduct" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:boolean name="registerQuantityOutProduct" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:boolean name="justOne" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:boolean name="allowToClose" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:boolean name="autoCloseOrder" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="generateProductionRecordNumberFromOrderNumber" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:hasMany name="productionTrackings" model="productionTracking"
-				joinField="order" plugin="productionCounting" cascade="delete" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:hasMany name="productionBalances" model="productionBalance"
-				joinField="order" plugin="productionCounting" cascade="delete" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:hasMany name="productionTrackingReports" model="productionTrackingReport"
-				joinField="order" plugin="productionCounting" cascade="delete" />
-		</model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"/>
+        </model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:boolean name="registerProductionTime"/>
+        </model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:boolean name="registerPiecework"/>
+        </model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:boolean name="registerQuantityInProduct"/>
+        </model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:boolean name="registerQuantityOutProduct"/>
+        </model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:boolean name="justOne"/>
+        </model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:boolean name="allowToClose"/>
+        </model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:boolean name="autoCloseOrder"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="generateProductionRecordNumberFromOrderNumber"/>
+        </model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:hasMany name="productionTrackings" model="productionTracking"
+                           joinField="order" plugin="productionCounting" cascade="delete"/>
+        </model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:hasMany name="productionBalances" model="productionBalance"
+                           joinField="order" plugin="productionCounting" cascade="delete"/>
+        </model:model-field>
+        <model:model-field model="order" plugin="orders">
+            <model:hasMany name="productionTrackingReports" model="productionTrackingReport"
+                           joinField="order" plugin="productionCounting" cascade="delete"/>
+        </model:model-field>
 
-		<model:model-field model="technology" plugin="technologies">
-			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:boolean name="registerProductionTime" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:boolean name="registerPiecework" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:boolean name="registerQuantityInProduct" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:boolean name="registerQuantityOutProduct" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:boolean name="justOne" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:boolean name="allowToClose" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:boolean name="autoCloseOrder" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:boolean name="generateProductionRecordNumberFromOrderNumber" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:hasMany name="productionTrackings" model="productionTracking"
-						   joinField="order" plugin="productionCounting" cascade="delete" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:hasMany name="productionBalances" model="productionBalance"
-						   joinField="order" plugin="productionCounting" cascade="delete" />
-		</model:model-field>
-		<model:model-field model="technology" plugin="technologies">
-			<model:hasMany name="productionTrackingReports" model="productionTrackingReport"
-						   joinField="order" plugin="productionCounting" cascade="delete" />
-		</model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:boolean name="registerProductionTime"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:boolean name="registerPiecework"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:boolean name="registerQuantityInProduct"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:boolean name="registerQuantityOutProduct"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:boolean name="justOne"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:boolean name="allowToClose"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:boolean name="autoCloseOrder"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:boolean name="generateProductionRecordNumberFromOrderNumber"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:hasMany name="productionTrackings" model="productionTracking"
+                           joinField="order" plugin="productionCounting" cascade="delete"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:hasMany name="productionBalances" model="productionBalance"
+                           joinField="order" plugin="productionCounting" cascade="delete"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:hasMany name="productionTrackingReports" model="productionTrackingReport"
+                           joinField="order" plugin="productionCounting" cascade="delete"/>
+        </model:model-field>
 
-		<model:model-hook model="parameter" plugin="basic">
-			<model:onCreate
-				class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
-				method="onCreate" />
-		</model:model-hook>
+        <model:model-hook model="parameter" plugin="basic">
+            <model:onCreate
+                    class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
+                    method="onCreate"/>
+        </model:model-hook>
 
-		<model:model-hook model="technology" plugin="technologies">
-			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.TechnologyHookPC"
-				method="onCreate" />
-		</model:model-hook>
+        <model:model-hook model="parameter" plugin="basic">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
+                    method="validatesWith"/>
+        </model:model-hook>
 
-		<model:model-hook model="order" plugin="orders">
-			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC"
-							method="onCreate" />
-		</model:model-hook>
+        <model:model-hook model="technology" plugin="technologies">
+            <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.TechnologyHookPC"
+                            method="onCreate"/>
+        </model:model-hook>
 
-		<model:model-hook model="productionCountingQuantity"
-			plugin="basicProductionCounting">
-			<model:onView
-				class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
-				method="onView" />
-		</model:model-hook>
 
-		<menu:menu-item name="productionTracking" category="ordersTracking"
-			view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
-		<menu:menu-item name="productionBalance" category="ordersTracking"
-			view="productionBalancesList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
-		<menu:menu-item name="productionTrackingReports"
-			category="ordersTracking" view="productionTrackingReportsList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
+        <model:model-hook model="technology" plugin="technologies">
+            <model:validatesWith class="com.qcadoo.mes.productionCounting.hooks.TechnologyHookPC"
+                                 method="validatesWith"/>
+        </model:model-hook>
 
-		<view:view resource="view/productionTrackingsList.xml" />
-		<view:view resource="view/productionTrackingDetails.xml" />
-		<view:view resource="view/productionBalancesList.xml" />
-		<view:view resource="view/productionBalanceDetails.xml" />
-		<view:view resource="view/productionTrackingReportsList.xml" />
-		<view:view resource="view/productionTrackingReportDetails.xml" />
-		<view:view resource="view/trackingOperationProductInComponentDetails.xml" />
-		<view:view resource="view/trackingOperationProductOutComponentDetails.xml" />
-		<view:view resource="view/staffWorkTimeDetails.xml" />
-		<view:view-tab resource="view/tabExtensions/parameters.xml" />
-		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
-		<view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
+        <model:model-hook model="order" plugin="orders">
+            <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC"
+                            method="onCreate"/>
+        </model:model-hook>
 
-		<view:resource uri="public/**/*" />
+        <model:model-hook model="order" plugin="orders">
+            <model:validatesWith class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC"
+                                 method="validatesWith"/>
+        </model:model-hook>
 
-		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
-			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
-			method="checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse" />
-		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
- 			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
- 			method="checkIfRegisterProductionTimeIsSet" />
-		<view:view-hook plugin="orders" view="orderDetails"
-			type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
-			method="setOrderDefaultValues" />
-		<view:view-hook plugin="orders" view="orderDetails"
-			type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
-			method="checkTypeOfProductionRecording" />
-		<view:view-hook plugin="orders" view="orderDetails"
-			type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
-			method="changeDoneQuantityAndAmountOfProducedQuantityFieldState" />
+        <model:model-hook model="productionCountingQuantity"
+                          plugin="basicProductionCounting">
+            <model:onView
+                    class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
+                    method="onView"/>
+        </model:model-hook>
 
-		<view:view-hook plugin="technologies" view="technologyDetails"
-						type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
-						method="setOrderDefaultValues" />
-		<view:view-hook plugin="technologies" view="technologyDetails"
-						type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
-						method="checkTypeOfProductionRecording" />
+        <menu:menu-item name="productionTracking" category="ordersTracking"
+                        view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+        <menu:menu-item name="productionBalance" category="ordersTracking"
+                        view="productionBalancesList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
+        <menu:menu-item name="productionTrackingReports"
+                        category="ordersTracking" view="productionTrackingReportsList"
+                        defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 
-		<view:view-listener plugin="orders" view="orderDetails"
-							component="technologyPrototype"
-							event="onSelectedEntityChange"
-							class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
-							method="fillPCParameters"/>
-		<view:view-listener plugin="orders" view="orderDetails"
-							component="product"
-							event="onSelectedEntityChange"
-							class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
-							method="fillPCParameters"/>
+        <view:view resource="view/productionTrackingsList.xml"/>
+        <view:view resource="view/productionTrackingDetails.xml"/>
+        <view:view resource="view/productionBalancesList.xml"/>
+        <view:view resource="view/productionBalanceDetails.xml"/>
+        <view:view resource="view/productionTrackingReportsList.xml"/>
+        <view:view resource="view/productionTrackingReportDetails.xml"/>
+        <view:view resource="view/trackingOperationProductInComponentDetails.xml"/>
+        <view:view resource="view/trackingOperationProductOutComponentDetails.xml"/>
+        <view:view resource="view/staffWorkTimeDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/parameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
 
-		<custom:custom
-			class="com.qcadoo.mes.productionCounting.states.module.ProductionTrackingStateServiceRegisterModule" />
-	</modules>
+        <view:resource uri="public/**/*"/>
 
-	<features>
-		<end-user />
-	</features>
+        <view:view-hook plugin="basic" view="parameters" type="beforeRender"
+                        class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
+                        method="checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse"/>
+        <view:view-hook plugin="basic" view="parameters" type="beforeRender"
+                        class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
+                        method="checkIfRegisterProductionTimeIsSet"/>
+        <view:view-hook plugin="orders" view="orderDetails"
+                        type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
+                        method="setOrderDefaultValues"/>
+        <view:view-hook plugin="orders" view="orderDetails"
+                        type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
+                        method="checkTypeOfProductionRecording"/>
+        <view:view-hook plugin="orders" view="orderDetails"
+                        type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
+                        method="changeDoneQuantityAndAmountOfProducedQuantityFieldState"/>
+
+        <view:view-hook plugin="technologies" view="technologyDetails"
+                        type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
+                        method="setOrderDefaultValues"/>
+        <view:view-hook plugin="technologies" view="technologyDetails"
+                        type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
+                        method="checkTypeOfProductionRecording"/>
+
+        <view:view-listener plugin="orders" view="orderDetails"
+                            component="technologyPrototype"
+                            event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
+                            method="fillPCParameters"/>
+        <view:view-listener plugin="orders" view="orderDetails"
+                            component="product"
+                            event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
+                            method="fillPCParameters"/>
+
+        <custom:custom
+                class="com.qcadoo.mes.productionCounting.states.module.ProductionTrackingStateServiceRegisterModule"/>
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
 
 </plugin>
