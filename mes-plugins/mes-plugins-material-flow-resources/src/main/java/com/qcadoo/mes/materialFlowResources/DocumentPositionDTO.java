@@ -18,8 +18,12 @@ public class DocumentPositionDTO {
     private String givenunit;
     private BigDecimal conversion;
     private Date expirationdate;
+    private Date productiondate;
     private String pallet;
     private String type_of_pallet;
     private String storage_location;
-//    private Long resource_id;
+    private BigDecimal price;
+    private String batch;
+    // TODO
+    private Long resource;
 }

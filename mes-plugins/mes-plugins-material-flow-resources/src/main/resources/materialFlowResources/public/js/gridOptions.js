@@ -81,6 +81,10 @@ myApp.directive('ngJqGrid', function ($window) {
                 element.append(angular.element('<div id="jqGridPager"></div>'));
                 $(table).jqGrid(newValue);
 
+                var addNewRowButton = '<input type="image" src="/qcadooView/public/img/core/icons/newIcon24.png" alt="Add new row" id="add_new_row" />';
+                $(addNewRowButton).bind('click', scope.addNewRow);
+                $('#t_grid').append(addNewRowButton);
+
                 $(table).jqGrid('filterToolbar');
 
                 $(table).navGrid('#jqGridPager',
@@ -342,8 +346,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }, gridEditOptions)
         };
 
-        var selectOptionsTypeOfPallets = [];
-        var selectOptionsUnits = [];
         var config = {
             url: '../../integration/rest/documentPositions/' + getContextParamFromUrl()['form.id'] + '.html',
             datatype: "json",
@@ -351,9 +353,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             autowidth: true,
             rowNum: 150,
             sortname: 'id',
+            toolbar: [true, "top"],
             errorTextFormat: function (response) {
-                console.log(response)
-
                 return JSON.parse(response.responseText).message;
             },
             colNames: ['ID', 'document', 'product', 'additional_code', 'quantity', 'unit', 'givenquantity', 'givenunit', 'conversion', 'expirationdate',
@@ -435,7 +436,19 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     required: true,
                     edittype: 'select',
                     editoptions: {
-                        value: selectOptionsUnits
+                        aysnc: false,
+                        dataUrl: '../../rest/units',
+                        buildSelect: function (response) {
+                            var data = $.parseJSON(response);
+                            var s = "<select>";
+
+                            s += '<option value="0">--</option>';
+                            $.each(data, function () {
+                                s += '<option value="' + this.key + '">' + this.value + '</option>';
+                            });
+
+                            return s + "</select>";
+                        }
                     },
                 },
                 {
@@ -478,7 +491,19 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     required: true,
                     edittype: 'select',
                     editoptions: {
-                        value: selectOptionsTypeOfPallets
+                        aysnc: false,
+                        dataUrl: '../../rest/typeOfPallets',
+                        buildSelect: function (response) {
+                            var data = $.parseJSON(response);
+                            var s = "<select>";
+
+                            s += '<option value="0">--</option>';
+                            $.each(data, function () {
+                                s += '<option value="' + this.key + '">' + this.value + '</option>';
+                            });
+
+                            return s + "</select>";
+                        }
                     }
                 },
                 {
@@ -515,6 +540,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             serializeRowData: function (postdata) {
                 delete postdata.oper;
                 return JSON.stringify(postdata);
+            },
+            beforeSubmit: function (postdata, formid) {
+                //more validations
+//                if ($('#exec').val() == "") {
+//                    $('#exec').addClass("ui-state-highlight");
+//                    return [false, 'ERROR MESSAGE']; //error
+//                }
+                return [false, 'ble']; 
             }
         };
 
@@ -543,10 +576,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     url: '../../rest/units'
 
                 }).then(function successCallback(response) {
-                    selectOptionsUnits = [];
+                    var selectOptionsUnits = [];
                     angular.forEach(response.data, function (value, key) {
                         selectOptionsUnits[value.key] = value.value;
                     });
+
+                    config.colModel.filter(function (element, index) {
+                        return element.index === 'givenunit';
+                    })[0].editoptions.value = selectOptionsUnits;
 
                     $http({
                         method: 'GET',
@@ -557,6 +594,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         angular.forEach(response.data, function (value, key) {
                             selectOptionsTypeOfPallets[value.key] = value.value;
                         });
+
+                        config.colModel.filter(function (element, index) {
+                            return element.index === 'type_of_pallet';
+                        })[0].editoptions.value = selectOptionsTypeOfPallets;
+
                         $scope.config = config;
 
                     }, errorCallback);

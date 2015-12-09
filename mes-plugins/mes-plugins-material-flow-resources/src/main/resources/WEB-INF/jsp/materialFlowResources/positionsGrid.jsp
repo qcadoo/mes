@@ -73,21 +73,14 @@ String ctx = request.getContextPath();
 
 <div class="windowContainer" style="background:#9b9b9b;" ng-app="gridApp" ng-controller="GridController">
 
-    <div class="windowContainerRibbon tabWindowRibbon">
-        <div id="window_windowContainerRibbon">
-            <div id="q_row3_out_container">
-                <div id="q_menu_row3"></div>
-            </div>
-            <div id="q_row4_out"></div>
-        </div>
-    </div>
-
     <div id="gridContainer">
         <ng-jq-grid config="config" data="data"></ng-jq-grid>
         <table id="grid"></table>
         <div id="jqGridPager"></div>
     </div>
-
+    
+    
     <br /><br />
     <button style="position: absolute; top: 10px; z-index: 100;" id="add-new-row" ng-click="addNewRow()">Add row</button>
+    
 </div>

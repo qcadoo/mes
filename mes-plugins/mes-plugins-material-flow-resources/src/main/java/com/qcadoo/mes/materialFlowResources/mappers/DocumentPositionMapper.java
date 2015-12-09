@@ -31,14 +31,11 @@ public class DocumentPositionMapper implements RowMapper {
         positionVO.setType_of_pallet(resultSet.getString("typeofpallet"));
         positionVO.setStorage_location(resultSet.getString("storagelocation_number"));
         positionVO.setDocument(resultSet.getLong("document_id"));
+        positionVO.setProductiondate(resultSet.getDate("productiondate"));
+        positionVO.setPrice(resultSet.getBigDecimal("price"));
+        positionVO.setBatch(resultSet.getString("batch"));
+        
 
-        
-        
-//        <belongsTo name="document" model="document"/>
-//        <decimal name="price" default="0">
-//            <validatesRange from="0"/>
-//        </decimal>
-//        <string name="batch"/>
 //        <string name="unit" persistent="false"/>
 //
 //        <date name="productionDate"/>

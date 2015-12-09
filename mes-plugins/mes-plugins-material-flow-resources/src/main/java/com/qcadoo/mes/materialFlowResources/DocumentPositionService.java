@@ -1,9 +1,12 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
 import com.qcadoo.mes.materialFlowResources.mappers.DocumentPositionMapper;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,22 +16,34 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class DocumentPositionRepository {
+public class DocumentPositionService {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    public List<DocumentPositionDTO> findAll(final Long documentId, final String sidx, final String sord) {
-        String query = "SELECT position.*, product.number as product_number, product.unit as product_unit, additionalcode.code as additionalcode_code, palletnumber.number as palletnumber_number, location.number as storagelocation_number\n"
-                + "	FROM materialflowresources_position position\n"
-                + "	left join basic_product product on (position.product_id = product.id)\n"
-                + "	left join basic_additionalcode additionalcode on (position.additionalcode_id = additionalcode.id)\n"
-                + "	left join basic_palletnumber palletnumber on (position.palletnumber_id = palletnumber.id)\n"
-                + "	left join materialflowresources_storagelocation location on (position.storagelocation_id = location.id) WHERE position.document_id = :documentId ORDER BY " + sidx + " " + sord;
+    @Autowired
+    private DocumentPositionValidator validator;
+
+    public List<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord) {        
+        String sidx = _sidx != null ? _sidx.toLowerCase() : "";
+        String sord = _sord != null ? _sord.toLowerCase() : "";
+
+        Preconditions.checkState(Arrays.asList("asc", "desc", "").contains(sord));
+        Preconditions.checkState(Arrays.asList(DocumentPositionDTO.class.getDeclaredFields()).stream().map(Field::getName).collect(Collectors.toList()).contains(sidx));
+
+        String query = "SELECT p.*, product.number as product_number, product.unit as product_unit, additionalcode.code as additionalcode_code, palletnumber.number as palletnumber_number, location.number as storagelocation_number\n"
+                + "	FROM materialflowresources_position p\n"
+                + "	left join basic_product product on (p.product_id = product.id)\n"
+                + "	left join basic_additionalcode additionalcode on (p.additionalcode_id = additionalcode.id)\n"
+                + "	left join basic_palletnumber palletnumber on (p.palletnumber_id = palletnumber.id)\n"
+                + "	left join materialflowresources_storagelocation location on (p.storagelocation_id = location.id) WHERE p.document_id = :documentId ORDER BY " + sidx + " " + sord;
 
         List<DocumentPositionDTO> list = jdbcTemplate.query(query, Collections.singletonMap("documentId", documentId), new DocumentPositionMapper());
 
@@ -36,26 +51,34 @@ public class DocumentPositionRepository {
     }
 
     public void delete(Long id) {
+        validator.validateBeforeDelete(id);
+
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("DELETE FROM materialflowresources_position WHERE id = :id ");
         jdbcTemplate.update(queryBuilder.toString(), Collections.singletonMap("id", id));
     }
 
     public void create(DocumentPositionDTO documentPositionVO) {
+        validator.validateBeforeCreate(documentPositionVO);
+
         Map<String, Object> params = tryMapDocumentPositionVOToParams(documentPositionVO);
-        params.remove("id");
+        if (params.get("id") == null || Long.valueOf(params.get("id").toString()) == 0) {
+            params.remove("id");
+        }
 
         String keys = params.keySet().stream().collect(Collectors.joining(", "));
         String values = params.keySet().stream().map(key -> {
             return ":" + key;
         }).collect(Collectors.joining(", "));
 
-        String query = String.format("INSERT INTO materialflowresources_position (%s) VALUES (%s) RETURNING id", keys, values);
+        String query = String.format("INSERT INTO materialflowresources_position (%s) VALUES (%s)", keys, values);
 
-        jdbcTemplate.queryForObject(query, params, Long.class);
+        jdbcTemplate.update(query, params);
     }
 
     public void update(Long id, DocumentPositionDTO documentPositionVO) {
+        validator.validateBeforeUpdate(documentPositionVO);
+
         Map<String, Object> params = tryMapDocumentPositionVOToParams(documentPositionVO);
 
         String set = params.keySet().stream().map(key -> {
@@ -81,7 +104,10 @@ public class DocumentPositionRepository {
         params.put("typeofpallet", vo.getType_of_pallet());
         params.put("storagelocation_id", tryGetStorageLocationIdByNumber(vo.getStorage_location()));
         params.put("document_id", vo.getDocument());
-
+        params.put("productiondate", vo.getProductiondate());
+        params.put("price", vo.getPrice());
+        params.put("batch", vo.getBatch());
+        
         return params;
     }
 

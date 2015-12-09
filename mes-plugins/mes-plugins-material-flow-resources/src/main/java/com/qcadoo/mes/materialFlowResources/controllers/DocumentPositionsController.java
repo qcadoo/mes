@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionRepository;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
 import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 @Controller
@@ -22,7 +22,7 @@ import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 public class DocumentPositionsController {
 
     @Autowired
-    private DocumentPositionRepository documentPositionRepository;
+    private DocumentPositionService documentPositionRepository;
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "{id}")

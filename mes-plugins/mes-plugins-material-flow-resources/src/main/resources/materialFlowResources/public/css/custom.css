@@ -72,3 +72,18 @@ button .customelement {
     display:table-cell;
     width: 5em;
 }
+
+#t_grid input {
+    border: 0;
+    float: left;
+    margin: 5px;
+}
+
+#t_grid label {
+    float: left;
+    margin: 5px 5px 5px 10px;
+}
+
+#t_grid {
+    height: 35px;
+}
