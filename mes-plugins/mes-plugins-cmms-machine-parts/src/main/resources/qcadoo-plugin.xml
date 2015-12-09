@@ -157,6 +157,7 @@
         <model:model model="maintenanceEventContext" resource="model/maintenanceEventContext.xml"/>
 
         <model:model model="plannedEvent" resource="model/plannedEvent.xml"/>
+        <model:model model="plannedEventListDto" resource="model/plannedEventListDto.xml"/>
         <model:model model="plannedEventContext" resource="model/plannedEventContext.xml"/>
         <model:model model="plannedEventRealization" resource="model/plannedEventRealization.xml"/>
         <model:model model="plannedEventAttachment" resource="model/plannedEventAttachment.xml"/>
