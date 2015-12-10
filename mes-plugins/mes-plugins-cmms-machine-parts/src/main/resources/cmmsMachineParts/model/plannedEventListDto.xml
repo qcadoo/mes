@@ -35,7 +35,9 @@
         <string name="ownerName"/>
         <string name="description"/>
         <string name="factoryNumber"/>
+        <integer name="factory_id"/>
         <string name="divisionNumber"/>
+        <integer name="division_id"/>
         <string name="productionLineNumber"/>
         <string name="workstationNumber"/>
         <string name="subassemblyNumber"/>

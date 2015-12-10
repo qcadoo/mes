@@ -6,7 +6,7 @@ CREATE SEQUENCE cmmsmachineparts_plannedeventlistdto_id_seq;
 create or replace view cmmsmachineparts_plannedEventListDto as
 select
     e.id, e.number, e.type, concat_ws(' ', owner.name::text, owner.surname::text) as ownerName,
-    e.description, factory.number as factoryNumber, division.number as divisionNumber,
+    e.description, factory.number as factoryNumber, factory.id as factory_id, division.number as divisionNumber, division.id as division_id,
     productionLine.number as productionLineNumber, workstation.number as workstationNumber,
     subassembly.number as subassemblyNumber, e.date, e.counter, e.createUser, e.createDate, e.state, context.id as plannedEventContext_id
     from cmmsmachineparts_plannedevent e
@@ -24,7 +24,8 @@ CREATE SEQUENCE cmmsmachineparts_maintenanceeventlistdto_id_seq;
 create or replace view cmmsmachineparts_maintenanceEventListDto as
 select
     e.id, e.number, e.type, concat_ws(' ', staff.name::text, staff.surname::text) as personReceivingName,
-    e.description, faultType.number as faultTypeNumber, factory.number as factoryNumber, division.number as divisionNumber,
+    e.description, faultType.name as faultTypeNumber, factory.number as factoryNumber, division.number as divisionNumber,
+    factory.id as factory_id, division.id as division_id,
     productionLine.number as productionLineNumber, workstation.number as workstationNumber,
     subassembly.number as subassemblyNumber, e.createUser, e.createDate, e.state, context.id as maintenanceEventContext_id
     from cmmsmachineparts_maintenanceevent e

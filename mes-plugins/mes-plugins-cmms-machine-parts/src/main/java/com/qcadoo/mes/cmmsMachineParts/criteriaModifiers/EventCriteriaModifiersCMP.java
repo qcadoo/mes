@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.criteriaModifiers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.DivisionFields;
@@ -43,8 +46,6 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service public class EventCriteriaModifiersCMP {
 
@@ -146,12 +147,12 @@ import org.springframework.stereotype.Service;
     public void showEventsFromContext(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(EVENT_CONTEXT_FILTER_PARAMETER_FACTORY)) {
             scb.add(SearchRestrictions
-                    .eq(MaintenanceEventFields.FACTORY + ".id", filterValue.getLong(EVENT_CONTEXT_FILTER_PARAMETER_FACTORY)));
+                    .eq(MaintenanceEventFields.FACTORY + "_id", filterValue.getInteger(EVENT_CONTEXT_FILTER_PARAMETER_FACTORY)));
         }
 
         if (filterValue.has(EVENT_CONTEXT_FILTER_PARAMETER_DIVISION)) {
             scb.add(SearchRestrictions
-                    .eq(MaintenanceEventFields.DIVISION + ".id", filterValue.getLong(EVENT_CONTEXT_FILTER_PARAMETER_DIVISION)));
+                    .eq(MaintenanceEventFields.DIVISION + "_id", filterValue.getInteger(EVENT_CONTEXT_FILTER_PARAMETER_DIVISION)));
         }
 
     }
@@ -159,12 +160,12 @@ import org.springframework.stereotype.Service;
     public void showPlannedEventsFromContext(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(EVENT_CONTEXT_FILTER_PARAMETER_FACTORY)) {
             scb.add(SearchRestrictions
-                    .eq(MaintenanceEventFields.FACTORY + ".id", filterValue.getLong(EVENT_CONTEXT_FILTER_PARAMETER_FACTORY)));
+                    .eq(MaintenanceEventFields.FACTORY + "_id", filterValue.getInteger(EVENT_CONTEXT_FILTER_PARAMETER_FACTORY)));
         }
 
         if (filterValue.has(EVENT_CONTEXT_FILTER_PARAMETER_DIVISION)) {
             scb.add(SearchRestrictions
-                    .eq(MaintenanceEventFields.DIVISION + ".id", filterValue.getLong(EVENT_CONTEXT_FILTER_PARAMETER_DIVISION)));
+                    .eq(MaintenanceEventFields.DIVISION + "_id", filterValue.getInteger(EVENT_CONTEXT_FILTER_PARAMETER_DIVISION)));
         }
     }
 
