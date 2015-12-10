@@ -38,7 +38,6 @@ public class DocumentPositionMapper implements RowMapper {
 
 //        <string name="unit" persistent="false"/>
 //
-//        <date name="productionDate"/>
 //        <priority name="number" scope="document"/>
 //        <hasMany name="attributeValues" joinField="position" model="attributeValue" cascade="delete"/>
 //

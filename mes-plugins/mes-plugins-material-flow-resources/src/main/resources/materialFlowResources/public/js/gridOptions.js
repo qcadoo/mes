@@ -357,8 +357,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             errorTextFormat: function (response) {
                 return JSON.parse(response.responseText).message;
             },
-            colNames: ['ID', 'document', 'product', 'additional_code', 'quantity', 'unit', 'givenquantity', 'givenunit', 'conversion', 'expirationdate',
-                'pallet', 'type_of_pallet', 'storage_location'/*, 'resource_id'*/],
+            colNames: ['ID', 'document', 'product', 'additional_code', 'quantity', 'unit', 'givenquantity', 'givenunit', 'conversion', 'price', 'expirationdate',
+                'productiondate', 'batch', 'pallet', 'type_of_pallet', 'storage_location'/*, 'resource_id'*/],
             colModel: [
                 {
                     name: 'id',
@@ -458,6 +458,18 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     required: true,
                 },
                 {
+                    name: 'price',
+                    index: 'price',
+                    editable: true,
+                    required: true,
+                    formatter: 'number',
+                    editrules: {
+                        custom_func: validatePositive,
+                        custom: true,
+                        required: false
+                    },
+                },
+                {
                     name: 'expirationdate',
                     index: 'expirationdate',
                     width: 150,
@@ -472,6 +484,28 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                             $(element).datepicker(options);
                         }
                     }
+                },
+                {
+                    name: 'productiondate',
+                    index: 'productiondate',
+                    width: 150,
+                    editable: true,
+                    required: true,
+                    edittype: "text",
+                    editoptions: {
+                        dataInit: function (element) {
+                            var options = $.datepicker.regional[window.locale];
+                            options.showOn = 'focus';
+
+                            $(element).datepicker(options);
+                        }
+                    }
+                },
+                {
+                    name: 'batch',
+                    index: 'batch',
+                    editable: true,
+                    required: true,
                 },
                 {
                     name: 'pallet',

@@ -74,17 +74,17 @@ public class DocumentPositionValidator {
 
         boolean result = true;
         if (requirePrice && position.getPrice() == null) {
-            errors.add("materialFlow.error.position.price.required");
+            errors.add("qcadooView.error.position.price.required");
         }
         if (requireBatch && position.getBatch() == null) {
-            errors.add("materialFlow.error.position.batch.required");
+            errors.add("qcadooView.error.position.batch.required");
         }
         if (requireProductionDate && position.getProductiondate() == null) {
-            errors.add("materialFlow.error.position.productionDate.required");
+            errors.add("qcadooView.error.position.productionDate.required");
         }
 
         if (requireExpirationDate && position.getExpirationdate() == null) {
-            errors.add("materialFlow.error.position.expirationDate.required");
+            errors.add("qcadooView.error.position.expirationDate.required");
         }
 
         return errors;
@@ -104,7 +104,7 @@ public class DocumentPositionValidator {
             if (WarehouseAlgorithm.MANUAL.getStringValue().compareTo(algorithm) == 0) {
                 boolean isValid = position.getResource() != null;
                 if (!isValid) {
-                    return Arrays.asList("materialFlow.error.position.batch.required");
+                    return Arrays.asList("qcadooView.error.position.batch.required");
                 }
             }
         }
@@ -116,7 +116,7 @@ public class DocumentPositionValidator {
         Date productionDate = position.getProductiondate();
         Date expirationDate = position.getExpirationdate();
         if (productionDate != null && expirationDate != null && expirationDate.compareTo(productionDate) < 0) {
-            return Arrays.asList("materialFlow.error.position.expirationDate.lessThenProductionDate");
+            return Arrays.asList("qcadooView.error.position.expirationDate.lessThenProductionDate");
         }
 
         return Arrays.asList();
