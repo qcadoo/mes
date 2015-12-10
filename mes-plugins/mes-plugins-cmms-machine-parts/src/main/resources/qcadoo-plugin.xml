@@ -150,6 +150,7 @@
         <model:model model="eventAttachment" resource="model/eventAttachment.xml"/>
         <model:model model="faultType" resource="model/faultType.xml"/>
         <model:model model="maintenanceEvent" resource="model/maintenanceEvent.xml"/>
+        <model:model model="maintenanceEventListDto" resource="model/maintenanceEventListDto.xml"/>
         <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
         <model:model model="machinePartForEvent" resource="model/machinePartForEvent.xml"/>
 

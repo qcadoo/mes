@@ -157,7 +157,7 @@
         </windowTab>
 
         <windowTab name="mainTab" reference="mainTab">
-            <component type="grid" name="grid" reference="grid" field="#{form}.plannedEvents">
+            <component type="grid" name="grid" reference="grid" field="#{form}.plannedEventsDtos">
                 <script>
                     <![CDATA[
 					var toggleRibbonItems = ["actions.delete"];
@@ -382,16 +382,15 @@
                 <option type="column" name="type" fields="type" link="true"/>
                 <option type="column" name="ownerName" fields="ownerName" link="true"/>
                 <option type="column" name="description" fields="description" link="true"/>
-                <option type="column" name="factory" fields="factoryNumber" expression="#factory['number']" link="true"
+                <option type="column" name="factory" fields="factoryNumber" link="true"
                         width="80"/>
-                <option type="column" name="division" fields="divisionNumber" expression="#division['number']"
+                <option type="column" name="division" fields="divisionNumber"
                         link="true"/>
                 <option type="column" name="productionLine" fields="productionLineNumber"
-                        expression="#productionLine['number']"
                         link="true"/>
-                <option type="column" name="workstation" fields="workstationNumber" expression="#workstation['number']"
+                <option type="column" name="workstation" fields="workstationNumber"
                         link="true" width="90"/>
-                <option type="column" name="subassembly" fields="subassemblyNumber" expression="#subassembly['number']"
+                <option type="column" name="subassembly" fields="subassemblyNumber"
                         link="true" width="85"/>
                 <option type="column" name="date" fields="date" link="false"/>
                 <option type="column" name="counter" fields="counter" link="false"/>

@@ -32,6 +32,10 @@
         <belongsTo name="division" model="division" plugin="basic"/>
         <hasMany name="plannedEvents" model="plannedEvent"
                  joinField="plannedEventContext" plugin="cmmsMachineParts"/>
+
+        <hasMany name="plannedEventsDtos" model="plannedEventListDto"
+                 joinField="plannedEventContext" plugin="cmmsMachineParts"/>
+
         <boolean name="generated" default="false"/>
         <boolean name="confirmed" default="false"/>
     </fields>
