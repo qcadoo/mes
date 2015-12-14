@@ -82,8 +82,8 @@ myApp.directive('ngJqGrid', function ($window) {
                     element.append(angular.element('<div id="jqGridPager"></div>'));
                     $(table).jqGrid(newValue);
 
-                    var addNewRowButton = '<input type="image" src="/qcadooView/public/img/core/icons/newIcon24.png" alt="Add new row" id="add_new_row" />';
-                    $(addNewRowButton).bind('click', scope.addNewRow);
+                    var addNewRowButton = $('<input onclick="return addNewRow();" type="image" src="/qcadooView/public/img/core/icons/newIcon24.png" alt="Add new row" id="add_new_row" />');                    
+                    
                     $('#t_grid').append(addNewRowButton);
 
                     $(table).jqGrid('filterToolbar');
@@ -163,6 +163,10 @@ myApp.directive('ngJqGrid', function ($window) {
 
 function documentIdChanged(id) {
     angular.element($("#GridController")).scope().documentIdChanged(id);
+}
+
+function addNewRow() {
+    angular.element($("#GridController")).scope().addNewRow();
 }
 
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
@@ -348,7 +352,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             addRowParams: angular.extend({
                 extraparam: {}
             }, gridEditOptions)
-        };
+        };       
 
         var config = {
             url: '../../integration/rest/documentPositions/' + getDocumentId() + '.html',
@@ -658,12 +662,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             prepareGridConfig(config);
         };
-
-        $scope.data = [];
-
+        
         $scope.addNewRow = function () {
             jQuery('#grid').addRow(gridAddOptions);
-        }
+        } 
+
+        $scope.data = [];
 
        $('#gridWrapper').block({
             message: '<h2>Grid dostępny po zapisie dokumentu</h2>',
