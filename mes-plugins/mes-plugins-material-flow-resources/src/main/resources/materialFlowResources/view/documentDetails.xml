@@ -44,11 +44,25 @@
         </ribbon>
         <windowTab name="generalTab" reference="generalTab">
             <component type="form" name="form" reference="form">
+                <script>
+<![CDATA[
+                this.addOnChangeListener({
+                    onSetValue: function(value) {
+                        if (!value || !value.content)
+                            return;
+                            
+                        if (value.content.entityId) {
+                            documentIdChanged(value.content.entityId);                            
+                        } 
+                    }
+                });
+            ]]></script>                
+                
+                
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="6">
                     <layoutElement column="1" row="1">
-                        <component type="input" name="number" reference="number"
-                                   field="number"/>
+                        <component type="input" name="number" reference="number" field="number"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="calendar" name="time" reference="time"
@@ -89,8 +103,8 @@
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
-                                    method="showWarehousesOnly"/>
+                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                method="showWarehousesOnly"/>
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                                       method="showAndSetRequiredForResourceLookup"/>
@@ -107,8 +121,8 @@
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
-                                    method="showWarehousesOnly"/>
+                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                method="showWarehousesOnly"/>
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                                       method="setCriteriaModifiersParameters"/>
@@ -174,8 +188,8 @@
                                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                                           method="refreshView"/>
                                 <criteriaModifier
-                                        class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
-                                        method="filterProductsInPosition"/>
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
+                                    method="filterProductsInPosition"/>
 
                             </component>
                         </layoutElement>
@@ -238,8 +252,8 @@
                                 <option type="fieldCode" value="batch"/>
 
                                 <criteriaModifier
-                                        class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ResourceCriteriaModifiers"
-                                        method="showResourcesForProductInWarehouse"/>
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ResourceCriteriaModifiers"
+                                    method="showResourcesForProductInWarehouse"/>
                             </component>
                         </layoutElement>
 
@@ -263,8 +277,8 @@
                                 <option type="expression" value="#number"/>
                                 <option type="fieldCode" value="number"/>
                                 <criteriaModifier
-                                        class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
-                                        method="showStorageLocationsForProductAndLocation"/>
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
+                                    method="showStorageLocationsForProductAndLocation"/>
                             </component>
                         </layoutElement>
 
@@ -318,9 +332,9 @@
 
             <component type="flowGridLayout" name="flowGridLayout" columns="1" rows="6">
                 <layoutElement column="1" row="1" minHeight="6">
-                    <component type="staticPage" name="editableGrid" reference="editableGrid">
+                    <component type="staticPage" name="positionsGrid">
                         <option type="page" value="materialFlowResources/positionsGrid.jsp"/>
-                    </component>
+                    </component>                  
                 </layoutElement>
             </component>
         </windowTab>
@@ -358,10 +372,9 @@
         </windowTab>
     </component>
     <hooks>
-
         <beforeRender
-                class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
-                method="onBeforeRender"/>
+            class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
+            method="onBeforeRender"/>
         <!--         <beforeRender -->
         <!--                 class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks" -->
         <!--                 method="initializeDocument"/> -->

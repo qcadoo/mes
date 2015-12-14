@@ -31,56 +31,59 @@
 <%
 String ctx = request.getContextPath();
 %>
-<script src="/materialFlowResources/public/js/jquery.auto-complete.js"></script>
 
-<script src="/basic/public/js/jquery.jqGrid.min.js"></script>
-<script src="/materialFlowResources/public/js/angular.js"></script>
+<div id="gridWrapper">
+    <script src="/materialFlowResources/public/js/jquery.auto-complete.js"></script>
 
-<script src="/materialFlowResources/public/js/gridOptions.js"></script>
+    <script src="/basic/public/js/jquery.jqGrid.min.js"></script>
+    <script src="/materialFlowResources/public/js/angular.js"></script>
 
-<c:choose>
-    <c:when test="${pageContext.request.locale.language == 'pl'}">
-        <script type="text/ecmascript" src="/basic/public/js/grid.locale-pl.js"></script>
-    </c:when>
-    <c:otherwise>
-        <script type="text/ecmascript" src="/basic/public/js/grid.locale-en.js"></script>
-    </c:otherwise>
-</c:choose>
+    <script src="/materialFlowResources/public/js/gridOptions.js"></script>
 
-<link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css" />
-<link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
-<link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/custom.css">
-<link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/jquery.auto-complete.css">
+    <c:choose>
+        <c:when test="${pageContext.request.locale.language == 'pl'}">
+            <script type="text/ecmascript" src="/basic/public/js/grid.locale-pl.js"></script>
+        </c:when>
+        <c:otherwise>
+            <script type="text/ecmascript" src="/basic/public/js/grid.locale-en.js"></script>
+        </c:otherwise>
+    </c:choose>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/jquery-ui-1.11.4.min.js?ver=${buildNumber}"></script>
+    <script src="/materialFlowResources/public/js/jquery.blockUI.js"></script>
 
-<script src="/cmmsScheduler/public/js/QCD/init.js?ver=${buildNumber}"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/custom.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/jquery.auto-complete.css">
 
-    <script type="text/javascript">
-        var QCD = QCD || {};
+        <script type="text/javascript">
+            var QCD = QCD || {};
 
-        QCD.currentLang = '<c:out value="${locale}" />';
+            QCD.currentLang = '<c:out value="${locale}" />';
 
-        QCD.translate = function (key) {
-            return QCD.translations[key] || '[' + key + ']';
-        };
+            QCD.translate = function (key) {
+                return QCD.translations[key] || '[' + key + ']';
+            };
 
-        QCD.translations = {};
-        <c:forEach items="${translationsMap}" var="translation">
-            QCD.translations['<c:out value="${translation.key}" />'] = '<c:out value="${fn:replace(translation.value, '\\\'','\\\\\\'')}" escapeXml="false" />';
-        </c:forEach>
-    </script>
+            QCD.translations = {};
+            <c:forEach items="${translationsMap}" var="translation">
+                QCD.translations['<c:out value="${translation.key}" />'] = '<c:out value="${fn:replace(translation.value, '\\\'','\\\\\\'')}" escapeXml="false" />';
+            </c:forEach>
+        </script>
 
-<div class="windowContainer" style="background:#9b9b9b;" ng-app="gridApp" ng-controller="GridController">
+    <div class="windowContainer" style="background:#9b9b9b;" ng-app="gridApp" ng-controller="GridController" id="GridController">
 
-    <div id="gridContainer">
-        <ng-jq-grid config="config" data="data"></ng-jq-grid>
-        <table id="grid"></table>
-        <div id="jqGridPager"></div>
+        <div id="gridContainer">
+            <ng-jq-grid config="config" data="data"></ng-jq-grid>
+            <table id="grid"></table>
+            <div id="jqGridPager"></div>
+        </div>
+
+
+        <br /><br />
+        <button style="position: absolute; top: 10px; z-index: 100;" id="add-new-row" ng-click="addNewRow()">Add row</button>
+
     </div>
-    
-    
-    <br /><br />
-    <button style="position: absolute; top: 10px; z-index: 100;" id="add-new-row" ng-click="addNewRow()">Add row</button>
-    
 </div>

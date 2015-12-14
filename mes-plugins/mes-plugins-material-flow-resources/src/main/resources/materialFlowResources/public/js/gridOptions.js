@@ -75,76 +75,78 @@ myApp.directive('ngJqGrid', function ($window) {
             var table;
 
             scope.$watch('config', function (newValue) {
-                element.children().empty();
-                table = angular.element('<table id="grid"></table>');
-                element.append(table);
-                element.append(angular.element('<div id="jqGridPager"></div>'));
-                $(table).jqGrid(newValue);
+                if (newValue) {
+                    element.children().empty();
+                    table = angular.element('<table id="grid"></table>');
+                    element.append(table);
+                    element.append(angular.element('<div id="jqGridPager"></div>'));
+                    $(table).jqGrid(newValue);
 
-                var addNewRowButton = '<input type="image" src="/qcadooView/public/img/core/icons/newIcon24.png" alt="Add new row" id="add_new_row" />';
-                $(addNewRowButton).bind('click', scope.addNewRow);
-                $('#t_grid').append(addNewRowButton);
+                    var addNewRowButton = '<input type="image" src="/qcadooView/public/img/core/icons/newIcon24.png" alt="Add new row" id="add_new_row" />';
+                    $(addNewRowButton).bind('click', scope.addNewRow);
+                    $('#t_grid').append(addNewRowButton);
 
-                $(table).jqGrid('filterToolbar');
+                    $(table).jqGrid('filterToolbar');
 
-                $(table).navGrid('#jqGridPager',
-                        // the buttons to appear on the toolbar of the grid
-                                {edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
-                        // options for the Edit Dialog
-                        {
-                            ajaxEditOptions: {contentType: "application/json"},
-                            mtype: 'PUT',
-                            closeAfterEdit: true,
-                            serializeEditData: function (data) {
-                                delete data.oper;
-                                return JSON.stringify(data);
+                    $(table).navGrid('#jqGridPager',
+                            // the buttons to appear on the toolbar of the grid
+                                    {edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
+                            // options for the Edit Dialog
+                            {
+                                ajaxEditOptions: {contentType: "application/json"},
+                                mtype: 'PUT',
+                                closeAfterEdit: true,
+                                serializeEditData: function (data) {
+                                    delete data.oper;
+                                    return JSON.stringify(data);
+                                },
+                                onclickSubmit: function (params, postdata) {
+                                    params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
+                                },
+                                errorTextFormat: function (response) {
+                                    return JSON.parse(response.responseText).message;
+                                }
                             },
-                            onclickSubmit: function (params, postdata) {
-                                params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
+                            // options for the Add Dialog
+                            {
+                                ajaxEditOptions: {contentType: "application/json"},
+                                mtype: "PUT",
+                                resize: false,
+                                drag: false,
+                                top: 100,
+                                left: function () {
+                                    return $(window).width() / 2 - 250;
+                                },
+                                width: 500,
+                                closeAfterEdit: true,
+                                reloadAfterSubmit: true,
+                                serializeEditData: function (data) {
+                                    delete data.oper;
+                                    delete data.id;
+                                    return JSON.stringify(data);
+                                },
+                                onclickSubmit: function (params, postdata) {
+                                    params.url = '../../integration/rest/documentPositions.html';
+                                },
+                                errorTextFormat: function (response) {
+                                    return JSON.parse(response.responseText).message;
+                                }
                             },
-                            errorTextFormat: function (response) {
-                                return JSON.parse(response.responseText).message;
-                            }
-                        },
-                        // options for the Add Dialog
-                        {
-                            ajaxEditOptions: {contentType: "application/json"},
-                            mtype: "PUT",
-                            resize: false,
-                            drag: false,
-                            top: 100,
-                            left: function () {
-                                return $(window).width() / 2 - 250;
-                            },
-                            width: 500,
-                            closeAfterEdit: true,
-                            reloadAfterSubmit: true,
-                            serializeEditData: function (data) {
-                                delete data.oper;
-                                delete data.id;
-                                return JSON.stringify(data);
-                            },
-                            onclickSubmit: function (params, postdata) {
-                                params.url = '../../integration/rest/documentPositions.html';
-                            },
-                            errorTextFormat: function (response) {
-                                return JSON.parse(response.responseText).message;
-                            }
-                        },
-                        // options for the Delete Dailog
-                        {
-                            mtype: "DELETE",
-                            serializeDelData: function () {
-                                return ""; // don't send and body for the HTTP DELETE
-                            },
-                            onclickSubmit: function (params, postdata) {
-                                params.url = '../../integration/rest/documentPositions/' + encodeURIComponent(postdata) + ".html";
-                            },
-                            errorTextFormat: function (response) {
-                                return JSON.parse(response.responseText).message;
-                            }
-                        });
-                    });
+                            // options for the Delete Dailog
+                            {
+                                mtype: "DELETE",
+                                serializeDelData: function () {
+                                    return ""; // don't send and body for the HTTP DELETE
+                                },
+                                onclickSubmit: function (params, postdata) {
+                                    params.url = '../../integration/rest/documentPositions/' + encodeURIComponent(postdata) + ".html";
+                                },
+                                errorTextFormat: function (response) {
+                                    return JSON.parse(response.responseText).message;
+                                }
+                            });
+                        }
+            });
 
             scope.$watch('data', function (newValue, oldValue) {
                 var i;
@@ -159,6 +161,10 @@ myApp.directive('ngJqGrid', function ($window) {
     };
 });
 
+function documentIdChanged(id) {
+    angular.element($("#GridController")).scope().documentIdChanged(id);
+}
+
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
         var _this = this;
         var lookupWindow;
@@ -170,17 +176,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             messagesController.addMessage(message);
         }
 
-        function getContextParamFromUrl() {
-            var query = location.search.substr(1);
-            var context = {};
-            query.split("&").forEach(function (part) {
-                var item = part.split("=");
-                context[item[0]] = decodeURIComponent(item[1]);
-            });
+        function getDocumentId() {
+            if (context) {
+                var contextObject = JSON.parse(context);
+                if (contextObject && contextObject['window.generalTab.form.id']) {
+                    return contextObject['window.generalTab.form.id'];
+                }
+            }
 
-            context = JSON.parse(context.context);
-
-            return context;
+            return 0;
         }
 
         function validatePositive(value, column) {
@@ -347,7 +351,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         };
 
         var config = {
-            url: '../../integration/rest/documentPositions/' + getContextParamFromUrl()['form.id'] + '.html',
+            url: '../../integration/rest/documentPositions/' + getDocumentId() + '.html',
             datatype: "json",
             height: '100%',
             autowidth: true,
@@ -372,7 +376,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     hidden: true,
                     editable: true,
                     editoptions: {
-                        defaultValue: getContextParamFromUrl()['form.id']
+                        defaultValue: getDocumentId()
                     }
 
                 },
@@ -436,19 +440,19 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     required: true,
                     edittype: 'select',
                     editoptions: {
-                        aysnc: false,
-                        dataUrl: '../../rest/units',
-                        buildSelect: function (response) {
-                            var data = $.parseJSON(response);
-                            var s = "<select>";
-
-                            s += '<option value="0">--</option>';
-                            $.each(data, function () {
-                                s += '<option value="' + this.key + '">' + this.value + '</option>';
-                            });
-
-                            return s + "</select>";
-                        }
+                        /*aysnc: false,
+                         dataUrl: '../../rest/units',
+                         buildSelect: function (response) {
+                         var data = $.parseJSON(response);
+                         var s = "<select>";
+                         
+                         s += '<option value="0">--</option>';
+                         $.each(data, function () {
+                         s += '<option value="' + this.key + '">' + this.value + '</option>';
+                         });
+                         
+                         return s + "</select>";
+                         }*/
                     },
                 },
                 {
@@ -525,19 +529,20 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     required: true,
                     edittype: 'select',
                     editoptions: {
-                        aysnc: false,
-                        dataUrl: '../../rest/typeOfPallets',
-                        buildSelect: function (response) {
-                            var data = $.parseJSON(response);
-                            var s = "<select>";
-
-                            s += '<option value="0">--</option>';
-                            $.each(data, function () {
-                                s += '<option value="' + this.key + '">' + this.value + '</option>';
-                            });
-
-                            return s + "</select>";
-                        }
+                        /*
+                         aysnc: false,
+                         dataUrl: '../../rest/typeOfPallets',
+                         buildSelect: function (response) {
+                         var data = $.parseJSON(response);
+                         var s = "<select>";
+                         
+                         s += '<option value="0">--</option>';
+                         $.each(data, function () {
+                         s += '<option value="' + this.key + '">' + this.value + '</option>';
+                         });
+                         
+                         return s + "</select>";
+                         }*/
                     }
                 },
                 {
@@ -581,11 +586,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 //                    $('#exec').addClass("ui-state-highlight");
 //                    return [false, 'ERROR MESSAGE']; //error
 //                }
-                return [false, 'ble']; 
+                return [false, 'ble'];
             }
         };
-
-        prepareGridConfig(config);
 
         function prepareGridConfig(config) {
             $http({
@@ -612,12 +615,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }).then(function successCallback(response) {
                     var selectOptionsUnits = [];
                     angular.forEach(response.data, function (value, key) {
-                        selectOptionsUnits[value.key] = value.value;
+                        selectOptionsUnits.push(value.key + ':' + value.value);
                     });
 
                     config.colModel.filter(function (element, index) {
                         return element.index === 'givenunit';
-                    })[0].editoptions.value = selectOptionsUnits;
+                    })[0].editoptions.value = selectOptionsUnits.join(';');
 
                     $http({
                         method: 'GET',
@@ -626,14 +629,16 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }).then(function successCallback(response) {
                         selectOptionsTypeOfPallets = [];
                         angular.forEach(response.data, function (value, key) {
-                            selectOptionsTypeOfPallets[value.key] = value.value;
+                            selectOptionsTypeOfPallets.push(value.key + ':' + value.value);
                         });
 
                         config.colModel.filter(function (element, index) {
                             return element.index === 'type_of_pallet';
-                        })[0].editoptions.value = selectOptionsTypeOfPallets;
+                        })[0].editoptions.value = selectOptionsTypeOfPallets.join(';');
 
                         $scope.config = config;
+                        //$scope.$apply();
+                        $('#gridWrapper').unblock();
 
                     }, errorCallback);
 
@@ -644,9 +649,30 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return config;
         }
 
+        $scope.documentIdChanged = function (id) {
+            config.url = '../../integration/rest/documentPositions/' + id + '.html';
+
+            config.colModel.filter(function (element, index) {
+                return element.index === 'document';
+            })[0].editoptions.defaultValue = id;
+
+            prepareGridConfig(config);
+        };
+
         $scope.data = [];
 
         $scope.addNewRow = function () {
             jQuery('#grid').addRow(gridAddOptions);
         }
+
+       $('#gridWrapper').block({
+            message: '<h2>Grid dostępny po zapisie dokumentu</h2>',
+            centerY: false,
+            centerX: false,
+            css: {                
+                top: '70px',
+                left: ($(window).width()/2)- 300 + 'px',
+            }
+        });
+
     }]);
