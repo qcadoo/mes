@@ -173,9 +173,13 @@
 
                                 if (state == "01new") {
                                     planEvent.enable();
-                                    plannedEvent.enable();
+                                    planEvent.forState="02inPlan";
+	                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.planEvent)}";
+	                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.planEvent)}");
+	                                plannedEvent.enable();
                                     cancelEvent.enable();
                                     realizedEvent.disable();
+                                    plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.planned)}";
                                 	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.plannedEvent)}");
 	                                plannedEvent.forState="03planned";
 	                                startEvent.disable();
@@ -186,6 +190,7 @@
                                     cancelEvent.enable();
                                     plannedEvent.enable();
                                     realizedEvent.disable();
+                                    plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.planned)}";
                                 	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.plannedEvent)}");
 	                                plannedEvent.forState="03planned";
 	                                startEvent.disable();
@@ -209,7 +214,7 @@
                                     plannedEvent.disable();
                                 	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
 	                                plannedEvent.forState="04inRealization";
-	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
                                     realizedEvent.disable();
                                     startEvent.disable();
 	                                stopEvent.enable();
@@ -224,7 +229,7 @@
                                     plannedEvent.disable();
                                 	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
 	                                plannedEvent.forState="04inRealization";
-	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
                                     realizedEvent.disable();
                                     startEvent.disable();
 	                                stopEvent.disable();
@@ -239,7 +244,7 @@
                                     plannedEvent.disable();
                                     plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
 	                                plannedEvent.forState="04inRealization";
-	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
                                     if (type !== "05meterReading") {
                                     	realizedEvent.enable();
                                     } else {
@@ -259,9 +264,11 @@
                                     plannedEvent.enable();
                                     plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
 	                                plannedEvent.forState="04inRealization";
-	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
                                     if (type == "05meterReading") {
                                     	realizedEvent.enable();
+                                    	planEvent.disable();
+                                    	plannedEvent.disable();
                                     } else {
                                     	realizedEvent.disable();
                                     }

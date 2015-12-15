@@ -262,6 +262,9 @@
 
                             if (state == "01new") {
                                 planEvent.enable();
+                                planEvent.forState="02inPlan";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.planEvent)}";
+                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.planEvent)}");
                                 plannedEvent.enable();
                                 cancelEvent.enable();
                                 realizedEvent.disable();
@@ -299,7 +302,7 @@
                                     realizedEvent.enable();
                                 }
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
-                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
                                 plannedEvent.forState="04inRealization";
                                 realizedEvent.disable();
                                 startEvent.disable();
@@ -316,7 +319,7 @@
                                	plannedEvent.disable();
                                	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
                                 plannedEvent.forState="04inRealization";
-                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
                                 startEvent.disable();
                            		stopEvent.disable();
                                 deleteButton.disable();
@@ -329,7 +332,7 @@
                                 plannedEvent.disable();
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
 	                            plannedEvent.forState="04inRealization";
-	                            plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+	                            plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
                                 if (!shouldShowAccept && differentTypes) {
                                 	realizedEvent.enable();
                                 } else {
@@ -348,9 +351,11 @@
                                 plannedEvent.enable();
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
                              	plannedEvent.forState="04inRealization";
-                             	plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
-                                if (!shouldShowAccept && differentTypes) {
+                             	plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
+                                if (!shouldShowAccept && !differentTypes) {
                                 	realizedEvent.enable();
+                                	planEvent.disable();
+                                   	plannedEvent.disable();
                                 } else {
                                 	realizedEvent.disable();
                                 }
@@ -457,7 +462,7 @@
 
                     <predefinedFilter name="open">
                         <filterRestriction column="state"
-                                           value="[01new,02inPlan,03planned,04inRealization,07accepted]"/>
+                                           value="[01new,02inPlan,03planned,04inRealization,07accepted,08inEditing]"/>
                     </predefinedFilter>
 
                     <predefinedFilter name="finished">
