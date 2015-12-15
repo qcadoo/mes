@@ -182,7 +182,7 @@ public class DocumentPositionService {
 
     public Map<String, Object> getGridConfig() {
         try {
-            String query = "select showstoragelocation from materialflowresources_documentpositionparameters";
+            String query = "select * from materialflowresources_documentpositionparameters";
             return jdbcTemplate.queryForMap(query, Collections.EMPTY_MAP);
 
         } catch (EmptyResultDataAccessException e) {

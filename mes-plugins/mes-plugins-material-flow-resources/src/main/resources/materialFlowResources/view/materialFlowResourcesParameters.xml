@@ -39,12 +39,48 @@
         </ribbon>
 
         <windowTab name="mainTab">
-            <component type="form" name="nblsParameters" reference="form">
+            <component type="form" name="documentPositionParameters" reference="form">
                 <component type="gridLayout" name="gridLayout" reference="gridLayout"
-                           columns="1" rows="1">
+                           columns="1" rows="7">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="showStorageLocation"
                                    reference="showStorageLocation" field="#{form}.showStorageLocation" >
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>                    
+                    <layoutElement column="1" row="2">
+                        <component type="checkbox" name="showAdditionalCode"
+                                   reference="showAdditionalCode" field="showAdditionalCode" >
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="checkbox" name="showProductionDate"
+                                   reference="showProductionDate" field="showProductionDate" >
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="checkbox" name="showExpiratinDate"
+                                   reference="showExpiratinDate" field="showExpiratinDate" >
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>                    
+                    <layoutElement column="1" row="5">
+                        <component type="checkbox" name="showPallet"
+                                   reference="showPallet" field="showPallet" >
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="checkbox" name="showTypeOfPallet"
+                                   reference="showTypeOfPallet" field="showTypeOfPallet" >
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="checkbox" name="showBatch"
+                                   reference="showBatch" field="showBatch" >
                             <option type="labelWidth" value="60" />
                         </component>
                     </layoutElement>

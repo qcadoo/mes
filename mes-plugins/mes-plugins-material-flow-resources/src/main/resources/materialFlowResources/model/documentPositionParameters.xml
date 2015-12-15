@@ -29,5 +29,11 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
         <boolean name="showStorageLocation" default="false"/>
+        <boolean name="showAdditionalCode" default="false"/>
+        <boolean name="showProductionDate" default="false"/>
+        <boolean name="showExpiratinDate" default="false"/>        
+        <boolean name="showPallet" default="false"/>
+        <boolean name="showTypeOfPallet" default="false"/>
+        <boolean name="showBatch" default="false"/>
     </fields>
 </model>

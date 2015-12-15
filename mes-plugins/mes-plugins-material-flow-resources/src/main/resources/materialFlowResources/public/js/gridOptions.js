@@ -684,14 +684,40 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }
         };
 
-        function prepareGridConfig(config) {
+        function prepareGridConfig(config) {            
+            var hideColumnInGrid = function(columnIndex, responseDate){
+                if(columnIndex === 'storage_location' && !responseDate.showstoragelocation){
+                    return true;
+                }           
+                if(columnIndex === 'additional_code' && !responseDate.showadditionalcode){
+                    return true;
+                }           
+                if(columnIndex === 'productiondate' && !responseDate.showproductiondate){
+                    return true;
+                }         
+                if(columnIndex === 'expirationdate' && !responseDate.showexpiratindate){
+                    return true;
+                }      
+                if(columnIndex === 'pallet' && !responseDate.showpallet){
+                    return true;
+                }   
+                if(columnIndex === 'type_of_pallet' && !responseDate.showtypeofpallet){
+                    return true;
+                }  
+                if(columnIndex === 'batch' && !responseDate.showbatch){
+                    return true;
+                }              
+                
+                return false;
+            };
+            
             $http({
                 method: 'GET',
                 url: '../../integration/rest/documentPositions/gridConfig.html'
 
             }).then(function successCallback(response) {
                 angular.forEach(config.colModel, function (value, key) {
-                    if (value.index === 'storage_location' && !response.data.showstoragelocation) {
+                    if(hideColumnInGrid(value.index, response.data)){
                         config.colModel[key].hidden = true;
                         config.colModel[key].editrules = config.colModel[key].editrules || {};
                         config.colModel[key].editrules.edithidden = true;

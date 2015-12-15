@@ -1,6 +1,7 @@
 package com.qcadoo.mes.materialFlowResources;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
@@ -40,6 +41,17 @@ public class DocumentPositionValidator {
                 Collections.singletonMap("id", position.getDocument()), new BeanPropertyRowMapper<DocumentDTO>(DocumentDTO.class));
 
         List<String> errors = new ArrayList<>();
+        
+        if(Strings.isNullOrEmpty(position.getProduct())){
+            errors.add("qcadooView.error.position.product.required");
+        }
+        if(Strings.isNullOrEmpty(position.getUnit())){
+            errors.add("qcadooView.error.position.unit.required");
+        }
+        if(position.getQuantity() == null){
+            errors.add("qcadooView.error.position.quantity.required");
+        }
+        
         errors.addAll(validateDates(position));
         errors.addAll(checkAttributesRequirement(position, document));
         errors.addAll(validateResources(position, document));
