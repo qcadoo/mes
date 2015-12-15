@@ -202,6 +202,9 @@
         <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS"
                        description="Dostęp do załączników w zdarzeniach planowanych"/>
 
+        <security:role identifier="ROLE_PLANNED_EVENTS_EDIT_RELATED"
+                       description="Dostęp modyfikacji powiązanych zdarzeń w zdarzeniach planowanych"/>
+
         <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS_REMOVE"
                        description="Dostęp do usuwania załączników w zdarzeniach planowanych"/>
 
