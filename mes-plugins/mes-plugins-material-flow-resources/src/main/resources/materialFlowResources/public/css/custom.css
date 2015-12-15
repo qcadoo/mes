@@ -26,7 +26,6 @@
     font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
     width: 100%;
     height: 100%;
-    margin-top: 90px;
 	position:absolute;
 }
 
@@ -85,5 +84,101 @@ button .customelement {
 }
 
 #t_grid {
-    height: 35px;
+    background: #f2f2f2;
+    line-height: 28px;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: solid #9b9b9b 1px;
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    padding: 0;
+    height: 30px;
+    vertical-align: middle;
+    overflow: hidden;
 }
+
+div.headerActionButton a span div {
+    display: inline-block;
+    height: 23px;
+    line-height: 23px;
+    vertical-align: middle;
+    padding: 0px 5px 0px 5px;
+    color: #464646;
+    cursor: pointer;
+}
+div.headerActionButton a {
+    display: block;
+    text-decoration: none;
+    color: #b7b7b7;
+    font-size: 11px;
+    height: 23px;
+    width: auto;
+    background-image: url('/qcadooView/public/css/core/menu/images/lt_twoB_l.png');
+    background-repeat: no-repeat;
+    background-position: left;
+    cursor: default;
+}
+#add_new_icon {
+    background-image: url('/qcadooView/public/img/core/icons/newIcon16.png');
+    background-repeat: no-repeat;
+    background-position: left;
+    width: 14px;
+    margin-left: 3px;
+    padding-right: 0;
+}
+div.gridTitle {
+    padding-left: 10px;
+    color: #555555;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 28px;
+    float: left;
+    padding-right: 8px;
+}
+div.headerActionButton a span div.hasIcon {
+    padding-left: 0px;
+}
+
+.ui-corner-top {
+    -moz-border-radius-topleft: 0px;
+    -webkit-border-top-left-radius: 0px;
+    border-top-left-radius: 0px;
+    -moz-border-radius-topright: 0px;
+    -webkit-border-top-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+#editmodgrid {
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    font-size: 11px;
+    background: #ebebeb;
+    padding: 0;
+}
+
+#edithdgrid {
+    background: #ebebeb;
+    color: #959595;
+    height: 25px;
+    line-height: 25px;
+    font-weight: normal;
+    font-size: 15px;
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    border: 0;
+    padding-left: 20px;
+}
+.ui-jqdialog-content .DataTD {
+    padding-right: 5px;
+}
+
+#editcntgrid {
+    background: #FAFAFA;
+    border-top: 1px solid #aaaaaa;
+    padding: 5px;
+}
+
+hr.ui-widget-content {
+    border: 0;
+}
+

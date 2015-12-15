@@ -80,10 +80,5 @@ String ctx = request.getContextPath();
             <table id="grid"></table>
             <div id="jqGridPager"></div>
         </div>
-
-
-        <br /><br />
-        <button style="position: absolute; top: 10px; z-index: 100;" id="add-new-row" ng-click="addNewRow()">Add row</button>
-
     </div>
 </div>
