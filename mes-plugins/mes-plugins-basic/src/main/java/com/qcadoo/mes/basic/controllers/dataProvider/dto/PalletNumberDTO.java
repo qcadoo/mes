@@ -1,8 +1,5 @@
 package com.qcadoo.mes.basic.controllers.dataProvider.dto;
 
-import lombok.Data;
-
-@Data
 public class PalletNumberDTO {
 
     private Long id;
@@ -10,4 +7,29 @@ public class PalletNumberDTO {
     private String code;
 
     private String number;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
 }

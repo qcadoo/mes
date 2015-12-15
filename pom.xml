@@ -138,11 +138,6 @@
             </aspectLibrary>
           </aspectLibraries>
           <showWeaveInfo>true</showWeaveInfo>
-          <forceAjcCompile>true</forceAjcCompile>
-          <sources/>
-            <weaveDirectories>
-                <weaveDirectory>${project.build.directory}/classes</weaveDirectory>
-            </weaveDirectories>
         </configuration>
         <dependencies>
           <dependency>

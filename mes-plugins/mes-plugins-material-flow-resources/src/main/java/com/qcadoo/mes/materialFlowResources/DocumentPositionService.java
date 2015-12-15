@@ -3,7 +3,6 @@ package com.qcadoo.mes.materialFlowResources;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
 import com.qcadoo.mes.materialFlowResources.mappers.DocumentPositionMapper;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -16,10 +15,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -184,7 +180,7 @@ public class DocumentPositionService {
         }
     }
 
-    public Map<String, String> getGridConfig() {
+    public Map<String, Object> getGridConfig() {
         try {
             String query = "select showstoragelocation from materialflowresources_documentpositionparameters";
             return jdbcTemplate.queryForMap(query, Collections.EMPTY_MAP);

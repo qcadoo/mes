@@ -62,7 +62,7 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "gridConfig")
-    public Map<String, String> gridConfig(){
+    public Map<String, Object> gridConfig(){
         return documentPositionRepository.getGridConfig();
     }
 }
