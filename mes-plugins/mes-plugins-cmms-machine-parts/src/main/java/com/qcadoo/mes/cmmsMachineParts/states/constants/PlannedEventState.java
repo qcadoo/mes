@@ -57,7 +57,7 @@ public enum PlannedEventState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return IN_EDITING.equals(targetState);
+            return IN_EDITING.equals(targetState) || CANCELED.equals(targetState);
         }
 
     },
