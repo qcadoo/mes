@@ -69,9 +69,8 @@ public enum PlannedEventRoles {
                     || shouldBeActive(view, PlannedEventState.IN_REALIZATION, Optional.of(PlannedEventType.METER_READING), true,
                             false)) {
                 lockFromRibbonGroup(view, "status", "realizedEvent");
-                lockFromRibbonGroup(view, "status", "startEvent");
             }
-
+            lockFromRibbonGroup(view, "status", "startEvent", "stopEvent");
         }
     },
     ROLE_PLANNED_EVENTS_STATES_ACCEPT {

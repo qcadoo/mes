@@ -196,7 +196,7 @@
 	                                startEvent.disable();
 	                                stopEvent.disable();
                                     toggleEditable(true, "");
-                                } else if (state == "03planned") { // tutaj
+                                } else if (state == "03planned") {
                                     planEvent.enable();
                                     cancelEvent.enable();
                                     plannedEvent.disable();
