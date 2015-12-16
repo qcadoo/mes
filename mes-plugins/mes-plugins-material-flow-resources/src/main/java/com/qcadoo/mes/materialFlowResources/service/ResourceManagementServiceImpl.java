@@ -127,6 +127,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.CONVERSION, position.getField(PositionFields.CONVERSION));
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
         resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
+        resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, position.getField(PositionFields.GIVEN_QUANTITY));
 
         setResourceAttributesFromPosition(resource, position);
         return resourceDD.save(resource);
@@ -151,6 +152,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newResource.setField(ResourceFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
         newResource.setField(ResourceFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
+        newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, resource.getField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT));
+
         setResourceAttributesFromResource(newResource, resource);
         return resourceDD.save(newResource);
     }
