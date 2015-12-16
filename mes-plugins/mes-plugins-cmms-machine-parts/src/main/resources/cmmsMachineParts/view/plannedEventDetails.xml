@@ -174,7 +174,7 @@
                                 if (state == "01new") {
                                     planEvent.enable();
                                     planEvent.forState="02inPlan";
-	                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.planEvent)}";
+	                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
 	                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.planEvent)}");
 	                                plannedEvent.enable();
                                     cancelEvent.enable();
