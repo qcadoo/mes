@@ -333,7 +333,7 @@
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
 	                            plannedEvent.forState="04inRealization";
 	                            plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
-                                if (!shouldShowAccept && differentTypes) {
+                                if (shouldShowAccept) {
                                 	realizedEvent.enable();
                                 } else {
                                 	realizedEvent.disable();
