@@ -53,12 +53,16 @@
             <group name="status">
                 <smallButton name="planEvent" icon="startIcon16.png"
                              state="disabled" action="#{grid}.changeState(planEvent);"/>
-                <smallButton name="cancelEvent" icon="deleteIcon16.png"
-                             state="disabled" action="#{grid}.changeState(cancelEvent);"/>
                 <smallButton name="plannedEvent" icon="startIcon16.png"
                              state="disabled" action="#{grid}.changeState(plannedEvent);"/>
+                <smallButton name="startEvent" icon="startIcon16.png"
+                             state="disabled" action="#{grid}.changeState(startEvent);"/>
+                <smallButton name="stopEvent" icon="deleteIcon16.png"
+                             state="disabled" action="#{grid}.changeState(stopEvent);"/>
                 <smallButton name="realizedEvent" icon="acceptIcon16.png"
                              state="disabled" action="#{grid}.changeState(realizedEvent);"/>
+                <smallButton name="cancelEvent" icon="deleteIcon16.png"
+                             state="disabled" action="#{grid}.changeState(cancelEvent);"/>
             </group>
 
             <group name="maintenanceEvents">
@@ -190,6 +194,8 @@
 						getRibbonItem("status.cancelEvent").disable();
 						getRibbonItem("status.plannedEvent").disable();
 						getRibbonItem("status.realizedEvent").disable();
+						getRibbonItem("status.startEvent").disable();
+                        getRibbonItem("status.stopEvent").disable();
 						getRibbonItem("maintenanceEvents.showMaintenanceEvent").disable();
 					}
 
@@ -232,6 +238,8 @@
                             var cancelEvent = #{window}.getRibbonItem("status.cancelEvent");
                             var plannedEvent = #{window}.getRibbonItem("status.plannedEvent");
                             var realizedEvent = #{window}.getRibbonItem("status.realizedEvent");
+                                var startEvent = #{window}.getRibbonItem("status.startEvent");
+                                var stopEvent = #{window}.getRibbonItem("status.stopEvent");
                             var deleteButton = #{window}.getRibbonItem("actions.delete");
 
                             planEvent.forState="02inPlan";
@@ -242,19 +250,28 @@
 
                             plannedEvent.forState="03planned";
                             plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.planned)}";
-                            if (shouldShowAccept) {
-                                realizedEvent.forState="07accepted";
-                                realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
-                                realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
-                            }
+                            
+                            startEvent.forState="04inRealization";
+                            startEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.startEvent)}";
+
+                            stopEvent.forState="08inEditing";
+                            stopEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.stopEvent)}";
+                            
+                            realizedEvent.forState="05realized";
+                            realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
 
                             if (state == "01new") {
                                 planEvent.enable();
+                                planEvent.forState="02inPlan";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
+                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.planEvent)}");
                                 plannedEvent.enable();
                                 cancelEvent.enable();
                                 realizedEvent.disable();
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.plannedEvent)}");
                                 plannedEvent.forState="03planned";
+                                startEvent.disable();
+                                stopEvent.disable();
                             } else if (state == "02inPlan") {
                                 planEvent.disable();
                                 cancelEvent.enable();
@@ -262,21 +279,21 @@
                                 realizedEvent.disable();
                                 plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.plannedEvent)}");
                                 plannedEvent.forState="03planned";
+                                startEvent.disable();
+                                stopEvent.disable();
                             } else if (state == "03planned") {
                                 planEvent.enable();
                                 cancelEvent.enable();
-                                plannedEvent.enable();
-                                if (!shouldShowAccept && differentTypes) {
-                                    realizedEvent.disable();
-                                } else {
-                                    realizedEvent.enable();
-                                }
-                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
-                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
-                                plannedEvent.forState="04inRealization";
+                                plannedEvent.disable();
+                                realizedEvent.disable();
+                               	startEvent.enable();
+                                stopEvent.disable();
                                 deleteButton.disable();
                             } else if (state == "04inRealization") {
                                 planEvent.disable();
+                                planEvent.forState="07accepted";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
                                 cancelEvent.enable();
                                 plannedEvent.disable();
                                 if (!shouldShowAccept && differentTypes) {
@@ -284,45 +301,67 @@
                                 } else {
                                     realizedEvent.enable();
                                 }
-                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
-                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
+                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
                                 plannedEvent.forState="04inRealization";
-                                if (shouldShowAccept) {
-                                        realizedEvent.forState="07accepted";
-                                        realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
-                                        realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
-                                    }
-                                    else {
-                                        realizedEvent.forState="05realized";
-                                        realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
-                                        realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
-                                    }
+                                realizedEvent.disable();
+                                startEvent.disable();
+                            	stopEvent.enable();
                                 deleteButton.disable();
                             } else if (state == "05realized" || state == "06canceled") {
                                 planEvent.disable();
+                                planEvent.forState="07accepted";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
                                 cancelEvent.disable();
                                 plannedEvent.disable();
                                 realizedEvent.disable();
-                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizeEvent)}");
-                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inRealization)}";
+                               	plannedEvent.disable();
+                               	plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
                                 plannedEvent.forState="04inRealization";
+                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
+                                startEvent.disable();
+                           		stopEvent.disable();
                                 deleteButton.disable();
                             } else if (state =="07accepted") {
-                                    planEvent.disable();
-                                    cancelEvent.disable();
-                                    plannedEvent.disable();
-                                    realizedEvent.enable();
-                                    realizedEvent.forState="05realized";
-                                    realizedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.realized)}";
-                                    realizedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.realizedEvent)}");
-
-                                    deleteButton.disable();
-                                }
-                            else {
                                 planEvent.disable();
+                                planEvent.forState="07accepted";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
                                 cancelEvent.disable();
                                 plannedEvent.disable();
-                                realizedEvent.disable();
+                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
+	                            plannedEvent.forState="04inRealization";
+	                            plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
+                                if (shouldShowAccept) {
+                                	realizedEvent.enable();
+                                } else {
+                                	realizedEvent.disable();
+                                }
+                                startEvent.disable();
+                             	stopEvent.disable();
+                             	
+                                deleteButton.disable();
+                            }else if (state =="08inEditing") {
+                                planEvent.enable();
+                                planEvent.forState="07accepted";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
+                                cancelEvent.disable();
+                                plannedEvent.enable();
+                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
+                             	plannedEvent.forState="04inRealization";
+                             	plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
+                                if (!shouldShowAccept && !differentTypes) {
+                                	realizedEvent.enable();
+                                	planEvent.disable();
+                                   	plannedEvent.disable();
+                                } else {
+                                	realizedEvent.disable();
+                                }
+                                startEvent.disable();
+                             	stopEvent.disable();
+                                deleteButton.disable();
                             }
 
                             if (selectedEntitiesArray.length == 1) {
@@ -330,6 +369,7 @@
                             }
                             else {
                                 showMaintenanceEvent.disable();
+                               	plannedEvent.disable();
                             }
 					}
 
@@ -422,7 +462,7 @@
 
                     <predefinedFilter name="open">
                         <filterRestriction column="state"
-                                           value="[01new,02inPlan,03planned,04inRealization,07accepted]"/>
+                                           value="[01new,02inPlan,03planned,04inRealization,07accepted,08inEditing]"/>
                     </predefinedFilter>
 
                     <predefinedFilter name="finished">

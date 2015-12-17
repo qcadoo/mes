@@ -39,6 +39,17 @@ public enum PlannedEventRoles {
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
         }
     },
+
+    ROLE_PLANNED_EVENTS_EDIT_RELATED {
+
+        @Override
+        public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
+            GridComponent grid = (GridComponent) view.getComponentByReference("relatedEvents");
+            if (grid != null) {
+                grid.setEnabled(false);
+            }
+        }
+    },
     ROLE_PLANNED_EVENTS_ATTACHMENTS_REMOVE {
 
         @Override
@@ -59,7 +70,7 @@ public enum PlannedEventRoles {
                             false)) {
                 lockFromRibbonGroup(view, "status", "realizedEvent");
             }
-
+            lockFromRibbonGroup(view, "status", "startEvent", "stopEvent");
         }
     },
     ROLE_PLANNED_EVENTS_STATES_ACCEPT {

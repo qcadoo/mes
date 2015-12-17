@@ -36,16 +36,21 @@ public class PlannedEventStateChangeValidators {
 
     public boolean validate(final DataDefinition evenStateChangetDD, final Entity eventStateChange) {
         String eventStatus = eventStateChange.getStringField(PlannedEventStateChangeFields.TARGET_STATE);
+        String oldEventStatus = eventStateChange.getStringField(PlannedEventStateChangeFields.SOURCE_STATE);
 
         switch (eventStatus) {
             case PlannedEventStateStringValues.CANCELED:
-                return validateForRevokedStatus(evenStateChangetDD, eventStateChange);
+                return validateRequiredComment(evenStateChangetDD, eventStateChange);
+            case PlannedEventStateStringValues.IN_REALIZATION:
+                if (PlannedEventStateStringValues.IN_EDITING.equals(oldEventStatus)) {
+                    return validateRequiredComment(evenStateChangetDD, eventStateChange);
+                }
         }
 
         return true;
     }
 
-    private boolean validateForRevokedStatus(final DataDefinition evenStateChangetDD, final Entity eventStateChange) {
+    private boolean validateRequiredComment(final DataDefinition evenStateChangetDD, final Entity eventStateChange) {
         String comment = eventStateChange.getStringField(PlannedEventStateChangeFields.COMMENT);
 
         if (eventStateChange.getBooleanField(PlannedEventStateChangeFields.COMMENT_REQUIRED) && Strings.isNullOrEmpty(comment)) {

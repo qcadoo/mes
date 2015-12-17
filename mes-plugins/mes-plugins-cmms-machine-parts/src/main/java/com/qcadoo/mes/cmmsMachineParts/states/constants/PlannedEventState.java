@@ -48,8 +48,7 @@ public enum PlannedEventState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return IN_PLAN.equals(targetState) || IN_REALIZATION.equals(targetState) || CANCELED.equals(targetState)
-                    || REALIZED.equals(targetState);
+            return IN_PLAN.equals(targetState) || IN_REALIZATION.equals(targetState) || CANCELED.equals(targetState);
         }
 
     },
@@ -58,9 +57,17 @@ public enum PlannedEventState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return CANCELED.equals(targetState) || REALIZED.equals(targetState) || ACCEPTED.equals(targetState);
+            return IN_EDITING.equals(targetState) || CANCELED.equals(targetState);
         }
 
+    },
+
+    IN_EDITING(PlannedEventStateStringValues.IN_EDITING) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return REALIZED.equals(targetState) || ACCEPTED.equals(targetState) || IN_REALIZATION.equals(targetState);
+        }
     },
 
     REALIZED(PlannedEventStateStringValues.REALIZED) {

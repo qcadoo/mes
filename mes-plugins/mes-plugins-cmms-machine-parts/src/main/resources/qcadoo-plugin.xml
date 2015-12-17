@@ -135,6 +135,7 @@
         <view:view resource="view/actionForPlannedEventDetails.xml"/>
         <view:view resource="view/plannedEventRealizationDetails.xml"/>
 
+        <view:view resource="view/plannedEventStateChangeReasonDialog.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
 
