@@ -8,6 +8,7 @@ import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -49,13 +50,9 @@ public class DocumentPositionValidator {
         if (Strings.isNullOrEmpty(position.getUnit())) {
             errors.add("qcadooView.error.position.unit.required");
         }
-        if (position.getQuantity() == null) {
-            errors.add("qcadooView.error.position.quantity.required");
-        }
-        if(BigDecimal.ZERO.compareTo(position.getQuantity()) >= 0){
-            errors.add("qcadooView.error.position.quantity.invalid");            
-        }
 
+        errors.addAll(validatePrice(position));
+        errors.addAll(validateQuantity(position));
         errors.addAll(validateDates(position));
         errors.addAll(checkAttributesRequirement(position, document));
         errors.addAll(validateResources(position, document));
@@ -88,8 +85,7 @@ public class DocumentPositionValidator {
 
         List<String> errors = new ArrayList<>();
 
-        boolean result = true;
-        if (requirePrice && position.getPrice() == null) {
+        if (requirePrice && (position.getPrice() == null ||BigDecimal.ZERO.compareTo(position.getPrice())==0 )) {
             errors.add("qcadooView.error.position.price.required");
         }
         if (requireBatch && position.getBatch() == null) {
@@ -144,5 +140,24 @@ public class DocumentPositionValidator {
 
         return jdbcTemplate.queryForObject("SELECT * FROM materialflow_location WHERE id = :id",
                 Collections.singletonMap("id", id), x);
+    }
+
+    private Collection<? extends String> validateQuantity(DocumentPositionDTO position) {
+        if (position.getQuantity() == null) {
+            return Arrays.asList("qcadooView.error.position.quantity.required");
+
+        } else if (BigDecimal.ZERO.compareTo(position.getQuantity()) >= 0) {
+            return Arrays.asList("qcadooView.error.position.quantity.invalid");
+        }
+
+        return Arrays.asList();
+    }
+
+    private Collection<? extends String> validatePrice(DocumentPositionDTO position) {
+        if (position.getPrice()!= null && BigDecimal.ZERO.compareTo(position.getPrice()) > 0) {
+            return Arrays.asList("qcadooView.error.position.price.invalid");
+        }
+
+        return Arrays.asList();        
     }
 }

@@ -105,6 +105,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                 mtype: 'PUT',
                                 closeAfterEdit: true,
                                 resize: false,
+                                viewPagerButtons: false,
                                 serializeEditData: function (data) {
                                     delete data.oper;
                                     return JSON.stringify(data);
@@ -133,6 +134,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                 closeAfterEdit: true,
                                 resize: false,
                                 reloadAfterSubmit: true,
+                                viewPagerButtons: false,
                                 serializeEditData: function (data) {
                                     delete data.oper;
                                     delete data.id;
@@ -225,13 +227,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }
 
             return 0;
-        }
-
-        function validatePositive(value, column) {
-            if (isNaN(value) && value < 0)
-                return [false, "Please enter a positive value"];
-            else
-                return [true, ""];
         }
 
         this.onGridLinkClicked = function (entityId) {
@@ -466,6 +461,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return $input;
         }
 
+        function price_createElement(value, options) {
+            var $input = $('<input type="number" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+            $input.val(value);
+
+            return $input;
+        }
+
         function givenquantity_createElement(value, options) {
             var $input = $('<input type="number" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
@@ -492,9 +494,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var rowId = options.rowId;
             var gridData = $('#grid').jqGrid('getRowData');
 
-            var productNumber = gridData.filter(function (element, index) {
+            var productNumber = '';
+            var currentElement = gridData.filter(function (element, index) {
                 return element.id === rowId;
-            })[0].product;
+            })[0];
+            if(currentElement){
+                productNumber = currentElement.product;
+            }
 
             if (productNumber.toLowerCase().indexOf('<input') >= 0) {
                 productNumber = $('#' + rowId + '_product').val();
@@ -711,11 +717,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     index: 'price',
                     editable: true,
                     required: true,
-                    formatter: 'number',
-                    editrules: {
-                        custom_func: validatePositive,
-                        custom: true,
-                        required: false
+                    edittype: 'custom',
+                    editoptions: {
+                        custom_element: price_createElement,
+                        custom_value: input_value
                     },
                     formoptions: {
                         rowpos: 2,
