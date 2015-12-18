@@ -77,8 +77,8 @@ public enum PlannedEventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            if (shouldBeActive(view, PlannedEventState.IN_REALIZATION, Optional.of(PlannedEventType.METER_READING), false, false)) {
-                lockFromRibbonGroup(view, "status", "realizedEvent");
+            if (shouldBeActive(view, PlannedEventState.IN_EDITING, Optional.of(PlannedEventType.METER_READING), false, false)) {
+                lockFromRibbonGroup(view, "status", "realizedEvent", "plannedEvent");
             }
             // FormComponent form = (FormComponent) view.getComponentByReference("form");
             // Entity plannedEvent = form.getEntity();
