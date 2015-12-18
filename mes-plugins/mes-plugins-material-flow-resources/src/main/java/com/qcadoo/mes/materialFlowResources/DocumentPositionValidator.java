@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,22 +42,25 @@ public class DocumentPositionValidator {
                 Collections.singletonMap("id", position.getDocument()), new BeanPropertyRowMapper<DocumentDTO>(DocumentDTO.class));
 
         List<String> errors = new ArrayList<>();
-        
-        if(Strings.isNullOrEmpty(position.getProduct())){
+
+        if (Strings.isNullOrEmpty(position.getProduct())) {
             errors.add("qcadooView.error.position.product.required");
         }
-        if(Strings.isNullOrEmpty(position.getUnit())){
+        if (Strings.isNullOrEmpty(position.getUnit())) {
             errors.add("qcadooView.error.position.unit.required");
         }
-        if(position.getQuantity() == null){
+        if (position.getQuantity() == null) {
             errors.add("qcadooView.error.position.quantity.required");
         }
-        
+        if(BigDecimal.ZERO.compareTo(position.getQuantity()) >= 0){
+            errors.add("qcadooView.error.position.quantity.invalid");            
+        }
+
         errors.addAll(validateDates(position));
         errors.addAll(checkAttributesRequirement(position, document));
         errors.addAll(validateResources(position, document));
-        
-        if(!errors.isEmpty()){
+
+        if (!errors.isEmpty()) {
             throw new RuntimeException(errors.stream().collect(Collectors.joining("\n")));
         }
     }
@@ -137,7 +141,7 @@ public class DocumentPositionValidator {
     private LocationDTO getWarehouseById(Long id) {
         BeanPropertyRowMapper<LocationDTO> x = new BeanPropertyRowMapper<>(LocationDTO.class);
         x.setPrimitivesDefaultedForNullValue(true);
-        
+
         return jdbcTemplate.queryForObject("SELECT * FROM materialflow_location WHERE id = :id",
                 Collections.singletonMap("id", id), x);
     }

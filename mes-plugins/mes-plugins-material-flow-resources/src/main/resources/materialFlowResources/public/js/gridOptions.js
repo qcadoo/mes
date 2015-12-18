@@ -447,7 +447,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function quantity_createElement(value, options) {
-            var $input = $('<input id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+            var $input = $('<input type="number" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
             $($input).bind('change keydown paste input', function () {
@@ -467,7 +467,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function givenquantity_createElement(value, options) {
-            var $input = $('<input id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+            var $input = $('<input type="number" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
             $($input).bind('change keydown paste input', function () {
@@ -586,7 +586,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             autowidth: true,
             rowNum: 150,
             sortname: 'id',
-            toolbar: [true, "top"],            
+            toolbar: [true, "top"],
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
             },
@@ -848,17 +848,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
                 jQuery('#grid').editRow(id, gridEditOptions);
             },
-            ajaxRowOptions: {contentType: "application/json"},
+            ajaxRowOptions: {
+                contentType: "application/json"
+            },
             serializeRowData: function (postdata) {
                 delete postdata.oper;
                 return JSON.stringify(postdata);
             },
             beforeSubmit: function (postdata, formid) {
-                //more validations
-//                if ($('#exec').val() == "") {
-//                    $('#exec').addClass("ui-state-highlight");
-//                    return [false, 'ERROR MESSAGE']; //error
-//                }
                 return [false, 'ble'];
             }
         };
@@ -946,6 +943,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         $scope.data = [];
+
+        // dont close inline edit after fail validations
+        $.extend($.jgrid.inlineEdit, { restoreAfterError: false });
 
         // disable close modal on off click
         $.jqm.params.closeoverlay = false;
