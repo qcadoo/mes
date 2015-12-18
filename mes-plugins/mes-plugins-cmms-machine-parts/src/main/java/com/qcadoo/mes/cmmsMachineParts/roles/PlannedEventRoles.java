@@ -77,8 +77,8 @@ public enum PlannedEventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            if (shouldBeActive(view, PlannedEventState.IN_EDITING, Optional.of(PlannedEventType.METER_READING), false, false)) {
-                lockFromRibbonGroup(view, "status", "realizedEvent", "plannedEvent");
+            if (shouldBeActive(view, PlannedEventState.IN_REALIZATION, Optional.of(PlannedEventType.METER_READING), false, false)) {
+                lockFromRibbonGroup(view, "status", "realizedEvent");
             }
             // FormComponent form = (FormComponent) view.getComponentByReference("form");
             // Entity plannedEvent = form.getEntity();
@@ -98,7 +98,10 @@ public enum PlannedEventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            lockFromRibbonGroup(view, "status", "planEvent", "cancelEvent", "plannedEvent");
+            if (!shouldBeActive(view, PlannedEventState.IN_EDITING, Optional.empty(), false, false)) {
+                lockFromRibbonGroup(view, "status", "planEvent", "plannedEvent");
+            }
+            lockFromRibbonGroup(view, "status", "cancelEvent");
         }
     },
     ROLE_PLANNED_EVENTS_ADVANCED_EDIT {
