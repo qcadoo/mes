@@ -437,7 +437,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 conversion = available_additionalunits.filter(function (element, index) {
                     return element.key === givenUnitValue;
                 })[0];
-                if(conversion){
+                if (conversion) {
                     conversion = conversion.conversion;
                 }
             }
@@ -586,7 +586,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             autowidth: true,
             rowNum: 150,
             sortname: 'id',
-            toolbar: [true, "top"],
+            toolbar: [true, "top"],            
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
             },
@@ -946,6 +946,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         $scope.data = [];
+
+        // disable close modal on off click
+        $.jqm.params.closeoverlay = false;
 
         $('#gridWrapper').block({
             message: '<h2>Grid dostępny po zapisie dokumentu</h2>',
