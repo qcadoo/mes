@@ -74,7 +74,7 @@
                 var item = $(this), v = item.data('val');
                 if (v || item.hasClass('autocomplete-suggestion')) { // else outside click
                     that.val(v);
-                    o.onSelect(e, v, item);
+                    o.onSelect(e, v, item, that);
                     that.sc.hide();
                 }
                 return false;

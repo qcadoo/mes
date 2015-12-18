@@ -31,9 +31,9 @@ public class DocumentPositionsController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "unit/{number}")
-    public String getUnitForProduct(@PathVariable String number) {
-        return documentPositionRepository.unitOfProduct(number);
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "units/{number}")
+    public Map<String, Object> getUnitsForProduct(@PathVariable String number) {
+        return documentPositionRepository.unitsOfProduct(number);
     }
 
     @ResponseBody
