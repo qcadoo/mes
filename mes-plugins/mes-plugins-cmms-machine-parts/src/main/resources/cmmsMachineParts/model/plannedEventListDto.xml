@@ -47,7 +47,7 @@
         <datetime name="createDate"/>
 
         <enum name="state"
-              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled,07accepted" default="01new"/>
+              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled,07accepted,08inEditing" default="01new"/>
         <belongsTo name="plannedEventContext" plugin="cmmsMachineParts" model="plannedEventContext"/>
     </fields>
     <identifier expression="#number"/>

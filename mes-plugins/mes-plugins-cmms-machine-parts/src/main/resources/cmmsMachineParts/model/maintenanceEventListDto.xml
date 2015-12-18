@@ -46,7 +46,7 @@
         <datetime name="createDate"/>
 
         <enum name="state"
-              values="01new,02inProgress,03edited,04closed,05revoked,06planned,07accepted,08inEditing" default="01new"/>
+              values="01new,02inProgress,03edited,04closed,05revoked,06planned,07accepted" default="01new"/>
         <belongsTo name="maintenanceEventContext" plugin="cmmsMachineParts" model="maintenanceEventContext"/>
     </fields>
     <identifier expression="#number"/>
