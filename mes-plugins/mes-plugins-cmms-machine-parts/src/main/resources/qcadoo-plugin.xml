@@ -135,6 +135,7 @@
         <view:view resource="view/actionForPlannedEventDetails.xml"/>
         <view:view resource="view/plannedEventRealizationDetails.xml"/>
 
+        <view:view resource="view/plannedEventStateChangeReasonDialog.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
 
@@ -150,6 +151,7 @@
         <model:model model="eventAttachment" resource="model/eventAttachment.xml"/>
         <model:model model="faultType" resource="model/faultType.xml"/>
         <model:model model="maintenanceEvent" resource="model/maintenanceEvent.xml"/>
+        <model:model model="maintenanceEventListDto" resource="model/maintenanceEventListDto.xml"/>
         <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
         <model:model model="machinePartForEvent" resource="model/machinePartForEvent.xml"/>
 
@@ -157,6 +159,7 @@
         <model:model model="maintenanceEventContext" resource="model/maintenanceEventContext.xml"/>
 
         <model:model model="plannedEvent" resource="model/plannedEvent.xml"/>
+        <model:model model="plannedEventListDto" resource="model/plannedEventListDto.xml"/>
         <model:model model="plannedEventContext" resource="model/plannedEventContext.xml"/>
         <model:model model="plannedEventRealization" resource="model/plannedEventRealization.xml"/>
         <model:model model="plannedEventAttachment" resource="model/plannedEventAttachment.xml"/>

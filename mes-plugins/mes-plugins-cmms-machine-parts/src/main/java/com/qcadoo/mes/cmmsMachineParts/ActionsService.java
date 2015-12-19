@@ -23,10 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionAppliesTo;
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionFields;
@@ -34,19 +30,19 @@ import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ActionsService {
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public boolean checkIfActionAppliesToOthers(final Entity action) {
 
-        return ActionAppliesTo.from(action).compareTo(ActionAppliesTo.NONE) == 0 || action.getId() == getDefaultAction().getId();
+        return ActionAppliesTo.from(action).compareTo(ActionAppliesTo.NONE) == 0 || action.getId().equals(
+                getDefaultAction().getId());
     }
 
     public boolean checkIfActionAppliesToWorkstation(final Entity action, final Entity workstation) {
@@ -70,12 +66,11 @@ public class ActionsService {
         if (defaultAction == null) {
             return false;
         }
-        return action.getId() == defaultAction.getId();
+        return action.getId().equals(defaultAction.getId());
     }
 
     public boolean checkIfActionAppliesToEntity(final Entity action, final Entity entity, final String fieldToTest) {
-        boolean result = action.getManyToManyField(fieldToTest).stream().anyMatch(e -> e.getId().equals(entity.getId()));
-        return result;
+        return action.getManyToManyField(fieldToTest).stream().anyMatch(e -> e.getId().equals(entity.getId()));
     }
 
     public Entity getDefaultAction() {

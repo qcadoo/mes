@@ -35,6 +35,8 @@ public final class PlannedEventStateStringValues {
 
     public static final String IN_REALIZATION = "04inRealization";
 
+    public static final String IN_EDITING = "08inEditing";
+
     public static final String REALIZED = "05realized";
 
     public static final String CANCELED = "06canceled";

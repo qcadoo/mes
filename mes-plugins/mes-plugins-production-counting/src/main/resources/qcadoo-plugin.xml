@@ -219,18 +219,6 @@
         <model:model-field model="technology" plugin="technologies">
             <model:boolean name="generateProductionRecordNumberFromOrderNumber"/>
         </model:model-field>
-        <model:model-field model="technology" plugin="technologies">
-            <model:hasMany name="productionTrackings" model="productionTracking"
-                           joinField="order" plugin="productionCounting" cascade="delete"/>
-        </model:model-field>
-        <model:model-field model="technology" plugin="technologies">
-            <model:hasMany name="productionBalances" model="productionBalance"
-                           joinField="order" plugin="productionCounting" cascade="delete"/>
-        </model:model-field>
-        <model:model-field model="technology" plugin="technologies">
-            <model:hasMany name="productionTrackingReports" model="productionTrackingReport"
-                           joinField="order" plugin="productionCounting" cascade="delete"/>
-        </model:model-field>
 
         <model:model-hook model="parameter" plugin="basic">
             <model:onCreate
