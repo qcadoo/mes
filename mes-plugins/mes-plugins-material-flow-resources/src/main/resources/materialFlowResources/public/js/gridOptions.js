@@ -409,25 +409,25 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     updateUnitsInGridByProduct(t.val());
                 }, 500));
             });
-            
+
             return lookup;
         }
 
         function additionalCodeLookup_createElement(value, options) {
             var url = '/rest/additionalcodes';
             var lookup = createLookupElement('additionalCode', value, url, options, options);
-            
+
             $(lookup).bind('change keydown paste input', function () {
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
-                    updateProductByAdditionalCode(t.val(),  t.attr('rowId'), url);
+                    updateProductByAdditionalCode(t.val(), t.attr('rowId'), url);
                 }, 500));
-            });            
-            
+            });
+
             return lookup;
         }
-        
+
         function updateProductByAdditionalCode(additionalCode, rowId, url) {
             var product = '';
 
@@ -440,9 +440,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }
             }
 
-            var productField = updateFieldValue('product', product, rowId);
-            productField.trigger('change');
-        }        
+            if (product) {
+                var productField = updateFieldValue('product', product, rowId);
+                productField.trigger('change');
+            }
+        }
 
         function lookup_value(elem, operation, value) {
             if (operation === 'get') {
