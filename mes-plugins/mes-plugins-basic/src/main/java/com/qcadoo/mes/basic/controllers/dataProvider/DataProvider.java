@@ -40,10 +40,12 @@ public class DataProvider {
     }
 
     public List<AdditionalCodeDTO> getAdditionalCodesByQuery(String query) {
-        String _query = "SELECT additionalcode.id as id, additionalcode.code as code "
-                + "FROM basic_additionalcode additionalcode WHERE additionalcode.code ilike :query LIMIT 15;";
+        String _query = "SELECT additionalcode.id as id, additionalcode.code as code, product.number as productnumber "
+                + "FROM basic_additionalcode additionalcode "
+                + "JOIN basic_product product ON (additionalcode.product_id = product.id)"
+                + "WHERE additionalcode.code ilike :query LIMIT 15;";
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("query", "%"+query+"%");
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 

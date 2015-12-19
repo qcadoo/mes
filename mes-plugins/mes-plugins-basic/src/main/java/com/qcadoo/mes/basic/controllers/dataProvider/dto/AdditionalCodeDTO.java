@@ -6,6 +6,8 @@ public class AdditionalCodeDTO {
 
     private String code;
 
+    private String productnumber;
+
     public Long getId() {
         return id;
     }
@@ -20,6 +22,14 @@ public class AdditionalCodeDTO {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getProductnumber() {
+        return productnumber;
+    }
+
+    public void setProductnumber(String productnumber) {
+        this.productnumber = productnumber;
     }
 
 }

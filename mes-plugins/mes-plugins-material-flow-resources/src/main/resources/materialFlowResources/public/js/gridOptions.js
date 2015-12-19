@@ -125,64 +125,84 @@ myApp.directive('ngJqGrid', function ($window) {
                                     dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
                                     dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
                                     dlgDiv[0].style.width = dlgWidth + "px";
-                                }
+                                },
+//                                beforeInitData: function (form) {
+//                                    var selectedRow = jQuery("#grid").jqGrid('getGridParam', 'selrow');
+//
+//                                    if (scope.editedRow) {
+//                                        return false;
+//                                    } else {
+//                                        scope.editedRow = selectedRow;
+//                                        return true;
+//                                    }
+//                                }
                             },
-                            // options for the Add Dialog
-                            {
-                                ajaxEditOptions: {contentType: "application/json"},
-                                mtype: "PUT",
-                                closeAfterEdit: true,
-                                resize: false,
-                                reloadAfterSubmit: true,
-                                viewPagerButtons: false,
-                                serializeEditData: function (data) {
-                                    delete data.oper;
-                                    delete data.id;
-                                    return JSON.stringify(data);
-                                },
-                                onclickSubmit: function (params, postdata) {
-                                    params.url = '../../integration/rest/documentPositions.html';
-                                },
-                                errorTextFormat: function (response) {
-                                    return translateMessages(JSON.parse(response.responseText).message);
-                                },
-                                beforeShowForm: function (form) {
-                                    var dlgDiv = $("#editmodgrid");
-                                    var dlgWidth = 586;
-                                    var dlgHeight = dlgDiv.height();
-                                    var parentWidth = $(window).width();
-                                    var parentHeight = $(window).height();
-                                    dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
-                                    dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
-                                    dlgDiv[0].style.width = dlgWidth + "px";
-                                }
-                            },
-                            // options for the Delete Dailog
-                            {
-                                mtype: "DELETE",
-                                serializeDelData: function () {
-                                    return ""; // don't send and body for the HTTP DELETE
-                                },
-                                onclickSubmit: function (params, postdata) {
-                                    params.url = '../../integration/rest/documentPositions/' + encodeURIComponent(postdata) + ".html";
-                                },
-                                errorTextFormat: function (response) {
-                                    return translateMessages(JSON.parse(response.responseText).message);
-                                }
+                                    // options for the Add Dialog
+                                            {
+                                                ajaxEditOptions: {contentType: "application/json"},
+                                                mtype: "PUT",
+                                                closeAfterEdit: true,
+                                                resize: false,
+                                                reloadAfterSubmit: true,
+                                                viewPagerButtons: false,
+                                                serializeEditData: function (data) {
+                                                    delete data.oper;
+                                                    delete data.id;
+                                                    return JSON.stringify(data);
+                                                },
+                                                onclickSubmit: function (params, postdata) {
+                                                    params.url = '../../integration/rest/documentPositions.html';
+                                                },
+                                                errorTextFormat: function (response) {
+                                                    return translateMessages(JSON.parse(response.responseText).message);
+                                                },
+                                                beforeShowForm: function (form) {
+                                                    var dlgDiv = $("#editmodgrid");
+                                                    var dlgWidth = 586;
+                                                    var dlgHeight = dlgDiv.height();
+                                                    var parentWidth = $(window).width();
+                                                    var parentHeight = $(window).height();
+                                                    dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
+                                                    dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
+                                                    dlgDiv[0].style.width = dlgWidth + "px";
+                                                },
+//                                beforeInitData: function (form) {
+//                                    var selectedRow = jQuery("#grid").jqGrid('getGridParam', 'selrow');
+//
+//                                    if (scope.editedRow) {
+//                                        return false;
+//                                    } else {
+//                                        scope.editedRow = selectedRow;
+//                                        return true;
+//                                    }
+//                                }
+                                            },
+                                            // options for the Delete Dailog
+                                                    {
+                                                        mtype: "DELETE",
+                                                        serializeDelData: function () {
+                                                            return ""; // don't send and body for the HTTP DELETE
+                                                        },
+                                                        onclickSubmit: function (params, postdata) {
+                                                            params.url = '../../integration/rest/documentPositions/' + encodeURIComponent(postdata) + ".html";
+                                                        },
+                                                        errorTextFormat: function (response) {
+                                                            return translateMessages(JSON.parse(response.responseText).message);
+                                                        }
+                                                    });
+                                        }
                             });
-                        }
-            });
 
-            scope.$watch('data', function (newValue, oldValue) {
-                var i;
-                for (i = oldValue.length - 1; i >= 0; i--) {
-                    $(table).jqGrid('delRowData', i);
+                    scope.$watch('data', function (newValue, oldValue) {
+                        var i;
+                        for (i = oldValue.length - 1; i >= 0; i--) {
+                            $(table).jqGrid('delRowData', i);
+                        }
+                        for (i = 0; i < newValue.length; i++) {
+                            $(table).jqGrid('addRowData', i, newValue[i]);
+                        }
+                    });
                 }
-                for (i = 0; i < newValue.length; i++) {
-                    $(table).jqGrid('addRowData', i, newValue[i]);
-                }
-            });
-        }
     };
 });
 
@@ -211,6 +231,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         var _this = this;
         var lookupWindow;
         var productIdElement;
+        var resources = {};
 
         var messagesController = new QCD.MessagesController();
 
@@ -248,8 +269,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             lookupWindow = mainController.openModal('body', 'materialFlowResources/productsLookup.html', null, onModalClose, onModalRender, {width: 1000, height: 560})
         }
 
-        function createLookupElement(inputId, value, url) {
-            var $ac = $('<input id="' + inputId + '" class="eac-square"/>');
+        function createLookupElement(inputId, value, url, options) {
+            var $ac = $('<input id="' + inputId + '" class="eac-square" rowId="' + options.rowId + '" />');
             $ac.val(value);
             $ac.autoComplete({
                 source: function (query, response) {
@@ -258,6 +279,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     } catch (e) {
                     }
                     xhr = $.getJSON(url, {query: query}, function (data) {
+                        resources[url] = data;
                         response(data);
                     });
                 },
@@ -284,11 +306,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function storageLocationLookup_createElement(value, options) {
-            return createLookupElement('storageLocation', value, '/integration/rest/documentPositions/storagelocations.html');
+            return createLookupElement('storageLocation', value, '/integration/rest/documentPositions/storagelocations.html', options);
         }
 
         function palletNumbersLookup_createElement(value, options) {
-            return createLookupElement('palletnumber', value, '/rest/palletnumbers');
+            return createLookupElement('palletnumber', value, '/rest/palletnumbers', options);
         }
 
         function updateFieldValue(field, value, rowId) {
@@ -296,11 +318,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             if (productInput.length) {
                 // edit form
-                $('#' + field).val(value);
+                return $('#' + field).val(value);
 
             } else {
                 // edit inline
-                $('#' + rowId + '_' + field).val(value);
+                return $('#' + rowId + '_' + field).val(value);
             }
         }
 
@@ -378,7 +400,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function productsLookup_createElement(value, options) {
-            var lookup = createLookupElement('square', value, '/rest/products');
+            var lookup = createLookupElement('square', value, '/rest/products', options);
 
             $(lookup).bind('change keydown paste input', function () {
                 var t = $(this);
@@ -387,12 +409,40 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     updateUnitsInGridByProduct(t.val());
                 }, 500));
             });
+            
             return lookup;
         }
 
         function additionalCodeLookup_createElement(value, options) {
-            return createLookupElement('additionalCode', value, '/rest/additionalcodes');
+            var url = '/rest/additionalcodes';
+            var lookup = createLookupElement('additionalCode', value, url, options, options);
+            
+            $(lookup).bind('change keydown paste input', function () {
+                var t = $(this);
+                window.clearTimeout(t.data("timeout"));
+                $(this).data("timeout", setTimeout(function () {
+                    updateProductByAdditionalCode(t.val(),  t.attr('rowId'), url);
+                }, 500));
+            });            
+            
+            return lookup;
         }
+        
+        function updateProductByAdditionalCode(additionalCode, rowId, url) {
+            var product = '';
+
+            if (resources[url]) {
+                product = resources[url].filter(function (element, index) {
+                    return element.code === additionalCode;
+                })[0];
+                if (product) {
+                    product = product.productnumber;
+                }
+            }
+
+            var productField = updateFieldValue('product', product, rowId);
+            productField.trigger('change');
+        }        
 
         function lookup_value(elem, operation, value) {
             if (operation === 'get') {
@@ -498,7 +548,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var currentElement = gridData.filter(function (element, index) {
                 return element.id === rowId;
             })[0];
-            if(currentElement){
+            if (currentElement) {
                 productNumber = currentElement.product;
             }
 
@@ -851,6 +901,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             },
             onSelectRow: function (id) {
                 gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
+
+//                if ($scope.editedRow) {
+//
+//                } else {
+//                    $scope.editedRow = id;
+//                    jQuery('#grid').editRow(id, gridEditOptions);
+//                }
                 jQuery('#grid').editRow(id, gridEditOptions);
             },
             ajaxRowOptions: {
@@ -950,7 +1007,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $scope.data = [];
 
         // dont close inline edit after fail validations
-        $.extend($.jgrid.inlineEdit, { restoreAfterError: false });
+        $.extend($.jgrid.inlineEdit, {restoreAfterError: false});
 
         // disable close modal on off click
         $.jqm.params.closeoverlay = false;
