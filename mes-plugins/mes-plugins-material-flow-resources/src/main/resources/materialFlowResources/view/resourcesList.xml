@@ -38,29 +38,29 @@
 
         <component type="grid" name="resourceGrid" reference="grid">
             <option type="column" name="locationNumber" fields="location"
-                    expression="#location['number']" link="true" width="40"/>
+                    expression="#location['number']" link="true" width="80"/>
             <option type="column" name="locationName" fields="location"
-                    expression="#location['name']" link="true"/>
+                    expression="#location['name']" link="true" width="150"/>
             <option type="column" name="productNumber" fields="product"
-                    expression="#product['number']" link="true" width="100"/>
+                    expression="#product['number']" link="true" width="150"/>
             <option type="column" name="productName" fields="product"
-                    expression="#product['name']" link="true" width="110"/>
+                    expression="#product['name']" link="true" width="150"/>
             <option type="column" name="quantity" fields="quantity" width="30"/>
             <option type="column" name="productUnit" fields="product"
                     expression="#product['unit']" width="50"/>
-            <option type="column" name="price" fields="price" width="60"/>
-            <option type="column" name="value" fields="value" width="60"/>
+            <option type="column" name="price" fields="price"/>
+            <option type="column" name="value" fields="value" />
             <option type="column" name="time" fields="time"/>
-            <option type="column" name="productionDate" fields="productionDate"/>
-            <option type="column" name="expirationDate" fields="expirationDate"/>
+            <option type="column" name="productionDate" fields="productionDate" width="120"/>
+            <option type="column" name="expirationDate" fields="expirationDate" width="120"/>
             <option type="column" name="batch" fields="batch"/>
             <option type="column" name="storageLocation" fields="storageLocation"
-                    expression="#storageLocation['number']"/>
+                    expression="#storageLocation['number']" width="150"/>
 
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit"/>
             <option type="column" name="additionalCode" fields="additionalCode" expression="#additionalCode['code']"/>
             <option type="column" name="conversion" fields="conversion"/>
-            <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']"/>
+            <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']" width="150"/>
             <option type="column" name="typeOfPallet" fields="typeOfPallet"/>
 
 
@@ -79,6 +79,8 @@
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+            <option type="shrinkToFit" value="false"/>
+
         </component>
 
         <option type="fixedHeight" value="true"/>
