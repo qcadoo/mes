@@ -108,7 +108,8 @@ myApp.directive('ngJqGrid', function ($window) {
                                 viewPagerButtons: false,
                                 serializeEditData: function (data) {
                                     delete data.oper;
-                                    return JSON.stringify(data);
+
+                                    return validateSerializeData(data);
                                 },
                                 onclickSubmit: function (params, postdata) {
                                     params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
@@ -126,20 +127,12 @@ myApp.directive('ngJqGrid', function ($window) {
                                     dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
                                     dlgDiv[0].style.width = dlgWidth + "px";
                                 },
-//                                beforeInitData: function (form) {
-//                                    var selectedRow = jQuery("#grid").jqGrid('getGridParam', 'selrow');
-//
-//                                    if (scope.editedRow) {
-//                                        return false;
-//                                    } else {
-//                                        scope.editedRow = selectedRow;
-//                                        return true;
-//                                    }
-//                                }
                             },
                                     // options for the Add Dialog
                                             {
-                                                ajaxEditOptions: {contentType: "application/json"},
+                                                ajaxEditOptions: {
+                                                    contentType: "application/json"
+                                                },
                                                 mtype: "PUT",
                                                 closeAfterEdit: true,
                                                 resize: false,
@@ -148,7 +141,8 @@ myApp.directive('ngJqGrid', function ($window) {
                                                 serializeEditData: function (data) {
                                                     delete data.oper;
                                                     delete data.id;
-                                                    return JSON.stringify(data);
+
+                                                    return validateSerializeData(data);
                                                 },
                                                 onclickSubmit: function (params, postdata) {
                                                     params.url = '../../integration/rest/documentPositions.html';
@@ -166,16 +160,6 @@ myApp.directive('ngJqGrid', function ($window) {
                                                     dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
                                                     dlgDiv[0].style.width = dlgWidth + "px";
                                                 },
-//                                beforeInitData: function (form) {
-//                                    var selectedRow = jQuery("#grid").jqGrid('getGridParam', 'selrow');
-//
-//                                    if (scope.editedRow) {
-//                                        return false;
-//                                    } else {
-//                                        scope.editedRow = selectedRow;
-//                                        return true;
-//                                    }
-//                                }
                                             },
                                             // options for the Delete Dailog
                                                     {
@@ -205,6 +189,42 @@ myApp.directive('ngJqGrid', function ($window) {
                 }
     };
 });
+
+function validateSerializeData(data) {
+    var elements = null;
+    if ($('#FrmGrid_grid').length) {
+        elements = $('.error', '#FrmGrid_grid');
+
+    } else {
+        elements = $('.error', '#gridContainer');
+    }
+
+    angular.forEach(elements, function (el, key) {
+        var name = $(el).attr('name');
+        delete data[name];
+    });
+
+    return JSON.stringify(data);
+}
+
+function roundTo(n) {
+    var places = 5;
+    return +(Math.round(parseFloat(n) + "e+" + places) + "e-" + places);
+}
+
+function validatorNumber(val) {
+    return parseFloat(val) === roundTo(val);
+}
+
+function validateElement(el, validator) {
+    el = $(el);
+    if (validator(el.val())) {
+        el.removeClass('error');
+
+    } else {
+        el.addClass('error');
+    }
+}
 
 function translateMessages(messages) {
     var message = [];
@@ -500,9 +520,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
+
+                validateElement(t, validatorNumber);
+
                 $(this).data("timeout", setTimeout(function () {
-                    var newGivenQuantity = parseFloat(t.val()) * parseFloat(getFieldValue('conversion', t.attr('rowId')));
-                    if (!newGivenQuantity) {
+                    var newGivenQuantity = roundTo(t.val()) * roundTo(getFieldValue('conversion', t.attr('rowId')));
+                    newGivenQuantity = roundTo(newGivenQuantity);
+                    if (!newGivenQuantity || t.hasClass('error')) {
                         newGivenQuantity = '';
                     }
 
@@ -526,10 +550,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
+
+                validateElement(t, validatorNumber);
+
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
-                    var newQuantity = parseFloat(t.val()) / parseFloat(getFieldValue('conversion', t.attr('rowId')));
-                    if (!newQuantity) {
+                    var newQuantity = roundTo(t.val()) / roundTo(getFieldValue('conversion', t.attr('rowId')));
+                    newQuantity = roundTo(newQuantity);
+                    if (!newQuantity || t.hasClass('error')) {
                         newQuantity = '';
                     }
 
@@ -917,7 +945,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             },
             serializeRowData: function (postdata) {
                 delete postdata.oper;
-                return JSON.stringify(postdata);
+
+                return validateSerializeData(postdata);
             },
             beforeSubmit: function (postdata, formid) {
                 return [false, 'ble'];
@@ -1015,7 +1044,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $.jqm.params.closeoverlay = false;
 
         $('#gridWrapper').block({
-            message: '<h2>Grid dostępny po zapisie dokumentu</h2>',
+            message: '<h2>Pozycje będą dostępne po zapisie dokumentu</h2>',
             centerY: false,
             centerX: false,
             css: {
