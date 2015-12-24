@@ -213,6 +213,10 @@ function roundTo(n) {
 }
 
 function validatorNumber(val) {
+    if(val === ''){
+        return true;
+    }
+    
     return parseFloat(val) === roundTo(val);
 }
 
