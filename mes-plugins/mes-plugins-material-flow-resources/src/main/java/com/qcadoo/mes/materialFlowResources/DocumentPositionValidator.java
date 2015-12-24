@@ -11,9 +11,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -24,18 +27,18 @@ public class DocumentPositionValidator {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    public void validateBeforeCreate(DocumentPositionDTO documentPositionDTO) {
-        validate(documentPositionDTO);
+    public Map<String, Object> validateAndTryMapBeforeCreate(DocumentPositionDTO documentPositionDTO) {
+        return validate(documentPositionDTO);
     }
 
-    public void validateBeforeUpdate(DocumentPositionDTO documentPositionDTO) {
-        validate(documentPositionDTO);
+    public Map<String, Object> validateAndTryMapBeforeUpdate(DocumentPositionDTO documentPositionDTO) {
+        return validate(documentPositionDTO);
     }
 
     public void validateBeforeDelete(Long id) {
     }
 
-    private void validate(DocumentPositionDTO position) {
+    private Map<String, Object> validate(DocumentPositionDTO position) {
         Preconditions.checkNotNull(position, "qcadooView.required.documentPosition");
         Preconditions.checkNotNull(position.getDocument(), "qcadooView.required.documentPosition.document");
 
@@ -57,9 +60,13 @@ public class DocumentPositionValidator {
         errors.addAll(checkAttributesRequirement(position, document));
         errors.addAll(validateResources(position, document));
 
+        Map<String, Object> params = tryMapDocumentPositionVOToParams(position, errors);
+        
         if (!errors.isEmpty()) {
             throw new RuntimeException(errors.stream().collect(Collectors.joining("\n")));
         }
+        
+        return params;
     }
 
     private List<String> checkAttributesRequirement(final DocumentPositionDTO position, final DocumentDTO document) {
@@ -160,4 +167,93 @@ public class DocumentPositionValidator {
 
         return Arrays.asList();        
     }
+    
+    private Map<String, Object> tryMapDocumentPositionVOToParams(DocumentPositionDTO vo, List<String> errors) {
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("id", vo.getId());
+        params.put("product_id", tryGetProductIdByNumber(vo.getProduct(), errors));
+        params.put("additionalcode_id", tryGetAdditionalCodeIdByCode(vo.getAdditional_code(), errors));
+        params.put("quantity", vo.getQuantity());
+        params.put("givenquantity", vo.getGivenquantity());
+        params.put("givenunit", vo.getGivenunit());
+        params.put("conversion", vo.getConversion());
+        params.put("expirationdate", vo.getExpirationdate());
+        params.put("palletnumber_id", tryGetPalletNumberIdByNumber(vo.getPallet(), errors));
+        params.put("typeofpallet", vo.getType_of_pallet());
+        params.put("storagelocation_id", tryGetStorageLocationIdByNumber(vo.getStorage_location(), errors));
+        params.put("document_id", vo.getDocument());
+        params.put("productiondate", vo.getProductiondate());
+        params.put("price", vo.getPrice());
+        params.put("batch", vo.getBatch());
+
+        return params;
+    }
+
+    private Long tryGetProductIdByNumber(String productNumber, List<String> errors) {
+        if (Strings.isNullOrEmpty(productNumber)) {
+            return null;
+        }
+
+        try {
+            Long productId = jdbcTemplate.queryForObject("SELECT product.id FROM basic_product product WHERE product.number = :number", Collections.singletonMap("number", productNumber), Long.class);
+
+            return productId;
+
+        } catch (EmptyResultDataAccessException e) {
+            errors.add(String.format("Nie znaleziono takiego produktu: '%s'.", productNumber));
+            return null;
+        }
+    }
+
+    private Long tryGetAdditionalCodeIdByCode(String additionalCode, List<String> errors) {
+        if (Strings.isNullOrEmpty(additionalCode)) {
+            return null;
+        }
+
+        try {
+            Long additionalCodeId = jdbcTemplate.queryForObject("SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code",
+                    Collections.singletonMap("code", additionalCode), Long.class);
+
+            return additionalCodeId;
+
+        } catch (EmptyResultDataAccessException e) {
+            errors.add(String.format("Nie znaleziono takiego dodatkowego kodu: '%s'.", additionalCode));
+            return null;
+        }
+    }
+
+    private Long tryGetPalletNumberIdByNumber(String palletNumber, List<String> errors) {
+        if (Strings.isNullOrEmpty(palletNumber)) {
+            return null;
+        }
+
+        try {
+            Long palletNumberId = jdbcTemplate.queryForObject("SELECT palletnumber.id FROM basic_palletnumber palletnumber WHERE palletnumber.number = :number",
+                    Collections.singletonMap("number", palletNumber), Long.class);
+
+            return palletNumberId;
+
+        } catch (EmptyResultDataAccessException e) {
+            errors.add(String.format("Nie znaleziono takiego numeru palety: '%s'.", palletNumber));
+            return null;
+        }
+    }
+
+    private Long tryGetStorageLocationIdByNumber(String storageLocationNumber, List<String> errors) {
+        if (Strings.isNullOrEmpty(storageLocationNumber)) {
+            return null;
+        }
+
+        try {
+            Long storageLocationId = jdbcTemplate.queryForObject("SELECT storagelocation.id FROM materialflowresources_storagelocation storagelocation WHERE storagelocation.number = :number",
+                    Collections.singletonMap("number", storageLocationNumber), Long.class);
+
+            return storageLocationId;
+
+        } catch (EmptyResultDataAccessException e) {
+            errors.add(String.format("Nie znaleziono takiego miejsca składowania: '%s'.", storageLocationNumber));
+            return null;
+        }
+    }    
 }

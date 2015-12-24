@@ -57,9 +57,8 @@ public class DocumentPositionService {
     }
 
     public void create(DocumentPositionDTO documentPositionVO) {
-        validator.validateBeforeCreate(documentPositionVO);
+        Map<String, Object> params = validator.validateAndTryMapBeforeCreate(documentPositionVO);
 
-        Map<String, Object> params = tryMapDocumentPositionVOToParams(documentPositionVO);
         if (params.get("id") == null || Long.valueOf(params.get("id").toString()) == 0) {
             params.remove("id");
         }
@@ -75,9 +74,7 @@ public class DocumentPositionService {
     }
 
     public void update(Long id, DocumentPositionDTO documentPositionVO) {
-        validator.validateBeforeUpdate(documentPositionVO);
-
-        Map<String, Object> params = tryMapDocumentPositionVOToParams(documentPositionVO);
+        Map<String, Object> params = validator.validateAndTryMapBeforeUpdate(documentPositionVO);
 
         String set = params.keySet().stream().map(key -> {
             return key + "=:" + key;
@@ -85,91 +82,6 @@ public class DocumentPositionService {
         String query = String.format("UPDATE materialflowresources_position SET %s WHERE id = :id ", set);
 
         jdbcTemplate.update(query, params);
-    }
-
-    private Map<String, Object> tryMapDocumentPositionVOToParams(DocumentPositionDTO vo) {
-        Map<String, Object> params = new HashMap<>();
-
-        params.put("id", vo.getId());
-        params.put("product_id", tryGetProductIdByNumber(vo.getProduct()));
-        params.put("additionalcode_id", tryGetAdditionalCodeIdByCode(vo.getAdditional_code()));
-        params.put("quantity", vo.getQuantity());
-        params.put("givenquantity", vo.getGivenquantity());
-        params.put("givenunit", vo.getGivenunit());
-        params.put("conversion", vo.getConversion());
-        params.put("expirationdate", vo.getExpirationdate());
-        params.put("palletnumber_id", tryGetPalletNumberIdByNumber(vo.getPallet()));
-        params.put("typeofpallet", vo.getType_of_pallet());
-        params.put("storagelocation_id", tryGetStorageLocationIdByNumber(vo.getStorage_location()));
-        params.put("document_id", vo.getDocument());
-        params.put("productiondate", vo.getProductiondate());
-        params.put("price", vo.getPrice());
-        params.put("batch", vo.getBatch());
-
-        return params;
-    }
-
-    private Long tryGetProductIdByNumber(String productNumber) {
-        if (Strings.isNullOrEmpty(productNumber)) {
-            return null;
-        }
-
-        try {
-            Long productId = jdbcTemplate.queryForObject("SELECT product.id FROM basic_product product WHERE product.number = :number", Collections.singletonMap("number", productNumber), Long.class);
-
-            return productId;
-
-        } catch (EmptyResultDataAccessException e) {
-            throw new RuntimeException(String.format("Nie znaleziono takiego produktu: '%s'.", productNumber));
-        }
-    }
-
-    private Long tryGetAdditionalCodeIdByCode(String additionalCode) {
-        if (Strings.isNullOrEmpty(additionalCode)) {
-            return null;
-        }
-
-        try {
-            Long additionalCodeId = jdbcTemplate.queryForObject("SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code",
-                    Collections.singletonMap("code", additionalCode), Long.class);
-
-            return additionalCodeId;
-
-        } catch (EmptyResultDataAccessException e) {
-            throw new RuntimeException(String.format("Nie znaleziono takiego dodatkowego kodu: '%s'.", additionalCode));
-        }
-    }
-
-    private Long tryGetPalletNumberIdByNumber(String palletNumber) {
-        if (Strings.isNullOrEmpty(palletNumber)) {
-            return null;
-        }
-
-        try {
-            Long palletNumberId = jdbcTemplate.queryForObject("SELECT palletnumber.id FROM basic_palletnumber palletnumber WHERE palletnumber.number = :number",
-                    Collections.singletonMap("number", palletNumber), Long.class);
-
-            return palletNumberId;
-
-        } catch (EmptyResultDataAccessException e) {
-            throw new RuntimeException(String.format("Nie znaleziono takiego numeru palety: '%s'.", palletNumber));
-        }
-    }
-
-    private Long tryGetStorageLocationIdByNumber(String storageLocationNumber) {
-        if (Strings.isNullOrEmpty(storageLocationNumber)) {
-            return null;
-        }
-
-        try {
-            Long storageLocationId = jdbcTemplate.queryForObject("SELECT storagelocation.id FROM materialflowresources_storagelocation storagelocation WHERE storagelocation.number = :number",
-                    Collections.singletonMap("number", storageLocationNumber), Long.class);
-
-            return storageLocationId;
-
-        } catch (EmptyResultDataAccessException e) {
-            throw new RuntimeException(String.format("Nie znaleziono takiego miejsca składowania: '%s'.", storageLocationNumber));
-        }
     }
 
     public List<StorageLocationDTO> getStorageLocations(String q) {
@@ -203,7 +115,7 @@ public class DocumentPositionService {
             }
 
             List<Map<String, Object>> availableAdditionalUnits = getAvailableAdditionalUnitsByProduct(Long.valueOf(units.get("id").toString()));
-            
+
             Map<String, Object> type = new HashMap<>();
             type.put("value", units.get("unit"));
             type.put("key", units.get("unit"));
@@ -212,7 +124,7 @@ public class DocumentPositionService {
             units.put("available_additionalunits", availableAdditionalUnits);
 
             units.put("conversion", calculateConversion(availableAdditionalUnits, units.get("additionalunit").toString()));
-            
+
             return units;
 
         } catch (EmptyResultDataAccessException e) {
@@ -238,12 +150,14 @@ public class DocumentPositionService {
 
     private BigDecimal calculateConversion(List<Map<String, Object>> availableAdditionalUnits, String additionalUnit) {
         BigDecimal conversion = null;
-        
-        Optional<Map<String, Object>> maybeEntry = availableAdditionalUnits.stream().filter(entry -> {return entry.get("key").equals(additionalUnit);}).findAny();
-        if(maybeEntry.isPresent()){
+
+        Optional<Map<String, Object>> maybeEntry = availableAdditionalUnits.stream().filter(entry -> {
+            return entry.get("key").equals(additionalUnit);
+        }).findAny();
+        if (maybeEntry.isPresent()) {
             conversion = (BigDecimal) maybeEntry.get().get("conversion");
         }
-        
+
         return conversion;
     }
 }
