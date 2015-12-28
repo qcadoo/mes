@@ -5,6 +5,7 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.model.api.DictionaryService;
+import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -26,12 +27,22 @@ public class DataProvider {
     @Autowired
     private DictionaryService dictionaryService;
 
+    public List<ProductDTO> getAllProducts(String sidx, String sord) {
+        // TODO sort
+        String _query = "SELECT product.id as id, product.number as code, product.number as number, product.name as name "
+                + "FROM basic_product product WHERE product.active = true;";
+
+        List<ProductDTO> products = jdbcTemplate.query(_query, new MapSqlParameterSource(Collections.EMPTY_MAP), new BeanPropertyRowMapper(ProductDTO.class));
+
+        return products;
+    }
+
     public List<ProductDTO> getProductsByQuery(String query) {
         String _query = "SELECT product.id as id, product.number as code, product.number as number, product.name as name "
                 + "FROM basic_product product WHERE product.active = true and product.number ilike :query LIMIT 15;";
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("query", "%"+query+"%");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("query", "%" + query + "%");
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
         List<ProductDTO> products = Lists.newArrayList();
@@ -46,7 +57,7 @@ public class DataProvider {
                 + "WHERE additionalcode.code ilike :query LIMIT 15;";
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("query", "%"+query+"%");
+        parameters.put("query", "%" + query + "%");
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
         List<AdditionalCodeDTO> codes = Lists.newArrayList();
@@ -59,7 +70,7 @@ public class DataProvider {
                 + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true and palletnumber.number ilike :query LIMIT 15;";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("query", "%"+query+"%");
+        parameters.put("query", "%" + query + "%");
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
         List<PalletNumberDTO> pallets = Lists.newArrayList();

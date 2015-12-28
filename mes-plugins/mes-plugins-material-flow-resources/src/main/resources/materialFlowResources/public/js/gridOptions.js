@@ -213,10 +213,10 @@ function roundTo(n) {
 }
 
 function validatorNumber(val) {
-    if(val === ''){
+    if (val === '') {
         return true;
     }
-    
+
     return parseFloat(val) === roundTo(val);
 }
 
@@ -251,10 +251,26 @@ function addNewRow() {
     angular.element($("#GridController")).scope().addNewRow();
 }
 
+
+
+function onModalClose() {
+    lookupWindow = null;
+}
+
+function onModalRender(modalWindow) {
+    //modalWindow.getComponent("window.mainTab.grid").setLinkListener(_this);
+    console.log(modalWindow);
+}
+
+function editProductId_openLookup() {
+    lookupWindow = mainController.openModal('body', '/productLookup.html', null, onModalClose, onModalRender, {width: 1000, height: 560})
+}
+var lookupWindow;
+var productIdElement;
+
+
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
         var _this = this;
-        var lookupWindow;
-        var productIdElement;
         var resources = {};
 
         var messagesController = new QCD.MessagesController();
@@ -281,20 +297,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             mainController.closeThisModalWindow();
         }
 
-        function onModalClose() {
-            lookupWindow = null;
-        }
-
-        function onModalRender(modalWindow) {
-            modalWindow.getComponent("window.mainTab.grid").setLinkListener(_this);
-        }
-
-        function editProductId_openLookup() {
-            lookupWindow = mainController.openModal('body', 'materialFlowResources/productsLookup.html', null, onModalClose, onModalRender, {width: 1000, height: 560})
-        }
-
         function createLookupElement(inputId, value, url, options) {
-            var $ac = $('<input id="' + inputId + '" class="eac-square" rowId="' + options.rowId + '" />');
+            var $ac = $('<input id="' + inputId + '" class="eac-square" rowId="' + options.rowId + '" /><button onclick="return editProductId_openLookup();">Szukaj</button>');
             $ac.val(value);
             $ac.autoComplete({
                 source: function (query, response) {
@@ -320,7 +324,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }
             });
 
-//            var button = $('<button>Szukaj</button>');
+//            var button = $('<button value="xxx">Szukaj</button>');
 //            button.bind('click', function () {
 //                editProductId_openLookup();
 //            });
