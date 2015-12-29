@@ -298,7 +298,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function createLookupElement(inputId, value, url, options) {
-            var $ac = $('<input id="' + inputId + '" class="eac-square" rowId="' + options.rowId + '" /><button onclick="return editProductId_openLookup();">Szukaj</button>');
+            var $ac = $('<input id="' + inputId + '" class="eac-square" rowId="' + options.rowId + '" />');
             $ac.val(value);
             $ac.autoComplete({
                 source: function (query, response) {
