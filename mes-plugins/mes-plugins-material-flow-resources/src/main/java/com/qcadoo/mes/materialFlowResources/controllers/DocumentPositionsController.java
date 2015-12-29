@@ -20,7 +20,7 @@ import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 @Controller
 @RequestMapping("/integration/rest/documentPositions")
 public class DocumentPositionsController {
-
+    
     @Autowired
     private DocumentPositionService documentPositionRepository;
 

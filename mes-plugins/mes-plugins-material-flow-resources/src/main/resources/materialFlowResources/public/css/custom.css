@@ -119,14 +119,23 @@ div.headerActionButton a {
     background-position: left;
     cursor: default;
 }
-#add_new_icon {
-    background-image: url('/qcadooView/public/img/core/icons/newIcon16.png');
+
+#add_new_icon, #cancel_icon {
     background-repeat: no-repeat;
     background-position: left;
     width: 14px;
     margin-left: 3px;
     padding-right: 0;
 }
+
+#add_new_icon {
+    background-image: url('/qcadooView/public/img/core/icons/newIcon16.png');
+}
+
+#cancel_icon {
+    background-image: url('/qcadooView/public/img/core/icons/cancelIcon24.png');
+}
+
 div.gridTitle {
     padding-left: 10px;
     color: #555555;

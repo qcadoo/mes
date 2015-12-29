@@ -18,10 +18,16 @@ myApp.directive('ngJqGrid', function ($window) {
                     element.append(angular.element('<div id="jqGridPager"></div>'));
                     $(table).jqGrid(newValue);
 
-                    var positionsHeader = QCD.translate('qcadooView.gridHeader.positions');
+                    var positionsHeader = QCD.translate('qcadooView.gridHeader.products');
+                    var cancelHeader = QCD.translate('qcadooView.gridHeader.cancel');
+                    var cancelButton = '<div id="cancel_button" class="headerActionButton" onclick="return cancelGrid();"> <a href="#"><span>' +
+                            '<div id="cancel_icon"></div>' +
+                            '<div class="hasIcon">' + cancelHeader + '</div></div>';
+
                     var gridTitle = '<div class="gridTitle">' + positionsHeader + '</div>';
 
                     $('#t_grid').append(gridTitle);
+                    $('#t_grid').append(cancelButton);
 
                     $(table).jqGrid('filterToolbar');
                 }
@@ -29,6 +35,10 @@ myApp.directive('ngJqGrid', function ($window) {
         }
     }
 });
+
+function cancelGrid() {
+    parent.frames[0].onSelectLookupRow(null);
+}
 
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
         var _this = this;
@@ -74,7 +84,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $("#window\\.positionsGridTab").resize($scope.resize);
 
         var config = {
-            url: '/rest/productsForLookup',
+            url: '',
             datatype: "json",
             height: '100%',
             autowidth: true,
@@ -84,49 +94,37 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
             },
-            colNames: ['ID', 'number', 'name'/*, 'globalTypeOfMaterial', 'family'*/],
-            colModel: [
-                {
-                    name: 'id',
-                    index: 'id',
-                    key: true,
-                    hidden: true
-                },
-                {
-                    name: 'number',
-                    index: 'number',
-                    editable: false,
-                    editoptions: {readonly: 'readonly'}
-                },
-                {
-                    name: 'name',
-                    index: 'name',
-                    editable: false,
-                    editoptions: {readonly: 'readonly'}
-                },
-//                {
-//                    name: 'globalTypeOfMaterial',
-//                    index: 'globalTypeOfMaterial',
-//                    editable: false,
-//                    editoptions: {readonly: 'readonly'}
-//                },
-//                {
-//                    name: 'family',
-//                    index: 'family',
-//                    editable: false,
-//                    editoptions: {readonly: 'readonly'}
-//                }
-            ],
+            colNames: [],
+            colModel: [],
             pager: "#jqGridPager",
             gridComplete: function () {
             },
             onSelectRow: function (id) {
-                console.log('selected row' + id)
+                var row =  jQuery('#grid').jqGrid ('getRowData', id);
+                parent.frames[0].onSelectLookupRow(row);
             },
             ajaxRowOptions: {
                 contentType: "application/json"
             }
         };
-        
-        $scope.config = config;
+
+
+        function prepareGridConfig(config) {
+
+            $http({
+                method: 'GET',
+                url: '/rest/productGridConfigForLookup'
+
+            }).then(function successCallback(response) {
+                console.log(response.data);
+
+                config = angular.merge(config, response.data);
+                
+                $scope.config = config;
+            });
+
+        }
+
+        prepareGridConfig(config);
+
     }]);

@@ -251,8 +251,6 @@ function addNewRow() {
     angular.element($("#GridController")).scope().addNewRow();
 }
 
-
-
 function onModalClose() {
     lookupWindow = null;
 }
@@ -263,11 +261,42 @@ function onModalRender(modalWindow) {
 }
 
 function editProductId_openLookup() {
-    lookupWindow = mainController.openModal('body', '/productLookup.html', null, onModalClose, onModalRender, {width: 1000, height: 560})
+    lookupWindow = mainController.openModal('body', '../productLookup.html', null, onModalClose, onModalRender, {width: 1000, height: 560})
 }
 var lookupWindow;
 var productIdElement;
 
+
+function updateFieldValue(field, value, rowId) {
+    var productInput = $('#product');
+    var selector = null;
+
+    if (productInput.length) {
+        // edit form
+        selector = $('#' + field);
+
+    } else {
+        // edit inline
+        selector = $('#' + rowId + '_' + field);
+    }
+
+    var element = $(selector);
+    if (element.length && element[0].tagName.toLowerCase() === 'span') {
+        element = $('input', element);
+    }
+
+    return element.val(value);
+}
+
+function onSelectLookupRow(row) {
+    if (row) {
+        var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
+        var productField = updateFieldValue('product', row.number, rowId);
+        productField.trigger('change');
+    }
+
+    mainController.closeThisModalWindow();
+}
 
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
         var _this = this;
@@ -288,13 +317,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }
 
             return 0;
-        }
-
-        this.onGridLinkClicked = function (entityId) {
-            var grid = lookupWindow.mainController.getComponent("window.mainTab.grid");
-//		var lookupData = grid.getLookupData(entityId);
-            productIdElement.val(entityId);
-            mainController.closeThisModalWindow();
         }
 
         function createLookupElement(inputId, value, url, options) {
@@ -324,13 +346,16 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }
             });
 
-//            var button = $('<button value="xxx">Szukaj</button>');
-//            button.bind('click', function () {
-//                editProductId_openLookup();
-//            });
-//            button.insertAfter($ac);
+            var button = $('<button value="xxx">Szukaj</button>');
+            button.bind('click', function () {
+                editProductId_openLookup();
+            });
 
-            return $ac;
+            var wrapper = $('<span></span>');
+            wrapper.append($ac);
+            wrapper.append(button);
+
+            return wrapper;
         }
 
         function storageLocationLookup_createElement(value, options) {
@@ -341,30 +366,25 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return createLookupElement('palletnumber', value, '/rest/palletnumbers', options);
         }
 
-        function updateFieldValue(field, value, rowId) {
-            var productInput = $('#product');
-
-            if (productInput.length) {
-                // edit form
-                return $('#' + field).val(value);
-
-            } else {
-                // edit inline
-                return $('#' + rowId + '_' + field).val(value);
-            }
-        }
-
         function getFieldValue(field, rowId) {
             var productInput = $('#product');
+            var selector = null;
 
             if (productInput.length) {
                 // edit form
-                return $('#' + field).val();
+                selector = $('#' + field).val();
 
             } else {
                 // edit inline
-                return $('#' + rowId + '_' + field).val();
+                selector = $('#' + rowId + '_' + field);
             }
+
+            var element = $(selector);
+            if (element.length && element[0].tagName.toLowerCase() === 'span') {
+                element = $('input', element);
+            }
+
+            return element.val();
         }
 
         var available_additionalunits = null;
@@ -398,7 +418,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         if (product.toLowerCase().indexOf('<input') >= 0) {
                             var matched = product.match(patternProduct)[0];
                             var numberOfInput = matched.toUpperCase().replace("ID=\"", "").replace("_PRODUCT\"", "");
-                            var productValue = $('#' + numberOfInput + '_product').val();
+                            var productValue = getFieldValue('product', numberOfInput);
 
                             if (productValue === productNumber) {
                                 // update input
@@ -430,7 +450,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function productsLookup_createElement(value, options) {
             var lookup = createLookupElement('square', value, '/rest/products', options);
 
-            $(lookup).bind('change keydown paste input', function () {
+            $('input', lookup).bind('change keydown paste input', function () {
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
@@ -445,7 +465,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var url = '/rest/additionalcodes';
             var lookup = createLookupElement('additionalCode', value, url, options, options);
 
-            $(lookup).bind('change keydown paste input', function () {
+            $('input', lookup).bind('change keydown paste input', function () {
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
@@ -591,7 +611,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }
 
             if (productNumber.toLowerCase().indexOf('<input') >= 0) {
-                productNumber = $('#' + rowId + '_product').val();
+                productNumber = getFieldValue('product', rowId);
             }
 
             updateUnitsInGridByProduct(productNumber, value);
