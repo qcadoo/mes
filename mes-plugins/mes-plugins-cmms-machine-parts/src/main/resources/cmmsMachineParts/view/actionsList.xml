@@ -25,7 +25,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="actionsList" modelName="action" menuAccessible="true">
+      name="actionsList" modelName="action" menuAccessible="true" defaultAuthorizationRole="ROLE_ACTIONS">
 
     <component type="window" name="window" reference="window">
 

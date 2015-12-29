@@ -128,7 +128,7 @@
 
         <menu:menu-item name="plannedEvents" category="maintenance" view="plannedEventsList"
                         defaultAuthorizationRole="ROLE_PLANNED_EVENTS_ACTIONS_VIEW"/>
-        <menu:menu-item name="actions" category="basic" view="actionsList" defaultAuthorizationRole="ROLE_MAINTENANCE"/>
+        <menu:menu-item name="actions" category="basic" view="actionsList" defaultAuthorizationRole="ROLE_ACTIONS"/>
 
         <view:view resource="view/plannedEventsList.xml"/>
         <view:view resource="view/plannedEventDetails.xml"/>
