@@ -143,7 +143,7 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
                 operationalTasksForOrdersService.createTechOperCompOperationalTask(technologyOperationComponent));
 
-        operationalTask = operationalTask.getDataDefinition().save(operationalTask);
+        operationalTask.getDataDefinition().save(operationalTask);
     }
 
 }

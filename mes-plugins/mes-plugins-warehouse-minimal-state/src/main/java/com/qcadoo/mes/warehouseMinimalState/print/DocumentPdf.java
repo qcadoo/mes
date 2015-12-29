@@ -55,7 +55,6 @@ import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper;
 import com.qcadoo.mes.warehouseMinimalState.WarehouseMinimalStateHelper;
 import com.qcadoo.mes.warehouseMinimalState.constants.WarehouseMinimalStateConstants;
 import com.qcadoo.mes.warehouseMinimalState.constants.WarehouseMinimumStateFields;
@@ -79,9 +78,6 @@ public class DocumentPdf extends ReportPdfView {
 
     @Autowired
     private PdfHelper pdfHelper;
-
-    @Autowired
-    private DocumentPdfHelper documentPdfHelper;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -133,10 +129,8 @@ public class DocumentPdf extends ReportPdfView {
     }
 
     private void addWarehouseTables(Document document) throws DocumentException {
-        List<Entity> warehousesList = warehouses
-                .stream()
-                .sorted((w1, w2) -> w1.getStringField(LocationFields.NUMBER).compareToIgnoreCase(
-                        w2.getStringField(LocationFields.NUMBER))).collect(Collectors.toList());
+        List<Entity> warehousesList = warehouses.stream().sorted((w1, w2) -> w1.getStringField(LocationFields.NUMBER)
+                .compareToIgnoreCase(w2.getStringField(LocationFields.NUMBER))).collect(Collectors.toList());
         for (Entity warehouse : warehousesList) {
             addWarehouseTable(document, warehouse);
         }
@@ -149,13 +143,11 @@ public class DocumentPdf extends ReportPdfView {
         PdfPTable warehouseTable = createTable();
 
         List<Entity> stocks = warehouseMinimalStateHelper.getWarehouseStockWithTooSmallMinState(warehouse);
-        Map<Long, Entity> stocksByProduct = stocks.stream().collect(
-                Collectors.toMap(res -> res.getBelongsToField("product").getId(), (res) -> res));
+        Map<Long, Entity> stocksByProduct = stocks.stream()
+                .collect(Collectors.toMap(res -> res.getBelongsToField("product").getId(), (res) -> res));
         Collection<Entity> minimumStates = warehouseToMinimumStateMap.get(warehouse.getId());
-        minimumStates = minimumStates
-                .stream()
-                .sorted(
-                (ms1, ms2) -> ms1.getBelongsToField("product").getStringField(ProductFields.NUMBER)
+        minimumStates = minimumStates.stream()
+                .sorted((ms1, ms2) -> ms1.getBelongsToField("product").getStringField(ProductFields.NUMBER)
                         .compareToIgnoreCase(ms2.getBelongsToField("product").getStringField(ProductFields.NUMBER)))
                 .collect(Collectors.toList());
         boolean rowsWereAdded = false;
@@ -171,9 +163,8 @@ public class DocumentPdf extends ReportPdfView {
     private PdfPTable createTable() {
         int[] headerWidths = Ints.toArray(getHeaderWidths());
         Map<String, HeaderAlignment> headerValues = getHeaderValues(locale);
-        PdfPTable warehouseTable = pdfHelper.createTableWithHeader(headerWidths.length,
-                Lists.newArrayList(headerValues.keySet()), false,
-                headerWidths, headerValues);
+        PdfPTable warehouseTable = pdfHelper.createTableWithHeader(headerWidths.length, Lists.newArrayList(headerValues.keySet()),
+                false, headerWidths, headerValues);
         warehouseTable.getDefaultCell().disableBorderSide(PdfPCell.RIGHT);
         warehouseTable.getDefaultCell().disableBorderSide(PdfPCell.LEFT);
         warehouseTable.setHeaderRows(1);
@@ -196,12 +187,12 @@ public class DocumentPdf extends ReportPdfView {
 
             if (warehouseMinimalStateHelper.checkIfLowerThanMinimum(product.getId(), ordered,
                     minimalState.getDecimalField("minimumState"))) {
-                addCells(table, minimalState, stock, ordered);
+                addCells(table, minimalState, null, ordered);
                 rowAdded = true;
             }
         } else {
-            BigDecimal statePlusOrder = BigDecimalUtils.convertNullToZero(stock.getDecimalField("orderedQuantity")).add(
-                    BigDecimalUtils.convertNullToZero(stock.getDecimalField("quantity")), numberService.getMathContext());
+            BigDecimal statePlusOrder = BigDecimalUtils.convertNullToZero(stock.getDecimalField("orderedQuantity"))
+                    .add(BigDecimalUtils.convertNullToZero(stock.getDecimalField("quantity")), numberService.getMathContext());
             if (warehouseMinimalStateHelper.checkIfLowerThanMinimum(product.getId(), statePlusOrder,
                     stock.getDecimalField("minimumState"))) {
                 addCells(table, minimalState, stock, null);
@@ -210,7 +201,6 @@ public class DocumentPdf extends ReportPdfView {
         }
         return rowAdded;
     }
-
 
     private void addCells(PdfPTable table, Entity warehouseMinimumState, Entity stock, BigDecimal ordered) {
         Entity product = warehouseMinimumState.getBelongsToField(WarehouseMinimumStateFields.PRODUCT);

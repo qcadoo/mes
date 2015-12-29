@@ -48,7 +48,8 @@ public class CompaniesListListeners {
     @Autowired
     private CompanyService companyService;
 
-    public void disabledRibbonForOwnerOrExternal(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void disabledRibbonForOwnerOrExternal(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
 
         List<Entity> companies = grid.getSelectedEntities();
@@ -60,11 +61,15 @@ public class CompaniesListListeners {
         for (Entity company : companies) {
             Entity companyFromDB = companyService.getCompany(company.getId());
 
-            isEnabled = !companyService.isCompanyOwner(companyFromDB);
+            if (companyFromDB != null) {
+                isEnabled = !companyService.isCompanyOwner(companyFromDB);
 
-            if ((companyFromDB != null) && !StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {
-                buttonMessage = "basic.company.isExternalNumber";
+                if (!StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {
+                    buttonMessage = "basic.company.isExternalNumber";
 
+                    isEnabled = false;
+                }
+            } else {
                 isEnabled = false;
             }
 

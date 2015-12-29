@@ -62,8 +62,8 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
     private PlannedEventChangeService plannedEventChangeService;
 
     @Autowired
-    PlannedEventStateValidationService validationService;
-    
+    private PlannedEventStateValidationService validationService;
+
     @Pointcut(PlannedEventStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
 

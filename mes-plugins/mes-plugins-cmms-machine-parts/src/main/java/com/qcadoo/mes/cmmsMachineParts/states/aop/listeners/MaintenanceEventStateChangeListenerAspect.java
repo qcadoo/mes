@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventChangeService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.states.EventDocumentsService;
-import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeListenerService;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateSetupService;
 import com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateValidationService;
 import com.qcadoo.mes.cmmsMachineParts.states.aop.MaintenanceEventStateChangeAspect;
@@ -57,9 +56,6 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
 
     @Autowired
     private MaintenanceEventStateSetupService setupService;
-
-    @Autowired
-    private MaintenanceEventStateChangeListenerService listenerService;
 
     @Autowired
     private MaintenanceEventChangeService maintenanceEventChangeService;

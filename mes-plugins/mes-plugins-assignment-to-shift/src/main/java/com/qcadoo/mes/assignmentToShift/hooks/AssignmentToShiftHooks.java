@@ -67,6 +67,8 @@ public class AssignmentToShiftHooks {
 
     private static final int DAYS_IN_YEAR = 365;
 
+    private static final String L_ALREADY_EXISTS = "assignmentToShift.assignmentToShift.entityAlreadyExists";
+
     @Autowired
     private StateChangeEntityBuilder stateChangeEntityBuilder;
 
@@ -174,22 +176,17 @@ public class AssignmentToShiftHooks {
 
         AssignmentToShiftCriteria criteria = AssignmentToShiftCriteria.empty();
 
-        SearchCriterion startDateCriteria = eq(AssignmentToShiftFields.START_DATE, startDate);
-        SearchCriterion additionalCriteria = startDateCriteria;
+        SearchCriterion additionalCriteria = eq(AssignmentToShiftFields.START_DATE, startDate);
 
         criteria.withShiftCriteria(idEq(shift.getId()));
         criteria.withFactoryCriteria(idEq(factory.getId()));
         if (crew != null) {
             criteria.withCrewCriteria(idEq(crew.getId()));
         } else {
-            // criteria.withCriteria(isNull(AssignmentToShiftFields.CREW));
             additionalCriteria = and(additionalCriteria, isNull(AssignmentToShiftFields.CREW));
         }
 
-        if (assignmentToShift.getId() == null) {
-            // criteria.withCriteria(startDateCriteria);
-        } else {
-            // criteria.withCriteria(and(startDateCriteria, idNe(assignmentToShift.getId())));
+        if (assignmentToShift.getId() != null) {
             additionalCriteria = and(additionalCriteria, idNe(assignmentToShift.getId()));
         }
         criteria.withCriteria(additionalCriteria);
@@ -204,14 +201,10 @@ public class AssignmentToShiftHooks {
     }
 
     private void addErrorMessages(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift) {
-        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.START_DATE),
-                "assignmentToShift.assignmentToShift.entityAlreadyExists");
-        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.SHIFT),
-                "assignmentToShift.assignmentToShift.entityAlreadyExists");
-        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.FACTORY),
-                "assignmentToShift.assignmentToShift.entityAlreadyExists");
-        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.CREW),
-                "assignmentToShift.assignmentToShift.entityAlreadyExists");
+        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.START_DATE), L_ALREADY_EXISTS);
+        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.SHIFT), L_ALREADY_EXISTS);
+        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.FACTORY), L_ALREADY_EXISTS);
+        assignmentToShift.addError(assignmentToShiftDD.getField(AssignmentToShiftFields.CREW), L_ALREADY_EXISTS);
     }
 
 }

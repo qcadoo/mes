@@ -122,11 +122,11 @@ public class TechnologyServiceO {
                 updateTechnology(technology);
 
                 order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
-            } else if (technologyPrototype == null) {
+            } else {
                 Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
                 if (technology != null) {
                     technology.setField(TechnologyFields.PRODUCT, order.getBelongsToField(OrderFields.PRODUCT));
-                    technology = technology.getDataDefinition().save(technology);
+                    technology.getDataDefinition().save(technology);
                 }
                 order.getGlobalErrors();
             }
@@ -323,8 +323,8 @@ public class TechnologyServiceO {
     }
 
     public void changeTechnologyState(final Entity technology, final String targetState) {
-        final StateChangeContext stateChangeContextT = stateChangeContextBuilder.build(
-                technologyStateChangeAspect.getChangeEntityDescriber(), technology, targetState);
+        final StateChangeContext stateChangeContextT = stateChangeContextBuilder
+                .build(technologyStateChangeAspect.getChangeEntityDescriber(), technology, targetState);
 
         stateChangeContextT.setStatus(StateChangeStatus.IN_PROGRESS);
         technologyStateChangeAspect.changeState(stateChangeContextT);

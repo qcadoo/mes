@@ -33,7 +33,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class BarcodeOperationComponentService {
@@ -41,16 +40,13 @@ public class BarcodeOperationComponentService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
-
     public void createBarcodeOperationComponent(final Entity operationComponent) {
 
         if (!checkIfBarcodeForOperationComponentExist(operationComponent)) {
             Entity barcodeOCEntity = getBarcodeOperationComponentDD().create();
             barcodeOCEntity.setField(BarcodeOperationComponentFields.OPERATION_COMPONENT, operationComponent);
             barcodeOCEntity.setField(BarcodeOperationComponentFields.CODE, operationComponent.getId().toString());
-            barcodeOCEntity = barcodeOCEntity.getDataDefinition().save(barcodeOCEntity);
+            barcodeOCEntity.getDataDefinition().save(barcodeOCEntity);
         }
     }
 
@@ -64,8 +60,8 @@ public class BarcodeOperationComponentService {
     }
 
     private DataDefinition getBarcodeOperationComponentDD() {
-        return dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_BARCODE_OPERATION_COMPONENT);
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_BARCODE_OPERATION_COMPONENT);
     }
 
     public String getCodeFromBarcodeForOperationComponet(final Entity operationComponent) {
@@ -77,10 +73,9 @@ public class BarcodeOperationComponentService {
 
     public Optional<Entity> getOperationComponetForBarcode(final String code) {
         Entity barcode = getBarcodeOperationComponentDD().find()
-                .add(SearchRestrictions.eq(BarcodeOperationComponentFields.CODE, code))
-                .setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(BarcodeOperationComponentFields.CODE, code)).setMaxResults(1).uniqueResult();
         if (barcode == null) {
-            return Optional.fromNullable(null);
+            return Optional.absent();
         }
         return Optional.fromNullable(barcode.getBelongsToField(BarcodeOperationComponentFields.OPERATION_COMPONENT));
     }

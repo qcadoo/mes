@@ -26,14 +26,11 @@ package com.qcadoo.mes.basic.print;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.lowagie.text.Document;
@@ -44,15 +41,12 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.PalletNumberGenerator;
 import com.qcadoo.mes.basic.PalletNumbersService;
 import com.qcadoo.mes.basic.constants.PalletNumberHelperFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.ColorUtils;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.Footer;
-import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.PdfPageNumbering;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 
@@ -63,16 +57,7 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
     private TranslationService translationService;
 
     @Autowired
-    private PdfHelper pdfHelper;
-
-    @Autowired
     private PalletNumbersService palletNumbersService;
-
-    @Autowired
-    private PalletNumberGenerator palletNumberGenerator;
-
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
-            LocaleContextHolder.getLocale());
 
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
@@ -117,7 +102,7 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
                 document.add(lineSeparator);
             }
 
-            if (i % 2 == 1) {
+            if (i % 2 != 0) {
                 Paragraph secondNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold70Dark()));
 
                 secondNumberParagraph.setAlignment(Element.ALIGN_CENTER);
