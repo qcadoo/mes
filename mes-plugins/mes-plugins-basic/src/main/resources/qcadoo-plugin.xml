@@ -411,10 +411,8 @@
 
         <view:resource uri="public/**/*"/>
 
-        <view:view resource="view/productsGrid.xml"/>
 
         <view:resource uri="public/**/*"/>
-        <menu:menu-item-url name="productsGrid" category="basic" url="/productsGrid.html"/>
 
 
     </modules>
