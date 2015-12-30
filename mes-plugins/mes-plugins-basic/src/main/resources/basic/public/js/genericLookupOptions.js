@@ -18,7 +18,7 @@ myApp.directive('ngJqGrid', function ($window) {
                     element.append(angular.element('<div id="jqGridPager"></div>'));
                     $(table).jqGrid(newValue);
 
-                    var positionsHeader = QCD.translate('qcadooView.gridHeader.products');
+                    var positionsHeader = QCD.translate('qcadooView.gridHeader.'+scope.recordName);
                     var cancelHeader = QCD.translate('qcadooView.gridHeader.cancel');
                     var cancelButton = '<div id="cancel_button" class="headerActionButton" onclick="return cancelGrid();"> <a href="#"><span>' +
                             '<div id="cancel_icon"></div>' +
@@ -41,8 +41,15 @@ function cancelGrid() {
 }
 
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
+        $scope.recordName = '';
         var _this = this;
         var messagesController = new QCD.MessagesController();
+
+        $scope.init = function (recordName) {
+            $scope.recordName = recordName;
+
+            prepareGridConfig();
+        }
 
         function showMessage(message) {
             messagesController.addMessage(message);
@@ -76,55 +83,42 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             });
         }
 
-        $scope.resize = function () {
-            console.log('resize');
-            jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 25, true);
-            jQuery('#grid').setGridHeight($("#window\\.positionsGridTab").height() - 150);
-        }
-        $("#window\\.positionsGridTab").resize($scope.resize);
-
-        var config = {
-            url: '',
-            datatype: "json",
-            height: '100%',
-            autowidth: true,
-            rowNum: 150,
-            sortname: 'id',
-            toolbar: [true, "top"],
-            errorTextFormat: function (response) {
-                return translateMessages(JSON.parse(response.responseText).message);
-            },
-            colNames: [],
-            colModel: [],
-            pager: "#jqGridPager",
-            gridComplete: function () {
-            },
-            onSelectRow: function (id) {
-                var row =  jQuery('#grid').jqGrid ('getRowData', id);
-                parent.frames[0].onSelectLookupRow(row);
-            },
-            ajaxRowOptions: {
-                contentType: "application/json"
-            }
-        };
-
-
-        function prepareGridConfig(config) {
+        function prepareGridConfig() {
+            var config = {
+                url: '/rest/' + $scope.recordName + '/records',
+                datatype: "json",
+                height: '100%',
+                autowidth: true,
+                rowNum: 150,
+                sortname: 'id',
+                toolbar: [true, "top"],
+                errorTextFormat: function (response) {
+                    return translateMessages(JSON.parse(response.responseText).message);
+                },
+                colNames: [],
+                colModel: [],
+                pager: "#jqGridPager",
+                gridComplete: function () {
+                },
+                onSelectRow: function (id) {
+                    var row = jQuery('#grid').jqGrid('getRowData', id);
+                    parent.frames[0].onSelectLookupRow(row, $scope.recordName);
+                },
+                ajaxRowOptions: {
+                    contentType: "application/json"
+                }
+            };
 
             $http({
                 method: 'GET',
-                url: '/rest/productGridConfigForLookup'
+                url: '/rest/' + $scope.recordName + '/config'
 
             }).then(function successCallback(response) {
-                console.log(response.data);
-
                 config = angular.merge(config, response.data);
-                
+
                 $scope.config = config;
             });
 
         }
-
-        prepareGridConfig(config);
 
     }]);

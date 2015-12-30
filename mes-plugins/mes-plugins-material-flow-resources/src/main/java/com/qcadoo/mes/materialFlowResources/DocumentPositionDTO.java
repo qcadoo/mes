@@ -9,7 +9,7 @@ public class DocumentPositionDTO {
     private Long id;
     private Long document;
     private String product;
-    private String additional_code;
+    private String additionalCode;
     private BigDecimal quantity;
     private String unit;
     private BigDecimal givenquantity;
@@ -17,9 +17,9 @@ public class DocumentPositionDTO {
     private BigDecimal conversion;
     private Date expirationdate;
     private Date productiondate;
-    private String pallet;
-    private String type_of_pallet;
-    private String storage_location;
+    private String palletNumber;
+    private String typeOfPallet;
+    private String storageLocation;
     private BigDecimal price;
     private String batch;
     // TODO
@@ -49,12 +49,12 @@ public class DocumentPositionDTO {
         this.product = product;
     }
 
-    public String getAdditional_code() {
-        return additional_code;
+    public String getAdditionalCode() {
+        return additionalCode;
     }
 
-    public void setAdditional_code(String additional_code) {
-        this.additional_code = additional_code;
+    public void setAdditionalCode(String additionalCode) {
+        this.additionalCode = additionalCode;
     }
 
     public BigDecimal getQuantity() {
@@ -113,28 +113,28 @@ public class DocumentPositionDTO {
         this.productiondate = productiondate;
     }
 
-    public String getPallet() {
-        return pallet;
+    public String getPalletNumber() {
+        return palletNumber;
     }
 
-    public void setPallet(String pallet) {
-        this.pallet = pallet;
+    public void setPalletNumber(String palletNumber) {
+        this.palletNumber = palletNumber;
     }
 
-    public String getType_of_pallet() {
-        return type_of_pallet;
+    public String getTypeOfPallet() {
+        return typeOfPallet;
     }
 
-    public void setType_of_pallet(String type_of_pallet) {
-        this.type_of_pallet = type_of_pallet;
+    public void setTypeOfPallet(String typeOfPallet) {
+        this.typeOfPallet = typeOfPallet;
     }
 
-    public String getStorage_location() {
-        return storage_location;
+    public String getStorageLocation() {
+        return storageLocation;
     }
 
-    public void setStorage_location(String storage_location) {
-        this.storage_location = storage_location;
+    public void setStorageLocation(String storageLocation) {
+        this.storageLocation = storageLocation;
     }
 
     public BigDecimal getPrice() {
@@ -167,7 +167,7 @@ public class DocumentPositionDTO {
         hash = 67 * hash + Objects.hashCode(this.id);
         hash = 67 * hash + Objects.hashCode(this.document);
         hash = 67 * hash + Objects.hashCode(this.product);
-        hash = 67 * hash + Objects.hashCode(this.additional_code);
+        hash = 67 * hash + Objects.hashCode(this.additionalCode);
         hash = 67 * hash + Objects.hashCode(this.quantity);
         hash = 67 * hash + Objects.hashCode(this.unit);
         hash = 67 * hash + Objects.hashCode(this.givenquantity);
@@ -175,9 +175,9 @@ public class DocumentPositionDTO {
         hash = 67 * hash + Objects.hashCode(this.conversion);
         hash = 67 * hash + Objects.hashCode(this.expirationdate);
         hash = 67 * hash + Objects.hashCode(this.productiondate);
-        hash = 67 * hash + Objects.hashCode(this.pallet);
-        hash = 67 * hash + Objects.hashCode(this.type_of_pallet);
-        hash = 67 * hash + Objects.hashCode(this.storage_location);
+        hash = 67 * hash + Objects.hashCode(this.palletNumber);
+        hash = 67 * hash + Objects.hashCode(this.typeOfPallet);
+        hash = 67 * hash + Objects.hashCode(this.storageLocation);
         hash = 67 * hash + Objects.hashCode(this.price);
         hash = 67 * hash + Objects.hashCode(this.batch);
         hash = 67 * hash + Objects.hashCode(this.resource);
@@ -202,7 +202,7 @@ public class DocumentPositionDTO {
         if (!Objects.equals(this.product, other.product)) {
             return false;
         }
-        if (!Objects.equals(this.additional_code, other.additional_code)) {
+        if (!Objects.equals(this.additionalCode, other.additionalCode)) {
             return false;
         }
         if (!Objects.equals(this.quantity, other.quantity)) {
@@ -226,13 +226,13 @@ public class DocumentPositionDTO {
         if (!Objects.equals(this.productiondate, other.productiondate)) {
             return false;
         }
-        if (!Objects.equals(this.pallet, other.pallet)) {
+        if (!Objects.equals(this.palletNumber, other.palletNumber)) {
             return false;
         }
-        if (!Objects.equals(this.type_of_pallet, other.type_of_pallet)) {
+        if (!Objects.equals(this.typeOfPallet, other.typeOfPallet)) {
             return false;
         }
-        if (!Objects.equals(this.storage_location, other.storage_location)) {
+        if (!Objects.equals(this.storageLocation, other.storageLocation)) {
             return false;
         }
         if (!Objects.equals(this.price, other.price)) {
@@ -249,7 +249,7 @@ public class DocumentPositionDTO {
 
     @Override
     public String toString() {
-        return "DocumentPositionDTO{" + "id=" + id + ", document=" + document + ", product=" + product + ", additional_code=" + additional_code + ", quantity=" + quantity + ", unit=" + unit + ", givenquantity=" + givenquantity + ", givenunit=" + givenunit + ", conversion=" + conversion + ", expirationdate=" + expirationdate + ", productiondate=" + productiondate + ", pallet=" + pallet + ", type_of_pallet=" + type_of_pallet + ", storage_location=" + storage_location + ", price=" + price + ", batch=" + batch + ", resource=" + resource + '}';
+        return "DocumentPositionDTO{" + "id=" + id + ", document=" + document + ", product=" + product + ", additional_code=" + additionalCode + ", quantity=" + quantity + ", unit=" + unit + ", givenquantity=" + givenquantity + ", givenunit=" + givenunit + ", conversion=" + conversion + ", expirationdate=" + expirationdate + ", productiondate=" + productiondate + ", pallet=" + palletNumber + ", type_of_pallet=" + typeOfPallet + ", storage_location=" + storageLocation + ", price=" + price + ", batch=" + batch + ", resource=" + resource + '}';
     }
     
     

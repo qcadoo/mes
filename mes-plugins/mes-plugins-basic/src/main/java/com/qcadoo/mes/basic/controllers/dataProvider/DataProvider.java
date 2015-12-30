@@ -45,9 +45,20 @@ public class DataProvider {
         parameters.put("query", "%" + query + "%");
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
-        List<ProductDTO> products = Lists.newArrayList();
-        products = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(ProductDTO.class));
+        List<ProductDTO> products = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(ProductDTO.class));
+        
         return products;
+    }
+
+    public List<AdditionalCodeDTO> getAllAdditionalCodes(String sidx, String sord) {
+        // TODO sort
+        String _query = "SELECT additionalcode.id as id, additionalcode.code as code, product.number as productnumber "
+                + "FROM basic_additionalcode additionalcode "
+                + "JOIN basic_product product ON (additionalcode.product_id = product.id);";
+
+        List<AdditionalCodeDTO> codes = jdbcTemplate.query(_query, new MapSqlParameterSource(Collections.EMPTY_MAP), new BeanPropertyRowMapper(AdditionalCodeDTO.class));
+        
+        return codes;
     }
 
     public List<AdditionalCodeDTO> getAdditionalCodesByQuery(String query) {
@@ -60,21 +71,30 @@ public class DataProvider {
         parameters.put("query", "%" + query + "%");
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
-        List<AdditionalCodeDTO> codes = Lists.newArrayList();
-        codes = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(AdditionalCodeDTO.class));
+        List<AdditionalCodeDTO> codes = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(AdditionalCodeDTO.class));
+        
         return codes;
+    }
+
+    public List<PalletNumberDTO> getAllPalletNumbers(String sidx, String sord) {
+        String _query = "SELECT palletnumber.id as id, palletnumber.number as code, palletnumber.number as number "
+                + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true;";
+
+        List<PalletNumberDTO> pallets = jdbcTemplate.query(_query, new MapSqlParameterSource(Collections.EMPTY_MAP), new BeanPropertyRowMapper(PalletNumberDTO.class));
+        
+        return pallets;
     }
 
     public List<PalletNumberDTO> getPalletNumbersByQuery(String query) {
         String _query = "SELECT palletnumber.id as id, palletnumber.number as code, palletnumber.number as number "
                 + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true and palletnumber.number ilike :query LIMIT 15;";
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("query", "%" + query + "%");
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
-        List<PalletNumberDTO> pallets = Lists.newArrayList();
-        pallets = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(PalletNumberDTO.class));
+        List<PalletNumberDTO> pallets = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(PalletNumberDTO.class));
+        
         return pallets;
     }
 

@@ -18,7 +18,7 @@ public class DocumentPositionMapper implements RowMapper {
         positionVO.setProduct(resultSet.getString("product_number"));
         positionVO.setUnit(resultSet.getString("product_unit"));
         // nowe pole
-        positionVO.setAdditional_code(resultSet.getString("additionalcode_code"));
+        positionVO.setAdditionalCode(resultSet.getString("additionalcode_code"));
         positionVO.setQuantity(resultSet.getBigDecimal("quantity"));
         positionVO.setGivenquantity(resultSet.getBigDecimal("givenquantity"));
         positionVO.setGivenunit(resultSet.getString("givenunit"));
@@ -26,10 +26,10 @@ public class DocumentPositionMapper implements RowMapper {
         positionVO.setConversion(resultSet.getBigDecimal("conversion"));
         positionVO.setExpirationdate(resultSet.getDate("expirationdate"));
         // nowe pole
-        positionVO.setPallet(resultSet.getString("palletnumber_number"));
+        positionVO.setPalletNumber(resultSet.getString("palletnumber_number"));
         // nowe pole
-        positionVO.setType_of_pallet(resultSet.getString("typeofpallet"));
-        positionVO.setStorage_location(resultSet.getString("storagelocation_number"));
+        positionVO.setTypeOfPallet(resultSet.getString("typeofpallet"));
+        positionVO.setStorageLocation(resultSet.getString("storagelocation_number"));
         positionVO.setDocument(resultSet.getLong("document_id"));
         positionVO.setProductiondate(resultSet.getDate("productiondate"));
         positionVO.setPrice(resultSet.getBigDecimal("price"));

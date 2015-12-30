@@ -251,21 +251,11 @@ function addNewRow() {
     angular.element($("#GridController")).scope().addNewRow();
 }
 
-function onModalClose() {
-    lookupWindow = null;
+function openLookup(name) {
+    mainController.openModal('body', '../' + name + '/lookup.html', null, function onModalClose() {
+    }, function onModalRender(modalWindow) {
+    }, {width: 1000, height: 560});
 }
-
-function onModalRender(modalWindow) {
-    //modalWindow.getComponent("window.mainTab.grid").setLinkListener(_this);
-    console.log(modalWindow);
-}
-
-function editProductId_openLookup() {
-    lookupWindow = mainController.openModal('body', '../productLookup.html', null, onModalClose, onModalRender, {width: 1000, height: 560})
-}
-var lookupWindow;
-var productIdElement;
-
 
 function updateFieldValue(field, value, rowId) {
     var productInput = $('#product');
@@ -288,11 +278,13 @@ function updateFieldValue(field, value, rowId) {
     return element.val(value);
 }
 
-function onSelectLookupRow(row) {
+function onSelectLookupRow(row, recordName) {
     if (row) {
+        var code = row.code || row.number;
+
         var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
-        var productField = updateFieldValue('product', row.number, rowId);
-        productField.trigger('change');
+        var field = updateFieldValue(recordName, code, rowId);
+        field.trigger('change');
     }
 
     mainController.closeThisModalWindow();
@@ -300,7 +292,6 @@ function onSelectLookupRow(row) {
 
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
         var _this = this;
-        var resources = {};
 
         var messagesController = new QCD.MessagesController();
 
@@ -319,8 +310,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return 0;
         }
 
-        function createLookupElement(inputId, value, url, options) {
-            var $ac = $('<input id="' + inputId + '" class="eac-square" rowId="' + options.rowId + '" />');
+        function createLookupElement(name, value, url, options) {
+            var $ac = $('<input class="eac-square" rowId="' + options.rowId + '" />');
             $ac.val(value);
             $ac.autoComplete({
                 source: function (query, response) {
@@ -329,7 +320,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     } catch (e) {
                     }
                     xhr = $.getJSON(url, {query: query}, function (data) {
-                        resources[url] = data;
                         response(data);
                     });
                 },
@@ -348,7 +338,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             var button = $('<button value="xxx">Szukaj</button>');
             button.bind('click', function () {
-                editProductId_openLookup();
+                openLookup(name);
             });
 
             var wrapper = $('<span></span>');
@@ -363,7 +353,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function palletNumbersLookup_createElement(value, options) {
-            return createLookupElement('palletnumber', value, '/rest/palletnumbers', options);
+            return createLookupElement('palletNumber', value, '/rest/palletnumbers', options);
         }
 
         function getFieldValue(field, rowId) {
@@ -448,7 +438,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function productsLookup_createElement(value, options) {
-            var lookup = createLookupElement('square', value, '/rest/products', options);
+            var lookup = createLookupElement('product', value, '/rest/products', options);
 
             $('input', lookup).bind('change keydown paste input', function () {
                 var t = $(this);
@@ -463,7 +453,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function additionalCodeLookup_createElement(value, options) {
             var url = '/rest/additionalcodes';
-            var lookup = createLookupElement('additionalCode', value, url, options, options);
+            var lookup = createLookupElement('additionalCode', value, url, options);
 
             $('input', lookup).bind('change keydown paste input', function () {
                 var t = $(this);
@@ -477,26 +467,27 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateProductByAdditionalCode(additionalCode, rowId, url) {
-            var product = '';
+            $.getJSON(url, {query: additionalCode}, function (data) {
+                var product = '';
 
-            if (resources[url]) {
-                product = resources[url].filter(function (element, index) {
+                product = data.filter(function (element, index) {
                     return element.code === additionalCode;
                 })[0];
+
                 if (product) {
                     product = product.productnumber;
                 }
-            }
+                if (product) {
+                    var productField = updateFieldValue('product', product, rowId);
+                    productField.trigger('change');
+                }
 
-            if (product) {
-                var productField = updateFieldValue('product', product, rowId);
-                productField.trigger('change');
-            }
+            });
         }
 
         function lookup_value(elem, operation, value) {
             if (operation === 'get') {
-                return $(elem).val();
+                return $('input', elem).val();
 
             } else if (operation === 'set') {
                 return $('input', elem).val(value);
@@ -704,8 +695,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
             },
-            colNames: ['ID', 'document', 'product', 'additional_code', 'quantity', 'unit', 'givenquantity', 'givenunit', 'conversion', 'price', 'expirationdate',
-                'productiondate', 'batch', 'pallet', 'type_of_pallet', 'storage_location'/*, 'resource_id'*/],
+            colNames: ['ID', 'document', 'product', 'additionalCode', 'quantity', 'unit', 'givenquantity', 'givenunit', 'conversion', 'price', 'expirationdate',
+                'productiondate', 'batch', 'palletNumber', 'typeOfPallet', 'storageLocation'/*, 'resource_id'*/],
             colModel: [
                 {
                     name: 'id',
@@ -736,11 +727,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     formoptions: {
                         rowpos: 2,
                         colpos: 1
-                    },
+                    }
                 },
                 {
-                    name: 'additional_code',
-                    index: 'additional_code',
+                    name: 'additionalCode',
+                    index: 'additionalCode',
                     editable: true,
                     required: true,
                     edittype: 'custom',
@@ -886,8 +877,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                 },
                 {
-                    name: 'pallet',
-                    index: 'pallet',
+                    name: 'palletNumber',
+                    index: 'palletNumber',
                     editable: true,
                     required: true,
                     edittype: 'custom',
@@ -901,26 +892,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                 },
                 {
-                    name: 'type_of_pallet',
-                    index: 'type_of_pallet',
+                    name: 'typeOfPallet',
+                    index: 'typeOfPallet',
                     editable: true,
                     required: true,
                     edittype: 'select',
                     editoptions: {
-                        /*
-                         aysnc: false,
-                         dataUrl: '../../rest/typeOfPallets',
-                         buildSelect: function (response) {
-                         var data = $.parseJSON(response);
-                         var s = "<select>";
-                         
-                         s += '<option value="0">--</option>';
-                         $.each(data, function () {
-                         s += '<option value="' + this.key + '">' + this.value + '</option>';
-                         });
-                         
-                         return s + "</select>";
-                         }*/
                     },
                     formoptions: {
                         rowpos: 7,
@@ -928,8 +905,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                 },
                 {
-                    name: 'storage_location',
-                    index: 'storage_location',
+                    name: 'storageLocation',
+                    index: 'storageLocation',
                     editable: true,
                     edittype: 'custom',
                     editoptions: {
@@ -983,10 +960,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function prepareGridConfig(config) {
             var hideColumnInGrid = function (columnIndex, responseDate) {
-                if (columnIndex === 'storage_location' && !responseDate.showstoragelocation) {
+                if (columnIndex === 'storageLocation' && !responseDate.showstoragelocation) {
                     return true;
                 }
-                if (columnIndex === 'additional_code' && !responseDate.showadditionalcode) {
+                if (columnIndex === 'additionalCode' && !responseDate.showadditionalcode) {
                     return true;
                 }
                 if (columnIndex === 'productiondate' && !responseDate.showproductiondate) {
@@ -995,10 +972,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 if (columnIndex === 'expirationdate' && !responseDate.showexpiratindate) {
                     return true;
                 }
-                if (columnIndex === 'pallet' && !responseDate.showpallet) {
+                if (columnIndex === 'palletNumber' && !responseDate.showpallet) {
                     return true;
                 }
-                if (columnIndex === 'type_of_pallet' && !responseDate.showtypeofpallet) {
+                if (columnIndex === 'typeOfPallet' && !responseDate.showtypeofpallet) {
                     return true;
                 }
                 if (columnIndex === 'batch' && !responseDate.showbatch) {
@@ -1036,7 +1013,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     });
 
                     config.colModel.filter(function (element, index) {
-                        return element.index === 'type_of_pallet';
+                        return element.index === 'typeOfPallet';
                     })[0].editoptions.value = selectOptionsTypeOfPallets.join(';');
 
                     $scope.config = config;

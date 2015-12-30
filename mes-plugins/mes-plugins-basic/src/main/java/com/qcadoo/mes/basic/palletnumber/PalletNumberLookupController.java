@@ -1,4 +1,4 @@
-package com.qcadoo.mes.basic.product;
+package com.qcadoo.mes.basic.palletnumber;
 
 import java.util.Locale;
 import java.util.Map;
@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.basic.BasicLookupController;
 import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping(value = "product")
-public class ProductLookupController extends BasicLookupController {
+@RequestMapping(value = "palletNumber")
+public class PalletNumberLookupController extends BasicLookupController {
 
     @Autowired
     private DataProvider dataProvider;
@@ -28,7 +28,7 @@ public class ProductLookupController extends BasicLookupController {
     @RequestMapping(value = "lookup", method = RequestMethod.GET)
     @Override
     public ModelAndView getLookupView(Map<String, String> arguments, Locale locale) {
-        ModelAndView mav = getModelAndView("product", "genericLookup", locale);
+        ModelAndView mav = getModelAndView("palletNumber", "genericLookup", locale);
 
         return mav;
     }
@@ -36,15 +36,15 @@ public class ProductLookupController extends BasicLookupController {
     @ResponseBody
     @RequestMapping(value = "records", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public List<ProductDTO> getRecords(@RequestParam String sidx, @RequestParam String sord) {
-        return dataProvider.getAllProducts(sidx, sord);
+    public List<PalletNumberDTO> getRecords(@RequestParam String sidx, @RequestParam String sord) {
+        return dataProvider.getAllPalletNumbers(sidx, sord);
     }
 
     @ResponseBody
     @RequestMapping(value = "config", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     public Map<String, Object> getConfig() {
-        return getConfigMap(Arrays.asList("number", "name"));
+        return getConfigMap(Arrays.asList("code", "number"));
     }
 
 }

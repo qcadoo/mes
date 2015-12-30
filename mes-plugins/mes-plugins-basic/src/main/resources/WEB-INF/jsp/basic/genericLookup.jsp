@@ -12,7 +12,7 @@ String ctx = request.getContextPath();
     <script type="text/javascript" src="/qcadooView/public/js/core/qcd/core/messagesController.js?ver=${buildNumber}"></script>
     <script src="/basic/public/js/jquery.jqGrid.min.js?ver=${buildNumber}"></script>
     <script src="/basic/public/js/angular.js?ver=${buildNumber}"></script>
-    <script src="/basic/public/js/product/productLookupOptions.js?ver=${buildNumber}"></script>
+    <script src="/basic/public/js/genericLookupOptions.js?ver=${buildNumber}"></script>
 
     <c:choose>
         <c:when test="${pageContext.request.locale.language == 'pl'}">
@@ -27,6 +27,8 @@ String ctx = request.getContextPath();
     <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/custom.css">
 
     <script type="text/javascript">
         var QCD = QCD || {};
@@ -45,7 +47,7 @@ String ctx = request.getContextPath();
 
                                               <div class="windowContainer" style="background:#9b9b9b;" ng-app="gridApp" ng-controller="GridController" id="GridController">
 
-                                              <div id="gridContainer">
+                                              <div id="gridContainer" ng-init="init('${recordName}');">
                                               <ng-jq-grid config="config" data="data"></ng-jq-grid>
                                               <table id="grid"></table>
                                               <div id="jqGridPager"></div>

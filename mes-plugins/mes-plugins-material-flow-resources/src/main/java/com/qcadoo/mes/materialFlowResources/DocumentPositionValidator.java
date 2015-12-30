@@ -173,15 +173,15 @@ public class DocumentPositionValidator {
 
         params.put("id", vo.getId());
         params.put("product_id", tryGetProductIdByNumber(vo.getProduct(), errors));
-        params.put("additionalcode_id", tryGetAdditionalCodeIdByCode(vo.getAdditional_code(), errors));
+        params.put("additionalcode_id", tryGetAdditionalCodeIdByCode(vo.getAdditionalCode(), errors));
         params.put("quantity", vo.getQuantity());
         params.put("givenquantity", vo.getGivenquantity());
         params.put("givenunit", vo.getGivenunit());
         params.put("conversion", vo.getConversion());
         params.put("expirationdate", vo.getExpirationdate());
-        params.put("palletnumber_id", tryGetPalletNumberIdByNumber(vo.getPallet(), errors));
-        params.put("typeofpallet", vo.getType_of_pallet());
-        params.put("storagelocation_id", tryGetStorageLocationIdByNumber(vo.getStorage_location(), errors));
+        params.put("palletnumber_id", tryGetPalletNumberIdByNumber(vo.getPalletNumber(), errors));
+        params.put("typeofpallet", vo.getTypeOfPallet());
+        params.put("storagelocation_id", tryGetStorageLocationIdByNumber(vo.getStorageLocation(), errors));
         params.put("document_id", vo.getDocument());
         params.put("productiondate", vo.getProductiondate());
         params.put("price", vo.getPrice());
