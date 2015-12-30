@@ -60,9 +60,9 @@
         </windowTab>
 
         <windowTab name="workstationsAndSubassemblies">
-            <component type="gridLayout" name="gridLayout" columns="2"
-                       rows="1">
-                <layoutElement row="1" column="1">
+            <component type="flowGridLayout" name="gridLayout" columns="2"
+                       rows="3">
+                <layoutElement row="1" column="1" minHeight='3'>
 
                     <component type="lookup" name="workstationsLookup" reference="workstationsLookup"
                                field="#{form}.workstations" defaultVisible="false" persistent="false"
@@ -101,7 +101,7 @@
                         <option type="correspondingLookup" value="workstationsLookup"/>
                     </component>
                 </layoutElement>
-                <layoutElement row="1" column="2">
+                <layoutElement row="1" column="2" minHeight='3'>
 
                     <component type="lookup" name="subassembliesLookup" reference="subassembliesLookup"
                                field="#{form}.subassemblies" defaultVisible="false" persistent="false"
@@ -144,9 +144,9 @@
         </windowTab>
 
         <windowTab name="workstationTypes">
-            <component type="gridLayout" name="gridLayout" columns="2"
-                       rows="1">
-                <layoutElement row="1" column="1">
+            <component type="flowGridLayout" name="gridLayout" columns="2"
+                       rows="3">
+                <layoutElement row="1" column="1" minHeight='3'>
 
                     <component type="lookup" name="workstationTypesLookup" reference="workstationTypesLookup"
                                field="#{form}.workstationTypes" defaultVisible="false" persistent="false"
