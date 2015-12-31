@@ -106,24 +106,9 @@ public class DocumentPositionService {
 
     public Map<String, Object> unitsOfProduct(String productNumber) {
         try {
-            String query = "SELECT id, unit, additionalunit FROM basic_product WHERE number = :number";
-
-            Map<String, Object> units = jdbcTemplate.queryForMap(query, Collections.singletonMap("number", productNumber));
-
-            if (units.get("additionalunit") == null || units.get("additionalunit").toString().isEmpty()) {
-                units.put("additionalunit", units.get("unit"));
-            }
-
-            List<Map<String, Object>> availableAdditionalUnits = getAvailableAdditionalUnitsByProduct(Long.valueOf(units.get("id").toString()));
-
-            Map<String, Object> type = new HashMap<>();
-            type.put("value", units.get("unit"));
-            type.put("key", units.get("unit"));
-            type.put("conversion", BigDecimal.valueOf(1));
-            availableAdditionalUnits.add(type);
-            units.put("available_additionalunits", availableAdditionalUnits);
-
-            units.put("conversion", calculateConversion(availableAdditionalUnits, units.get("additionalunit").toString()));
+            Map<String, Object> units = getUnitsFromProduct(productNumber);
+            units.put("available_additionalunits", getAvailableAdditionalUnitsByProduct(units));
+            calculateConversion(units);
 
             return units;
 
@@ -132,8 +117,9 @@ public class DocumentPositionService {
         }
     }
 
-    private List<Map<String, Object>> getAvailableAdditionalUnitsByProduct(Long productId) {
-        String query = "select unitto, quantityto/quantityfrom as conversion from qcadoomodel_unitconversionitem  where product_id = :id";
+    private List<Map<String, Object>> getAvailableAdditionalUnitsByProduct(Map<String, Object> units) {
+        Long productId = Long.valueOf(units.get("id").toString());
+        String query = "select unitto, quantityto, quantityfrom from qcadoomodel_unitconversionitem  where product_id = :id";
         List<Map<String, Object>> availableUnits = jdbcTemplate.queryForList(query, Collections.singletonMap("id", productId));
 
         List<Map<String, Object>> result = availableUnits.stream().map(entry -> {
@@ -141,23 +127,48 @@ public class DocumentPositionService {
             type.put("value", entry.get("unitto"));
             type.put("key", entry.get("unitto"));
             type.put("conversion", entry.get("conversion"));
+            type.put("quantityto", entry.get("quantityto"));
+            type.put("quantityfrom", entry.get("quantityfrom"));
 
             return type;
         }).collect(Collectors.toList());
 
+        Map<String, Object> type = new HashMap<>();
+        type.put("value", units.get("unit"));
+        type.put("key", units.get("unit"));
+        type.put("quantityfrom", BigDecimal.valueOf(1));
+        type.put("quantityto", BigDecimal.valueOf(1));
+        result.add(type);
+
         return result;
     }
 
-    private BigDecimal calculateConversion(List<Map<String, Object>> availableAdditionalUnits, String additionalUnit) {
-        BigDecimal conversion = null;
+    private void calculateConversion(Map<String, Object> units) {
+        List<Map<String, Object>> availableAdditionalUnits = (List<Map<String, Object>>) units.get("available_additionalunits");
+        String additionalUnit = units.get("additionalunit").toString();
 
         Optional<Map<String, Object>> maybeEntry = availableAdditionalUnits.stream().filter(entry -> {
             return entry.get("key").equals(additionalUnit);
         }).findAny();
+
         if (maybeEntry.isPresent()) {
-            conversion = (BigDecimal) maybeEntry.get().get("conversion");
+            units.put("quantityto", maybeEntry.get().get("quantityto"));
+            units.put("quantityfrom", maybeEntry.get().get("quantityfrom"));
+
+        } else {
+            units.put("quantityto", 0);
+            units.put("quantityfrom", 0);
+        }
+    }
+
+    private Map<String, Object> getUnitsFromProduct(String productNumber) {
+        String query = "SELECT id, unit, additionalunit FROM basic_product WHERE number = :number";
+        Map<String, Object> units = jdbcTemplate.queryForMap(query, Collections.singletonMap("number", productNumber));
+
+        if (units.get("additionalunit") == null || units.get("additionalunit").toString().isEmpty()) {
+            units.put("additionalunit", units.get("unit"));
         }
 
-        return conversion;
+        return units;
     }
 }

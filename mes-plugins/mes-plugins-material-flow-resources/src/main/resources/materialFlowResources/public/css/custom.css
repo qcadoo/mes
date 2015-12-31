@@ -204,7 +204,7 @@ input[readonly]{
     background: #dddddd;
 }
 
-.error {
+.error-grid {
     border-color: red;
     background-color: rgba(255, 0, 0, 0.33);
 }

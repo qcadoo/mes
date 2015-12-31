@@ -193,10 +193,10 @@ myApp.directive('ngJqGrid', function ($window) {
 function validateSerializeData(data) {
     var elements = null;
     if ($('#FrmGrid_grid').length) {
-        elements = $('.error', '#FrmGrid_grid');
+        elements = $('.error-grid', '#FrmGrid_grid');
 
     } else {
-        elements = $('.error', '#gridContainer');
+        elements = $('.error-grid', '#gridContainer');
     }
 
     angular.forEach(elements, function (el, key) {
@@ -223,10 +223,10 @@ function validatorNumber(val) {
 function validateElement(el, validator) {
     el = $(el);
     if (validator(el.val())) {
-        el.removeClass('error');
+        el.removeClass('error-grid');
 
     } else {
-        el.addClass('error');
+        el.addClass('error-grid');
     }
 }
 
@@ -292,6 +292,7 @@ function onSelectLookupRow(row, recordName) {
 
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
         var _this = this;
+        var quantities = {};
 
         var messagesController = new QCD.MessagesController();
 
@@ -517,14 +518,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateConversionByGivenUnitValue(givenUnitValue, rowId) {
-            var conversion = "";
+            var conversion = '';
 
             if (available_additionalunits) {
-                conversion = available_additionalunits.filter(function (element, index) {
+                var entry = available_additionalunits.filter(function (element, index) {
                     return element.key === givenUnitValue;
                 })[0];
-                if (conversion) {
-                    conversion = conversion.conversion;
+                if (entry) {
+                    quantities[rowId] = {from: entry.quantityfrom, to: entry.quantityto};
+                    conversion = roundTo(parseFloat(entry.quantityfrom) / parseFloat(entry.quantityto));
                 }
             }
 
@@ -543,9 +545,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 validateElement(t, validatorNumber);
 
                 $(this).data("timeout", setTimeout(function () {
-                    var newGivenQuantity = roundTo(t.val()) * roundTo(getFieldValue('conversion', t.attr('rowId')));
+                    var rowId = t.attr('rowId');
+
+                    var newGivenQuantity = roundTo(t.val() * quantities[rowId].to / quantities[rowId].from);
                     newGivenQuantity = roundTo(newGivenQuantity);
-                    if (!newGivenQuantity || t.hasClass('error')) {
+                    if (!newGivenQuantity || t.hasClass('error-grid')) {
                         newGivenQuantity = '';
                     }
 
@@ -574,9 +578,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
-                    var newQuantity = roundTo(t.val()) / roundTo(getFieldValue('conversion', t.attr('rowId')));
+                    var rowId = t.attr('rowId');
+
+                    var newQuantity = roundTo(t.val() * quantities[rowId].from / quantities[rowId].to);                    
                     newQuantity = roundTo(newQuantity);
-                    if (!newQuantity || t.hasClass('error')) {
+                    if (!newQuantity || t.hasClass('error-grid')) {
                         newQuantity = '';
                     }
 
@@ -924,7 +930,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                  editable: true,
                  edittype: 'custom',
                  editoptions: {
-                 // TODO
                  custom_element: editProductId_createElement,
                  custom_value: editProductId_value
                  }
