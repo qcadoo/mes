@@ -526,7 +526,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 })[0];
                 if (entry) {
                     quantities[rowId] = {from: entry.quantityfrom, to: entry.quantityto};
-                    conversion = roundTo(parseFloat(entry.quantityfrom) / parseFloat(entry.quantityto));
+                    conversion = roundTo(parseFloat(entry.quantityto) / parseFloat(entry.quantityfrom));
                 }
             }
 
@@ -547,7 +547,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $(this).data("timeout", setTimeout(function () {
                     var rowId = t.attr('rowId');
 
-                    var newGivenQuantity = roundTo(t.val() * quantities[rowId].to / quantities[rowId].from);
+                    var newGivenQuantity = null;
+                    if (quantities[rowId]) {
+                        newGivenQuantity = roundTo(t.val() * quantities[rowId].to / quantities[rowId].from);
+                    }
                     newGivenQuantity = roundTo(newGivenQuantity);
                     if (!newGivenQuantity || t.hasClass('error-grid')) {
                         newGivenQuantity = '';
@@ -580,7 +583,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $(this).data("timeout", setTimeout(function () {
                     var rowId = t.attr('rowId');
 
-                    var newQuantity = roundTo(t.val() * quantities[rowId].from / quantities[rowId].to);                    
+                    var newQuantity = null;
+                    if(quantities[rowId]){
+                        newQuantity = roundTo(t.val() * quantities[rowId].from / quantities[rowId].to);
+                    }
                     newQuantity = roundTo(newQuantity);
                     if (!newQuantity || t.hasClass('error-grid')) {
                         newQuantity = '';
