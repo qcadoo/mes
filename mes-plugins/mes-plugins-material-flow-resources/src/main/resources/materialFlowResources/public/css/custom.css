@@ -59,7 +59,7 @@ input.eac-square {
 }
 
 input[type="text"] {
-    padding: .5em .3em;
+    padding: .1em;
     margin-bottom: 3px;
     display:table-cell;
     border: 1px solid #aaaaaa;
@@ -198,6 +198,8 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 input[type="number"] {
     -moz-appearance: textfield;
+    padding: .5em .3em;
+    border: 1px solid #aaaaaa;
 }
 
 input[readonly]{
@@ -207,4 +209,37 @@ input[readonly]{
 .error-grid {
     border-color: red;
     background-color: rgba(255, 0, 0, 0.33);
+}
+
+.ui-jqgrid-labels {
+    height: 30px;
+}
+.ui-jqgrid .ui-jqgrid-htable th {
+    height: 22px;
+    background: #555555;
+}
+.ui-jqgrid tr.ui-search-toolbar td > input {
+    margin-left: 5px;
+}
+.ui-state-default a {
+    color: #e8e8e8;
+}
+
+#ui-datepicker-div {
+    font-size: 12px;
+}
+
+.ui-datepicker-trigger {
+    position: relative;
+    cursor: pointer;
+    left: -23px;
+    top: 8px;
+}
+
+.FormData {
+    height: 30px;
+}
+
+.EditTable td select {
+    margin-top: 2px;
 }

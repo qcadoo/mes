@@ -84,7 +84,7 @@ myApp.directive('ngJqGrid', function ($window) {
 
                     var positionsHeader = QCD.translate('qcadooView.gridHeader.positions');
                     var newHeader = QCD.translate('qcadooView.gridHeader.new');
-                    var addNewRowButton = '<div id="add_new_row" class="headerActionButton" onclick="return addNewRow();"> <a href="#"><span>' +
+                    var addNewRowButton = '<div id="add_new_row" class="headerActionButton headerButtonEnabled" onclick="return addNewRow();"> <a href="#"><span>' +
                             '<div id="add_new_icon""></div>' +
                             '<div class="hasIcon">' + newHeader + '</div></div>';
                     $(addNewRowButton).bind('click', scope.addNewRow);
@@ -848,8 +848,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editoptions: {
                         dataInit: function (element) {
                             var options = $.datepicker.regional[window.locale];
-                            options.showOn = 'focus';
-
+                            options.showOn = 'button';
+                            options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
+                            options.buttonImageOnly = true;
+                            options.buttonText = 'Wybierz';
                             $(element).datepicker(options);
                         }
                     },
@@ -868,8 +870,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editoptions: {
                         dataInit: function (element) {
                             var options = $.datepicker.regional[window.locale];
-                            options.showOn = 'focus';
-
+                            options.showOn = 'button';
+                            options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
+                            options.buttonImageOnly = true;
+                            options.buttonText = 'Wybierz';
                             $(element).datepicker(options);
                         }
                     },
