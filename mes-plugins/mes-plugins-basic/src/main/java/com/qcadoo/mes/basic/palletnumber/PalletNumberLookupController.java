@@ -44,7 +44,7 @@ public class PalletNumberLookupController extends BasicLookupController {
     @RequestMapping(value = "config", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     public Map<String, Object> getConfig() {
-        return getConfigMap(Arrays.asList("code", "number"));
+        return getConfigMap(Arrays.asList("number"));
     }
 
 }
