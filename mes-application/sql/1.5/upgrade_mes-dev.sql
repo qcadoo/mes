@@ -56,5 +56,23 @@ ALTER TABLE materialflowresources_resource ADD COLUMN typeofpallet character var
 
 -- end
 
+-- ESILCO-16
+CREATE TABLE materialflowresources_documentpositionparameters
+(
+  id bigint NOT NULL,
+  showstoragelocation boolean DEFAULT false,
+  showadditionalcode boolean DEFAULT false,
+  showproductiondate boolean DEFAULT false,
+  showexpiratindate boolean DEFAULT false,
+  showpallet boolean DEFAULT false,
+  showtypeofpallet boolean DEFAULT false,
+  showbatch boolean DEFAULT false,
+  CONSTRAINT materialflowresources_documentpositionparameters_pkey PRIMARY KEY (id)
+);
 
+ALTER TABLE basic_parameter ADD COLUMN documentpositionparameters_id bigint;
 
+ALTER TABLE basic_parameter
+  ADD CONSTRAINT parammeter_documentpositionparameters_fkey FOREIGN KEY (documentpositionparameters_id)
+      REFERENCES materialflowresources_documentpositionparameters (id) DEFERRABLE;
+-- end
