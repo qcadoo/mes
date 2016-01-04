@@ -296,6 +296,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var messagesController = new QCD.MessagesController();
 
+        function getRowIdFromElement(el) {
+            var rowId = el.attr('rowId');
+            if ('_empty' === rowId) {
+                rowId = 0;
+            }
+            
+            return rowId;
+        }
+
         function showMessage(message) {
             messagesController.addMessage(message);
         }
@@ -460,7 +469,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
-                    updateProductByAdditionalCode(t.val(), t.attr('rowId'), url);
+                    updateProductByAdditionalCode(t.val(), getRowIdFromElement(t), url);
                 }, 500));
             });
 
@@ -525,7 +534,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     return element.key === givenUnitValue;
                 })[0];
                 if (entry) {
-                    quantities[rowId] = {from: entry.quantityfrom, to: entry.quantityto};
+                    quantities[rowId||0] = {from: entry.quantityfrom, to: entry.quantityto};
                     conversion = roundTo(parseFloat(entry.quantityto) / parseFloat(entry.quantityfrom));
                 }
             }
@@ -545,7 +554,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 validateElement(t, validatorNumber);
 
                 $(this).data("timeout", setTimeout(function () {
-                    var rowId = t.attr('rowId');
+                    var rowId = getRowIdFromElement(t);
 
                     var newGivenQuantity = null;
                     if (quantities[rowId]) {
@@ -556,7 +565,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         newGivenQuantity = '';
                     }
 
-                    updateFieldValue('givenquantity', newGivenQuantity, t.attr('rowId'));
+                    updateFieldValue('givenquantity', newGivenQuantity, rowId);
                 }, 500));
             });
 
@@ -581,10 +590,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
-                    var rowId = t.attr('rowId');
+                    var rowId = getRowIdFromElement(t);
 
                     var newQuantity = null;
-                    if(quantities[rowId]){
+                    if (quantities[rowId]) {
                         newQuantity = roundTo(t.val() * quantities[rowId].from / quantities[rowId].to);
                     }
                     newQuantity = roundTo(newQuantity);
@@ -592,7 +601,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         newQuantity = '';
                     }
 
-                    updateFieldValue('quantity', newQuantity, t.attr('rowId'));
+                    updateFieldValue('quantity', newQuantity, rowId);
                 }, 500));
             });
 
@@ -621,7 +630,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             $select.bind('change', function () {
                 var newValue = $(this).val();
-                updateConversionByGivenUnitValue(newValue, $(this).attr('rowId'));
+                updateConversionByGivenUnitValue(newValue, getRowIdFromElement($(this)));
             });
 
             return $select;
