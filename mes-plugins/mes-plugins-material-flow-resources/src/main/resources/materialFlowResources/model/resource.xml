@@ -61,6 +61,7 @@
         <decimal name="conversion" default="0" />
         <belongsTo name="palletNumber" model="palletNumber" plugin="basic" />
         <dictionary name="typeOfPallet" dictionary="typeOfPallet"/>
+        <dictionary name="givenUnit" dictionary="units"/>
 
     </fields>
     <hooks>

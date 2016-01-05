@@ -58,6 +58,7 @@
                     expression="#storageLocation['number']"/>
 
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit"/>
+            <option type="column" name="givenUnit" fields="givenUnit" width="50"/>
             <option type="column" name="additionalCode" fields="additionalCode" expression="#additionalCode['code']"/>
             <option type="column" name="conversion" fields="conversion"/>
             <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']"/>
@@ -69,9 +70,9 @@
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,quantityInAdditionalUnit,additionalCode,conversion,palletNumber,typeOfPallet"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,quantityInAdditionalUnit,additionalCode,conversion,palletNumber,typeOfPallet,givenUnit"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,quantityInAdditionalUnit,additionalCode,conversion,palletNumber,typeOfPallet"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,quantityInAdditionalUnit,additionalCode,conversion,palletNumber,typeOfPallet,givenUnit"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceDetails"/>
             <option type="correspondingViewInModal" value="true"/>

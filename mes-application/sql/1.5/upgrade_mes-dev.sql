@@ -54,6 +54,8 @@ ALTER TABLE materialflowresources_resource
 
 ALTER TABLE materialflowresources_resource ADD COLUMN typeofpallet character varying(255);
 
+ALTER TABLE materialflowresources_resource ADD COLUMN givenunit character varying(255);
+
 -- end
 
 -- ESILCO-16
