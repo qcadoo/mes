@@ -173,8 +173,8 @@ public class DocumentPositionValidator {
             return Arrays.asList("qcadooView.error.position.givenquantity.invalid");
         }
 
-        if( !validateScale(position.getGivenquantity(), null, 5) || !validatePresicion(position.getGivenquantity(), null, 12)){
-            return Arrays.asList("qcadooView.error.position.givenquantity.invalid");            
+        if (!validateScale(position.getGivenquantity(), null, 5) || !validatePresicion(position.getGivenquantity(), null, 12)) {
+            return Arrays.asList("qcadooView.error.position.givenquantity.invalid");
         }
 
         return Arrays.asList();
@@ -184,8 +184,8 @@ public class DocumentPositionValidator {
         if (position.getPrice() != null && BigDecimal.ZERO.compareTo(position.getPrice()) > 0) {
             return Arrays.asList("qcadooView.error.position.price.invalid");
         }
-        
-        if( !validateScale(position.getPrice(), null, 5) || !validatePresicion(position.getPrice(), null, 12)){
+
+        if (position.getPrice() != null && (!validateScale(position.getPrice(), null, 5) || !validatePresicion(position.getPrice(), null, 12))) {
             return Arrays.asList("qcadooView.error.position.price.invalid");
         }
 

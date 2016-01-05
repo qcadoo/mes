@@ -211,12 +211,23 @@ function validateSerializeData(data) {
     } else {
         elements = $('.error-grid', '#gridContainer');
     }
-/*
-    angular.forEach(elements, function (el, key) {
-        var name = $(el).attr('name');
-        delete data[name];
+    /*
+     angular.forEach(elements, function (el, key) {
+     var name = $(el).attr('name');
+     delete data[name];
+     });
+     */
+    angular.forEach(data, function (el, key) {
+        if ('typeOfPallet' === key) {
+            /*var emptyItem = translateMessages('qcadooView.typeOfPallet.emptyItem');
+             if(emptyItem === data[key]){
+             delete data[key];
+             }*/
+        }
     });
-*/
+
+
+
     return JSON.stringify(data);
 }
 
@@ -697,6 +708,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $("#grid").trigger("reloadGrid");
         }
 
+        function typeOfPalletFmatter(cellvalue, options, rowObject) {
+            var newValue = cellvalue;
+            if (!cellvalue) {
+                newValue = translateMessages('qcadooView.typeOfPallet.emptyItem');
+            }
+
+            return newValue;
+        }
+
         $scope.resize = function () {
             console.log('resize');
             jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 25, true);
@@ -940,6 +960,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     name: 'typeOfPallet',
                     index: 'typeOfPallet',
                     editable: true,
+                    formatter: typeOfPalletFmatter,
                     required: true,
                     edittype: 'select',
                     editoptions: {
@@ -1051,7 +1072,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     url: '../../rest/typeOfPallets'
 
                 }).then(function successCallback(response) {
-                    selectOptionsTypeOfPallets = [];
+                    selectOptionsTypeOfPallets = [':' + translateMessages('qcadooView.typeOfPallet.emptyItem')];
                     angular.forEach(response.data, function (value, key) {
                         selectOptionsTypeOfPallets.push(value.key + ':' + value.value);
                     });
