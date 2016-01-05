@@ -7,21 +7,39 @@ import java.util.Objects;
 public class DocumentPositionDTO {
 
     private Long id;
+
     private Long document;
+
+    private Integer number;
+
     private String product;
+
     private String additionalCode;
+
     private BigDecimal quantity;
+
     private String unit;
+
     private BigDecimal givenquantity;
+
     private String givenunit;
+
     private BigDecimal conversion;
+
     private Date expirationdate;
+
     private Date productiondate;
+
     private String palletNumber;
+
     private String typeOfPallet;
+
     private String storageLocation;
+
     private BigDecimal price;
+
     private String batch;
+
     // TODO
     private Long resource;
 
@@ -31,6 +49,14 @@ public class DocumentPositionDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     public Long getDocument() {
@@ -249,8 +275,12 @@ public class DocumentPositionDTO {
 
     @Override
     public String toString() {
-        return "DocumentPositionDTO{" + "id=" + id + ", document=" + document + ", product=" + product + ", additional_code=" + additionalCode + ", quantity=" + quantity + ", unit=" + unit + ", givenquantity=" + givenquantity + ", givenunit=" + givenunit + ", conversion=" + conversion + ", expirationdate=" + expirationdate + ", productiondate=" + productiondate + ", pallet=" + palletNumber + ", type_of_pallet=" + typeOfPallet + ", storage_location=" + storageLocation + ", price=" + price + ", batch=" + batch + ", resource=" + resource + '}';
+        return "DocumentPositionDTO{" + "id=" + id + ", document=" + document + ", product=" + product + ", additional_code="
+                + additionalCode + ", quantity=" + quantity + ", unit=" + unit + ", givenquantity=" + givenquantity
+                + ", givenunit=" + givenunit + ", conversion=" + conversion + ", expirationdate=" + expirationdate
+                + ", productiondate=" + productiondate + ", pallet=" + palletNumber + ", type_of_pallet=" + typeOfPallet
+                + ", storage_location=" + storageLocation + ", price=" + price + ", batch=" + batch + ", resource=" + resource
+                + '}';
     }
-    
-    
+
 }
