@@ -76,3 +76,18 @@ ALTER TABLE basic_parameter
   ADD CONSTRAINT parammeter_documentpositionparameters_fkey FOREIGN KEY (documentpositionparameters_id)
       REFERENCES materialflowresources_documentpositionparameters (id) DEFERRABLE;
 -- end
+
+
+ALTER TABLE materialflowresources_position ADD additionalcode_id bigint;
+ALTER TABLE materialflowresources_position ADD conversion numeric(12,5) DEFAULT 0::numeric;
+ALTER TABLE materialflowresources_position ADD palletnumber_id bigint;
+ALTER TABLE materialflowresources_position ADD typeofpallet character varying(255);
+
+ALTER TABLE materialflowresources_position
+  ADD CONSTRAINT position_additionalcode_fkey FOREIGN KEY (additionalcode_id)
+      REFERENCES basic_additionalcode (id) DEFERRABLE;
+
+ALTER TABLE materialflowresources_position
+  ADD CONSTRAINT position_palletnumber_fkey FOREIGN KEY (palletnumber_id)
+      REFERENCES basic_palletnumber (id) DEFERRABLE;
+  

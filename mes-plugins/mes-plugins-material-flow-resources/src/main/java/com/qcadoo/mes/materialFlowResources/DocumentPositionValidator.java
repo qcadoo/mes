@@ -56,16 +56,17 @@ public class DocumentPositionValidator {
 
         errors.addAll(validatePrice(position));
         errors.addAll(validateQuantity(position));
+        errors.addAll(validateGivenquantity(position));
         errors.addAll(validateDates(position));
         errors.addAll(checkAttributesRequirement(position, document));
         errors.addAll(validateResources(position, document));
 
         Map<String, Object> params = tryMapDocumentPositionVOToParams(position, errors);
-        
+
         if (!errors.isEmpty()) {
             throw new RuntimeException(errors.stream().collect(Collectors.joining("\n")));
         }
-        
+
         return params;
     }
 
@@ -92,7 +93,7 @@ public class DocumentPositionValidator {
 
         List<String> errors = new ArrayList<>();
 
-        if (requirePrice && (position.getPrice() == null ||BigDecimal.ZERO.compareTo(position.getPrice())==0 )) {
+        if (requirePrice && (position.getPrice() == null || BigDecimal.ZERO.compareTo(position.getPrice()) == 0)) {
             errors.add("qcadooView.error.position.price.required");
         }
         if (requireBatch && position.getBatch() == null) {
@@ -157,17 +158,40 @@ public class DocumentPositionValidator {
             return Arrays.asList("qcadooView.error.position.quantity.invalid");
         }
 
+        if (!validateScale(position.getQuantity(), null, 5) || !validatePresicion(position.getQuantity(), null, 12)) {
+            return Arrays.asList("qcadooView.error.position.quantity.invalid");
+        }
+
+        return Arrays.asList();
+    }
+
+    private Collection<? extends String> validateGivenquantity(DocumentPositionDTO position) {
+        if (position.getGivenquantity() == null) {
+            return Arrays.asList("qcadooView.error.position.givenquantity.required");
+
+        } else if (BigDecimal.ZERO.compareTo(position.getGivenquantity()) >= 0) {
+            return Arrays.asList("qcadooView.error.position.givenquantity.invalid");
+        }
+
+        if( !validateScale(position.getGivenquantity(), null, 5) || !validatePresicion(position.getGivenquantity(), null, 12)){
+            return Arrays.asList("qcadooView.error.position.givenquantity.invalid");            
+        }
+
         return Arrays.asList();
     }
 
     private Collection<? extends String> validatePrice(DocumentPositionDTO position) {
-        if (position.getPrice()!= null && BigDecimal.ZERO.compareTo(position.getPrice()) > 0) {
+        if (position.getPrice() != null && BigDecimal.ZERO.compareTo(position.getPrice()) > 0) {
+            return Arrays.asList("qcadooView.error.position.price.invalid");
+        }
+        
+        if( !validateScale(position.getPrice(), null, 5) || !validatePresicion(position.getPrice(), null, 12)){
             return Arrays.asList("qcadooView.error.position.price.invalid");
         }
 
-        return Arrays.asList();        
+        return Arrays.asList();
     }
-    
+
     private Map<String, Object> tryMapDocumentPositionVOToParams(DocumentPositionDTO vo, List<String> errors) {
         Map<String, Object> params = new HashMap<>();
 
@@ -255,5 +279,31 @@ public class DocumentPositionValidator {
             errors.add(String.format("Nie znaleziono takiego miejsca składowania: '%s'.", storageLocationNumber));
             return null;
         }
-    }    
+    }
+
+    private boolean validateScale(BigDecimal value, Integer min, Integer max) {
+        int scale = value.stripTrailingZeros().scale();
+
+        if (max != null && scale > max) {
+            return false;
+        }
+        if (min != null && scale < min) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validatePresicion(BigDecimal value, Integer min, Integer max) {
+        final int presicion = value.precision();
+
+        if (max != null && presicion > max) {
+            return false;
+        }
+        if (min != null && presicion < min) {
+            return false;
+        }
+
+        return true;
+    }
 }

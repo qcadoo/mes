@@ -96,6 +96,19 @@ myApp.directive('ngJqGrid', function ($window) {
 
                     $(table).jqGrid('filterToolbar');
 
+                    function translateAndShowMessages(response) {
+                        var messages = translateMessages(JSON.parse(response.responseText).message);
+
+                        angular.forEach(messages.split('\n'), function (el, key) {
+                            messagesController.addMessage({
+                                type: "failure",
+                                content: el
+                            });
+                        });
+
+                        return '';
+                    }
+
                     $(table).navGrid('#jqGridPager',
                             // the buttons to appear on the toolbar of the grid
                                     {edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
@@ -115,7 +128,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                     params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
                                 },
                                 errorTextFormat: function (response) {
-                                    return translateMessages(JSON.parse(response.responseText).message);
+                                    return translateAndShowMessages(response);
                                 },
                                 beforeShowForm: function (form) {
                                     var dlgDiv = $("#editmodgrid");
@@ -148,7 +161,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                                     params.url = '../../integration/rest/documentPositions.html';
                                                 },
                                                 errorTextFormat: function (response) {
-                                                    return translateMessages(JSON.parse(response.responseText).message);
+                                                    return translateAndShowMessages(response);
                                                 },
                                                 beforeShowForm: function (form) {
                                                     var dlgDiv = $("#editmodgrid");
@@ -198,12 +211,12 @@ function validateSerializeData(data) {
     } else {
         elements = $('.error-grid', '#gridContainer');
     }
-
+/*
     angular.forEach(elements, function (el, key) {
         var name = $(el).attr('name');
         delete data[name];
     });
-
+*/
     return JSON.stringify(data);
 }
 
@@ -290,18 +303,19 @@ function onSelectLookupRow(row, recordName) {
     mainController.closeThisModalWindow();
 }
 
+var messagesController = new QCD.MessagesController();
+
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
         var _this = this;
         var quantities = {};
 
-        var messagesController = new QCD.MessagesController();
 
         function getRowIdFromElement(el) {
             var rowId = el.attr('rowId');
             if ('_empty' === rowId) {
                 rowId = 0;
             }
-            
+
             return rowId;
         }
 
@@ -534,7 +548,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     return element.key === givenUnitValue;
                 })[0];
                 if (entry) {
-                    quantities[rowId||0] = {from: entry.quantityfrom, to: entry.quantityto};
+                    quantities[rowId || 0] = {from: entry.quantityfrom, to: entry.quantityto};
                     conversion = roundTo(parseFloat(entry.quantityto) / parseFloat(entry.quantityfrom));
                 }
             }
@@ -575,6 +589,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function price_createElement(value, options) {
             var $input = $('<input type="number" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
+
+            $($input).bind('change keydown paste input', function () {
+                var t = $(this);
+
+                validateElement(t, validatorNumber);
+            });
 
             return $input;
         }

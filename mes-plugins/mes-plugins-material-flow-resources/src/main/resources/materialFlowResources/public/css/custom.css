@@ -243,3 +243,7 @@ input[readonly]{
 .EditTable td select {
     margin-top: 2px;
 }
+
+.FormError {
+    display: none !important;
+}
