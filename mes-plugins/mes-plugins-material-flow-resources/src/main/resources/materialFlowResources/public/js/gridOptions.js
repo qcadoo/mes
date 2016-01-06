@@ -737,7 +737,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             rowID: "0",
             initdata: {
             },
-            position: "first",
+            position: "last",
             useDefValues: true,
             useFormatter: false,
             addRowParams: angular.extend({
@@ -753,10 +753,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             rowNum: 150,
             sortname: 'id',
             toolbar: [true, "top"],
+            rownumbers: true,
+            altRows:true,
+            altclass:'qcadooRowClass',
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
             },
-            colNames: ['ID', 'document', 'number', 'product', 'additionalCode', 'quantity', 'unit', 'givenquantity', 'givenunit', 'conversion', 'price', 'expirationdate',
+            colNames: ['ID', 'document', 'product', 'additionalCode', 'quantity', 'unit', 'givenquantity', 'givenunit', 'conversion', 'price', 'expirationdate',
                 'productiondate', 'batch', 'palletNumber', 'typeOfPallet', 'storageLocation'/*, 'resource_id'*/],
             colModel: [
                 {
@@ -775,13 +778,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
 
                 },
-                {
+                /*{
                     name: 'number',
                     index: 'number',
                     width: 50,
                     hidden: false,
                     editable: false
-                },
+                },*/
                 {
                     name: 'product',
                     index: 'product',

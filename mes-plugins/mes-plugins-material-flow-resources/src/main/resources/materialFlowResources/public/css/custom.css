@@ -247,3 +247,5 @@ input[readonly]{
 .FormError {
     display: none !important;
 }
+
+.qcadooRowClass { background-color: #DDDDDC; background-image: none; }
