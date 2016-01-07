@@ -47,7 +47,7 @@ public class StorageLocationLookupController extends BasicLookupController {
     @ResponseBody
     @RequestMapping(value = "config", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public Map<String, Object> getConfig() {
+    public Map<String, Object> getConfig(Locale locale) {
         return getConfigMap(Arrays.asList("number"));
     }
 

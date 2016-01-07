@@ -27,7 +27,7 @@ public abstract class BasicLookupController {
         ModelAndView mav = new ModelAndView();
 
         mav.addObject("userLogin", securityService.getCurrentUserName());
-        mav.addObject("translationsMap", translationService.getMessagesGroup(view, locale));
+        mav.addObject("translationsMap", translationService.getMessagesGroup("commons", locale));
         mav.addObject("recordName", recordName);
 
         mav.setViewName("basic/" + view);
@@ -67,6 +67,6 @@ public abstract class BasicLookupController {
 
     public abstract List getRecords(@RequestParam String sidx, @RequestParam String sord);
 
-    public abstract Map<String, Object> getConfig();
+    public abstract Map<String, Object> getConfig(Locale locale);
 
 }

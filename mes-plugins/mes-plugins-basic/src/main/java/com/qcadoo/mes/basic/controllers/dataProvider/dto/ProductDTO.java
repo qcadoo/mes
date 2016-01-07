@@ -10,6 +10,12 @@ public class ProductDTO {
 
     private String name;
 
+    private String ean;
+
+    private String globaltypeofmaterial;
+
+    private String category;
+
     public Long getId() {
         return id;
     }
@@ -40,6 +46,30 @@ public class ProductDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEan() {
+        return ean;
+    }
+
+    public void setEan(String ean) {
+        this.ean = ean;
+    }
+
+    public String getGlobaltypeofmaterial() {
+        return globaltypeofmaterial;
+    }
+
+    public void setGlobaltypeofmaterial(String globaltypeofmaterial) {
+        this.globaltypeofmaterial = globaltypeofmaterial;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
 }

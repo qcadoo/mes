@@ -29,7 +29,7 @@ public class DataProvider {
 
     public List<ProductDTO> getAllProducts(String sidx, String sord) {
         // TODO sort
-        String _query = "SELECT product.id as id, product.number as code, product.number as number, product.name as name "
+        String _query = "SELECT product.id, product.number as code, product.number, product.name, product.ean, product.globaltypeofmaterial, product.category "
                 + "FROM basic_product product WHERE product.active = true;";
 
         List<ProductDTO> products = jdbcTemplate.query(_query, new MapSqlParameterSource(Collections.EMPTY_MAP), new BeanPropertyRowMapper(ProductDTO.class));
@@ -46,7 +46,7 @@ public class DataProvider {
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
         List<ProductDTO> products = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(ProductDTO.class));
-        
+
         return products;
     }
 
@@ -57,7 +57,7 @@ public class DataProvider {
                 + "JOIN basic_product product ON (additionalcode.product_id = product.id);";
 
         List<AdditionalCodeDTO> codes = jdbcTemplate.query(_query, new MapSqlParameterSource(Collections.EMPTY_MAP), new BeanPropertyRowMapper(AdditionalCodeDTO.class));
-        
+
         return codes;
     }
 
@@ -72,7 +72,7 @@ public class DataProvider {
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
         List<AdditionalCodeDTO> codes = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(AdditionalCodeDTO.class));
-        
+
         return codes;
     }
 
@@ -81,7 +81,7 @@ public class DataProvider {
                 + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true;";
 
         List<PalletNumberDTO> pallets = jdbcTemplate.query(_query, new MapSqlParameterSource(Collections.EMPTY_MAP), new BeanPropertyRowMapper(PalletNumberDTO.class));
-        
+
         return pallets;
     }
 
@@ -94,7 +94,7 @@ public class DataProvider {
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
         List<PalletNumberDTO> pallets = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(PalletNumberDTO.class));
-        
+
         return pallets;
     }
 

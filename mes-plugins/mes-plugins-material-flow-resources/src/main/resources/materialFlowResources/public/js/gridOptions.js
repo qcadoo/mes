@@ -737,7 +737,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             rowID: "0",
             initdata: {
             },
-            position: "last",
+            position: "first",
             useDefValues: true,
             useFormatter: false,
             addRowParams: angular.extend({

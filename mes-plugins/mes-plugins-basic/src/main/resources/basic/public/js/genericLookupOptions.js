@@ -18,7 +18,7 @@ myApp.directive('ngJqGrid', function ($window) {
                     element.append(angular.element('<div id="jqGridPager"></div>'));
                     $(table).jqGrid(newValue);
 
-                    var positionsHeader = QCD.translate('qcadooView.gridHeader.'+scope.recordName);
+                    var positionsHeader = QCD.translate('qcadooView.gridHeader.' + scope.recordName);
                     var cancelHeader = QCD.translate('qcadooView.gridHeader.cancel');
                     var cancelButton = '<div id="cancel_button" class="headerActionButton" onclick="return cancelGrid();"> <a href="#"><span>' +
                             '<div id="cancel_icon"></div>' +
@@ -115,6 +115,17 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             }).then(function successCallback(response) {
                 config = angular.merge(config, response.data);
+
+                angular.forEach(config.colNames, function (value, key) {
+                    config.colNames[key] = QCD.translate('qcadooView.gridColumn.' + value);
+                });
+
+                angular.forEach(config.colModel, function (value, key) {
+                    if (config.colModel[key].formatter && typeof config.colModel[key].formatter === 'string') {
+                        config.colModel[key].formatter = eval('(' + config.colModel[key].formatter + ')');
+                    }
+
+                });
 
                 $scope.config = config;
             });
