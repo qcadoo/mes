@@ -2,11 +2,14 @@ package com.qcadoo.mes.basic;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.security.api.SecurityService;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,9 +47,10 @@ public abstract class BasicLookupController {
         modelId.put("key", true);
         modelId.put("hidden", true);
 
-        Map<String, Map<String, Object>> colModel = new HashMap<>();
+        Map<String, Map<String, Object>> colModel = new TreeMap<>();
         colModel.put("ID", modelId);
 
+        Collections.reverse(columns);
         columns.forEach(column -> {
             Map<String, Object> model = new HashMap<>();
             model.put("name", column);

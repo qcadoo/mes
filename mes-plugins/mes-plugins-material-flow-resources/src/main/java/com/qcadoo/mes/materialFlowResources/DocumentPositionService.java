@@ -3,6 +3,7 @@ package com.qcadoo.mes.materialFlowResources;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.mappers.DocumentPositionMapper;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -94,10 +95,14 @@ public class DocumentPositionService {
         }
     }
 
-    public Map<String, Object> getGridConfig() {
+    public Map<String, Object> getGridConfig(Long documentId) {
         try {
             String query = "select * from materialflowresources_documentpositionparameters";
-            return jdbcTemplate.queryForMap(query, Collections.EMPTY_MAP);
+            Map<String, Object> config = jdbcTemplate.queryForMap(query, Collections.EMPTY_MAP);
+
+            config.put("readOnly", isGridReadOnly(documentId));
+
+            return config;
 
         } catch (EmptyResultDataAccessException e) {
             return Collections.EMPTY_MAP;
@@ -170,5 +175,12 @@ public class DocumentPositionService {
         }
 
         return units;
+    }
+
+    private boolean isGridReadOnly(Long documentId) {
+        String query = "select state from materialflowresources_document WHERE id = :id";
+        String stateString = jdbcTemplate.queryForObject(query, Collections.singletonMap("id", documentId), String.class);
+
+        return DocumentState.parseString(stateString) == DocumentState.ACCEPTED;
     }
 }

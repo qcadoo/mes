@@ -84,10 +84,9 @@ myApp.directive('ngJqGrid', function ($window) {
 
                     var positionsHeader = QCD.translate('qcadooView.gridHeader.positions');
                     var newHeader = QCD.translate('qcadooView.gridHeader.new');
-                    var addNewRowButton = '<div id="add_new_row" class="headerActionButton headerButtonEnabled" onclick="return addNewRow();"> <a href="#"><span>' +
+                    var addNewRowButton = '<div id="add_new_row" class="headerActionButton headerButtonEnabled"' + (scope.readOnly ? '' : ' onclick="return addNewRow();"') + '> <a href="#"><span>' +
                             '<div id="add_new_icon""></div>' +
                             '<div class="hasIcon">' + newHeader + '</div></div>';
-                    $(addNewRowButton).bind('click', scope.addNewRow);
 
                     var gridTitle = '<div class="gridTitle">' + positionsHeader + '</div>';
 
@@ -109,97 +108,100 @@ myApp.directive('ngJqGrid', function ($window) {
                         return '';
                     }
 
-                    $(table).navGrid('#jqGridPager',
-                            // the buttons to appear on the toolbar of the grid
-                                    {edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
-                            // options for the Edit Dialog
-                            {
-                                ajaxEditOptions: {contentType: "application/json"},
-                                mtype: 'PUT',
-                                closeAfterEdit: true,
-                                resize: false,
-                                viewPagerButtons: false,
-                                serializeEditData: function (data) {
-                                    delete data.oper;
+                    if (!scope.readOnly) {
+                        $(table).navGrid('#jqGridPager',
+                                // the buttons to appear on the toolbar of the grid
+                                        {edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
+                                // options for the Edit Dialog
+                                {
+                                    ajaxEditOptions: {contentType: "application/json"},
+                                    mtype: 'PUT',
+                                    closeAfterEdit: true,
+                                    resize: false,
+                                    viewPagerButtons: false,
+                                    serializeEditData: function (data) {
+                                        delete data.oper;
 
-                                    return validateSerializeData(data);
+                                        return validateSerializeData(data);
+                                    },
+                                    onclickSubmit: function (params, postdata) {
+                                        params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
+                                    },
+                                    errorTextFormat: function (response) {
+                                        return translateAndShowMessages(response);
+                                    },
+                                    beforeShowForm: function (form) {
+                                        var dlgDiv = $("#editmodgrid");
+                                        var dlgWidth = 586;
+                                        var dlgHeight = dlgDiv.height();
+                                        var parentWidth = $(window).width();
+                                        var parentHeight = $(window).height();
+                                        dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
+                                        dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
+                                        dlgDiv[0].style.width = dlgWidth + "px";
+                                    },
                                 },
-                                onclickSubmit: function (params, postdata) {
-                                    params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
-                                },
-                                errorTextFormat: function (response) {
-                                    return translateAndShowMessages(response);
-                                },
-                                beforeShowForm: function (form) {
-                                    var dlgDiv = $("#editmodgrid");
-                                    var dlgWidth = 586;
-                                    var dlgHeight = dlgDiv.height();
-                                    var parentWidth = $(window).width();
-                                    var parentHeight = $(window).height();
-                                    dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
-                                    dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
-                                    dlgDiv[0].style.width = dlgWidth + "px";
-                                },
-                            },
-                                    // options for the Add Dialog
-                                            {
-                                                ajaxEditOptions: {
-                                                    contentType: "application/json"
-                                                },
-                                                mtype: "PUT",
-                                                closeAfterEdit: true,
-                                                resize: false,
-                                                reloadAfterSubmit: true,
-                                                viewPagerButtons: false,
-                                                serializeEditData: function (data) {
-                                                    delete data.oper;
-                                                    delete data.id;
+                                        // options for the Add Dialog
+                                                {
+                                                    ajaxEditOptions: {
+                                                        contentType: "application/json"
+                                                    },
+                                                    mtype: "PUT",
+                                                    closeAfterEdit: true,
+                                                    resize: false,
+                                                    reloadAfterSubmit: true,
+                                                    viewPagerButtons: false,
+                                                    serializeEditData: function (data) {
+                                                        delete data.oper;
+                                                        delete data.id;
 
-                                                    return validateSerializeData(data);
+                                                        return validateSerializeData(data);
+                                                    },
+                                                    onclickSubmit: function (params, postdata) {
+                                                        params.url = '../../integration/rest/documentPositions.html';
+                                                    },
+                                                    errorTextFormat: function (response) {
+                                                        return translateAndShowMessages(response);
+                                                    },
+                                                    beforeShowForm: function (form) {
+                                                        var dlgDiv = $("#editmodgrid");
+                                                        var dlgWidth = 586;
+                                                        var dlgHeight = dlgDiv.height();
+                                                        var parentWidth = $(window).width();
+                                                        var parentHeight = $(window).height();
+                                                        dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
+                                                        dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
+                                                        dlgDiv[0].style.width = dlgWidth + "px";
+                                                    },
                                                 },
-                                                onclickSubmit: function (params, postdata) {
-                                                    params.url = '../../integration/rest/documentPositions.html';
-                                                },
-                                                errorTextFormat: function (response) {
-                                                    return translateAndShowMessages(response);
-                                                },
-                                                beforeShowForm: function (form) {
-                                                    var dlgDiv = $("#editmodgrid");
-                                                    var dlgWidth = 586;
-                                                    var dlgHeight = dlgDiv.height();
-                                                    var parentWidth = $(window).width();
-                                                    var parentHeight = $(window).height();
-                                                    dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
-                                                    dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
-                                                    dlgDiv[0].style.width = dlgWidth + "px";
-                                                },
-                                            },
-                                            // options for the Delete Dailog
-                                                    {
-                                                        mtype: "DELETE",
-                                                        serializeDelData: function () {
-                                                            return ""; // don't send and body for the HTTP DELETE
-                                                        },
-                                                        onclickSubmit: function (params, postdata) {
-                                                            params.url = '../../integration/rest/documentPositions/' + encodeURIComponent(postdata) + ".html";
-                                                        },
-                                                        errorTextFormat: function (response) {
-                                                            return translateMessages(JSON.parse(response.responseText).message);
-                                                        }
-                                                    });
-                                        }
-                            });
-
-                    scope.$watch('data', function (newValue, oldValue) {
-                        var i;
-                        for (i = oldValue.length - 1; i >= 0; i--) {
-                            $(table).jqGrid('delRowData', i);
-                        }
-                        for (i = 0; i < newValue.length; i++) {
-                            $(table).jqGrid('addRowData', i, newValue[i]);
-                        }
+                                                // options for the Delete Dailog
+                                                        {
+                                                            mtype: "DELETE",
+                                                            serializeDelData: function () {
+                                                                return ""; // don't send and body for the HTTP DELETE
+                                                            },
+                                                            onclickSubmit: function (params, postdata) {
+                                                                params.url = '../../integration/rest/documentPositions/' + encodeURIComponent(postdata) + ".html";
+                                                            },
+                                                            errorTextFormat: function (response) {
+                                                                return translateMessages(JSON.parse(response.responseText).message);
+                                                            }
+                                                        });
+                                            }
+                                }
                     });
+
+
+            scope.$watch('data', function (newValue, oldValue) {
+                var i;
+                for (i = oldValue.length - 1; i >= 0; i--) {
+                    $(table).jqGrid('delRowData', i);
                 }
+                for (i = 0; i < newValue.length; i++) {
+                    $(table).jqGrid('addRowData', i, newValue[i]);
+                }
+            });
+        }
     };
 });
 
@@ -754,8 +756,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             sortname: 'id',
             toolbar: [true, "top"],
             rownumbers: true,
-            altRows:true,
-            altclass:'qcadooRowClass',
+            altRows: true,
+            altclass: 'qcadooRowClass',
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
             },
@@ -779,12 +781,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                 },
                 /*{
-                    name: 'number',
-                    index: 'number',
-                    width: 50,
-                    hidden: false,
-                    editable: false
-                },*/
+                 name: 'number',
+                 index: 'number',
+                 width: 50,
+                 hidden: false,
+                 editable: false
+                 },*/
                 {
                     name: 'product',
                     index: 'product',
@@ -1062,7 +1064,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             $http({
                 method: 'GET',
-                url: '../../integration/rest/documentPositions/gridConfig.html'
+                url: '../../integration/rest/documentPositions/gridConfig/' + config.document_id + '.html'
 
             }).then(function successCallback(response) {
                 angular.forEach(config.colModel, function (value, key) {
@@ -1103,6 +1105,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         $scope.documentIdChanged = function (id) {
             config.url = '../../integration/rest/documentPositions/' + id + '.html';
+            config.document_id = id;
 
             config.colModel.filter(function (element, index) {
                 return element.index === 'document';
