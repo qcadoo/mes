@@ -1093,6 +1093,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         return element.index === 'typeOfPallet';
                     })[0].editoptions.value = selectOptionsTypeOfPallets.join(';');
 
+                    $scope.readOnly = config.readOnly;
                     $scope.config = config;
 
                     $('#gridWrapper').unblock();
