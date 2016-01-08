@@ -23,9 +23,7 @@ public class TimeUsageDTO {
 
     private Integer duration;
 
-    private Date registeredStart;
-
-    private Date registeredEnd;
+    private Integer registeredTime;
 
     public String getWorker() {
         return worker;
@@ -99,20 +97,12 @@ public class TimeUsageDTO {
         this.duration = duration;
     }
 
-    public Date getRegisteredStart() {
-        return registeredStart;
+    public Integer getRegisteredTime() {
+        return registeredTime;
     }
 
-    public void setRegisteredStart(Date registeredStart) {
-        this.registeredStart = registeredStart;
-    }
-
-    public Date getRegisteredEnd() {
-        return registeredEnd;
-    }
-
-    public void setRegisteredEnd(Date registeredEnd) {
-        this.registeredEnd = registeredEnd;
+    public void setRegisteredTime(Integer registeredTime) {
+        this.registeredTime = registeredTime;
     }
 
 }

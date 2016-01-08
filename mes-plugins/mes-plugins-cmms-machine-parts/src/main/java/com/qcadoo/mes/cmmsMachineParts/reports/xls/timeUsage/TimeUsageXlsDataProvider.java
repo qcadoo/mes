@@ -1,12 +1,14 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage.dto.TimeUsageDTO;
 import com.qcadoo.model.api.DataDefinitionService;
 
@@ -19,7 +21,7 @@ public class TimeUsageXlsDataProvider {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private final static String query = "SELECT staff.name || ' ' || staff.surname AS worker, 'planned' AS event_type,\n"
+    private final static String plannedEventQuery = "SELECT staff.name || ' ' || staff.surname AS worker, staff.id AS worker_id, 'planned' AS event_type,\n"
             + "realization.startdate,\n"
             + "event.number,\n"
             + "event.type,\n"
@@ -38,9 +40,9 @@ public class TimeUsageXlsDataProvider {
             + "LEFT JOIN basic_subassembly subassembly ON event.subassembly_id=subassembly.id\n"
             + "LEFT JOIN basic_workstation workstation ON event.workstation_id=workstation.id\n"
             + "LEFT JOIN basic_division division ON event.division_id=division.id\n"
-            + "LEFT JOIN basic_factory factory ON event.factory_id=factory.id\n"
-            + "UNION ALL\n"
-            + "SELECT staff.name || ' ' || staff.surname AS worker, 'maintenance' AS event_type,\n"
+            + "LEFT JOIN basic_factory factory ON event.factory_id=factory.id\n";
+
+    private final static String maintenanceEventQuery = "SELECT staff.name || ' ' || staff.surname AS worker, staff.id AS worker_id, 'maintenance' AS event_type,\n"
             + "realization.startdate,\n"
             + "event.number,\n"
             + "event.type,\n"
@@ -61,8 +63,28 @@ public class TimeUsageXlsDataProvider {
             + "LEFT JOIN basic_division division ON event.division_id=division.id\n"
             + "LEFT JOIN basic_factory factory ON event.factory_id=factory.id";
 
-    public List<TimeUsageDTO> getUsages() {
-        List<TimeUsageDTO> usages = jdbcTemplate.query(query, new BeanPropertyRowMapper(TimeUsageDTO.class));
+    public List<TimeUsageDTO> getUsages(Map<String, Object> filters) {
+        String query = prepareQuery(filters);
+        List<TimeUsageDTO> usages = jdbcTemplate.query(query, filters, new TimeUsageRowMapper());
         return usages;
+    }
+
+    private String prepareQuery(Map<String, Object> filters) {
+        StringBuilder builder = new StringBuilder("SELECT * FROM ( " + plannedEventQuery + "UNION ALL " + maintenanceEventQuery
+                + " ) AS events");
+        if (!filters.isEmpty()) {
+            List<String> whereFilters = Lists.newLinkedList();
+            if (filters.containsKey("fromDate")) {
+                whereFilters.add("startDate >= :fromDate");
+            }
+            if (filters.containsKey("toDate")) {
+                whereFilters.add("startDate <= :toDate");
+            }
+            if (filters.containsKey("workers")) {
+                whereFilters.add("worker_id in (:workers)");
+            }
+            builder.append(" WHERE " + StringUtils.collectionToDelimitedString(whereFilters, " AND "));
+        }
+        return builder.toString();
     }
 }
