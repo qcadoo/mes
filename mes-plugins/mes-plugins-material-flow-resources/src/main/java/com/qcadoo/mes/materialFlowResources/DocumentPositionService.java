@@ -5,21 +5,16 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.mappers.DocumentPositionMapper;
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class DocumentPositionService {
@@ -120,6 +115,37 @@ public class DocumentPositionService {
         } catch (EmptyResultDataAccessException e) {
             return Collections.EMPTY_MAP;
         }
+    }
+
+    public void updateDocumentPositionsNumbers(final Long documentId){
+        String query = "SELECT p.*, product.number as product_number, product.unit as product_unit, additionalcode.code as additionalcode_code, palletnumber.number as palletnumber_number, location.number as storagelocation_number\n"
+                + "	FROM materialflowresources_position p\n"
+                + "	left join basic_product product on (p.product_id = product.id)\n"
+                + "	left join basic_additionalcode additionalcode on (p.additionalcode_id = additionalcode.id)\n"
+                + "	left join basic_palletnumber palletnumber on (p.palletnumber_id = palletnumber.id)\n"
+                + "	left join materialflowresources_storagelocation location on (p.storagelocation_id = location.id) WHERE p.document_id = :documentId ORDER BY p.number";
+
+        List<DocumentPositionDTO> list = jdbcTemplate.query(query, Collections.singletonMap("documentId", documentId), new DocumentPositionMapper());
+        int index = 1;
+        for (DocumentPositionDTO documentPositionDTO : list) {
+            documentPositionDTO.setNumber(index);
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("number", documentPositionDTO.getNumber());
+            parameters.put("id", documentPositionDTO.getId());
+            String _query = "UPDATE materialflowresources_position SET number = :number WHERE id = :id ";
+            jdbcTemplate.update(_query, parameters);
+            index++;
+        }
+
+
+    }
+
+    public Long findDocumentByPosition(final Long positionId) {
+        String query = "SELECT p.document_id FROM materialflowresources_position p WHERE id = :id ";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("id", positionId);
+        Long documentId = jdbcTemplate.queryForObject(query, parameters, Long.class);
+        return documentId;
     }
 
     private List<Map<String, Object>> getAvailableAdditionalUnitsByProduct(Map<String, Object> units) {
