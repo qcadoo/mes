@@ -321,7 +321,7 @@ var messagesController = new QCD.MessagesController();
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
         var _this = this;
         var quantities = {};
-
+        var conversionModified = false;
 
         function getRowIdFromElement(el) {
             var rowId = el.attr('rowId');
@@ -481,6 +481,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
+                    conversionModified = false;
                     updateUnitsInGridByProduct(t.val());
                 }, 500));
             });
@@ -556,18 +557,20 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function updateConversionByGivenUnitValue(givenUnitValue, rowId) {
             var conversion = '';
 
-            if (available_additionalunits) {
-                var entry = available_additionalunits.filter(function (element, index) {
-                    return element.key === givenUnitValue;
-                })[0];
-                if (entry) {
-                    quantities[rowId || 0] = {from: entry.quantityfrom, to: entry.quantityto};
-                    conversion = roundTo(parseFloat(entry.quantityto) / parseFloat(entry.quantityfrom));
+            if (!conversionModified) {
+                if (available_additionalunits) {
+                    var entry = available_additionalunits.filter(function (element, index) {
+                        return element.key === givenUnitValue;
+                    })[0];
+                    if (entry) {
+                        quantities[rowId || 0] = {from: entry.quantityfrom, to: entry.quantityto};
+                        conversion = roundTo(parseFloat(entry.quantityto) / parseFloat(entry.quantityfrom));
+                    }
                 }
-            }
 
-            updateFieldValue('conversion', conversion, rowId);
-            touchManuallyQuantityField(rowId);
+                updateFieldValue('conversion', conversion, rowId);
+                touchManuallyQuantityField(rowId);
+            }
         }
 
         function quantity_createElement(value, options) {
@@ -583,9 +586,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $(this).data("timeout", setTimeout(function () {
                     var rowId = getRowIdFromElement(t);
 
+                    var conversion = getFieldValue('conversion', rowId);
                     var newGivenQuantity = null;
                     if (quantities[rowId]) {
-                        newGivenQuantity = roundTo(t.val() * quantities[rowId].to / quantities[rowId].from);
+                        newGivenQuantity = roundTo(t.val() * conversion);
                     }
                     newGivenQuantity = roundTo(newGivenQuantity);
                     if (!newGivenQuantity || t.hasClass('error-grid')) {
@@ -625,9 +629,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $(this).data("timeout", setTimeout(function () {
                     var rowId = getRowIdFromElement(t);
 
+                    var conversion = getFieldValue('conversion', rowId);
                     var newQuantity = null;
                     if (quantities[rowId]) {
-                        newQuantity = roundTo(t.val() * quantities[rowId].from / quantities[rowId].to);
+                        newQuantity = roundTo(t.val() * (1 / conversion));
                     }
                     newQuantity = roundTo(newQuantity);
                     if (!newQuantity || t.hasClass('error-grid')) {
@@ -636,6 +641,39 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                     updateFieldValue('quantity', newQuantity, rowId);
                 }, 500));
+            });
+
+            return $input;
+        }
+
+        function conversion_createElement(value, options) {
+            var $input = $('<input type="number" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+            $input.val(value);
+
+            $($input).bind('change keydown paste input', function () {
+                var t = $(this);
+                conversionModified = true;
+                window.clearTimeout(t.data("timeout"));
+
+                validateElement(t, validatorNumber);
+
+                console.log(t.val());
+                $(this).data("timeout", setTimeout(function () {
+                    var rowId = getRowIdFromElement(t);
+
+                    var quantity = getFieldValue('quantity', rowId);
+                    var newGivenQuantity = null;
+                    if (quantities[rowId]) {
+                        newGivenQuantity = roundTo(t.val() * quantity);
+                    }
+                    newGivenQuantity = roundTo(newGivenQuantity);
+                    if (!newGivenQuantity || t.hasClass('error-grid')) {
+                        newGivenQuantity = '';
+                    }
+
+                    updateFieldValue('givenquantity', newGivenQuantity, rowId);
+                }, 500));
+
             });
 
             return $input;
@@ -663,6 +701,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             $select.bind('change', function () {
                 var newValue = $(this).val();
+                conversionModified = false;
                 updateConversionByGivenUnitValue(newValue, getRowIdFromElement($(this)));
             });
 
@@ -874,7 +913,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     index: 'conversion',
                     editable: true,
                     required: true,
-                    editoptions: {readonly: 'readonly'},
+                    edittype: 'custom',
+                    editoptions: {
+                        custom_element: conversion_createElement,
+                        custom_value: input_value
+                    },
                     formoptions: {
                         rowpos: 8,
                         colpos: 1
