@@ -37,5 +37,6 @@
                     copyable="false"/>
     </fields>
     <hooks>
+    	<onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.TimeUsageReportFilterHooks" method="onSave"/>
     </hooks>
 </model>

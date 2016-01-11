@@ -26,10 +26,6 @@ public class TimeUsageReportListeners {
         GridComponent workersGrid = (GridComponent) state.getComponentByReference("workers");
         String selected = (String) componentState.getFieldValue();
         if ("01all".equals(selected)) {
-            FormComponent form = (FormComponent) state.getComponentByReference("form");
-            Entity filter = form.getEntity();
-            filter.setField("workers", null);
-            form.setEntity(filter);
             workersGrid.setEntities(Collections.emptyList());
             workersGrid.setEnabled(false);
         } else {

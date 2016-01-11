@@ -27,9 +27,7 @@ import java.util.Collections;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.internal.components.select.SelectComponentState;
 
@@ -43,10 +41,6 @@ public class TimeUsageReportHooks {
         GridComponent workersGrid = (GridComponent) view.getComponentByReference("workers");
         String selected = (String) workersSelection.getFieldValue();
         if ("01all".equals(selected)) {
-            FormComponent form = (FormComponent) view.getComponentByReference("form");
-            Entity filter = form.getEntity();
-            filter.setField("workers", null);
-            form.setEntity(filter);
             workersGrid.setEntities(Collections.emptyList());
             workersGrid.setEnabled(false);
         } else {

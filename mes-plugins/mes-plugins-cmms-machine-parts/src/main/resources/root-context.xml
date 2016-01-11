@@ -52,4 +52,23 @@
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate"
           c:dataSource-ref="dataSource"/>
+
+    <bean id="schedulerReportFilterCleaner" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="cleanOldFilters"/>
+            </list>
+        </property>
+    </bean>
+
+     <bean id="cleanOldFilters" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail" ref="cleanOldUsageFilters"/>
+        <property name="cronExpression" value="0 0 0 * * ?"/>
+    </bean>
+
+    <bean id="cleanOldUsageFilters"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="timeUsageReportFilterCleanerService"/>
+        <property name="targetMethod" value="cleanOldFilters"/>
+    </bean>
 </beans>
