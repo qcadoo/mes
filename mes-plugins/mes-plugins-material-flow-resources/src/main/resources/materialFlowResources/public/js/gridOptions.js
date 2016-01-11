@@ -84,7 +84,7 @@ myApp.directive('ngJqGrid', function ($window) {
 
                     var positionsHeader = QCD.translate('qcadooView.gridHeader.positions');
                     var newHeader = QCD.translate('qcadooView.gridHeader.new');
-                    var addNewRowButton = '<div id="add_new_row" class="headerActionButton headerButtonEnabled"' + (scope.readOnly ? '' : ' onclick="return addNewRow();"') + '> <a href="#"><span>' +
+                    var addNewRowButton = '<div id="add_new_row" class="headerActionButton headerButtonEnabled ' + (newValue.readOnly ? 'disabled-button"' : '" onclick="return addNewRow();"') + '> <a href="#"><span>' +
                             '<div id="add_new_icon""></div>' +
                             '<div class="hasIcon">' + newHeader + '</div></div>';
 
@@ -108,7 +108,7 @@ myApp.directive('ngJqGrid', function ($window) {
                         return '';
                     }
 
-                    if (!scope.readOnly) {
+                    if (!newValue.readOnly) {
                         $(table).navGrid('#jqGridPager',
                                 // the buttons to appear on the toolbar of the grid
                                         {edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
@@ -761,8 +761,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
             },
-            colNames: ['ID', 'document', 'number', 'product', 'additionalCode', 'quantity', 'unit', 'givenquantity', 'givenunit', 'conversion', 'price', 'expirationdate',
-                'productiondate', 'batch', 'palletNumber', 'typeOfPallet', 'storageLocation'/*, 'resource_id'*/],
+            colNames: ['ID', QCD.translate('qcadooView.gridColumn.document'), QCD.translate('qcadooView.gridColumn.number'), QCD.translate('qcadooView.gridColumn.product'), QCD.translate('qcadooView.gridColumn.additionalCode'), 
+                QCD.translate('qcadooView.gridColumn.quantity'), QCD.translate('qcadooView.gridColumn.unit'), QCD.translate('qcadooView.gridColumn.givenquantity'), 
+                QCD.translate('qcadooView.gridColumn.givenunit'), QCD.translate('qcadooView.gridColumn.conversion'), QCD.translate('qcadooView.gridColumn.price'), 
+                QCD.translate('qcadooView.gridColumn.expirationdate'), QCD.translate('qcadooView.gridColumn.productiondate'), QCD.translate('qcadooView.gridColumn.batch'), 
+                QCD.translate('qcadooView.gridColumn.palletNumber'), QCD.translate('qcadooView.gridColumn.typeOfPallet'), 
+                QCD.translate('qcadooView.gridColumn.storageLocation')/*, 'resource_id'*/],
             colModel: [
                 {
                     name: 'id',
@@ -1021,7 +1025,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 //                    $scope.editedRow = id;
 //                    jQuery('#grid').editRow(id, gridEditOptions);
 //                }
-                jQuery('#grid').editRow(id, gridEditOptions);
+                if (!$scope.config.readOnly) {
+                    jQuery('#grid').editRow(id, gridEditOptions);
+                }
             },
             ajaxRowOptions: {
                 contentType: "application/json"
@@ -1068,16 +1074,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 url: '../../integration/rest/documentPositions/gridConfig/' + config.document_id + '.html'
 
             }).then(function successCallback(response) {
+                config.readOnly = response.data.readOnly;
+
                 angular.forEach(config.colModel, function (value, key) {
                     if (hideColumnInGrid(value.index, response.data)) {
                         config.colModel[key].hidden = true;
                         config.colModel[key].editrules = config.colModel[key].editrules || {};
                         config.colModel[key].editrules.edithidden = true;
                     }
-                });
-
-                angular.forEach(config.colNames, function (value, key) {
-                    config.colNames[key] = QCD.translate('qcadooView.gridColumn.' + value);
                 });
 
                 $http({
@@ -1094,8 +1098,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         return element.index === 'typeOfPallet';
                     })[0].editoptions.value = selectOptionsTypeOfPallets.join(';');
 
-                    $scope.readOnly = config.readOnly;
-                    $scope.config = config;
+                    var newConfig = {};
+                    newConfig = angular.merge(newConfig, config);
+                    $scope.config = newConfig;
 
                     $('#gridWrapper').unblock();
 

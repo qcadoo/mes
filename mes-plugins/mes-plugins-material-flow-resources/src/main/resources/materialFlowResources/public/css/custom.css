@@ -249,3 +249,8 @@ input[readonly]{
 }
 
 .qcadooRowClass { background-color: #DDDDDC; background-image: none; }
+
+.disabled-button {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}

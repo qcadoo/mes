@@ -46,28 +46,39 @@ public class DocumentPositionValidator {
                 Collections.singletonMap("id", position.getDocument()), new BeanPropertyRowMapper<DocumentDTO>(DocumentDTO.class));
 
         List<String> errors = new ArrayList<>();
+        Map<String, Object> params = null;
+        
+        if (isGridReadOnly(document)) {
+            errors.add("qcadooView.error.position.documentAccepted");
+            
+        } else {
 
-        if (Strings.isNullOrEmpty(position.getProduct())) {
-            errors.add("qcadooView.error.position.product.required");
+            if (Strings.isNullOrEmpty(position.getProduct())) {
+                errors.add("qcadooView.error.position.product.required");
+            }
+            if (Strings.isNullOrEmpty(position.getUnit())) {
+                errors.add("qcadooView.error.position.unit.required");
+            }
+
+            errors.addAll(validatePrice(position));
+            errors.addAll(validateQuantity(position));
+            errors.addAll(validateGivenquantity(position));
+            errors.addAll(validateDates(position));
+            errors.addAll(checkAttributesRequirement(position, document));
+            errors.addAll(validateResources(position, document));
+
+            params = tryMapDocumentPositionVOToParams(position, errors);
         }
-        if (Strings.isNullOrEmpty(position.getUnit())) {
-            errors.add("qcadooView.error.position.unit.required");
-        }
-
-        errors.addAll(validatePrice(position));
-        errors.addAll(validateQuantity(position));
-        errors.addAll(validateGivenquantity(position));
-        errors.addAll(validateDates(position));
-        errors.addAll(checkAttributesRequirement(position, document));
-        errors.addAll(validateResources(position, document));
-
-        Map<String, Object> params = tryMapDocumentPositionVOToParams(position, errors);
-
+        
         if (!errors.isEmpty()) {
             throw new RuntimeException(errors.stream().collect(Collectors.joining("\n")));
         }
 
         return params;
+    }
+
+    private boolean isGridReadOnly(DocumentDTO document) {
+        return DocumentState.parseString(document.getState()) == DocumentState.ACCEPTED;
     }
 
     private List<String> checkAttributesRequirement(final DocumentPositionDTO position, final DocumentDTO document) {
