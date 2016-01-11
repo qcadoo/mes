@@ -710,15 +710,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $("#grid").trigger("reloadGrid");
         }
 
-        function typeOfPalletFmatter(cellvalue, options, rowObject) {
-            var newValue = cellvalue;
-            if (!cellvalue) {
-                newValue = translateMessages('qcadooView.typeOfPallet.emptyItem');
-            }
-
-            return newValue;
-        }
-
         $scope.resize = function () {
             console.log('resize');
             jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 25, true);
@@ -977,7 +968,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     name: 'typeOfPallet',
                     index: 'typeOfPallet',
                     editable: true,
-                    formatter: typeOfPalletFmatter,
                     required: true,
                     edittype: 'select',
                     editoptions: {
