@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.mappers.DocumentPositionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -25,21 +24,27 @@ public class DocumentPositionService {
     @Autowired
     private DocumentPositionValidator validator;
 
-    public List<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord) {
+    public List<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, DocumentPositionDTO position) {
         String sidx = _sidx != null ? _sidx.toLowerCase() : "";
         String sord = _sord != null ? _sord.toLowerCase() : "";
 
         Preconditions.checkState(Arrays.asList("asc", "desc", "").contains(sord));
         Preconditions.checkState(Arrays.asList(DocumentPositionDTO.class.getDeclaredFields()).stream().map(Field::getName).collect(Collectors.toList()).contains(sidx));
 
-        String query = "SELECT p.*, product.number as product_number, product.unit as product_unit, additionalcode.code as additionalcode_code, palletnumber.number as palletnumber_number, location.number as storagelocation_number\n"
+        String query = "SELECT * FROM ( SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, "
+                + "palletnumber.number as palletnumber, location.number as storagelocation\n"
                 + "	FROM materialflowresources_position p\n"
                 + "	left join basic_product product on (p.product_id = product.id)\n"
                 + "	left join basic_additionalcode additionalcode on (p.additionalcode_id = additionalcode.id)\n"
                 + "	left join basic_palletnumber palletnumber on (p.palletnumber_id = palletnumber.id)\n"
-                + "	left join materialflowresources_storagelocation location on (p.storagelocation_id = location.id) WHERE p.document_id = :documentId ORDER BY " + sidx + " " + sord;
+                + "	left join materialflowresources_storagelocation location on (p.storagelocation_id = location.id) WHERE p.document_id = :documentId ORDER BY " + sidx + " " + sord + ") q ";
 
-        List<DocumentPositionDTO> list = jdbcTemplate.query(query, Collections.singletonMap("documentId", documentId), new DocumentPositionMapper());
+        query += addQueryWhereForPosition(position);
+
+        Map<String, Object> parameters = getParametersForPosition(position);
+        parameters.put("documentId", documentId);
+
+        List<DocumentPositionDTO> list = jdbcTemplate.query(query, parameters, new BeanPropertyRowMapper(DocumentPositionDTO.class));
 
         return list;
     }
@@ -117,26 +122,26 @@ public class DocumentPositionService {
         }
     }
 
-    public void updateDocumentPositionsNumbers(final Long documentId){
-        String query = "SELECT p.*, product.number as product_number, product.unit as product_unit, additionalcode.code as additionalcode_code, palletnumber.number as palletnumber_number, location.number as storagelocation_number\n"
+    public void updateDocumentPositionsNumbers(final Long documentId) {
+        String query = "SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, palletnumber.number as palletnumber, "
+                + "location.number as storagelocationnumber\n"
                 + "	FROM materialflowresources_position p\n"
                 + "	left join basic_product product on (p.product_id = product.id)\n"
                 + "	left join basic_additionalcode additionalcode on (p.additionalcode_id = additionalcode.id)\n"
                 + "	left join basic_palletnumber palletnumber on (p.palletnumber_id = palletnumber.id)\n"
                 + "	left join materialflowresources_storagelocation location on (p.storagelocation_id = location.id) WHERE p.document_id = :documentId ORDER BY p.number";
 
-        List<DocumentPositionDTO> list = jdbcTemplate.query(query, Collections.singletonMap("documentId", documentId), new DocumentPositionMapper());
+        List<DocumentPositionDTO> list = jdbcTemplate.query(query, Collections.singletonMap("documentId", documentId), new BeanPropertyRowMapper(DocumentPositionDTO.class));
         int index = 1;
         for (DocumentPositionDTO documentPositionDTO : list) {
             documentPositionDTO.setNumber(index);
-            Map<String, Object> parameters = new HashMap<String, Object>();
+            Map<String, Object> parameters = new HashMap<>();
             parameters.put("number", documentPositionDTO.getNumber());
             parameters.put("id", documentPositionDTO.getId());
             String _query = "UPDATE materialflowresources_position SET number = :number WHERE id = :id ";
             jdbcTemplate.update(_query, parameters);
             index++;
         }
-
 
     }
 
@@ -208,5 +213,66 @@ public class DocumentPositionService {
         String stateString = jdbcTemplate.queryForObject(query, Collections.singletonMap("id", documentId), String.class);
 
         return DocumentState.parseString(stateString) == DocumentState.ACCEPTED;
+    }
+
+    private String addQueryWhereForPosition(DocumentPositionDTO position) {
+        List<String> items = new ArrayList<>();
+
+        if (position != null) {
+            for (Field field : DocumentPositionDTO.class.getDeclaredFields()) {
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(position);
+                    if (value != null) {
+                        if (value instanceof Number) {
+                            items.add(String.format("%s = :%s", field.getName(), field.getName()));
+
+                        } else if (value instanceof Date) {
+                            items.add(String.format("%s = :%s", field.getName(), field.getName()));
+
+                        } else if (value instanceof String) {
+                            items.add(String.format("lower(%s) like lower(:%s)", field.getName(), field.getName()));
+                        }
+                    }
+
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+
+        String where = "";
+
+        if (!items.isEmpty()) {
+            where = " WHERE " + items.stream().collect(Collectors.joining(" AND "));
+        }
+
+        return where;
+    }
+
+    private Map<String, Object> getParametersForPosition(DocumentPositionDTO position) {
+        Map<String, Object> parameters = new HashMap<>();
+
+        if (position != null) {
+            for (Field field : DocumentPositionDTO.class.getDeclaredFields()) {
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(position);
+                    if (value != null) {
+                        if (value instanceof String) {
+                            parameters.put(field.getName(), "%" + value + "%");
+
+                        } else {
+                            parameters.put(field.getName(), value);
+                        }
+                    }
+
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+
+        return parameters;
     }
 }

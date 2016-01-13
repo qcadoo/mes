@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
@@ -26,8 +27,10 @@ public class DocumentPositionDTO {
 
     private BigDecimal conversion;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "CET")
     private Date expirationdate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "CET")
     private Date productiondate;
 
     private String palletNumber;

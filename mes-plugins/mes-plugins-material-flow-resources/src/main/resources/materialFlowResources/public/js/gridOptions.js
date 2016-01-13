@@ -809,7 +809,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             datatype: "json",
             height: '100%',
             autowidth: true,
-            rowNum: 150,
+            rowNum: 3,
             sortname: 'id',
             toolbar: [true, "top"],
             rownumbers: false,
@@ -819,10 +819,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 return translateMessages(JSON.parse(response.responseText).message);
             },
             colNames: ['ID', QCD.translate('qcadooView.gridColumn.document'), QCD.translate('qcadooView.gridColumn.number'), QCD.translate('qcadooView.gridColumn.actions'), QCD.translate('qcadooView.gridColumn.product'), QCD.translate('qcadooView.gridColumn.additionalCode'), 
-                QCD.translate('qcadooView.gridColumn.quantity'), QCD.translate('qcadooView.gridColumn.unit'), QCD.translate('qcadooView.gridColumn.givenquantity'), 
-                QCD.translate('qcadooView.gridColumn.givenunit'), QCD.translate('qcadooView.gridColumn.conversion'), QCD.translate('qcadooView.gridColumn.price'), 
-                QCD.translate('qcadooView.gridColumn.expirationdate'), QCD.translate('qcadooView.gridColumn.productiondate'), QCD.translate('qcadooView.gridColumn.batch'), 
-                QCD.translate('qcadooView.gridColumn.palletNumber'), QCD.translate('qcadooView.gridColumn.typeOfPallet'), 
+                QCD.translate('qcadooView.gridColumn.quantity'), QCD.translate('qcadooView.gridColumn.unit'), QCD.translate('qcadooView.gridColumn.givenquantity'),
+                QCD.translate('qcadooView.gridColumn.givenunit'), QCD.translate('qcadooView.gridColumn.conversion'), QCD.translate('qcadooView.gridColumn.price'),
+                QCD.translate('qcadooView.gridColumn.expirationdate'), QCD.translate('qcadooView.gridColumn.productiondate'), QCD.translate('qcadooView.gridColumn.batch'),
+                QCD.translate('qcadooView.gridColumn.palletNumber'), QCD.translate('qcadooView.gridColumn.typeOfPallet'),
                 QCD.translate('qcadooView.gridColumn.storageLocation')/*, 'resource_id'*/],
             colModel: [
                 {
@@ -842,13 +842,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                 },
                 {
-                 name: 'number',
-                 index: 'number',
-                 search:false,
-                 width: 50,
-                 hidden: false,
-                 editable: false
-                 },
+                    name: 'number',
+                    index: 'number',
+                    search: false,
+                    width: 50,
+                    hidden: false,
+                    editable: false
+                },
                  {
                     name:'act',
                     index:'act',
@@ -1142,7 +1142,17 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             },
             beforeSubmit: function (postdata, formid) {
                 return [false, 'ble'];
-            }
+            },
+//            serializeGridData: function (postData) {
+//                var queryData = {};
+//                angular.forEach(config.colModel, function (value, key) {
+//                    queryData[value.index] = postData[value.index];
+//                    delete postData[value.index];
+//                });
+//                postData.queryData = queryData;
+//                
+//                return postData;
+//            },
         };
 
         function prepareGridConfig(config) {

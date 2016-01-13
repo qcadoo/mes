@@ -3,25 +3,36 @@ package com.qcadoo.mes.materialFlowResources.controllers;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
 import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.web.bind.WebDataBinder;
 
 @Controller
 @RequestMapping("/integration/rest/documentPositions")
 public class DocumentPositionsController {
-    
+
     @Autowired
     private DocumentPositionService documentPositionRepository;
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "{id}")
-    public List<DocumentPositionDTO> findAll(@PathVariable Long id, @RequestParam String sidx, @RequestParam String sord) {
-        return documentPositionRepository.findAll(id, sidx, sord);
+    public List<DocumentPositionDTO> findAll(@PathVariable Long id, @RequestParam String sidx, @RequestParam String sord,
+            @RequestParam(defaultValue = "1", required = false, value = "page") Integer page,
+            @RequestParam(value = "rows") int rows,
+            DocumentPositionDTO positionDTO) {
+
+        return documentPositionRepository.findAll(id, sidx, sord, positionDTO);
     }
 
     @ResponseBody
@@ -60,7 +71,15 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "gridConfig/{id}")
-    public Map<String, Object> gridConfig(@PathVariable Long id){
+    public Map<String, Object> gridConfig(@PathVariable Long id) {
         return documentPositionRepository.getGridConfig(id);
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder dataBinder, Locale locale, HttpServletRequest request) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
+        dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
 }
