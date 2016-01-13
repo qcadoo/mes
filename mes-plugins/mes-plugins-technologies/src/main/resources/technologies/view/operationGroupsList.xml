@@ -43,6 +43,7 @@
 			<option type="correspondingView" value="technologies/operationGroupDetails" />
 			<option type="correspondingComponent" value="form" />
 
+			<option type="fixedHeight" value="true" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 			<option type="paginable" value="true" />

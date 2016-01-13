@@ -24,14 +24,18 @@
 package com.qcadoo.mes.cmmsMachineParts;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -62,6 +66,9 @@ public class MaintenanceEventContextService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
     public void confirmOrChangeContext(ViewDefinitionState view, ComponentState componentState, String[] args) {
         FormComponent formComponent = (FormComponentState) view.getComponentByReference(L_FORM);
         Entity maintenanceEventContextEntity = prepareContextEntity(formComponent.getEntity());
@@ -69,7 +76,7 @@ public class MaintenanceEventContextService {
         if (maintenanceEventContextEntity.getBooleanField(MaintenanceEventContextFields.CONFIRMED)) {
             maintenanceEventContextEntity = changeContext(view, maintenanceEventContextEntity);
         } else {
-            maintenanceEventContextEntity = confirmContext(view, maintenanceEventContextEntity, args);
+            maintenanceEventContextEntity = confirmContext(maintenanceEventContextEntity, args);
         }
         formComponent.setEntity(maintenanceEventContextEntity);
     }
@@ -84,25 +91,22 @@ public class MaintenanceEventContextService {
         return maintenanceEventContextEntity;
     }
 
-    private Entity confirmContext(ViewDefinitionState view, Entity maintenanceEventContextEntity, String[] args) {
-        FormComponent formComponent = (FormComponentState) view.getComponentByReference(L_FORM);
-
+    private Entity confirmContext(Entity maintenanceEventContextEntity, String[] args) {
         maintenanceEventContextEntity.setField(MaintenanceEventContextFields.CONFIRMED, true);
         maintenanceEventContextEntity = maintenanceEventContextEntity.getDataDefinition().save(maintenanceEventContextEntity);
         Long maintenanceEventContextEntityId = maintenanceEventContextEntity.getId();
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("contextId", maintenanceEventContextEntityId);
+        SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
         if (args.length > 0 && args[0].equals(L_PLANNED_EVENT)) {
-            dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
-                    .find().list().getEntities().stream().forEach(event -> {
-                        event.setField(PlannedEventFields.PLANNED_EVENT_CONTEXT, maintenanceEventContextEntityId);
-                        event.getDataDefinition().save(event);
-                    });
+            String sql = "update cmmsmachineparts_plannedevent set plannedeventcontext_id = :contextId";
+
+            jdbcTemplate.update(sql, namedParameters);
+
         } else {
-            dataDefinitionService
-                    .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT).find()
-                    .list().getEntities().stream().forEach(event -> {
-                        event.setField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT, maintenanceEventContextEntityId);
-                        event.getDataDefinition().save(event);
-                    });
+            String sql = "update cmmsmachineparts_maintenanceevent set maintenanceeventcontext_id = :contextId";
+
+            jdbcTemplate.update(sql, namedParameters);
         }
         return maintenanceEventContextEntity;
     }
@@ -212,12 +216,14 @@ public class MaintenanceEventContextService {
 
         Entity factoryEntity = maintenanceEventContext.getBelongsToField(MaintenanceEventContextFields.FACTORY);
         if (factoryEntity != null) {
-            filterValueHolder.put(EventCriteriaModifiersCMP.EVENT_CONTEXT_FILTER_PARAMETER_FACTORY, factoryEntity.getId());
+            filterValueHolder.put(EventCriteriaModifiersCMP.EVENT_CONTEXT_FILTER_PARAMETER_FACTORY,
+                    Math.toIntExact(factoryEntity.getId()));
         }
 
         Entity divisionEntity = maintenanceEventContext.getBelongsToField(MaintenanceEventContextFields.DIVISION);
         if (divisionEntity != null) {
-            filterValueHolder.put(EventCriteriaModifiersCMP.EVENT_CONTEXT_FILTER_PARAMETER_DIVISION, divisionEntity.getId());
+            filterValueHolder.put(EventCriteriaModifiersCMP.EVENT_CONTEXT_FILTER_PARAMETER_DIVISION,
+                    Math.toIntExact(divisionEntity.getId()));
         }
         gridComponent.setFilterValue(filterValueHolder);
     }
@@ -232,5 +238,11 @@ public class MaintenanceEventContextService {
             eventEntity.setField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT, form.getEntityId());
             maintenanceEventDD.save(eventEntity);
         }
+    }
+
+    public Entity getCurrentContext(ViewDefinitionState viewDefinitionState, ComponentState triggerState, String[] args) {
+        FormComponent formComponent = (FormComponentState) viewDefinitionState.getComponentByReference(L_FORM);
+        Entity context = prepareContextEntity(formComponent.getEntity());
+        return context;
     }
 }

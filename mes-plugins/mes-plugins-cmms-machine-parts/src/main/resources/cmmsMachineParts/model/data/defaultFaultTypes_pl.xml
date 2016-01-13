@@ -25,5 +25,5 @@
 
 -->
 <faultType>
-	<row NAME="Inne" APPLIESTO="" />
+    <row NAME="Inne" APPLIESTO="" ISDEFAULT="true"/>
 </faultType>

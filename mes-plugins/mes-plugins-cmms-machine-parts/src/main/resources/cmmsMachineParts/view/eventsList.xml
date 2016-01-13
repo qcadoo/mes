@@ -153,7 +153,7 @@
         </windowTab>
 
         <windowTab name="mainTab" reference="mainTab">
-            <component type="grid" name="grid" reference="grid" field="#{form}.events">
+            <component type="grid" name="grid" reference="grid" field="#{form}.maintenanceEventListDtos">
                 <script>
                     <![CDATA[
 					var toggleRibbonItems = ["actions.delete"];
@@ -343,16 +343,15 @@
                 </script>
                 <option type="column" name="number" fields="number" link="true"/>
                 <option type="column" name="type" fields="type" link="true"/>
-                <option type="column" name="factory" fields="factory" expression="#factory['number']" link="true"/>
-                <option type="column" name="division" fields="division" expression="#division['number']" link="true"/>
-                <option type="column" name="productionLine" fields="productionLine"
-                        expression="#productionLine['number']"
+                <option type="column" name="factory" fields="factoryNumber" link="true"/>
+                <option type="column" name="division" fields="divisionNumber" link="true"/>
+                <option type="column" name="productionLine" fields="productionLineNumber"
                         link="true"/>
-                <option type="column" name="workstation" fields="workstation" expression="#workstation['number']"
+                <option type="column" name="workstation" fields="workstationNumber"
                         link="true"/>
-                <option type="column" name="subassembly" fields="subassembly" expression="#subassembly['number']"
+                <option type="column" name="subassembly" fields="subassemblyNumber"
                         link="true"/>
-                <option type="column" name="faultType" fields="faultType" expression="#faultType['name']"
+                <option type="column" name="faultType" fields="faultTypeNumber"
                         link="false"/>
                 <option type="column" name="description" fields="description" link="true"/>
                 <option type="column" name="createDate" fields="createDate" link="false"/>
@@ -375,6 +374,26 @@
 
                 <option type="order" column="number" direction="desc"/>
                 <option type="fullscreen" value="true"/>
+
+                <option type="hasPredefinedFilters" value="true"/>
+                <option type="defaultPredefinedFilterName" value="open"/>
+
+                <predefinedFilters>
+
+                    <predefinedFilter name="all">
+                    </predefinedFilter>
+
+                    <predefinedFilter name="open">
+                        <filterRestriction column="state"
+                                           value="[01new,02inProgress,03edited,07accepted]"/>
+                    </predefinedFilter>
+
+                    <predefinedFilter name="finished">
+                        <filterRestriction column="state"
+                                           value="[04closed,05revoked,06planned]"/>
+                    </predefinedFilter>
+
+                </predefinedFilters>
 
                 <listener event="changeState"
                           class="com.qcadoo.mes.cmmsMachineParts.states.MaintenanceEventStateChangeViewClient"

@@ -30,7 +30,9 @@
     <fields>
         <string name="number" required="true" unique="true"/>
         <enum name="type" values="01failure,02issue,03proposal" default="01failure" required="true"/>
-        <string name="description"/>
+        <string name="description">
+            <validatesLength max="600"/>
+        </string>
         <belongsTo name="personReceiving" model="staff" plugin="basic"/>
         <!-- only for show in grid-->
         <string name="personReceivingName"/>
@@ -68,7 +70,7 @@
 
         <hasMany name="plannedEvents" plugin="cmmsMachineParts" model="plannedEvent" joinField="maintenanceEvent"
                  cascade="nullify"/>
-        
+
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"

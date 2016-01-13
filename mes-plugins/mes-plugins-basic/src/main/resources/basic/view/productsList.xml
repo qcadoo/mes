@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="productsList" modelName="product" menuAccessible="true">
 
@@ -85,6 +86,7 @@
             <option type="column" name="name" fields="name" link="true"
                     width="300"/>
             <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" width="85"/>
+            <option type="column" name="category" fields="category" width="85"/>
             <option type="column" name="parent" fields="parent"
                     expression="#parent['name']" width="200"/>
             <option type="column" name="ean" fields="ean" width="85"/>
@@ -93,8 +95,8 @@
 
             <option type="order" column="name" direction="asc"/>
 
-            <option type="searchable" value="number,name,globalTypeOfMaterial,ean,parent"/>
-            <option type="orderable" value="number,name,globalTypeOfMaterial,ean,parent"/>
+            <option type="searchable" value="number,name,globalTypeOfMaterial,category,ean,parent"/>
+            <option type="orderable" value="number,name,globalTypeOfMaterial,category,ean,parent"/>
 
             <option type="correspondingView" value="basic/productDetails"/>
             <option type="correspondingComponent" value="form"/>

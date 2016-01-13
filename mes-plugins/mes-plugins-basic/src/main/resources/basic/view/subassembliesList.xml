@@ -24,16 +24,18 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="subassembliesList" modelName="subassembly" menuAccessible="true">
+      name="subassembliesList" modelName="subassemblyListDto" menuAccessible="true">
 
     <component type="window" name="window">
 
         <ribbon>
             <group name="actions" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                 <bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.performNew;" accesskey="n"/>
-                <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{grid}.performCopy;" accesskey="c">
+                <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{grid}.performCopy;"
+                             accesskey="c">
                     <script><![CDATA[
                 #{grid}.addOnChangeListener({
                 	onChange: function(selectedArray) {
@@ -46,7 +48,8 @@
                 });
 			]]></script>
                 </smallButton>
-                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{grid}.performDelete;" accesskey="d">
+                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{grid}.performDelete;"
+                             accesskey="d">
                     <script><![CDATA[
                 #{grid}.addOnChangeListener({
                 	onChange: function(selectedArray) {
@@ -61,12 +64,14 @@
                 </smallButton>
             </group>
             <group name="actions" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE">
-                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;" accesskey="r"
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;"
+                           accesskey="r"
                         />
             </group>
             <group name="states" if="#view.getComponentByReference('grid').dataDefinition.activable"
                    defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
-                <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled" action="#{grid}.performActivate;">
+                <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled"
+                             action="#{grid}.performActivate;">
                     <script><![CDATA[
                 #{grid}.addOnChangeListener({
                 	onChange: function(selectedArray) {
@@ -125,11 +130,9 @@
                     width="50"/>
             <option type="column" name="name" fields="name" link="true"
                     width="100"/>
-            <option type="column" name="workstation" fields="workstation"
-                    expression="#workstation?.get('number')"
+            <option type="column" name="workstation" fields="workstationNumber"
                     link="true"/>
-            <option type="column" name="workstationType" fields="workstationType"
-                    expression="#workstationType?.get('number')"
+            <option type="column" name="workstationType" fields="workstationTypeNumber"
                     link="true"/>
             <option type="column" name="productionDate" fields="productionDate"/>
             <option type="column" name="lastRepairsDate" fields="lastRepairsDate"/>
