@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.states.aop.listeners;
 
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.DeclarePrecedence;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import com.qcadoo.mes.cmmsMachineParts.PlannedEventChangeService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.states.AfterReviewEventsService;
 import com.qcadoo.mes.cmmsMachineParts.states.EventDocumentsService;
@@ -34,19 +43,13 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
+import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.plugin.api.RunIfEnabled;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
-import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 
 @Aspect
 @Configurable
 @RunIfEnabled(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER)
+@DeclarePrecedence("*,askForNotAcceptReason")
 public class PlannedEventStateChangeListenerAspect extends AbstractStateListenerAspect {
 
     @Autowired
@@ -56,57 +59,68 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
     private AfterReviewEventsService afterReviewEventsService;
 
     @Autowired
-    PlannedEventStateValidationService validationService;
+    private PlannedEventChangeService plannedEventChangeService;
 
+    @Autowired
+    PlannedEventStateValidationService validationService;
+    
     @Pointcut(PlannedEventStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
 
     }
 
     @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.IN_PLAN)
+    @RunForStateTransition(targetState = PlannedEventStateStringValues.IN_PLAN)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void validationOnInPlan(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnInPlan(stateChangeContext);
     }
 
     @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.PLANNED)
+    @RunForStateTransition(targetState = PlannedEventStateStringValues.PLANNED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onPlanned(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnPlanned(stateChangeContext);
     }
 
     @RunInPhase(PlannedEventStateChangePhase.DEFAULT)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.REALIZED)
+    @RunForStateTransition(targetState = PlannedEventStateStringValues.REALIZED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void createDocumentsForMachineParts(final StateChangeContext stateChangeContext, final int phase) {
         eventDocumentsService.createDocumentsForMachineParts(stateChangeContext);
     }
 
+    @RunInPhase(PlannedEventStateChangePhase.LAST)
+    @RunForStateTransition(sourceState = PlannedEventStateStringValues.IN_EDITING, targetState = PlannedEventStateStringValues.IN_REALIZATION)
+    @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
+    public void askForNotAcceptReason(final StateChangeContext stateChangeContext, final int phase,
+            final ViewContextHolder viewContext) {
+        plannedEventChangeService.showReasonForm(stateChangeContext, viewContext);
+    }
+
     @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.IN_REALIZATION)
+    @RunForStateTransition(targetState = PlannedEventStateStringValues.IN_REALIZATION)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onInRealization(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnInRealization(stateChangeContext);
     }
 
     @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.REALIZED)
+    @RunForStateTransition(targetState = PlannedEventStateStringValues.REALIZED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onRealized(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnRealized(stateChangeContext);
     }
 
     @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.CANCELED)
+    @RunForStateTransition(targetState = PlannedEventStateStringValues.CANCELED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onCanceled(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnCanceled(stateChangeContext);
     }
 
     @RunInPhase(PlannedEventStateChangePhase.LAST)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = PlannedEventStateStringValues.REALIZED)
+    @RunForStateTransition(targetState = PlannedEventStateStringValues.REALIZED)
     @AfterReturning(PHASE_EXECUTION_POINTCUT)
     public void createAfterReviewEvents(final StateChangeContext stateChangeContext, final int phase) {
         afterReviewEventsService.createAfterReviewEvents(stateChangeContext);

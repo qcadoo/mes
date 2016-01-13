@@ -23,16 +23,16 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class TechnologyHookPC {
@@ -55,6 +55,15 @@ public class TechnologyHookPC {
                 technology.setField(fieldName, parameterService.getParameter().getField(fieldName));
             }
         }
+    }
+
+    public boolean validatesWith(final DataDefinition parameterDD, final Entity technology) {
+        if (technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING) == null) {
+            technology.addError(parameterDD.getField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING),
+                    "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        return true;
     }
 
 }

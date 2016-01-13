@@ -32,6 +32,9 @@
 		<belongsTo name="division" model="division" plugin="basic" />
 		<hasMany name="events" model="maintenanceEvent"
 				 joinField="maintenanceEventContext" plugin="cmmsMachineParts" />
+
+        <hasMany name="maintenanceEventListDtos" model="maintenanceEventListDto"
+                 joinField="maintenanceEventContext" plugin="cmmsMachineParts" />
 		<boolean name="generated" default="false" />
 		<boolean name="confirmed" default="false" />
 	</fields>
