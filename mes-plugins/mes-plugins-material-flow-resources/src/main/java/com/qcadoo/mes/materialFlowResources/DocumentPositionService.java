@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.controllers.GridResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -24,29 +25,33 @@ public class DocumentPositionService {
     @Autowired
     private DocumentPositionValidator validator;
 
-    public List<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, DocumentPositionDTO position) {
+    public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page, int perPage, DocumentPositionDTO position) {
         String sidx = _sidx != null ? _sidx.toLowerCase() : "";
         String sord = _sord != null ? _sord.toLowerCase() : "";
 
         Preconditions.checkState(Arrays.asList("asc", "desc", "").contains(sord));
-        Preconditions.checkState(Arrays.asList(DocumentPositionDTO.class.getDeclaredFields()).stream().map(Field::getName).collect(Collectors.toList()).contains(sidx));
+        Preconditions.checkState(Arrays.asList(DocumentPositionDTO.class.getDeclaredFields()).stream().map(Field::getName).map(String::toLowerCase).collect(Collectors.toList()).contains(sidx));
 
-        String query = "SELECT * FROM ( SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, "
+        String query = "SELECT %s FROM ( SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, "
                 + "palletnumber.number as palletnumber, location.number as storagelocation\n"
                 + "	FROM materialflowresources_position p\n"
                 + "	left join basic_product product on (p.product_id = product.id)\n"
                 + "	left join basic_additionalcode additionalcode on (p.additionalcode_id = additionalcode.id)\n"
                 + "	left join basic_palletnumber palletnumber on (p.palletnumber_id = palletnumber.id)\n"
-                + "	left join materialflowresources_storagelocation location on (p.storagelocation_id = location.id) WHERE p.document_id = :documentId ORDER BY " + sidx + " " + sord + ") q ";
+                + "	left join materialflowresources_storagelocation location on (p.storagelocation_id = location.id) WHERE p.document_id = :documentId %s) q ";
 
         query += addQueryWhereForPosition(position);
 
         Map<String, Object> parameters = getParametersForPosition(position);
         parameters.put("documentId", documentId);
 
-        List<DocumentPositionDTO> list = jdbcTemplate.query(query, parameters, new BeanPropertyRowMapper(DocumentPositionDTO.class));
+        String queryCount = String.format(query, "COUNT(*)", "");
+        String queryRecords = String.format(query, "*", "ORDER BY " + sidx + " " + sord) + String.format(" LIMIT %d OFFSET %d", perPage, perPage * (page - 1));
 
-        return list;
+        Integer records = jdbcTemplate.queryForObject(queryCount, parameters, Long.class).intValue();
+        List<DocumentPositionDTO> list = jdbcTemplate.query(queryRecords, parameters, new BeanPropertyRowMapper(DocumentPositionDTO.class));
+
+        return new GridResponse<>(page, Double.valueOf(Math.ceil((1.0 * records) / perPage)).intValue(), records, list);
     }
 
     public void delete(Long id) {

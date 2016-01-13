@@ -27,12 +27,12 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "{id}")
-    public List<DocumentPositionDTO> findAll(@PathVariable Long id, @RequestParam String sidx, @RequestParam String sord,
+    public GridResponse<DocumentPositionDTO> findAll(@PathVariable Long id, @RequestParam String sidx, @RequestParam String sord,
             @RequestParam(defaultValue = "1", required = false, value = "page") Integer page,
-            @RequestParam(value = "rows") int rows,
+            @RequestParam(value = "rows") int perPage,
             DocumentPositionDTO positionDTO) {
 
-        return documentPositionRepository.findAll(id, sidx, sord, positionDTO);
+        return documentPositionRepository.findAll(id, sidx, sord, page, perPage, positionDTO);
     }
 
     @ResponseBody
