@@ -13,6 +13,8 @@ public class TimeUsageDTO {
 
     private String type;
 
+    private String eventType;
+
     private String state;
 
     private String object;
@@ -55,6 +57,14 @@ public class TimeUsageDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     public String getState() {

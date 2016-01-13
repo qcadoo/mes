@@ -18,7 +18,7 @@ public class TimeUsageRowMapper implements RowMapper<TimeUsageDTO> {
         timeUsage.setWorker(rs.getString("worker"));
         timeUsage.setStartDate(rs.getDate("startDate"));
         timeUsage.setNumber(rs.getString("number"));
-        String eventType = rs.getString("event_type");
+        timeUsage.setEventType(rs.getString("event_type"));
         timeUsage.setType(rs.getString("type"));
         timeUsage.setState(rs.getString("state"));
         timeUsage.setObject(rs.getString("object"));
