@@ -732,6 +732,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function successfunc(rowID, response) {
             $("#add_new_row").removeClass("disableButton");
+            $("#add_grid").show();
+            $("#edit_grid").show();
+            $("#del_grid").show();
             showMessage({
                 type: 'success',
                 content: QCD.translate('qcadooView.message.saveMessage')
@@ -752,21 +755,20 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
          function cancelEditing(myGrid) {
-                    var lrid;
-                     $("#add_new_row").removeClass("disableButton");
-                    if (typeof lastSel !== "undefined") {
-                        // cancel editing of the previous selected row if it was in editing state.
-                        // jqGrid hold intern savedRow array inside of jqGrid object,
-                        // so it is safe to call restoreRow method with any id parameter
-                        // if jqGrid not in editing state
-                        $('#grid').jqGrid('restoreRow',lastSel);
+            var lrid;
+            if (typeof lastSel !== "undefined") {
+                // cancel editing of the previous selected row if it was in editing state.
+                 // jqGrid hold intern savedRow array inside of jqGrid object,
+                // so it is safe to call restoreRow method with any id parameter
+                // if jqGrid not in editing state
+                $('#grid').jqGrid('restoreRow',lastSel);
 
-                        // now we need to restore the icons in the formatter:"actions"
-                        lrid = $.jgrid.jqID(lastSel);
-                        $("tr#" + lrid + " div.ui-inline-edit, " + "tr#" + lrid + " div.ui-inline-del").show();
-                        $("tr#" + lrid + " div.ui-inline-save, " + "tr#" + lrid + " div.ui-inline-cancel").hide();
-                    }
-                }
+                 // now we need to restore the icons in the formatter:"actions"
+                lrid = $.jgrid.jqID(lastSel);
+                $("tr#" + lrid + " div.ui-inline-edit, " + "tr#" + lrid + " div.ui-inline-del").show();
+                $("tr#" + lrid + " div.ui-inline-save, " + "tr#" + lrid + " div.ui-inline-cancel").hide();
+             }
+         }
 
         $scope.resize = function () {
             console.log('resize');
@@ -791,7 +793,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             },
             position: "first",
             useDefValues: true,
-            useFormatter: false,
+            useFormatter: true,
             addRowParams: angular.extend({
                 extraparam: {}
             }, gridEditOptions)
@@ -856,18 +858,24 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         url : '../../integration/rest/documentPositions/' + 1 + '.html',
                         delbutton: false,
                         onEdit: function (id) {
-                            $("#add_new_row").addClass("disableButton");
+
                             if (typeof (lastSel) !== "undefined" && id !== lastSel) {
                                 cancelEditing(id);
                             }
+
+                             $("#add_new_row").addClass("disableButton");
+                                                        $("#add_grid").hide();
+                                                        $("#edit_grid").hide();
+                                                        $("#del_grid").hide();
                             gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
-                            jQuery('#grid').editRow(id, gridEditOptions);
                             lastSel = id;
                         },
                         afterRestore :  function () {
-                                                                                     $("#add_new_row").removeClass("disableButton");
-
-                                                               }
+                            $("#add_new_row").removeClass("disableButton");
+                            $("#add_grid").show();
+                            $("#edit_grid").show();
+                            $("#del_grid").show();
+                        }
                     }
                  },
                  {
@@ -1095,7 +1103,17 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             ],
             pager: "#jqGridPager",
             gridComplete: function () {
-                //setTimeout(function() { $scope.resize(); }, 1000);                
+                var grid = $('#grid');
+                var rows = grid.jqGrid('getDataIDs');
+                if($scope.config.readOnly){
+                for (i = 0; i < rows.length; i++)
+                {
+                     $("tr#" + rows[i] + " div.ui-inline-edit").hide();
+
+                }
+                }
+                //setTimeout(function() { $scope.resize(); }, 1000);
+
             },
             onSelectRow: function (id) {
                // gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
@@ -1202,7 +1220,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         };
 
         $scope.addNewRow = function () {
-         $("#add_new_row").addClass("disableButton");
+            $("#add_new_row").addClass("disableButton");
+            $("#add_grid").hide();
+            $("#edit_grid").hide();
+            $("#del_grid").hide();
             jQuery('#grid').addRow(gridAddOptions);
         }
 
