@@ -34,10 +34,13 @@
 		<datetime name="startDate" required="true"/>
         <datetime name="finishDate" required="true"/>
         <integer name="duration" default="0"/>
-	</fields>
+        <boolean name="confirmed" default="true"/>
+    </fields>
 	<hooks>
 		<validatesWith
                 class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventRealizationValidators"
                 method="validatesWith" />
-	</hooks>
+        <onCreate class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventRealization" method="onCreate"/>
+
+    </hooks>
 </model>

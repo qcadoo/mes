@@ -41,4 +41,7 @@ public class PlannedEventRealizationFields {
     public static final String FINISH_DATE = "finishDate";
 
     public static final String DURATION = "duration";
+
+    public static final String CONFIRMED = "confirmed";
+
 }
