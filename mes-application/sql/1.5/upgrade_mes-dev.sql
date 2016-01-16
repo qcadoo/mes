@@ -62,15 +62,32 @@ ALTER TABLE materialflowresources_resource ADD COLUMN givenunit character varyin
 CREATE TABLE materialflowresources_documentpositionparameters
 (
   id bigint NOT NULL,
-  showstoragelocation boolean DEFAULT false,
-  showadditionalcode boolean DEFAULT false,
-  showproductiondate boolean DEFAULT false,
-  showexpiratindate boolean DEFAULT false,
-  showpallet boolean DEFAULT false,
-  showtypeofpallet boolean DEFAULT false,
-  showbatch boolean DEFAULT false,
   CONSTRAINT materialflowresources_documentpositionparameters_pkey PRIMARY KEY (id)
 );
+
+CREATE TABLE materialflowresources_documentpositionparametersitem
+(
+  id bigint NOT NULL,
+  checked boolean DEFAULT true,
+  parameters_id bigint,
+  name character varying(255),
+  CONSTRAINT materialflowresources_documentpositionparametersitem_pkey PRIMARY KEY (id)
+)
+
+ALTER TABLE materialflowresources_documentpositionparametersitem
+  ADD CONSTRAINT documentpositionparametersitem_parameters_fkey FOREIGN KEY (parameters_id)
+      REFERENCES materialflowresources_documentpositionparameters (id) DEFERRABLE;
+
+insert into materialflowresources_documentpositionparameters (id) values (1);
+insert into materialflowresources_documentpositionparametersitem (name, parameters_id) values 
+	('price', 1),
+	('storageLocation', 1),
+	('additionalCode', 1),
+	('productionDate', 1),
+	('expiratinDate', 1),
+	('pallet', 1),
+	('typeOfPallet', 1),
+	('batch', 1);
 
 ALTER TABLE basic_parameter ADD COLUMN documentpositionparameters_id bigint;
 

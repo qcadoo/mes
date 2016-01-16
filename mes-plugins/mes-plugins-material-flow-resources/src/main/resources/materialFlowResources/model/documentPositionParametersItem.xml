@@ -24,10 +24,19 @@
     ***************************************************************************
 
 -->
-<model name="documentPositionParameters"
+<model name="documentPositionParametersItem"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <hasMany name="items" model="documentPositionParametersItem" joinField="parameters" />
+        <string name="name" required="true" unique="true" readonly="true" />
+        <string name="displayName" persistent="false" readonly="true" />
+        <boolean name="checked" default="true" />
+        
+        <belongsTo name="parameters" model="documentPositionParameters"/>
     </fields>
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.materialFlowResources.hooks.DocumentPositionParametersItemModelValidators"
+                method="validate"/>
+    </hooks>
 </model>

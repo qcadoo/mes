@@ -102,10 +102,15 @@ public class DocumentPositionService {
 
     public Map<String, Object> getGridConfig(Long documentId) {
         try {
-            String query = "select * from materialflowresources_documentpositionparameters";
-            Map<String, Object> config = jdbcTemplate.queryForMap(query, Collections.EMPTY_MAP);
+            String query = "select * from materialflowresources_documentpositionparametersitem";
+            List<Map<String, Object>> items = jdbcTemplate.queryForList(query, Collections.EMPTY_MAP);
 
+            Map<String, Object> config = new HashMap<>();
             config.put("readOnly", isGridReadOnly(documentId));
+            
+            for(Map<String, Object> item : items){
+                config.put("show"+item.get("name").toString().toLowerCase(), item.get("checked"));
+            }
 
             return config;
 
