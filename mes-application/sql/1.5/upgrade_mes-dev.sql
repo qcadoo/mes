@@ -84,7 +84,7 @@ insert into materialflowresources_documentpositionparametersitem (name, paramete
 	('storageLocation', 1),
 	('additionalCode', 1),
 	('productionDate', 1),
-	('expiratinDate', 1),
+	('expirationDate', 1),
 	('pallet', 1),
 	('typeOfPallet', 1),
 	('batch', 1);

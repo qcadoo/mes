@@ -1167,7 +1167,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 if (columnIndex === 'productiondate' && !responseDate.showproductiondate) {
                     return true;
                 }
-                if (columnIndex === 'expirationdate' && !responseDate.showexpiratindate) {
+                if (columnIndex === 'expirationdate' && !responseDate.showexpirationdate) {
                     return true;
                 }
                 if (columnIndex === 'palletNumber' && !responseDate.showpallet) {
