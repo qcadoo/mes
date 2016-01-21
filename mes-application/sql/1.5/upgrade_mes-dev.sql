@@ -27,5 +27,14 @@ CREATE OR REPLACE FUNCTION prepare_superadmin()
    END;
  $$ LANGUAGE plpgsql;
 
+-- cmmsmachineparts_plannedeventrealization
+-- last touched 21.01.2016 by kasi
+
+ALTER TABLE cmmsmachineparts_plannedeventrealization ADD COLUMN confirmed boolean;
+ALTER TABLE cmmsmachineparts_plannedeventrealization ALTER COLUMN confirmed SET DEFAULT true;
+UPDATE cmmsmachineparts_plannedeventrealization SET confirmed=true;
+
+-- end
+
 
 
