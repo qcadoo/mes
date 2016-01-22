@@ -44,6 +44,10 @@
                     <option type="textRepresentationOnDisabled" value="true"/>
                 </component>
             </layoutElement>
+            <layoutElement column="1" row="2" width="5">
+                <component type="checkbox" name="acceptanceEvents" field="#{form}.acceptanceEvents"
+                           reference="acceptanceEvents" hasDescription="true"/>
+            </layoutElement>
         </component>
     </windowTab>
 </windowTabExtension>

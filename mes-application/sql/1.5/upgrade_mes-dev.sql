@@ -36,5 +36,12 @@ UPDATE cmmsmachineparts_plannedeventrealization SET confirmed=true;
 
 -- end
 
+-- basic_parameter
+-- last touched 22.01.2016 by kasi
+
+ALTER TABLE basic_parameter ADD COLUMN acceptanceevents boolean;
+
+-- end
+
 
 

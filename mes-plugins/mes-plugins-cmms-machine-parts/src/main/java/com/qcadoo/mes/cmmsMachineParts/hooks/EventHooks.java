@@ -23,41 +23,31 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.SourceCostService;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import com.qcadoo.mes.cmmsMachineParts.roles.EventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class EventHooks {
@@ -85,7 +75,12 @@ public class EventHooks {
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
+        FieldComponent acceptanceEvents = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.ACCEPTANCE_EVENTS);
+        acceptanceEvents.setFieldValue(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS));
         setEventCriteriaModifiers(view);
         setUpFaultTypeLookup(view);
         setFieldsRequired(view);
