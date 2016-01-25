@@ -334,8 +334,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return rowId;
         }
 
-        function showMessage(message) {
-            messagesController.addMessage(message);
+        function showMessage(type, title, content) {
+            mainController.showMessage({
+                type : type,
+                title : title,
+                content : content
+            });
         }
 
         function getDocumentId() {
@@ -726,12 +730,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function errorfunc(rowID, response) {
             var message = JSON.parse(response.responseText).message;
             message = translateMessages(message);
-
-            showMessage({
-                type: "failure",
-                content: message
-            });
-
+            showMessage('failure', QCD.translate('qcadooView.notification.failure'), message);
             return true;
         }
 
@@ -740,19 +739,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $("#add_grid").show();
             $("#edit_grid").show();
             $("#del_grid").show();
-            showMessage({
-                type: 'success',
-                content: QCD.translate('qcadooView.message.saveMessage')
-            });
-
+            showMessage('success', QCD.translate('qcadooView.notification.success'), QCD.translate('qcadooView.message.saveMessage'));
             return true;
         }
 
         function errorCallback(response) {
-            showMessage({
-                type: "failure",
-                content: response.data.message
-            });
+            showMessage('failure', QCD.translate('qcadooView.notification.failure'), response.data.message);
         }
 
         function aftersavefunc() {
