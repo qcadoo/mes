@@ -62,17 +62,17 @@ public class TimeUsageXlsDataProvider {
             + "LEFT JOIN basic_subassembly subassembly ON event.subassembly_id=subassembly.id\n"
             + "LEFT JOIN basic_workstation workstation ON event.workstation_id=workstation.id\n"
             + "LEFT JOIN basic_division division ON event.division_id=division.id\n"
-            + "LEFT JOIN basic_factory factory ON event.factory_id=factory.id";
+            + "LEFT JOIN basic_factory factory ON event.factory_id=factory.id\n";
 
     public List<TimeUsageDTO> getUsages(Map<String, Object> filters) {
-        String query = prepareQuery(filters);
+        String query = prepareQuery(filters, plannedEventQuery, maintenanceEventQuery);
         List<TimeUsageDTO> usages = jdbcTemplate.query(query, filters, new TimeUsageRowMapper());
         return usages;
     }
 
-    private String prepareQuery(Map<String, Object> filters) {
-        StringBuilder builder = new StringBuilder("SELECT * FROM ( " + plannedEventQuery + "UNION ALL " + maintenanceEventQuery
-                + " ) AS events");
+    private String prepareQuery(Map<String, Object> filters, String plannedEventQueryPart, String maintenanceEventQueryPart) {
+        StringBuilder builder = new StringBuilder("SELECT * FROM ( " + plannedEventQueryPart + "UNION ALL "
+                + maintenanceEventQueryPart + " ) AS events");
         if (!filters.isEmpty()) {
             List<String> whereFilters = Lists.newLinkedList();
             if (filters.containsKey(TimeUsageReportFilterFields.FROM_DATE)) {

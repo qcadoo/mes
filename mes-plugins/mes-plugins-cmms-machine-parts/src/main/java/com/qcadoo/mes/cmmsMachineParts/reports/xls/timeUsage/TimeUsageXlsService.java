@@ -111,7 +111,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         }
         return groups.stream().sorted((g1, g2) -> {
             if (g1.getWorker().equals(g2.getWorker())) {
-                return g2.getDate().compareTo(g1.getDate());
+                return g1.getDate().compareTo(g2.getDate());
             } else {
                 return g1.getWorker().compareTo(g2.getWorker());
             }
