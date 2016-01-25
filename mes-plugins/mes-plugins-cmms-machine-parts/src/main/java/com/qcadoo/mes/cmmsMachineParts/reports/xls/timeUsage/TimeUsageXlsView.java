@@ -1,5 +1,9 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage;
 
+import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,15 +16,31 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.document.AbstractExcelView;
 
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
+
 @Component
 public class TimeUsageXlsView  extends AbstractExcelView {
 
     @Autowired
     private TimeUsageXlsService timeUsageXlsService;
 
+    @Autowired
+    private TranslationService translationService;
+
+    private String localePrefix = "cmmsMachineParts.timeUsageReport.report.filename";
+
     @Override protected void buildExcelDocument(Map<String, Object> filters, HSSFWorkbook hssfWorkbook,
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+        String fileName = generateFilename();
+        httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + ".xls\"");
         HSSFSheet sheet = hssfWorkbook.createSheet(timeUsageXlsService.getReportTitle(LocaleContextHolder.getLocale()));
         timeUsageXlsService.buildExcelContent(hssfWorkbook, sheet, filters, LocaleContextHolder.getLocale());
+    }
+
+    private String generateFilename() {
+        String translatedFileName = translationService.translate(localePrefix, getLocale());
+        String date = new SimpleDateFormat(DateUtils.L_REPORT_DATE_TIME_FORMAT, getLocale()).format(new Date());
+        return translatedFileName + "_" + date;
     }
 }

@@ -75,20 +75,20 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
 
     private List<TimeUsageGroupDTO> group(List<TimeUsageDTO> usages) {
         List<TimeUsageGroupDTO> groups = Lists.newLinkedList();
-        Map<Date, List<TimeUsageDTO>> dateMap = usages.stream().collect(Collectors.groupingBy(TimeUsageDTO::getStartDate));
-        for (Date date : dateMap.keySet()) {
-            List<TimeUsageDTO> entry = dateMap.get(date);
-            Map<String, List<TimeUsageDTO>> workerMap = entry.stream().collect(Collectors.groupingBy(TimeUsageDTO::getWorker));
-            for (String worker : workerMap.keySet()) {
-                TimeUsageGroupDTO timeUsageGroup = new TimeUsageGroupDTO(date, worker, workerMap.get(worker));
+        Map<String, List<TimeUsageDTO>> workerMap = usages.stream().collect(Collectors.groupingBy(TimeUsageDTO::getWorker));
+        for (String worker : workerMap.keySet()) {
+            List<TimeUsageDTO> entry = workerMap.get(worker);
+            Map<Date, List<TimeUsageDTO>> dateMap = entry.stream().collect(Collectors.groupingBy(TimeUsageDTO::getStartDate));
+            for (Date date : dateMap.keySet()) {
+                TimeUsageGroupDTO timeUsageGroup = new TimeUsageGroupDTO(date, worker, dateMap.get(date));
                 groups.add(timeUsageGroup);
             }
         }
         return groups.stream().sorted((g1, g2) -> {
-            if (g1.getDate().equals(g2.getDate())) {
-                return g1.getWorker().compareTo(g2.getWorker());
-            } else {
+            if (g1.getWorker().equals(g2.getWorker())) {
                 return g2.getDate().compareTo(g1.getDate());
+            } else {
+                return g1.getWorker().compareTo(g2.getWorker());
             }
         }).collect(Collectors.toList());
     }

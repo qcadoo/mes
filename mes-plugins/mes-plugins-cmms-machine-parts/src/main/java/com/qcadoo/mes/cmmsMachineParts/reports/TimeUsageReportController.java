@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.TimeUsageReportFilterFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -28,17 +29,18 @@ import com.qcadoo.model.api.Entity;
                 CmmsMachinePartsConstants.MODEL_TIME_USAGE_REPORT_FILTER);
         Entity filter = dataDefinition.get(filterId);
         HashMap<String, Object> filtersMap = new HashMap<String, Object>();
-        Date fromDate = filter.getDateField("fromDate");
+        Date fromDate = filter.getDateField(TimeUsageReportFilterFields.FROM_DATE);
         if (fromDate != null) {
-            filtersMap.put("fromDate", fromDate);
+            filtersMap.put(TimeUsageReportFilterFields.FROM_DATE, fromDate);
         }
-        Date toDate = filter.getDateField("toDate");
+        Date toDate = filter.getDateField(TimeUsageReportFilterFields.TO_DATE);
         if (toDate != null) {
-            filtersMap.put("toDate", toDate);
+            filtersMap.put(TimeUsageReportFilterFields.TO_DATE, toDate);
         }
-        List<Entity> workers = filter.getManyToManyField("workers");
+        List<Entity> workers = filter.getManyToManyField(TimeUsageReportFilterFields.WORKERS);
         if (!workers.isEmpty()) {
-            filtersMap.put("workers", workers.stream().map(w -> w.getId()).collect(Collectors.toList()));
+            filtersMap
+                    .put(TimeUsageReportFilterFields.WORKERS, workers.stream().map(w -> w.getId()).collect(Collectors.toList()));
         }
         return new ModelAndView("timeUsageXlsView", "filtersMap", filtersMap);
 

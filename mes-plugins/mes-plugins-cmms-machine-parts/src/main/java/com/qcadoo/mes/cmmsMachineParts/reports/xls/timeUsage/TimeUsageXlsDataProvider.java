@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.cmmsMachineParts.constants.TimeUsageReportFilterFields;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage.dto.TimeUsageDTO;
 import com.qcadoo.model.api.DataDefinitionService;
 
@@ -21,7 +22,7 @@ public class TimeUsageXlsDataProvider {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private final static String plannedEventQuery = "SELECT staff.name || ' ' || staff.surname AS worker, staff.id AS worker_id, 'planned' AS event_type,\n"
+    private final static String plannedEventQuery = "SELECT staff.surname || ' ' || staff.name AS worker, staff.id AS worker_id, 'planned' AS event_type,\n"
             + "realization.startdate,\n"
             + "event.number,\n"
             + "event.type,\n"
@@ -42,7 +43,7 @@ public class TimeUsageXlsDataProvider {
             + "LEFT JOIN basic_division division ON event.division_id=division.id\n"
             + "LEFT JOIN basic_factory factory ON event.factory_id=factory.id\n";
 
-    private final static String maintenanceEventQuery = "SELECT staff.name || ' ' || staff.surname AS worker, staff.id AS worker_id, 'maintenance' AS event_type,\n"
+    private final static String maintenanceEventQuery = "SELECT staff.surname || ' ' || staff.name AS worker, staff.id AS worker_id, 'maintenance' AS event_type,\n"
             + "realization.startdate,\n"
             + "event.number,\n"
             + "event.type,\n"
@@ -74,13 +75,13 @@ public class TimeUsageXlsDataProvider {
                 + " ) AS events");
         if (!filters.isEmpty()) {
             List<String> whereFilters = Lists.newLinkedList();
-            if (filters.containsKey("fromDate")) {
+            if (filters.containsKey(TimeUsageReportFilterFields.FROM_DATE)) {
                 whereFilters.add("startDate >= :fromDate");
             }
-            if (filters.containsKey("toDate")) {
+            if (filters.containsKey(TimeUsageReportFilterFields.TO_DATE)) {
                 whereFilters.add("startDate <= :toDate");
             }
-            if (filters.containsKey("workers")) {
+            if (filters.containsKey(TimeUsageReportFilterFields.WORKERS)) {
                 whereFilters.add("worker_id in (:workers)");
             }
             builder.append(" WHERE " + StringUtils.collectionToDelimitedString(whereFilters, " AND "));

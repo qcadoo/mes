@@ -2,6 +2,7 @@ package com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -25,9 +26,14 @@ public class TimeUsageRowMapper implements RowMapper<TimeUsageDTO> {
         timeUsage.setParts(rs.getString("parts"));
         timeUsage.setDescription(rs.getString("description"));
         timeUsage.setDuration(rs.getInt("duration"));
-        DateTime startDate = new DateTime(rs.getDate("registeredStart"));
-        DateTime endDate = new DateTime(rs.getDate("registeredEnd"));
-        timeUsage.setRegisteredTime(Minutes.minutesBetween(startDate, endDate).getMinutes());
+        DateTime startDateTime = new DateTime(rs.getDate("registeredStart"));
+        Date endDate = rs.getDate("registeredEnd");
+        if (endDate != null) {
+            DateTime endDateTime = new DateTime(endDate);
+            timeUsage.setRegisteredTime(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
+        } else {
+            timeUsage.setRegisteredTime(0);
+        }
         return timeUsage;
     }
 

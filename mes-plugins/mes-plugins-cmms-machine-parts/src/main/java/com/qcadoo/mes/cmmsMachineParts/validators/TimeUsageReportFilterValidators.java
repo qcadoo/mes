@@ -21,28 +21,32 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.hooks;
+package com.qcadoo.mes.cmmsMachineParts.validators;
 
-import java.util.Collections;
+import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.internal.components.select.SelectComponentState;
+import com.qcadoo.mes.cmmsMachineParts.ActionsService;
+import com.qcadoo.mes.cmmsMachineParts.constants.TimeUsageReportFilterFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 
 @Service
-public class TimeUsageReportHooks {
+public class TimeUsageReportFilterValidators {
 
-    public final void onBeforeRender(final ViewDefinitionState view) {
-        SelectComponentState workersSelection = (SelectComponentState) view.getComponentByReference("workersSelection");
-        GridComponent workersGrid = (GridComponent) view.getComponentByReference("workers");
-        String selected = (String) workersSelection.getFieldValue();
-        if ("01all".equals(selected)) {
-            workersGrid.setEntities(Collections.emptyList());
-            workersGrid.setEnabled(false);
-        } else {
-            workersGrid.setEnabled(true);
+    @Autowired
+    private ActionsService actionsService;
+
+    public boolean validate(final DataDefinition timeUsageReportDD, final Entity timeUsageReport) {
+        Date fromDate = timeUsageReport.getDateField(TimeUsageReportFilterFields.FROM_DATE);
+        Date toDate = timeUsageReport.getDateField(TimeUsageReportFilterFields.TO_DATE);
+        if (toDate.before(fromDate)) {
+            timeUsageReport.addError(timeUsageReportDD.getField(TimeUsageReportFilterFields.TO_DATE),
+                    "cmmsMachineParts.timeUsageReport.error.wrongDateOrder");
+            return false;
         }
+        return true;
     }
 }
