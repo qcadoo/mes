@@ -21,6 +21,10 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
+import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage.dto.TimeUsageDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage.dto.TimeUsageGroupDTO;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -41,6 +45,9 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private EventFieldsForTypeFactory fieldsForTypeFactory;
+
     public String getReportTitle(final Locale locale) {
         return translationService.translate(TimeUsageXlsConstants.REPORT_TITLE, locale);
     }
@@ -48,6 +55,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
     public void buildExcelContent(final HSSFWorkbook workbook, final HSSFSheet sheet, Map<String, Object> filters,
             final Locale locale) {
         List<TimeUsageDTO> usages = timeUsageXLSDataProvider.getUsages((Map<String, Object>) filters.get("filtersMap"));
+        updatePartsAndDescription(usages, locale);
         fillHeaderData(workbook, sheet, 0, locale, (Map<String, Object>) filters.get("filtersMap"));
         fillHeaderRow(workbook, sheet, 4, locale);
         List<TimeUsageGroupDTO> timeUsageGroups = group(usages);
@@ -56,6 +64,23 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
             rowCounter = fillTimeUsageRows(workbook, sheet, timeUsageGroupDTO, rowCounter++, locale);
         }
         setColumnsWidths(sheet);
+    }
+
+    private void updatePartsAndDescription(List<TimeUsageDTO> usages, Locale locale) {
+        for (TimeUsageDTO usage : usages) {
+            if ("planned".equals(usage.getEventType())) {
+                PlannedEventType type = PlannedEventType.parseString(usage.getType());
+                FieldsForType fields = fieldsForTypeFactory.createFieldsForType(type);
+                if (fields.getHiddenTabs().contains(PlannedEventFields.MACHINE_PARTS_TAB)) {
+                    String notApplicable = translationService.translate("cmmsMachineParts.timeUsageReport.na", locale);
+                    usage.setParts(notApplicable);
+                }
+                if (fields.getHiddenTabs().contains(PlannedEventFields.SOLUTION_DESCRIPTION_TAB)) {
+                    String notApplicable = translationService.translate("cmmsMachineParts.timeUsageReport.na", locale);
+                    usage.setDescription(notApplicable);
+                }
+            }
+        }
     }
 
     private void setColumnsWidths(HSSFSheet sheet) {

@@ -18,9 +18,9 @@ public class TimeUsageReportListeners {
 
     public void printXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
+        form.performEvent(view, "save");
         Entity filterEntity = form.getEntity();
-        filterEntity = filterEntity.getDataDefinition().save(filterEntity);
-        if (workersPresent(filterEntity, view) && filterEntity.isValid()) {
+        if (workersPresent(filterEntity, view) && form.isValid()) {
             view.redirectTo("/cmmsMachineParts/timeUsageReport.xls?filterId=" + filterEntity.getId(), true, false);
         }
     }

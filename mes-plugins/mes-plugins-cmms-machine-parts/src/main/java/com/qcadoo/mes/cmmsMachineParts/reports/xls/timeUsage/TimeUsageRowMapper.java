@@ -26,8 +26,8 @@ public class TimeUsageRowMapper implements RowMapper<TimeUsageDTO> {
         timeUsage.setParts(rs.getString("parts"));
         timeUsage.setDescription(rs.getString("description"));
         timeUsage.setDuration(rs.getInt("duration"));
-        DateTime startDateTime = new DateTime(rs.getDate("registeredStart"));
-        Date endDate = rs.getDate("registeredEnd");
+        DateTime startDateTime = new DateTime(rs.getTimestamp("registeredStart"));
+        Date endDate = rs.getTimestamp("registeredEnd");
         if (endDate != null) {
             DateTime endDateTime = new DateTime(endDate);
             timeUsage.setRegisteredTime(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
