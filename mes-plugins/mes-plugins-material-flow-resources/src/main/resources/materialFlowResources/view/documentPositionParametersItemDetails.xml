@@ -48,7 +48,8 @@
                     </layoutElement>
                 </component>
 
-                <option type="header" value="false" />
+                <option type="header" value="true" />
+                <option type="expression" value="#displayName" />
             
             </component>
         </windowTab>
