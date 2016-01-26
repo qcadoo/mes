@@ -383,12 +383,16 @@ public class EventHooks {
     }
 
     public final void onBeforeRenderListView(final ViewDefinitionState view) {
+        FieldComponent acceptanceEvents = (FieldComponent) view.getComponentByReference(PlannedEventFields.ACCEPTANCE_EVENTS);
+        acceptanceEvents.setFieldValue(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS));
         maintenanceEventContextService.beforeRenderListView(view);
         hideAccordingToRole(view);
     }
 
 
     public final void onBeforeRenderPlannedListView(final ViewDefinitionState view) {
+        FieldComponent acceptanceEvents = (FieldComponent) view.getComponentByReference(PlannedEventFields.ACCEPTANCE_EVENTS);
+        acceptanceEvents.setFieldValue(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS));
         maintenanceEventContextService.beforeRenderListView(view);
     }
     public void hideAccordingToRole(ViewDefinitionState view) {

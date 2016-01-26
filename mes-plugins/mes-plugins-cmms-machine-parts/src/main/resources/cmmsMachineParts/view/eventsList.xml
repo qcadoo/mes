@@ -145,6 +145,8 @@
                                    reference="confirmed"/>
                         <component type="hidden" name="generated" field="generated"
                                    reference="generated"/>
+                        <component type="hidden" name="acceptanceEvents" field="acceptanceEvents"
+                                   reference="acceptanceEvents"/>
                     </layoutElement>
                 </component>
                 <listener event="confirmContext" method="confirmContext"
@@ -198,6 +200,8 @@
 						var differentStatesMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.differentStates)}";
 						var differentStates = statesAreDifferent(selectedEntitiesArray);
                         var showPlannedEvent = #{window}.getRibbonItem("plannedEvents.showPlannedEvent");
+
+                        var acceptanceEvents = #{acceptanceEvents}.getValue().content.value;
 
 						for (var elementKey in toggleRibbonItems) {
 							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
@@ -280,24 +284,35 @@
 								closeEvent.disable();
 
 							} else if ( state == "03edited") {
-								startEvent.disable();
-								if (selectedEntitiesArray.length == 1) {
-								    planEvent.enable();
-								}
-								else {
+							    if(acceptanceEvents == "true"){
+
+								    startEvent.disable();
+								    if (selectedEntitiesArray.length == 1) {
+								        planEvent.enable();
+								    }
+								    else {
+								        planEvent.disable();
+								    }
+								    revokeEvent.disable();
+								    closeEvent.enable();
+
+                                    planEvent.forState="02inProgress";
+							        planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.notAccept)}";
+							        planEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.notAcceptEvent)}");
+
+								    closeEvent.forState="07accepted";
+							        closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.accepted)}";
+							        closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.acceptEvent)}");
+                                } else {
+                                    closeEvent.forState="04closed";
+							        closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
+							        closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.closeEvent)}");
+
+								    closeEvent.enable();
+								    startEvent.disable();
 								    planEvent.disable();
-								}
-								revokeEvent.disable();
-								closeEvent.enable();
-
-                                planEvent.forState="02inProgress";
-							    planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.notAccept)}";
-							    planEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.notAcceptEvent)}");
-
-								closeEvent.forState="07accepted";
-							    closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.accepted)}";
-							    closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.acceptEvent)}");
-
+								    revokeEvent.disable();
+                                }
 							}
 							else if ( state == "07accepted"){
 								startEvent.disable();
