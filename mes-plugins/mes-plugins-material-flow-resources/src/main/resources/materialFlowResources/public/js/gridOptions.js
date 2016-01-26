@@ -1123,7 +1123,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 //                    jQuery('#grid').editRow(id, gridEditOptions);
 //                }
               //  jQuery('#grid').editRow(id, gridEditOptions);
-                }
+                //}
             },
             ajaxRowOptions: {
                 contentType: "application/json"
