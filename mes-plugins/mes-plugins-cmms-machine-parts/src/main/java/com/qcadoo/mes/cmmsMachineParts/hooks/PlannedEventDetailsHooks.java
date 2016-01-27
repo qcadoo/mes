@@ -255,6 +255,11 @@ public class PlannedEventDetailsHooks {
                 role.disableFieldsWhenNotInRole(view);
             }
         }
+
+        if (securityService.hasRole(user, PlannedEventRoles.ROLE_PLANNED_EVENTS_STATES_ACCEPT.toString())
+                && !parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)) {
+            PlannedEventRoles.ROLE_PLANNED_EVENTS_STATES_ACCEPT.disableFieldsWhenNotInRole(view);
+        }
     }
 
     public void setUnit(final ViewDefinitionState view) {

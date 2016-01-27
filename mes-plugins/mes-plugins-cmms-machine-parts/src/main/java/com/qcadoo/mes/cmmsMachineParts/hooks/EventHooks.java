@@ -389,12 +389,12 @@ public class EventHooks {
         hideAccordingToRole(view);
     }
 
-
     public final void onBeforeRenderPlannedListView(final ViewDefinitionState view) {
         FieldComponent acceptanceEvents = (FieldComponent) view.getComponentByReference(PlannedEventFields.ACCEPTANCE_EVENTS);
         acceptanceEvents.setFieldValue(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS));
         maintenanceEventContextService.beforeRenderListView(view);
     }
+
     public void hideAccordingToRole(ViewDefinitionState view) {
         Entity user = userService.getCurrentUserEntity();
         for (EventRoles role : EventRoles.values()) {
@@ -402,5 +402,9 @@ public class EventHooks {
                 role.disableFieldsWhenNotInRole(view);
             }
         }
+        if (securityService.hasRole(user, EventRoles.ROLE_EVENTS_ACCEPT.toString()) && !parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)) {
+                EventRoles.ROLE_EVENTS_ACCEPT.disableFieldsWhenNotInRole(view);
+        }
+
     }
 }
