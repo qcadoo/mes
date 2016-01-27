@@ -197,8 +197,14 @@ public class OrderHooks {
 
             orderStateChange.setField(OrderStateChangeFields.SOURCE_STATE, order.getField(OrderFields.STATE));
             orderStateChange.setField(OrderStateChangeFields.TARGET_STATE, order.getField(OrderFields.STATE));
-            orderStateChange.setField(OrderStateChangeFields.WORKER,
-                    userService.getCurrentUserEntity().getField(UserFields.USER_NAME));
+            String workerToChange = order.getStringField(OrderFields.WORKER_TO_CHANGE);
+            if (StringUtils.isEmpty(workerToChange)) {
+                orderStateChange.setField(OrderStateChangeFields.WORKER,
+                        userService.getCurrentUserEntity().getField(UserFields.USER_NAME));
+            } else {
+                orderStateChange.setField(OrderStateChangeFields.WORKER, workerToChange);
+                order.setField(OrderFields.WORKER_TO_CHANGE, null);
+            }
             orderStateChange.setField("dateAndTime", setDateToField(new Date()));
             orderStateChange.setField(OrderStateChangeFields.STATUS, "03successful");
             orderStateChangeDD.save(orderStateChange);
@@ -323,8 +329,8 @@ public class OrderHooks {
         // EFFECTIVE_DATE_FROM
         if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)
                 && differenceForDateFrom > 0L) {
-            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                    .abs(differenceForDateFrom)));
+            final String differenceAsString = TimeConverterService
+                    .convertTimeToString(String.valueOf(Math.abs(differenceForDateFrom)));
 
             checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
                     OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
@@ -332,8 +338,8 @@ public class OrderHooks {
         }
         if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)
                 && differenceForDateFrom < 0L) {
-            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                    .abs(differenceForDateFrom)));
+            final String differenceAsString = TimeConverterService
+                    .convertTimeToString(String.valueOf(Math.abs(differenceForDateFrom)));
 
             checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
                     OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
@@ -341,17 +347,19 @@ public class OrderHooks {
         }
 
         // EFFECTIVE_DATE_TO
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && differenceForDateTo > 0L) {
-            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                    .abs(differenceForDateTo)));
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO)
+                && differenceForDateTo > 0L) {
+            final String differenceAsString = TimeConverterService
+                    .convertTimeToString(String.valueOf(Math.abs(differenceForDateTo)));
 
             checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
                     OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
                     "orders.order.reasonNeededWhenDelayedEffectiveDateTo.isRequired", differenceAsString);
         }
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO) && differenceForDateTo < 0L) {
-            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                    .abs(differenceForDateTo)));
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO)
+                && differenceForDateTo < 0L) {
+            final String differenceAsString = TimeConverterService
+                    .convertTimeToString(String.valueOf(Math.abs(differenceForDateTo)));
             checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
                     OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
                     "orders.order.reasonNeededWhenEarlierEffectiveDateTo.isRequired", differenceAsString);
@@ -394,8 +402,8 @@ public class OrderHooks {
         if (OrderState.PENDING.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
             order.setField(OrderFields.DATE_FROM, startDate);
         }
-        if ((OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.COMPLETED.getStringValue().equals(state) || OrderState.ABANDONED
-                .getStringValue().equals(state)) && !startDate.equals(startDateDB)) {
+        if ((OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.COMPLETED.getStringValue().equals(state)
+                || OrderState.ABANDONED.getStringValue().equals(state)) && !startDate.equals(startDateDB)) {
             order.setField(OrderFields.EFFECTIVE_DATE_FROM, startDate);
         }
         if (OrderState.ACCEPTED.getStringValue().equals(state) && !startDateDB.equals(startDate)) {
@@ -513,10 +521,11 @@ public class OrderHooks {
         String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
 
         if (StringUtils.isEmpty(typeOfProductionRecording)) {
-            if (BigDecimalUtils.convertNullToZero(doneQuantity).compareTo(BigDecimalUtils.convertNullToZero(doneQuantityFromDB)) != 0) {
+            if (BigDecimalUtils.convertNullToZero(doneQuantity)
+                    .compareTo(BigDecimalUtils.convertNullToZero(doneQuantityFromDB)) != 0) {
                 order.setField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, numberService.setScale(doneQuantity));
-            } else if (BigDecimalUtils.convertNullToZero(amountOfProductProduced).compareTo(
-                    BigDecimalUtils.convertNullToZero(amountOfProductProducedFromDB)) != 0) {
+            } else if (BigDecimalUtils.convertNullToZero(amountOfProductProduced)
+                    .compareTo(BigDecimalUtils.convertNullToZero(amountOfProductProducedFromDB)) != 0) {
                 order.setField(OrderFields.DONE_QUANTITY, numberService.setScale(amountOfProductProduced));
             }
         } else {
@@ -546,8 +555,8 @@ public class OrderHooks {
             BigDecimal commissionedCorrectedQuantityFromDB = orderFromDB
                     .getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY);
 
-            if ((BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity).compareTo(
-                    BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantityFromDB)) != 0)
+            if ((BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity)
+                    .compareTo(BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantityFromDB)) != 0)
                     && order.getHasManyField(OrderFields.TYPE_OF_CORRECTION_CAUSES).isEmpty()) {
                 order.addGlobalError("orders.order.correctingQuantity.missingTypeOfCorrectionCauses");
             }
@@ -555,8 +564,8 @@ public class OrderHooks {
     }
 
     public boolean neededWhenCorrectingTheRequestedVolume() {
-        return parameterService.getParameter().getBooleanField(
-                ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME);
+        return parameterService.getParameter()
+                .getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME);
     }
 
     public void setCommissionedPlannedQuantity(final DataDefinition orderDD, final Entity order) {
@@ -626,8 +635,8 @@ public class OrderHooks {
         if (OrderType.WITH_PATTERN_TECHNOLOGY == orderType) {
             maybeTechnologyPrototype = Optional.fromNullable(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
         }
-        return Optional.fromNullable(technologyServiceO.generateNumberForTechnologyInOrder(order,
-                maybeTechnologyPrototype.orNull()));
+        return Optional
+                .fromNullable(technologyServiceO.generateNumberForTechnologyInOrder(order, maybeTechnologyPrototype.orNull()));
     }
 
 }
