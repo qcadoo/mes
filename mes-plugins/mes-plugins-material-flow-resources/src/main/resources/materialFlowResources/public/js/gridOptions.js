@@ -261,7 +261,11 @@ function translateMessages(messages) {
     if (messages) {
         var messageArray = messages.split('\n');
         for (var i in messageArray) {
-            message.push(QCD.translate(messageArray[i]));
+            var msg = QCD.translate(messageArray[i]);
+            if(msg.substr(0, 1) === '[' && msg.substr(-1, 1)===']'){
+                msg = msg.substr(1, msg.length-2);
+            }
+            message.push(msg);
         }
     }
     message = message.join('\n');
@@ -582,7 +586,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function quantity_createElement(value, options) {
-            var $input = $('<input type="number" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+            var $input = $('<input type="number" pattern="[0-9]+([,\.][0-9]+)?" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
             $($input).bind('change keydown paste input', function () {

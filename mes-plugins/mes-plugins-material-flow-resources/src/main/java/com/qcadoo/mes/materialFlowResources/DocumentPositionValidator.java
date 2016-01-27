@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlowResources;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -26,6 +28,9 @@ public class DocumentPositionValidator {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private TranslationService translationService;
 
     public Map<String, Object> validateAndTryMapBeforeCreate(DocumentPositionDTO documentPositionDTO) {
         return validate(documentPositionDTO);
@@ -47,10 +52,10 @@ public class DocumentPositionValidator {
 
         List<String> errors = new ArrayList<>();
         Map<String, Object> params = null;
-        
+
         if (isGridReadOnly(document)) {
             errors.add("qcadooView.error.position.documentAccepted");
-            
+
         } else {
 
             if (Strings.isNullOrEmpty(position.getProduct())) {
@@ -69,7 +74,7 @@ public class DocumentPositionValidator {
 
             params = tryMapDocumentPositionVOToParams(position, errors);
         }
-        
+
         if (!errors.isEmpty()) {
             throw new RuntimeException(errors.stream().collect(Collectors.joining("\n")));
         }
@@ -169,11 +174,7 @@ public class DocumentPositionValidator {
             return Arrays.asList("qcadooView.error.position.quantity.invalid");
         }
 
-        if (!validateScale(position.getQuantity(), null, 5) || !validatePresicion(position.getQuantity(), null, 12)) {
-            return Arrays.asList("qcadooView.error.position.quantity.invalid");
-        }
-
-        return Arrays.asList();
+        return validateBigDecimal(position.getQuantity(), "quantity", 5, 9);
     }
 
     private Collection<? extends String> validateGivenquantity(DocumentPositionDTO position) {
@@ -184,11 +185,7 @@ public class DocumentPositionValidator {
             return Arrays.asList("qcadooView.error.position.givenquantity.invalid");
         }
 
-        if (!validateScale(position.getGivenquantity(), null, 5) || !validatePresicion(position.getGivenquantity(), null, 12)) {
-            return Arrays.asList("qcadooView.error.position.givenquantity.invalid");
-        }
-
-        return Arrays.asList();
+        return validateBigDecimal(position.getGivenquantity(), "givenquantity", 5, 9);
     }
 
     private Collection<? extends String> validatePrice(DocumentPositionDTO position) {
@@ -196,8 +193,8 @@ public class DocumentPositionValidator {
             return Arrays.asList("qcadooView.error.position.price.invalid");
         }
 
-        if (position.getPrice() != null && (!validateScale(position.getPrice(), null, 5) || !validatePresicion(position.getPrice(), null, 12))) {
-            return Arrays.asList("qcadooView.error.position.price.invalid");
+        if (position.getPrice() != null) {
+            return validateBigDecimal(position.getPrice(), "price", 5, 7);
         }
 
         return Arrays.asList();
@@ -292,29 +289,24 @@ public class DocumentPositionValidator {
         }
     }
 
-    private boolean validateScale(BigDecimal value, Integer min, Integer max) {
-        int scale = value.stripTrailingZeros().scale();
-
-        if (max != null && scale > max) {
-            return false;
+    private List<String> validateBigDecimal(BigDecimal value, String field, int maxScale, int maxPrecision) {
+        List<String> errors = new ArrayList<>();
+        BigDecimal noZero = value.stripTrailingZeros();
+        int scale = noZero.scale();
+        int precision = noZero.precision();
+        if (scale < 0) {
+            precision -= scale;
+            scale = 0;
         }
-        if (min != null && scale < min) {
-            return false;
+        String fieldName = translationService.translate("qcadooView.gridColumn." + field, LocaleContextHolder.getLocale());
+
+        if (scale > maxScale) {
+            errors.add(String.format(translationService.translate("qcadooView.error.position.bigdecimal.invalidScale", LocaleContextHolder.getLocale()), fieldName, maxScale));
         }
-
-        return true;
-    }
-
-    private boolean validatePresicion(BigDecimal value, Integer min, Integer max) {
-        final int presicion = value.precision();
-
-        if (max != null && presicion > max) {
-            return false;
-        }
-        if (min != null && presicion < min) {
-            return false;
+        if ((precision - scale) > maxPrecision) {
+            errors.add(String.format(translationService.translate("qcadooView.error.position.bigdecimal.invalidPrecision", LocaleContextHolder.getLocale()), fieldName, maxPrecision));
         }
 
-        return true;
+        return errors;
     }
 }
