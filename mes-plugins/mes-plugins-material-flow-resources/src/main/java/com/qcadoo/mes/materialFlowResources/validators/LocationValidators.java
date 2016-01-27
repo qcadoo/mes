@@ -68,7 +68,8 @@ public class LocationValidators {
             String camelCaseName = "require" + name.substring(0, 1).toUpperCase() + name.substring(1);
             if (location.getBooleanField(camelCaseName) && !items.get(name).getBooleanField("checked")) {
                 String fieldTranslatedName = translationService.translate("materialFlowResources.materialFlowResourcesParameters.documentPositionParameters." + name, LocaleContextHolder.getLocale());
-                String errorMessage = translationService.translate("materialFlowResources.error.documentLocationPositionItemIsHidden", LocaleContextHolder.getLocale(), fieldTranslatedName);
+                String errorMessage = translationService.translate("materialFlowResources.error.documentLocationPositionItemIsHidden", LocaleContextHolder.getLocale());
+                errorMessage = String.format(errorMessage, fieldTranslatedName);
                 location.addError(locatoinDD.getField(camelCaseName), errorMessage);
             }
         }
