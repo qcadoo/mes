@@ -1,4 +1,3 @@
-
 -- QCADOOCLS-4577
 
 CREATE OR REPLACE FUNCTION prepare_superadmin() 
@@ -56,5 +55,31 @@ SELECT create_warehouse_stock_view();
 DROP FUNCTION create_warehouse_stock_view();
 -- end
 
+-- tables for time usage filters
+-- last touched 11.01.2016 by pako
 
+CREATE TABLE cmmsmachineparts_timeusagereportfilter
+(
+  id bigint NOT NULL,
+  fromdate date,
+  todate date,
+  workersselection character varying(255),
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  createuser character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT cmmsmachineparts_timeusagereportfilter_pkey PRIMARY KEY (id)
+);
 
+CREATE TABLE jointable_staff_timeusagereportfilter
+(
+  staff_id bigint NOT NULL,
+  timeusagereportfilter_id bigint NOT NULL,
+  CONSTRAINT jointable_staff_timeusagereportfilter_pkey PRIMARY KEY (timeusagereportfilter_id, staff_id),
+  CONSTRAINT staff_timeusagereportfilter_staff_fkey FOREIGN KEY (staff_id)
+      REFERENCES basic_staff (id) DEFERRABLE,
+  CONSTRAINT staff_timeusagereportfilter_filter_fkey FOREIGN KEY (timeusagereportfilter_id)
+      REFERENCES cmmsmachineparts_timeusagereportfilter (id) DEFERRABLE
+);
+
+-- end
