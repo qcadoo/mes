@@ -34,6 +34,9 @@ ALTER TABLE cmmsmachineparts_plannedeventrealization ADD COLUMN confirmed boolea
 ALTER TABLE cmmsmachineparts_plannedeventrealization ALTER COLUMN confirmed SET DEFAULT true;
 UPDATE cmmsmachineparts_plannedeventrealization SET confirmed=true;
 
+-- materialflowresources_resource
+-- last touched 27.01.2016 by wesi
+ALTER TABLE materialflowresources_resource ALTER COLUMN quantity TYPE numeric(14,5);
 -- end
 
 
