@@ -403,7 +403,9 @@ public class EventHooks {
             }
         }
         if (securityService.hasRole(user, EventRoles.ROLE_EVENTS_ACCEPT.toString()) && !parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)) {
+            if(!securityService.hasRole(user, EventRoles.ROLE_EVENTS_CLOSE.toString())){
                 EventRoles.ROLE_EVENTS_ACCEPT.disableFieldsWhenNotInRole(view);
+            }
         }
 
     }
