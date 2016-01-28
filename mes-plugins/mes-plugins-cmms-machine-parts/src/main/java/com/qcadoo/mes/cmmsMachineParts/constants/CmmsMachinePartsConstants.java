@@ -58,5 +58,6 @@ public class CmmsMachinePartsConstants {
 
     public static final String MODEL_MACHINE_PART_FOR_EVENT = "machinePartForEvent";
 
+    public static final String MODEL_TIME_USAGE_REPORT_FILTER = "timeUsageReportFilter";
 
 }
