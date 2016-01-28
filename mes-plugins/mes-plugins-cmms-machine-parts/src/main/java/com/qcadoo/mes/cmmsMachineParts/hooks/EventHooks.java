@@ -427,6 +427,9 @@ public class EventHooks {
         if (eventState == null) {
             GridComponent grid = (GridComponent) view.getComponentByReference("grid");
             List<Entity> entities = grid.getSelectedEntities();
+            if (entities.isEmpty()){
+                return false;
+            }
             return entities.stream().allMatch(e -> state.getStringValue().equals(e.getStringField(MaintenanceEventFields.STATE)));
         }
         return state.getStringValue().equals(eventState);
