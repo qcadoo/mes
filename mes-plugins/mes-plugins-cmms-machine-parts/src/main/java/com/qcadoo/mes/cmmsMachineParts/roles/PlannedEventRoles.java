@@ -67,6 +67,8 @@ public enum PlannedEventRoles {
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
             if (shouldBeActive(view, PlannedEventState.ACCEPTED, Optional.of(PlannedEventType.METER_READING), false, false)
                     || shouldBeActive(view, PlannedEventState.IN_REALIZATION, Optional.of(PlannedEventType.METER_READING), true,
+                            false)
+                    || shouldBeActive(view, PlannedEventState.IN_EDITING, Optional.of(PlannedEventType.METER_READING), true,
                             false)) {
                 lockFromRibbonGroup(view, "status", "realizedEvent");
             }
@@ -77,8 +79,7 @@ public enum PlannedEventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            if (shouldBeActive(view, PlannedEventState.IN_REALIZATION, Optional.of(PlannedEventType.METER_READING), false, false)
-                    || shouldBeActive(view, PlannedEventState.IN_EDITING, Optional.of(PlannedEventType.METER_READING), false, false)) {
+            if (shouldBeActive(view, PlannedEventState.IN_REALIZATION, Optional.of(PlannedEventType.METER_READING), false, false)) {
                 lockFromRibbonGroup(view, "status", "realizedEvent");
             }
             lockFromRibbonGroup(view, "status", "planEvent", "plannedEvent");

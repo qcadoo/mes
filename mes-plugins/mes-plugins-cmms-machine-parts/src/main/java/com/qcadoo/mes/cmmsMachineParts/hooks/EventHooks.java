@@ -47,12 +47,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class EventHooks {
 
     private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
 
     @Autowired
     private MaintenanceEventService maintenanceEventService;
@@ -308,7 +311,7 @@ public class EventHooks {
     }
 
     public void setEventCriteriaModifiers(ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity event = formComponent.getEntity();
 
         setEventCriteriaModifier(view, event, MaintenanceEventFields.FACTORY, MaintenanceEventFields.DIVISION);
@@ -329,7 +332,7 @@ public class EventHooks {
     }
 
     private void setUpFaultTypeLookup(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
         Entity workstation = event.getBelongsToField(MaintenanceEventFields.WORKSTATION);
         Entity subassembly = event.getBelongsToField(MaintenanceEventFields.SUBASSEMBLY);
@@ -375,7 +378,7 @@ public class EventHooks {
         RibbonGroup solutionsRibbonGroup = ribbon.getGroupByName("solutions");
         RibbonActionItem showSolutionsRibbonActionItem = solutionsRibbonGroup.getItemByName("showSolutions");
 
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
 
         showSolutionsRibbonActionItem.setEnabled(event.getId() != null);
@@ -402,11 +405,45 @@ public class EventHooks {
                 role.disableFieldsWhenNotInRole(view);
             }
         }
-        if (securityService.hasRole(user, EventRoles.ROLE_EVENTS_ACCEPT.toString()) && !parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)) {
+        if(!parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)){
             if(!securityService.hasRole(user, EventRoles.ROLE_EVENTS_CLOSE.toString())){
-                EventRoles.ROLE_EVENTS_ACCEPT.disableFieldsWhenNotInRole(view);
+                enableCloseEvents(view, false);
+            } else {
+                enableCloseEvents(view, true);
             }
         }
+    }
 
+    private void enableCloseEvents(final ViewDefinitionState view, final boolean enable) {
+        if(eventInState(view, MaintenanceEventState.EDITED) || eventInState(view, MaintenanceEventState.ACCEPTED)){
+            enableFromRibbonGroup(view, enable, "status", "closeEvent");
+        }
+    }
+
+    private boolean eventInState(final ViewDefinitionState view, final MaintenanceEventState state) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getEntity();
+        String eventState = event.getStringField(MaintenanceEventFields.STATE);
+        if (eventState == null) {
+            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            List<Entity> entities = grid.getSelectedEntities();
+            return entities.stream().allMatch(e -> state.getStringValue().equals(e.getStringField(MaintenanceEventFields.STATE)));
+        }
+        return state.getStringValue().equals(eventState);
+    }
+
+    private void enableFromRibbonGroup(final ViewDefinitionState view, final boolean enable, final String groupName, String... items) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup ribbonGroup = ribbon.getGroupByName(groupName);
+        if(ribbonGroup != null) {
+            for (String item : items) {
+                RibbonActionItem ribbonItem = ribbonGroup.getItemByName(item);
+                if (ribbonItem != null) {
+                    ribbonItem.setEnabled(enable);
+                    ribbonItem.requestUpdate(true);
+                }
+            }
+        }
     }
 }

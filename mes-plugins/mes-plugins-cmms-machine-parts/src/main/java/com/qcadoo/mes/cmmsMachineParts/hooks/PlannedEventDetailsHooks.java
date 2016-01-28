@@ -59,6 +59,8 @@ public class PlannedEventDetailsHooks {
 
     private static final String L_FORM = "form";
 
+    private static final String L_WINDOW = "window";
+
     @Autowired
     private EventFieldsForTypeFactory eventFieldsForTypeFactory;
 
@@ -256,9 +258,48 @@ public class PlannedEventDetailsHooks {
             }
         }
 
-        if (securityService.hasRole(user, PlannedEventRoles.ROLE_PLANNED_EVENTS_STATES_ACCEPT.toString())
-                && !parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)) {
-            PlannedEventRoles.ROLE_PLANNED_EVENTS_STATES_ACCEPT.disableFieldsWhenNotInRole(view);
+        if(!parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)){
+            if(!securityService.hasRole(user, PlannedEventRoles.ROLE_PLANNED_EVENTS_STATES_REALIZED.toString())){
+                enableRealizationEvents(view, false);
+            } else {
+                enableRealizationEvents(view, true);
+            }
+        }
+    }
+
+    private void enableRealizationEvents(final ViewDefinitionState view, final boolean enable) {
+        if(eventInState(view, PlannedEventState.IN_EDITING) || eventInState(view, PlannedEventState.ACCEPTED)){
+            enableFromRibbonGroup(view, enable, "status", "realizedEvent");
+        }
+    }
+
+    private boolean eventInState(final ViewDefinitionState view, final PlannedEventState state) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getEntity();
+        String eventState = event.getStringField(PlannedEventFields.STATE);
+        if (eventState == null) {
+            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            List<Entity> entities = grid.getSelectedEntities();
+            if (entities.isEmpty()){
+                return false;
+            }
+            return entities.stream().allMatch(e -> state.getStringValue().equals(e.getStringField(PlannedEventFields.STATE)));
+        }
+        return state.getStringValue().equals(eventState);
+    }
+
+    private void enableFromRibbonGroup(final ViewDefinitionState view, final boolean enable, final String groupName, String... items) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup ribbonGroup = ribbon.getGroupByName(groupName);
+        if(ribbonGroup != null) {
+            for (String item : items) {
+                RibbonActionItem ribbonItem = ribbonGroup.getItemByName(item);
+                if (ribbonItem != null) {
+                    ribbonItem.setEnabled(enable);
+                    ribbonItem.requestUpdate(true);
+                }
+            }
         }
     }
 
