@@ -1,17 +1,16 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage;
 
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.cmmsMachineParts.constants.TimeUsageReportFilterFields;
+import com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage.dto.TimeUsageDTO;
+import com.qcadoo.model.api.DataDefinitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.cmmsMachineParts.constants.TimeUsageReportFilterFields;
-import com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage.dto.TimeUsageDTO;
-import com.qcadoo.model.api.DataDefinitionService;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class TimeUsageXlsDataProvider {
@@ -34,7 +33,7 @@ public class TimeUsageXlsDataProvider {
             + "(SELECT MIN(dateandtime) FROM cmmsmachineparts_plannedeventstatechange WHERE plannedevent_id = event.id and targetstate='04inRealization') AS registeredStart,\n"
             + "(SELECT MAX(dateandtime) FROM cmmsmachineparts_plannedeventstatechange WHERE plannedevent_id = event.id and targetstate='08inEditing') AS registeredEnd\n"
             + "FROM (\n"
-            + "SELECT worker_id, plannedevent_id, sum(duration) AS duration, (startdate - interval '6 hours')::date as startdate FROM cmmsmachineparts_plannedeventrealization GROUP BY 1,2,4) AS realization\n"
+            + "SELECT worker_id, plannedevent_id, sum(duration) AS duration, (startdate - interval '6 hours')::date as startdate FROM cmmsmachineparts_plannedeventrealization WHERE confirmed='true' GROUP BY 1,2,4) AS realization\n"
             + "LEFT JOIN basic_staff staff ON realization.worker_id=staff.id\n"
             + "LEFT JOIN cmmsmachineparts_plannedevent event ON plannedevent_id=event.id\n"
             + "LEFT JOIN productionlines_productionline line ON event.productionline_id=line.id\n"
