@@ -82,4 +82,10 @@ CREATE TABLE jointable_staff_timeusagereportfilter
       REFERENCES cmmsmachineparts_timeusagereportfilter (id) DEFERRABLE
 );
 
+INSERT INTO qcadooview_view(pluginidentifier, name, view, entityversion) VALUES ('cmmsMachineParts', 'timeUsageReport', 'timeUsageReport', 0);
+INSERT INTO qcadooview_item(pluginidentifier, name, active, category_id, view_id, succession, authrole, entityversion)
+VALUES ('cmmsMachineParts', 'timeUsageReport', true, (SELECT id FROM qcadooview_category WHERE name = 'maintenance' LIMIT 1), (
+		SELECT id FROM qcadooview_view WHERE name = 'timeUsageReport' LIMIT 1),(
+		SELECT max(succession) + 1 FROM qcadooview_item WHERE category_id = (SELECT id FROM qcadooview_category WHERE name = 'maintenance' LIMIT 1)), 'ROLE_MAINTENANCE', 0);
+
 -- end
