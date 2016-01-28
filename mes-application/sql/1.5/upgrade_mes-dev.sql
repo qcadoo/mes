@@ -55,6 +55,13 @@ SELECT create_warehouse_stock_view();
 DROP FUNCTION create_warehouse_stock_view();
 -- end
 
+-- basic_parameter
+-- last touched 22.01.2016 by kasi
+
+ALTER TABLE basic_parameter ADD COLUMN acceptanceevents boolean;
+
+-- end
+
 -- tables for time usage filters
 -- last touched 11.01.2016 by pako
 

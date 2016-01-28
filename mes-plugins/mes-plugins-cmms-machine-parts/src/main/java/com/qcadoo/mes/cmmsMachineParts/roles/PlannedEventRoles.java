@@ -1,8 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.roles;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
@@ -17,6 +14,9 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+
+import java.util.List;
+import java.util.Optional;
 
 public enum PlannedEventRoles {
     ROLE_PLANNED_EVENTS_DOCUMENTS {
@@ -67,6 +67,8 @@ public enum PlannedEventRoles {
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
             if (shouldBeActive(view, PlannedEventState.ACCEPTED, Optional.of(PlannedEventType.METER_READING), false, false)
                     || shouldBeActive(view, PlannedEventState.IN_REALIZATION, Optional.of(PlannedEventType.METER_READING), true,
+                            false)
+                    || shouldBeActive(view, PlannedEventState.IN_EDITING, Optional.of(PlannedEventType.METER_READING), true,
                             false)) {
                 lockFromRibbonGroup(view, "status", "realizedEvent");
             }

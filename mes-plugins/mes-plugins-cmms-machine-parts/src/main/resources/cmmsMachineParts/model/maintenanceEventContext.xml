@@ -37,7 +37,9 @@
                  joinField="maintenanceEventContext" plugin="cmmsMachineParts" />
 		<boolean name="generated" default="false" />
 		<boolean name="confirmed" default="false" />
-	</fields>
+        <boolean name="acceptanceEvents" default="false" persistent="false"/>
+
+    </fields>
 	<hooks>
 
 	</hooks>

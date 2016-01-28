@@ -68,6 +68,8 @@
 
         <belongsTo name="maintenanceEventContext" plugin="cmmsMachineParts" model="maintenanceEventContext"/>
 
+        <boolean name="acceptanceEvents" default="false" persistent="false"/>
+
         <hasMany name="plannedEvents" plugin="cmmsMachineParts" model="plannedEvent" joinField="maintenanceEvent"
                  cascade="nullify"/>
 
