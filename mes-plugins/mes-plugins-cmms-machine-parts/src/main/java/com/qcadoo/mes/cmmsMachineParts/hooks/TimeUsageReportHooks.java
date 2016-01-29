@@ -21,27 +21,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.constants;
+package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import java.util.Collections;
 
-public class PlannedEventRealizationFields {
+import org.springframework.stereotype.Service;
 
-    private PlannedEventRealizationFields() {
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.internal.components.select.SelectComponentState;
 
+@Service
+public class TimeUsageReportHooks {
+
+    public final void onBeforeRender(final ViewDefinitionState view) {
+        SelectComponentState workersSelection = (SelectComponentState) view.getComponentByReference("workersSelection");
+        GridComponent workersGrid = (GridComponent) view.getComponentByReference("workers");
+        String selected = (String) workersSelection.getFieldValue();
+        if ("01all".equals(selected)) {
+            workersGrid.setEntities(Collections.emptyList());
+            workersGrid.setEnabled(false);
+        } else {
+            workersGrid.setEnabled(true);
+        }
     }
-
-    public static final String PLANNED_EVENT = "plannedEvent";
-
-    public static final String WORKER = "worker";
-
-    public static final String ACTION = "action";
-
-    public static final String START_DATE = "startDate";
-
-    public static final String FINISH_DATE = "finishDate";
-
-    public static final String DURATION = "duration";
-
-    public static final String CONFIRMED = "confirmed";
-
 }

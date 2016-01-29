@@ -38,6 +38,8 @@
 
         <boolean name="generated" default="false"/>
         <boolean name="confirmed" default="false"/>
+        <boolean name="acceptanceEvents" default="false" persistent="false"/>
+
     </fields>
     <hooks>
 

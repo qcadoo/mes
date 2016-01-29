@@ -128,7 +128,9 @@
 
         <menu:menu-item name="plannedEvents" category="maintenance" view="plannedEventsList"
                         defaultAuthorizationRole="ROLE_PLANNED_EVENTS_ACTIONS_VIEW"/>
-        <menu:menu-item name="actions" category="basic" view="actionsList" defaultAuthorizationRole="ROLE_MAINTENANCE"/>
+        <menu:menu-item name="actions" category="basic" view="actionsList" defaultAuthorizationRole="ROLE_ACTIONS"/>
+        <menu:menu-item name="timeUsageReport" category="maintenance" view="timeUsageReport"
+                        defaultAuthorizationRole="ROLE_MAINTENANCE"/>
 
         <view:view resource="view/plannedEventsList.xml"/>
         <view:view resource="view/plannedEventDetails.xml"/>
@@ -136,6 +138,8 @@
         <view:view resource="view/plannedEventRealizationDetails.xml"/>
 
         <view:view resource="view/plannedEventStateChangeReasonDialog.xml"/>
+
+        <view:view resource="view/timeUsageReport.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
 
@@ -171,11 +175,17 @@
         <model:model model="sourceCost" resource="model/sourceCost.xml"/>
         <model:model model="plannedEventXLSHelper" resource="model/plannedEventXLSHelper.xml"/>
 
+        <model:model model="timeUsageReportFilter" resource="model/timeUsageReportFilter.xml"/>
+
 
         <!-- model extensions -->
 
         <model:model-field plugin="basic" model="parameter">
             <model:decimal name="possibleWorkTimeDeviation"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="acceptanceEvents"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -366,6 +376,12 @@
             <model:hasMany name="actionsForPlannedEvent" model="actionForPlannedEvent" joinField="responsibleWorker"
                            plugin="cmmsMachineParts"
                            cascade="nullify"/>
+        </model:model-field>
+
+		<model:model-field model="staff" plugin="basic">
+            <model:manyToMany name="timeUsageReportFilters" model="timeUsageReportFilter" joinField="workers"
+                              plugin="cmmsMachineParts"
+                              cascade="nullify"/>
         </model:model-field>
 
         <model:model-hook plugin="materialFlowResources" model="document">

@@ -24,23 +24,20 @@
     ***************************************************************************
 
 -->
-<model name="maintenanceEventContext"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="factory" model="factory" plugin="basic" />
-		<belongsTo name="division" model="division" plugin="basic" />
-		<hasMany name="events" model="maintenanceEvent"
-				 joinField="maintenanceEventContext" plugin="cmmsMachineParts" />
-
-        <hasMany name="maintenanceEventListDtos" model="maintenanceEventListDto"
-                 joinField="maintenanceEventContext" plugin="cmmsMachineParts" />
-		<boolean name="generated" default="false" />
-		<boolean name="confirmed" default="false" />
-        <boolean name="acceptanceEvents" default="false" persistent="false"/>
-
+<model name="timeUsageReportFilter" auditable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+    	<date name="fromDate" required="true"/>
+    	<date name="toDate" required="true"/>
+    	<enum name="workersSelection"
+              values="01all,02selected" default="01all"
+              required="true"/>
+		<manyToMany name="workers" joinField="timeUsageReportFilters" model="staff" cascade="nullify" plugin="basic"
+                    copyable="false"/>
     </fields>
-	<hooks>
-
-	</hooks>
+    <hooks>
+    	<onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.TimeUsageReportFilterHooks" method="onSave"/>
+    	<validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.TimeUsageReportFilterValidators" method="validate"/>
+    </hooks>
 </model>

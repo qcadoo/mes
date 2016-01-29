@@ -245,6 +245,8 @@
 
         <security:role identifier="ROLE_PRODUCTION_PER_SHIFT" description="Dostęp do produkcji na zmianę"/>
 
+        <security:role identifier="ROLE_ACTIONS" description="Dostęp do czynności"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>

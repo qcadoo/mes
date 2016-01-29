@@ -152,7 +152,7 @@
                                 var deleteButton = #{window}.getRibbonItem("actions.delete");
 
                                 var type = #{type}.getValue().content.value;
-
+                                var acceptanceEvents = #{acceptanceEvents}.getValue().content.value;
                                 planEvent.forState="02inPlan";
                                 planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
 
@@ -256,27 +256,39 @@
 
                                     deleteButton.disable();
                                 } else if (state =="08inEditing") {
-                                    planEvent.enable();
-                                    planEvent.forState="07accepted";
-                                    planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
-                                    planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
-                                    cancelEvent.disable();
-                                    plannedEvent.enable();
-                                    plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
-	                                plannedEvent.forState="04inRealization";
-	                                plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
-                                    if (type == "05meterReading") {
-                                    	realizedEvent.enable();
-                                    	planEvent.disable();
-                                    	plannedEvent.disable();
-                                    } else {
-                                    	realizedEvent.disable();
-                                    }
-                                    startEvent.disable();
-	                                stopEvent.disable();
-                                    toggleEditable(true, "");
+                                    if(acceptanceEvents == "true"){
+                                        planEvent.enable();
+                                        planEvent.forState="07accepted";
+                                        planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                        planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
+                                        cancelEvent.disable();
+                                        plannedEvent.enable();
+                                        plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
+	                                    plannedEvent.forState="04inRealization";
+	                                    plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
+                                        if (type == "05meterReading") {
+                                    	    realizedEvent.enable();
+                                    	    planEvent.disable();
+                                    	    plannedEvent.disable();
+                                        } else {
+                                    	    realizedEvent.disable();
+                                        }
+                                        startEvent.disable();
+	                                    stopEvent.disable();
+                                        toggleEditable(true, "");
 
-                                    deleteButton.disable();
+                                        deleteButton.disable();
+                                    } else {
+                                        realizedEvent.enable();
+                                        planEvent.disable();
+                                        plannedEvent.disable();
+                                        startEvent.disable();
+	                                    stopEvent.disable();
+	                                    cancelEvent.disable();
+                                        toggleEditable(true, "");
+
+                                        deleteButton.disable();
+                                    }
                                 }
 
                             }
@@ -299,6 +311,8 @@
                         <component type="hidden" name="plannedEventContext" field="plannedEventContext"
                                    reference="plannedEventContext"/>
                         <component type="input" name="number" field="number" reference="number"/>
+                        <component type="hidden" name="acceptanceEvents" field="acceptanceEvents"
+                                   reference="acceptanceEvents"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="select" name="type" field="type" reference="type" defaultEnabled="true">
@@ -724,9 +738,9 @@
                 <option type="column" name="finishDate" fields="finishDate"/>
                 <option type="column" name="duration" fields="duration"
                         expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
-
-                <option type="searchable" value="workerName,workerSurname,action,startDate,finishDate,duration"/>
-                <option type="orderable" value="workerName,workerSurname,action,startDate,finishDate,duration"/>
+                <option type="column" name="confirmed" fields="confirmed"/>
+                <option type="searchable" value="workerName,workerSurname,action,startDate,finishDate,duration,confirmed"/>
+                <option type="orderable" value="workerName,workerSurname,action,startDate,finishDate,duration,confirmed"/>
 
                 <option type="order" column="startDate" direction="asc"/>
 

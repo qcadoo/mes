@@ -69,4 +69,6 @@ public class MaintenanceEventFields {
     public static final String MAINTENANCE_EVENT_CONTEXT = "maintenanceEventContext";
 
     public static final String SOURCE_COST = "sourceCost";
+
+    public static final String ACCEPTANCE_EVENTS = "acceptanceEvents";
 }

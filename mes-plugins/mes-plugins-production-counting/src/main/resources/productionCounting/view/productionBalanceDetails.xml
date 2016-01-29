@@ -243,6 +243,8 @@
 					expression="#product['unit']" />
 
 				<option type="order" column="inputProductNumber" direction="asc" />
+				
+				<option type="fixedHeight" value="true" />
 			</component>
 		</windowTab>
 
@@ -265,6 +267,8 @@
 					expression="#product['unit']" />
 
 				<option type="order" column="outputProductNumber" direction="asc" />
+				
+				<option type="fixedHeight" value="true" />
 			</component>
 		</windowTab>
 

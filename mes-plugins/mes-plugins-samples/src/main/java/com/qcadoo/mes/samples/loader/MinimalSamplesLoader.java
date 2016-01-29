@@ -198,7 +198,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
                 workstationTypeComponent.setField("quantity", 1);
                 workstationTypeComponent.setField("productionLine", productionLine);
                 workstationTypeComponent.setField("workstationType", machine);
-                workstationTypeComponent = workstationTypeComponent.getDataDefinition().save(workstationTypeComponent);
+                workstationTypeComponent.getDataDefinition().save(workstationTypeComponent);
             }
         }
 

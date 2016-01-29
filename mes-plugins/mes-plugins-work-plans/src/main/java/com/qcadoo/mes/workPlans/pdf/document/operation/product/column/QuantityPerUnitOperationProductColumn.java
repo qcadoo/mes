@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
@@ -59,12 +60,12 @@ public class QuantityPerUnitOperationProductColumn extends AbstractOperationProd
     public String getColumnValue(Entity operationProduct) {
         List<Entity> orders = operationProduct.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT)
                 .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY).getHasManyField(TechnologyFieldsO.ORDERS);
-        if (orders.isEmpty()) {
+        BigDecimal quantity = operationProduct.getDecimalField(OperationProductInComponentFields.QUANTITY);
+        if (orders.isEmpty() || quantity == null) {
             return StringUtils.EMPTY;
         }
-        return String.valueOf(numberService.format(numberService.setScale((operationProduct
-                .getDecimalField(OperationProductInComponentFields.QUANTITY).divide(
-                orders.get(0).getDecimalField(OrderFields.PLANNED_QUANTITY), RoundingMode.HALF_UP)))));
+        return String.valueOf(numberService.format(numberService
+                .setScale(quantity.divide(orders.get(0).getDecimalField(OrderFields.PLANNED_QUANTITY), RoundingMode.HALF_UP))));
     }
 
     @Override

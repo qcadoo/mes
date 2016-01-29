@@ -42,7 +42,7 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 public class DeliveredProductValidationAspect {
 
     @Autowired
-    DeliveredProductValidationHelper deliveredProductValidaionHelper;
+    private DeliveredProductValidationHelper deliveredProductValidaionHelper;
 
     @Pointcut("execution(public boolean com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks.checkIfDeliveredProductAlreadyExists(..))"
             + "&& args(deliveredProductDD, deliveredProduct)")
