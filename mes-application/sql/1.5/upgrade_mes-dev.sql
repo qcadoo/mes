@@ -96,3 +96,7 @@ VALUES ('cmmsMachineParts', 'timeUsageReport', true, (SELECT id FROM qcadooview_
 		SELECT max(succession) + 1 FROM qcadooview_item WHERE category_id = (SELECT id FROM qcadooview_category WHERE name = 'maintenance' LIMIT 1)), 'ROLE_MAINTENANCE', 0);
 
 -- end
+
+-- #ESILCO-42
+ALTER TABLE materialflowresources_position ALTER COLUMN quantity TYPE numeric(14,5);
+--end
