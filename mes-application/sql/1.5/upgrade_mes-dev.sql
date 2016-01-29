@@ -96,3 +96,20 @@ VALUES ('cmmsMachineParts', 'timeUsageReport', true, (SELECT id FROM qcadooview_
 		SELECT max(succession) + 1 FROM qcadooview_item WHERE category_id = (SELECT id FROM qcadooview_category WHERE name = 'maintenance' LIMIT 1)), 'ROLE_MAINTENANCE', 0);
 
 -- end
+
+-- cmmsmachineparts_plannedevent
+-- last touched 29.01.2016 by wesi
+CREATE OR REPLACE VIEW cmmsmachineparts_plannedeventlistdto as
+    select e.id, e.number, e.type, owner.name || ' ' || owner.surname  as ownerName,
+            ''::varchar(255) as description, factory.number as factoryNumber, factory.id as factory_id, division.number as divisionNumber,
+            division.id as division_id, productionLine.number as productionLineNumber, workstation.number as workstationNumber,
+            subassembly.number as subassemblyNumber, e.date, e.counter, e.createUser, e.createDate, e.state, context.id as plannedEventContext_id
+    from cmmsmachineparts_plannedevent e left join basic_staff owner on (e.owner_id = owner.id) join basic_factory factory on (e.factory_id = factory.id)
+        join basic_division division on (e.division_id = division.id) left join productionLines_productionLine productionLine on (e.productionline_id = productionLine.id)
+        left join basic_workstation workstation on (e.workstation_id = workstation.id) left join basic_subassembly subassembly on (e.subassembly_id = subassembly.id)
+        left join cmmsmachineparts_plannedeventcontext context on (e.plannedeventcontext_id = context.id);
+
+ALTER TABLE cmmsmachineparts_plannedevent ALTER COLUMN description TYPE character varying(600);
+
+create or replace view cmmsmachineparts_plannedEventListDto as select e.id, e.number, e.type, owner.name || ' ' || owner.surname  as ownerName, e.description, factory.number as factoryNumber, factory.id as factory_id, division.number as divisionNumber, division.id as division_id, productionLine.number as productionLineNumber, workstation.number as workstationNumber, subassembly.number as subassemblyNumber, e.date, e.counter, e.createUser, e.createDate, e.state, context.id as plannedEventContext_id from cmmsmachineparts_plannedevent e left join basic_staff owner on (e.owner_id = owner.id) join basic_factory factory on (e.factory_id = factory.id) join basic_division division on (e.division_id = division.id) left join productionLines_productionLine productionLine on (e.productionline_id = productionLine.id) left join basic_workstation workstation on (e.workstation_id = workstation.id) left join basic_subassembly subassembly on (e.subassembly_id = subassembly.id) left join cmmsmachineparts_plannedeventcontext context on (e.plannedeventcontext_id = context.id);
+-- end
