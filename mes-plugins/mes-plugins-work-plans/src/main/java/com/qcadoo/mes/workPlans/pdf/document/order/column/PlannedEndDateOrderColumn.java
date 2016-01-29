@@ -23,27 +23,25 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.order.column;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Component("plannedEndDateOrderColumn")
 public class PlannedEndDateOrderColumn extends AbstractOrderColumn {
 
-    private NumberService numberService;
-
     @Autowired
     public PlannedEndDateOrderColumn(TranslationService translationService, NumberService numberService) {
         super(translationService);
-        this.numberService = numberService;
     }
 
     @Override
