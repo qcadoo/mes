@@ -1,5 +1,25 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TimeZone;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Font;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.MachinePartForEventDTO;
@@ -8,33 +28,25 @@ import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEven
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventStateChangeDTO;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventStateStringValues;
 import com.qcadoo.model.api.NumberService;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Font;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
+@Service
+public class PlannedEventsXlsService {
 
-@Service public class PlannedEventsXlsService {
+    @Autowired
+    private TranslationService translationService;
 
-    @Autowired private TranslationService translationService;
+    @Autowired
+    private PlannedEventsXLSDataProvider plannedEventsXLSDataProvider;
 
-    @Autowired private PlannedEventsXLSDataProvider plannedEventsXLSDataProvider;
-
-    @Autowired private NumberService numberService;
-
-    private static final int REALIZATIONS_COLUMN_POSITION_START = 25;
-
-    private static final int PARTS_COLUMN_POSITION_START = 21;
+    @Autowired
+    private NumberService numberService;
 
     public String getReportTitle(final Locale locale) {
         return translationService.translate(PlannedEventsXlsConstants.REPORT_TITLE, locale);
     }
 
-    public void buildExcelContent(final HSSFWorkbook workbook, final HSSFSheet sheet, final Map<String, Object> filters, final Locale locale) {
+    public void buildExcelContent(final HSSFWorkbook workbook, final HSSFSheet sheet, final Map<String, Object> filters,
+            final Locale locale) {
         List<PlannedEventDTO> events = plannedEventsXLSDataProvider.getEvents(filters);
         fillHeaderRow(workbook, sheet, 0, locale);
         int rowCounter = 1;
@@ -51,7 +63,7 @@ import java.util.*;
         font.setBoldweight(Font.BOLDWEIGHT_BOLD);
         HSSFCellStyle style = workbook.createCellStyle();
 
-            style.setFont(font);
+        style.setFont(font);
 
         int colNumber = 0;
         for (String column : PlannedEventsXlsConstants.ALL_COLUMNS) {
@@ -62,7 +74,8 @@ import java.util.*;
         }
     }
 
-    private int fillEventsRows(final HSSFWorkbook workbook, final HSSFSheet sheet, final PlannedEventDTO event, int rowCounter, final Locale locale) {
+    private int fillEventsRows(final HSSFWorkbook workbook, final HSSFSheet sheet, final PlannedEventDTO event, int rowCounter,
+            final Locale locale) {
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short) 10);
@@ -71,7 +84,7 @@ import java.util.*;
         int rowCounterCopy = rowCounter;
         int partsCounter = rowCounterCopy;
         int realizationsCounter = rowCounterCopy;
-        //dodanie wiersza ze zdarzeniem
+        // dodanie wiersza ze zdarzeniem
         HSSFRow eventLine = sheet.createRow(rowCounterCopy);
 
         HSSFCell numberCell = eventLine.createCell(0);
@@ -137,7 +150,7 @@ import java.util.*;
         HSSFCell solutionDescriptionCell = eventLine.createCell(20);
         solutionDescriptionCell.setCellValue(event.getSolutionDescription());
 
-        //dodanie sub wierszy
+        // dodanie sub wierszy
         int rowsToAdd = event.subListSize();
         for (int i = 1; i < rowsToAdd; i++) {
             int r = rowCounterCopy + i;
@@ -259,7 +272,7 @@ import java.util.*;
         TimeZone tz = TimeZone.getTimeZone("UTC");
         SimpleDateFormat df = new SimpleDateFormat("HHHH:mm:ss");
         df.setTimeZone(tz);
-        String time = df.format(new Date(value*1000L*100L));
+        String time = df.format(new Date(value * 1000L * 100L));
 
         return time;
     }
@@ -268,7 +281,7 @@ import java.util.*;
         if (value == null) {
             return "";
         }
-        return numberService.formatWithMinimumFractionDigits(value,0);
+        return numberService.formatWithMinimumFractionDigits(value, 0);
     }
 
     private String getDateValue(Date date) {

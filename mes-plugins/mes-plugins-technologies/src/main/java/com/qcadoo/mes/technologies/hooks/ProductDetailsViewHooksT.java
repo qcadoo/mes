@@ -49,8 +49,9 @@ public class ProductDetailsViewHooksT {
 
     // TODO lupo fix when problem with navigation will be done
     public void updateRibbonState(final ViewDefinitionState view) {
-        Entity loggedUser = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER,
-                QcadooSecurityConstants.MODEL_USER).get(securityService.getCurrentUserId());
+        Entity loggedUser = dataDefinitionService
+                .get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
+                .get(securityService.getCurrentUserId());
 
         if (!securityService.hasRole(loggedUser, "ROLE_TECHNOLOGIES")) {
             view.getComponentByReference("technologyTab").setVisible(false);
@@ -61,14 +62,12 @@ public class ProductDetailsViewHooksT {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         RibbonGroup technologies = (RibbonGroup) window.getRibbon().getGroupByName("technologies");
 
-        // RibbonActionItem addTechnologyGroup = (RibbonActionItem) technologies.getItemByName("addTechnologyGroup");
         RibbonActionItem showTechnologiesWithTechnologyGroup = (RibbonActionItem) technologies
                 .getItemByName("showTechnologiesWithTechnologyGroup");
         RibbonActionItem showTechnologiesWithProduct = (RibbonActionItem) technologies
                 .getItemByName("showTechnologiesWithProduct");
 
         if (product.getId() != null) {
-            // updateButtonState(addTechnologyGroup, true);
 
             Entity technologyGroup = product.getBelongsToField("technologyGroup");
 
@@ -83,7 +82,6 @@ public class ProductDetailsViewHooksT {
             return;
         }
 
-        // updateButtonState(addTechnologyGroup, false);
         updateButtonState(showTechnologiesWithTechnologyGroup, false);
         updateButtonState(showTechnologiesWithProduct, false);
     }
