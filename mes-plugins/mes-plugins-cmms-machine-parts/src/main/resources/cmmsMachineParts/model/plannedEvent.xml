@@ -32,7 +32,9 @@
         <enum name="type"
               values="01review,02repairs,03externalService,04udtReview,05meterReading,06manual,07additionalWork,08afterReview"
               default="01review" required="true"/>
-        <string name="description"/>
+        <string name="description">
+            <validatesLength max="600"/>
+        </string>
         <belongsTo name="owner" model="staff" plugin="basic"/>
         <!-- only for show in grid-->
         <string name="ownerName"/>
