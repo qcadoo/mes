@@ -45,14 +45,11 @@ import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentEntityType;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.grouping.OperationMergeService;
-import com.qcadoo.mes.technologies.tree.builder.api.OperationProductComponent;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 
 @Service
 public class OperationProductsExtractor {
@@ -111,7 +108,8 @@ public class OperationProductsExtractor {
                         continue;
                     }
                 } else {
-                    if ((operationComponent == null) || !technologyOperationComponent.getId().equals(operationComponent.getId())) {
+                    if ((operationComponent == null)
+                            || !technologyOperationComponent.getId().equals(operationComponent.getId())) {
                         continue;
                     }
                 }
@@ -144,22 +142,6 @@ public class OperationProductsExtractor {
 
                 }
 
-                // if ((product != null) && (entityType != null)) {
-                // if (entityTypeWithAlreadyAddedProducts.containsKey(entityType)) {
-                // if (shouldSkipAddingProduct(operationProductComponentHolder, entityTypeWithAlreadyAddedProducts,
-                // typeOfProductionRecording)) {
-                // continue;
-                // } else {
-                // Set<Entity> alreadAddedProducts = entityTypeWithAlreadyAddedProducts.get(entityType);
-                //
-                // alreadAddedProducts.add(product);
-                //
-                // entityTypeWithAlreadyAddedProducts.put(entityType, alreadAddedProducts);
-                // }
-                // } else {
-                // entityTypeWithAlreadyAddedProducts.put(entityType, Sets.newHashSet(product));
-                // }
-                // }
             }
 
             Entity trackingOperationProductComponent = trackingOperationComponentBuilder

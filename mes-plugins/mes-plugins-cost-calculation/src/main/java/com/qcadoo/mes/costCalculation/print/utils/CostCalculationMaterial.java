@@ -45,7 +45,8 @@ public class CostCalculationMaterial {
 
     private Font redFont;
 
-    public CostCalculationMaterial(String productNumber, String unit, BigDecimal productQuantity, BigDecimal costForGivenQuantity) {
+    public CostCalculationMaterial(String productNumber, String unit, BigDecimal productQuantity,
+            BigDecimal costForGivenQuantity) {
         this.productNumber = productNumber;
         this.unit = unit;
         this.productQuantity = productQuantity;
@@ -56,8 +57,8 @@ public class CostCalculationMaterial {
         redFont.setColor(Color.RED);
     }
 
-    public CostCalculationMaterial(String productNumber, String unit, BigDecimal productQuantity,
-            BigDecimal costForGivenQuantity, BigDecimal totalCost, BigDecimal toAdd) {
+    public CostCalculationMaterial(String productNumber, String unit, BigDecimal productQuantity, BigDecimal costForGivenQuantity,
+            BigDecimal totalCost, BigDecimal toAdd) {
         this.productNumber = productNumber;
         this.unit = unit;
         this.productQuantity = productQuantity;
@@ -127,26 +128,34 @@ public class CostCalculationMaterial {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         CostCalculationMaterial that = (CostCalculationMaterial) o;
 
         if (costForGivenQuantity != null ? !costForGivenQuantity.equals(that.costForGivenQuantity)
-                : that.costForGivenQuantity != null)
+                : that.costForGivenQuantity != null) {
             return false;
-        if (!productNumber.equals(that.productNumber))
+        }
+        if (!productNumber.equals(that.productNumber)) {
             return false;
-        if (productQuantity != null ? !productQuantity.equals(that.productQuantity) : that.productQuantity != null)
+        }
+        if (productQuantity != null ? !productQuantity.equals(that.productQuantity) : that.productQuantity != null) {
             return false;
-        if (toAdd != null ? !toAdd.equals(that.toAdd) : that.toAdd != null)
+        }
+        if (toAdd != null ? !toAdd.equals(that.toAdd) : that.toAdd != null) {
             return false;
-        if (totalCost != null ? !totalCost.equals(that.totalCost) : that.totalCost != null)
+        }
+        if (totalCost != null ? !totalCost.equals(that.totalCost) : that.totalCost != null) {
             return false;
-        if (!unit.equals(that.unit))
+        }
+        if (!unit.equals(that.unit)) {
             return false;
+        }
 
         return true;
     }

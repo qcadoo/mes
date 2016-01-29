@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import java.util.Locale;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -31,25 +37,15 @@ import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.hooks.OrderDetailsHooks;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Locale;
-import java.util.Map;
 
 @Service
 public class OrderDetailsListeners {
-
-    private static Logger LOG = LoggerFactory.getLogger(OrderDetailsListeners.class);
 
     private static final String L_FORM = "form";
 
@@ -60,11 +56,6 @@ public class OrderDetailsListeners {
     private static final String L_EFFECTIVE_DATE_FROM = "effectiveDateFrom";
 
     private static final String L_EFFECTIVE_DATE_TO = "effectiveDateTo";
-
-    public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
-
-    @Autowired
-    private NumberService numberService;
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
@@ -186,8 +177,7 @@ public class OrderDetailsListeners {
         if (OrderState.PENDING.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_FROM, L_PLANNED_DATE_FROM);
         }
-        if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)
-                || OrderState.ABANDONED.getStringValue().equals(orderState)
+        if (OrderState.IN_PROGRESS.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)
                 || OrderState.COMPLETED.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_FROM, L_EFFECTIVE_DATE_FROM);
         }
@@ -213,10 +203,12 @@ public class OrderDetailsListeners {
         if (OrderState.PENDING.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, L_PLANNED_DATE_TO);
         }
-        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)) {
+        if (OrderState.COMPLETED.getStringValue().equals(orderState)
+                || OrderState.ABANDONED.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, L_EFFECTIVE_DATE_TO);
         }
-        if (OrderState.ACCEPTED.getStringValue().equals(orderState) || OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
+        if (OrderState.ACCEPTED.getStringValue().equals(orderState)
+                || OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, OrderFields.CORRECTED_DATE_TO);
         }
     }
@@ -258,8 +250,8 @@ public class OrderDetailsListeners {
         if (orderId != null) {
             FieldComponent orderTypeField = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
 
-            boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(
-                    orderTypeField.getFieldValue());
+            boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue()
+                    .equals(orderTypeField.getFieldValue());
 
             if (selectForPatternTechnology) {
                 orderForm.addMessage("order.orderType.changeOrderType", MessageType.INFO, false);

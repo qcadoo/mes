@@ -40,8 +40,6 @@ import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
-import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.PlannedEventsXLSDataProvider;
-import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.PlannedEventsXlsService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -62,19 +60,10 @@ public class EventsListListeners {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private EventListeners eventListeners;
-
-    @Autowired
     private MaintenanceEventContextService maintenanceEventContextService;
 
     @Autowired
     private MaintenanceEventService maintenanceEventService;
-
-    @Autowired
-    private PlannedEventsXlsService plannedEventsXlsService;
-
-    @Autowired
-    private PlannedEventsXLSDataProvider plannedEventsXLSDataProvider;
 
     public void newEventAction(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String args[]) {
         viewDefinitionState.redirectTo("../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/addNewEvent.html", false,
@@ -108,8 +97,8 @@ public class EventsListListeners {
         Map<String, String> filter = grid.getFilters();
         String filterQ = "";
         try {
-            filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(), "event", dataDefinitionService.get(
-                    CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT));
+            filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(), "event", dataDefinitionService
+                    .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT));
         } catch (GridComponentFilterException e) {
             filterQ = "";
         }
@@ -138,8 +127,8 @@ public class EventsListListeners {
             }
         }
 
-        Entity plannedEventXLSHelper = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                "plannedEventXLSHelper").create();
+        Entity plannedEventXLSHelper = dataDefinitionService
+                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "plannedEventXLSHelper").create();
         plannedEventXLSHelper.setField("query", filterQ);
         plannedEventXLSHelper = plannedEventXLSHelper.getDataDefinition().save(plannedEventXLSHelper);
 
@@ -159,14 +148,11 @@ public class EventsListListeners {
 
         List<Entity> factories = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_FACTORY).find()
                 .list().getEntities();
-        List<Entity> divisions = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_DIVISION)
-                .find().list().getEntities();
-        List<Entity> workers = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF).find()
+        List<Entity> divisions = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_DIVISION).find()
                 .list().getEntities();
-
         for (int i = 0; i < 10000; i++) {
-            Entity afterReviewEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                    CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).create();
+            Entity afterReviewEvent = dataDefinitionService
+                    .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).create();
             String number = numberGeneratorService.generateNumber(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
                     CmmsMachinePartsConstants.MODEL_PLANNED_EVENT);
             afterReviewEvent.setField(PlannedEventFields.NUMBER, number);
@@ -199,8 +185,9 @@ public class EventsListListeners {
         if (selectedEntities.isEmpty()) {
             return;
         }
-        Entity maintenanceEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT).get(selectedEntities.get(0).getId());
+        Entity maintenanceEvent = dataDefinitionService
+                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT)
+                .get(selectedEntities.get(0).getId());
 
         Optional<Entity> plannedEvent = maintenanceEventService.getPlannedEventForMaintenanceEvent(maintenanceEvent);
         if (plannedEvent.isPresent()) {
@@ -219,8 +206,9 @@ public class EventsListListeners {
         if (selectedEntities.isEmpty()) {
             return;
         }
-        Entity plannedEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(selectedEntities.get(0).getId());
+        Entity plannedEvent = dataDefinitionService
+                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
+                .get(selectedEntities.get(0).getId());
 
         Entity maintenanceEvent = plannedEvent.getBelongsToField(PlannedEventFields.MAINTENANCE_EVENT);
         if (maintenanceEvent != null) {
