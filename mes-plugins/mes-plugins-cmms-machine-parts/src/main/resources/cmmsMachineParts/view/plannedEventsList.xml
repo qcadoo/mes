@@ -286,6 +286,9 @@
                                 stopEvent.disable();
                             } else if (state == "03planned") {
                                 planEvent.enable();
+                                planEvent.forState="02inPlan";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
+                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.planEvent)}");
                                 cancelEvent.enable();
                                 plannedEvent.disable();
                                 realizedEvent.disable();

@@ -257,6 +257,9 @@
 							if (state == "01new") {
 								startEvent.enable();
 								planEvent.enable();
+								planEvent.forState="06planned";
+							    planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.planned)}";
+							    planEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.planEvent)}");
 								revokeEvent.enable();
 								closeEvent.disable();
 								startEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.startEvent)}");
