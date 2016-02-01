@@ -64,6 +64,51 @@
 
 var myApp = angular.module('gridApp', []);
 
+function parseAndValidateInputNumber($element) {
+    function countEmptyElements(arr) {
+        var counterOfEmptyElements = 0;
+        for (var index in arr) {
+            if (!arr[index]) {
+                counterOfEmptyElements++;
+            }
+        }
+
+        return counterOfEmptyElements;
+    }
+    var element = $element[0];
+    var rawValue = element.value;
+
+    try {
+        if (!rawValue) {
+            throw 'Empty element value';
+        }
+
+        var valueArray = rawValue.split(/[.,]/);
+
+        if (!((valueArray.length === 1 || valueArray.length === 2) && countEmptyElements(valueArray) === 0)) {
+            throw 'Value with wrong separator';
+        }
+
+        var value = rawValue.replace(',', '.');
+        var unitPart = valueArray[0];
+        var fractionPart = valueArray[1] || '0';
+
+        if (unitPart !== parseFloat(unitPart).toString()) {
+            throw 'Invalid unit part';
+        }
+        if (fractionPart !== parseFloat(fractionPart).toString()) {
+            throw 'Invalid fraction part';
+        }
+
+        $element.removeClass('error-grid');
+        $element.val(value);
+
+    } catch (exception) {
+        $element.addClass('error-grid');
+        $element.val(rawValue);
+    }
+}
+
 myApp.directive('ngJqGrid', function ($window) {
     return {
         restrict: 'E',
@@ -113,34 +158,34 @@ myApp.directive('ngJqGrid', function ($window) {
                                 // the buttons to appear on the toolbar of the grid
                                         {edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
                                 // options for the Edit Dialog
-                                {
-                                    ajaxEditOptions: {contentType: "application/json"},
-                                    mtype: 'PUT',
-                                    closeAfterEdit: true,
-                                    resize: false,
-                                    viewPagerButtons: false,
-                                    serializeEditData: function (data) {
-                                        delete data.oper;
+                                        {
+                                            ajaxEditOptions: {contentType: "application/json"},
+                                            mtype: 'PUT',
+                                            closeAfterEdit: true,
+                                            resize: false,
+                                            viewPagerButtons: false,
+                                            serializeEditData: function (data) {
+                                                delete data.oper;
 
-                                        return validateSerializeData(data);
-                                    },
-                                    onclickSubmit: function (params, postdata) {
-                                        params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
-                                    },
-                                    errorTextFormat: function (response) {
-                                        return translateAndShowMessages(response);
-                                    },
-                                    beforeShowForm: function (form) {
-                                        var dlgDiv = $("#editmodgrid");
-                                        var dlgWidth = 586;
-                                        var dlgHeight = dlgDiv.height();
-                                        var parentWidth = $(window).width();
-                                        var parentHeight = $(window).height();
-                                        dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
-                                        dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
-                                        dlgDiv[0].style.width = dlgWidth + "px";
-                                    },
-                                },
+                                                return validateSerializeData(data);
+                                            },
+                                            onclickSubmit: function (params, postdata) {
+                                                params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
+                                            },
+                                            errorTextFormat: function (response) {
+                                                return translateAndShowMessages(response);
+                                            },
+                                            beforeShowForm: function (form) {
+                                                var dlgDiv = $("#editmodgrid");
+                                                var dlgWidth = 586;
+                                                var dlgHeight = dlgDiv.height();
+                                                var parentWidth = $(window).width();
+                                                var parentHeight = $(window).height();
+                                                dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
+                                                dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
+                                                dlgDiv[0].style.width = dlgWidth + "px";
+                                            },
+                                        },
                                         // options for the Add Dialog
                                                 {
                                                     ajaxEditOptions: {
@@ -262,8 +307,8 @@ function translateMessages(messages) {
         var messageArray = messages.split('\n');
         for (var i in messageArray) {
             var msg = QCD.translate(messageArray[i]);
-            if(msg.substr(0, 1) === '[' && msg.substr(-1, 1)===']'){
-                msg = msg.substr(1, msg.length-2);
+            if (msg.substr(0, 1) === '[' && msg.substr(-1, 1) === ']') {
+                msg = msg.substr(1, msg.length - 2);
             }
             message.push(msg);
         }
@@ -340,9 +385,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function showMessage(type, title, content) {
             mainController.showMessage({
-                type : type,
-                title : title,
-                content : content
+                type: type,
+                title: title,
+                content: content
             });
         }
 
@@ -567,16 +612,16 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function updateConversionByGivenUnitValue(givenUnitValue, rowId) {
             var conversion = '';
 
-                if (available_additionalunits) {
-                    var entry = available_additionalunits.filter(function (element, index) {
-                        return element.key === givenUnitValue;
-                    })[0];
-                    if (entry) {
-                        quantities[rowId || 0] = {from: entry.quantityfrom, to: entry.quantityto};
-                        if (!firstLoad && !conversionModified) {
-                            conversion = roundTo(parseFloat(entry.quantityto) / parseFloat(entry.quantityfrom));
-                        }
+            if (available_additionalunits) {
+                var entry = available_additionalunits.filter(function (element, index) {
+                    return element.key === givenUnitValue;
+                })[0];
+                if (entry) {
+                    quantities[rowId || 0] = {from: entry.quantityfrom, to: entry.quantityto};
+                    if (!firstLoad && !conversionModified) {
+                        conversion = roundTo(parseFloat(entry.quantityto) / parseFloat(entry.quantityfrom));
                     }
+                }
                 if (!firstLoad && !conversionModified) {
                     updateFieldValue('conversion', conversion, rowId);
                 }
@@ -586,14 +631,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function quantity_createElement(value, options) {
-            var $input = $('<input type="number" pattern="[0-9]+([,\.][0-9]+)?" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+            var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
 
-                validateElement(t, validatorNumber);
+                parseAndValidateInputNumber(t);
 
                 $(this).data("timeout", setTimeout(function () {
                     var rowId = getRowIdFromElement(t);
@@ -618,26 +663,26 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function price_createElement(value, options) {
-            var $input = $('<input type="number" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+            var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
 
-                validateElement(t, validatorNumber);
+                parseAndValidateInputNumber(t);
             });
 
             return $input;
         }
 
         function givenquantity_createElement(value, options) {
-            var $input = $('<input type="number" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+            var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
 
-                validateElement(t, validatorNumber);
+                parseAndValidateInputNumber(t);
 
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
@@ -661,7 +706,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function conversion_createElement(value, options) {
-            var $input = $('<input type="number" min="0" step="0.00001" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+            var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
             $($input).bind('change keydown paste input', function () {
@@ -669,9 +714,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 conversionModified = true;
                 window.clearTimeout(t.data("timeout"));
 
-                validateElement(t, validatorNumber);
+                parseAndValidateInputNumber(t);
 
-                console.log(t.val());
                 $(this).data("timeout", setTimeout(function () {
                     var rowId = getRowIdFromElement(t);
 
@@ -755,24 +799,23 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $("#grid").trigger("reloadGrid");
         }
 
-         function cancelEditing(myGrid) {
+        function cancelEditing(myGrid) {
             var lrid;
             if (typeof lastSel !== "undefined") {
                 // cancel editing of the previous selected row if it was in editing state.
-                 // jqGrid hold intern savedRow array inside of jqGrid object,
+                // jqGrid hold intern savedRow array inside of jqGrid object,
                 // so it is safe to call restoreRow method with any id parameter
                 // if jqGrid not in editing state
-                $('#grid').jqGrid('restoreRow',lastSel);
+                $('#grid').jqGrid('restoreRow', lastSel);
 
-                 // now we need to restore the icons in the formatter:"actions"
+                // now we need to restore the icons in the formatter:"actions"
                 lrid = $.jgrid.jqID(lastSel);
                 $("tr#" + lrid + " div.ui-inline-edit, " + "tr#" + lrid + " div.ui-inline-del").show();
                 $("tr#" + lrid + " div.ui-inline-save, " + "tr#" + lrid + " div.ui-inline-cancel").hide();
-             }
-         }
+            }
+        }
 
         $scope.resize = function () {
-            console.log('resize');
             jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 25, true);
             jQuery('#grid').setGridHeight($("#window\\.positionsGridTab").height() - 150);
         }
@@ -815,7 +858,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
             },
-            colNames: ['ID', QCD.translate('qcadooView.gridColumn.document'), QCD.translate('qcadooView.gridColumn.number'), QCD.translate('qcadooView.gridColumn.actions'), QCD.translate('qcadooView.gridColumn.product'), QCD.translate('qcadooView.gridColumn.additionalCode'), 
+            colNames: ['ID', QCD.translate('qcadooView.gridColumn.document'), QCD.translate('qcadooView.gridColumn.number'), QCD.translate('qcadooView.gridColumn.actions'), QCD.translate('qcadooView.gridColumn.product'), QCD.translate('qcadooView.gridColumn.additionalCode'),
                 QCD.translate('qcadooView.gridColumn.quantity'), QCD.translate('qcadooView.gridColumn.unit'), QCD.translate('qcadooView.gridColumn.givenquantity'),
                 QCD.translate('qcadooView.gridColumn.givenunit'), QCD.translate('qcadooView.gridColumn.conversion'), QCD.translate('qcadooView.gridColumn.price'),
                 QCD.translate('qcadooView.gridColumn.expirationdate'), QCD.translate('qcadooView.gridColumn.productiondate'), QCD.translate('qcadooView.gridColumn.batch'),
@@ -846,18 +889,18 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     hidden: false,
                     editable: false
                 },
-                 {
-                    name:'act',
-                    index:'act',
-                    width:55,
-                    align:'center',
-                    sortable:false,
-                    search:false,
-                    formatter:'actions',
-                    formatoptions:{
+                {
+                    name: 'act',
+                    index: 'act',
+                    width: 55,
+                    align: 'center',
+                    sortable: false,
+                    search: false,
+                    formatter: 'actions',
+                    formatoptions: {
                         keys: true, // we want use [Enter] key to save the row and [Esc] to cancel editing.
                         editOptions: gridEditOptions,
-                        url : '../../integration/rest/documentPositions/' + 1 + '.html',
+                        url: '../../integration/rest/documentPositions/' + 1 + '.html',
                         delbutton: false,
                         onEdit: function (id) {
 
@@ -865,22 +908,22 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                                 cancelEditing(id);
                             }
 
-                             $("#add_new_row").addClass("disableButton");
-                                                        $("#add_grid").hide();
-                                                        $("#edit_grid").hide();
-                                                        $("#del_grid").hide();
+                            $("#add_new_row").addClass("disableButton");
+                            $("#add_grid").hide();
+                            $("#edit_grid").hide();
+                            $("#del_grid").hide();
                             gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
                             lastSel = id;
                         },
-                        afterRestore :  function () {
+                        afterRestore: function () {
                             $("#add_new_row").removeClass("disableButton");
                             $("#add_grid").show();
                             $("#edit_grid").show();
                             $("#del_grid").show();
                         }
                     }
-                 },
-                 {
+                },
+                {
                     name: 'product',
                     index: 'product',
                     editable: true,
@@ -1107,18 +1150,18 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             gridComplete: function () {
                 var grid = $('#grid');
                 var rows = grid.jqGrid('getDataIDs');
-                if($scope.config.readOnly){
-                for (i = 0; i < rows.length; i++)
-                {
-                     $("tr#" + rows[i] + " div.ui-inline-edit").hide();
+                if ($scope.config.readOnly) {
+                    for (i = 0; i < rows.length; i++)
+                    {
+                        $("tr#" + rows[i] + " div.ui-inline-edit").hide();
 
-                }
+                    }
                 }
                 //setTimeout(function() { $scope.resize(); }, 1000);
 
             },
             onSelectRow: function (id) {
-               // gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
+                // gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
 
 //                if ($scope.editedRow) {
 //
@@ -1126,7 +1169,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 //                    $scope.editedRow = id;
 //                    jQuery('#grid').editRow(id, gridEditOptions);
 //                }
-              //  jQuery('#grid').editRow(id, gridEditOptions);
+                //  jQuery('#grid').editRow(id, gridEditOptions);
                 //}
             },
             ajaxRowOptions: {
@@ -1249,18 +1292,18 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         $.extend(true, $.jgrid.inlineEdit, {
             beforeSaveRow: function (option, rowId) {
-                if(rowId === '0'){
+                if (rowId === '0') {
                     option.url = '../../integration/rest/documentPositions.html';
-                    option.errorfunc= errorfunc;
-                    option.successfunc= successfunc;
-                    option.aftersavefunc= aftersavefunc;
+                    option.errorfunc = errorfunc;
+                    option.successfunc = successfunc;
+                    option.aftersavefunc = aftersavefunc;
                 } else {
                     option.url = '../../integration/rest/documentPositions/' + rowId + '.html';
-                    option.errorfunc= errorfunc;
-                    option.successfunc= successfunc;
-                    option.aftersavefunc= aftersavefunc;
+                    option.errorfunc = errorfunc;
+                    option.successfunc = successfunc;
+                    option.aftersavefunc = aftersavefunc;
                 }
-                option.mtype= 'PUT';
+                option.mtype = 'PUT';
             }
         });
 

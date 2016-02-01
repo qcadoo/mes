@@ -72,7 +72,7 @@ CREATE TABLE materialflowresources_documentpositionparametersitem
   parameters_id bigint,
   name character varying(255),
   CONSTRAINT materialflowresources_documentpositionparametersitem_pkey PRIMARY KEY (id)
-)
+);
 
 ALTER TABLE materialflowresources_documentpositionparametersitem
   ADD CONSTRAINT documentpositionparametersitem_parameters_fkey FOREIGN KEY (parameters_id)

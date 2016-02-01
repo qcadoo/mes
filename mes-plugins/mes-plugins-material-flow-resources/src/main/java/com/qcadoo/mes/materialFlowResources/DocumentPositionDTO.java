@@ -1,6 +1,7 @@
 package com.qcadoo.mes.materialFlowResources;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
@@ -17,14 +18,17 @@ public class DocumentPositionDTO {
 
     private String additionalCode;
 
+    @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal quantity;
 
     private String unit;
 
+    @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal givenquantity;
 
     private String givenunit;
 
+    @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal conversion;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "CET")
@@ -39,6 +43,7 @@ public class DocumentPositionDTO {
 
     private String storageLocation;
 
+    @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal price;
 
     private String batch;
