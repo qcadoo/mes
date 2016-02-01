@@ -66,8 +66,6 @@ import com.qcadoo.model.api.utils.EntityUtils;
 @Service
 public class AssignmentToShiftHooks {
 
-    // private static final int DAYS_IN_YEAR = 365;
-
     private static final String L_ALREADY_EXISTS = "assignmentToShift.assignmentToShift.entityAlreadyExists";
 
     @Autowired
@@ -123,8 +121,6 @@ public class AssignmentToShiftHooks {
 
         int daysInYear = cal.getActualMaximum(Calendar.DAY_OF_YEAR);
         Iterable<Integer> daysRange = ContiguousSet.create(Range.closed(1, daysInYear), DiscreteDomain.integers());
-
-        // Iterable<Integer> daysRange = ContiguousSet.create(Range.closed(1, DAYS_IN_YEAR), DiscreteDomain.integers());
 
         return FluentIterable.from(daysRange).transform(new Function<Integer, LocalDate>() {
 
