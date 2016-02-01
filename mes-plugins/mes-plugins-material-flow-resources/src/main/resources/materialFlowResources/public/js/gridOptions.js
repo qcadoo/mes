@@ -135,8 +135,9 @@ myApp.directive('ngJqGrid', function ($window) {
 
                     var gridTitle = '<div class="gridTitle">' + positionsHeader + '</div>';
 
-                    $('#t_grid').append(gridTitle);
-                    $('#t_grid').append(addNewRowButton);
+                    $('#t_grid').append('<div class="t_grid__container"></div>');
+                    $('#t_grid .t_grid__container').append(gridTitle);
+                    $('#t_grid .t_grid__container').append(addNewRowButton);
 
                     $(table).jqGrid('filterToolbar');
 
@@ -428,7 +429,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }
             });
 
-            var button = $('<button value="xxx">Szukaj</button>');
+            var button = $('<button class="editable__searchBtn" value="xxx"></button>');
             button.bind('click', function () {
                 openLookup(name);
             });
