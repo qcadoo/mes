@@ -30,7 +30,7 @@
         return this.each(function(){
             var that = $(this);
             // sc = 'suggestions container'
-            that.sc = $('<div class="autocomplete-suggestions '+o.menuClass+'"></div>');
+            that.sc = that.sc || $('<div class="autocomplete-suggestions '+o.menuClass+'"></div>');
             that.data('sc', that.sc).data('autocomplete', that.attr('autocomplete'));
             that.attr('autocomplete', 'off');
             that.cache = {};
