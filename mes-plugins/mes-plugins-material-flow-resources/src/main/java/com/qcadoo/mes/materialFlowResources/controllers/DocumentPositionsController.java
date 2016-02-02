@@ -80,6 +80,6 @@ public class DocumentPositionsController {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
         dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
-        dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));        
+        dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
 }

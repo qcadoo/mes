@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 public class BigDecimalDeserializer extends JsonDeserializer<BigDecimal> {
 
-    private final NumberDeserializers.BigDecimalDeserializer delegate = null;// = NumberDeserializers.BigDecimalDeserializer.instance;
+    private final NumberDeserializers.BigDecimalDeserializer delegate = NumberDeserializers.BigDecimalDeserializer.instance;
 
     @Override
     public BigDecimal deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {

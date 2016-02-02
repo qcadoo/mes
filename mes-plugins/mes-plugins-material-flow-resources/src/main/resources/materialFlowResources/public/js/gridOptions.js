@@ -101,7 +101,9 @@ function parseAndValidateInputNumber($element) {
         }
 
         $element.removeClass('error-grid');
-        $element.val(value);
+        if (value != $element.val()) {
+            $element.val(value);
+        }
 
     } catch (exception) {
         $element.addClass('error-grid');
@@ -307,7 +309,8 @@ function translateMessages(messages) {
     if (messages) {
         var messageArray = messages.split('\n');
         for (var i in messageArray) {
-            var msg = QCD.translate(messageArray[i]);
+            var msg = messageArray[i].split('"').join("&#039;");
+            msg = QCD.translate(msg);
             if (msg.substr(0, 1) === '[' && msg.substr(-1, 1) === ']') {
                 msg = msg.substr(1, msg.length - 2);
             }
@@ -639,9 +642,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
 
-                parseAndValidateInputNumber(t);
-
                 $(this).data("timeout", setTimeout(function () {
+                    parseAndValidateInputNumber(t);
+
                     var rowId = getRowIdFromElement(t);
 
                     var conversion = getFieldValue('conversion', rowId);
@@ -670,7 +673,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
 
-                parseAndValidateInputNumber(t);
+                window.clearTimeout(t.data("timeout"));
+
+                $(this).data("timeout", setTimeout(function () {
+                    parseAndValidateInputNumber(t);
+                }, 500));
+
             });
 
             return $input;
@@ -683,10 +691,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
 
-                parseAndValidateInputNumber(t);
-
                 window.clearTimeout(t.data("timeout"));
+
                 $(this).data("timeout", setTimeout(function () {
+                    parseAndValidateInputNumber(t);
+
                     var rowId = getRowIdFromElement(t);
 
                     var conversion = getFieldValue('conversion', rowId);
@@ -715,9 +724,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 conversionModified = true;
                 window.clearTimeout(t.data("timeout"));
 
-                parseAndValidateInputNumber(t);
-
                 $(this).data("timeout", setTimeout(function () {
+                    parseAndValidateInputNumber(t);
+
                     var rowId = getRowIdFromElement(t);
 
                     var quantity = getFieldValue('quantity', rowId);
