@@ -24,7 +24,7 @@ public class TimeUsageXlsDataProvider {
             + "event.type,\n"
             + "event.state,\n"
             + "COALESCE(subassembly.number, workstation.number, line.number, division.number, factory.number) AS object,\n"
-            + "(SELECT CASE WHEN EXISTS (SELECT FROM cmmsmachineparts_machinepartforevent WHERE plannedevent_id=event.id) THEN 'tak' ELSE 'nie' END) as parts,\n"
+            + "(SELECT CASE WHEN EXISTS (SELECT id FROM cmmsmachineparts_machinepartforevent WHERE plannedevent_id=event.id) THEN 'tak' ELSE 'nie' END) as parts,\n"
             + "event.solutiondescription AS description,\n"
             + "realization.duration AS duration,\n"
             + "(SELECT MIN(dateandtime) FROM cmmsmachineparts_plannedeventstatechange WHERE plannedevent_id = event.id and targetstate='04inRealization') AS registeredStart,\n"
