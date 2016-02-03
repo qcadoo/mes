@@ -28,27 +28,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.warehouseMinimalState.constants.WarehouseMinimalStateConstants;
+import com.qcadoo.mes.warehouseMinimalState.constants.WarehouseMinimumStateFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import com.qcadoo.report.api.ReportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
-@Service public class WarehouseMinimumStateListListener {
+@Service
+public class WarehouseMinimumStateListListener {
 
     private static final String L_FORM = "form";
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
 
-    @Autowired private DataDefinitionService dataDefinitionService;
-
     @Autowired
-    private ReportService reportService;
+    private DataDefinitionService dataDefinitionService;
 
     public void redirectToAddManyMinimalState(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
             final String[] args) {
@@ -63,13 +62,14 @@ import com.qcadoo.view.api.components.LookupComponent;
         return state.getDataDefinition().save(state);
     }
 
-    @Transactional public void createMultiMinimalStates(final ViewDefinitionState view, final ComponentState componentState,
+    @Transactional
+    public void createMultiMinimalStates(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity state = form.getPersistedEntityWithIncludedFormValues();
 
-        if (state.getBelongsToField("location") == null) {
-            LookupComponent location = (LookupComponent) view.getComponentByReference("location");
+        if (state.getBelongsToField(WarehouseMinimumStateFields.LOCATION) == null) {
+            LookupComponent location = (LookupComponent) view.getComponentByReference(WarehouseMinimumStateFields.LOCATION);
             location.addMessage(new ErrorMessage(L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING));
             location.requestComponentUpdateState();
             return;
@@ -80,33 +80,37 @@ import com.qcadoo.view.api.components.LookupComponent;
             return;
         }
         state.getManyToManyField("products").forEach(p -> createMinimalStateEntity(state, p));
-        componentState.addMessage("warehouseMinimalState.warehouseMinimumStateAddMulti.info.generated", ComponentState.MessageType.SUCCESS);
+        componentState.addMessage("warehouseMinimalState.warehouseMinimumStateAddMulti.info.generated",
+                ComponentState.MessageType.SUCCESS);
 
     }
 
     private void createMinimalStateEntity(Entity state, Entity product) {
 
-        if (getLocationMinimumStateByProductAndLocation( dataDefinitionService.get("warehouseMinimalState", "warehouseMinimumState"), product, state.getBelongsToField("location"))
-                == null) {
+        if (getLocationMinimumStateByProductAndLocation(
+                dataDefinitionService.get("warehouseMinimalState", "warehouseMinimumState"), product,
+                state.getBelongsToField(WarehouseMinimumStateFields.LOCATION)) == null) {
 
             Entity mstate = dataDefinitionService.get("warehouseMinimalState", "warehouseMinimumState").create();
 
-            mstate.setField("product", product);
-            mstate.setField("location", state.getBelongsToField("location"));
-            mstate.setField("minimumState", state.getDecimalField("minimumState"));
-            mstate.setField("optimalOrderQuantity", state.getDecimalField("optimalOrderQuantity"));
+            mstate.setField(WarehouseMinimumStateFields.PRODUCT, product);
+            mstate.setField(WarehouseMinimumStateFields.LOCATION, state.getBelongsToField(WarehouseMinimumStateFields.LOCATION));
+            mstate.setField(WarehouseMinimumStateFields.MINIMUM_STATE,
+                    state.getDecimalField(WarehouseMinimumStateFields.MINIMUM_STATE));
+            mstate.setField(WarehouseMinimumStateFields.OPTIMAL_ORDER_QUANTITY,
+                    state.getDecimalField(WarehouseMinimumStateFields.OPTIMAL_ORDER_QUANTITY));
             mstate.getDataDefinition().save(mstate);
         }
     }
 
     private Entity getLocationMinimumStateByProductAndLocation(final DataDefinition locationMinimumStateDD, final Entity product,
             final Entity location) {
-        return locationMinimumStateDD.find().add(SearchRestrictions.belongsTo("product", product))
-                .add(SearchRestrictions.belongsTo("location", location)).setMaxResults(1).uniqueResult();
+        return locationMinimumStateDD.find().add(SearchRestrictions.belongsTo(WarehouseMinimumStateFields.PRODUCT, product))
+                .add(SearchRestrictions.belongsTo(WarehouseMinimumStateFields.LOCATION, location)).setMaxResults(1)
+                .uniqueResult();
     }
 
-    public void printDocument(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
+    public void printDocument(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
         viewDefinitionState.redirectTo("/" + WarehouseMinimalStateConstants.PLUGIN_IDENTIFIER + "/document." + args[0], true,
                 false);

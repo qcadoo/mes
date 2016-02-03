@@ -23,6 +23,19 @@
  */
 package com.qcadoo.mes.assignmentToShift.print.xls;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
@@ -39,18 +52,6 @@ import com.qcadoo.model.constants.DictionaryFields;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.model.constants.QcadooModelConstants;
 import com.qcadoo.report.api.xls.XlsDocumentService;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 @Service
 public class AssignmentToShiftXlsService extends XlsDocumentService {
@@ -89,8 +90,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 + assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.FACTORY).getStringField(FactoryFields.NAME);
         String user = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_AUTHOR, locale) + " "
                 + assignmentToShiftReport.getField(AssignmentToShiftReportFields.CREATE_USER).toString();
-        String date = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_UPDATE_DATE, locale)
-                + " "
+        String date = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_UPDATE_DATE, locale) + " "
                 + DateFormat.getDateInstance()
                         .format(assignmentToShiftReport.getField(AssignmentToShiftReportFields.UPDATE_DATE));
 
@@ -115,7 +115,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
     }
 
-    private void createHeaderForAssignmentToShift(final HSSFSheet sheet, final Locale locale, final Entity assignmentToShiftReport) {
+    private void createHeaderForAssignmentToShift(final HSSFSheet sheet, final Locale locale,
+            final Entity assignmentToShiftReport) {
         List<DateTime> days = assignmentToShiftXlsHelper.getDaysBetweenGivenDates(assignmentToShiftReport);
 
         if (days != null) {
@@ -161,7 +162,6 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
             for (Entity dictionaryItem : occupationTypesWithoutTechnicalCode) {
                 rowNum = fillColumnWithStaffForOtherTypes(sheet, rowNum, assignmentToShiftReport, days, dictionaryItem);
-                // rowNum++;
             }
 
             fillColumnWithStaffForOtherTypes(sheet, rowNum, assignmentToShiftReport, days, getDictionaryItemWithOtherCase());
@@ -252,7 +252,6 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                         maxLength = staffsValue.length();
                     }
 
-                    // row.setHeightInPoints(assignmentToShiftXlsStyleHelper.getHeightForRow(maxLength, 22, 14));
                     columnNumber += 3;
                 }
 
@@ -309,8 +308,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
             List<String> workers = Lists.newArrayList();
 
-            if (OccupationType.OTHER_CASE.getStringValue().equals(
-                    dictionaryItem.getStringField(DictionaryItemFields.TECHNICAL_CODE))) {
+            if (OccupationType.OTHER_CASE.getStringValue()
+                    .equals(dictionaryItem.getStringField(DictionaryItemFields.TECHNICAL_CODE))) {
                 workers = assignmentToShiftXlsHelper.getListOfWorkerWithOtherCases(staffs);
             } else {
                 workers = assignmentToShiftXlsHelper.getListOfWorker(staffs);
@@ -353,7 +352,6 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             sheet.addMergedRegion(new CellRangeAddress(rowNumFromLastSection, rowNum - 1, 0, 0));
 
             int columnNumber = 1;
-            int maxLength = 0;
 
             for (DateTime day : days) {
                 List<Entity> assignmentsToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
@@ -379,8 +377,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
                 List<String> workers = Lists.newArrayList();
 
-                if (OccupationType.OTHER_CASE.getStringValue().equals(
-                        dictionaryItem.getStringField(DictionaryItemFields.TECHNICAL_CODE))) {
+                if (OccupationType.OTHER_CASE.getStringValue()
+                        .equals(dictionaryItem.getStringField(DictionaryItemFields.TECHNICAL_CODE))) {
                     workers = assignmentToShiftXlsHelper.getListOfWorkerWithOtherCases(staffs);
                 } else {
                     workers = assignmentToShiftXlsHelper.getListOfWorker(staffs);
@@ -417,7 +415,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
         return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY_ITEM)
                 .find().add(SearchRestrictions.belongsTo(DictionaryItemFields.DICTIONARY, occupationTypeDictionary))
-                .add(SearchRestrictions.isNull(DictionaryItemFields.TECHNICAL_CODE)).add(SearchRestrictions.eq("active", true)).list().getEntities();
+                .add(SearchRestrictions.isNull(DictionaryItemFields.TECHNICAL_CODE)).add(SearchRestrictions.eq("active", true))
+                .list().getEntities();
     }
 
     private Entity getDictionaryItemWithProductionOnLine() {

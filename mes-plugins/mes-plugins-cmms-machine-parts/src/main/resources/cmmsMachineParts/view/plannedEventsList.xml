@@ -237,6 +237,19 @@
 						    getRibbonItem("actions.delete").disable();
 						}
 
+                        var noDifferentStates = true;
+					    if(selectedEntitiesArray.length > 1) {
+						    for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+							    if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+									noDifferentStates = false;
+									break;
+								}
+							}
+						}
+
+						if (noDifferentStates) {
+
+
                             var planEvent = #{window}.getRibbonItem("status.planEvent");
                             var cancelEvent = #{window}.getRibbonItem("status.cancelEvent");
                             var plannedEvent = #{window}.getRibbonItem("status.plannedEvent");
@@ -286,6 +299,9 @@
                                 stopEvent.disable();
                             } else if (state == "03planned") {
                                 planEvent.enable();
+                                planEvent.forState="02inPlan";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
+                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.planEvent)}");
                                 cancelEvent.enable();
                                 plannedEvent.disable();
                                 realizedEvent.disable();
@@ -375,15 +391,18 @@
 	                                 cancelEvent.disable();
                                      deleteButton.disable();
                                 }
-                            }
+                             }
 
-                            if (selectedEntitiesArray.length == 1) {
-                                showMaintenanceEvent.enable();
-                            }
-                            else {
-                                showMaintenanceEvent.disable();
-                               	plannedEvent.disable();
-                            }
+                        } else {
+                            resetRibbon();
+                        }
+                        if (selectedEntitiesArray.length == 1) {
+                            showMaintenanceEvent.enable();
+                        }
+                        else {
+                           showMaintenanceEvent.disable();
+                           plannedEvent.disable();
+                        }
 					}
 
 					function getRibbonItem(ribbonPath) {

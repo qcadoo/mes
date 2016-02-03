@@ -23,14 +23,14 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
+import java.util.Locale;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 
-import java.util.Locale;
-
 public abstract class AbstractOperationProductColumn implements OperationProductColumn {
 
-    TranslationService translationService;
+    private TranslationService translationService;
 
     public AbstractOperationProductColumn(TranslationService translationService) {
         this.translationService = translationService;
@@ -38,22 +38,22 @@ public abstract class AbstractOperationProductColumn implements OperationProduct
 
     @Override
     public String getName(Locale locale, ProductDirection productDirection) {
-        if (ProductDirection.OUT.equals(productDirection))
+        if (ProductDirection.OUT.equals(productDirection)) {
             return translationService.translate("workPlans.columnForOutputProducts.name.value." + getIdentifier(), locale);
-        else if (ProductDirection.IN.equals(productDirection)) {
+        } else if (ProductDirection.IN.equals(productDirection)) {
             return translationService.translate("workPlans.columnForInputProducts.name.value." + getIdentifier(), locale);
-        }else
-            return null;
+        }
+        return null;
     }
 
     @Override
     public String getDescription(Locale locale, ProductDirection productDirection) {
-        if (ProductDirection.OUT.equals(productDirection))
+        if (ProductDirection.OUT.equals(productDirection)) {
             return translationService.translate("workPlans.columnForOutputProducts.description.value." + getIdentifier(), locale);
-        else if (ProductDirection.IN.equals(productDirection)) {
+        } else if (ProductDirection.IN.equals(productDirection)) {
             return translationService.translate("workPlans.columnForInputProducts.description.value." + getIdentifier(), locale);
-        }else
-            return null;
+        }
+        return null;
     }
 
 }
