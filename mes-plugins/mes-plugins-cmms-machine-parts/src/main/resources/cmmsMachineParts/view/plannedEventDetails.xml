@@ -867,6 +867,7 @@
                         <option type="order" column="attachment" direction="desc"/>
 
                         <option type="deletable" value="true"/>
+                        <option type="deletableAuthorizationRole" value="ROLE_PLANNED_EVENTS_ATTACHMENTS_REMOVE"/>
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>
