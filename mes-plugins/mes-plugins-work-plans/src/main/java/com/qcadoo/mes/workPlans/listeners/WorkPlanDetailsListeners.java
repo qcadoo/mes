@@ -140,6 +140,7 @@ public class WorkPlanDetailsListeners {
 
             try {
                 generateWorkPlanDocuments(state, workPlan);
+                checkIfInactiveOrders(state, orders);
                 state.performEvent(view, "reset", new String[0]);
             } catch (IOException e) {
                 throw new IllegalStateException(e.getMessage(), e);
@@ -162,6 +163,24 @@ public class WorkPlanDetailsListeners {
                     .map(i -> i.toString())
                     .collect(Collectors.joining(", "));
             state.addMessage("workPlans.workPlanDetails.window.workPlan.missingTechnologyInOrders", MessageType.FAILURE, commaSeparatedNumbers);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkIfInactiveOrders(final ComponentState state, final List<Entity> orders) {
+        List<String> numbers = Lists.newArrayList();
+        for (Entity order : orders){
+            if(!order.isActive()){
+                numbers.add(order.getStringField(OrderFields.NUMBER));
+            }
+        }
+
+        if(!numbers.isEmpty()){
+            String commaSeparatedNumbers = numbers.stream()
+                    .map(i -> i.toString())
+                    .collect(Collectors.joining(", "));
+            state.addMessage("workPlans.workPlanDetails.window.workPlan.isInactiveOrders", MessageType.INFO, commaSeparatedNumbers);
             return false;
         }
         return true;
