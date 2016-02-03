@@ -259,7 +259,7 @@ public class PlannedEventDetailsHooks {
         }
 
         if(!parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)){
-            if(!securityService.hasRole(user, PlannedEventRoles.ROLE_PLANNED_EVENTS_STATES_REALIZED.toString())){
+            if(!securityService.hasRole(user, PlannedEventRoles.ROLE_PLANNED_EVENTS_STATES_START_STOP.toString())){
                 enableRealizationEvents(view, false);
             } else {
                 enableRealizationEvents(view, true);
