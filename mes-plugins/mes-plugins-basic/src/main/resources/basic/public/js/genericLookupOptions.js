@@ -89,7 +89,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 datatype: "json",
                 height: '100%',
                 autowidth: true,
-                rowNum: 150,
+                rowNum: 20,
+                rowList: [20, 30, 50, 100, 200],
                 sortname: 'id',
                 toolbar: [true, "top"],
                 errorTextFormat: function (response) {

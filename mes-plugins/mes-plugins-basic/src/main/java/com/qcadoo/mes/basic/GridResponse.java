@@ -1,4 +1,4 @@
-package com.qcadoo.mes.materialFlowResources.controllers;
+package com.qcadoo.mes.basic;
 
 import java.util.List;
 

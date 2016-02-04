@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.controllers;
 
+import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
 import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;

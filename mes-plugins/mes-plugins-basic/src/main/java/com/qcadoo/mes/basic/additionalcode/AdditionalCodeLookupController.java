@@ -1,50 +1,34 @@
 package com.qcadoo.mes.basic.additionalcode;
 
-import java.util.Locale;
-import java.util.Map;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.basic.BasicLookupController;
-import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
 import java.util.Arrays;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping(value = "additionalCode")
-public class AdditionalCodeLookupController extends BasicLookupController {
+public class AdditionalCodeLookupController extends BasicLookupController<AdditionalCodeDTO> {
 
-    @Autowired
-    private DataProvider dataProvider;
-
-    @RequestMapping(value = "lookup", method = RequestMethod.GET)
     @Override
-    public ModelAndView getLookupView(Map<String, String> arguments, Locale locale) {
-        ModelAndView mav = getModelAndView("additionalCode", "genericLookup", locale);
+    protected String getQueryForRecords() {
+        String query = "SELECT %s FROM (SELECT additionalcode.id as id, additionalcode.code as code, product.number as productnumber "
+                + "FROM basic_additionalcode additionalcode "
+                + "JOIN basic_product product ON (additionalcode.product_id = product.id) ) q";
 
-        return mav;
+        return query;
     }
 
-    @ResponseBody
-    @RequestMapping(value = "records", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public List<AdditionalCodeDTO> getRecords(@RequestParam String sidx, @RequestParam String sord) {
-        return dataProvider.getAllAdditionalCodes(sidx, sord);
+    protected List<String> getGridFields() {
+        return Arrays.asList("code", "productnumber");
     }
 
-    @ResponseBody
-    @RequestMapping(value = "config", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public Map<String, Object> getConfig(Locale locale) {
-        return getConfigMap(Arrays.asList("code", "productnumber"));
+    protected String getRecordName() {
+        return "additionalCode";
     }
 
 }

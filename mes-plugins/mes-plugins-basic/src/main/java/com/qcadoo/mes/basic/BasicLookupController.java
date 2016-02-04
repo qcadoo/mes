@@ -2,7 +2,6 @@ package com.qcadoo.mes.basic;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.security.api.SecurityService;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,13 +9,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-public abstract class BasicLookupController {
+public abstract class BasicLookupController<R> {
+
+    @Autowired
+    private LookupUtils lookupUtils;
 
     @Autowired
     protected TranslationService translationService;
@@ -67,10 +72,34 @@ public abstract class BasicLookupController {
         return config;
     }
 
-    public abstract ModelAndView getLookupView(@RequestParam final Map<String, String> arguments, final Locale locale);
+    @ResponseBody
+    @RequestMapping(value = "records", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)    
+    public GridResponse<R> getRecords(@RequestParam String sidx, @RequestParam String sord,
+            @RequestParam(defaultValue = "1", required = false, value = "page") Integer page,
+            @RequestParam(value = "rows") int perPage, R record) {
 
-    public abstract List getRecords(@RequestParam String sidx, @RequestParam String sord);
+        String query = getQueryForRecords();
 
-    public abstract Map<String, Object> getConfig(Locale locale);
+        return lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "config", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getConfigView(Locale locale) {
+        return getConfigMap(getGridFields());
+    }
+
+    @RequestMapping(value = "lookup", method = RequestMethod.GET)
+    public ModelAndView getLookupView(Map<String, String> arguments, Locale locale) {
+        ModelAndView mav = getModelAndView(getRecordName(), "genericLookup", locale);
+
+        return mav;
+    }
+
+    protected abstract List<String> getGridFields();
+
+    protected abstract String getRecordName();
+
+    protected abstract String getQueryForRecords();
 
 }
