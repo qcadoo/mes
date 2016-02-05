@@ -70,6 +70,11 @@
                            action="#{grid}.fireEvent(showPlannedEvent);" state="disabled">
                 </bigButton>
             </group>
+            <group name="export">
+                <bigButton name="xls" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(printEventXlsReport);"
+                           state="disabled"/>
+            </group>
         </ribbon>
 
         <windowTab name="contextTab" reference="contextTab">
@@ -86,13 +91,17 @@
 						});
 
 						function updateRibbon() {
+							var xlsButton = #{window}.getRibbonItem("export.xls");
+
 							var confirmed = #{confirmed}.getValue().content.value,
 							    confirmContextButton = #{window}.getRibbonItem("contextActions.confirmContext"),
 							    confirmContextButtonLabel;
 
 							if (confirmed == 'true' || confirmed == '1') {
+								xlsButton.disable();
 								confirmContextButtonLabel = "#{translate(cmmsMachineParts.eventsList.window.ribbon.contextActions.changeContext)}";
 							} else {
+							    xlsButton.disable();
 							    confirmContextButtonLabel = "#{translate(cmmsMachineParts.eventsList.window.ribbon.contextActions.confirmContext)}";
 							}
 
@@ -434,6 +443,8 @@
         <option type="header" value="false"/>
 
         <listener event="addEvent" method="addEvent"
+                  class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
+        <listener event="printEventXlsReport" method="printEventXlsReport"
                   class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
 
     </component>

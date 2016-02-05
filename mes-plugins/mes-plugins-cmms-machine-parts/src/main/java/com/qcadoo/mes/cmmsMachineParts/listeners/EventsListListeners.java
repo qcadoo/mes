@@ -23,23 +23,11 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.codehaus.jettison.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -49,6 +37,13 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.internal.components.grid.GridComponentFilterException;
 import com.qcadoo.view.internal.components.grid.GridComponentFilterSQLUtils;
+import org.codehaus.jettison.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class EventsListListeners {
@@ -89,6 +84,58 @@ public class EventsListListeners {
     public void onSelectedEventChange(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String args[]) {
         maintenanceEventContextService.onSelectedEventChange(viewDefinitionState);
+    }
+
+    public void printEventXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
+        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        Map<String, String> filter = grid.getFilters();
+        String filterQ = "";
+        try {
+            filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(), "maintenanceevent", dataDefinitionService
+                    .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT));
+        } catch (GridComponentFilterException e) {
+            filterQ = "";
+        }
+
+        String contextFilter = "";
+        Entity context = maintenanceEventContextService.getCurrentContext(view, state, args);
+        if (context.getBooleanField(MaintenanceEventContextFields.CONFIRMED)) {
+            Entity factory = context.getBelongsToField(MaintenanceEventContextFields.FACTORY);
+            if (factory != null) {
+                contextFilter += " factory.id = " + factory.getId();
+            }
+            Entity division = context.getBelongsToField(MaintenanceEventContextFields.DIVISION);
+            if (division != null) {
+                if (contextFilter.length() > 1) {
+                    contextFilter += " AND";
+                }
+                contextFilter += " division.id = " + division.getId();
+
+            }
+            if (filterQ.length() > 1) {
+                if (contextFilter.length() > 1) {
+                    filterQ = contextFilter + " AND " + filterQ;
+                }
+            } else {
+                filterQ = contextFilter;
+            }
+        }
+
+        Entity maintenanceEventXLSHelper = dataDefinitionService
+                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "maintenanceEventXLSHelper").create();
+        maintenanceEventXLSHelper.setField("query", filterQ);
+        maintenanceEventXLSHelper = maintenanceEventXLSHelper.getDataDefinition().save(maintenanceEventXLSHelper);
+
+        Map<String, Long> filters = Maps.newHashMap();
+        filters.put("MAINTENANCE_EVENT_FILTER", maintenanceEventXLSHelper.getId());
+
+        String filtersInJson = new JSONObject(filters).toString();
+        StringBuffer redirectUrl = new StringBuffer();
+        redirectUrl.append("/cmmsMachineParts/maintenanceEvents.xls");
+        redirectUrl.append("?");
+        redirectUrl.append("filters=");
+        redirectUrl.append(filtersInJson);
+        view.redirectTo(redirectUrl.toString(), true, false);
     }
 
     public void printXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
