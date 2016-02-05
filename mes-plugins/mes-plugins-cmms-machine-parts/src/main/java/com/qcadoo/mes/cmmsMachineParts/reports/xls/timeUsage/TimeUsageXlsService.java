@@ -95,7 +95,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         sheet.setColumnWidth(8, 4000);
         sheet.setColumnWidth(9, 4000);
         sheet.setColumnWidth(10, 4500);
-        sheet.setColumnWidth(11, 4500);
+        sheet.setColumnWidth(11, 5000);
     }
 
     private List<TimeUsageGroupDTO> group(List<TimeUsageDTO> usages) {
@@ -184,6 +184,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         style.setBorderRight(HSSFCellStyle.BORDER_THIN);
         style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setWrapText(true);
         style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
 
@@ -251,7 +252,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         }
         if ("maintenance".equals(usage.getEventType())) {
             if (usage.getRegisteredTime() - 5 <= usage.getDuration() && usage.getDuration() <= usage.getRegisteredTime() + 15) {
-                style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+                style.setFillForegroundColor(IndexedColors.LIME.getIndex());
                 style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
             } else {
                 style.setFillForegroundColor(IndexedColors.RED.getIndex());
