@@ -330,8 +330,13 @@ function addNewRow() {
     angular.element($("#GridController")).scope().addNewRow();
 }
 
-function openLookup(name) {
-    mainController.openModal('body', '../' + name + '/lookup.html', null, function onModalClose() {
+function openLookup(name, parameters) {
+	var lookupHtml = '/lookup.html'
+	if(parameters) {
+		var urlParams = $.param(parameters);
+		lookupHtml = lookupHtml + "?" + urlParams;
+	}
+    mainController.openModal('body', '../' + name + lookupHtml, null, function onModalClose() {
     }, function onModalRender(modalWindow) {
     }, {width: 1000, height: 560});
 }
@@ -406,7 +411,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return 0;
         }
 
-        function createLookupElement(name, value, url, options) {
+        function createLookupElement(name, value, url, options, getParametersFunction) {
             var $ac = $('<input class="eac-square" rowId="' + options.rowId + '" />');
             $ac.val(value);
             $ac.autoComplete({
@@ -434,7 +439,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             var button = $('<button class="editable__searchBtn" value="xxx"></button>');
             button.bind('click', function () {
-                openLookup(name);
+        		var parameters = getParametersFunction ? getParametersFunction() : {};
+                openLookup(name, parameters);
             });
 
             var wrapper = $('<span></span>');
@@ -442,10 +448,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             wrapper.append(button);
 
             return wrapper;
-        }
-
-        function storageLocationLookup_createElement(value, options) {
-            return createLookupElement('storageLocation', value, '/integration/rest/documentPositions/storagelocations.html', options);
         }
 
         function palletNumbersLookup_createElement(value, options) {
@@ -533,6 +535,39 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             });
         }
 
+        var storageLocations = null;
+        function updateStorageLocations(productNumber, document) {
+            $.get('/integration/rest/documentPositions/storageLocation/' + productNumber + "/" + document +".html", function (location) {
+            	if(location) {
+	                var gridData = $('#grid').jqGrid('getRowData');
+	
+	                var productInput = $('#product');
+
+	                if (productInput.length) {
+	                    // edit form
+	                    updateFieldValue('storageLocation', location['number'], 0);
+	
+	                } else {
+	                	// edit inline
+	                    var patternProduct = /(id=\".+_product\")/ig;
+	                    for (var i = 0; i < gridData.length; i++) {
+	                        var product = gridData[i]['product'];
+	                        if (product.toLowerCase().indexOf('<input') >= 0) {
+	                            var matched = product.match(patternProduct)[0];
+	                            var numberOfInput = matched.toUpperCase().replace("ID=\"", "").replace("_PRODUCT\"", "");
+	                            var productValue = getFieldValue('product', numberOfInput);
+	
+	                            if (productValue === productNumber) {
+	                                // update input
+	                            	updateFieldValue('storageLocation', location['number'], numberOfInput);
+	                            }
+	                        }
+	                    }
+	                }
+                }
+            });
+        }
+
         function productsLookup_createElement(value, options) {
             var lookup = createLookupElement('product', value, '/rest/products', options);
 
@@ -542,6 +577,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $(this).data("timeout", setTimeout(function () {
                     conversionModified = false;
                     updateUnitsInGridByProduct(t.val());
+                    if(t.val()) {                    	
+                    	updateStorageLocations(t.val(), getDocumentId());
+                    } else {
+                    	updateFieldValue('storageLocation', '', getRowIdFromElement(t));
+                    }
                 }, 500));
             });
 
@@ -578,6 +618,35 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     var productField = updateFieldValue('product', product, rowId);
                     productField.trigger('change');
                 }
+
+            });
+        }
+
+        function storageLocationLookup_createElement(value, options) {
+        	var lookup = createLookupElement('storageLocation', value, '/integration/rest/documentPositions/storagelocations.html', options, function() {
+        		return  {
+        			product : getFieldValue('product', getRowIdFromElement($('input', lookup))),
+        			location : getDocumentId()
+        		};
+        	});
+
+            $('input', lookup).bind('change keydown paste input', function () {
+                var t = $(this);
+                window.clearTimeout(t.data("timeout"));
+                $(this).data("timeout", setTimeout(function () {
+                    conversionModified = false;
+                    updateProductFromLocation(t.val(), getRowIdFromElement(t));
+                }, 500));
+            });
+
+            return lookup;
+        }
+
+        function updateProductFromLocation(location, rowNumber) {
+            $.get('/integration/rest/documentPositions/productFromLocation/' + location + ".html", function (newProduct) {
+            	if(newProduct) {            		
+            		updateFieldValue('product', newProduct, rowNumber);
+            	}
 
             });
         }

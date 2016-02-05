@@ -1,23 +1,31 @@
 package com.qcadoo.mes.materialFlowResources.controllers;
 
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
-import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
+import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 @Controller
 @RequestMapping("/integration/rest/documentPositions")
@@ -68,6 +76,25 @@ public class DocumentPositionsController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storagelocations")
     public List<StorageLocationDTO> getStorageLocations(@RequestParam("query") String query) {
         return documentPositionRepository.getStorageLocations(query);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storageLocation//{document}")
+    public StorageLocationDTO getStorageLocationForEmptyProduct(@PathVariable String document) {
+        return null;
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storageLocation/{product}/{document}")
+    public StorageLocationDTO getStorageLocationForProductAndWarehouse(@PathVariable String product,
+            @PathVariable String document) {
+        return documentPositionRepository.getStorageLocation(product, document);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "productFromLocation/{location}")
+    public String getProductFromLocation(@PathVariable String location) {
+        return documentPositionRepository.getProductFromLocation(location);
     }
 
     @ResponseBody

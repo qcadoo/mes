@@ -1,19 +1,26 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.LookupUtils;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.LookupUtils;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+
 
 @Repository
 public class DocumentPositionService {
@@ -211,5 +218,39 @@ public class DocumentPositionService {
         String stateString = jdbcTemplate.queryForObject(query, Collections.singletonMap("id", documentId), String.class);
 
         return DocumentState.parseString(stateString) == DocumentState.ACCEPTED;
+    }
+
+    public StorageLocationDTO getStorageLocation(String product, String document) {
+        if (StringUtils.isEmpty(product)) {
+            return null;
+        }
+        String query = "select sl.id, sl.number as number, p.name as product, loc.name as location from materialflowresources_storagelocation sl join basic_product p on p.id = sl.product_id join materialflow_location loc on loc.id = sl.location_id\n"
+                + "where location_id in\n"
+                + "(SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :document) AND p.number = :product LIMIT 1;";
+        Map<String, Object> filter = new HashMap<>();
+        filter.put("product", product);
+        filter.put("document", Integer.parseInt(document));
+        List<StorageLocationDTO> locations = jdbcTemplate.query(query, filter,
+                new BeanPropertyRowMapper(StorageLocationDTO.class));
+        if (locations.size() == 1) {
+            return locations.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public String getProductFromLocation(String location) {
+        if (StringUtils.isEmpty(location)) {
+            return null;
+        }
+        String query = "SELECT p.name FROM materialflowresources_storagelocation l join basic_product p on l.product_id = p.id WHERE l.number = :location;";
+        Map<String, Object> filter = new HashMap<>();
+        filter.put("location", location);
+        List<String> products = jdbcTemplate.queryForList(query, filter, String.class);
+        if (products.isEmpty()) {
+            return null;
+        } else {
+            return products.get(0);
+        }
     }
 }

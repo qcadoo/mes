@@ -85,7 +85,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function prepareGridConfig() {
             var config = {
-                url: '/rest/' + $scope.recordName + '/records',
+                url: '/rest/' + $scope.recordName + '/records'+document.location.search,
                 datatype: "json",
                 height: '100%',
                 autowidth: true,
