@@ -65,6 +65,7 @@ public class DocumentPositionValidator {
                 errors.add("qcadooView.error.position.unit.required");
             }
 
+            errors.addAll(validateConversion(position));
             errors.addAll(validatePrice(position));
             errors.addAll(validateQuantity(position));
             errors.addAll(validateGivenquantity(position));
@@ -198,6 +199,19 @@ public class DocumentPositionValidator {
         }
 
         return Arrays.asList();
+    }
+
+    private Collection<? extends String> validateConversion(DocumentPositionDTO position) {
+        if (position.getConversion() == null) {
+            return Arrays.asList("qcadooView.error.position.conversion.required");
+
+        } else {
+            if (BigDecimal.ZERO.compareTo(position.getConversion()) >= 0) {
+                return Arrays.asList("qcadooView.error.position.conversion.invalid");
+            }
+            
+            return validateBigDecimal(position.getPrice(), "conversion", 5, 7);
+        }
     }
 
     private Map<String, Object> tryMapDocumentPositionVOToParams(DocumentPositionDTO vo, List<String> errors) {
