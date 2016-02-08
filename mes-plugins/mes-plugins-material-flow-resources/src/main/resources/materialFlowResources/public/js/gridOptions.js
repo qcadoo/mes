@@ -415,6 +415,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var $ac = $('<input class="eac-square" rowId="' + options.rowId + '" />');
             $ac.val(value);
             $ac.autoComplete({
+                minChars: 0,
                 source: function (query, response) {
                     try {
                         xhr.abort();
