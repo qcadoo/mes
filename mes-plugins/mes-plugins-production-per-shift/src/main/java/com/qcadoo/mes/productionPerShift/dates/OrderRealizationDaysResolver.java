@@ -23,7 +23,9 @@
  */
 package com.qcadoo.mes.productionPerShift.dates;
 
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -70,8 +72,8 @@ public class OrderRealizationDaysResolver {
         }).toOpt();
 
         if (shiftWorkTimeMatchPredicate(shiftStartingOrder, workTimeRange, startsDayBefore(orderStartTime))) {
-            return Optional.of(new OrderRealizationDay(orderStartDate, firstWorkingDay.getRealizationDayNumber() - 1, Lists
-                    .newArrayList(shiftStartingOrder.asSet())));
+            return Optional.of(new OrderRealizationDay(orderStartDate, firstWorkingDay.getRealizationDayNumber() - 1,
+                    Lists.newArrayList(shiftStartingOrder.asSet())));
         }
         if (shiftWorkTimeMatchPredicate(shiftStartingOrder, workTimeRange, endsNextDay(orderStartTime))) {
             return Optional.of(new OrderRealizationDay(firstWorkingDay.getDate(), firstWorkingDay.getRealizationDayNumber(),
@@ -93,11 +95,14 @@ public class OrderRealizationDaysResolver {
         return timeRange -> timeRange.startsDayBefore() && !orderStartTime.isAfter(timeRange.getTo());
     }
 
-    private static final int DAYS_IN_YEAR = 365;
 
     private OrderRealizationDay findFirstWorkingDayFrom(final LocalDate orderStartDate, final int startFrom,
             final List<Shift> shifts) {
-        for (int offset = startFrom; offset < startFrom + DAYS_IN_YEAR; offset++) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+
+        int daysInYear = cal.getActualMaximum(Calendar.DAY_OF_YEAR);
+        for (int offset = startFrom; offset < startFrom + daysInYear; offset++) {
             List<Shift> workingShifts = getShiftsWorkingAt(orderStartDate.plusDays(offset - 1).getDayOfWeek(), shifts);
             if (!workingShifts.isEmpty()) {
                 return new OrderRealizationDay(orderStartDate, offset, workingShifts);

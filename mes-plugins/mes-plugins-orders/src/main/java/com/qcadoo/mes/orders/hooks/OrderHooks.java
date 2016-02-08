@@ -193,8 +193,14 @@ public class OrderHooks {
 
             orderStateChange.setField(OrderStateChangeFields.SOURCE_STATE, order.getField(OrderFields.STATE));
             orderStateChange.setField(OrderStateChangeFields.TARGET_STATE, order.getField(OrderFields.STATE));
-            orderStateChange.setField(OrderStateChangeFields.WORKER,
-                    userService.getCurrentUserEntity().getField(UserFields.USER_NAME));
+            String workerToChange = order.getStringField(OrderFields.WORKER_TO_CHANGE);
+            if (StringUtils.isEmpty(workerToChange)) {
+                orderStateChange.setField(OrderStateChangeFields.WORKER,
+                        userService.getCurrentUserEntity().getField(UserFields.USER_NAME));
+            } else {
+                orderStateChange.setField(OrderStateChangeFields.WORKER, workerToChange);
+                order.setField(OrderFields.WORKER_TO_CHANGE, null);
+            }
             orderStateChange.setField("dateAndTime", setDateToField(new Date()));
             orderStateChange.setField(OrderStateChangeFields.STATUS, "03successful");
             orderStateChangeDD.save(orderStateChange);

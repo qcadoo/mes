@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="order" activable="true"  versionable="true"
+<model name="order" activable="true" versionable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
@@ -50,17 +50,17 @@
         <datetime name="effectiveDateFrom"/>
         <datetime name="effectiveDateTo"/>
         <datetime name="deadline"/>
-        <datetime name="correctedDateFrom"> 
-        	<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
+        <datetime name="correctedDateFrom">
+            <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
         </datetime>
         <datetime name="correctedDateTo">
-        	<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
+            <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
         </datetime>
         <datetime name="startDate">
-        	<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
+            <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
         </datetime>
         <datetime name="finishDate">
-        	<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
+            <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
         </datetime>
 
         <enum name="state"
@@ -132,17 +132,19 @@
                  joinField="order" cascade="delete"/>
         <hasMany name="reasonTypesDeviationsOfEffectiveEnd" model="reasonTypeDeviationEffectiveEnd"
                  joinField="order" cascade="delete"/>
-                 
-		<!-- dates audit fields -->
+
+        <!-- dates audit fields -->
         <boolean name="datesChanged" default="false"/>
-        
+
         <datetime name="sourceCorrectedDateFrom"/>
         <datetime name="sourceCorrectedDateTo"/>
         <datetime name="sourceStartDate"/>
         <datetime name="sourceFinishDate"/>
-        
-        <belongsTo name="recipe" plugin="orders" model="recipe" />
-        
+
+        <belongsTo name="recipe" plugin="orders" model="recipe"/>
+
+        <string name="workerToChange"/>
+
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
@@ -158,7 +160,7 @@
                 method="onCopy"/>
 
         <onDelete class="com.qcadoo.mes.orders.hooks.OrderHooks" method="onDelete"/>
-        
+
     </hooks>
     <identifier expression="#number + ' - ' + #name"/>
 </model>
