@@ -11,11 +11,11 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.HashMap;
 import java.util.Iterator;
 
-@Controller public class PlannedEventsReportController {
+@Controller
+public class MaintenanceEventsReportController {
 
-    @RequestMapping(value = "/cmmsMachineParts/plannedEvents.xlsx", method = RequestMethod.GET)
-    public ModelAndView generatePlannedEventsReport(
-            @RequestParam("filters") final String filters) {
+    @RequestMapping(value = "/cmmsMachineParts/maintenanceEvents.xlsx", method = RequestMethod.GET)
+    public ModelAndView generateMaintenanceEventsReport(@RequestParam("filters") final String filters) {
         HashMap<String, String> filtersMap = new HashMap<String, String>();
         try {
             JSONObject jObject = new JSONObject(filters);
@@ -28,7 +28,7 @@ import java.util.Iterator;
         } catch (JSONException e) {
             filtersMap = new HashMap<String, String>();
         }
-        return new ModelAndView("plannedEventsXlsView", "filtersMap", filtersMap);
+        return new ModelAndView("maintenanceEventsXlsView", "filtersMap", filtersMap);
 
     }
 
