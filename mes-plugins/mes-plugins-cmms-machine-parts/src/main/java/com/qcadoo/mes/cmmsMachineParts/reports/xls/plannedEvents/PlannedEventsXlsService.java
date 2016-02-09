@@ -149,6 +149,8 @@ public class PlannedEventsXlsService {
         for (int i = 1; i < rowsToAdd; i++) {
             int r = rowCounterCopy + i;
             XSSFRow subEventLine = sheet.createRow(r);
+            XSSFCell subEventLineNumberCell = subEventLine.createCell(0);
+            subEventLineNumberCell.setCellValue(event.getNumber());
         }
 
         if (rowsToAdd > 0) {
@@ -185,6 +187,8 @@ public class PlannedEventsXlsService {
                     machinePartQuantityCell.setCellValue(getDecimalValue(part.getMachinePartPlannedQuantity()));
                     XSSFCell machinePartUnitCell = eventLine.createCell(26);
                     machinePartUnitCell.setCellValue(part.getMachinePartUnit());
+                    XSSFCell valueCell = eventLine.createCell(27);
+                    valueCell.setCellValue(getDecimalValue(part.getValue()));
                     first = false;
 
                 } else {
@@ -198,6 +202,8 @@ public class PlannedEventsXlsService {
                     machinePartQuantityCell.setCellValue(getDecimalValue(part.getMachinePartPlannedQuantity()));
                     XSSFCell machinePartUnitCell = subEventLine.createCell(26);
                     machinePartUnitCell.setCellValue(part.getMachinePartUnit());
+                    XSSFCell valueCell = subEventLine.createCell(27);
+                    valueCell.setCellValue(getDecimalValue(part.getValue()));
                 }
             }
         }
@@ -214,28 +220,43 @@ public class PlannedEventsXlsService {
     private void fillStateChange(XSSFRow eventLine, PlannedEventDTO event) {
         List<PlannedEventStateChangeDTO> states = event.getStateChanges();
 
-        XSSFCell createDateCell = eventLine.createCell(27);
+        XSSFCell createDateCell = eventLine.createCell(28);
         createDateCell.setCellValue(getDateValue(event.getCreatedate()));
 
-        XSSFCell stateAuthorCell = eventLine.createCell(28);
+        XSSFCell stateAuthorCell = eventLine.createCell(29);
         stateAuthorCell.setCellValue(event.getCreateuser());
 
-        XSSFCell stateStartDateCell = eventLine.createCell(29);
+        XSSFCell stateStartDateCell = eventLine.createCell(30);
         stateStartDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.IN_PLAN, states));
 
-        XSSFCell stateStopDateCell = eventLine.createCell(30);
+        XSSFCell stateStartDateWCell = eventLine.createCell(31);
+        stateStartDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.IN_PLAN, states));
+
+        XSSFCell stateStopDateCell = eventLine.createCell(32);
         stateStopDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.PLANNED, states));
 
-        XSSFCell stateInRealizationDateCell = eventLine.createCell(31);
+        XSSFCell stateStopDateWCell = eventLine.createCell(33);
+        stateStopDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.PLANNED, states));
+
+        XSSFCell stateInRealizationDateCell = eventLine.createCell(34);
         stateInRealizationDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.IN_REALIZATION, states));
 
-        XSSFCell stateAcceptedDateDateCell = eventLine.createCell(32);
+        XSSFCell stateInRealizationDateWCell = eventLine.createCell(35);
+        stateInRealizationDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.IN_REALIZATION, states));
+
+        XSSFCell stateAcceptedDateDateCell = eventLine.createCell(36);
         stateAcceptedDateDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.ACCEPTED, states));
 
-        XSSFCell stateRealizationDateCell = eventLine.createCell(33);
+        XSSFCell stateAcceptedDateWCell = eventLine.createCell(37);
+        stateAcceptedDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.ACCEPTED, states));
+
+        XSSFCell stateRealizationDateCell = eventLine.createCell(38);
         stateRealizationDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.REALIZED, states));
 
-        XSSFCell stateCell = eventLine.createCell(34);
+        XSSFCell stateRealizationDateWCell = eventLine.createCell(39);
+        stateRealizationDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.REALIZED, states));
+
+        XSSFCell stateCell = eventLine.createCell(40);
         stateCell.setCellValue(translationService.translate(event.getState(), LocaleContextHolder.getLocale()));
     }
 
@@ -248,6 +269,14 @@ public class PlannedEventsXlsService {
         return "";
     }
 
+    private String getWorkerForState(final String state, final List<PlannedEventStateChangeDTO> states) {
+        Optional<PlannedEventStateChangeDTO> op = states.stream().filter(e -> state.equals(e.getStateChangeTargetState()))
+                .sorted((e1, e2) -> e1.getStateChangeDateAndTime().compareTo(e1.getStateChangeDateAndTime())).reduce((a, b) -> b);
+        if (op.isPresent()) {
+            return op.get().getStateWorker();
+        }
+        return "";
+    }
     private void fillSubRows(final XSSFSheet sheet, final PlannedEventDTO event, Integer rowNum, final Locale locale) {
 
     }

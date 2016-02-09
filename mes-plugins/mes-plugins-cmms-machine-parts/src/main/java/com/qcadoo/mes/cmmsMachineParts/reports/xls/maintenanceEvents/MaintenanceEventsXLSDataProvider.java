@@ -20,61 +20,50 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Service
-public class MaintenanceEventsXLSDataProvider {
+@Service public class MaintenanceEventsXLSDataProvider {
 
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    @Autowired private NamedParameterJdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    @Autowired private DataDefinitionService dataDefinitionService;
 
-    private final static String query = "SELECT maintenanceevent.id as id, \n"
-            + "maintenanceevent.number as number, \n"
-            + "maintenanceevent.type as type, \n"
-            + "factory.number as factoryNumber, \n"
-            + "division.number as divisionNumber,\n"
-            + "productionline.number as productionLineNumber,\n"
-            + "workstation.number as workstationNumber,\n"
-            + "subassembly.number as subassemblyNumber,\n"
-            + "faulttype.name as faultTypeName,\n"
-            + "maintenanceevent.description as description,\n"
-            + "(personreceiving.surname || ' ' || personreceiving.name ) as personReceiving,\n"
-            + "sourcecost.number as sourceCost,\n"
-            + "staffworktime.id as staffworkTimeId,\n"
-            + "(staffworktimestaff.surname || ' ' || staffworktimestaff.name ) as staffWorkTimeWorker,\n"
-            + "staffworktime.laborTime as staffWorkTimeLaborTime,\n"
-            + "machinepart.id as machinePartId,\n"
-            + "product.number as partNumber,\n"
-            + "product.name as partName,\n"
-            + "warehouse.number as warehouseNumber,\n"
-            + "machinepart.plannedQuantity as partPlannedQuantity,\n"
-            + "product.unit as partUnit,\n"
-            + "maintenanceevent.createdate as createDate,\n"
-            + "maintenanceevent.createuser as createUser,\n"
-            + "statechange.id as stateChangeId, \n"
-            + "statechange.dateandtime as stateChangeDateAndTime, \n"
-            + "statechange.sourcestate as stateChangeSourceState, \n"
-            + "statechange.targetstate as stateChangeTargetState , \n"
-            + "statechange.status as stateStatus,\n"
-            + "statechange.worker as stateWorker,\n"
-            + "maintenanceevent.state as state,\n"
-            + "maintenanceevent.solutiondescription as solutionDescription\n"
-            + "FROM cmmsmachineparts_maintenanceevent maintenanceevent\n"
-            + "LEFT JOIN cmmsmachineparts_staffworktime staffworktime ON maintenanceevent.id = staffworktime.maintenanceevent_id\n"
-            + "LEFT JOIN basic_staff staffworktimestaff ON staffworktime.worker_id = staffworktimestaff.id\n"
-            + "LEFT JOIN cmmsmachineparts_machinepartforevent machinepart ON maintenanceevent.id = machinepart.maintenanceevent_id\n"
-            + "LEFT JOIN basic_product product ON machinepart.machinepart_id = product.id\n"
-            + "LEFT JOIN materialflow_location warehouse ON machinepart.warehouse_id = warehouse.id\n"
-            + "LEFT JOIN cmmsmachineparts_maintenanceeventstatechange statechange ON maintenanceevent.id = statechange.maintenanceevent_id\n"
-            + "LEFT JOIN basic_factory factory ON maintenanceevent.factory_id = factory.id\n"
-            + "LEFT JOIN basic_division division ON maintenanceevent.division_id = division.id\n"
-            + "LEFT JOIN productionlines_productionline productionline ON maintenanceevent.productionline_id = productionline.id\n"
-            + "LEFT JOIN basic_workstation workstation ON maintenanceevent.workstation_id = workstation.id\n"
-            + "LEFT JOIN basic_subassembly subassembly ON maintenanceevent.subassembly_id = subassembly.id\n"
-            + "LEFT JOIN basic_staff personreceiving ON maintenanceevent.personreceiving_id = personreceiving.id\n"
-            + "LEFT JOIN cmmsmachineparts_faulttype faulttype ON maintenanceevent.faulttype_id = faulttype.id\n"
-            + "LEFT JOIN cmmsmachineparts_sourcecost sourcecost ON maintenanceevent.sourcecost_id = sourcecost.id\n";
+    private final static String query =
+            "SELECT maintenanceevent.id as id, \n" + "maintenanceevent.number as number, \n" + "maintenanceevent.type as type, \n"
+                    + "factory.number as factoryNumber, \n" + "division.number as divisionNumber,\n"
+                    + "productionline.number as productionLineNumber,\n" + "workstation.number as workstationNumber,\n"
+                    + "subassembly.number as subassemblyNumber,\n" + "faulttype.name as faultTypeName,\n"
+                    + "maintenanceevent.description as description,\n"
+                    + "(personreceiving.surname || ' ' || personreceiving.name ) as personReceiving,\n"
+                    + "sourcecost.number as sourceCost,\n" + "staffworktime.id as staffworkTimeId,\n"
+                    + "(staffworktimestaff.surname || ' ' || staffworktimestaff.name ) as staffWorkTimeWorker,\n"
+                    + "staffworktime.laborTime as staffWorkTimeLaborTime,\n" + "machinepart.id as machinePartId,\n"
+                    + "product.number as partNumber,\n" + "product.name as partName,\n" + "warehouse.number as warehouseNumber,\n"
+                    + "product.lastpurchasecost *  machinepart.plannedQuantity as lastPurchaseCost,\n"
+                    + "docpos.price * docpos.quantity as priceFromDocumentPosition,\n" + "docpos.price as priceFromPosition,\n"
+                    + "docpos.quantity as quantityFromPosition,\n"
+                    + "machinepart.plannedQuantity as partPlannedQuantity,\n" + "product.unit as partUnit,\n"
+                    + "maintenanceevent.createdate as createDate,\n" + "maintenanceevent.createuser as createUser,\n"
+                    + "statechange.id as stateChangeId, \n" + "statechange.dateandtime as stateChangeDateAndTime, \n"
+                    + "statechange.sourcestate as stateChangeSourceState, \n"
+                    + "statechange.targetstate as stateChangeTargetState , \n" + "statechange.status as stateStatus,\n"
+                    + "statechange.worker as stateWorker,\n" + "maintenanceevent.state as state,\n"
+                    + "maintenanceevent.solutiondescription as solutionDescription\n"
+                    + "FROM cmmsmachineparts_maintenanceevent maintenanceevent\n"
+                    + "LEFT JOIN cmmsmachineparts_staffworktime staffworktime ON maintenanceevent.id = staffworktime.maintenanceevent_id\n"
+                    + "LEFT JOIN basic_staff staffworktimestaff ON staffworktime.worker_id = staffworktimestaff.id\n"
+                    + "LEFT JOIN cmmsmachineparts_machinepartforevent machinepart ON maintenanceevent.id = machinepart.maintenanceevent_id\n"
+                    + "LEFT JOIN basic_product product ON machinepart.machinepart_id = product.id\n"
+                    + "LEFT JOIN materialflowresources_document doc ON maintenanceevent.id = doc.maintenanceevent_id\n"
+                    + "LEFT JOIN materialflowresources_position docpos ON docpos.document_id = doc.id and docpos.product_id=product.id and docpos.quantity = machinepart.plannedQuantity\n"
+                    + "LEFT JOIN materialflow_location warehouse ON machinepart.warehouse_id = warehouse.id\n"
+                    + "LEFT JOIN cmmsmachineparts_maintenanceeventstatechange statechange ON maintenanceevent.id = statechange.maintenanceevent_id\n"
+                    + "LEFT JOIN basic_factory factory ON maintenanceevent.factory_id = factory.id\n"
+                    + "LEFT JOIN basic_division division ON maintenanceevent.division_id = division.id\n"
+                    + "LEFT JOIN productionlines_productionline productionline ON maintenanceevent.productionline_id = productionline.id\n"
+                    + "LEFT JOIN basic_workstation workstation ON maintenanceevent.workstation_id = workstation.id\n"
+                    + "LEFT JOIN basic_subassembly subassembly ON maintenanceevent.subassembly_id = subassembly.id\n"
+                    + "LEFT JOIN basic_staff personreceiving ON maintenanceevent.personreceiving_id = personreceiving.id\n"
+                    + "LEFT JOIN cmmsmachineparts_faulttype faulttype ON maintenanceevent.faulttype_id = faulttype.id\n"
+                    + "LEFT JOIN cmmsmachineparts_sourcecost sourcecost ON maintenanceevent.sourcecost_id = sourcecost.id\n";
 
     private final static String ORDER_BY = " ORDER BY maintenanceevent.number";
 
@@ -83,6 +72,7 @@ public class MaintenanceEventsXLSDataProvider {
         String _query = buildQuery(filters);
         events = jdbcTemplate.query(_query, new BeanPropertyRowMapper(MaintenanceEventDTO.class));
         List<MaintenanceEventDTO> finalEvents = processResults(events);
+        finalEvents.sort((e1, e2) -> e1.getNumber().compareTo(e2.getNumber()));
         return finalEvents;
     }
 
@@ -152,6 +142,11 @@ public class MaintenanceEventsXLSDataProvider {
         part.setPartPlannedQuantity(e.getPartPlannedQuantity());
         part.setPartUnit(e.getPartUnit());
         part.setWarehouseNumber(e.getWarehouseNumber());
+        if(e.getPriceFromDocumentPosition() != null){
+            part.setValue(e.getPriceFromDocumentPosition());
+        } else {
+            part.setValue(e.getLastPurchaseCost());
+        }
         return part;
     }
 

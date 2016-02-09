@@ -47,7 +47,12 @@ public class MaintenanceEventDTO {
     private String warehouseNumber;
     private BigDecimal partPlannedQuantity;
     private BigDecimal value;
+    private BigDecimal lastPurchaseCost;
+    private BigDecimal priceFromDocumentPosition;
+    private BigDecimal priceFromPosition;
+    private BigDecimal quantityFromPosition;
     private String partUnit;
+
     List<MachinePartDTO> machineParts = Lists.newArrayList();
 
     public int subListSize() {
@@ -333,5 +338,37 @@ public class MaintenanceEventDTO {
 
     public void setStateWorker(String stateWorker) {
         this.stateWorker = stateWorker;
+    }
+
+    public BigDecimal getLastPurchaseCost() {
+        return lastPurchaseCost;
+    }
+
+    public void setLastPurchaseCost(BigDecimal lastPurchaseCost) {
+        this.lastPurchaseCost = lastPurchaseCost;
+    }
+
+    public BigDecimal getPriceFromDocumentPosition() {
+        return priceFromDocumentPosition;
+    }
+
+    public void setPriceFromDocumentPosition(BigDecimal priceFromDocumentPosition) {
+        this.priceFromDocumentPosition = priceFromDocumentPosition;
+    }
+
+    public BigDecimal getPriceFromPosition() {
+        return priceFromPosition;
+    }
+
+    public void setPriceFromPosition(BigDecimal priceFromPosition) {
+        this.priceFromPosition = priceFromPosition;
+    }
+
+    public BigDecimal getQuantityFromPosition() {
+        return quantityFromPosition;
+    }
+
+    public void setQuantityFromPosition(BigDecimal quantityFromPosition) {
+        this.quantityFromPosition = quantityFromPosition;
     }
 }
