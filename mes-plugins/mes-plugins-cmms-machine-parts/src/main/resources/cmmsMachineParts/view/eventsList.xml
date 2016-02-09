@@ -98,7 +98,7 @@
 							    confirmContextButtonLabel;
 
 							if (confirmed == 'true' || confirmed == '1') {
-								xlsButton.disable();
+								xlsButton.enable();
 								confirmContextButtonLabel = "#{translate(cmmsMachineParts.eventsList.window.ribbon.contextActions.changeContext)}";
 							} else {
 							    xlsButton.disable();

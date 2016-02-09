@@ -78,7 +78,11 @@ public class PlannedEventDTO {
     private String machinePartUnit;
 
     private BigDecimal machinePartPlannedQuantity;
-
+    private BigDecimal value;
+    private BigDecimal lastPurchaseCost;
+    private BigDecimal priceFromDocumentPosition;
+    private BigDecimal priceFromPosition;
+    private BigDecimal quantityFromPosition;
     private String createuser;
     //------
     private Long realizationId;
@@ -99,6 +103,8 @@ public class PlannedEventDTO {
     private String stateChangeTargetState;
 
     private String stateStatus;
+
+    private String stateWorker;
 
     public int subListSize() {
         return realizations.size() > parts.size() ? realizations.size() : parts.size();
@@ -462,5 +468,53 @@ public class PlannedEventDTO {
 
     public void setCreatedate(Date createdate) {
         this.createdate = createdate;
+    }
+
+    public String getStateWorker() {
+        return stateWorker;
+    }
+
+    public void setStateWorker(String stateWorker) {
+        this.stateWorker = stateWorker;
+    }
+
+    public BigDecimal getValue() {
+        return value;
+    }
+
+    public void setValue(BigDecimal value) {
+        this.value = value;
+    }
+
+    public BigDecimal getLastPurchaseCost() {
+        return lastPurchaseCost;
+    }
+
+    public void setLastPurchaseCost(BigDecimal lastPurchaseCost) {
+        this.lastPurchaseCost = lastPurchaseCost;
+    }
+
+    public BigDecimal getPriceFromDocumentPosition() {
+        return priceFromDocumentPosition;
+    }
+
+    public void setPriceFromDocumentPosition(BigDecimal priceFromDocumentPosition) {
+        this.priceFromDocumentPosition = priceFromDocumentPosition;
+    }
+
+    public BigDecimal getPriceFromPosition() {
+        return priceFromPosition;
+    }
+
+    public void setPriceFromPosition(BigDecimal priceFromPosition) {
+        this.priceFromPosition = priceFromPosition;
+    }
+
+    public BigDecimal getQuantityFromPosition() {
+        return quantityFromPosition;
+    }
+
+    public void setQuantityFromPosition(BigDecimal quantityFromPosition) {
+        this.quantityFromPosition = quantityFromPosition;
     }
 }

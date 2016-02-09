@@ -12,6 +12,10 @@ public class MachinePartDTO {
     private String warehouseNumber;
     private BigDecimal partPlannedQuantity;
     private BigDecimal value;
+    private BigDecimal lastPurchaseCost;
+    private BigDecimal priceFromDocumentPosition;
+    private BigDecimal priceFromPosition;
+    private BigDecimal quantityFromPosition;
     private String partUnit;
 
     public Long getMachinePartId() {
@@ -68,6 +72,38 @@ public class MachinePartDTO {
 
     public void setPartUnit(String partUnit) {
         this.partUnit = partUnit;
+    }
+
+    public BigDecimal getLastPurchaseCost() {
+        return lastPurchaseCost;
+    }
+
+    public void setLastPurchaseCost(BigDecimal lastPurchaseCost) {
+        this.lastPurchaseCost = lastPurchaseCost;
+    }
+
+    public BigDecimal getPriceFromDocumentPosition() {
+        return priceFromDocumentPosition;
+    }
+
+    public void setPriceFromDocumentPosition(BigDecimal priceFromDocumentPosition) {
+        this.priceFromDocumentPosition = priceFromDocumentPosition;
+    }
+
+    public BigDecimal getPriceFromPosition() {
+        return priceFromPosition;
+    }
+
+    public void setPriceFromPosition(BigDecimal priceFromPosition) {
+        this.priceFromPosition = priceFromPosition;
+    }
+
+    public BigDecimal getQuantityFromPosition() {
+        return quantityFromPosition;
+    }
+
+    public void setQuantityFromPosition(BigDecimal quantityFromPosition) {
+        this.quantityFromPosition = quantityFromPosition;
     }
 
     @Override public boolean equals(Object o) {
