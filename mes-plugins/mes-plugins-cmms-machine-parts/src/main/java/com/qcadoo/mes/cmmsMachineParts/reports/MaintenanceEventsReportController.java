@@ -14,7 +14,7 @@ import java.util.Iterator;
 @Controller
 public class MaintenanceEventsReportController {
 
-    @RequestMapping(value = "/cmmsMachineParts/maintenanceEvents.xls", method = RequestMethod.GET)
+    @RequestMapping(value = "/cmmsMachineParts/maintenanceEvents.xlsx", method = RequestMethod.GET)
     public ModelAndView generateMaintenanceEventsReport(@RequestParam("filters") final String filters) {
         HashMap<String, String> filtersMap = new HashMap<String, String>();
         try {

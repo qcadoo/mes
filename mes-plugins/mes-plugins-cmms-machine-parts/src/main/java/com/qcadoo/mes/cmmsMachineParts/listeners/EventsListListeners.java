@@ -131,7 +131,7 @@ public class EventsListListeners {
 
         String filtersInJson = new JSONObject(filters).toString();
         StringBuffer redirectUrl = new StringBuffer();
-        redirectUrl.append("/cmmsMachineParts/maintenanceEvents.xls");
+        redirectUrl.append("/cmmsMachineParts/maintenanceEvents.xlsx");
         redirectUrl.append("?");
         redirectUrl.append("filters=");
         redirectUrl.append(filtersInJson);
@@ -184,7 +184,7 @@ public class EventsListListeners {
 
         String filtersInJson = new JSONObject(filters).toString();
         StringBuffer redirectUrl = new StringBuffer();
-        redirectUrl.append("/cmmsMachineParts/plannedEvents.xls");
+        redirectUrl.append("/cmmsMachineParts/plannedEvents.xlsx");
         redirectUrl.append("?");
         redirectUrl.append("filters=");
         redirectUrl.append(filtersInJson);
