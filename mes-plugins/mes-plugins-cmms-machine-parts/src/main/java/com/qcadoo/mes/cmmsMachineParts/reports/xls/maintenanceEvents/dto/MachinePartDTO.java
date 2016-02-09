@@ -1,21 +1,23 @@
-package com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto;
+package com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents.dto;
 
 import com.google.common.base.Objects;
 
 import java.math.BigDecimal;
 
-public class MachinePartForEventDTO {
+public class MachinePartDTO {
 
     private Long machinePartId;
-    private String machinePartName;
-    private String machinePartNumber;
-    private String machinePartUnit;
-    private BigDecimal machinePartPlannedQuantity;
+    private String partNumber;
+    private String partName;
+    private String warehouseNumber;
+    private BigDecimal partPlannedQuantity;
     private BigDecimal value;
     private BigDecimal lastPurchaseCost;
     private BigDecimal priceFromDocumentPosition;
     private BigDecimal priceFromPosition;
     private BigDecimal quantityFromPosition;
+    private String partUnit;
+
     public Long getMachinePartId() {
         return machinePartId;
     }
@@ -24,36 +26,36 @@ public class MachinePartForEventDTO {
         this.machinePartId = machinePartId;
     }
 
-    public String getMachinePartName() {
-        return machinePartName;
+    public String getPartNumber() {
+        return partNumber;
     }
 
-    public void setMachinePartName(String machinePartName) {
-        this.machinePartName = machinePartName;
+    public void setPartNumber(String partNumber) {
+        this.partNumber = partNumber;
     }
 
-    public String getMachinePartNumber() {
-        return machinePartNumber;
+    public String getPartName() {
+        return partName;
     }
 
-    public void setMachinePartNumber(String machinePartNumber) {
-        this.machinePartNumber = machinePartNumber;
+    public void setPartName(String partName) {
+        this.partName = partName;
     }
 
-    public String getMachinePartUnit() {
-        return machinePartUnit;
+    public String getWarehouseNumber() {
+        return warehouseNumber;
     }
 
-    public void setMachinePartUnit(String machinePartUnit) {
-        this.machinePartUnit = machinePartUnit;
+    public void setWarehouseNumber(String warehouseNumber) {
+        this.warehouseNumber = warehouseNumber;
     }
 
-    public BigDecimal getMachinePartPlannedQuantity() {
-        return machinePartPlannedQuantity;
+    public BigDecimal getPartPlannedQuantity() {
+        return partPlannedQuantity;
     }
 
-    public void setMachinePartPlannedQuantity(BigDecimal machinePartPlannedQuantity) {
-        this.machinePartPlannedQuantity = machinePartPlannedQuantity;
+    public void setPartPlannedQuantity(BigDecimal partPlannedQuantity) {
+        this.partPlannedQuantity = partPlannedQuantity;
     }
 
     public BigDecimal getValue() {
@@ -62,6 +64,14 @@ public class MachinePartForEventDTO {
 
     public void setValue(BigDecimal value) {
         this.value = value;
+    }
+
+    public String getPartUnit() {
+        return partUnit;
+    }
+
+    public void setPartUnit(String partUnit) {
+        this.partUnit = partUnit;
     }
 
     public BigDecimal getLastPurchaseCost() {
@@ -101,15 +111,17 @@ public class MachinePartForEventDTO {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        MachinePartForEventDTO that = (MachinePartForEventDTO) o;
+        MachinePartDTO that = (MachinePartDTO) o;
         return Objects.equal(machinePartId, that.machinePartId) &&
-                Objects.equal(machinePartName, that.machinePartName) &&
-                Objects.equal(machinePartNumber, that.machinePartNumber) &&
-                Objects.equal(machinePartUnit, that.machinePartUnit) &&
-                Objects.equal(machinePartPlannedQuantity, that.machinePartPlannedQuantity);
+                Objects.equal(partNumber, that.partNumber) &&
+                Objects.equal(partName, that.partName) &&
+                Objects.equal(warehouseNumber, that.warehouseNumber) &&
+                Objects.equal(partPlannedQuantity, that.partPlannedQuantity) &&
+                Objects.equal(value, that.value) &&
+                Objects.equal(partUnit, that.partUnit);
     }
 
     @Override public int hashCode() {
-        return Objects.hashCode(machinePartId, machinePartName, machinePartNumber, machinePartUnit, machinePartPlannedQuantity);
+        return Objects.hashCode(machinePartId, partNumber, partName, warehouseNumber, partPlannedQuantity, value, partUnit);
     }
 }

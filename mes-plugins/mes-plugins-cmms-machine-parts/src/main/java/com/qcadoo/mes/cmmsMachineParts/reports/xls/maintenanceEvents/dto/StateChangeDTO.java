@@ -1,10 +1,10 @@
-package com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto;
+package com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents.dto;
 
 import com.google.common.base.Objects;
 
 import java.util.Date;
 
-public class PlannedEventStateChangeDTO {
+public class StateChangeDTO {
 
     private Long stateChangeId;
     private Date stateChangeDateAndTime;
@@ -66,16 +66,18 @@ public class PlannedEventStateChangeDTO {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        PlannedEventStateChangeDTO that = (PlannedEventStateChangeDTO) o;
+        StateChangeDTO that = (StateChangeDTO) o;
         return Objects.equal(stateChangeId, that.stateChangeId) &&
                 Objects.equal(stateChangeDateAndTime, that.stateChangeDateAndTime) &&
                 Objects.equal(stateChangeSourceState, that.stateChangeSourceState) &&
                 Objects.equal(stateChangeTargetState, that.stateChangeTargetState) &&
-                Objects.equal(stateStatus, that.stateStatus);
+                Objects.equal(stateStatus, that.stateStatus) &&
+                Objects.equal(stateWorker, that.stateWorker);
     }
 
     @Override public int hashCode() {
         return Objects
-                .hashCode(stateChangeId, stateChangeDateAndTime, stateChangeSourceState, stateChangeTargetState, stateStatus);
+                .hashCode(stateChangeId, stateChangeDateAndTime, stateChangeSourceState, stateChangeTargetState, stateStatus,
+                        stateWorker);
     }
 }

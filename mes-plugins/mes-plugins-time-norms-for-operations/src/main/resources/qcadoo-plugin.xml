@@ -242,19 +242,19 @@
 
 		<view:view-grid-column view="operationsList" component="grid" plugin="technologies">
             <view:column name="tpz" fields="tpz"
-                         orderable="true" searchable="false" width="40"
+                         orderable="false" searchable="false" width="40"
                          expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tpz)"/>
         </view:view-grid-column>
 
 		<view:view-grid-column view="operationsList" component="grid" plugin="technologies">
             <view:column name="tj" fields="tj"
-                         orderable="true" searchable="false" width="40"
+                         orderable="false" searchable="false" width="40"
                          expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tj)"/>
         </view:view-grid-column>
 
 		<view:view-grid-column view="operationsList" component="grid" plugin="technologies">
             <view:column name="timeNextOperation" fields="timeNextOperation"
-                         orderable="true" searchable="false" width="40"
+                         orderable="false" searchable="false" width="40"
                          expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeNextOperation)"/>
         </view:view-grid-column>
 	
