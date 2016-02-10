@@ -583,10 +583,34 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     } else {
                     	updateFieldValue('storageLocation', '', getRowIdFromElement(t));
                     }
+                    clearAdditionalCode(t.val(), getRowIdFromElement(t));
                 }, 500));
             });
 
             return lookup;
+        }
+
+        function clearAdditionalCode(newProductNumber, rowId) {
+            var additionalCode = getFieldValue('additionalCode', rowId);
+
+            var url = '/rest/additionalcodes';
+            $.getJSON(url, {query: additionalCode}, function (data) {
+
+                    var product = '';
+                    product = data.filter(function (element, index) {
+                        return element.code === additionalCode;
+                    })[0];
+
+                    if (product) {
+                        product = product.productnumber;
+                     }
+
+                    if (product !== newProductNumber) {
+                        var additionalCodeField = updateFieldValue('additionalCode', '', rowId);
+                        additionalCodeField.trigger('change');
+                    }
+
+            });
         }
 
         function additionalCodeLookup_createElement(value, options) {

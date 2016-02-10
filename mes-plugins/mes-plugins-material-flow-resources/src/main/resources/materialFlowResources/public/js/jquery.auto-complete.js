@@ -124,7 +124,15 @@
                 // enter or tab
                 else if (e.which == 13 || e.which == 9) {
                     var sel = $('.autocomplete-suggestion.selected', that.sc);
-                    if (sel.length && that.sc.is(':visible')) { o.onSelect(e, sel.data('val'), sel); setTimeout(function(){ that.sc.hide(); }, 20); }
+                   // if (e.which == 13) {
+                        e.stopPropagation();
+                    //}
+                    if (sel.length && that.sc.is(':visible')) {
+                        o.onSelect(e, sel.data('val'), sel);
+                        setTimeout(function(){
+                            that.sc.hide();
+                        }, 20);
+                    }
                 }
             });
 
