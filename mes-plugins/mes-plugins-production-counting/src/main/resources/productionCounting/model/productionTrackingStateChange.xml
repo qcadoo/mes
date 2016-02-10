@@ -25,24 +25,29 @@
 
 -->
 <model name="productionTrackingStateChange" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	   xmlns="http://schema.qcadoo.org/model"
+	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<!-- generic state change fields -->
-		<datetime name="dateAndTime" />
-		<enum name="sourceState" values="01draft,02accepted,03declined" />
+		<datetime name="dateAndTime"/>
+		<enum name="sourceState" values="01draft,02accepted,03declined"/>
 		<enum name="targetState" values="01draft,02accepted,03declined"
-			required="true" />
+			  required="true"/>
 		<enum name="status"
-			values="01inProgress,02paused,03successful,04failure,05canceled"
-			required="true" />
-		<integer name="phase" />
-		<string name="worker" />
-		<belongsTo name="shift" model="shift" plugin="basic" />
-		<belongsTo name="productionTracking" model="productionTracking" /> <!-- owner -->
+			  values="01inProgress,02paused,03successful,04failure,05canceled"
+			  required="true"/>
+		<integer name="phase"/>
+		<string name="worker"/>
+		<belongsTo name="shift" model="shift" plugin="basic"/>
+		<belongsTo name="productionTracking" model="productionTracking"/>
+		<!-- owner -->
 
 		<hasMany name="messages" joinField="productionTrackingStateChange"
-			model="message" plugin="states" cascade="delete" /> <!-- messages -->
+				 model="message" plugin="states" cascade="delete"/>
+		<!-- messages -->
 	</fields>
-	<hooks />
+
+	<hooks/>
+
 </model>
