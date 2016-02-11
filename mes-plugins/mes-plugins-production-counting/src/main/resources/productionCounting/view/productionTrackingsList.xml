@@ -170,23 +170,23 @@
 			</script>
 
 			<option type="column" name="productionTrackingNumber" fields="productionTrackingNumber" link="true"
-					width="150"/>
-			<option type="column" name="orderNumber" fields="orderNumber"
-					width="150"/>
+					width="120"/>
+			<option type="column" name="orderNumber" fields="orderNumber" link="true"
+					width="200"/>
 			<option type="column" name="technologyOperationComponentNumber"
-					fields="technologyOperationComponentNumber" width="150"/>
+					fields="technologyOperationComponentNumber" width="120"/>
 			<option type="column" name="shiftName" fields="shiftName"
-					width="100"/>
+					width="80"/>
 			<option type="column" name="staffName" fields="staffName"
 					width="100"/>
 			<option type="column" name="divisionNumber" fields="divisionNumber"
-					width="100"/>
-			<option type="column" name="productionTrackingState" fields="productionTrackingState"
 					width="80"/>
+			<option type="column" name="productionTrackingState" fields="productionTrackingState"
+					width="90"/>
 			<option type="column" name="productionTrackingCreateDate" fields="productionTrackingCreateDate"
 					width="100"/>
 			<option type="column" name="productionTrackingLastTracking" fields="productionTrackingLastTracking"
-					expression="#productionTrackingLastTracking" width="75"/>
+					expression="#productionTrackingLastTracking" width="60"/>
 			<option type="column" name="productionTrackingTimeRangeFrom" fields="productionTrackingTimeRangeFrom"
 					width="100"/>
 			<option type="column" name="productionTrackingTimeRangeTo" fields="productionTrackingTimeRangeTo"
