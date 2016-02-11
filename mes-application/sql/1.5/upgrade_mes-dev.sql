@@ -31,7 +31,7 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 		shift.id::integer AS shift_id,
 		shift.name AS shiftname,
 		staff.id::integer AS staff_id,
-		staff.number || ' - ' || staff.name || ' ' || staff.surname AS staffname,
+		staff.name || ' ' || staff.surname AS staffname,
 		division.id::integer AS division_id,
 		division.number AS divisionnumber,
 		subcontractor.id AS subcontractor_id,
