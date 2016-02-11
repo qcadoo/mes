@@ -210,7 +210,7 @@ public class DocumentPositionValidator {
                 return Arrays.asList("qcadooView.error.position.conversion.invalid");
             }
             
-            return validateBigDecimal(position.getPrice(), "conversion", 5, 7);
+            return validateBigDecimal(position.getConversion(), "conversion", 5, 7);
         }
     }
 
@@ -305,6 +305,7 @@ public class DocumentPositionValidator {
 
     private List<String> validateBigDecimal(BigDecimal value, String field, int maxScale, int maxPrecision) {
         List<String> errors = new ArrayList<>();
+        
         BigDecimal noZero = value.stripTrailingZeros();
         int scale = noZero.scale();
         int precision = noZero.precision();

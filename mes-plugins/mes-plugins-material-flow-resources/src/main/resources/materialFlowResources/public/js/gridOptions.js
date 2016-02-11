@@ -91,7 +91,7 @@ function parseAndValidateInputNumber($element) {
 
         var value = rawValue.replace(',', '.');
         var unitPart = valueArray[0];
-        var fractionPart = valueArray[1] || '0';
+        var fractionPart = '1' + (valueArray[1] || '0');
 
         if (unitPart !== parseFloat(unitPart).toString()) {
             throw 'Invalid unit part';
@@ -101,7 +101,7 @@ function parseAndValidateInputNumber($element) {
         }
 
         $element.removeClass('error-grid');
-        if (value != $element.val()) {
+        if (value !== $element.val()) {
             $element.val(value);
         }
 
@@ -161,34 +161,34 @@ myApp.directive('ngJqGrid', function ($window) {
                                 // the buttons to appear on the toolbar of the grid
                                         {edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
                                 // options for the Edit Dialog
-                                        {
-                                            ajaxEditOptions: {contentType: "application/json"},
-                                            mtype: 'PUT',
-                                            closeAfterEdit: true,
-                                            resize: false,
-                                            viewPagerButtons: false,
-                                            serializeEditData: function (data) {
-                                                delete data.oper;
+                                {
+                                    ajaxEditOptions: {contentType: "application/json"},
+                                    mtype: 'PUT',
+                                    closeAfterEdit: true,
+                                    resize: false,
+                                    viewPagerButtons: false,
+                                    serializeEditData: function (data) {
+                                        delete data.oper;
 
-                                                return validateSerializeData(data);
-                                            },
-                                            onclickSubmit: function (params, postdata) {
-                                                params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
-                                            },
-                                            errorTextFormat: function (response) {
-                                                return translateAndShowMessages(response);
-                                            },
-                                            beforeShowForm: function (form) {
-                                                var dlgDiv = $("#editmodgrid");
-                                                var dlgWidth = 586;
-                                                var dlgHeight = dlgDiv.height();
-                                                var parentWidth = $(window).width();
-                                                var parentHeight = $(window).height();
-                                                dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
-                                                dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
-                                                dlgDiv[0].style.width = dlgWidth + "px";
-                                            },
-                                        },
+                                        return validateSerializeData(data);
+                                    },
+                                    onclickSubmit: function (params, postdata) {
+                                        params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
+                                    },
+                                    errorTextFormat: function (response) {
+                                        return translateAndShowMessages(response);
+                                    },
+                                    beforeShowForm: function (form) {
+                                        var dlgDiv = $("#editmodgrid");
+                                        var dlgWidth = 586;
+                                        var dlgHeight = dlgDiv.height();
+                                        var parentWidth = $(window).width();
+                                        var parentHeight = $(window).height();
+                                        dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
+                                        dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
+                                        dlgDiv[0].style.width = dlgWidth + "px";
+                                    },
+                                },
                                         // options for the Add Dialog
                                                 {
                                                     ajaxEditOptions: {
@@ -331,11 +331,11 @@ function addNewRow() {
 }
 
 function openLookup(name, parameters) {
-	var lookupHtml = '/lookup.html'
-	if(parameters) {
-		var urlParams = $.param(parameters);
-		lookupHtml = lookupHtml + "?" + urlParams;
-	}
+    var lookupHtml = '/lookup.html'
+    if (parameters) {
+        var urlParams = $.param(parameters);
+        lookupHtml = lookupHtml + "?" + urlParams;
+    }
     mainController.openModal('body', '../' + name + lookupHtml, null, function onModalClose() {
     }, function onModalRender(modalWindow) {
     }, {width: 1000, height: 560});
@@ -440,7 +440,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             var button = $('<button class="editable__searchBtn" value="xxx"></button>');
             button.bind('click', function () {
-        		var parameters = getParametersFunction ? getParametersFunction() : {};
+                var parameters = getParametersFunction ? getParametersFunction() : {};
                 openLookup(name, parameters);
             });
 
@@ -538,33 +538,33 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var storageLocations = null;
         function updateStorageLocations(productNumber, document) {
-            $.get('/integration/rest/documentPositions/storageLocation/' + productNumber + "/" + document +".html", function (location) {
-            	if(location) {
-	                var gridData = $('#grid').jqGrid('getRowData');
-	
-	                var productInput = $('#product');
+            $.get('/integration/rest/documentPositions/storageLocation/' + productNumber + "/" + document + ".html", function (location) {
+                if (location) {
+                    var gridData = $('#grid').jqGrid('getRowData');
 
-	                if (productInput.length) {
-	                    // edit form
-	                    updateFieldValue('storageLocation', location['number'], 0);
-	
-	                } else {
-	                	// edit inline
-	                    var patternProduct = /(id=\".+_product\")/ig;
-	                    for (var i = 0; i < gridData.length; i++) {
-	                        var product = gridData[i]['product'];
-	                        if (product.toLowerCase().indexOf('<input') >= 0) {
-	                            var matched = product.match(patternProduct)[0];
-	                            var numberOfInput = matched.toUpperCase().replace("ID=\"", "").replace("_PRODUCT\"", "");
-	                            var productValue = getFieldValue('product', numberOfInput);
-	
-	                            if (productValue === productNumber) {
-	                                // update input
-	                            	updateFieldValue('storageLocation', location['number'], numberOfInput);
-	                            }
-	                        }
-	                    }
-	                }
+                    var productInput = $('#product');
+
+                    if (productInput.length) {
+                        // edit form
+                        updateFieldValue('storageLocation', location['number'], 0);
+
+                    } else {
+                        // edit inline
+                        var patternProduct = /(id=\".+_product\")/ig;
+                        for (var i = 0; i < gridData.length; i++) {
+                            var product = gridData[i]['product'];
+                            if (product.toLowerCase().indexOf('<input') >= 0) {
+                                var matched = product.match(patternProduct)[0];
+                                var numberOfInput = matched.toUpperCase().replace("ID=\"", "").replace("_PRODUCT\"", "");
+                                var productValue = getFieldValue('product', numberOfInput);
+
+                                if (productValue === productNumber) {
+                                    // update input
+                                    updateFieldValue('storageLocation', location['number'], numberOfInput);
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }
@@ -578,10 +578,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $(this).data("timeout", setTimeout(function () {
                     conversionModified = false;
                     updateUnitsInGridByProduct(t.val());
-                    if(t.val()) {                    	
-                    	updateStorageLocations(t.val(), getDocumentId());
+                    if (t.val()) {
+                        updateStorageLocations(t.val(), getDocumentId());
                     } else {
-                    	updateFieldValue('storageLocation', '', getRowIdFromElement(t));
+                        updateFieldValue('storageLocation', '', getRowIdFromElement(t));
                     }
                     clearAdditionalCode(t.val(), getRowIdFromElement(t));
                 }, 500));
@@ -596,19 +596,19 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var url = '/rest/additionalcodes';
             $.getJSON(url, {query: additionalCode}, function (data) {
 
-                    var product = '';
-                    product = data.filter(function (element, index) {
-                        return element.code === additionalCode;
-                    })[0];
+                var product = '';
+                product = data.filter(function (element, index) {
+                    return element.code === additionalCode;
+                })[0];
 
-                    if (product) {
-                        product = product.productnumber;
-                     }
+                if (product) {
+                    product = product.productnumber;
+                }
 
-                    if (product !== newProductNumber) {
-                        var additionalCodeField = updateFieldValue('additionalCode', '', rowId);
-                        additionalCodeField.trigger('change');
-                    }
+                if (product !== newProductNumber) {
+                    var additionalCodeField = updateFieldValue('additionalCode', '', rowId);
+                    additionalCodeField.trigger('change');
+                }
 
             });
         }
@@ -648,12 +648,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function storageLocationLookup_createElement(value, options) {
-        	var lookup = createLookupElement('storageLocation', value, '/integration/rest/documentPositions/storagelocations.html', options, function() {
-        		return  {
-        			product : getFieldValue('product', getRowIdFromElement($('input', lookup))),
-        			location : getDocumentId()
-        		};
-        	});
+            var lookup = createLookupElement('storageLocation', value, '/integration/rest/documentPositions/storagelocations.html', options, function () {
+                return  {
+                    product: getFieldValue('product', getRowIdFromElement($('input', lookup))),
+                    location: getDocumentId()
+                };
+            });
 
             $('input', lookup).bind('change keydown paste input', function () {
                 var t = $(this);
@@ -669,9 +669,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function updateProductFromLocation(location, rowNumber) {
             $.get('/integration/rest/documentPositions/productFromLocation/' + location + ".html", function (newProduct) {
-            	if(newProduct) {            		
-            		updateFieldValue('product', newProduct, rowNumber);
-            	}
+                if (newProduct) {
+                    updateFieldValue('product', newProduct, rowNumber);
+                }
 
             });
         }
