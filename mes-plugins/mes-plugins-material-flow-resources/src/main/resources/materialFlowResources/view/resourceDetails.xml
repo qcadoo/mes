@@ -100,7 +100,7 @@
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="6" row="4" width="1">
+                    <layoutElement column="6" row="5" width="1">
                         <component type="input" name="quantityUNIT" reference="quantityUNIT"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
@@ -112,7 +112,7 @@
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="6" row="5" width="1">
+                    <layoutElement column="6" row="6" width="1">
                         <component type="input" name="priceCurrency" reference="priceCurrency"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
