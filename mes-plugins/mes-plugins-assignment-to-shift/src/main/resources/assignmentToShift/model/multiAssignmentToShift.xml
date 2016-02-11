@@ -24,31 +24,27 @@
     ***************************************************************************
 
 -->
-<model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="staffAssignmentToShift"
+<model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" auditable="true" name="multiAssignmentToShift"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <belongsTo name="assignmentToShift" model="assignmentToShift"/>
-        <belongsTo name="worker" model="staff" plugin="basic"
-                   required="true"/>
+        <manyToMany name="workers" joinField="multiAssignmentToShifts" model="staff" cascade="nullify" plugin="basic"
+                    copyable="false"/>
         <belongsTo name="productionLine" model="productionLine"
                    plugin="productionLines"/>
         <dictionary dictionary="occupationType" name="occupationType"
                     required="true"/>
         <string name="occupationTypeName"/>
         <enum name="occupationTypeEnum" values="01workOnLine,02otherCase"/>
-        <string name="occupationTypeValueForGrid"/>
         <belongsTo name="masterOrder" model="masterOrder"
                    plugin="masterOrders"/>
-        <enum name="state" values="01simple,02accepted,03corrected"
-              default="01simple"/>
-        <string name="description"/>
+        <belongsTo name="assignmentToShift" model="assignmentToShift"/>
     </fields>
 
     <hooks>
-        <onSave
-                class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks"
+		<onSave
+                class="com.qcadoo.mes.assignmentToShift.hooks.MultiAssignmentToShiftDetailsHooks"
                 method="onSave"/>
     </hooks>
 

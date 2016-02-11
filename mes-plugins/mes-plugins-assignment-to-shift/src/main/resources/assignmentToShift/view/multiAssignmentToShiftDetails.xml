@@ -23,49 +23,35 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_ASSIGNMENT_TO_SHIFT" name="staffAssignmentToShiftDetails"
-      modelName="staffAssignmentToShift"
+<view defaultAuthorizationRole="ROLE_ASSIGNMENT_TO_SHIFT" name="multiAssignmentToShiftDetails"
+      modelName="multiAssignmentToShift"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardFormTemplate" excludeItems="actions.copy, actions.delete"/>
+            <template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
+            <group name="add">
+                <bigButton name="addManyWorkers" icon="newIcon24.png" state="enabled"
+                           action="#{form}.fireEvent(addManyWorkers); #{window}.performBack;"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
-            <component type="form" name="assignmentToShiftDetails"
+            <component type="form" name="multiAssignmentToShiftDetails"
                        reference="form">
                 <component type="gridLayout" name="gridLayout" columns="2"
-                           rows="6">
+                           rows="4">
                     <layoutElement column="1" row="1">
-                        <component type="lookup" name="worker" field="worker"
-                                   reference="worker">
-                            <option type="column" name="name" fields="name" link="true"/>
-                            <option type="column" name="number" fields="number" link="true"/>
-                            <option type="column" name="crew" fields="crew" expression="#crew['number']" link="true"/>
-
-                            <option type="searchable" value="number,surname,name,crew"/>
-                            <option type="orderable" value="number,crew"/>
-
-                            <option type="expression" value="#number + ' - ' + #surname + ' ' + #name"/>
-                            <option type="fieldCode" value="surname"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="2" height="2" >
-                    	<component type="textarea" name="description" field="description"
-                                   reference="description"/>
-                    </layoutElement>
-                    <layoutElement column="1" row="4">
                         <component type="select" name="occupationType" field="occupationType"
                                    reference="occupationType">
 
                             <listener event="onSelectedEntityChange" method="enabledFieldWhenTypeIsSpecific"
-                                      class="com.qcadoo.mes.assignmentToShift.listeners.StaffAssignmentToShiftListeners"/>
+                                      class="com.qcadoo.mes.assignmentToShift.listeners.MultiAssignmentToShiftListeners"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5">
+                    <layoutElement column="1" row="2">
                         <component type="lookup" name="masterOrder" field="masterOrder"
                                    reference="masterOrder">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -78,9 +64,46 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6">
-                        <component type="select" name="state" field="state"
-                                   reference="state" defaultVisible="false"/>
+                    <layoutElement column="1" row="3" width="2" height="2" >
+                        <component type="lookup" name="staffLookup" reference="staffLookup"
+	                           field="#{form}.workers" defaultVisible="false" persistent="false"
+	                           hasLabel="false">
+		                    <option type="column" name="name" fields="name"/>
+		                    <option type="column" name="surname" fields="surname"/>
+		                    <option type="column" name="crew" fields="crew" expression="#crew['number']"/>
+		                    <option type="searchable" value="number,name,surname,crew"/>
+		                    <option type="orderable" value="number,name,surname,crew"/>
+		
+		                    <option type="expression" value="#name + ' ' + #surname"/>
+		                    <option type="fieldCode" value="number"/>
+		
+		                    <option type="multiselect" value="true"/>
+		                    <criteriaModifier
+		                        class="com.qcadoo.mes.assignmentToShift.criteriaModifiers.StaffCriteriaModifier"
+		                        method="filterByCrew"/>
+		                </component>
+		                <component type="grid" name="workers" reference="workers"
+		                           source="#{form}.workers" defaultEnabled="false">
+		                    <option type="column" name="number" fields="number"/>
+		                    <option type="column" name="name" fields="name"/>
+		                    <option type="column" name="surname" fields="surname"/>
+		
+		                    <option type="order" column="number" direction="asc"/>
+		
+		                    <option type="searchable" value="number,name,surname"/>
+		                    <option type="orderable" value="number,name,surname"/>
+		
+		                    <option type="correspondingLookup" value="staffLookup"/>
+	
+		                    <option type="weakRelation" value="true"/>
+	
+		                    <option type="fullscreen" value="true"/>
+		                    <option type="multiselect" value="true"/>
+		                    <option type="deletable" value="true"/>
+		                    <option type="creatable" value="true"/>
+	                        <option type="paginable" value="false"/>
+
+		                </component>
                     </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="lookup" name="productionLine" field="productionLine"
@@ -97,17 +120,17 @@
                                    reference="occupationTypeName" defaultVisible="false"/>
                     </layoutElement>
                 </component>
+                <listener event="addManyWorkers"
+                          class="com.qcadoo.mes.assignmentToShift.listeners.MultiAssignmentToShiftListeners"
+                          method="addManyWorkers"/>
             </component>
         </windowTab>
 
     </component>
 
     <hooks>
-        <beforeRender
-                class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftDetailsHooks"
-                method="setOccupationTypeToDefault"/>
-        <beforeRender
-                class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftDetailsHooks"
-                method="setFieldsEnabledWhenTypeIsSpecific"/>
+		<beforeRender
+                class="com.qcadoo.mes.assignmentToShift.hooks.MultiAssignmentToShiftDetailsHooks"
+                method="onBeforeRender"/>
     </hooks>
 </view>
