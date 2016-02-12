@@ -171,7 +171,7 @@
                 </script>
 
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="10">
+                           rows="5">
                     <layoutElement column="1" row="1">
                         <component type="gridLayout" name="leftColGridLayout" columns="1"
                                    rows="5">
@@ -226,7 +226,7 @@
                             </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="1" width="2" height="10">
+                    <layoutElement column="2" row="1" width="2" height="5">
                         <component type="grid" name="staffAssignmentToShifts"
                                    reference="staffAssignmentToShifts" source="#{form}.staffAssignmentToShifts">
                             <option type="column" name="occupationTypeValueForGrid"
@@ -257,6 +257,7 @@
                             <option type="paginable" value="false"/>
 
                             <option type="fullscreen" value="true"/>
+                            <option type="fixedHeight" value="true" />
                             <option type="multiselect" value="true"/>
                             <listener event="select"
                                       class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftDetailsListeners"
@@ -352,6 +353,7 @@
 
                 <option type="searchable" value="false"/>
                 <option type="orderable" value="false"/>
+                <option type="fixedHeight" value="true"/>
             </component>
         </windowTab>
 
