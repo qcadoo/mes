@@ -38,8 +38,8 @@ public class PlannedEventsXLSDataProvider {
             + "event.startdate as startDate, event.finishdate as finishDate, event.countertolerance as countertolerance, event.createuser as createuser, \n"
             + "factory.number as factoryNumber, division.number as divisionNumber, productionline.number as productionLineNumber, workstation.number as workstatioNnumber, subassembly.number as subassemblynumber, \n"
             + "company.number as companyNumber, sourcecost.number as sourceCostNumber,\n"
-            + "part.id as machinePartId, product.name as machinePartName, product.number as machinePartNumber, product.unit as machinePartUnit, part.plannedquantity as machinePartPlannedQuantity, \n"
-            + "product.lastpurchasecost *  part.plannedQuantity as lastPurchaseCost,\n"
+            + "docpos.id as machinePartId, product.name as machinePartName, product.number as machinePartNumber, product.unit as machinePartUnit, docpos.quantity as machinePartPlannedQuantity, \n"
+            + "product.lastpurchasecost * docpos.quantity as lastPurchaseCost,\n"
             + "docpos.price * docpos.quantity as priceFromDocumentPosition,\n"
             + "docpos.price as priceFromPosition,\n"
             + "docpos.quantity as quantityFromPosition,"
@@ -49,7 +49,6 @@ public class PlannedEventsXLSDataProvider {
             + "  FROM cmmsmachineparts_plannedevent event\n"
             + "   LEFT JOIN cmmsmachineparts_plannedeventstatechange hist ON event.id = hist.plannedevent_id\n"
             + "   LEFT JOIN cmmsmachineparts_plannedeventrealization realization ON event.id = realization.plannedevent_id\n"
-            + "   LEFT JOIN cmmsmachineparts_machinepartforevent part ON event.id = part.plannedevent_id\n"
             + "   LEFT JOIN basic_factory factory ON event.factory_id = factory.id\n"
             + "   LEFT JOIN basic_division division ON event.division_id = division.id\n"
             + "   LEFT JOIN productionlines_productionline productionline ON event.productionline_id = productionline.id\n"
@@ -58,9 +57,9 @@ public class PlannedEventsXLSDataProvider {
             + "   LEFT JOIN basic_company company ON event.company_id = company.id\n"
             + "   LEFT JOIN cmmsmachineparts_sourcecost sourcecost ON event.sourcecost_id = sourcecost.id\n"
             + "   LEFT JOIN basic_staff worker ON realization.worker_id = worker.id\n"
-            + "   LEFT JOIN basic_product product ON part.machinepart_id = product.id"
-            + "   LEFT JOIN materialflowresources_document doc ON event.id = doc.plannedevent_id\n"
-            + "   LEFT JOIN materialflowresources_position docpos ON docpos.document_id = doc.id and docpos.product_id=product.id and docpos.quantity = part.plannedQuantity\n";
+            + "LEFT JOIN materialflowresources_document doc ON event.id = doc.plannedevent_id and doc.state = '02accepted'\n"
+            + "LEFT JOIN materialflowresources_position docpos ON docpos.document_id = doc.id\n"
+            + "LEFT JOIN basic_product product ON docpos.product_id = product.id\n";
 
     public List<PlannedEventDTO> getEvents(final Map<String, Object> filters) {
         List<PlannedEventDTO> events = Lists.newArrayList();
