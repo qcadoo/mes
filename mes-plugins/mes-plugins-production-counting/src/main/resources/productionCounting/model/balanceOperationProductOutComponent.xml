@@ -24,25 +24,28 @@
     ***************************************************************************
 
 -->
-<model name="balanceOperationProductOutComponent" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+<model name="balanceOperationProductOutComponent"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
-		<belongsTo name="productionBalance" model="productionBalance" />
-		<belongsTo name="product" model="product" plugin="basic" />
+		<belongsTo name="productionBalance" model="productionBalance"/>
+		<belongsTo name="product" model="product" plugin="basic"/>
 		<decimal name="plannedQuantity">
-			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
+			<validatesRange from="0" exclusively="true"/>
+			<validatesUnscaledValue max="9"/>
+			<validatesScale max="5"/>
 		</decimal>
 		<decimal name="usedQuantity">
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
+			<validatesUnscaledValue max="9"/>
+			<validatesScale max="5"/>
 		</decimal>
 		<decimal name="balance">
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
+			<validatesUnscaledValue max="9"/>
+			<validatesScale max="5"/>
 		</decimal>
 	</fields>
-	<hooks />
+
+	<hooks/>
+
 </model>

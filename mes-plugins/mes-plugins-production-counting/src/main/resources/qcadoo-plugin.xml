@@ -94,6 +94,8 @@
         <model:model model="operationPieceworkComponent" resource="model/operationPieceworkComponent.xml"/>
         <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
 
+        <model:model model="productionTrackingDto" resource="model/productionTrackingDto.xml"/>
+
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
                         default="02cumulated" required="true"/>
@@ -277,6 +279,7 @@
         <view:view resource="view/trackingOperationProductInComponentDetails.xml"/>
         <view:view resource="view/trackingOperationProductOutComponentDetails.xml"/>
         <view:view resource="view/staffWorkTimeDetails.xml"/>
+
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>

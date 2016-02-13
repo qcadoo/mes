@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.techSubcontrForProductionCounting.constants;
 
-public final class ProductionTrackingFieldTSFPC {
+public final class ProductionTrackingFieldsTSFPC {
 
-    private ProductionTrackingFieldTSFPC() {
+    private ProductionTrackingFieldsTSFPC() {
 
     }
 

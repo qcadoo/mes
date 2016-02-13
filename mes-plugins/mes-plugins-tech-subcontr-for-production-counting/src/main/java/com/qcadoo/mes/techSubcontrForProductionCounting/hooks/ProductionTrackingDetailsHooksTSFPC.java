@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
-import com.qcadoo.mes.techSubcontrForProductionCounting.constants.ProductionTrackingFieldTSFPC;
+import com.qcadoo.mes.techSubcontrForProductionCounting.constants.ProductionTrackingFieldsTSFPC;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -47,7 +47,7 @@ public class ProductionTrackingDetailsHooksTSFPC {
     public void disabledSubcontractorFieldForState(final ViewDefinitionState view) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
         LookupComponent subcontractorLookup = (LookupComponent) view
-                .getComponentByReference(ProductionTrackingFieldTSFPC.SUBCONTRACTOR);
+                .getComponentByReference(ProductionTrackingFieldsTSFPC.SUBCONTRACTOR);
 
         if (productionTrackingForm.getEntityId() == null) {
             return;
