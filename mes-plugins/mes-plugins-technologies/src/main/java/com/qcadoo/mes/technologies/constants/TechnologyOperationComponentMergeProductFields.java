@@ -23,11 +23,18 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public interface TechnologyOperationComponentMergeProductFields {
+public final class TechnologyOperationComponentMergeProductFields {
 
-    String OPERATION_COMPONENT = "operationComponent";
-    String MERGED_OPERATION_COMPONENT = "mergedOperationComponent";
-    String MERGED_OPERATION_PRODUCT_COMPONENT = "mergedOperationProductComponent";
-    String QUANTITY_CHANGE = "quantityChange";
+    private TechnologyOperationComponentMergeProductFields() {
+
+    }
+
+    public static final String OPERATION_COMPONENT = "operationComponent";
+
+    public static final String MERGED_OPERATION_COMPONENT = "mergedOperationComponent";
+
+    public static final String MERGED_OPERATION_PRODUCT_COMPONENT = "mergedOperationProductComponent";
+
+    public static final String QUANTITY_CHANGE = "quantityChange";
 
 }
