@@ -41,8 +41,15 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="resourceForm" reference="form">
                 <component type="gridLayout" name="resourceGridLayout"
-                           hasBorders="false" columns="11" rows="6">
+                           hasBorders="false" columns="11" rows="7">
+                    
                     <layoutElement column="1" row="1" width="5">
+                        <component type="input" name="number" field="number"
+                                   reference="number" defaultEnabled="false">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" width="5">
                         <component type="lookup" name="location" field="location"
                                    reference="location" defaultEnabled="false">
                             <option type="searchable" value="name"/>
@@ -52,7 +59,7 @@
                             <option type="fieldCode" value="name"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2" width="5">
+                    <layoutElement column="1" row="3" width="5">
                         <component type="lookup" name="product" field="product"
                                    reference="product" defaultEnabled="false">
                             <option type="column" fields="name" name="name" link="true"/>
@@ -71,7 +78,7 @@
                                       method="fillCurrencyFieldValues"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3" width="5">
+                    <layoutElement column="1" row="4" width="5">
                         <component type="lookup" name="storageLocation" field="storageLocation"
                                    reference="storageLocation">
                             <option type="column" fields="location" name="location" link="true"
@@ -87,25 +94,25 @@
                                     method="showStorageLocationsForProductAndLocation"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4" width="5">
+                    <layoutElement column="1" row="5" width="5">
                         <component type="input" name="quantity" field="quantity"
                                    reference="quantity">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="6" row="4" width="1">
+                    <layoutElement column="6" row="5" width="1">
                         <component type="input" name="quantityUNIT" reference="quantityUNIT"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5" width="5">
+                    <layoutElement column="1" row="6" width="5">
                         <component type="input" name="price" field="price"
                                    reference="price" defaultEnabled="false">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="6" row="5" width="1">
+                    <layoutElement column="6" row="6" width="1">
                         <component type="input" name="priceCurrency" reference="priceCurrency"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>

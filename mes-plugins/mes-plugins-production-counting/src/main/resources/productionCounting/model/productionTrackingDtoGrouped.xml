@@ -24,33 +24,20 @@
     ***************************************************************************
 
 -->
-<model name="productionTrackingReport" activable="true"
+<model name="productionTrackingDtoGrouped" auditable="false" deletable="false" insertable="false" updatable="false"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
 	<fields>
-		<boolean name="generated"/>
-		<belongsTo name="order" plugin="orders" model="order"
-				   required="true"/>
-		<belongsTo name="product" plugin="basic" model="product"/>
-		<string name="name" required="true">
-			<validatesLength max="1024"/>
-		</string>
-		<datetime name="date"/>
-		<string name="worker"/>
-		<string name="description"/>
-		<string name="fileName"/>
+		<integer name="orderId"/>
+		<string name="orderNumber"/>
+        <integer name="technologyOperationComponentId"/>
+        <string name="technologyOperationComponentNumber"/>
+		<integer name="productId"/>
+		<string name="productNumber"/>
+
+		<decimal name="usedQuantity"/>
+		<decimal name="plannedQuantity"/>
 	</fields>
-
-	<hooks>
-		<validatesWith
-				class="com.qcadoo.mes.productionCounting.validators.ProductionTrackingReportValidators"
-				method="validatesWith"/>
-		<onCopy
-				class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingReportHooks"
-				method="onCopy"/>
-	</hooks>
-
-	<identifier expression="#name"/>
 
 </model>

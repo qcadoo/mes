@@ -265,7 +265,13 @@
 
 							if (state == "01new") {
 								startEvent.enable();
-								planEvent.enable();
+								if (selectedEntitiesArray.length == 1) {
+								    planEvent.enable();
+								}
+								else {
+								    planEvent.disable();
+								}
+
 								planEvent.forState="06planned";
 							    planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.planned)}";
 							    planEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.planEvent)}");
@@ -276,7 +282,12 @@
 							} else if (state == "02inProgress") {
 
 								startEvent.enable();
-								planEvent.enable();
+                                if (selectedEntitiesArray.length == 1) {
+								    planEvent.enable();
+								}
+								else {
+								    planEvent.disable();
+								}
 								revokeEvent.enable();
 								closeEvent.disable();
 

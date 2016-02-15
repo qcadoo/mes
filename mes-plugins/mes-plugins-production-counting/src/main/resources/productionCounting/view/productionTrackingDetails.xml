@@ -159,8 +159,9 @@
                             <option type="order" column="number" direction="desc"/>
 
                             <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                    value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
                             <!-- TODO replace these listeners with one general event-method (for
                                 example "onSelectedOrderChange"), like for hooks types -->
 
@@ -188,7 +189,7 @@
                             <option type="orderable" value="name,number"/>
 
                             <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                    value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                         </component>
                         <component type="lookup" name="technologyOperationComponent"
@@ -222,6 +223,7 @@
                                                field="shift">
                                         <option type="searchable" value="name"/>
                                         <option type="orderable" value="name"/>
+
                                         <option type="expression" value="#name"/>
                                         <option type="fieldCode" value="name"/>
                                     </component>
@@ -349,14 +351,13 @@
                         <component type="lookup" name="staff" reference="staff"
                                    field="staff">
                             <option type="column" name="name" fields="name"/>
-                            <option type="column" name="surname" fields="surname"/>
 
-                            <option type="searchable" value="surname,name,number"/>
-                            <option type="orderable" value="name,number"/>
+                            <option type="searchable" value="name,surname"/>
+                            <option type="orderable" value="name,surname"/>
 
                             <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name + '&lt;/b&gt; - ' + #surname"/>
-                            <option type="fieldCode" value="number"/>
+                                    value="#name + ' ' + #surname"/>
+                            <option type="fieldCode" value="surname"/>
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
@@ -370,7 +371,7 @@
                             <option type="orderable" value="name,number"/>
 
                             <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                    value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange"
@@ -385,7 +386,7 @@
                             <option type="orderable" value="name,number"/>
 
                             <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                    value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                         </component>
                         <component type="checkbox" name="isDisabled" reference="isDisabled"
@@ -394,8 +395,8 @@
                                    reference="isExternalSynchronized" defaultVisible="false"
                                    field="isExternalSynchronized"/>
                     </layoutElement>
-
                 </component>
+
                 <option type="header" value="true"/>
                 <option type="expression" value="#number"/>
 
@@ -518,6 +519,7 @@
 
                         <option type="creatable" value="true"/>
                         <option type="deletable" value="true"/>
+
                         <option type="searchable" value="workerNumber,workerName,workerSurname"/>
                         <option type="orderable" value="workerNumber,workerName,workerSurname"/>
                     </component>
@@ -530,6 +532,7 @@
                 </layoutElement>
             </component>
         </windowTab>
+
         <windowTab name="pieceworkTab" reference="pieceworkTab">
             <component type="gridLayout" name="pieceworkGridLayout"
                        columns="3" rows="1">
