@@ -74,15 +74,15 @@
 						cancelRecord = #{window}.getRibbonItem("status.cancelTracking");
 
 					QCDTrack.track(
-							acceptRecord,
-							"onClick",
-							"acceptProductionRecord"
+						acceptRecord,
+						"onClick",
+						"acceptProductionRecord"
 					);
 
                     QCDTrack.track(
-							cancelRecord,
-							"onClick",
-							"cancelProductionRecord"
+						cancelRecord,
+						"onClick",
+						"cancelProductionRecord"
 					);
 				]]>
 			</script>
@@ -97,6 +97,7 @@
 						onChange: function(selectedEntitiesArray) {
 							var deleteable = true;
 							var copyable = true;
+
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								deleteButton.disable();
 								copyButton.disable();
@@ -108,15 +109,16 @@
 								if (selectedEntitiesArray.length > 1)
 								{
 									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
-										if (selectedEntitiesArray[i-1].fields.productionTrackingState != selectedEntitiesArray[i].fields.productionTrackingState) {
+										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
 											noDifferentStates = false;
+
 											break;
 										}
 									}
 								} 
 								
 								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
-									var state = selectedEntitiesArray[0].fields.productionTrackingState;
+									var state = selectedEntitiesArray[0].fields.state;
 									
 									if (state == "01draft") {
 										acceptTracking.enable();
@@ -137,18 +139,20 @@
 								for (var i in selectedEntitiesArray) {
 									console.log(selectedEntitiesArray[i].fields);
 									
-									if(selectedEntitiesArray[i].fields.productionTrackingState == "02accepted"){
+									if (selectedEntitiesArray[i].fields.state == "02accepted") {
 										deleteable = false;
 										break;
-									}}
+									}
+								}
 								
 								for (var i in selectedEntitiesArray) {
 									console.log(selectedEntitiesArray[i].fields);
 									
-									if(selectedEntitiesArray[i].fields.orderState != "03inProgress"){
+									if (selectedEntitiesArray[i].fields.orderState != "03inProgress") {
 										copyable = false;
 										break;
-									}}
+									}
+								}
 								
 								if (deleteable == false) {
 									deleteButton.disable("#{translate(productionCounting.productionTrackingsList.window.mainTab.productionTrackingsList.grid.error.delete)}");
@@ -169,7 +173,7 @@
 				]]>
 			</script>
 
-			<option type="column" name="productionTrackingNumber" fields="productionTrackingNumber" link="true"
+			<option type="column" name="number" fields="number" link="true"
 					width="120"/>
 			<option type="column" name="orderNumber" fields="orderNumber" link="true"
 					width="200"/>
@@ -181,24 +185,24 @@
 					width="100"/>
 			<option type="column" name="divisionNumber" fields="divisionNumber"
 					width="80"/>
-			<option type="column" name="productionTrackingState" fields="productionTrackingState"
+			<option type="column" name="state" fields="state"
 					width="90"/>
-			<option type="column" name="productionTrackingCreateDate" fields="productionTrackingCreateDate"
+			<option type="column" name="createDate" fields="createDate"
 					width="100"/>
-			<option type="column" name="productionTrackingLastTracking" fields="productionTrackingLastTracking"
-					expression="#productionTrackingLastTracking" width="60"/>
-			<option type="column" name="productionTrackingTimeRangeFrom" fields="productionTrackingTimeRangeFrom"
+			<option type="column" name="lastTracking" fields="lastTracking"
+					expression="#lastTracking" width="60"/>
+			<option type="column" name="timeRangeFrom" fields="timeRangeFrom"
 					width="100"/>
-			<option type="column" name="productionTrackingTimeRangeTo" fields="productionTrackingTimeRangeTo"
+			<option type="column" name="timeRangeTo" fields="timeRangeTo"
 					width="100"/>
 			<option type="column" name="orderState" fields="orderState" hidden="true"/>
 
-			<option type="order" column="productionTrackingNumber" direction="asc"/>
+			<option type="order" column="number" direction="asc"/>
 
 			<option type="searchable"
-					value="productionTrackingNumber,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productionTrackingState,productionTrackingCreateDate,productionTrackingLastTracking,productionTrackingTimeRangeFrom,productionTrackingTimeRangeTo"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo"/>
 			<option type="orderable"
-					value="productionTrackingNumber,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productionTrackingState,productionTrackingCreateDate,productionTrackingLastTracking,productionTrackingTimeRangeFrom,productionTrackingTimeRangeTo"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo"/>
 
 			<option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
 			<option type="correspondingComponent" value="form"/>

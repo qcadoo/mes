@@ -91,22 +91,21 @@ alter table materialflowresources_resource alter column time set not null;
 alter table materialflowresources_resource add unique(number);
 --end #QCADOO-432
 
+
 -- productioncounting_productiontrackingdto
 -- last touched 09.02.2016 by lupo
 
 CREATE SEQUENCE productioncounting_productiontrackingdto_id_seq;
 
--- DROP TABLE IF EXISTS productioncounting_productiontrackingdto;
-
 CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 	SELECT
 		productiontracking.id::integer AS id,
-		productiontracking.number AS productiontrackingnumber,
-		productiontracking.state AS productiontrackingstate,
-		productiontracking.createdate AS productiontrackingcreatedate,
-		productiontracking.lasttracking AS productiontrackinglasttracking,
-		productiontracking.timerangefrom AS productiontrackingtimerangefrom,
-		productiontracking.timerangeto AS productiontrackingtimerangeto,
+		productiontracking.number AS number,
+		productiontracking.state AS state,
+		productiontracking.createdate AS createdate,
+		productiontracking.lasttracking AS lasttracking,
+		productiontracking.timerangefrom AS timerangefrom,
+		productiontracking.timerangeto AS timerangeto,
 		productiontracking.active AS active,
 		ordersorder.id::integer AS order_id,
 		ordersorder.number AS ordernumber,
@@ -144,8 +143,6 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 -- last touched 14.02.2016 by lupo
 
 CREATE SEQUENCE productioncounting_trackingoperationproductincomponentdto_id_seq;
-
--- DROP TABLE IF EXISTS productioncounting_trackingoperationproductincomponentdto;
 
 CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto AS
 	SELECT
@@ -195,8 +192,6 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto
 
 CREATE SEQUENCE productioncounting_trackingoperationproductoutcomponentdto_id_seq;
 
--- DROP TABLE IF EXISTS productioncounting_trackingoperationproductoutcomponentdto;
-
 CREATE OR REPLACE VIEW productioncounting_trackingoperationproductoutcomponentdto AS
 	SELECT
 		trackingoperationproductoutcomponent.id::integer AS id,
@@ -245,8 +240,6 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductoutcomponentdt
 
 CREATE SEQUENCE productioncounting_trackingoperationproductcomponentdto_id_seq;
 
--- DROP TABLE IF EXISTS productioncounting_trackingoperationproductcomponentdto;
-
 CREATE OR REPLACE VIEW productioncounting_trackingoperationproductcomponentdto AS
 	SELECT
 		trackingoperationproductcomponentdto.productiontracking_id::integer AS productiontracking_id,
@@ -283,17 +276,15 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductcomponentdto A
 
 CREATE SEQUENCE productioncounting_productiontrackingforproductdto_id_seq;
 
--- DROP TABLE IF EXISTS productioncounting_productiontrackingforproductdto;
-
 CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductdto AS
 	SELECT
 		productiontrackingdto.id::integer AS id,
-		productiontrackingdto.productiontrackingnumber AS productiontrackingnumber,
-		productiontrackingdto.productiontrackingstate AS productiontrackingstate,
-		productiontrackingdto.productiontrackingcreatedate AS productiontrackingcreatedate,
-		productiontrackingdto.productiontrackinglasttracking AS productiontrackinglasttracking,
-		productiontrackingdto.productiontrackingtimerangefrom AS productiontrackingtimerangefrom,
-		productiontrackingdto.productiontrackingtimerangeto AS productiontrackingtimerangeto,
+		productiontrackingdto.number AS number,
+		productiontrackingdto.state AS state,
+		productiontrackingdto.createdate AS createdate,
+		productiontrackingdto.lasttracking AS lasttracking,
+		productiontrackingdto.timerangefrom AS timerangefrom,
+		productiontrackingdto.timerangeto AS timerangeto,
 		productiontrackingdto.active AS active,
 		productiontrackingdto.order_id::integer AS order_id,
 		productiontrackingdto.ordernumber AS ordernumber,
@@ -325,8 +316,6 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductdto AS
 -- last touched 14.02.2016 by lupo
 
 CREATE SEQUENCE productioncounting_productiontrackingforproductgroupeddto_id_seq;
-
--- DROP TABLE IF EXISTS productioncounting_productiontrackingforproductgroupeddto;
 
 CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductgroupeddto AS
 	SELECT

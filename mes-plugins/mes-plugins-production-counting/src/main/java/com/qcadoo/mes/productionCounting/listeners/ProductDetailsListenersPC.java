@@ -54,7 +54,13 @@ public class ProductDetailsListenersPC {
             return;
         }
 
-        String productNumber = product.getStringField(ProductFields.NUMBER);
+        StringBuilder productNumberBuilder = new StringBuilder();
+
+        productNumberBuilder.append("[");
+        productNumberBuilder.append(product.getStringField(ProductFields.NUMBER));
+        productNumberBuilder.append("]");
+
+        String productNumber = productNumberBuilder.toString();
 
         Map<String, String> filters = Maps.newHashMap();
         filters.put("productNumber", productNumber);
@@ -81,7 +87,13 @@ public class ProductDetailsListenersPC {
             return;
         }
 
-        String productNumber = product.getStringField(ProductFields.NUMBER);
+        StringBuilder productNumberBuilder = new StringBuilder();
+
+        productNumberBuilder.append("[");
+        productNumberBuilder.append(product.getStringField(ProductFields.NUMBER));
+        productNumberBuilder.append("]");
+
+        String productNumber = productNumberBuilder.toString();
 
         Map<String, String> filters = Maps.newHashMap();
         filters.put("productNumber", productNumber);

@@ -28,6 +28,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingForProductGroupedDtoFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -54,10 +55,23 @@ public class ProductionTrackingsForProductGroupedListListeners {
 
         Entity productionTrackingsForProductGrouped = productionTrackingsForProductGroupedGrid.getSelectedEntities().get(0);
 
-        String orderNumber = productionTrackingsForProductGrouped
-                .getStringField(ProductionTrackingForProductGroupedDtoFields.ORDER_NUMBER);
-        String productNumber = productionTrackingsForProductGrouped
-                .getStringField(ProductionTrackingForProductGroupedDtoFields.PRODUCT_NUMBER);
+        StringBuilder orderNumberBuilder = new StringBuilder();
+
+        orderNumberBuilder.append("[");
+        orderNumberBuilder.append(productionTrackingsForProductGrouped
+                .getStringField(ProductionTrackingForProductGroupedDtoFields.ORDER_NUMBER));
+        orderNumberBuilder.append("]");
+
+        StringBuilder productNumberBuilder = new StringBuilder();
+
+        String orderNumber = orderNumberBuilder.toString();
+
+        productNumberBuilder.append("[");
+        productNumberBuilder.append(productionTrackingsForProductGrouped
+                .getStringField(ProductionTrackingForProductGroupedDtoFields.PRODUCT_NUMBER));
+        productNumberBuilder.append("]");
+
+        String productNumber = productNumberBuilder.toString();
 
         Map<String, String> filters = Maps.newHashMap();
         filters.put("orderNumber", orderNumber);

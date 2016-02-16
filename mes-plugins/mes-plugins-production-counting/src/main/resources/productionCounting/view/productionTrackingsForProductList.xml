@@ -38,7 +38,7 @@
 
 		<component type="grid" name="productionTrackingsForProductList"
 				   reference="grid">
-			<option type="column" name="productionTrackingNumber" fields="productionTrackingNumber" link="true"
+			<option type="column" name="number" fields="number" link="true"
 					width="120"/>
 			<option type="column" name="orderNumber" fields="orderNumber" link="true"
 					width="200"/>
@@ -58,24 +58,24 @@
 					width="80"/>
 			<option type="column" name="productUnit" fields="productUnit"
 					width="60"/>
-			<option type="column" name="productionTrackingState" fields="productionTrackingState"
+			<option type="column" name="state" fields="state"
 					width="90"/>
-			<option type="column" name="productionTrackingCreateDate" fields="productionTrackingCreateDate"
+			<option type="column" name="createDate" fields="createDate"
 					width="100"/>
-			<option type="column" name="productionTrackingLastTracking" fields="productionTrackingLastTracking"
-					expression="#productionTrackingLastTracking" width="60"/>
-			<option type="column" name="productionTrackingTimeRangeFrom" fields="productionTrackingTimeRangeFrom"
+			<option type="column" name="lastTracking" fields="lastTracking"
+					expression="#lastTracking" width="60"/>
+			<option type="column" name="timeRangeFrom" fields="timeRangeFrom"
 					width="100"/>
-			<option type="column" name="productionTrackingTimeRangeTo" fields="productionTrackingTimeRangeTo"
+			<option type="column" name="timeRangeTo" fields="timeRangeTo"
 					width="100"/>
 			<option type="column" name="orderState" fields="orderState" hidden="true"/>
 
-			<option type="order" column="productionTrackingNumber" direction="asc"/>
+			<option type="order" column="number" direction="asc"/>
 
 			<option type="searchable"
-					value="productionTrackingNumber,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,productionTrackingState,productionTrackingCreateDate,productionTrackingLastTracking,productionTrackingTimeRangeFrom,productionTrackingTimeRangeTo"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo"/>
 			<option type="orderable"
-					value="productionTrackingNumber,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,productionTrackingState,productionTrackingCreateDate,productionTrackingLastTracking,productionTrackingTimeRangeFrom,productionTrackingTimeRangeTo"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo"/>
 
 			<option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
 			<option type="correspondingComponent" value="form"/>

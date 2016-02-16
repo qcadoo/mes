@@ -29,17 +29,17 @@ public final class ProductionTrackingForProductDtoFields {
 
     }
 
-    public static final String PRODUCTION_TRACKING_NUMBER = "productionTrackingNumber";
+    public static final String NUMBER = "number";
 
-    public static final String PRODUCTION_TRACKING_STATE = "productionTrackingState";
+    public static final String STATE = "state";
 
-    public static final String PRODUCTION_TRACKING_CREATE_DATE = "productionTrackingCreateDate";
+    public static final String CREATE_DATE = "createDate";
 
-    public static final String PRODUCTION_TRACKING_LAST_TRACKING = "productionTrackingLastTracking";
+    public static final String LAST_TRACKING = "lastTracking";
 
-    public static final String PRODUCTION_TRACKING_TIME_RANGE_FROM = "productionTrackingTimeRangeFrom";
+    public static final String TIME_RANGE_FROM = "timeRangeFrom";
 
-    public static final String PRODUCTION_TRACKING_TIMERANGE_TO = "productionTrackingTimeRangeTo";
+    public static final String TIME_RANGE_TO = "timeRangeTo";
 
     public static final String ORDER_ID = "order_id";
 
