@@ -21,20 +21,32 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.productionCounting.constants;
 
-public final class TechnologyOperationComponentMergeProductFields {
+public final class ProductionTrackingForProductGroupedDtoFields {
 
-    private TechnologyOperationComponentMergeProductFields() {
+    private ProductionTrackingForProductGroupedDtoFields() {
 
     }
 
-    public static final String OPERATION_COMPONENT = "operationComponent";
+    public static final String ORDER_ID = "order_id";
 
-    public static final String MERGED_OPERATION_COMPONENT = "mergedOperationComponent";
+    public static final String ORDER_NUMBER = "orderNumber";
 
-    public static final String MERGED_OPERATION_PRODUCT_COMPONENT = "mergedOperationProductComponent";
+    public static final String TECHNOLOGY_OPERATION_COMPONENT_ID = "technologyOperationComponent_id";
 
-    public static final String QUANTITY_CHANGE = "quantityChange";
+    public static final String TECHNOLOGY_OPERATION_COMPONENT_NUMBER = "technologyOperationComponentNumber";
+
+    public static final String OPERATION_ID = "operation_id";
+
+    public static final String PRODUCT_ID = "product_id";
+
+    public static final String PRODUCT_NUMBER = "productNumber";
+
+    public static final String PRODUCT_UNIT = "productUnit";
+
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
+
+    public static final String USED_QUANTITY = "usedQuantity";
 
 }

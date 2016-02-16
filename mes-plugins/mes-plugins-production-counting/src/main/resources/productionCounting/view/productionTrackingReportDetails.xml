@@ -24,26 +24,27 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING" name="productionTrackingReportDetails" modelName="productionTrackingReport"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+<view defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING" name="productionTrackingReportDetails"
+	  modelName="productionTrackingReport"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
 	<component type="window" name="window" reference="window">
 
 		<ribbon>
-			<template name="standardFormTemplate" />
+			<template name="standardFormTemplate"/>
 			<group name="generate">
 				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{form}.fireEvent(generateProductionTrackingReport);" state="disabled" />
+						   action="#{form}.fireEvent(generateProductionTrackingReport);" state="disabled"/>
 			</group>
 			<group name="export">
 				<bigButton name="pdf" icon="pdfIcon24.png"
-					action="#{form}.fireEvent(printProductionTrackingReport,pdf);" state="disabled" />
+						   action="#{form}.fireEvent(printProductionTrackingReport,pdf);" state="disabled"/>
 			</group>
 		</ribbon>
 
 		<component type="form" name="productionTrackingReportDetails"
-			reference="form">
+				   reference="form">
 
 			<script>
 				<![CDATA[
@@ -97,102 +98,102 @@
 			</script>
 
 			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="9">
+					   rows="9">
 				<layoutElement column="1" row="1">
 					<component type="checkbox" name="generated" reference="generated"
-						field="generated" defaultEnabled="false">
-						<option type="textRepresentationOnDisabled" value="false" />
+							   field="generated" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false"/>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="lookup" name="order" field="order"
-						reference="order">
-						<option type="column" name="name" fields="name" link="true" />
+							   reference="order">
+						<option type="column" name="name" fields="name" link="true"/>
 
-						<option type="required" value="true" />
+						<option type="required" value="true"/>
 
-						<option type="searchable" value="name" />
-						<option type="orderable" value="name" />
+						<option type="searchable" value="name"/>
+						<option type="orderable" value="name"/>
 
 						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+						<option type="fieldCode" value="number"/>
 
 						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingReportDetailsListeners"
-							method="fillProductAndProductionTrackingsWhenOrderChanged" />
+								  class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingReportDetailsListeners"
+								  method="fillProductAndProductionTrackingsWhenOrderChanged"/>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="lookup" name="product" field="product"
-						reference="product">
-						<option type="column" name="name" fields="name" link="true" />
+							   reference="product">
+						<option type="column" name="name" fields="name" link="true"/>
 
-						<option type="required" value="true" />
+						<option type="required" value="true"/>
 
-						<option type="searchable" value="name" />
-						<option type="orderable" value="name" />
+						<option type="searchable" value="name"/>
+						<option type="orderable" value="name"/>
 
-						<option type="expression" value="#name" />
-						<option type="fieldCode" value="number" />
+						<option type="expression" value="#name"/>
+						<option type="fieldCode" value="number"/>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4">
 					<component type="textarea" name="name" reference="name"
-						field="name" />
+							   field="name"/>
 				</layoutElement>
 				<layoutElement column="1" row="5">
 					<component type="input" name="date" reference="date"
-						field="date" defaultEnabled="false" />
+							   field="date" defaultEnabled="false"/>
 				</layoutElement>
 				<layoutElement column="1" row="6">
 					<component type="input" name="worker" reference="worker"
-						field="worker" defaultEnabled="false">
-						<option type="textRepresentationOnDisabled" value="false" />
+							   field="worker" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false"/>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="7" height="3">
 					<component type="textarea" name="description" reference="description"
-						field="description" />
+							   field="description"/>
 				</layoutElement>
 				<layoutElement column="2" row="1" height="9" width="2">
 					<component type="grid" name="productionTrackings"
-						reference="productionTrackings" model="productionTracking">
-						<option type="column" name="number" fields="number" />
+							   reference="productionTrackings" model="productionTracking">
+						<option type="column" name="number" fields="number"/>
 						<option type="column" name="operation" fields="technologyOperationComponent"
-							expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent['nodeNumber'] + ' ' + #technologyOperationComponent['operation']['name']" />
-						<option type="column" name="lastTracking" fields="lastTracking" />
-						<option type="column" name="shift" fields="shift" />
+								expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent['nodeNumber'] + ' ' + #technologyOperationComponent['operation']['name']"/>
+						<option type="column" name="lastTracking" fields="lastTracking"/>
+						<option type="column" name="shift" fields="shift"/>
 						<option type="column" name="dateAndTime" fields="stateChanges"
-							expression="#stateChanges[0].getField('dateAndTime').toLocaleString()" />
+								expression="#stateChanges[0].getField('dateAndTime').toLocaleString()"/>
 						<option type="column" name="worker" fields="stateChanges"
-							expression="#stateChanges[0].getField('worker')" />
+								expression="#stateChanges[0].getField('worker')"/>
 
-						<option type="order" column="number" direction="asc" />
+						<option type="order" column="number" direction="asc"/>
 					</component>
 				</layoutElement>
 			</component>
 
-			<option type="header" value="true" />
-			<option type="expression" value="#name" />
+			<option type="header" value="true"/>
+			<option type="expression" value="#name"/>
 
 			<listener event="generateProductionTrackingReport"
-				class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingReportDetailsListeners"
-				method="generateProductionTrackingReport" />
+					  class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingReportDetailsListeners"
+					  method="generateProductionTrackingReport"/>
 			<listener event="printProductionTrackingReport"
-				class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingReportDetailsListeners"
-				method="printProductionTrackingReport" />
+					  class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingReportDetailsListeners"
+					  method="printProductionTrackingReport"/>
 		</component>
 
 	</component>
 
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingReportDetailsHooks"
-			method="fillProductionTrackingsGrid" />
+				class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingReportDetailsHooks"
+				method="fillProductionTrackingsGrid"/>
 		<beforeRender
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingReportDetailsHooks"
-			method="disableFieldsWhenGenerated" />
+				class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingReportDetailsHooks"
+				method="disableFieldsWhenGenerated"/>
 	</hooks>
 
 </view>
