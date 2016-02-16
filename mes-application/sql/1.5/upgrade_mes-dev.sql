@@ -402,3 +402,20 @@ INSERT INTO qcadooview_item(pluginidentifier, name, active, category_id, view_id
 	);
 
 -- end
+
+
+-- productioncounting_productiontrackingforproductgroupeddto
+-- last touched 16.02.2016 by kasi
+
+CREATE TABLE cmmsmachineparts_maintenanceeventxlshelper
+(
+  id bigint NOT NULL,
+  query text,
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  createuser character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT cmmsmachineparts_maintenanceeventxlshelper_pkey PRIMARY KEY (id)
+);
+
+-- end
