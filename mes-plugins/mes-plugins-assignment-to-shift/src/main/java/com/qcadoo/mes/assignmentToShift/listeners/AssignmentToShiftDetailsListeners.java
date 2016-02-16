@@ -135,6 +135,7 @@ public class AssignmentToShiftDetailsListeners {
                 .getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_VALUE_FOR_GRID);
         Entity masterOrder = staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.MASTER_ORDER);
         String state = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.STATE);
+        String description = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.DESCRIPTION);
 
         newStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.ASSIGNMENT_TO_SHIFT, assignmentToShift);
         newStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.WORKER, worker);
@@ -146,6 +147,7 @@ public class AssignmentToShiftDetailsListeners {
                 occupationTypeValueForGrid);
         newStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.MASTER_ORDER, masterOrder);
         newStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.STATE, state);
+        newStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.DESCRIPTION, description);
 
         newStaffAssignmentToShift = newStaffAssignmentToShift.getDataDefinition().save(newStaffAssignmentToShift);
 
