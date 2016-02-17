@@ -266,8 +266,6 @@ public class DocumentBuilder {
         document.setField(DocumentFields.TIME, new Date());
         document.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
         document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-        document.setField(DocumentFields.NUMBER, numberGeneratorService.generateNumber(
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT));
         document.setField(DocumentFields.POSITIONS, Lists.newArrayList());
         return document;
     }

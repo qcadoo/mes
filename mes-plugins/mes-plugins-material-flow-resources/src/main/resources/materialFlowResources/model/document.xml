@@ -28,7 +28,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <string name="number" required="true" unique="true">
+        <!-- number generated in database trigger -->
+        <string name="number" unique="true" readonly="true"/>
+        <string name="name" unique="true">
             <validatesLength max="255" />
         </string>
         <enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer" required="true" />
@@ -44,6 +46,7 @@
         <hasMany name="positions" model="position" joinField="document" cascade="delete" copyable="true" />
     </fields>
     <hooks>
-        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.DocumentValidators" method="hasWarehouses"/>
+        <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.DocumentModelHooks" method="onCreate"/>
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.DocumentValidators" method="validate"/>
     </hooks>
 </model>

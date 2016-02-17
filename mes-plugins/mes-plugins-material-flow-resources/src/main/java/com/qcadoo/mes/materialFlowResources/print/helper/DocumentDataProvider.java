@@ -39,8 +39,8 @@ public class DocumentDataProvider {
     private DocumentDataProvider() {
     }
 
-    public static String number(final Entity document) {
-        return document.getStringField(DocumentFields.NUMBER);
+    public static String name(final Entity document) {
+        return document.getStringField(DocumentFields.NAME);
     }
 
     public static String time(final Entity document) {
