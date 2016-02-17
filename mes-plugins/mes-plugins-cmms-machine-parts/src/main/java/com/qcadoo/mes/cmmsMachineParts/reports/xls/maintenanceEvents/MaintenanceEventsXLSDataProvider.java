@@ -172,7 +172,7 @@ import java.util.stream.Collectors;
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(query);
         if (StringUtils.isNoneBlank(helperEntity.getStringField("query")) && helperEntity.getStringField("query").length() > 1) {
-            queryBuilder.append(" where " + helperEntity.getStringField("query"));
+            queryBuilder.append(" where " + MaintenanceEventsFilterUtils.processFilter(helperEntity.getStringField("query")));
         }
         queryBuilder.append(ORDER_BY);
         return queryBuilder.toString();
