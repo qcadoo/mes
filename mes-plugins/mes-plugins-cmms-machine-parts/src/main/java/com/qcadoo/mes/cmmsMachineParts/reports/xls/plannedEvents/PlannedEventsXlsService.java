@@ -244,19 +244,25 @@ public class PlannedEventsXlsService {
         XSSFCell stateInRealizationDateWCell = eventLine.createCell(35);
         stateInRealizationDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.IN_REALIZATION, states));
 
-        XSSFCell stateAcceptedDateDateCell = eventLine.createCell(36);
+        XSSFCell stateInEditingDateCell = eventLine.createCell(36);
+        stateInEditingDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.IN_EDITING, states));
+
+        XSSFCell stateInEditingDateWCell = eventLine.createCell(37);
+        stateInEditingDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.IN_EDITING, states));
+
+        XSSFCell stateAcceptedDateDateCell = eventLine.createCell(38);
         stateAcceptedDateDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.ACCEPTED, states));
 
-        XSSFCell stateAcceptedDateWCell = eventLine.createCell(37);
+        XSSFCell stateAcceptedDateWCell = eventLine.createCell(39);
         stateAcceptedDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.ACCEPTED, states));
 
-        XSSFCell stateRealizationDateCell = eventLine.createCell(38);
+        XSSFCell stateRealizationDateCell = eventLine.createCell(40);
         stateRealizationDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.REALIZED, states));
 
-        XSSFCell stateRealizationDateWCell = eventLine.createCell(39);
+        XSSFCell stateRealizationDateWCell = eventLine.createCell(41);
         stateRealizationDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.REALIZED, states));
 
-        XSSFCell stateCell = eventLine.createCell(40);
+        XSSFCell stateCell = eventLine.createCell(42);
         stateCell.setCellValue(translationService.translate(event.getState(), LocaleContextHolder.getLocale()));
     }
 

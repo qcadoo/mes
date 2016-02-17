@@ -88,6 +88,10 @@ public final class PlannedEventsXlsConstants {
 
     public static final String COLUMN_stateInRealizationDateWorker = "cmmsMachineParts.plannedEventsList.report.column.stateWorker";
 
+    public static final String COLUMN_stateEditDate = "cmmsMachineParts.plannedEventsList.report.column.stateEditDate";
+
+    public static final String COLUMN_stateEditDateWorker = "cmmsMachineParts.plannedEventsList.report.column.stateWorker";
+
     public static final String COLUMN_stateAcceptedDate = "cmmsMachineParts.plannedEventsList.report.column.stateAcceptedDate";
 
     public static final String COLUMN_stateAcceptedDateWorker = "cmmsMachineParts.plannedEventsList.report.column.stateWorker";
@@ -106,8 +110,8 @@ public final class PlannedEventsXlsConstants {
             COLUMN_counter, COLUMN_counterTolerance, COLUMN_sourceCostNumber, COLUMN_duration, COLUMN_effectiveCounter,
             COLUMN_startDate, COLUMN_finishDate, COLUMN_solutionDescription, COLUMN_realizationWorkerSurname,
             COLUMN_realizationDuration, COLUMN_machinePartNumber, COLUMN_machinePartName, COLUMN_machinePartPlannedQuantity,
-            COLUMN_machinePartUnit, COLUMN_machinePartValue, COLUMN_createdate, COLUMN_stateAuthor, COLUMN_stateStartDate, COLUMN_stateStartDateWorker,
-            COLUMN_stateStopDate, COLUMN_stateStopDateWorker, COLUMN_stateInRealizationDate, COLUMN_stateInRealizationDateWorker,
-            COLUMN_stateAcceptedDate, COLUMN_stateAcceptedDateWorker, COLUMN_stateRealizationDate,
-            COLUMN_stateRealizationDateWorker, COLUMN_state);
+            COLUMN_machinePartUnit, COLUMN_machinePartValue, COLUMN_createdate, COLUMN_stateAuthor, COLUMN_stateStartDate,
+            COLUMN_stateStartDateWorker, COLUMN_stateStopDate, COLUMN_stateStopDateWorker, COLUMN_stateInRealizationDate,
+            COLUMN_stateInRealizationDateWorker, COLUMN_stateEditDate, COLUMN_stateEditDateWorker, COLUMN_stateAcceptedDate,
+            COLUMN_stateAcceptedDateWorker, COLUMN_stateRealizationDate, COLUMN_stateRealizationDateWorker, COLUMN_state);
 }
