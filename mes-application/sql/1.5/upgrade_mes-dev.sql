@@ -99,7 +99,7 @@ CREATE SEQUENCE productioncounting_productiontrackingdto_id_seq;
 
 CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 	SELECT
-		productiontracking.id::integer AS id,
+		productiontracking.id AS id,
 		productiontracking.number AS number,
 		productiontracking.state AS state,
 		productiontracking.createdate AS createdate,
@@ -119,7 +119,7 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 		staff.name || ' ' || staff.surname AS staffname,
 		division.id::integer AS division_id,
 		division.number AS divisionnumber,
-		subcontractor.id AS subcontractor_id,
+		subcontractor.id::integer AS subcontractor_id,
 		subcontractor.name AS subcontractorname
 	FROM productioncounting_productiontracking productiontracking
 	LEFT JOIN orders_order ordersorder
@@ -146,7 +146,7 @@ CREATE SEQUENCE productioncounting_trackingoperationproductincomponentdto_id_seq
 
 CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto AS
 	SELECT
-		trackingoperationproductincomponent.id::integer AS id,
+		trackingoperationproductincomponent.id AS id,
 		productiontracking.id::integer AS productiontracking_id,
 		product.id::integer AS product_id,
 		product.number AS productnumber,
@@ -194,7 +194,7 @@ CREATE SEQUENCE productioncounting_trackingoperationproductoutcomponentdto_id_se
 
 CREATE OR REPLACE VIEW productioncounting_trackingoperationproductoutcomponentdto AS
 	SELECT
-		trackingoperationproductoutcomponent.id::integer AS id,
+		trackingoperationproductoutcomponent.id AS id,
 		productiontracking.id::integer AS productiontracking_id,
 		product.id::integer AS product_id,
 		product.number AS productnumber,
@@ -242,6 +242,7 @@ CREATE SEQUENCE productioncounting_trackingoperationproductcomponentdto_id_seq;
 
 CREATE OR REPLACE VIEW productioncounting_trackingoperationproductcomponentdto AS
 	SELECT
+		row_number() OVER () AS id,
 		trackingoperationproductcomponentdto.productiontracking_id::integer AS productiontracking_id,
     	trackingoperationproductcomponentdto.product_id::integer AS product_id,
     	trackingoperationproductcomponentdto.productnumber AS productnumber,
@@ -278,7 +279,7 @@ CREATE SEQUENCE productioncounting_productiontrackingforproductdto_id_seq;
 
 CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductdto AS
 	SELECT
-		productiontrackingdto.id::integer AS id,
+		productiontrackingdto.id AS id,
 		productiontrackingdto.number AS number,
 		productiontrackingdto.state AS state,
 		productiontrackingdto.createdate AS createdate,
@@ -394,7 +395,9 @@ INSERT INTO qcadooview_item(pluginidentifier, name, active, category_id, view_id
 
 
 -- productioncounting_productiontrackingforproductgroupeddto
--- last touched 16.02.2016 by kasi
+-- last touched 17.02.2016 by lupo
+
+CREATE SEQUENCE cmmsmachineparts_maintenanceeventxlshelper_id_seq;
 
 CREATE TABLE cmmsmachineparts_maintenanceeventxlshelper
 (

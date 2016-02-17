@@ -31,10 +31,10 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="productionTracking_id"/>
+        <integer name="productionTracking_id"/>
 
         <integer name="product_id"/>
-        <string name="productName"/>
+        <string name="productNumber"/>
         <string name="productUnit"/>
 
         <decimal name="plannedQuantity"/>
