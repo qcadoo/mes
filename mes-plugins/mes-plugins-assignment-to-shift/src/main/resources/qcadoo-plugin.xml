@@ -84,6 +84,7 @@
         <model:model model="assignmentToShiftStateChange"
                      resource="model/assignmentToShiftStateChange.xml"/>
         <model:model model="assignmentToShiftReport" resource="model/assignmentToShiftReport.xml"/>
+        <model:model model="multiAssignmentToShift" resource="model/multiAssignmentToShift.xml"/>
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="assignmentToShiftStateChange"
@@ -114,6 +115,24 @@
                            joinField="masterOrder" cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany name="multiAssignmentToShifts"
+                           plugin="assignmentToShift" model="multiAssignmentToShift"
+                           joinField="productionLine" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="masterOrders" model="masterOrder">
+            <model:hasMany name="multiAssignmentToShifts"
+                           plugin="assignmentToShift" model="multiAssignmentToShift"
+                           joinField="masterOrder" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="staff">
+            <model:manyToMany name="multiAssignmentToShifts"
+                           plugin="assignmentToShift" model="multiAssignmentToShift"
+                           joinField="workers" cascade="nullify"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="crew">
             <model:hasMany name="assignmentsToShift" model="assignmentToShift" plugin="assignmentToShift"
                            joinField="crew" cascade="nullify"
@@ -129,6 +148,7 @@
         <view:view resource="view/assignmentToShiftReportList.xml"/>
         <view:view resource="view/assignmentToShiftDetails.xml"/>
         <view:view resource="view/staffAssignmentToShiftDetails.xml"/>
+        <view:view resource="view/multiAssignmentToShiftDetails.xml"/>
         <view:view resource="view/assignmentToShiftReportDetails.xml"/>
 
         <view:resource uri="public/**/*"/>

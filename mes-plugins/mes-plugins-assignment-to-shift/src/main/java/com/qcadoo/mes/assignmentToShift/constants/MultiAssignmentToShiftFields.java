@@ -23,22 +23,24 @@
  */
 package com.qcadoo.mes.assignmentToShift.constants;
 
-public final class AssignmentToShiftConstants {
+public final class MultiAssignmentToShiftFields {
 
-    private AssignmentToShiftConstants() {
+    private MultiAssignmentToShiftFields() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "assignmentToShift";
+    public static final String ASSIGNMENT_TO_SHIFT = "assignmentToShift";
 
-    public static final String MODEL_ASSIGNMENT_TO_SHIFT = "assignmentToShift";
+    public static final String WORKERS = "workers";
 
-    public static final String MODEL_STAFF_ASSIGNMENT_TO_SHIFT = "staffAssignmentToShift";
+    public static final String PRODUCTION_LINE = "productionLine";
 
-    public static final String MODEL_MULTI_ASSIGNMENT_TO_SHIFT = "multiAssignmentToShift";
+    public static final String OCCUPATION_TYPE = "occupationType";
 
-    public static final String MODEL_ASSIGNMENT_TO_SHIFT_STATE_CHANGE = "assignmentToShiftStateChange";
+    public static final String OCCUPATION_TYPE_NAME = "occupationTypeName";
 
-    public static final String MODEL_ASSIGNMENT_TO_SHIFT_REPORT = "assignmentToShiftReport";
+    public static final String OCCUPATION_TYPE_ENUM = "occupationTypeEnum";
+
+    public static final String MASTER_ORDER = "masterOrder";
 
 }
