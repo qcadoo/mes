@@ -1,6 +1,6 @@
 package com.qcadoo.mes.basic.controllers.dataProvider.dto;
 
-public class PalletNumberDTO {
+public class PalletNumberDTO implements AbstractDTO {
 
     private Long id;
 

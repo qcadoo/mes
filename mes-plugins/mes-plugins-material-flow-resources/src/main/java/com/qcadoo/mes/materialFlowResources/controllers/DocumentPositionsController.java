@@ -2,7 +2,6 @@ package com.qcadoo.mes.materialFlowResources.controllers;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
 import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
@@ -38,8 +38,7 @@ public class DocumentPositionsController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "{id}")
     public GridResponse<DocumentPositionDTO> findAll(@PathVariable Long id, @RequestParam String sidx, @RequestParam String sord,
             @RequestParam(defaultValue = "1", required = false, value = "page") Integer page,
-            @RequestParam(value = "rows") int perPage,
-            DocumentPositionDTO positionDTO) {
+            @RequestParam(value = "rows") int perPage, DocumentPositionDTO positionDTO) {
 
         return documentPositionRepository.findAll(id, sidx, sord, page, perPage, positionDTO);
     }
@@ -74,9 +73,9 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storagelocations")
-    public List<StorageLocationDTO> getStorageLocations(@RequestParam("query") String query,
-            @RequestParam("product") String product, @RequestParam("location") String location) {
-        return documentPositionRepository.getStorageLocations(query, product, location);
+    public DataResponse getStorageLocations(@RequestParam("query") String query, @RequestParam("product") String product,
+            @RequestParam("location") String location) {
+        return documentPositionRepository.getStorageLocationsResponse(query, product, location);
     }
 
     @ResponseBody

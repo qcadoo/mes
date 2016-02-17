@@ -1,6 +1,6 @@
 package com.qcadoo.mes.basic.controllers.dataProvider.dto;
 
-public class ProductDTO {
+public class ProductDTO implements AbstractDTO {
 
     private Long id;
 

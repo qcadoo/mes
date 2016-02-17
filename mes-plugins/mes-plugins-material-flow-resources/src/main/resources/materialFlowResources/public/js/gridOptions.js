@@ -416,14 +416,36 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $ac.val(value);
             $ac.autoComplete({
                 minChars: 0,
+                autoCompleteResult : false,
                 source: function (query, response) {
                 	var parameters = getParametersFunction ? getParametersFunction() : {};
                     try {
                         xhr.abort();
                     } catch (e) {
                     }
+
                     xhr = $.getJSON(url, $.extend({query: query}, parameters), function (data) {
-                        response(data);
+                        console.log(data.numberOfResults);
+                        console.log(data.entities);
+                        console.log(data);
+                        if (data.numberOfResults == 0) {
+                            autoCompleteResult = false;
+                            response([{
+                                    id: 0,
+                                    code: QCD.translate('qcadooView.autocomplete.noResults')
+                                }]);
+                        }
+                        else if (data.entities.length == 0) {
+                            autoCompleteResult = false;
+                            response([{
+                                    id: 0,
+                                    code: QCD.translate('qcadooView.autocomplete.tooManyResults') + ' (' + data.numberOfResults + ')'
+                                }]);
+                        }
+                        else {
+                            autoCompleteResult = true;
+                            response(data.entities);
+                        }
                     });
                 },
                 renderItem: function (item, search) {
@@ -432,10 +454,17 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     // escape special characters
                     search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                     var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-                    return '<div class="autocomplete-suggestion" data-id="' + id + '" data-val="' + code + '">' + code.replace(re, "<b>$1</b>") + '</div>';
+                    if (autoCompleteResult) {
+                        return '<div class="autocomplete-suggestion" data-id="' + id + '" data-val="' + code + '">' + code.replace(re, "<b>$1</b>") + '</div>';
+                    }
+                    else {
+                        return '<div class="autocomplete-no-result" data-id="' + id + '" data-val="' + code + '">' + code.replace(re, "<b>$1</b>") + '</div>';
+                    }
                 },
                 onSelect: function (e, term, item, that) {
-                    $(that).trigger('change');
+                    if (autoCompleteResult) {
+                        $(that).trigger('change');
+                    }
                 }
             });
 
@@ -597,10 +626,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var url = '/rest/additionalcodes';
             $.getJSON(url, {query: additionalCode}, function (data) {
 
-                var product = '';
-                product = data.filter(function (element, index) {
-                    return element.code === additionalCode;
-                })[0];
+                    var product = '';
+                    product = data.entities.filter(function (element, index) {
+                        return element.code === additionalCode;
+                    })[0];
 
                 if (product) {
                     product = product.productnumber;
@@ -633,7 +662,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $.getJSON(url, {query: additionalCode}, function (data) {
                 var product = '';
 
-                product = data.filter(function (element, index) {
+                product = data.entities.filter(function (element, index) {
                     return element.code === additionalCode;
                 })[0];
 

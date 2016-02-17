@@ -1,6 +1,8 @@
 package com.qcadoo.mes.materialFlowResources;
 
-public class StorageLocationDTO {
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+
+public class StorageLocationDTO implements AbstractDTO{
     private Long id;
     private String number;
 
@@ -39,6 +41,6 @@ public class StorageLocationDTO {
     public void setLocation(String location) {
         this.location = location;
     }
-    
-    
+
+
 }

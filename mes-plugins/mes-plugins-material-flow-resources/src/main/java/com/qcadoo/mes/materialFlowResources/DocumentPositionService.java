@@ -19,8 +19,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.LookupUtils;
+import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-
 
 @Repository
 public class DocumentPositionService {
@@ -34,7 +36,11 @@ public class DocumentPositionService {
     @Autowired
     private LookupUtils lookupUtils;
 
-    public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page, int perPage, DocumentPositionDTO position) {
+    @Autowired
+    private DataProvider dataProvider;
+
+    public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
+            int perPage, DocumentPositionDTO position) {
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, "
                 + "palletnumber.number as palletnumber, location.number as storagelocation\n"
                 + "	FROM materialflowresources_position p\n"
@@ -85,7 +91,8 @@ public class DocumentPositionService {
         jdbcTemplate.update(query, params);
     }
 
-    public List<StorageLocationDTO> getStorageLocations(String q, String product, String document) {
+    public List<AbstractDTO> getStorageLocations(String q, String product, String document) {
+
         if (Strings.isNullOrEmpty(q)) {
             return Lists.newArrayList();
         } else {
@@ -95,16 +102,32 @@ public class DocumentPositionService {
             if (Strings.isNullOrEmpty(product)) {
                 String query = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :q "
                         + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = :document) "
-                        + "LIMIT 15;";
+                        + "LIMIT 20;";
                 return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(StorageLocationDTO.class));
             } else {
                 String query = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :q "
                         + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = :document) "
-                        + "AND product_id IN (SELECT id FROM basic_product WHERE name LIKE :product) OR product_id IS NULL LIMIT 15;";
+                        + "AND product_id IN (SELECT id FROM basic_product WHERE name LIKE :product) OR product_id IS NULL LIMIT 20;";
                 paramMap.put("product", product);
                 return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(StorageLocationDTO.class));
             }
+
         }
+    }
+
+    public DataResponse getStorageLocationsResponse(String q, String product, String location) {
+        String preparedQuery = "";
+        if (Strings.isNullOrEmpty(product)) {
+            preparedQuery = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :q "
+                    + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = :document); ";
+        } else {
+
+            preparedQuery = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :q "
+                    + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = :document) "
+                    + "AND product_id IN (SELECT id FROM basic_product WHERE name LIKE '" + product + "') OR product_id IS NULL;";
+        }
+        List<AbstractDTO> entities = getStorageLocations(q, product, location);
+        return dataProvider.getDataResponse(q, preparedQuery, entities);
     }
 
     public Map<String, Object> getGridConfig(Long documentId) {
@@ -141,14 +164,14 @@ public class DocumentPositionService {
 
     public void updateDocumentPositionsNumbers(final Long documentId) {
         String query = "SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, palletnumber.number as palletnumber, "
-                + "location.number as storagelocationnumber\n"
-                + "	FROM materialflowresources_position p\n"
+                + "location.number as storagelocationnumber\n" + "	FROM materialflowresources_position p\n"
                 + "	left join basic_product product on (p.product_id = product.id)\n"
                 + "	left join basic_additionalcode additionalcode on (p.additionalcode_id = additionalcode.id)\n"
                 + "	left join basic_palletnumber palletnumber on (p.palletnumber_id = palletnumber.id)\n"
                 + "	left join materialflowresources_storagelocation location on (p.storagelocation_id = location.id) WHERE p.document_id = :documentId ORDER BY p.number";
 
-        List<DocumentPositionDTO> list = jdbcTemplate.query(query, Collections.singletonMap("documentId", documentId), new BeanPropertyRowMapper(DocumentPositionDTO.class));
+        List<DocumentPositionDTO> list = jdbcTemplate.query(query, Collections.singletonMap("documentId", documentId),
+                new BeanPropertyRowMapper(DocumentPositionDTO.class));
         int index = 1;
         for (DocumentPositionDTO documentPositionDTO : list) {
             documentPositionDTO.setNumber(index);

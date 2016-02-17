@@ -47,13 +47,17 @@
                     if (!that.sc.maxHeight) that.sc.maxHeight = parseInt(that.sc.css('max-height'));
                     if (!that.sc.suggestionHeight) that.sc.suggestionHeight = $('.autocomplete-suggestion', that.sc).first().outerHeight();
                     if (that.sc.suggestionHeight)
-                        if (!next) that.sc.scrollTop(0);
+                        if (next === undefined) that.sc.scrollTop(0);
                         else {
-                            var scrTop = that.sc.scrollTop(), selTop = next.offset().top - that.sc.offset().top;
-                            if (selTop + that.sc.suggestionHeight - that.sc.maxHeight > 0)
-                                that.sc.scrollTop(selTop + that.sc.suggestionHeight + scrTop - that.sc.maxHeight);
-                            else if (selTop < 0)
-                                that.sc.scrollTop(selTop + scrTop);
+                            var nextOffset = next.offset();
+                            if (nextOffset !== undefined) {
+                                var scrTop = that.sc.scrollTop(),
+                                    selTop = nextOffset.top - that.sc.offset().top;
+                                if (selTop + that.sc.suggestionHeight - that.sc.maxHeight > 0)
+                                    that.sc.scrollTop(selTop + that.sc.suggestionHeight + scrTop - that.sc.maxHeight);
+                                else if (selTop < 0)
+                                    that.sc.scrollTop(selTop + scrTop);
+                            }
                         }
                 }
             }
