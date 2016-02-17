@@ -18,9 +18,6 @@ public class TimeUsageXlsDataProvider {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
     private final static String plannedEventQuery = "SELECT staff.surname || ' ' || staff.name AS worker, staff.id AS worker_id, 'planned' AS event_type,\n"
             + "realization.startdate,\n"
             + "event.number,\n"
@@ -65,8 +62,7 @@ public class TimeUsageXlsDataProvider {
 
     public List<TimeUsageDTO> getUsages(Map<String, Object> filters) {
         String query = prepareQuery(filters, plannedEventQuery, maintenanceEventQuery);
-        List<TimeUsageDTO> usages = jdbcTemplate.query(query, filters, new TimeUsageRowMapper());
-        return usages;
+        return jdbcTemplate.query(query, filters, new TimeUsageRowMapper());
     }
 
     private String prepareQuery(Map<String, Object> filters, String plannedEventQueryPart, String maintenanceEventQueryPart) {
@@ -83,7 +79,7 @@ public class TimeUsageXlsDataProvider {
             if (filters.containsKey(TimeUsageReportFilterFields.WORKERS)) {
                 whereFilters.add("worker_id in (:workers)");
             }
-            builder.append(" WHERE " + StringUtils.collectionToDelimitedString(whereFilters, " AND "));
+            builder.append(" WHERE ").append(StringUtils.collectionToDelimitedString(whereFilters, " AND "));
         }
         return builder.toString();
     }

@@ -61,7 +61,7 @@ public enum PlannedEventRoles {
         }
     },
 
-    ROLE_PLANNED_EVENTS_STATES_REALIZED {
+    ROLE_PLANNED_EVENTS_STATES_START_STOP {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {

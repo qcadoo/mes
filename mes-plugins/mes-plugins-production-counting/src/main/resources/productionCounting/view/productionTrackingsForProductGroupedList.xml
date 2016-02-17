@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="productionTrackingsForProductGroupedList"
+	  modelName="productionTrackingForProductGroupedDto"
+	  menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns="http://schema.qcadoo.org/view"
+	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+	<component type="window" name="window" reference="window">
+
+		<ribbon>
+			<template name="standardGridTemplate" includeItems="actions.refresh"/>
+
+			<group name="showProductionTrackings">
+				<bigButton name="showProductionTrackingsForProduct" icon="genealogyIcon24.png"
+						   state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showProductionTrackingsForProduct', []);
+									}
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
+		</ribbon>
+
+		<component type="grid" name="productionTrackingsForProductGroupedList"
+				   reference="grid">
+			<option type="column" name="orderNumber" fields="orderNumber"
+					width="200"/>
+			<option type="column" name="technologyOperationComponentNumber"
+					fields="technologyOperationComponentNumber" width="120"/>
+			<option type="column" name="productNumber" fields="productNumber"
+					width="100"/>
+			<option type="column" name="plannedQuantity" fields="plannedQuantity"
+					width="80"/>
+			<option type="column" name="usedQuantity" fields="usedQuantity"
+					width="80"/>
+			<option type="column" name="productUnit" fields="productUnit"
+					width="60"/>
+
+			<option type="order" column="orderNumber" direction="asc"/>
+
+			<option type="searchable"
+					value="orderNumber,technologyOperationComponentNumber,productNumber,plannedQuantity,usedQuantity,productUnit"/>
+			<option type="orderable"
+					value="orderNumber,technologyOperationComponentNumber,productNumber,plannedQuantity,usedQuantity,productUnit"/>
+
+			<option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
+			<option type="correspondingComponent" value="form"/>
+
+			<option type="fullscreen" value="true"/>
+			<option type="multiselect" value="false"/>
+
+			<listener event="showProductionTrackingsForProduct"
+					  class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingsForProductGroupedListListeners"
+					  method="showProductionTrackingsForProduct"/>
+		</component>
+
+		<option type="fixedHeight" value="true"/>
+		<option type="header" value="false"/>
+	</component>
+
+	<hooks>
+		<beforeRender
+				class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingsForProductGroupedListHooks"
+				method="updateButtonsState"/>
+	</hooks>
+
+</view>

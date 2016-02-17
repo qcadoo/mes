@@ -11,7 +11,11 @@ public class MachinePartForEventDTO {
     private String machinePartNumber;
     private String machinePartUnit;
     private BigDecimal machinePartPlannedQuantity;
-
+    private BigDecimal value;
+    private BigDecimal lastPurchaseCost;
+    private BigDecimal priceFromDocumentPosition;
+    private BigDecimal priceFromPosition;
+    private BigDecimal quantityFromPosition;
     public Long getMachinePartId() {
         return machinePartId;
     }
@@ -50,6 +54,46 @@ public class MachinePartForEventDTO {
 
     public void setMachinePartPlannedQuantity(BigDecimal machinePartPlannedQuantity) {
         this.machinePartPlannedQuantity = machinePartPlannedQuantity;
+    }
+
+    public BigDecimal getValue() {
+        return value;
+    }
+
+    public void setValue(BigDecimal value) {
+        this.value = value;
+    }
+
+    public BigDecimal getLastPurchaseCost() {
+        return lastPurchaseCost;
+    }
+
+    public void setLastPurchaseCost(BigDecimal lastPurchaseCost) {
+        this.lastPurchaseCost = lastPurchaseCost;
+    }
+
+    public BigDecimal getPriceFromDocumentPosition() {
+        return priceFromDocumentPosition;
+    }
+
+    public void setPriceFromDocumentPosition(BigDecimal priceFromDocumentPosition) {
+        this.priceFromDocumentPosition = priceFromDocumentPosition;
+    }
+
+    public BigDecimal getPriceFromPosition() {
+        return priceFromPosition;
+    }
+
+    public void setPriceFromPosition(BigDecimal priceFromPosition) {
+        this.priceFromPosition = priceFromPosition;
+    }
+
+    public BigDecimal getQuantityFromPosition() {
+        return quantityFromPosition;
+    }
+
+    public void setQuantityFromPosition(BigDecimal quantityFromPosition) {
+        this.quantityFromPosition = quantityFromPosition;
     }
 
     @Override public boolean equals(Object o) {

@@ -94,6 +94,19 @@
         <model:model model="operationPieceworkComponent" resource="model/operationPieceworkComponent.xml"/>
         <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
 
+        <model:model model="productionTrackingDto" resource="model/productionTrackingDto.xml"/>
+        <model:model model="productionTrackingForProductDto"
+                     resource="model/productionTrackingForProductDto.xml"/>
+        <model:model model="productionTrackingForProductGroupedDto"
+                     resource="model/productionTrackingForProductGroupedDto.xml"/>
+
+        <model:model model="trackingOperationProductComponentDto"
+                     resource="model/trackingOperationProductComponentDto.xml"/>
+        <model:model model="trackingOperationProductInComponentDto"
+                     resource="model/trackingOperationProductInComponentDto.xml"/>
+        <model:model model="trackingOperationProductOutComponentDto"
+                     resource="model/trackingOperationProductOutComponentDto.xml"/>
+
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
                         default="02cumulated" required="true"/>
@@ -244,12 +257,12 @@
         </model:model-hook>
 
         <model:model-hook model="order" plugin="orders">
-            <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC"
+            <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHooksPC"
                             method="onCreate"/>
         </model:model-hook>
 
         <model:model-hook model="order" plugin="orders">
-            <model:validatesWith class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC"
+            <model:validatesWith class="com.qcadoo.mes.productionCounting.hooks.OrderHooksPC"
                                  method="validatesWith"/>
         </model:model-hook>
 
@@ -268,6 +281,12 @@
                         category="ordersTracking" view="productionTrackingReportsList"
                         defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 
+        <menu:menu-item name="productionTrackingForProduct" category="ordersTracking"
+                        view="productionTrackingsForProductList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+        <menu:menu-item name="productionTrackingForProductGrouped" category="ordersTracking"
+                        view="productionTrackingsForProductGroupedList"
+                        defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+
         <view:view resource="view/productionTrackingsList.xml"/>
         <view:view resource="view/productionTrackingDetails.xml"/>
         <view:view resource="view/productionBalancesList.xml"/>
@@ -277,9 +296,15 @@
         <view:view resource="view/trackingOperationProductInComponentDetails.xml"/>
         <view:view resource="view/trackingOperationProductOutComponentDetails.xml"/>
         <view:view resource="view/staffWorkTimeDetails.xml"/>
+
+        <view:view resource="view/productionTrackingsForProductList.xml"/>
+        <view:view resource="view/productionTrackingsForProductGroupedList.xml"/>
+
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 
         <view:resource uri="public/**/*"/>
 
@@ -289,6 +314,11 @@
         <view:view-hook plugin="basic" view="parameters" type="beforeRender"
                         class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
                         method="checkIfRegisterProductionTimeIsSet"/>
+
+        <view:view-hook plugin="basic" view="productDetails"
+                        type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.ProductDetailsHooksPC"
+                        method="updateButtonsState"/>
+
         <view:view-hook plugin="orders" view="orderDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
                         method="setOrderDefaultValues"/>
@@ -305,6 +335,17 @@
         <view:view-hook plugin="technologies" view="technologyDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
                         method="checkTypeOfProductionRecording"/>
+
+        <view:view-listener plugin="basic" view="productDetails"
+                            component="form"
+                            event="showProductionTrackingsForProduct"
+                            class="com.qcadoo.mes.productionCounting.listeners.ProductDetailsListenersPC"
+                            method="showProductionTrackingsForProduct"/>
+        <view:view-listener plugin="basic" view="productDetails"
+                            component="form"
+                            event="showProductionTrackingsForProductGrouped"
+                            class="com.qcadoo.mes.productionCounting.listeners.ProductDetailsListenersPC"
+                            method="showProductionTrackingsForProductGrouped"/>
 
         <view:view-listener plugin="orders" view="orderDetails"
                             component="technologyPrototype"

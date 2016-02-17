@@ -48,12 +48,15 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
     @Autowired
     private EventFieldsForTypeFactory fieldsForTypeFactory;
 
+    private ReportStyleFactory reportStyleFactory;
+
     public String getReportTitle(final Locale locale) {
         return translationService.translate(TimeUsageXlsConstants.REPORT_TITLE, locale);
     }
 
     public void buildExcelContent(final HSSFWorkbook workbook, final HSSFSheet sheet, Map<String, Object> filters,
             final Locale locale) {
+        reportStyleFactory = new ReportStyleFactory(workbook);
         List<TimeUsageDTO> usages = timeUsageXLSDataProvider.getUsages((Map<String, Object>) filters.get("filtersMap"));
         updatePartsAndDescription(usages, locale);
         fillHeaderData(workbook, sheet, 0, locale, (Map<String, Object>) filters.get("filtersMap"));
@@ -95,7 +98,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         sheet.setColumnWidth(8, 4000);
         sheet.setColumnWidth(9, 4000);
         sheet.setColumnWidth(10, 4500);
-        sheet.setColumnWidth(11, 4500);
+        sheet.setColumnWidth(11, 5000);
     }
 
     private List<TimeUsageGroupDTO> group(List<TimeUsageDTO> usages) {
@@ -184,6 +187,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         style.setBorderRight(HSSFCellStyle.BORDER_THIN);
         style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setWrapText(true);
         style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
 
@@ -244,27 +248,31 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         cell.setCellStyle(style);
     }
 
-    private HSSFCellStyle getLeftAlignedStyle(final HSSFWorkbook workbook, boolean isFirst, TimeUsageDTO usage) {
-        HSSFCellStyle style = workbook.createCellStyle();
-        if (isFirst) {
-            style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+    private HSSFCellStyle getStyle(final HSSFWorkbook workbook, boolean isFirst, TimeUsageDTO usage, boolean isLeft) {
+        reportStyleFactory.setFirst(isFirst);
+        if (isLeft) {
+            reportStyleFactory.setLeftAligned();
+        } else {
+            reportStyleFactory.setRightAligned();
         }
         if ("maintenance".equals(usage.getEventType())) {
             if (usage.getRegisteredTime() - 5 <= usage.getDuration() && usage.getDuration() <= usage.getRegisteredTime() + 15) {
-                style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
-                style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                reportStyleFactory.setGreen();
             } else {
-                style.setFillForegroundColor(IndexedColors.RED.getIndex());
-                style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                reportStyleFactory.setRed();
             }
+        } else {
+            reportStyleFactory.setWhite();
         }
-        return style;
+        return reportStyleFactory.getStyle();
     }
 
     private HSSFCellStyle getRightAlignedStyle(final HSSFWorkbook workbook, boolean isFirst, TimeUsageDTO usage) {
-        HSSFCellStyle style = getLeftAlignedStyle(workbook, isFirst, usage);
-        style.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
-        return style;
+        return getStyle(workbook, isFirst, usage, false);
+    }
+
+    private HSSFCellStyle getLeftAlignedStyle(final HSSFWorkbook workbook, boolean isFirst, TimeUsageDTO usage) {
+        return getStyle(workbook, isFirst, usage, true);
     }
 
     private String getDateValue(Date date) {

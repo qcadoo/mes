@@ -37,6 +37,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
+import com.qcadoo.mes.technologies.tree.RemoveTOCService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -64,6 +65,9 @@ public class TechnologyDetailsListeners {
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
 
+    @Autowired
+    private RemoveTOCService removeTOCService;
+
     private static final String OUT_PRODUCTS_REFERENCE = "outProducts";
 
     private static final String IN_PRODUCTS_REFERENCE = "inProducts";
@@ -72,6 +76,24 @@ public class TechnologyDetailsListeners {
 
     public void setGridEditable(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         setGridEditable(view);
+    }
+
+    public void removeOnlySelectedOperation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+
+        final TreeComponent technologyTree = (TreeComponent) view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE);
+        final Long selectedEntityId = technologyTree.getSelectedEntityId();
+        Entity selectedOperation = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                .get(selectedEntityId);
+        boolean removed = removeTOCService.removeOnlySelectedOperation(selectedOperation, view);
+        if (removed) {
+            FormComponent form = (FormComponent) view.getComponentByReference("form");
+
+            form.performEvent(view, "reset");
+
+            view.addMessage("technologies.technologyDetails.window.treeTab.technologyTree.success",
+                    ComponentState.MessageType.SUCCESS);
+        }
     }
 
     public void setGridEditable(final ViewDefinitionState view) {

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
@@ -134,8 +135,8 @@ public class TechnologyService {
 
         SearchCriteriaBuilder searchCriteria = getOrderDataDefinition().find();
         searchCriteria.add(SearchRestrictions.belongsTo("technology", technology));
-        searchCriteria.add(SearchRestrictions.in("state",
-                Lists.newArrayList("01pending", "02accepted", "03inProgress", "06interrupted")));
+        searchCriteria.add(
+                SearchRestrictions.in("state", Lists.newArrayList("01pending", "02accepted", "03inProgress", "06interrupted")));
         searchCriteria.setMaxResults(1);
 
         return searchCriteria.uniqueResult() != null;
@@ -165,14 +166,15 @@ public class TechnologyService {
             return;
         }
 
-        Entity technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(tree.getSelectedEntityId());
+        Entity technologyOperationComponent = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                .get(tree.getSelectedEntityId());
 
         GridComponent outProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("outProducts");
         GridComponent inProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
 
-        if (!TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
-                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+        if (!TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue()
+                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
             inProductsGrid.setEditable(true);
             outProductsGrid.setEditable(true);
 
@@ -186,8 +188,8 @@ public class TechnologyService {
         Entity rootOperation = operations.getRoot();
 
         if (rootOperation != null) {
-            outProductsGrid.setEntities(rootOperation
-                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS));
+            outProductsGrid.setEntities(
+                    rootOperation.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS));
         }
 
         List<Entity> operationProductInComponents = Lists.newArrayList();
@@ -198,8 +200,9 @@ public class TechnologyService {
         for (Entry<Long, BigDecimal> productQuantity : productQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
 
-            Entity operationProductInComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
+            Entity operationProductInComponent = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
+                    .create();
 
             operationProductInComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT, rootOperation);
             operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT, product);
@@ -330,13 +333,14 @@ public class TechnologyService {
     public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree,
             final List<Entity> technologyOperationComponents) {
         for (Entity technologyOperationComponent : entityTree) {
-            if (TechnologyOperationComponentType.OPERATION.getStringValue().equals(
-                    technologyOperationComponent.getField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+            if (TechnologyOperationComponentType.OPERATION.getStringValue()
+                    .equals(technologyOperationComponent.getField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
                 technologyOperationComponents.add(technologyOperationComponent);
             } else {
                 addOperationsFromSubtechnologiesToList(
                         technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
-                                .getTreeField(TechnologyFields.OPERATION_COMPONENTS), technologyOperationComponents);
+                                .getTreeField(TechnologyFields.OPERATION_COMPONENTS),
+                        technologyOperationComponents);
             }
         }
     }
@@ -383,14 +387,24 @@ public class TechnologyService {
         return list.stream().anyMatch(condition);
     }
 
+    public Optional<Entity> tryGetMainOutputProductComponent(Entity technologyOperationComponent) {
+
+        try {
+            Entity component = getMainOutputProductComponent(technologyOperationComponent);
+            return Optional.of(component);
+        } catch (IllegalStateException e) {
+            return Optional.empty();
+        }
+    }
+
     /**
      * @param technologyOperationComponent
      * @return productOutComponent. Assuming operation can have only one product/intermediate.
      */
     // TODO dev_team introduce MainTocOutputProductProvider
     public Entity getMainOutputProductComponent(Entity technologyOperationComponent) {
-        if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
-                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+        if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue()
+                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
             technologyOperationComponent = technologyOperationComponent
                     .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
                     .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
@@ -425,8 +439,8 @@ public class TechnologyService {
             }
         }
 
-        throw new IllegalStateException("OperationComponent doesn't have any products nor intermediates, id = "
-                + technologyOperationComponent.getId());
+        throw new IllegalStateException(
+                "OperationComponent doesn't have any products nor intermediates, id = " + technologyOperationComponent.getId());
     }
 
     /**

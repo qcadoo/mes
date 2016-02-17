@@ -86,9 +86,6 @@ public class OrderHooksTest {
     private TechnologyServiceO technologyServiceO;
 
     @Mock
-    private NumberGeneratorService numberGeneratorService;
-
-    @Mock
     private Entity order, product, productionLine, defaultProductionLine;
 
     @Before
@@ -100,7 +97,6 @@ public class OrderHooksTest {
         setField(orderHooks, "orderService", orderService);
         setField(orderHooks, "orderDatesService", orderDatesService);
         setField(orderHooks, "technologyServiceO", technologyServiceO);
-        setField(orderHooks, "numberGeneratorService", numberGeneratorService);
     }
 
     @Test

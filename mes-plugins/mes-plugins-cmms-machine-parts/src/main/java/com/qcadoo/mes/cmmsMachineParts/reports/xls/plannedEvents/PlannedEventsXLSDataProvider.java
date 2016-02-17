@@ -20,36 +20,46 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Service public class PlannedEventsXLSDataProvider {
+@Service
+public class PlannedEventsXLSDataProvider {
 
-    @Autowired private NamedParameterJdbcTemplate jdbcTemplate;
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
-    @Autowired private DataDefinitionService dataDefinitionService;
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
-    private final static String query =
-            "SELECT event.id as id, event.\"number\" as number, event.type as type, event.description as description, event.state as state, event.ownername as ownerName,\n"
-                    + "event.plannedseparately as plannedSeparately, event.requiresshutdown as requiresShutdown, event.basedon as basedOn, event.solutiondescription as solutionDescription, \n"
-                    + "event.date as date, event.counter as counter, event.countertolerance as counterTolerance, event.effectivecounter as effectiveCounter, \n"
-                    + "event.duration as duration, event.effectiveduration as effectiveDuration, event.isdeadline as isDeadline, event.createdate as createdate, \n"
-                    + "event.startdate as startDate, event.finishdate as finishDate, event.countertolerance as countertolerance, event.createuser as createuser, \n"
-                    + "factory.number as factoryNumber, division.number as divisionNumber, productionline.number as productionLineNumber, workstation.number as workstatioNnumber, subassembly.number as subassemblynumber, \n"
-                    + "company.number as companyNumber, sourcecost.number as sourceCostNumber,\n"
-                    + "part.id as machinePartId, product.name as machinePartName, product.number as machinePartNumber, product.unit as machinePartUnit, part.plannedquantity as machinePartPlannedQuantity, \n"
-                    + "realization.id as realizationId, worker.name as realizationWorkerName, worker.surname as realizationWorkerSurname, realization.duration as realizationDuration, \n"
-                    + "hist.id as stateChangeId, hist.dateandtime as stateChangeDateAndTime, hist.sourcestate as stateChangeSourceState, hist.targetstate as stateChangeTargetState , hist.status as stateStatus \n"
-                    + "  FROM cmmsmachineparts_plannedevent event\n"
-                    + "   LEFT JOIN cmmsmachineparts_plannedeventstatechange hist ON event.id = hist.plannedevent_id\n"
-                    + "   LEFT JOIN cmmsmachineparts_plannedeventrealization realization ON event.id = realization.plannedevent_id\n"
-                    + "   LEFT JOIN cmmsmachineparts_machinepartforevent part ON event.id = part.plannedevent_id\n"
-                    + "   LEFT JOIN basic_factory factory ON event.factory_id = factory.id\n"
-                    + "   LEFT JOIN basic_division division ON event.division_id = division.id\n"
-                    + "   LEFT JOIN productionlines_productionline productionline ON event.productionline_id = productionline.id\n"
-                    + "   LEFT JOIN basic_workstation workstation ON event.workstation_id = workstation.id\n"
-                    + "   LEFT JOIN basic_subassembly subassembly ON event.subassembly_id = subassembly.id\n"
-                    + "   LEFT JOIN basic_company company ON event.company_id = company.id\n"
-                    + "   LEFT JOIN cmmsmachineparts_sourcecost sourcecost ON event.sourcecost_id = sourcecost.id\n"
-                    + "   LEFT JOIN basic_staff worker ON realization.worker_id = worker.id\n"
-                    + "   LEFT JOIN basic_product product ON part.machinepart_id = product.id";
+    private final static String ORDER_BY = " ORDER BY event.id";
+
+    private final static String query = "SELECT event.id as id, event.\"number\" as number, event.type as type, event.description as description, event.state as state, event.ownername as ownerName,\n"
+            + "event.plannedseparately as plannedSeparately, event.requiresshutdown as requiresShutdown, event.basedon as basedOn, event.solutiondescription as solutionDescription, \n"
+            + "event.date as date, event.counter as counter, event.countertolerance as counterTolerance, event.effectivecounter as effectiveCounter, \n"
+            + "event.duration as duration, event.effectiveduration as effectiveDuration, event.isdeadline as isDeadline, event.createdate as createdate, \n"
+            + "event.startdate as startDate, event.finishdate as finishDate, event.countertolerance as countertolerance, event.createuser as createuser, \n"
+            + "factory.number as factoryNumber, division.number as divisionNumber, productionline.number as productionLineNumber, workstation.number as workstatioNnumber, subassembly.number as subassemblynumber, \n"
+            + "company.number as companyNumber, sourcecost.number as sourceCostNumber,\n"
+            + "docpos.id as machinePartId, product.name as machinePartName, product.number as machinePartNumber, product.unit as machinePartUnit, docpos.quantity as machinePartPlannedQuantity, \n"
+            + "product.lastpurchasecost * docpos.quantity as lastPurchaseCost,\n"
+            + "docpos.price * docpos.quantity as priceFromDocumentPosition,\n"
+            + "docpos.price as priceFromPosition,\n"
+            + "docpos.quantity as quantityFromPosition,"
+            + "realization.id as realizationId, worker.name as realizationWorkerName, worker.surname as realizationWorkerSurname, realization.duration as realizationDuration, \n"
+            + "hist.id as stateChangeId, hist.dateandtime as stateChangeDateAndTime, hist.sourcestate as stateChangeSourceState, hist.targetstate as stateChangeTargetState , "
+            + "hist.status as stateStatus, hist.worker as stateWorker \n"
+            + "  FROM cmmsmachineparts_plannedevent event\n"
+            + "   LEFT JOIN cmmsmachineparts_plannedeventstatechange hist ON event.id = hist.plannedevent_id\n"
+            + "   LEFT JOIN cmmsmachineparts_plannedeventrealization realization ON event.id = realization.plannedevent_id\n"
+            + "   LEFT JOIN basic_factory factory ON event.factory_id = factory.id\n"
+            + "   LEFT JOIN basic_division division ON event.division_id = division.id\n"
+            + "   LEFT JOIN productionlines_productionline productionline ON event.productionline_id = productionline.id\n"
+            + "   LEFT JOIN basic_workstation workstation ON event.workstation_id = workstation.id\n"
+            + "   LEFT JOIN basic_subassembly subassembly ON event.subassembly_id = subassembly.id\n"
+            + "   LEFT JOIN basic_company company ON event.company_id = company.id\n"
+            + "   LEFT JOIN cmmsmachineparts_sourcecost sourcecost ON event.sourcecost_id = sourcecost.id\n"
+            + "   LEFT JOIN basic_staff worker ON realization.worker_id = worker.id\n"
+            + "LEFT JOIN materialflowresources_document doc ON event.id = doc.plannedevent_id and doc.state = '02accepted'\n"
+            + "LEFT JOIN materialflowresources_position docpos ON docpos.document_id = doc.id\n"
+            + "LEFT JOIN basic_product product ON docpos.product_id = product.id\n";
 
     public List<PlannedEventDTO> getEvents(final Map<String, Object> filters) {
         List<PlannedEventDTO> events = Lists.newArrayList();
@@ -61,12 +71,14 @@ import java.util.stream.Collectors;
         if (StringUtils.isNoneBlank(helperEntity.getStringField("query")) && helperEntity.getStringField("query").length() > 1) {
             _query = query + " where " + helperEntity.getStringField("query");
         }
+        _query = _query + ORDER_BY;
         events = jdbcTemplate.query(_query, new BeanPropertyRowMapper(PlannedEventDTO.class));
 
         Multimap<Long, PlannedEventDTO> eventsMap = ArrayListMultimap.create();
         eventsMap = Multimaps.index(events, new Function<PlannedEventDTO, Long>() {
 
-            @Override public Long apply(PlannedEventDTO plannedEventDTO) {
+            @Override
+            public Long apply(PlannedEventDTO plannedEventDTO) {
                 return plannedEventDTO.getId();
             }
         });
@@ -89,6 +101,7 @@ import java.util.stream.Collectors;
             plannedEventDTO.setStateChanges(hists);
 
         }
+        finalEvents.sort((e1, e2) -> e1.getNumber().compareTo(e2.getNumber()));
         return finalEvents;
     }
 
@@ -108,7 +121,7 @@ import java.util.stream.Collectors;
         state.setStateChangeSourceState(e.getStateChangeSourceState());
         state.setStateChangeTargetState(e.getStateChangeTargetState());
         state.setStateStatus(e.getStateStatus());
-
+        state.setStateWorker(e.getStateWorker());
         return state;
     }
 
@@ -126,6 +139,11 @@ import java.util.stream.Collectors;
         part.setMachinePartNumber(e.getMachinePartNumber());
         part.setMachinePartPlannedQuantity(e.getMachinePartPlannedQuantity());
         part.setMachinePartUnit(e.getMachinePartUnit());
+        if(e.getPriceFromDocumentPosition() != null){
+            part.setValue(e.getPriceFromDocumentPosition());
+        } else {
+            part.setValue(e.getLastPurchaseCost());
+        }
         return part;
     }
 

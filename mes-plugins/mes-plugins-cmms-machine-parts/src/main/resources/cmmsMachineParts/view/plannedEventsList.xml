@@ -237,13 +237,35 @@
 						    getRibbonItem("actions.delete").disable();
 						}
 
-                            var planEvent = #{window}.getRibbonItem("status.planEvent");
-                            var cancelEvent = #{window}.getRibbonItem("status.cancelEvent");
-                            var plannedEvent = #{window}.getRibbonItem("status.plannedEvent");
-                            var realizedEvent = #{window}.getRibbonItem("status.realizedEvent");
-                                var startEvent = #{window}.getRibbonItem("status.startEvent");
-                                var stopEvent = #{window}.getRibbonItem("status.stopEvent");
-                            var deleteButton = #{window}.getRibbonItem("actions.delete");
+                        var noDifferentStates = true;
+					    if(selectedEntitiesArray.length > 1) {
+						    for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+							    if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+									noDifferentStates = false;
+									break;
+								}
+							}
+						}
+
+                        var inEditingState = false;
+					    if(selectedEntitiesArray.length > 1) {
+						    for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+							    if (selectedEntitiesArray[i].fields.state == "08inEditing") {
+									inEditingState = true;
+									break;
+								}
+							}
+						}
+
+                        var planEvent = #{window}.getRibbonItem("status.planEvent");
+                        var cancelEvent = #{window}.getRibbonItem("status.cancelEvent");
+                        var plannedEvent = #{window}.getRibbonItem("status.plannedEvent");
+                        var realizedEvent = #{window}.getRibbonItem("status.realizedEvent");
+                        var startEvent = #{window}.getRibbonItem("status.startEvent");
+                        var stopEvent = #{window}.getRibbonItem("status.stopEvent");
+                        var deleteButton = #{window}.getRibbonItem("actions.delete");
+
+						if (noDifferentStates) {
 
                             planEvent.forState="02inPlan";
                             planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
@@ -286,6 +308,9 @@
                                 stopEvent.disable();
                             } else if (state == "03planned") {
                                 planEvent.enable();
+                                planEvent.forState="02inPlan";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
+                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.planEvent)}");
                                 cancelEvent.enable();
                                 plannedEvent.disable();
                                 realizedEvent.disable();
@@ -375,15 +400,22 @@
 	                                 cancelEvent.disable();
                                      deleteButton.disable();
                                 }
-                            }
+                             }
 
-                            if (selectedEntitiesArray.length == 1) {
-                                showMaintenanceEvent.enable();
-                            }
-                            else {
-                                showMaintenanceEvent.disable();
-                               	plannedEvent.disable();
-                            }
+                             if(inEditingState && isMeterReading(selectedEntitiesArray) && differentTypes){
+                                resetRibbon();
+                             }
+
+                        } else {
+                            resetRibbon();
+                        }
+                        if (selectedEntitiesArray.length == 1) {
+                            showMaintenanceEvent.enable();
+                        }
+                        else {
+                           showMaintenanceEvent.disable();
+                           plannedEvent.disable();
+                        }
 					}
 
 					function getRibbonItem(ribbonPath) {
@@ -427,6 +459,15 @@
 							}
 						}
 						return true;
+					}
+
+					function isMeterReading(selectedEntitiesArray) {
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.type == "05meterReading") {
+								return true;
+							}
+						}
+						return false;
 					}
 
 				]]>

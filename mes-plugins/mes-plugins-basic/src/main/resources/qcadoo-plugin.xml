@@ -196,8 +196,8 @@
         <security:role identifier="ROLE_PLANNED_EVENTS_STATES_ACCEPT"
                        description="Dostęp do akceptacji w zdarzeniach planowanych"/>
 
-        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_REALIZED"
-                       description="Dostęp do realizacji w zdarzeniach planowanych"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_START_STOP"
+                       description="Dostęp do przycisków START/STOP."/>
 
         <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS"
                        description="Dostęp do załączników w zdarzeniach planowanych"/>
