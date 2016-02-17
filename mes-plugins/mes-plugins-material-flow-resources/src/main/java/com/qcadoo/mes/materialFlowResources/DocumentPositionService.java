@@ -85,13 +85,25 @@ public class DocumentPositionService {
         jdbcTemplate.update(query, params);
     }
 
-    public List<StorageLocationDTO> getStorageLocations(String q) {
+    public List<StorageLocationDTO> getStorageLocations(String q, String product, String document) {
         if (Strings.isNullOrEmpty(q)) {
             return Lists.newArrayList();
-
         } else {
-            String query = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :q LIMIT 15;";
-            return jdbcTemplate.query(query, Collections.singletonMap("q", '%' + q + '%'), new BeanPropertyRowMapper(StorageLocationDTO.class));
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("q", '%' + q + '%');
+            paramMap.put("document", Integer.parseInt(document));
+            if (Strings.isNullOrEmpty(product)) {
+                String query = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :q "
+                        + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = :document) "
+                        + "LIMIT 15;";
+                return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(StorageLocationDTO.class));
+            } else {
+                String query = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :q "
+                        + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = :document) "
+                        + "AND product_id IN (SELECT id FROM basic_product WHERE name LIKE :product) OR product_id IS NULL LIMIT 15;";
+                paramMap.put("product", product);
+                return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(StorageLocationDTO.class));
+            }
         }
     }
 

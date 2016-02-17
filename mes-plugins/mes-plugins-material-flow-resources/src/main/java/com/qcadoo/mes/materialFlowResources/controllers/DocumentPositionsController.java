@@ -74,8 +74,9 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storagelocations")
-    public List<StorageLocationDTO> getStorageLocations(@RequestParam("query") String query) {
-        return documentPositionRepository.getStorageLocations(query);
+    public List<StorageLocationDTO> getStorageLocations(@RequestParam("query") String query,
+            @RequestParam("product") String product, @RequestParam("location") String location) {
+        return documentPositionRepository.getStorageLocations(query, product, location);
     }
 
     @ResponseBody

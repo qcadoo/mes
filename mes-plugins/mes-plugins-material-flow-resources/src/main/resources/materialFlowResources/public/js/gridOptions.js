@@ -417,11 +417,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $ac.autoComplete({
                 minChars: 0,
                 source: function (query, response) {
+                	var parameters = getParametersFunction ? getParametersFunction() : {};
                     try {
                         xhr.abort();
                     } catch (e) {
                     }
-                    xhr = $.getJSON(url, {query: query}, function (data) {
+                    xhr = $.getJSON(url, $.extend({query: query}, parameters), function (data) {
                         response(data);
                     });
                 },
