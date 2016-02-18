@@ -169,7 +169,7 @@
     $.fn.autoComplete.defaults = {
         source: 0,
         minChars: 1,
-        delay: 150,
+        delay: 200,
         cache: 1,
         menuClass: '',
         renderItem: function (item, search){
