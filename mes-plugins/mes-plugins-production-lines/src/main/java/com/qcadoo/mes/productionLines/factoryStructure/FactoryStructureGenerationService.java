@@ -59,8 +59,8 @@ public class FactoryStructureGenerationService {
     private ParameterService parameterService;
 
     public EntityTree generateFactoryStructureForWorkstation(final Entity workstationEntity) {
-        Entity workstation = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(
-                workstationEntity.getId());
+        Entity workstation = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION)
+                .get(workstationEntity.getId());
         Entity division = workstation.getBelongsToField(WorkstationFields.DIVISION);
         if (workstation.getId() == null || division == null) {
             return null;
@@ -70,18 +70,12 @@ public class FactoryStructureGenerationService {
             return null;
         }
 
-        // List<Entity> factoryStructureList = Lists.newArrayList();
-        // Entity root = addRoot(factoryStructureList, workstation, FactoryStructureElementFields.WORKSTATION);
-        // generateFactoryStructure(factoryStructureList, root, workstation, FactoryStructureElementFields.WORKSTATION);
-        // EntityTree factoryStructure = EntityTreeUtilsService.getDetachedEntityTree(factoryStructureList);
-
-        // return factoryStructure;
         return generateFactoryStructureForEntity(workstation, FactoryStructureElementFields.WORKSTATION);
     }
 
     public EntityTree generateFactoryStructureForSubassembly(final Entity subassemblyEntity) {
-        Entity subassembly = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBASSEMBLY).get(
-                subassemblyEntity.getId());
+        Entity subassembly = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBASSEMBLY)
+                .get(subassemblyEntity.getId());
         Entity workstation = subassembly.getBelongsToField(SubassemblyFields.WORKSTATION);
         if (subassembly.getId() == null || workstation == null) {
             return null;
@@ -95,12 +89,6 @@ public class FactoryStructureGenerationService {
             return null;
         }
 
-        // List<Entity> factoryStructureList = Lists.newArrayList();
-        // Entity root = addRoot(factoryStructureList, subassembly, FactoryStructureElementFields.SUBASSEMBLY);
-        // generateFactoryStructure(factoryStructureList, root, subassembly, FactoryStructureElementFields.SUBASSEMBLY);
-        // EntityTree factoryStructure = EntityTreeUtilsService.getDetachedEntityTree(factoryStructureList);
-        //
-        // return factoryStructure;
         return generateFactoryStructureForEntity(subassembly, FactoryStructureElementFields.SUBASSEMBLY);
     }
 
@@ -108,8 +96,7 @@ public class FactoryStructureGenerationService {
         List<Entity> factoryStructureList = Lists.newArrayList();
         Entity root = addRoot(factoryStructureList, entity, belongsToField);
         generateFactoryStructure(factoryStructureList, root, entity, belongsToField);
-        EntityTree factoryStructure = EntityTreeUtilsService.getDetachedEntityTree(factoryStructureList);
-        return factoryStructure;
+        return EntityTreeUtilsService.getDetachedEntityTree(factoryStructureList);
     }
 
     private void generateFactoryStructure(List<Entity> tree, final Entity root, final Entity belongsToEntity,
@@ -140,8 +127,8 @@ public class FactoryStructureGenerationService {
                     }
                     Entity productionLineNode = createNode(belongsToEntity, belongsToField,
                             productionLine.getStringField(ProductionLineFields.NUMBER),
-                            productionLine.getStringField(ProductionLineFields.NAME),
-                            FactoryStructureElementType.PRODUCTION_LINE, productionLine.getId());
+                            productionLine.getStringField(ProductionLineFields.NAME), FactoryStructureElementType.PRODUCTION_LINE,
+                            productionLine.getId());
                     addChild(tree, productionLineNode, divisionNode);
 
                     List<Entity> workstations = getWorkstationsForProductionLineAndDivision(productionLine, division);

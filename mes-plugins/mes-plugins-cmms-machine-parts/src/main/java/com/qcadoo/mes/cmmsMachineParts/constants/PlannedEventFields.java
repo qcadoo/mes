@@ -107,6 +107,8 @@ public class PlannedEventFields {
 
     public static final String SOURCE_COST = "sourceCost";
 
+    public static final String ACCEPTANCE_EVENTS = "acceptanceEvents";
+
     private PlannedEventFields() {
     }
 

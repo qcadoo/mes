@@ -72,16 +72,12 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         MathContext mc = numberService.getMathContext();
         BigDecimal tj = BigDecimal.valueOf(getValueOfIntFiled(operationComponent, "tj"));
         BigDecimal abstractOperationWorkTime = tj.multiply(neededNumberOfCycles, mc);
-        BigDecimal workstationsDecimalValue = new BigDecimal(getIntegerValue(workstations));
         if (includeTpz) {
             BigDecimal tpz = new BigDecimal(getValueOfIntFiled(operationComponent, "tpz"));
-            // abstractOperationWorkTime = abstractOperationWorkTime.add(tpz.multiply(workstationsDecimalValue, mc));
             abstractOperationWorkTime = abstractOperationWorkTime.add(tpz, mc);
         }
         if (includeAdditionalTime) {
             BigDecimal additionalTime = new BigDecimal(getValueOfIntFiled(operationComponent, "timeNextOperation"));
-            // abstractOperationWorkTime = abstractOperationWorkTime.add(additionalTime.multiply(workstationsDecimalValue, mc),
-            // mc);
             abstractOperationWorkTime = abstractOperationWorkTime.add(additionalTime, mc);
         }
         return numberService.setScale(abstractOperationWorkTime);
@@ -110,10 +106,10 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             final boolean includeTpz, final boolean includeAdditionalTime, final Integer workstations, final boolean saved) {
 
         MathContext mc = numberService.getMathContext();
-        BigDecimal laborUtilization = BigDecimalUtils.convertNullToZero(getValueOfDecimalFiled(operationComponent,
-                "laborUtilization"));
-        BigDecimal machineUtilization = BigDecimalUtils.convertNullToZero(getValueOfDecimalFiled(operationComponent,
-                "machineUtilization"));
+        BigDecimal laborUtilization = BigDecimalUtils
+                .convertNullToZero(getValueOfDecimalFiled(operationComponent, "laborUtilization"));
+        BigDecimal machineUtilization = BigDecimalUtils
+                .convertNullToZero(getValueOfDecimalFiled(operationComponent, "machineUtilization"));
 
         BigDecimal abstractOperationWorkTime = estimateAbstractOperationWorkTime(operationComponent, neededNumberOfCycles,
                 includeTpz, includeAdditionalTime, workstations);
@@ -156,8 +152,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             OperationWorkTime operationWorkTime = estimateOperationWorkTime(operationComponent,
                     getOperationRunsFromMap(operationRuns, operationComponent), includeTpz, includeAdditionalTime,
                     getWorkstationsQuantityFromMap(workstations, operationComponent), saved);
-            operationTimesContainer
-                    .add(operationComponent.getDataDefinition().get(operationComponent.getId()), operationWorkTime);
+            operationTimesContainer.add(operationComponent.getDataDefinition().get(operationComponent.getId()),
+                    operationWorkTime);
         }
         return operationTimesContainer;
     }
@@ -175,8 +171,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForOrder(final Entity order,
             final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine, final boolean saved) {
-        List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY).getHasManyField(
-                TechnologyFields.OPERATION_COMPONENTS);
+        List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY)
+                .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
         Map<Entity, Integer> workstations = getWorkstationsFromOrder(order);
         return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
                 saved);
@@ -255,8 +251,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     @Override
     public OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine, final boolean saved) {
-        List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY).getHasManyField(
-                TechnologyFields.OPERATION_COMPONENTS);
+        List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY)
+                .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
         Map<Long, Integer> workstations = getWorkstationsMapFromOrder(order);
 
         return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);

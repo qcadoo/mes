@@ -59,7 +59,7 @@
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
         </component>
-
+	<option type="fixedHeight" value="true"/>
     </component>
 
 </view>

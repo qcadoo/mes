@@ -25,6 +25,8 @@ package com.qcadoo.mes.orders.states.constants;
 
 public final class OrderStateChangeFields {
 
+    public static final String COMMENT = "comment";
+
     private OrderStateChangeFields() {
     }
 

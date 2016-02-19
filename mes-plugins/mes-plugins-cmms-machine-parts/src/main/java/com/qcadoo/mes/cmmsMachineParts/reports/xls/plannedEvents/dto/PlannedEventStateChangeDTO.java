@@ -11,6 +11,7 @@ public class PlannedEventStateChangeDTO {
     private String stateChangeSourceState;
     private String stateChangeTargetState;
     private String stateStatus;
+    private String stateWorker;
 
     public Long getStateChangeId() {
         return stateChangeId;
@@ -50,6 +51,14 @@ public class PlannedEventStateChangeDTO {
 
     public void setStateStatus(String stateStatus) {
         this.stateStatus = stateStatus;
+    }
+
+    public String getStateWorker() {
+        return stateWorker;
+    }
+
+    public void setStateWorker(String stateWorker) {
+        this.stateWorker = stateWorker;
     }
 
     @Override public boolean equals(Object o) {

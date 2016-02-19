@@ -45,6 +45,8 @@
                  model="staffAssignmentToShift" persistent="false"/>
         <hasMany name="correctedStaffAssignmentToShifts" joinField="assignmentToShift"
                  model="staffAssignmentToShift" persistent="false"/>
+        <hasMany name="multiAssignmentToShifts" joinField="assignmentToShift"
+                 model="multiAssignmentToShift" cascade="delete"/>
 
         <integer name="externalNumber" unique="true" copyable="false"/>
         <boolean name="externalSynchronized" default="true" copyable="false"/>

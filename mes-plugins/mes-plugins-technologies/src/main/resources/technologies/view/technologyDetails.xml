@@ -356,6 +356,8 @@
                             <option type="canHaveChildren" value="false"/>
                         </dataType>
                         <option type="selectableWhenDisabled" value="true"/>
+                        <option type="hasCustomActionButton" value="true"/>
+                        <option type="customActionIcon" value="clearIcon16_dis.png"/>
 
                         <listener event="select"
                                   class="com.qcadoo.mes.technologies.TechnologyService"
@@ -363,6 +365,10 @@
                         <listener event="select"
                                   class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
                                   method="setGridEditable"/>
+
+                        <listener event="customAction"
+                                  class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                                  method="removeOnlySelectedOperation"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="2" row="1" height="3">

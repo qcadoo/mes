@@ -23,16 +23,7 @@
  */
 package com.qcadoo.mes.workPlans.listeners;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.google.common.collect.Lists;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -56,6 +47,16 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkPlanDetailsListeners {
@@ -107,7 +108,9 @@ public class WorkPlanDetailsListeners {
                 state.addMessage("workPlans.workPlanDetails.window.workPlan.missingAssosiatedOrders", MessageType.FAILURE);
                 return;
             }
-
+            if(!validateOrders(state, orders)){
+                return;
+            }
             createBarcodeOCForOrders(orders);
 
             List<String> numbersOfOrdersWithoutTechnology = orderHelperService.getOrdersWithoutTechnology(orders);
@@ -137,6 +140,7 @@ public class WorkPlanDetailsListeners {
 
             try {
                 generateWorkPlanDocuments(state, workPlan);
+                checkIfInactiveOrders(state, orders);
                 state.performEvent(view, "reset", new String[0]);
             } catch (IOException e) {
                 throw new IllegalStateException(e.getMessage(), e);
@@ -144,6 +148,42 @@ public class WorkPlanDetailsListeners {
                 throw new IllegalStateException(e.getMessage(), e);
             }
         }
+    }
+
+    private boolean validateOrders(final ComponentState state, final List<Entity> orders) {
+        List<String> numbers = Lists.newArrayList();
+        for (Entity order : orders){
+            if(order.getBelongsToField(OrderFields.TECHNOLOGY) == null){
+                numbers.add(order.getStringField(OrderFields.NUMBER));
+            }
+        }
+
+        if(!numbers.isEmpty()){
+            String commaSeparatedNumbers = numbers.stream()
+                    .map(i -> i.toString())
+                    .collect(Collectors.joining(", "));
+            state.addMessage("workPlans.workPlanDetails.window.workPlan.missingTechnologyInOrders", MessageType.FAILURE, commaSeparatedNumbers);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkIfInactiveOrders(final ComponentState state, final List<Entity> orders) {
+        List<String> numbers = Lists.newArrayList();
+        for (Entity order : orders){
+            if(!order.isActive()){
+                numbers.add(order.getStringField(OrderFields.NUMBER));
+            }
+        }
+
+        if(!numbers.isEmpty()){
+            String commaSeparatedNumbers = numbers.stream()
+                    .map(i -> i.toString())
+                    .collect(Collectors.joining(", "));
+            state.addMessage("workPlans.workPlanDetails.window.workPlan.isInactiveOrders", MessageType.INFO, commaSeparatedNumbers);
+            return false;
+        }
+        return true;
     }
 
     @Transactional
@@ -196,10 +236,13 @@ public class WorkPlanDetailsListeners {
     }
 
     private void createBarcodeOCForOrder(final Entity order) {
-        List<Entity> tocs = order.getBelongsToField(OrderFields.TECHNOLOGY)
-                .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
-        for (Entity toc : tocs) {
-            barcodeOperationComponentService.createBarcodeOperationComponent(toc);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if(technology != null) {
+            List<Entity> tocs = order.getBelongsToField(OrderFields.TECHNOLOGY)
+                    .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+            for (Entity toc : tocs) {
+                barcodeOperationComponentService.createBarcodeOperationComponent(toc);
+            }
         }
     }
 

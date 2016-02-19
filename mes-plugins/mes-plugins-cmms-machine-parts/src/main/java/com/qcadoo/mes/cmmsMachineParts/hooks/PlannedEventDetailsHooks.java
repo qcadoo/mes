@@ -23,17 +23,11 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.cmmsMachineParts.constants.ParameterFieldsCMP;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
@@ -46,21 +40,26 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.internal.components.select.SelectComponentState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class PlannedEventDetailsHooks {
 
     private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
 
     @Autowired
     private EventFieldsForTypeFactory eventFieldsForTypeFactory;
@@ -77,6 +76,9 @@ public class PlannedEventDetailsHooks {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     private List<String> previouslyHiddenTabs = Lists.newArrayList();
 
     private static final List<String> GRIDS = Lists.newArrayList(PlannedEventFields.RELATED_EVENTS, PlannedEventFields.ACTIONS,
@@ -85,6 +87,9 @@ public class PlannedEventDetailsHooks {
     public void plannedEventBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         form.setFormEnabled(true);
+
+        FieldComponent acceptanceEvents = (FieldComponent) view.getComponentByReference(PlannedEventFields.ACCEPTANCE_EVENTS);
+        acceptanceEvents.setFieldValue(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS));
 
         eventHooks.plannedEventBeforeRender(view);
 
@@ -250,6 +255,50 @@ public class PlannedEventDetailsHooks {
         for (PlannedEventRoles role : PlannedEventRoles.values()) {
             if (!securityService.hasRole(user, role.toString())) {
                 role.disableFieldsWhenNotInRole(view);
+            }
+        }
+
+        if(!parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)){
+            if(!securityService.hasRole(user, PlannedEventRoles.ROLE_PLANNED_EVENTS_STATES_START_STOP.toString())){
+                enableRealizationEvents(view, false);
+            } else {
+                enableRealizationEvents(view, true);
+            }
+        }
+    }
+
+    private void enableRealizationEvents(final ViewDefinitionState view, final boolean enable) {
+        if(eventInState(view, PlannedEventState.IN_EDITING) || eventInState(view, PlannedEventState.ACCEPTED)){
+            enableFromRibbonGroup(view, enable, "status", "realizedEvent");
+        }
+    }
+
+    private boolean eventInState(final ViewDefinitionState view, final PlannedEventState state) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getEntity();
+        String eventState = event.getStringField(PlannedEventFields.STATE);
+        if (eventState == null) {
+            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            List<Entity> entities = grid.getSelectedEntities();
+            if (entities.isEmpty()){
+                return false;
+            }
+            return entities.stream().allMatch(e -> state.getStringValue().equals(e.getStringField(PlannedEventFields.STATE)));
+        }
+        return state.getStringValue().equals(eventState);
+    }
+
+    private void enableFromRibbonGroup(final ViewDefinitionState view, final boolean enable, final String groupName, String... items) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup ribbonGroup = ribbon.getGroupByName(groupName);
+        if(ribbonGroup != null) {
+            for (String item : items) {
+                RibbonActionItem ribbonItem = ribbonGroup.getItemByName(item);
+                if (ribbonItem != null) {
+                    ribbonItem.setEnabled(enable);
+                    ribbonItem.requestUpdate(true);
+                }
             }
         }
     }

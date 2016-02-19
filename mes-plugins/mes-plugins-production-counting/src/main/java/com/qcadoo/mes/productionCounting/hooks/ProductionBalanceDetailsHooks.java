@@ -107,7 +107,7 @@ public class ProductionBalanceDetailsHooks {
 
         Entity order = orderService.getOrder(orderId);
 
-        if (generatedCheckBox.isChecked() && (calculateOperationCostModeField != null) && (order != null)) {
+        if (generatedCheckBox.isChecked() && (order != null)) {
             ComponentState inputProductsGridComponent = view.getComponentByReference(L_INPUT_PRODUCTS_GRID);
             ComponentState outputProductsGridComponent = view.getComponentByReference(L_OUTPUT_PRODUCTS_GRID);
 
@@ -131,13 +131,13 @@ public class ProductionBalanceDetailsHooks {
                     && order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
                 timeGridLayoutComponent.setVisible(true);
 
-                if (productionCountingService.isTypeOfProductionRecordingForEach(order
-                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                if (productionCountingService
+                        .isTypeOfProductionRecordingForEach(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
                     machineTimeBorderLayoutComponent.setVisible(true);
                     laborTimeBorderLayoutComponent.setVisible(true);
                     operationsTimeGridComponent.setVisible(true);
-                } else if (productionCountingService.isTypeOfProductionRecordingCumulated(order
-                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                } else if (productionCountingService
+                        .isTypeOfProductionRecordingCumulated(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
                     machineTimeBorderLayoutComponent.setVisible(true);
                     laborTimeBorderLayoutComponent.setVisible(true);
                     operationsTimeGridComponent.setVisible(false);

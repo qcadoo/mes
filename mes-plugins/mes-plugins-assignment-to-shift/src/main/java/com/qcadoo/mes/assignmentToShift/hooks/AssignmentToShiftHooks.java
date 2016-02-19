@@ -34,6 +34,7 @@ import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 import static com.qcadoo.model.api.search.SearchRestrictions.idNe;
 import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -64,8 +65,6 @@ import com.qcadoo.model.api.utils.EntityUtils;
 
 @Service
 public class AssignmentToShiftHooks {
-
-    private static final int DAYS_IN_YEAR = 365;
 
     private static final String L_ALREADY_EXISTS = "assignmentToShift.assignmentToShift.entityAlreadyExists";
 
@@ -117,7 +116,11 @@ public class AssignmentToShiftHooks {
         Set<LocalDate> occupiedDates = findNextStartDatesMatching(assignmentToShift.getDataDefinition(), startDate, shift,
                 factory);
 
-        Iterable<Integer> daysRange = ContiguousSet.create(Range.closed(1, DAYS_IN_YEAR), DiscreteDomain.integers());
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+
+        int daysInYear = cal.getActualMaximum(Calendar.DAY_OF_YEAR);
+        Iterable<Integer> daysRange = ContiguousSet.create(Range.closed(1, daysInYear), DiscreteDomain.integers());
 
         return FluentIterable.from(daysRange).transform(new Function<Integer, LocalDate>() {
 

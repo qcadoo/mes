@@ -71,13 +71,21 @@
 				model="company" />
 		</model:model-field>
 
+		<model:model-field plugin="productionCounting"
+						   model="productionTrackingDto">
+			<model:integer name="subcontractor_id"/>
+		</model:model-field>
+		<model:model-field plugin="productionCounting"
+						   model="productionTrackingDto">
+			<model:string name="subcontractorName"/>
+		</model:model-field>
+
 		<view:view-tab resource="view/tabExtensions/productionTrackingDetails.xml" />
 
 		<view:view-grid-column plugin="productionCounting"
 			view="productionTrackingsList" component="grid">
-			<view:column name="subcontractor" fields="subcontractor"
-				expression="#subcontractor['name']" orderable="true" searchable="true"
-				width="200" />
+			<view:column name="subcontractorName" fields="subcontractorName" orderable="true" searchable="true"
+				width="100" />
 		</view:view-grid-column>
 
 		<view:view-hook view="productionTrackingDetails" type="beforeRender"

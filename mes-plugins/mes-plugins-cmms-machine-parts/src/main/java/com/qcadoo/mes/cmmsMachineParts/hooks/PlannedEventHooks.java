@@ -80,11 +80,7 @@ public class PlannedEventHooks {
         event.setField(PlannedEventFields.MAINTENANCE_EVENT, null);
         event.setField(PlannedEventFields.RELATED_EVENTS, null);
         event.setField(PlannedEventFields.ACTIONS, null);
-        // event.setField(PlannedEventFields.ATTACHMENTS, null);
         event.setField(PlannedEventFields.FINISH_DATE, null);
-        // event.setField(PlannedEventFields.MACHINE_PARTS_FOR_EVENT, null);
-        // event.setField(PlannedEventFields.REALIZATIONS, null);
-        // event.setField(PlannedEventFields.RESPONSIBLE_WORKERS, null);
         event.setField(PlannedEventFields.START_DATE, null);
         event.setField(PlannedEventFields.SOLUTION_DESCRIPTION, null);
         event.setField(PlannedEventFields.IS_DEADLINE, false);
@@ -93,21 +89,14 @@ public class PlannedEventHooks {
     private void clearHiddenFields(final Entity event) {
         FieldsForType fieldsForType = fieldsForTypeFactory.createFieldsForType(PlannedEventType.from(event));
         List<String> fieldsToClear = fieldsForType.getHiddenFields();
-        List<String> hasManyToClear = fieldsForType.getGridsToClear();
         for (String fieldName : fieldsToClear) {
-            if (fieldName.equals(PlannedEventFields.REQUIRES_SHUTDOWN) || fieldName.equals(PlannedEventFields.PLANNED_SEPARATELY)) {
+            if (fieldName.equals(PlannedEventFields.REQUIRES_SHUTDOWN)
+                    || fieldName.equals(PlannedEventFields.PLANNED_SEPARATELY)) {
                 event.setField(fieldName, false);
             } else {
                 event.setField(fieldName, null);
             }
         }
-
-        /*
-         * for (String fieldName : hasManyToClear) { List<Entity> fields = event.getHasManyField(fieldName); if
-         * (!fields.isEmpty()) { DataDefinition dataDefinition = fields.get(0).getDataDefinition(); Long[] ids =
-         * fields.stream().map(entity -> entity.getId()).toArray(size -> new Long[size]); dataDefinition.delete(ids);
-         * event.setField(fieldName, null); } }
-         */
 
     }
 

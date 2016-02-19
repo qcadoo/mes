@@ -153,6 +153,8 @@
                                    reference="confirmed"/>
                         <component type="hidden" name="generated" field="generated"
                                    reference="generated"/>
+                        <component type="hidden" name="acceptanceEvents" field="acceptanceEvents"
+                                   reference="acceptanceEvents"/>
                     </layoutElement>
                 </component>
                 <listener event="confirmContext" method="confirmContext"
@@ -208,6 +210,7 @@
                         var shouldShowAccept = shouldShowAcceptButton(selectedEntitiesArray);
                         var differentTypes = typesAreDifferent(selectedEntitiesArray);
 
+                        var acceptanceEvents = #{acceptanceEvents}.getValue().content.value;
 						for (var elementKey in toggleRibbonItems) {
 							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
 							if (!ribbonItem) {
@@ -234,13 +237,35 @@
 						    getRibbonItem("actions.delete").disable();
 						}
 
-                            var planEvent = #{window}.getRibbonItem("status.planEvent");
-                            var cancelEvent = #{window}.getRibbonItem("status.cancelEvent");
-                            var plannedEvent = #{window}.getRibbonItem("status.plannedEvent");
-                            var realizedEvent = #{window}.getRibbonItem("status.realizedEvent");
-                                var startEvent = #{window}.getRibbonItem("status.startEvent");
-                                var stopEvent = #{window}.getRibbonItem("status.stopEvent");
-                            var deleteButton = #{window}.getRibbonItem("actions.delete");
+                        var noDifferentStates = true;
+					    if(selectedEntitiesArray.length > 1) {
+						    for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+							    if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+									noDifferentStates = false;
+									break;
+								}
+							}
+						}
+
+                        var inEditingState = false;
+					    if(selectedEntitiesArray.length > 1) {
+						    for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+							    if (selectedEntitiesArray[i].fields.state == "08inEditing") {
+									inEditingState = true;
+									break;
+								}
+							}
+						}
+
+                        var planEvent = #{window}.getRibbonItem("status.planEvent");
+                        var cancelEvent = #{window}.getRibbonItem("status.cancelEvent");
+                        var plannedEvent = #{window}.getRibbonItem("status.plannedEvent");
+                        var realizedEvent = #{window}.getRibbonItem("status.realizedEvent");
+                        var startEvent = #{window}.getRibbonItem("status.startEvent");
+                        var stopEvent = #{window}.getRibbonItem("status.stopEvent");
+                        var deleteButton = #{window}.getRibbonItem("actions.delete");
+
+						if (noDifferentStates) {
 
                             planEvent.forState="02inPlan";
                             planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
@@ -283,6 +308,9 @@
                                 stopEvent.disable();
                             } else if (state == "03planned") {
                                 planEvent.enable();
+                                planEvent.forState="02inPlan";
+                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.inPlan)}";
+                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.planEvent)}");
                                 cancelEvent.enable();
                                 plannedEvent.disable();
                                 realizedEvent.disable();
@@ -343,34 +371,51 @@
                              	
                                 deleteButton.disable();
                             }else if (state =="08inEditing") {
-                                planEvent.enable();
-                                planEvent.forState="07accepted";
-                                planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
-                                planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
-                                cancelEvent.disable();
-                                plannedEvent.enable();
-                                plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
-                             	plannedEvent.forState="04inRealization";
-                             	plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
-                                if (!shouldShowAccept && !differentTypes) {
-                                	realizedEvent.enable();
-                                	planEvent.disable();
-                                   	plannedEvent.disable();
-                                } else {
+                                if(acceptanceEvents == "true"){
+                                    planEvent.enable();
+                                    planEvent.forState="07accepted";
+                                    planEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.accepted)}";
+                                    planEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.acceptEvent)}");
+                                    cancelEvent.disable();
+                                    plannedEvent.enable();
+                                    plannedEvent.setLabel("#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.dontAcceptEvent)}");
+                             	    plannedEvent.forState="04inRealization";
+                             	    plannedEvent.confirmMessage = "#{translate(cmmsMachineParts.plannedEventDetails.window.ribbon.status.confirm.notAccept)}";
+                                    if (!shouldShowAccept && !differentTypes) {
+                                	    realizedEvent.enable();
+                                	    planEvent.disable();
+                                   	    plannedEvent.disable();
+                                    } else {
                                 	realizedEvent.disable();
+                                    }
+                                    startEvent.disable();
+                             	    stopEvent.disable();
+                                    deleteButton.disable();
+                                } else {
+                                     realizedEvent.enable();
+                                     planEvent.disable();
+                                     plannedEvent.disable();
+                                     startEvent.disable();
+	                                 stopEvent.disable();
+	                                 cancelEvent.disable();
+                                     deleteButton.disable();
                                 }
-                                startEvent.disable();
-                             	stopEvent.disable();
-                                deleteButton.disable();
-                            }
+                             }
 
-                            if (selectedEntitiesArray.length == 1) {
-                                showMaintenanceEvent.enable();
-                            }
-                            else {
-                                showMaintenanceEvent.disable();
-                               	plannedEvent.disable();
-                            }
+                             if(inEditingState && isMeterReading(selectedEntitiesArray) && differentTypes){
+                                resetRibbon();
+                             }
+
+                        } else {
+                            resetRibbon();
+                        }
+                        if (selectedEntitiesArray.length == 1) {
+                            showMaintenanceEvent.enable();
+                        }
+                        else {
+                           showMaintenanceEvent.disable();
+                           plannedEvent.disable();
+                        }
 					}
 
 					function getRibbonItem(ribbonPath) {
@@ -414,6 +459,15 @@
 							}
 						}
 						return true;
+					}
+
+					function isMeterReading(selectedEntitiesArray) {
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.type == "05meterReading") {
+								return true;
+							}
+						}
+						return false;
 					}
 
 				]]>
