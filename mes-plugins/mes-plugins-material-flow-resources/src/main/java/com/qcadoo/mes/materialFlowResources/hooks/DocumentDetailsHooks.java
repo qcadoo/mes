@@ -100,26 +100,22 @@ public class DocumentDetailsHooks {
             enableStorageLocation(view, true);
             showWarehouse(view, false, true);
             showCompany(view, true);
-            // enableAttributesADL(view, true);
         } else if (DocumentType.TRANSFER.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             enableStorageLocation(view, true);
             showWarehouse(view, true, true);
             showCompany(view, false);
-            // enableAttributesADL(view, false);
         } else if (DocumentType.RELEASE.getStringValue().equals(documentType)
                 || DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             enableStorageLocation(view, false);
             showWarehouse(view, true, false);
             showCompany(view, true);
-            // enableAttributesADL(view, false);
         } else {
             enableInboundDocumentPositionsAttributesAndFillInUnit(view, false);
             enableStorageLocation(view, true);
             showWarehouse(view, false, false);
             showCompany(view, false);
-            // enableAttributesADL(view, false);
         }
     }
 
@@ -137,7 +133,8 @@ public class DocumentDetailsHooks {
     }
 
     private void enableStorageLocation(final ViewDefinitionState view, boolean enabled) {
-        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view
+                .getComponentByReference(DocumentFields.POSITIONS);
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             FieldComponent storageLocation = positionForm.findFieldComponentByName(PositionFields.STORAGE_LOCATION);
 
@@ -147,7 +144,8 @@ public class DocumentDetailsHooks {
 
     private void enableInboundDocumentPositionsAttributesAndFillInUnit(final ViewDefinitionState view, final boolean enabled) {
 
-        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view
+                .getComponentByReference(DocumentFields.POSITIONS);
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             for (String fieldName : INBOUND_FIELDS) {
                 FieldComponent field = positionForm.findFieldComponentByName(fieldName);
@@ -165,7 +163,8 @@ public class DocumentDetailsHooks {
 
     private void enableAttributesADL(final ViewDefinitionState view, final boolean enabled) {
 
-        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view
+                .getComponentByReference(DocumentFields.POSITIONS);
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             AwesomeDynamicListComponent attributeADL = (AwesomeDynamicListComponent) positionForm
                     .findFieldComponentByName("additionalAttributes");
@@ -231,7 +230,8 @@ public class DocumentDetailsHooks {
     }
 
     private void disableADL(ViewDefinitionState view) {
-        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view
+                .getComponentByReference(DocumentFields.POSITIONS);
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             positionForm.setFormEnabled(false);
         }
@@ -272,7 +272,8 @@ public class DocumentDetailsHooks {
         if (!DocumentState.of(document).equals(DocumentState.ACCEPTED)) {
             Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
             Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
-            AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
+            AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view
+                    .getComponentByReference(DocumentFields.POSITIONS);
             for (FormComponent positionForm : positionsADL.getFormComponents()) {
                 Entity position = positionForm.getPersistedEntityWithIncludedFormValues();
                 Entity product = position.getBelongsToField(PositionFields.PRODUCT);

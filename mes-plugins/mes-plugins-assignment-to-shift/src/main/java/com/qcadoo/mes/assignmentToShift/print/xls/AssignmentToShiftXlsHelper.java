@@ -206,8 +206,14 @@ public class AssignmentToShiftXlsHelper {
             worker.append(" ");
             worker.append(workerEntity.getStringField(StaffFields.SURNAME));
 
-            listOfWorkers.add(worker.toString());
+            String description = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.DESCRIPTION);
 
+            if (StringUtils.isNotEmpty(description)) {
+                worker.append(", ");
+                worker.append(description);
+            }
+
+            listOfWorkers.add(worker.toString());
         }
 
         return listOfWorkers;
@@ -251,10 +257,16 @@ public class AssignmentToShiftXlsHelper {
             Entity worker = staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.WORKER);
 
             String occupationTypeName = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME);
+            String description = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.DESCRIPTION);
 
             listOfWorkersWithOtherCases.append(worker.getStringField(StaffFields.NAME));
             listOfWorkersWithOtherCases.append(" ");
             listOfWorkersWithOtherCases.append(worker.getStringField(StaffFields.SURNAME));
+
+            if (StringUtils.isNotEmpty(description)) {
+                listOfWorkersWithOtherCases.append(", ");
+                listOfWorkersWithOtherCases.append(description);
+            }
 
             if (StringUtils.isNotEmpty(occupationTypeName)) {
                 listOfWorkersWithOtherCases.append(" - ");

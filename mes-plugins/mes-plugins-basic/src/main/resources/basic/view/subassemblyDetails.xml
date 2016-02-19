@@ -109,7 +109,7 @@
                 </smallButton>
             </group>
 
-            <group name="atachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+            <group name="atachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE">
                 <bigButton name="downloadAtachment" icon="generateIcon24.png"
                            state="enabled">
                     <script>
@@ -254,13 +254,14 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="2" row="1" width="2" height="6">
-                    <component type="grid" name="attachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT"
+                    <component type="grid" name="attachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"
                                reference="attachments" source="#{form}.attachments">
                         <option type="column" name="attachment" fields="name"/>
                         <option type="column" name="size" fields="size"/>
                         <option type="order" column="attachment" direction="desc"/>
 
                         <option type="deletable" value="true"/>
+                        <option type="deletableAuthorizationRole"  value="ROLE_COMPANY_STRUCTURE_EDIT"/>
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>

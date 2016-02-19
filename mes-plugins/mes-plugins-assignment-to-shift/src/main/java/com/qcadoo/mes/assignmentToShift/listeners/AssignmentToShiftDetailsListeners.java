@@ -23,16 +23,22 @@
  */
 package com.qcadoo.mes.assignmentToShift.listeners;
 
+import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
+import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
+import com.qcadoo.mes.assignmentToShift.hooks.MultiAssignmentToShiftDetailsHooks;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -59,6 +65,35 @@ public class AssignmentToShiftDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private MultiAssignmentToShiftDetailsHooks multiAssignmentToShiftDetailsHooks;
+
+    public void addManyWorkers(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity multiAssignmentToShift = prepareMultiAssignmetEntity(assignmentToShiftForm.getEntity());
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", multiAssignmentToShift.getId());
+        parameters.put("window.activeMenu", "orders.assignmentToShift");
+
+        view.redirectTo("/page/assignmentToShift/multiAssignmentToShiftDetails.html", false, true, parameters);
+    }
+
+    private Entity prepareMultiAssignmetEntity(Entity assignmentToShift) {
+        Entity multiAssignmentToShift = dataDefinitionService.get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
+                AssignmentToShiftConstants.MODEL_MULTI_ASSIGNMENT_TO_SHIFT).create();
+        multiAssignmentToShift.setField("assignmentToShift", assignmentToShift);
+        Entity dictionaryItem = multiAssignmentToShiftDetailsHooks.findDictionaryItemByTechnicalCode(WORK_ON_LINE
+                .getStringValue());
+
+        if (dictionaryItem != null) {
+            String occupationTypeName = dictionaryItem.getStringField(NAME);
+            multiAssignmentToShift.setField("occupationType", occupationTypeName);
+        }
+        multiAssignmentToShift = multiAssignmentToShift.getDataDefinition().save(multiAssignmentToShift);
+        return multiAssignmentToShift;
+    }
 
     public void copyStaffAssignmentToShift(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -100,6 +135,7 @@ public class AssignmentToShiftDetailsListeners {
                 .getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_VALUE_FOR_GRID);
         Entity masterOrder = staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.MASTER_ORDER);
         String state = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.STATE);
+        String description = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.DESCRIPTION);
 
         newStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.ASSIGNMENT_TO_SHIFT, assignmentToShift);
         newStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.WORKER, worker);
@@ -111,6 +147,7 @@ public class AssignmentToShiftDetailsListeners {
                 occupationTypeValueForGrid);
         newStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.MASTER_ORDER, masterOrder);
         newStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.STATE, state);
+        newStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.DESCRIPTION, description);
 
         newStaffAssignmentToShift = newStaffAssignmentToShift.getDataDefinition().save(newStaffAssignmentToShift);
 
