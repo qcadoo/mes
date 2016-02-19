@@ -39,18 +39,18 @@ ALTER TABLE assignmenttoshift_staffassignmenttoshift ADD COLUMN description char
 -- end
 
 -- cmmsmachineparts_plannedevent
--- last touched 29.01.2016 by wesi
+-- last touched 19.02.2016 by wesi
 CREATE OR REPLACE VIEW cmmsmachineparts_plannedeventlistdto as
     select e.id, e.number, e.type, owner.name || ' ' || owner.surname  as ownerName,
-            ''::varchar(600) as description, factory.number as factoryNumber, 0::bigint as factory_id, division.number as divisionNumber,
-            0::bigint as division_id, productionLine.number as productionLineNumber, workstation.number as workstationNumber,
-            subassembly.number as subassemblyNumber, e.date::date as date, e.counter, e.createUser, e.createDate, e.state, context.id as plannedEventContext_id
+            ''::varchar(255) as description, factory.number as factoryNumber, 0::integer as factory_id, division.number as divisionNumber,
+            0::integer as division_id, productionLine.number as productionLineNumber, workstation.number as workstationNumber,
+            subassembly.number as subassemblyNumber, e.date::timestamp as date, e.counter, e.createUser, e.createDate, e.state, context.id as plannedEventContext_id
     from cmmsmachineparts_plannedevent e left join basic_staff owner on (e.owner_id = owner.id) join basic_factory factory on (e.factory_id = factory.id)
         join basic_division division on (e.division_id = division.id) left join productionLines_productionLine productionLine on (e.productionline_id = productionLine.id)
         left join basic_workstation workstation on (e.workstation_id = workstation.id) left join basic_subassembly subassembly on (e.subassembly_id = subassembly.id)
         left join cmmsmachineparts_plannedeventcontext context on (e.plannedeventcontext_id = context.id);
 
 ALTER TABLE cmmsmachineparts_plannedevent ALTER COLUMN description TYPE character varying(600);
-
+drop view cmmsmachineparts_plannedEventListDto;
 create or replace view cmmsmachineparts_plannedEventListDto as select e.id, e.number, e.type, owner.name || ' ' || owner.surname  as ownerName, e.description, factory.number as factoryNumber, factory.id as factory_id, division.number as divisionNumber, division.id as division_id, productionLine.number as productionLineNumber, workstation.number as workstationNumber, subassembly.number as subassemblyNumber, e.date, e.counter, e.createUser, e.createDate, e.state, context.id as plannedEventContext_id from cmmsmachineparts_plannedevent e left join basic_staff owner on (e.owner_id = owner.id) join basic_factory factory on (e.factory_id = factory.id) join basic_division division on (e.division_id = division.id) left join productionLines_productionLine productionLine on (e.productionline_id = productionLine.id) left join basic_workstation workstation on (e.workstation_id = workstation.id) left join basic_subassembly subassembly on (e.subassembly_id = subassembly.id) left join cmmsmachineparts_plannedeventcontext context on (e.plannedeventcontext_id = context.id);
 -- end
