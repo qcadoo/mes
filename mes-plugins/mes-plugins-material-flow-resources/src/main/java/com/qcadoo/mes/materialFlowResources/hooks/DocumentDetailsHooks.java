@@ -89,7 +89,7 @@ public class DocumentDetailsHooks {
         initializeDocument(view);
         documentDetailsListeners.calculateQuantity(view, null, new String[0]);
         setCriteriaModifiersParameters(view);
-        lockTypeChange(view);
+        lockNumberAndTypeChange(view);
         fetchNameAndNumberFromDatabase(view);
     }
 
@@ -303,13 +303,16 @@ public class DocumentDetailsHooks {
         }
     }
 
-    private void lockTypeChange(final ViewDefinitionState view) {
+    private void lockNumberAndTypeChange(final ViewDefinitionState view) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
 
         if (formComponent.getEntityId() != null) {
             ComponentState typeComponent = view.getComponentByReference(DocumentFields.TYPE);
             typeComponent.setEnabled(false);
         }
+        
+        FieldComponent numberFieldComponent = (FieldComponent) view.getComponentByReference(DocumentFields.NUMBER);
+        numberFieldComponent.setEnabled(false);
     }
 
     private void fetchNameAndNumberFromDatabase(final ViewDefinitionState view) {

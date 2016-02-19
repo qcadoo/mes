@@ -41,11 +41,23 @@ public class DocumentModelHooks {
     private TranslationService translationService;
 
     public void onCreate(final DataDefinition documentDD, final Entity document) {
-        String translatedType = translationService.translate(TYPE_TRANSLATION_PREFIX + document.getStringField(DocumentFields.TYPE), LocaleContextHolder.getLocale());
-        /**
-         * number is generated in database trigger *
-         */
+        String translatedType = getTranslatedType(document);
+
         document.setField(DocumentFields.NUMBER, translatedType);
+    }
+
+    public void onCopy(final DataDefinition documentDD, final Entity document) {
+        String translatedType = getTranslatedType(document);
+        
+        document.setField(DocumentFields.NUMBER, translatedType);
+        document.setField(DocumentFields.NAME, null);
+    }
+
+    private String getTranslatedType(Entity document) {
+        /**
+         * number is generated in database trigger from translated type *
+         */
+        return translationService.translate(TYPE_TRANSLATION_PREFIX + document.getStringField(DocumentFields.TYPE), LocaleContextHolder.getLocale());
     }
 
 }
