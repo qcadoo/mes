@@ -15,7 +15,8 @@ public class MaintenanceEventsFilterUtils {
     private static final String WORKSTATION_TO = "workstation.number";
     private static final String SUBASSEMBLY_FROM = "maintenanceevent.subassemblyNumber";
     private static final String SUBASSEMBLY_TO = "subassembly.number";
-
+    private static final String FAULT_FROM = "maintenanceevent.faultTypeNumber";
+    private static final String FAULT_TO = "faulttype.name";
 
     public static String processFilter(String filter){
         if(filter.contains(FACTORY_FROM)){
@@ -32,6 +33,9 @@ public class MaintenanceEventsFilterUtils {
         }
         if(filter.contains(SUBASSEMBLY_FROM)){
             filter = filter.replace(SUBASSEMBLY_FROM, SUBASSEMBLY_TO);
+        }
+        if(filter.contains(FAULT_FROM)){
+            filter = filter.replace(FAULT_FROM, FAULT_TO);
         }
         return filter;
     }

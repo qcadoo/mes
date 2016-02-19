@@ -240,7 +240,7 @@ public class MaintenanceEventsXlsService {
 
     private String getDateForState(final String state, final List<StateChangeDTO> states) {
         Optional<StateChangeDTO> op = states.stream().filter(e -> state.equals(e.getStateChangeTargetState()))
-                .sorted((e1, e2) -> e1.getStateChangeDateAndTime().compareTo(e1.getStateChangeDateAndTime())).reduce((a, b) -> b);
+                .sorted((e1, e2) -> e1.getStateChangeDateAndTime().compareTo(e2.getStateChangeDateAndTime())).reduce((a, b) -> b);
         if (op.isPresent()) {
             return DateUtils.toDateTimeString(op.get().getStateChangeDateAndTime());
         }
@@ -249,7 +249,7 @@ public class MaintenanceEventsXlsService {
 
     private String getWorkerForState(final String state, final List<StateChangeDTO> states) {
         Optional<StateChangeDTO> op = states.stream().filter(e -> state.equals(e.getStateChangeTargetState()))
-                .sorted((e1, e2) -> e1.getStateChangeDateAndTime().compareTo(e1.getStateChangeDateAndTime())).reduce((a, b) -> b);
+                .sorted((e1, e2) -> e1.getStateChangeDateAndTime().compareTo(e2.getStateChangeDateAndTime())).reduce((a, b) -> b);
         if (op.isPresent()) {
             return op.get().getStateWorker();
         }
