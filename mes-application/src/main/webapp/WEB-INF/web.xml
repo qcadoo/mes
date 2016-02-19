@@ -84,7 +84,12 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>*.xls</url-pattern>
 	</filter-mapping>
-	
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>*.xlsx</url-pattern>
+	</filter-mapping>
+
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>*.csv</url-pattern>
@@ -198,7 +203,12 @@
 		<servlet-name>Qcadoo MES</servlet-name>
 		<url-pattern>*.xls</url-pattern>
 	</servlet-mapping>
-	
+
+	<servlet-mapping>
+		<servlet-name>Qcadoo MES</servlet-name>
+		<url-pattern>*.xlsx</url-pattern>
+	</servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>Qcadoo MES</servlet-name>
 		<url-pattern>*.csv</url-pattern>

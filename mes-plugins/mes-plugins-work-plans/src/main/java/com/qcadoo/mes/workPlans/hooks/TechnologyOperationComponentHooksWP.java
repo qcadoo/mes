@@ -53,7 +53,6 @@ public class TechnologyOperationComponentHooksWP {
 
     public void onCreate(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         copyColumnForProducts(technologyOperationComponent);
-        // copyManualOrderForProductsParameter(technologyOperationComponent);
     }
 
     private void copyColumnForProducts(final Entity technologyOperationComponent) {
@@ -70,7 +69,8 @@ public class TechnologyOperationComponentHooksWP {
         List<Entity> technologyOperationInputColumns = Lists.newArrayList();
         List<Entity> technologyOperationOutputColumns = Lists.newArrayList();
 
-        for (Entity operationInputColumn : getOperationHasManyField(operation.getId(), OperationFieldsWP.OPERATION_INPUT_COLUMNS)) {
+        for (Entity operationInputColumn : getOperationHasManyField(operation.getId(),
+                OperationFieldsWP.OPERATION_INPUT_COLUMNS)) {
             Entity columnForInputProducts = operationInputColumn
                     .getBelongsToField(OperationInputColumnFields.COLUMN_FOR_INPUT_PRODUCTS);
 
@@ -102,27 +102,17 @@ public class TechnologyOperationComponentHooksWP {
     }
 
     private boolean shouldPropagateValuesFromLowerInstance(final Entity technologyOperationComponent) {
-        return (technologyOperationComponent.getField(TechnologyOperationComponentFieldsWP.TECHNOLOGY_OPERATION_INPUT_COLUMNS) == null)
+        return (technologyOperationComponent
+                .getField(TechnologyOperationComponentFieldsWP.TECHNOLOGY_OPERATION_INPUT_COLUMNS) == null)
                 && (technologyOperationComponent
                         .getField(TechnologyOperationComponentFieldsWP.TECHNOLOGY_OPERATION_OUTPUT_COLUMNS) == null);
     }
 
-    // private void copyManualOrderForProductsParameter(final Entity technologyOperationComponent) {
-    //
-    // Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-    //
-    // if (operation == null) {
-    // return;
-    // }
-    // technologyOperationComponent.setField(TechnologyOperationComponentFieldsWP.MANUAL_ORDER_FOR_PRODUCTS,
-    // operation.getField(OperationFieldsWP.MANUAL_ORDER_FOR_PRODUCTS));
-    // }
-
     private List<Entity> getOperationHasManyField(final Long operationId, final String fieldName) {
         List<Entity> hasManyFieldValue = null;
 
-        Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION).get(operationId);
+        Entity operation = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION).get(operationId);
 
         if ((operation == null) || (operation.getHasManyField(fieldName) == null)) {
             hasManyFieldValue = Lists.newArrayList();

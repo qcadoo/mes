@@ -47,4 +47,6 @@ public final class StaffAssignmentToShiftFields {
 
     public static final String STATE = "state";
 
+    public static final String DESCRIPTION = "description";
+
 }

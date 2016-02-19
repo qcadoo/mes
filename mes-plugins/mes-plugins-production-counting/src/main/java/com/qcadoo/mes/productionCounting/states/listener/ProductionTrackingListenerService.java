@@ -132,8 +132,8 @@ public final class ProductionTrackingListenerService {
                 ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS)
                 && !checkIfUsedQuantitiesWereFilled(productionTracking,
                         ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
-            stateChangeContext
-                    .addValidationError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
+            stateChangeContext.addValidationError(
+                    "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
@@ -167,7 +167,7 @@ public final class ProductionTrackingListenerService {
     public void closeOrder(final StateChangeContext stateChangeContext) {
         final Entity productionTracking = stateChangeContext.getOwner();
         final Entity order = productionTracking.getBelongsToField(ORDER);
-
+        Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderClosingHelper.orderShouldBeClosed(productionTracking)) {
             return;
         }
@@ -175,10 +175,10 @@ public final class ProductionTrackingListenerService {
             stateChangeContext.addMessage("productionCounting.order.orderIsAlreadyClosed", StateMessageType.INFO, false);
             return;
         }
-        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
-                orderStateChangeAspect.getChangeEntityDescriber(), order, OrderState.COMPLETED.getStringValue());
+        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
+                .build(orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
         orderStateChangeAspect.changeState(orderStateChangeContext);
-        Entity orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
+        orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
         if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
             stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
         } else if (StateChangeStatus.PAUSED.equals(orderStateChangeContext.getStatus())) {
@@ -293,7 +293,8 @@ public final class ProductionTrackingListenerService {
         Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
 
         for (Entity basicProductionCounting : basicProductionCountings) {
-            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId().equals(product.getId())) {
+            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId()
+                    .equals(product.getId())) {
                 return basicProductionCounting;
             }
         }

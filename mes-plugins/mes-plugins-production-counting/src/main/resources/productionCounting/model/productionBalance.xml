@@ -25,63 +25,67 @@
 
 -->
 <model name="productionBalance" activable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
-		<boolean name="generated" />
+		<boolean name="generated"/>
 		<belongsTo name="order" plugin="orders" model="order"
-			required="true" />
-		<belongsTo name="product" plugin="basic" model="product" />
+				   required="true"/>
+		<belongsTo name="product" plugin="basic" model="product"/>
 		<string name="name" required="true">
-			<validatesLength max="1024" />
+			<validatesLength max="1024"/>
 		</string>
-		<datetime name="date" />
-		<string name="worker" />
+		<datetime name="date"/>
+		<string name="worker"/>
 		<integer name="trackingsNumber">
-			<validatesRange from="0" />
+			<validatesRange from="0"/>
 		</integer>
-		<string name="description" />
+		<string name="description"/>
 		<string name="fileName">
-			<validatesLength max="1024" />
+			<validatesLength max="1024"/>
 		</string>
 
-		<boolean name="printOperationNorms" default="true" />
+		<boolean name="printOperationNorms" default="true"/>
 		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"
-			required="true" default="01hourly" />
+			  required="true" default="01hourly"/>
 
-		<boolean name="includeTPZ" default="true" />
-		<boolean name="includeAdditionalTime" default="true" />
+		<boolean name="includeTPZ" default="true"/>
+		<boolean name="includeAdditionalTime" default="true"/>
 
-		<integer name="plannedMachineTime" />
-		<integer name="machineTime" />
-		<integer name="machineTimeBalance" />
+		<integer name="plannedMachineTime"/>
+		<integer name="machineTime"/>
+		<integer name="machineTimeBalance"/>
 
-		<integer name="plannedLaborTime" />
-		<integer name="laborTime" />
-		<integer name="laborTimeBalance" />
+		<integer name="plannedLaborTime"/>
+		<integer name="laborTime"/>
+		<integer name="laborTimeBalance"/>
 
 		<hasMany name="balanceOperationProductInComponents" joinField="productionBalance"
-			model="balanceOperationProductInComponent" cascade="delete" />
+				 model="balanceOperationProductInComponent" cascade="delete"/>
 		<hasMany name="balanceOperationProductOutComponents"
-			joinField="productionBalance" model="balanceOperationProductOutComponent"
-			cascade="delete" />
+				 joinField="productionBalance" model="balanceOperationProductOutComponent"
+				 cascade="delete"/>
 
 		<hasMany name="operationTimeComponents" joinField="productionBalance"
-			model="operationTimeComponent" cascade="delete" />
+				 model="operationTimeComponent" cascade="delete"/>
 
 		<hasMany name="operationPieceworkComponents" joinField="productionBalance"
-			model="operationPieceworkComponent" cascade="delete" />
+				 model="operationPieceworkComponent" cascade="delete"/>
 	</fields>
+
 	<hooks>
 		<validatesWith
-			class="com.qcadoo.mes.productionCounting.validators.ProductionBalanceValidators"
-			method="validatesWith" />
+				class="com.qcadoo.mes.productionCounting.validators.ProductionBalanceValidators"
+				method="validatesWith"/>
 		<onSave
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceHooks"
-			method="onSave" />
+				class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceHooks"
+				method="onSave"/>
 		<onCopy
-			class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceHooks"
-			method="onCopy" />
+				class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceHooks"
+				method="onCopy"/>
 	</hooks>
-	<identifier expression="#name" />
+
+	<identifier expression="#name"/>
+
 </model>

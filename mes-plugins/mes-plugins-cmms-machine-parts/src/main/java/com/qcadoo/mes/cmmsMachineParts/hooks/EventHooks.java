@@ -23,46 +23,39 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.SourceCostService;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import com.qcadoo.mes.cmmsMachineParts.roles.EventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EventHooks {
 
     private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
 
     @Autowired
     private MaintenanceEventService maintenanceEventService;
@@ -85,7 +78,12 @@ public class EventHooks {
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
+        FieldComponent acceptanceEvents = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.ACCEPTANCE_EVENTS);
+        acceptanceEvents.setFieldValue(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS));
         setEventCriteriaModifiers(view);
         setUpFaultTypeLookup(view);
         setFieldsRequired(view);
@@ -313,7 +311,7 @@ public class EventHooks {
     }
 
     public void setEventCriteriaModifiers(ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity event = formComponent.getEntity();
 
         setEventCriteriaModifier(view, event, MaintenanceEventFields.FACTORY, MaintenanceEventFields.DIVISION);
@@ -334,7 +332,7 @@ public class EventHooks {
     }
 
     private void setUpFaultTypeLookup(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
         Entity workstation = event.getBelongsToField(MaintenanceEventFields.WORKSTATION);
         Entity subassembly = event.getBelongsToField(MaintenanceEventFields.SUBASSEMBLY);
@@ -380,7 +378,7 @@ public class EventHooks {
         RibbonGroup solutionsRibbonGroup = ribbon.getGroupByName("solutions");
         RibbonActionItem showSolutionsRibbonActionItem = solutionsRibbonGroup.getItemByName("showSolutions");
 
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
 
         showSolutionsRibbonActionItem.setEnabled(event.getId() != null);
@@ -388,19 +386,66 @@ public class EventHooks {
     }
 
     public final void onBeforeRenderListView(final ViewDefinitionState view) {
+        FieldComponent acceptanceEvents = (FieldComponent) view.getComponentByReference(PlannedEventFields.ACCEPTANCE_EVENTS);
+        acceptanceEvents.setFieldValue(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS));
         maintenanceEventContextService.beforeRenderListView(view);
         hideAccordingToRole(view);
     }
 
-
     public final void onBeforeRenderPlannedListView(final ViewDefinitionState view) {
+        FieldComponent acceptanceEvents = (FieldComponent) view.getComponentByReference(PlannedEventFields.ACCEPTANCE_EVENTS);
+        acceptanceEvents.setFieldValue(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS));
         maintenanceEventContextService.beforeRenderListView(view);
     }
+
     public void hideAccordingToRole(ViewDefinitionState view) {
         Entity user = userService.getCurrentUserEntity();
         for (EventRoles role : EventRoles.values()) {
             if (!securityService.hasRole(user, role.toString())) {
                 role.disableFieldsWhenNotInRole(view);
+            }
+        }
+        if(!parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)){
+            if(!securityService.hasRole(user, EventRoles.ROLE_EVENTS_CLOSE.toString())){
+                enableCloseEvents(view, false);
+            } else {
+                enableCloseEvents(view, true);
+            }
+        }
+    }
+
+    private void enableCloseEvents(final ViewDefinitionState view, final boolean enable) {
+        if(eventInState(view, MaintenanceEventState.EDITED) || eventInState(view, MaintenanceEventState.ACCEPTED)){
+            enableFromRibbonGroup(view, enable, "status", "closeEvent");
+        }
+    }
+
+    private boolean eventInState(final ViewDefinitionState view, final MaintenanceEventState state) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getEntity();
+        String eventState = event.getStringField(MaintenanceEventFields.STATE);
+        if (eventState == null) {
+            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            List<Entity> entities = grid.getSelectedEntities();
+            if (entities.isEmpty()){
+                return false;
+            }
+            return entities.stream().allMatch(e -> state.getStringValue().equals(e.getStringField(MaintenanceEventFields.STATE)));
+        }
+        return state.getStringValue().equals(eventState);
+    }
+
+    private void enableFromRibbonGroup(final ViewDefinitionState view, final boolean enable, final String groupName, String... items) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup ribbonGroup = ribbon.getGroupByName(groupName);
+        if(ribbonGroup != null) {
+            for (String item : items) {
+                RibbonActionItem ribbonItem = ribbonGroup.getItemByName(item);
+                if (ribbonItem != null) {
+                    ribbonItem.setEnabled(enable);
+                    ribbonItem.requestUpdate(true);
+                }
             }
         }
     }

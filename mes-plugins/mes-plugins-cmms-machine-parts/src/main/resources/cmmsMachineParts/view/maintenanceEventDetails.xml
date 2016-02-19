@@ -160,6 +160,7 @@
 							planEvent.forState="06planned";
 							planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.planned)}";
 
+                            var acceptanceEvents = #{acceptanceEvents}.getValue().content.value;
 
 							if (state == "01new") {
 								startEvent.enable();
@@ -195,21 +196,34 @@
 								    deleteButton.enable();
 								}
 							} else if ( state == "03edited"){
-								startEvent.disable();
-								planEvent.enable();
-								revokeEvent.disable();
-								closeEvent.enable();
+							    if(acceptanceEvents == "true"){
+								    startEvent.disable();
+								    planEvent.enable();
+								    revokeEvent.disable();
+								    closeEvent.enable();
 
-                                planEvent.forState="02inProgress";
-							    planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.notAccept)}";
-							    planEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.notAcceptEvent)}");
+                                    planEvent.forState="02inProgress";
+							        planEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.notAccept)}";
+							        planEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.notAcceptEvent)}");
 
-                                closeEvent.forState="07accepted";
-							    closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.accepted)}";
-							    closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.acceptEvent)}");
+                                    closeEvent.forState="07accepted";
+							        closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.accepted)}";
+							        closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.acceptEvent)}");
 
-								toggleEditable(true, "");
-								deleteButton.disable();
+								    toggleEditable(true, "");
+								    deleteButton.disable();
+								} else {
+                                    closeEvent.forState="04closed";
+							        closeEvent.confirmMessage = "#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.confirm.closed)}";
+							        closeEvent.setLabel("#{translate(cmmsMachineParts.maintenanceEventDetails.window.ribbon.status.closeEvent)}");
+
+								    closeEvent.enable();
+								    toggleEditable(true, "");
+								    startEvent.disable();
+								    planEvent.disable();
+								    revokeEvent.disable();
+								    deleteButton.disable();
+								}
 							}
 							else if ( state == "07accepted"){
 								startEvent.disable();
@@ -258,6 +272,8 @@
                                    reference="factoryStructure"/>
                         <component type="hidden" name="maintenanceEventContext" field="maintenanceEventContext"
                                    reference="maintenanceEventContext"/>
+                        <component type="hidden" name="acceptanceEvents" field="acceptanceEvents"
+                                   reference="acceptanceEvents"/>
                         <component type="input" name="number" field="number" reference="number"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
@@ -582,6 +598,7 @@
                         <option type="order" column="attachment" direction="desc"/>
 
                         <option type="deletable" value="true"/>
+                        <option type="deletableAuthorizationRole" value="ROLE_EVENTS_DELETE_ATTACHMENT"/>
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>

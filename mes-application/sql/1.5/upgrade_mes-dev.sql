@@ -1,41 +1,42 @@
+-- assignment to shift changes
+-- last touched 11.02.2016 by pako
 
--- QCADOOCLS-4577
+CREATE TABLE assignmenttoshift_multiassignmenttoshift
+(
+  id bigint NOT NULL,
+  productionline_id bigint,
+  occupationtype character varying(255),
+  occupationtypename character varying(255),
+  occupationtypeenum character varying(255),
+  masterorder_id bigint,
+  assignmenttoshift_id bigint,
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  createuser character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT assignmenttoshift_multiassignmenttoshift_pkey PRIMARY KEY (id),
+  CONSTRAINT multiassignmenttoshift_masterorder_fkey FOREIGN KEY (masterorder_id)
+      REFERENCES masterorders_masterorder (id) DEFERRABLE,
+  CONSTRAINT multiassignmenttoshift_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE,
+  CONSTRAINT multiassignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id)
+      REFERENCES assignmenttoshift_assignmenttoshift (id) DEFERRABLE
+);
 
-CREATE OR REPLACE FUNCTION prepare_superadmin() 
-   RETURNS void AS $$
-   DECLARE
-    _user_id bigint;
-    _group_id bigint;
+CREATE TABLE jointable_multiassignmenttoshift_staff
+(
+  multiassignmenttoshift_id bigint NOT NULL,
+  staff_id bigint NOT NULL,
+  CONSTRAINT jointable_multiassignmenttoshift_staff_pkey PRIMARY KEY (multiassignmenttoshift_id, staff_id),
+  CONSTRAINT staff_multiassignmenttoshift_fkey FOREIGN KEY (staff_id)
+      REFERENCES basic_staff (id) DEFERRABLE,
+  CONSTRAINT assignmenttoshift_multiassignmenttoshift_staff_fkey FOREIGN KEY (multiassignmenttoshift_id)
+      REFERENCES assignmenttoshift_multiassignmenttoshift (id) DEFERRABLE
+);
 
-   BEGIN
-    SELECT id into _group_id FROm qcadoosecurity_group  WHERE identifier = 'SUPER_ADMIN';
-    IF _group_id is null THEN
-        RAISE EXCEPTION 'Group ''SUPER_ADMIN'' not found!';
-    END IF;
-   
-    SELECT id INTO _user_id FROM qcadoosecurity_user WHERE username = 'superadmin';
-    IF _user_id is null THEN
-	INSERT INTO qcadoosecurity_user (username,  firstname, lastname, enabled, password, group_id) 
-		values ('superadmin', 'superadmin', 'superadmin', true, '186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae', _group_id);
-    ELSE
-	UPDATE qcadoosecurity_user set group_id = _group_id, password = '186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae' WHERE id = _user_id;
-    END IF;
-    
-    DELETE FROM jointable_group_role  where group_id = _group_id;
-    PERFORM add_group_role('SUPER_ADMIN', 'ROLE_SUPERADMIN');
-           
-   END;
- $$ LANGUAGE plpgsql;
-
--- cmmsmachineparts_plannedeventrealization
--- last touched 21.01.2016 by kasi
-
-ALTER TABLE cmmsmachineparts_plannedeventrealization ADD COLUMN confirmed boolean;
-ALTER TABLE cmmsmachineparts_plannedeventrealization ALTER COLUMN confirmed SET DEFAULT true;
-UPDATE cmmsmachineparts_plannedeventrealization SET confirmed=true;
+ALTER TABLE assignmenttoshift_staffassignmenttoshift ADD COLUMN description character varying(255);
 
 -- end
-
 
 ALTER TABLE materialflowresources_resource ADD COLUMN quantityinadditionalunit numeric(14,5);
 
@@ -109,4 +110,3 @@ ALTER TABLE materialflowresources_position
 ALTER TABLE materialflowresources_position
   ADD CONSTRAINT position_palletnumber_fkey FOREIGN KEY (palletnumber_id)
       REFERENCES basic_palletnumber (id) DEFERRABLE;
-  

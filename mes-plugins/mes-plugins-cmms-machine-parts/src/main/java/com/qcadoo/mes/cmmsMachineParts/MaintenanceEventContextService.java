@@ -170,7 +170,6 @@ public class MaintenanceEventContextService {
     }
 
     private void setEnableOfMainTab(ViewDefinitionState view, boolean enabled) {
-        ComponentState contextTabComponent = view.getComponentByReference("mainTab");
         view.getComponentByReference(L_GRID).setEnabled(enabled);
     }
 
@@ -242,7 +241,6 @@ public class MaintenanceEventContextService {
 
     public Entity getCurrentContext(ViewDefinitionState viewDefinitionState, ComponentState triggerState, String[] args) {
         FormComponent formComponent = (FormComponentState) viewDefinitionState.getComponentByReference(L_FORM);
-        Entity context = prepareContextEntity(formComponent.getEntity());
-        return context;
+        return prepareContextEntity(formComponent.getEntity());
     }
 }

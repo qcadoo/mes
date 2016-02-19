@@ -35,6 +35,8 @@ public final class AssignmentToShiftConstants {
 
     public static final String MODEL_STAFF_ASSIGNMENT_TO_SHIFT = "staffAssignmentToShift";
 
+    public static final String MODEL_MULTI_ASSIGNMENT_TO_SHIFT = "multiAssignmentToShift";
+
     public static final String MODEL_ASSIGNMENT_TO_SHIFT_STATE_CHANGE = "assignmentToShiftStateChange";
 
     public static final String MODEL_ASSIGNMENT_TO_SHIFT_REPORT = "assignmentToShiftReport";

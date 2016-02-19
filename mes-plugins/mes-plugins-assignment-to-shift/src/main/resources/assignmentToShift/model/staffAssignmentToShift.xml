@@ -43,6 +43,7 @@
                    plugin="masterOrders"/>
         <enum name="state" values="01simple,02accepted,03corrected"
               default="01simple"/>
+        <string name="description"/>
     </fields>
 
     <hooks>

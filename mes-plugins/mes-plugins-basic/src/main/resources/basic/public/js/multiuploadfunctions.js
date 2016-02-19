@@ -32,24 +32,24 @@ $(function() {
 						submit : function(e, data) {
 							var locale = window.mainController
 							.getComponentByReferenceName(
-								"technologyMultiUploadLocale")
+								"workstationMultiUploadLocale")
 									.getValue().content.value;
 							var techId = window.mainController
 								.getComponentByReferenceName(
-									"technologyIdForMultiUpload")
+									"workstationIdForMultiUpload")
 										.getValue();
 							var techIdValue = techId.content;
 							if(!techIdValue.value || 0 === techIdValue.value){
 							    $.each(data.files, function (index, file) {
 									if(locale === "pl"){
 							    	showMessage("failure",
-											"Technologia niezapisana",
-											"Pominięto wgranie pliku : "
+											"Stacja robocza niezapisana",
+											"Pominięto wgranie pliku: "
 													+ file.name);
 									} else {
 								    	showMessage("failure",
-												"Technology is not saved",
-												"Omitted file upload : "
+												"Workstation is not saved",
+												"Omitted file upload: "
 														+ file.name);
 									}
 									});
@@ -80,10 +80,10 @@ $(function() {
 								if (filetype.test(file.name)) {
 								if(locale === "pl"){
 									showMessage("success", "Wgrywanie zakończone",
-											"Wgrano plik : " + file.name);
+											"Wgrano plik: " + file.name);
 								} else {
 									showMessage("success", "Uploading completed",
-											"Loaded a file : " + file.name);
+											"Loaded a file: " + file.name);
 								}
 								}
 							});
@@ -121,12 +121,12 @@ $(function() {
 								if(locale === "pl"){
 								showMessage("failure",
 										"Pominięto wgranie pliku",
-										"Niedopuszczalny typ pliku : "
+										"Niedopuszczalny typ pliku: "
 												+ file.name);
 								} else {
 									showMessage("failure",
 											"Omitted file upload",
-											"Invalid file type : "
+											"Invalid file type: "
 													+ file.name);
 								}
 								return false;

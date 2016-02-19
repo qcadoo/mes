@@ -44,12 +44,12 @@ $(function() {
 									if(locale === "pl"){
 							    	showMessage("failure",
 											"Podzespół niezapisany",
-											"Pominięto wgranie pliku : "
+											"Pominięto wgranie pliku: "
 													+ file.name);
 									} else {
 								    	showMessage("failure",
 												"Subassembly is not saved",
-												"Omitted file upload : "
+												"Omitted file upload: "
 														+ file.name);
 									}
 									});
@@ -80,10 +80,10 @@ $(function() {
 								if (filetype.test(file.name)) {
 								if(locale === "pl"){
 									showMessage("success", "Wgrywanie zakończone",
-											"Wgrano plik : " + file.name);
+											"Wgrano plik: " + file.name);
 								} else {
 									showMessage("success", "Uploading completed",
-											"Loaded a file : " + file.name);
+											"Loaded a file: " + file.name);
 								}
 								}
 							});
@@ -121,12 +121,12 @@ $(function() {
 								if(locale === "pl"){
 								showMessage("failure",
 										"Pominięto wgranie pliku",
-										"Niedopuszczalny typ pliku : "
+										"Niedopuszczalny typ pliku: "
 												+ file.name);
 								} else {
 									showMessage("failure",
 											"Omitted file upload",
-											"Invalid file type : "
+											"Invalid file type: "
 													+ file.name);
 								}
 								return false;

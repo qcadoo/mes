@@ -86,6 +86,10 @@ public class AssignmentToShiftDetailsHooks {
 
     private static final Logger LOG = LoggerFactory.getLogger(AssignmentToShiftDetailsHooks.class);
 
+    private static final String L_ADD_MANY_WORKERS = "addManyWorkers";
+
+    private static final String L_ADD = "add";
+
     private static CustomRestriction customRestrictionAccepted = new CustomRestriction() {
 
         @Override
@@ -174,6 +178,7 @@ public class AssignmentToShiftDetailsHooks {
         RibbonGroup actionsRibbonGroup = ribbon.getGroupByName(L_ACTIONS);
         RibbonGroup statusRibbonGroup = ribbon.getGroupByName(L_STATUS);
         RibbonGroup copyRibbonGroup = ribbon.getGroupByName(L_COPY);
+        RibbonGroup addRibbonGroup = ribbon.getGroupByName(L_ADD);
 
         RibbonActionItem saveRibbonActionItem = actionsRibbonGroup.getItemByName(L_SAVE);
         RibbonActionItem saveBackRibbonActionItem = actionsRibbonGroup.getItemByName(L_SAVE_BACK);
@@ -188,6 +193,8 @@ public class AssignmentToShiftDetailsHooks {
 
         RibbonActionItem copyStaffAssignmentToShiftRibbonActionItem = copyRibbonGroup
                 .getItemByName(L_COPY_STAFF_ASSIGNMENT_TO_SHIFT);
+
+        RibbonActionItem addManyWorkersRibbonActionItem = addRibbonGroup.getItemByName(L_ADD_MANY_WORKERS);
 
         GridComponent staffAssignmentToShiftsGrid = (GridComponent) view
                 .getComponentByReference(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS);
@@ -222,7 +229,8 @@ public class AssignmentToShiftDetailsHooks {
 
         List<RibbonActionItem> ribbonActionItems = Lists.newArrayList(saveRibbonActionItem, saveBackRibbonActionItem,
                 saveNewRibbonActionItem, deleteRibbonActionItem, acceptAssignmentToShiftRibbonActionItem,
-                correctAssignmentToShiftRibbonActionItem, acceptCorrectedAssignmentToShiftRibbonActionItem, copyStaffAssignmentToShiftRibbonActionItem);
+                correctAssignmentToShiftRibbonActionItem, acceptCorrectedAssignmentToShiftRibbonActionItem,
+                copyStaffAssignmentToShiftRibbonActionItem, addManyWorkersRibbonActionItem);
 
         for (RibbonActionItem ribbonActionItem : ribbonActionItems) {
             if (ribbonActionItem != null) {
@@ -242,6 +250,8 @@ public class AssignmentToShiftDetailsHooks {
                     ribbonActionItem.setEnabled(false);
                     ribbonActionItem.setMessage(message);
                 } else if (L_COPY_STAFF_ASSIGNMENT_TO_SHIFT.equals(ribbonActionItemName) && !areSelected) {
+                    ribbonActionItem.setEnabled(false);
+                } else if (L_ADD_MANY_WORKERS.equals(ribbonActionItemName) && !isSaved) {
                     ribbonActionItem.setEnabled(false);
                 } else {
                     ribbonActionItem.setEnabled(isEnabled);
