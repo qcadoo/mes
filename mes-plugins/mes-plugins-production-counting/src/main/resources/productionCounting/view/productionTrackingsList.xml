@@ -124,12 +124,18 @@
 										acceptTracking.enable();
 										cancelTracking.enable();
 									} else if (state == "02accepted") {
-										deleteButton.disable();
+										acceptTracking.disable();
 										cancelTracking.enable();
-									} else if ((state == "03declined")) {
+
+										deleteButton.disable();
+									} else if (state == "03declined") {
+										acceptTracking.disable();
+										cancelTracking.disable();
+
 										deleteButton.enable();
 									} else{
-										cancelTracking.enable();
+										acceptTracking.disable();
+										cancelTracking.disable();
 									}
 								} else {
 									acceptTracking.disable("#{translate(productionCounting.productionTrackingsList.ribbon.message.productionTrackingWithDifferentStatesSelected)}");
@@ -137,19 +143,17 @@
 								}
 								
 								for (var i in selectedEntitiesArray) {
-									console.log(selectedEntitiesArray[i].fields);
-									
 									if (selectedEntitiesArray[i].fields.state == "02accepted") {
 										deleteable = false;
+
 										break;
 									}
 								}
 								
-								for (var i in selectedEntitiesArray) {
-									console.log(selectedEntitiesArray[i].fields);
-									
+								for (var i in selectedEntitiesArray) {;
 									if (selectedEntitiesArray[i].fields.orderState != "03inProgress") {
 										copyable = false;
+
 										break;
 									}
 								}

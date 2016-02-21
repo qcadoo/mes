@@ -111,6 +111,7 @@
 								
 								for (var elementKey in itemNames) {
 									var ribbonItem = #{window}.getRibbonItem(itemNames[elementKey]);
+
 									if (isSaved) {
 										ribbonItem.enable();
 									} else {
@@ -119,7 +120,8 @@
 								}
  								
    								for(var elementKey in itemsToDisable){  
-   									var ribbonItem = #{window}.getRibbonItem(itemsToDisable[elementKey]);  
+   									var ribbonItem = #{window}.getRibbonItem(itemsToDisable[elementKey]);
+
    									if(isDisabled){  
    										ribbonItem.disable();  
  									} else {  
@@ -286,6 +288,7 @@
 											"productsQuantities.copyPlannedQuantityToUsedQuantity",
                                                  "workTime.calcTotalLaborTime"
 										],
+
 										toggleRibbonItemsLen = toggleRibbonItems.length,
                                              idx = 0,
 										elementKey = {},
