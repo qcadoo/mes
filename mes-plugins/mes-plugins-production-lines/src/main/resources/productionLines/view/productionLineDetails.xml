@@ -159,12 +159,13 @@
                                 expression="#workstationType['name']" link="true" width="100"/>
                         <option type="column" name="quantity" fields="quantity"
                                 link="true" width="50"/>
-
+                        <option type="column" name="dateFrom" fields="dateFrom" width="50"/>
+                        <option type="column" name="dateTo" fields="dateTo" width="50"/>
                         <option type="order" column="workstationTypeNumber"
                                 direction="desc"/>
 
                         <option type="searchable"
-                                value="workstationTypeNumber,workstationTypeName,quantity"/>
+                                value="workstationTypeNumber,workstationTypeName,quantity,dateFrom,dateTo"/>
 
                         <option type="correspondingView"
                                 value="productionLines/workstationTypeComponentDetails"/>
