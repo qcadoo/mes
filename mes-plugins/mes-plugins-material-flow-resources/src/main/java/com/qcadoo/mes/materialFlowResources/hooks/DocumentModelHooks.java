@@ -23,14 +23,14 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 @Service
 public class DocumentModelHooks {
@@ -48,7 +48,7 @@ public class DocumentModelHooks {
 
     public void onCopy(final DataDefinition documentDD, final Entity document) {
         String translatedType = getTranslatedType(document);
-        
+
         document.setField(DocumentFields.NUMBER, translatedType);
         document.setField(DocumentFields.NAME, null);
     }
@@ -57,7 +57,8 @@ public class DocumentModelHooks {
         /**
          * number is generated in database trigger from translated type *
          */
-        return translationService.translate(TYPE_TRANSLATION_PREFIX + document.getStringField(DocumentFields.TYPE), LocaleContextHolder.getLocale());
+        return translationService.translate(TYPE_TRANSLATION_PREFIX + document.getStringField(DocumentFields.TYPE),
+                LocaleContextHolder.getLocale());
     }
 
 }

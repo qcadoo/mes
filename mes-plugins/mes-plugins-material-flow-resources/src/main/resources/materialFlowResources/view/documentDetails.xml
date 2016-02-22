@@ -145,6 +145,10 @@
                 <listener event="printDocument"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="printDocument"/>
+
+                <listener event="save"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                          method="onSave"/>
             </component>
         </windowTab>
 
