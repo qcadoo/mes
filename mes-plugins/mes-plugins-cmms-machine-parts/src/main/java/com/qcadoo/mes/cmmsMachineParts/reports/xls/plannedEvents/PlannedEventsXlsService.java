@@ -239,10 +239,10 @@ public class PlannedEventsXlsService {
         stateStopDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.PLANNED, states));
 
         XSSFCell stateInRealizationDateCell = eventLine.createCell(34);
-        stateInRealizationDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.IN_REALIZATION, states));
+        stateInRealizationDateCell.setCellValue(getFirstDateForState(PlannedEventStateStringValues.IN_REALIZATION, states));
 
         XSSFCell stateInRealizationDateWCell = eventLine.createCell(35);
-        stateInRealizationDateWCell.setCellValue(getWorkerForState(PlannedEventStateStringValues.IN_REALIZATION, states));
+        stateInRealizationDateWCell.setCellValue(getFirstWorkerForState(PlannedEventStateStringValues.IN_REALIZATION, states));
 
         XSSFCell stateInEditingDateCell = eventLine.createCell(36);
         stateInEditingDateCell.setCellValue(getDateForState(PlannedEventStateStringValues.IN_EDITING, states));
@@ -275,6 +275,15 @@ public class PlannedEventsXlsService {
         return "";
     }
 
+    private String getFirstDateForState(final String state, final List<PlannedEventStateChangeDTO> states) {
+        Optional<PlannedEventStateChangeDTO> op = states.stream().filter(e -> state.equals(e.getStateChangeTargetState()))
+                .sorted((e1, e2) -> e2.getStateChangeDateAndTime().compareTo(e1.getStateChangeDateAndTime())).reduce((a, b) -> b);
+        if (op.isPresent()) {
+            return DateUtils.toDateTimeString(op.get().getStateChangeDateAndTime());
+        }
+        return "";
+    }
+
     private String getWorkerForState(final String state, final List<PlannedEventStateChangeDTO> states) {
         Optional<PlannedEventStateChangeDTO> op = states.stream().filter(e -> state.equals(e.getStateChangeTargetState()))
                 .sorted((e1, e2) -> e1.getStateChangeDateAndTime().compareTo(e2.getStateChangeDateAndTime())).reduce((a, b) -> b);
@@ -283,6 +292,16 @@ public class PlannedEventsXlsService {
         }
         return "";
     }
+
+    private String getFirstWorkerForState(final String state, final List<PlannedEventStateChangeDTO> states) {
+        Optional<PlannedEventStateChangeDTO> op = states.stream().filter(e -> state.equals(e.getStateChangeTargetState()))
+                .sorted((e1, e2) -> e2.getStateChangeDateAndTime().compareTo(e1.getStateChangeDateAndTime())).reduce((a, b) -> b);
+        if (op.isPresent()) {
+            return op.get().getStateWorker();
+        }
+        return "";
+    }
+
     private void fillSubRows(final XSSFSheet sheet, final PlannedEventDTO event, Integer rowNum, final Locale locale) {
 
     }
