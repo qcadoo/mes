@@ -1,4 +1,4 @@
-
+﻿
 -- worker to change in order
 -- last touched 27.01.2016 by kama
 
@@ -229,7 +229,6 @@ drop function migrate_document_numbers();
 
 alter table materialflowresources_document alter column name set not null;
 alter table materialflowresources_document alter column type set not null;
-alter table materialflowresources_document add unique(name);
 
 alter table materialflowresources_document alter column number set not null;
 alter table materialflowresources_document add unique(number);
