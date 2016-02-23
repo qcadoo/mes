@@ -279,7 +279,7 @@ CREATE SEQUENCE productioncounting_productiontrackingforproductdto_id_seq;
 
 CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductdto AS
 	SELECT
-		productiontrackingdto.id AS id,
+		trackingoperationproductcomponentdto.id AS id,
 		productiontrackingdto.number AS number,
 		productiontrackingdto.state AS state,
 		productiontrackingdto.createdate AS createdate,
