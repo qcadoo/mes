@@ -23,6 +23,7 @@ import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 
 @Repository
 public class DocumentPositionService {
@@ -42,11 +43,12 @@ public class DocumentPositionService {
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
             int perPage, DocumentPositionDTO position) {
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, "
-                + "palletnumber.number as palletnumber, location.number as storagelocation\n"
+                + "palletnumber.number as palletnumber, location.number as storagelocation, resource.number as resource \n"
                 + "	FROM materialflowresources_position p\n"
                 + "	left join basic_product product on (p.product_id = product.id)\n"
                 + "	left join basic_additionalcode additionalcode on (p.additionalcode_id = additionalcode.id)\n"
                 + "	left join basic_palletnumber palletnumber on (p.palletnumber_id = palletnumber.id)\n"
+                + "	left join materialflowresources_resource resource on (p.resource_id = resource.id)\n"
                 + "	left join materialflowresources_storagelocation location on (p.storagelocation_id = location.id) WHERE p.document_id = :documentId %s) q ";
 
         Map<String, Object> parameters = new HashMap<>();
@@ -139,6 +141,8 @@ public class DocumentPositionService {
 
             Map<String, Object> config = new HashMap<>();
             config.put("readOnly", isGridReadOnly(documentId));
+            config.put("suggestResource", shouldSuggestResource());
+            config.put("outDocument", isOutDocument(documentId));
 
             for (Map<String, Object> item : items) {
                 config.put("show" + item.get("name").toString().toLowerCase(), item.get("checked"));
@@ -257,6 +261,19 @@ public class DocumentPositionService {
         return DocumentState.parseString(stateString) == DocumentState.ACCEPTED;
     }
 
+    private boolean shouldSuggestResource() {
+        String query = "select suggestResource from materialflowresources_documentpositionparameters limit 1";
+        Boolean suggestResource = jdbcTemplate.queryForObject(query, Collections.EMPTY_MAP, Boolean.class);
+        return suggestResource;
+    }
+
+    private Object isOutDocument(Long documentId) {
+        String query = "select type from materialflowresources_document WHERE id = :id";
+        String stateString = jdbcTemplate.queryForObject(query, Collections.singletonMap("id", documentId), String.class);
+        DocumentType type = DocumentType.parseString(stateString);
+        return type == DocumentType.INTERNAL_OUTBOUND || type == DocumentType.RELEASE || type == DocumentType.TRANSFER;
+    }
+
     public StorageLocationDTO getStorageLocation(String product, String document) {
         if (StringUtils.isEmpty(product)) {
             return null;
@@ -288,6 +305,67 @@ public class DocumentPositionService {
             return null;
         } else {
             return products.get(0);
+        }
+    }
+
+    public ResourceDTO getResource(String product) {
+        String query = "select number, batch from materialflowresources_resource WHERE product_id =\n"
+                + "(SELECT id FROM basic_product WHERE number = :product) and expirationdate = \n"
+                + "(select min(expirationdate) from materialflowresources_resource WHERE product_id =\n"
+                + "(SELECT id FROM basic_product WHERE number = :product))";
+        Map<String, Object> filter = new HashMap<>();
+        filter.put("product", product);
+        List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
+        if (batches.isEmpty()) {
+            return null;
+        } else {
+            return batches.get(0);
+        }
+    }
+
+    public List<AbstractDTO> getResources(String q, String product) {
+
+        if (Strings.isNullOrEmpty(q) || Strings.isNullOrEmpty(product)) {
+            return Lists.newArrayList();
+        } else {
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("query", '%' + q + '%');
+            paramMap.put("product", product);
+            String query = "select number, batch from materialflowresources_resource WHERE product_id =\n"
+                    + "(SELECT id FROM basic_product WHERE number = :product) and expirationdate = \n"
+                    + "(select min(expirationdate) from materialflowresources_resource WHERE product_id =\n"
+                    + "(SELECT id FROM basic_product WHERE number = :product)) " + "AND number ilike :query";
+            return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
+
+        }
+    }
+
+    public DataResponse getResourcesResponse(String q, String product) {
+        if (Strings.isNullOrEmpty(product)) {
+            return new DataResponse(Lists.newArrayList(), 0);
+        }
+        String preparedQuery = "select number, batch from materialflowresources_resource WHERE product_id =\n"
+                + "(SELECT id FROM basic_product WHERE number = '" + product + "') and expirationdate = \n"
+                    + "(select min(expirationdate) from materialflowresources_resource WHERE product_id =\n"
+                + "(SELECT id FROM basic_product WHERE number = '" + product + "')) " + "AND number ilike :query";
+        String query = '%' + q + '%';
+        List<AbstractDTO> entities = getResources(query, product);
+        return dataProvider.getDataResponse(query, preparedQuery, entities);
+    }
+
+    public ResourceDTO getResourceByNumber(String resource) {
+        String query = "select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode \n"
+                + "FROM materialflowresources_resource r \n"
+                + "LEFT JOIN materialflowresources_storagelocation sl on sl.id = storageLocation_id \n"
+                + "LEFT JOIN basic_additionalcode ac on ac.id = additionalcode_id \n"
+                + "LEFT JOIN basic_palletnumber pn on pn.id = palletnumber_id WHERE r.number = :resource";
+        Map<String, Object> filter = new HashMap<>();
+        filter.put("resource", resource);
+        List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
+        if (batches.isEmpty()) {
+            return null;
+        } else {
+            return batches.get(0);
         }
     }
 }

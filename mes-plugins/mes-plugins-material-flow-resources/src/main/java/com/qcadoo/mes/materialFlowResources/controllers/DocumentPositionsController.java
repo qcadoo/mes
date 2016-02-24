@@ -25,6 +25,7 @@ import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
+import com.qcadoo.mes.materialFlowResources.ResourceDTO;
 import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 @Controller
@@ -89,6 +90,24 @@ public class DocumentPositionsController {
     public StorageLocationDTO getStorageLocationForProductAndWarehouse(@PathVariable String product,
             @PathVariable String document) {
         return documentPositionRepository.getStorageLocation(product, document);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resource/{product}")
+    public ResourceDTO getResourceForProduct(@PathVariable String product) {
+        return documentPositionRepository.getResource(product);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resources")
+    public DataResponse getResources(@RequestParam("query") String query, @RequestParam("product") String product) {
+        return documentPositionRepository.getResourcesResponse(query, product);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resourceByNumber/{resource}")
+    public ResourceDTO getBatchForResource(@PathVariable String resource) {
+        return documentPositionRepository.getResourceByNumber(resource);
     }
 
     @ResponseBody

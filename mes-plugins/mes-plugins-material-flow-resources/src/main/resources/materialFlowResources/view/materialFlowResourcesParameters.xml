@@ -33,11 +33,13 @@
     <component type="window" name="window">
 
         <ribbon>
+        <template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
         </ribbon>
 
         <windowTab name="mainTab">
             <component type="form" name="documentPositionParameters" reference="form">
                        
+                <component type="checkbox" name="suggestResource" field="suggestResource" reference="suggestResource" />
                 <component type="grid" name="grid" reference="grid" source="#{form}.items">
                     <option type="column" name="name" fields="name" link="true" />
                     <option type="column" name="checked" fields="checked" width="50" />

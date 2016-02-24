@@ -1,11 +1,5 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,12 +10,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 
 @Service
 public class DocumentPositionValidator {
@@ -231,6 +233,7 @@ public class DocumentPositionValidator {
         params.put("document_id", vo.getDocument());
         params.put("productiondate", vo.getProductiondate());
         params.put("price", vo.getPrice());
+        params.put("resource_id", tryGetResourceIdByNumber(vo.getResource(), errors));
         params.put("batch", vo.getBatch());
 
         return params;
@@ -299,6 +302,23 @@ public class DocumentPositionValidator {
 
         } catch (EmptyResultDataAccessException e) {
             errors.add(String.format("Nie znaleziono takiego miejsca składowania: '%s'.", storageLocationNumber));
+            return null;
+        }
+    }
+
+    private Object tryGetResourceIdByNumber(String resource, List<String> errors) {
+        if (Strings.isNullOrEmpty(resource)) {
+            return null;
+        }
+
+        try {
+            Long resourceId = jdbcTemplate.queryForObject("SELECT id FROM materialflowresources_resource WHERE number = :number",
+                    Collections.singletonMap("number", resource), Long.class);
+
+            return resourceId;
+
+        } catch (EmptyResultDataAccessException e) {
+            errors.add(String.format("Nie znaleziono takiego zasobu: '%s'.", resource));
             return null;
         }
     }

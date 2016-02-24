@@ -110,3 +110,13 @@ ALTER TABLE materialflowresources_position
 ALTER TABLE materialflowresources_position
   ADD CONSTRAINT position_palletnumber_fkey FOREIGN KEY (palletnumber_id)
       REFERENCES basic_palletnumber (id) DEFERRABLE;
+
+-- resource lookup changes
+-- last touched 23.02.2016 by pako
+
+insert into materialflowresources_documentpositionparametersitem (name, parameters_id) values 
+	('resource', 1);
+
+ALTER TABLE materialflowresources_documentpositionparameters ADD COLUMN suggestresource boolean;
+ALTER TABLE materialflowresources_documentpositionparameters ALTER COLUMN suggestresource SET DEFAULT true;
+-- end

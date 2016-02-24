@@ -23,13 +23,32 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATION;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
+import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
+import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -38,18 +57,6 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
-import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATION;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -468,7 +475,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     public List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
             WarehouseAlgorithm warehouseAlgorithm) {
         List<Entity> resources = Lists.newArrayList();
-        if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {
+        Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
+        if(resource != null) {
+            resources.add(resource);
+        } if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {
             resources = getResourcesForLocationAndProductFIFO(warehouse, product);
         } else if (WarehouseAlgorithm.LIFO.equals(warehouseAlgorithm)) {
             resources = getResourcesForLocationAndProductLIFO(warehouse, product);

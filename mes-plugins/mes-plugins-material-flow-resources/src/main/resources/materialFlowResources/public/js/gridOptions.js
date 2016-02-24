@@ -481,6 +481,36 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return wrapper;
         }
 
+        function resourceLookup_createElement(value, options) {
+            var lookup = createLookupElement('resource', value, '/integration/rest/documentPositions/resources.html', options, function () {
+                return  {
+                    product: getFieldValue('product', getRowIdFromElement($('input', lookup)))
+                };
+            });
+            
+            $('input', lookup).bind('change keydown paste input', function () {
+                var t = $(this);
+                window.clearTimeout(t.data("timeout"));
+                $(this).data("timeout", setTimeout(function () {
+                    if (t.val()) {
+                    	$.get('/integration/rest/documentPositions/resourceByNumber/' + t.val() + ".html", function (resource) {
+                    		updateFieldValue('batch', resource['batch'], getRowIdFromElement(t));
+                    		updateFieldValue('productiondate', resource['productionDate'], getRowIdFromElement(t));
+                    		updateFieldValue('expirationdate', resource['expirationDate'], getRowIdFromElement(t));
+                    		updateFieldValue('storageLocation', resource['storageLocation'], getRowIdFromElement(t));
+                    		updateFieldValue('palletNumber', resource['palletNumber'], getRowIdFromElement(t));
+                    		updateFieldValue('additionalCode', resource['additionalCode'], getRowIdFromElement(t));
+                    		updateFieldValue('price', resource['price'], getRowIdFromElement(t));
+                    		updateFieldValue('typeOfPallet', resource['typeOfPallet'], getRowIdFromElement(t));
+                    	});
+                    } else {
+                    	updateFieldValue('batch', '', getRowIdFromElement(t));
+                    }
+                }, 500));
+            });
+            return lookup;
+        }
+
         function palletNumbersLookup_createElement(value, options) {
             return createLookupElement('palletNumber', value, '/rest/palletnumbers', options);
         }
@@ -599,6 +629,40 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             });
         }
 
+        function updateResource(productNumber) {
+        	$.get('/integration/rest/documentPositions/resource/' + productNumber + ".html", function (resource) {
+                if (resource) {
+                    var gridData = $('#grid').jqGrid('getRowData');
+
+                    var productInput = $('#product');
+
+                    if (productInput.length) {
+                        // edit form
+                        updateFieldValue('resource', resource['number'], 0);
+                        updateFieldValue('batch', resource['batch'], 0);
+
+                    } else {
+                        // edit inline
+                        var patternProduct = /(id=\".+_product\")/ig;
+                        for (var i = 0; i < gridData.length; i++) {
+                            var product = gridData[i]['product'];
+                            if (product.toLowerCase().indexOf('<input') >= 0) {
+                                var matched = product.match(patternProduct)[0];
+                                var numberOfInput = matched.toUpperCase().replace("ID=\"", "").replace("_PRODUCT\"", "");
+                                var productValue = getFieldValue('product', numberOfInput);
+
+                                if (productValue === productNumber) {
+                                    // update input
+                                    updateFieldValue('resource', resource['number'], numberOfInput);
+                                    updateFieldValue('batch', resource['batch'], numberOfInput);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         function productsLookup_createElement(value, options) {
             var lookup = createLookupElement('product', value, '/rest/products', options);
 
@@ -610,8 +674,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     updateUnitsInGridByProduct(t.val());
                     if (t.val()) {
                         updateStorageLocations(t.val(), getDocumentId());
+                        if ($scope.config.suggestResource) {
+                        	updateResource(t.val());
+                        }
                     } else {
                         updateFieldValue('storageLocation', '', getRowIdFromElement(t));
+                        updateFieldValue('resource', '', getRowIdFromElement(t));
+                        updateFieldValue('batch', '', getRowIdFromElement(t));
                     }
                     clearAdditionalCode(t.val(), getRowIdFromElement(t));
                 }, 500));
@@ -995,8 +1064,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             colNames: ['ID', QCD.translate('qcadooView.gridColumn.document'), QCD.translate('qcadooView.gridColumn.number'), QCD.translate('qcadooView.gridColumn.actions'), QCD.translate('qcadooView.gridColumn.product'), QCD.translate('qcadooView.gridColumn.additionalCode'),
                 QCD.translate('qcadooView.gridColumn.quantity'), QCD.translate('qcadooView.gridColumn.unit'), QCD.translate('qcadooView.gridColumn.givenquantity'),
                 QCD.translate('qcadooView.gridColumn.givenunit'), QCD.translate('qcadooView.gridColumn.conversion'), QCD.translate('qcadooView.gridColumn.price'),
-                QCD.translate('qcadooView.gridColumn.expirationdate'), QCD.translate('qcadooView.gridColumn.productiondate'), QCD.translate('qcadooView.gridColumn.batch'),
-                QCD.translate('qcadooView.gridColumn.palletNumber'), QCD.translate('qcadooView.gridColumn.typeOfPallet'),
+                QCD.translate('qcadooView.gridColumn.expirationdate'), QCD.translate('qcadooView.gridColumn.productiondate'), QCD.translate('qcadooView.gridColumn.resource'),
+                QCD.translate('qcadooView.gridColumn.batch'), QCD.translate('qcadooView.gridColumn.palletNumber'), QCD.translate('qcadooView.gridColumn.typeOfPallet'),
                 QCD.translate('qcadooView.gridColumn.storageLocation')/*, 'resource_id'*/],
             colModel: [
                 {
@@ -1218,14 +1287,29 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                 },
                 {
-                    name: 'batch',
-                    index: 'batch',
+                    name: 'resource',
+                    index: 'resource',
                     editable: true,
                     required: true,
+                    edittype: 'custom',
+                    editoptions: {
+                        custom_element: resourceLookup_createElement,
+                        custom_value: lookup_value
+                    },
                     formoptions: {
                         rowpos: 5,
                         colpos: 2
                     },
+                },
+                {
+                	name: 'batch',
+                	index: 'batch',
+                	editable: true,
+                	required: true,
+                	formoptions: {
+                		rowpos: 6,
+                		colpos: 2
+                	},
                 },
                 {
                     name: 'palletNumber',
@@ -1238,7 +1322,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         custom_value: lookup_value
                     },
                     formoptions: {
-                        rowpos: 6,
+                        rowpos: 7,
                         colpos: 2
                     },
                 },
@@ -1251,7 +1335,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editoptions: {
                     },
                     formoptions: {
-                        rowpos: 7,
+                        rowpos: 8,
                         colpos: 2
                     },
                 },
@@ -1265,7 +1349,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         custom_value: lookup_value
                     },
                     formoptions: {
-                        rowpos: 8,
+                        rowpos: 9,
                         colpos: 2
                     },
                 }/*,
@@ -1330,7 +1414,17 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         };
 
         function prepareGridConfig(config) {
-            var hideColumnInGrid = function (columnIndex, responseDate) {
+            var readOnlyInType = function (outDocument, columnIndex, responseDate) {
+            	if(outDocument && (columnIndex === 'conversion' || columnIndex === 'expirationdate' ||
+            			columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
+            		return true;
+            	}
+            	if(!outDocument && columnIndex === 'resource') {
+            		return true;
+            	}
+            	return false;
+            }
+        	var hideColumnInGrid = function (columnIndex, responseDate) {
                 if (columnIndex === 'storageLocation' && !responseDate.showstoragelocation) {
                     return true;
                 }
@@ -1349,8 +1443,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 if (columnIndex === 'typeOfPallet' && !responseDate.showtypeofpallet) {
                     return true;
                 }
-                if (columnIndex === 'batch' && !responseDate.showbatch) {
+                if (columnIndex === 'resource' && !responseDate.showresource) {
                     return true;
+                }
+                if (columnIndex === 'batch' && !responseDate.showbatch) {
+                	return true;
                 }
                 if (columnIndex === 'price' && !responseDate.showprice) {
                     return true;
@@ -1365,12 +1462,18 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             }).then(function successCallback(response) {
                 config.readOnly = response.data.readOnly;
+                config.suggestResource = response.data.suggestResource;
+                config.outDocument = response.data.outDocument;
 
                 angular.forEach(config.colModel, function (value, key) {
                     if (hideColumnInGrid(value.index, response.data)) {
                         config.colModel[key].hidden = true;
                         config.colModel[key].editrules = config.colModel[key].editrules || {};
                         config.colModel[key].editrules.edithidden = true;
+                    }
+                    if(readOnlyInType(config.outDocument,value.index, response.data)) {
+                    	config.colModel[key].editoptions = config.colModel[key].editoptions || {};
+                    	config.colModel[key].editoptions.readonly = 'readonly';
                     }
                 });
 

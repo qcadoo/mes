@@ -29,5 +29,6 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
         <hasMany name="items" model="documentPositionParametersItem" joinField="parameters" />
+        <boolean name="suggestResource" default="true"/> 
     </fields>
 </model>

@@ -1,10 +1,11 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public class DocumentPositionDTO {
 
@@ -48,8 +49,7 @@ public class DocumentPositionDTO {
 
     private String batch;
 
-    // TODO
-    private Long resource;
+    private String resource;
 
     public Long getId() {
         return id;
@@ -187,11 +187,11 @@ public class DocumentPositionDTO {
         this.batch = batch;
     }
 
-    public Long getResource() {
+    public String getResource() {
         return resource;
     }
 
-    public void setResource(Long resource) {
+    public void setResource(String resource) {
         this.resource = resource;
     }
 
