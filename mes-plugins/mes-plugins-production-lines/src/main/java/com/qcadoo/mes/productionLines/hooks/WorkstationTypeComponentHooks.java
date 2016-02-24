@@ -64,8 +64,8 @@ public class WorkstationTypeComponentHooks {
         }
 
         if (shouldValidateDates(dataDefinition, entity)) {
-            boolean isValid = workstationTypeComponentsService.checkIfComponentForGivenTimeExists(entity);
-            if (!isValid) {
+            boolean componentExists = workstationTypeComponentsService.checkIfComponentForGivenTimeExists(entity);
+            if (componentExists) {
                 entity.addError(dataDefinition.getField(WorkstationTypeComponentFields.DATE_FROM),
                         "productionLines.workstationTypeComponent.validation.otherComponentsExist");
             }

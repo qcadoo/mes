@@ -49,16 +49,25 @@ public class WorkstationTypeComponentsService {
         Entity productionLine = workstationTypeComponent.getBelongsToField(WorkstationTypeComponentFields.PRODUCTIONLINE);
         Entity workstationType = workstationTypeComponent.getBelongsToField(WorkstationTypeComponentFields.WORKSTATIONTYPE);
         Date dateFrom = workstationTypeComponent.getDateField(WorkstationTypeComponentFields.DATE_FROM);
+        Date dateTo = workstationTypeComponent.getDateField(WorkstationTypeComponentFields.DATE_TO);
         SearchCriterion scb = SearchRestrictions.and(
                 SearchRestrictions.belongsTo(WorkstationTypeComponentFields.PRODUCTIONLINE, productionLine),
-                SearchRestrictions.belongsTo(WorkstationTypeComponentFields.WORKSTATIONTYPE, workstationType),
-                SearchRestrictions.or(
-                        SearchRestrictions.and(SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
-                                SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom)),
-                        SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_FROM, dateFrom)));
+                SearchRestrictions.belongsTo(WorkstationTypeComponentFields.WORKSTATIONTYPE, workstationType));
 
+        if (dateTo == null) {
+            scb = SearchRestrictions
+                    .and(scb,
+                            SearchRestrictions.or(SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
+                                    SearchRestrictions.and(
+                                            SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
+                                            SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom))));
+        } else {
+            scb = SearchRestrictions.and(scb,
+                    SearchRestrictions.and(SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
+                            SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom)));
+        }
         if (workstationTypeComponent.getId() != null) {
-            scb = SearchRestrictions.and(scb, SearchRestrictions.ne("id", workstationType.getId()));
+            scb = SearchRestrictions.and(scb, SearchRestrictions.ne("id", workstationTypeComponent.getId()));
         }
         long count = dataDefinitionService
                 .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_WORKSTATION_TYPE_COMPONENT)
