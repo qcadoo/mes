@@ -12,6 +12,7 @@ import com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
@@ -48,19 +49,21 @@ public class WorkstationTypeComponentsService {
         Entity productionLine = workstationTypeComponent.getBelongsToField(WorkstationTypeComponentFields.PRODUCTIONLINE);
         Entity workstationType = workstationTypeComponent.getBelongsToField(WorkstationTypeComponentFields.WORKSTATIONTYPE);
         Date dateFrom = workstationTypeComponent.getDateField(WorkstationTypeComponentFields.DATE_FROM);
-        SearchCriteriaBuilder scb = dataDefinitionService
-                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_WORKSTATION_TYPE_COMPONENT).find()
-                .add(SearchRestrictions.belongsTo(WorkstationTypeComponentFields.PRODUCTIONLINE, productionLine))
-                .add(SearchRestrictions.belongsTo(WorkstationTypeComponentFields.WORKSTATIONTYPE, workstationType))
-                .add(SearchRestrictions.or(
+        SearchCriterion scb = SearchRestrictions.and(
+                SearchRestrictions.belongsTo(WorkstationTypeComponentFields.PRODUCTIONLINE, productionLine),
+                SearchRestrictions.belongsTo(WorkstationTypeComponentFields.WORKSTATIONTYPE, workstationType),
+                SearchRestrictions.or(
                         SearchRestrictions.and(SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
                                 SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom)),
                         SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_FROM, dateFrom)));
 
         if (workstationTypeComponent.getId() != null) {
-            scb.add(SearchRestrictions.idNe(workstationTypeComponent.getId()));
+            scb = SearchRestrictions.and(scb, SearchRestrictions.ne("id", workstationType.getId()));
         }
-        return scb.list().getEntities().isEmpty();
+        long count = dataDefinitionService
+                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_WORKSTATION_TYPE_COMPONENT)
+                .count(scb);
+        return count != 0;
 
     }
 
