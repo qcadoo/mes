@@ -305,7 +305,8 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductdto AS
 		trackingoperationproductcomponentdto.productnumber AS productnumber,
 		trackingoperationproductcomponentdto.productunit AS productunit,
 		trackingoperationproductcomponentdto.plannedquantity AS plannedquantity,
-		trackingoperationproductcomponentdto.usedquantity AS usedquantity
+		trackingoperationproductcomponentdto.usedquantity AS usedquantity,
+		productiontrackingdto.id AS productiontracking_id
 	FROM productioncounting_trackingoperationproductcomponentdto trackingoperationproductcomponentdto
 	LEFT JOIN productioncounting_productiontrackingdto productiontrackingdto
 		ON productiontrackingdto.id = trackingoperationproductcomponentdto.productiontracking_id;
