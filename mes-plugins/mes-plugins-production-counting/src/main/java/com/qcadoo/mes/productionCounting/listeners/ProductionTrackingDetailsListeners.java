@@ -23,16 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
@@ -51,6 +42,15 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ProductionTrackingDetailsListeners {
@@ -72,6 +72,16 @@ public class ProductionTrackingDetailsListeners {
 
     @Autowired
     private StaffTimeCalculator staffTimeCalculator;
+
+    public void goToProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        if (!grid.getSelectedEntitiesIds().isEmpty()) {
+            String url = "../page/productionCounting/productionTrackingDetails.html";
+            Entity e = grid.getSelectedEntities().get(0).getDataDefinition().get(grid.getSelectedEntities().get(0).getId());
+
+            view.redirectTo(url, false, true, ImmutableMap.of("form.id", e.getIntegerField("productiontracking_id")));
+        }
+    }
 
     public void calcTotalLaborTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
