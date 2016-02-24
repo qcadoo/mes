@@ -1471,10 +1471,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         config.colModel[key].editrules = config.colModel[key].editrules || {};
                         config.colModel[key].editrules.edithidden = true;
                     }
-                    if(readOnlyInType(config.outDocument,value.index, response.data)) {
-                    	config.colModel[key].editoptions = config.colModel[key].editoptions || {};
-                    	config.colModel[key].editoptions.readonly = 'readonly';
-                    }
+//                    if(readOnlyInType(config.outDocument,value.index, response.data)) {
+//                    	config.colModel[key].editoptions = config.colModel[key].editoptions || {};
+//                    	config.colModel[key].editoptions.readonly = 'readonly';
+//                    }
                 });
 
                 $http({
