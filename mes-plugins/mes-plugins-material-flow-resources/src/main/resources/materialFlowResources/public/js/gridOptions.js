@@ -495,7 +495,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
                     if (t.val()) {
-                    	$.get('/integration/rest/documentPositions/resourceByNumber/' + t.val() + ".html", function (resource) {
+                    	$.get('/integration/rest/documentPositions/resourceByNumber/' + encodeURIComponent(t.val()).replace('%2F','%252F') + ".html", function (resource) {
                     		updateFieldValue('batch', resource['batch'], getRowIdFromElement(t));
                     		updateFieldValue('productiondate', resource['productionDate'], getRowIdFromElement(t));
                     		updateFieldValue('expirationdate', resource['expirationDate'], getRowIdFromElement(t));

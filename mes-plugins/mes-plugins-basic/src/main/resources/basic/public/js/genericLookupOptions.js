@@ -18,14 +18,13 @@ myApp.directive('ngJqGrid', function ($window) {
                     element.append(angular.element('<div id="jqGridPager"></div>'));
                     $(table).jqGrid(newValue);
 
-                    var positionsHeader = QCD.translate('qcadooView.gridHeader.' + scope.recordName);
+                    var positionsHeader = QCD.translate('qcadooView.gridHeader.' + scope.$parent.recordName);
                     var cancelHeader = QCD.translate('qcadooView.gridHeader.cancel');
                     var cancelButton = '<div id="cancel_button" class="headerActionButton" onclick="return cancelGrid();"> <a href="#"><span>' +
                             '<div id="cancel_icon"></div>' +
                             '<div class="hasIcon">' + cancelHeader + '</div></div>';
 
                     var gridTitle = '<div class="gridTitle">' + positionsHeader + '</div>';
-
                     $('#t_grid').append(gridTitle);
                     $('#t_grid').append(cancelButton);
 
@@ -47,7 +46,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         $scope.init = function (recordName) {
             $scope.recordName = recordName;
-
             prepareGridConfig();
         }
 
@@ -118,7 +116,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 config = angular.merge(config, response.data);
 
                 angular.forEach(config.colNames, function (value, key) {
-                    config.colNames[key] = QCD.translate('qcadooView.gridColumn.' + value);
+                    config.colNames[key] = getSpecificTranslationOrDefault(value, $scope.recordName);
                 });
 
                 angular.forEach(config.colModel, function (value, key) {
@@ -131,6 +129,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $scope.config = config;
             });
 
+        }
+        
+        function getSpecificTranslationOrDefault(value, recordName) {
+        	var translation = QCD.translate('qcadooView.gridColumn.' + recordName + '.' + value);
+        	if(translation.startsWith('[') && translation.endsWith(']')) {
+        		translation = QCD.translate('qcadooView.gridColumn.' + value);
+        	}
+        	return translation;
         }
 
     }]);
