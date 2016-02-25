@@ -1,5 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.controllers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -106,8 +108,9 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resourceByNumber/{resource}")
-    public ResourceDTO getBatchForResource(@PathVariable String resource) {
-        return documentPositionRepository.getResourceByNumber(resource);
+    public ResourceDTO getBatchForResource(@PathVariable String resource) throws UnsupportedEncodingException {
+        String decodedResource = URLDecoder.decode(resource, "UTF-8");
+        return documentPositionRepository.getResourceByNumber(decodedResource);
     }
 
     @ResponseBody
