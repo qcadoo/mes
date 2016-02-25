@@ -484,7 +484,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function resourceLookup_createElement(value, options) {
             var lookup = createLookupElement('resource', value, '/integration/rest/documentPositions/resources.html', options, function () {
                 return  {
-                    product: getFieldValue('product', getRowIdFromElement($('input', lookup)))
+                    product: getFieldValue('product', getRowIdFromElement($('input', lookup))),
+                    documentId: getDocumentId()
+
                 };
             });
             

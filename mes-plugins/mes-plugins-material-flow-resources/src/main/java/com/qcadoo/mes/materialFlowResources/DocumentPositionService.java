@@ -1,20 +1,5 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.GridResponse;
@@ -24,6 +9,16 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class DocumentPositionService {
@@ -309,10 +304,14 @@ public class DocumentPositionService {
     }
 
     public ResourceDTO getResource(String product) {
-        String query = "select number, batch from materialflowresources_resource WHERE product_id =\n"
-                + "(SELECT id FROM basic_product WHERE number = :product) and expirationdate = \n"
-                + "(select min(expirationdate) from materialflowresources_resource WHERE product_id =\n"
-                + "(SELECT id FROM basic_product WHERE number = :product))";
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
+        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and expirationdate = ");
+        queryBuilder.append("(select min(expirationdate) from materialflowresources_resource WHERE product_id = ");
+        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product))");
+
+        String query = queryBuilder.toString();
         Map<String, Object> filter = new HashMap<>();
         filter.put("product", product);
         List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
@@ -328,13 +327,17 @@ public class DocumentPositionService {
         if (Strings.isNullOrEmpty(q) || Strings.isNullOrEmpty(product)) {
             return Lists.newArrayList();
         } else {
+            StringBuilder queryBuilder = new StringBuilder();
+            queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
+            queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and expirationdate = ");
+            queryBuilder.append("(select min(expirationdate) from materialflowresources_resource WHERE product_id = ");
+            queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product)) " + "AND number ilike :query");
+
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("query", '%' + q + '%');
             paramMap.put("product", product);
-            String query = "select number, batch from materialflowresources_resource WHERE product_id =\n"
-                    + "(SELECT id FROM basic_product WHERE number = :product) and expirationdate = \n"
-                    + "(select min(expirationdate) from materialflowresources_resource WHERE product_id =\n"
-                    + "(SELECT id FROM basic_product WHERE number = :product)) " + "AND number ilike :query";
+
+            String query = queryBuilder.toString();
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
 
         }
@@ -344,10 +347,15 @@ public class DocumentPositionService {
         if (Strings.isNullOrEmpty(product)) {
             return new DataResponse(Lists.newArrayList(), 0);
         }
-        String preparedQuery = "select number, batch from materialflowresources_resource WHERE product_id =\n"
-                + "(SELECT id FROM basic_product WHERE number = '" + product + "') and expirationdate = \n"
-                    + "(select min(expirationdate) from materialflowresources_resource WHERE product_id =\n"
-                + "(SELECT id FROM basic_product WHERE number = '" + product + "')) " + "AND number ilike :query";
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
+        queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "') and expirationdate = ");
+        queryBuilder.append("(select min(expirationdate) from materialflowresources_resource WHERE product_id = ");
+        queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "')) " + "AND number ilike :query");
+
+        String preparedQuery = queryBuilder.toString();
+
         String query = '%' + q + '%';
         List<AbstractDTO> entities = getResources(query, product);
         return dataProvider.getDataResponse(query, preparedQuery, entities);
@@ -368,4 +376,5 @@ public class DocumentPositionService {
             return batches.get(0);
         }
     }
+
 }
