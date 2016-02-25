@@ -306,11 +306,14 @@ public class DocumentDetailsHooks {
     private void lockNumberAndTypeChange(final ViewDefinitionState view) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
 
+        ComponentState typeComponent = view.getComponentByReference(DocumentFields.TYPE);
         if (formComponent.getEntityId() != null) {
-            ComponentState typeComponent = view.getComponentByReference(DocumentFields.TYPE);
             typeComponent.setEnabled(false);
+
+        } else {
+            typeComponent.setEnabled(true);
         }
-        
+
         FieldComponent numberFieldComponent = (FieldComponent) view.getComponentByReference(DocumentFields.NUMBER);
         numberFieldComponent.setEnabled(false);
     }
@@ -321,9 +324,9 @@ public class DocumentDetailsHooks {
             ComponentState numberField = view.getComponentByReference(DocumentFields.NUMBER);
             ComponentState nameField = view.getComponentByReference(DocumentFields.NAME);
 
-            String nameFieldValue = (String)nameField.getFieldValue();
-            String numberFieldValue = (String)numberField.getFieldValue();
-            
+            String nameFieldValue = (String) nameField.getFieldValue();
+            String numberFieldValue = (String) numberField.getFieldValue();
+
             if (!numberFieldValue.contains("/")) {
                 Entity document = getDocumentDD().get(formComponent.getEntityId());
 
