@@ -109,7 +109,7 @@ public class DocumentPositionService {
             } else {
                 String query = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :q "
                         + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = :document) "
-                        + "AND (product_id IN (SELECT id FROM basic_product WHERE name LIKE :product) OR product_id IS NULL) LIMIT 20;";
+                        + "AND (product_id IN (SELECT id FROM basic_product WHERE number LIKE :product) OR product_id IS NULL) LIMIT 20;";
                 paramMap.put("product", product);
                 return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(StorageLocationDTO.class));
             }
@@ -127,7 +127,7 @@ public class DocumentPositionService {
 
             preparedQuery = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :query "
                     + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = "
-                    + Integer.parseInt(document) + ") " + "AND (product_id IN (SELECT id FROM basic_product WHERE name LIKE '"
+                    + Integer.parseInt(document) + ") " + "AND (product_id IN (SELECT id FROM basic_product WHERE number LIKE '"
                     + product + "') OR product_id IS NULL);";
         }
         List<AbstractDTO> entities = getStorageLocations(q, product, document);
