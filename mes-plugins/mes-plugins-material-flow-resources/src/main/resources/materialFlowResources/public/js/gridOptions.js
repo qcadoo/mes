@@ -497,22 +497,26 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
                     if (t.val()) {
-                        $.get('/integration/rest/documentPositions/resourceByNumber/' + encodeURIComponent(t.val()).replace('%2F', '%252F') + ".html", function (resource) {
-                            updateFieldValue('batch', resource['batch'], getRowIdFromElement(t));
-                            updateFieldValue('productiondate', resource['productionDate'], getRowIdFromElement(t));
-                            updateFieldValue('expirationdate', resource['expirationDate'], getRowIdFromElement(t));
-                            updateFieldValue('storageLocation', resource['storageLocation'], getRowIdFromElement(t));
-                            updateFieldValue('palletNumber', resource['palletNumber'], getRowIdFromElement(t));
-                            updateFieldValue('additionalCode', resource['additionalCode'], getRowIdFromElement(t));
-                            updateFieldValue('price', resource['price'], getRowIdFromElement(t));
-                            updateFieldValue('typeOfPallet', resource['typeOfPallet'], getRowIdFromElement(t));
-                        });
+                        fillWithAttributesFromResource(t.val(), getRowIdFromElement(t))
                     } else {
                         updateFieldValue('batch', '', getRowIdFromElement(t));
                     }
                 }, 500));
             });
             return lookup;
+        }
+
+        function fillWithAttributesFromResource(resource, rowId) {
+        	$.get('/integration/rest/documentPositions/resourceByNumber/' + encodeURIComponent(resource).replace('%2F', '%252F') + ".html", function (resource) {
+                updateFieldValue('batch', resource['batch'], rowId);
+                updateFieldValue('productiondate', resource['productionDate'], rowId);
+                updateFieldValue('expirationdate', resource['expirationDate'], rowId);
+                updateFieldValue('storageLocation', resource['storageLocation'], rowId);
+                updateFieldValue('palletNumber', resource['palletNumber'], rowId);
+                updateFieldValue('additionalCode', resource['additionalCode'], rowId);
+                updateFieldValue('price', resource['price'], rowId);
+                updateFieldValue('typeOfPallet', resource['typeOfPallet'], rowId);
+            });
         }
 
         function palletNumbersLookup_createElement(value, options) {
@@ -661,7 +665,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                                 if (productValue === productNumber) {
                                     // update input
                                     updateFieldValue('resource', resource['number'], numberOfInput);
-                                    updateFieldValue('batch', resource['batch'], numberOfInput);
+                                    fillWithAttributesFromResource(resource['number'], numberOfInput);
                                 }
                             }
                         }
