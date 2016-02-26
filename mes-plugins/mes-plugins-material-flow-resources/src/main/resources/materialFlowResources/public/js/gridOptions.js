@@ -772,7 +772,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     updateFieldValue('product', newProduct, rowNumber);
                 }
 
-            });
+            }, 'json');
         }
 
         function lookup_value(elem, operation, value) {
