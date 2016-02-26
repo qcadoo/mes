@@ -1,5 +1,19 @@
 package com.qcadoo.mes.materialFlowResources.controllers;
 
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
+import com.qcadoo.mes.materialFlowResources.ResourceDTO;
+import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
@@ -7,28 +21,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
-import com.qcadoo.mes.materialFlowResources.ResourceDTO;
-import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 @Controller
 @RequestMapping("/integration/rest/documentPositions")
@@ -89,26 +81,27 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storageLocation/{product}/{document}")
-    public StorageLocationDTO getStorageLocationForProductAndWarehouse(@PathVariable String product,
-            @PathVariable String document) {
+    public StorageLocationDTO getStorageLocationForProductAndWarehouse(@PathVariable String product, @PathVariable String document) {
         return documentPositionRepository.getStorageLocation(product, document);
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resource/{product}")
-    public ResourceDTO getResourceForProduct(@PathVariable String product) {
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resource/{document}/{product}")
+    public ResourceDTO getResourceForProduct(@PathVariable String document, @PathVariable String product) {
         return documentPositionRepository.getResource(product);
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resources")
-    public DataResponse getResources(@RequestParam("query") String query, @RequestParam("product") String product) {
+    public DataResponse getResources(@RequestParam("query") String query, @RequestParam("product") String product,
+            @RequestParam("documentId") String document) {
         return documentPositionRepository.getResourcesResponse(query, product);
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resourceByNumber/{resource}")
-    public ResourceDTO getBatchForResource(@PathVariable String resource) throws UnsupportedEncodingException {
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resourceByNumber/{document}/{resource}")
+    public ResourceDTO getBatchForResource(@PathVariable String document, @PathVariable String resource)
+            throws UnsupportedEncodingException {
         String decodedResource = URLDecoder.decode(resource, "UTF-8");
         return documentPositionRepository.getResourceByNumber(decodedResource);
     }

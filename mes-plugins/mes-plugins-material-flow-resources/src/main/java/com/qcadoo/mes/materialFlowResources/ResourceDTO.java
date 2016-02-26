@@ -1,9 +1,9 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.math.BigDecimal;
 import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 public class ResourceDTO {

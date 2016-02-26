@@ -485,7 +485,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var lookup = createLookupElement('resource', value, '/integration/rest/documentPositions/resources.html', options, function () {
                 return  {
                     product: getFieldValue('product', getRowIdFromElement($('input', lookup))),
-                    documentId: getDocumentId()
+                    context: getDocumentId()
 
                 };
             });
@@ -495,7 +495,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
                     if (t.val()) {
-                    	$.get('/integration/rest/documentPositions/resourceByNumber/' + encodeURIComponent(t.val()).replace('%2F','%252F') + ".html", function (resource) {
+                    	$.get('/integration/rest/documentPositions/resourceByNumber/'+getDocumentId()+'/' + encodeURIComponent(t.val()).replace('%2F','%252F') + ".html", function (resource) {
                     		updateFieldValue('batch', resource['batch'], getRowIdFromElement(t));
                     		updateFieldValue('productiondate', resource['productionDate'], getRowIdFromElement(t));
                     		updateFieldValue('expirationdate', resource['expirationDate'], getRowIdFromElement(t));
@@ -632,7 +632,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateResource(productNumber) {
-        	$.get('/integration/rest/documentPositions/resource/' + productNumber + ".html", function (resource) {
+        	$.get('/integration/rest/documentPositions/resource/'+getDocumentId()+'/' + productNumber + ".html", function (resource) {
                 if (resource) {
                     var gridData = $('#grid').jqGrid('getRowData');
 
