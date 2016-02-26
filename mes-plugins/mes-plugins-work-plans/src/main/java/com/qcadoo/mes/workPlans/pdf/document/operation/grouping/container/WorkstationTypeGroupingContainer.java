@@ -35,7 +35,7 @@ import com.qcadoo.model.api.Entity;
 
 public class WorkstationTypeGroupingContainer extends AbstractGroupingContainer {
 
-    protected String nullWorkstationTitle;
+    private String nullWorkstationTitle;
 
     public WorkstationTypeGroupingContainer(Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
             Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,

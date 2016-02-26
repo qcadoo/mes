@@ -50,7 +50,7 @@ import com.qcadoo.view.api.components.LookupComponent;
 public class ResourceDetailsListeners {
 
     @Autowired
-    ResourceCorrectionService resourceCorrectionService;
+    private ResourceCorrectionService resourceCorrectionService;
 
     private static final String L_FORM = "form";
 
@@ -101,7 +101,7 @@ public class ResourceDetailsListeners {
         ParsePosition parsePosition = new ParsePosition(0);
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance(locale);
         formatter.setParseBigDecimal(true);
-        Object parsedValue = formatter.parseObject(trimedValue, parsePosition);
+        
         if (parsePosition.getIndex() != (trimedValue.length())) {
             return false;
         }

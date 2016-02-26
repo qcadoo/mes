@@ -365,7 +365,7 @@ public class TechnologyServiceO {
         technologyStateChange.setField(technologyStateChangeAspect.getChangeEntityDescriber().getShiftFieldName(), shiftsService.getShiftFromDateWithTime(new Date()));
         technologyStateChange.setField(technologyStateChangeAspect.getChangeEntityDescriber().getWorkerFieldName(), securityService.getCurrentUserName());
         
-        technologyStateChange = technologyStateChangeDD.save(technologyStateChange);
+        technologyStateChangeDD.save(technologyStateChange);
     }
 
     public void setTechnologyNumber(final DataDefinition orderDD, final Entity order) {

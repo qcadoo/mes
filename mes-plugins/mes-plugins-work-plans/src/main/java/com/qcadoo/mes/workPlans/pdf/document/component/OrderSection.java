@@ -37,7 +37,7 @@ import java.util.Locale;
 @Component
 public class OrderSection {
 
-    private OrderTable orderTable;
+    private final OrderTable orderTable;
 
     @Autowired
     public OrderSection(OrderTable orderTable) {
@@ -45,8 +45,9 @@ public class OrderSection {
     }
 
     public void print(Entity workPlan, GroupingContainer groupingContainer, Document document, Locale locale) throws DocumentException {
-        if(printingOrdersEnabled(workPlan))
+        if (printingOrdersEnabled(workPlan)) {
             orderTable.print(groupingContainer, document, locale);
+        }
     }
 
     private boolean printingOrdersEnabled(Entity workPlan) {

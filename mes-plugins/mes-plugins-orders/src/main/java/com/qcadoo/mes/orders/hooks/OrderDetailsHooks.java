@@ -596,7 +596,7 @@ public class OrderDetailsHooks {
 
         for (String field : fileds) {
             try {
-                BigDecimal decimalField = entity.getDecimalField(field);
+                entity.getDecimalField(field);
             } catch (IllegalArgumentException e) {
                 FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(field);
                 fieldComponent.addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);

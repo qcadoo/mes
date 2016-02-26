@@ -252,23 +252,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 errorMessage.append(", ");
             }
         }
-        //
-        // List<Entity> generatedPositions = Lists.newArrayList();
-        // for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-        // Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-        // BigDecimal quantityInWarehouse = getQuantityOfProductInWarehouse(warehouse, product, position);
-        // generatedPositions.addAll(updateResources(warehouse, position, warehouseAlgorithm));
-        // enoughResources = enoughResources && position.isValid();
-        // if (!position.isValid()) {
-        // BigDecimal quantity = position.getDecimalField(QUANTITY);
-        // errorMessage.append(product.getStringField(ProductFields.NAME));
-        // errorMessage.append(" - ");
-        // errorMessage.append(numberService.format(quantity.subtract(quantityInWarehouse)));
-        // errorMessage.append(" ");
-        // errorMessage.append(product.getStringField(ProductFields.UNIT));
-        // errorMessage.append(", ");
-        // }
-        // }
 
         if (!enoughResources) {
             addDocumentError(document, warehouse, errorMessage);
@@ -383,23 +366,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 errorMessage.append(", ");
             }
         }
-
-        //
-        // for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-        // Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-        // BigDecimal quantityInWarehouse = getQuantityOfProductInWarehouse(warehouseFrom, product, position);
-        // moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);
-        // enoughResources = enoughResources && position.isValid();
-        // if (!position.isValid()) {
-        // BigDecimal quantity = position.getDecimalField(QUANTITY);
-        // errorMessage.append(product.getStringField(ProductFields.NAME));
-        // errorMessage.append(" - ");
-        // errorMessage.append(numberService.format(quantity.subtract(quantityInWarehouse)));
-        // errorMessage.append(" ");
-        // errorMessage.append(product.getStringField(ProductFields.UNIT));
-        // errorMessage.append(", ");
-        // }
-        // }
 
         if (!enoughResources) {
             addDocumentError(document, warehouseFrom, errorMessage);

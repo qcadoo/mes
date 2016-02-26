@@ -16,6 +16,7 @@ public class MachinePartForEventDTO {
     private BigDecimal priceFromDocumentPosition;
     private BigDecimal priceFromPosition;
     private BigDecimal quantityFromPosition;
+
     public Long getMachinePartId() {
         return machinePartId;
     }
@@ -96,20 +97,24 @@ public class MachinePartForEventDTO {
         this.quantityFromPosition = quantityFromPosition;
     }
 
-    @Override public boolean equals(Object o) {
-        if (this == o)
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         MachinePartForEventDTO that = (MachinePartForEventDTO) o;
-        return Objects.equal(machinePartId, that.machinePartId) &&
-                Objects.equal(machinePartName, that.machinePartName) &&
-                Objects.equal(machinePartNumber, that.machinePartNumber) &&
-                Objects.equal(machinePartUnit, that.machinePartUnit) &&
-                Objects.equal(machinePartPlannedQuantity, that.machinePartPlannedQuantity);
+        return Objects.equal(machinePartId, that.machinePartId)
+                && Objects.equal(machinePartName, that.machinePartName)
+                && Objects.equal(machinePartNumber, that.machinePartNumber)
+                && Objects.equal(machinePartUnit, that.machinePartUnit)
+                && Objects.equal(machinePartPlannedQuantity, that.machinePartPlannedQuantity);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hashCode(machinePartId, machinePartName, machinePartNumber, machinePartUnit, machinePartPlannedQuantity);
     }
 }

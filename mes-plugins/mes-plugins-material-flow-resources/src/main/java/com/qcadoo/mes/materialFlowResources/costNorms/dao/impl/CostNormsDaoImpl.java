@@ -136,20 +136,23 @@ public class CostNormsDaoImpl implements CostNormsDao {
             values.append("lastpurchasecost = :lastPurchaseCost");
         }
         if (costNorm.getAverageCost() != null) {
-            if (values.length() > 0)
+            if (values.length() > 0) {
                 values.append(", ");
+            }
             values.append("averagecost = :averageCost");
         }
 
         if (costNorm.getCostForNumber() != null) {
-            if (values.length() > 0)
+            if (values.length() > 0) {
                 values.append(", ");
+            }
             values.append("costfornumber = :costForNumber");
         }
 
         if (costNorm.getNominalCost() != null) {
-            if (values.length() > 0)
+            if (values.length() > 0) {
                 values.append(", ");
+            }
             values.append("nominalcost = :nominalCost");
         }
         return values.toString();

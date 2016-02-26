@@ -34,7 +34,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 public class LocationDetailsListenersMFR {
 
     @Autowired
-    LocationDetailsHooksMFR locationDetailsHooksMFR;
+    private LocationDetailsHooksMFR locationDetailsHooksMFR;
 
     public void onAlgorithmChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         locationDetailsHooksMFR.setEnabledForBatchCheckbox(view);

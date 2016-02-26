@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.google.common.base.Optional;
 import com.qcadoo.model.api.search.SearchCriterion;
 
-public class MasterOutputProductCriteria {
+public final class MasterOutputProductCriteria {
 
     private Optional<SearchCriterion> tocCriteria = Optional.absent();
 

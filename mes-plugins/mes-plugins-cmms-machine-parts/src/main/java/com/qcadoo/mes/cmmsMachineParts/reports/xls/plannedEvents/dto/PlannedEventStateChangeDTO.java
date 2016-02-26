@@ -61,20 +61,24 @@ public class PlannedEventStateChangeDTO {
         this.stateWorker = stateWorker;
     }
 
-    @Override public boolean equals(Object o) {
-        if (this == o)
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         PlannedEventStateChangeDTO that = (PlannedEventStateChangeDTO) o;
-        return Objects.equal(stateChangeId, that.stateChangeId) &&
-                Objects.equal(stateChangeDateAndTime, that.stateChangeDateAndTime) &&
-                Objects.equal(stateChangeSourceState, that.stateChangeSourceState) &&
-                Objects.equal(stateChangeTargetState, that.stateChangeTargetState) &&
-                Objects.equal(stateStatus, that.stateStatus);
+        return Objects.equal(stateChangeId, that.stateChangeId)
+                && Objects.equal(stateChangeDateAndTime, that.stateChangeDateAndTime)
+                && Objects.equal(stateChangeSourceState, that.stateChangeSourceState)
+                && Objects.equal(stateChangeTargetState, that.stateChangeTargetState)
+                && Objects.equal(stateStatus, that.stateStatus);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects
                 .hashCode(stateChangeId, stateChangeDateAndTime, stateChangeSourceState, stateChangeTargetState, stateStatus);
     }

@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.constants;
 
-public class CostNormsGeneratorFields {
+public final class CostNormsGeneratorFields {
 
     public static final String PRODUCTS_TO_UPDATE = "productsToUpdate";
     public static final String WAREHOUSES = "warehouses";

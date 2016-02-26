@@ -32,7 +32,7 @@ import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.model.api.Entity;
 
-public class DocumentDataProvider {
+public final class DocumentDataProvider {
 
     private static final String L_LONG_DATE = "yyyy-MM-dd HH:mm:ss";
 

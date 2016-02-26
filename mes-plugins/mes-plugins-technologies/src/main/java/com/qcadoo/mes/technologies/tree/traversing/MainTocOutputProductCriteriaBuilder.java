@@ -71,19 +71,6 @@ public class MainTocOutputProductCriteriaBuilder {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    // HQL form:
-    // ------------------------
-    // select toc from
-    // #technologies_technologyOperationComponent toc -- Aliases.TOC
-    // inner join toc.operationProductOutComponents opoc -- Aliases.OPERATION_PROD_OUT_COMPONENT
-    // inner join opoc.product as p -- Aliases.OPERATION_OUTPUT_PRODUCT
-    // inner join toc.technology t -- Aliases.TECHNOLOGY
-    // left join toc.parent parentToc -- Aliases.TOC_PARENT
-    // left join parentToc.operationProductInComponents opic -- Aliases.TOC_PARENT_OPIC
-    // left join opic.product opicProd -- Aliases.TOC_PARENT_INPUT_PRODUCT
-    // left join t.product tProduct -- Aliases.TECHNOLOGY_PRODUCT
-    // where
-    // (opoc.product.id = opic.product.id or (toc.parent is null and t.product.id = p.id))
     public SearchCriteriaBuilder create(final MasterOutputProductCriteria criteria) {
         SearchCriteriaBuilder tocScb = getTocDataDefinition().findWithAlias(Aliases.TOC);
         applyCriteriaIfPresent(tocScb, criteria.getTocCriteria());
@@ -108,12 +95,7 @@ public class MainTocOutputProductCriteriaBuilder {
         SearchCriteriaBuilder parentOpicScb = parentTocScb.createCriteria(
                 TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS, Aliases.TOC_PARENT_OPIC, JoinType.LEFT);
 
-        SearchCriteriaBuilder parentOpicProdScb = parentOpicScb.createCriteria(OperationProductInComponentFields.PRODUCT,
-                Aliases.TOC_PARENT_INPUT_PRODUCT, JoinType.LEFT);
         applyCriteriaIfPresent(parentOpicScb, criteria.getParentOpicCriteria());
-
-        SearchCriteriaBuilder techProductScb = techScb.createCriteria(TechnologyFields.PRODUCT, Aliases.TECHNOLOGY_PRODUCT,
-                JoinType.INNER);
 
         SearchCriterion productIsConsumedByParentOp = eqField(Aliases.OPERATION_OUTPUT_PRODUCT + ".id",
                 Aliases.TOC_PARENT_INPUT_PRODUCT + ".id");

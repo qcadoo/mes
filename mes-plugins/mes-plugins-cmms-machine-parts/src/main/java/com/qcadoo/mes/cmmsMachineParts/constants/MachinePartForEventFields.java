@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
-public class MachinePartForEventFields {
+public final class MachinePartForEventFields {
 
     public static final String MACHINE_PART = "machinePart";
 

@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderCriteriaModifier {
 
-    private static String MASTER_ORDER_NUMBER_FILTER_VALUE = "masterOrderNumber";
+    private static final String MASTER_ORDER_NUMBER_FILTER_VALUE = "masterOrderNumber";
 
     public void filterByMasterOrderNumber(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
 

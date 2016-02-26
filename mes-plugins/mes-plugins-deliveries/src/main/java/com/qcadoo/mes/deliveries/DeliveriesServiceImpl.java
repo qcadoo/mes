@@ -221,7 +221,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public String generateAddressFromCompany(final Entity company) {
-        StringBuffer address = new StringBuffer();
+        StringBuilder address = new StringBuilder();
 
         if (company != null) {
             String street = company.getStringField(CompanyFields.STREET);
@@ -421,7 +421,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
         for (String field : fileds) {
             try {
-                BigDecimal decimalField = entity.getDecimalField(field);
+                entity.getDecimalField(field);
             } catch (IllegalArgumentException e) {
                 form.findFieldComponentByName(field).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
                         MessageType.FAILURE);

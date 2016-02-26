@@ -106,22 +106,26 @@ public class MachinePartDTO {
         this.quantityFromPosition = quantityFromPosition;
     }
 
-    @Override public boolean equals(Object o) {
-        if (this == o)
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         MachinePartDTO that = (MachinePartDTO) o;
-        return Objects.equal(machinePartId, that.machinePartId) &&
-                Objects.equal(partNumber, that.partNumber) &&
-                Objects.equal(partName, that.partName) &&
-                Objects.equal(warehouseNumber, that.warehouseNumber) &&
-                Objects.equal(partPlannedQuantity, that.partPlannedQuantity) &&
-                Objects.equal(value, that.value) &&
-                Objects.equal(partUnit, that.partUnit);
+        return Objects.equal(machinePartId, that.machinePartId)
+                && Objects.equal(partNumber, that.partNumber)
+                && Objects.equal(partName, that.partName)
+                && Objects.equal(warehouseNumber, that.warehouseNumber)
+                && Objects.equal(partPlannedQuantity, that.partPlannedQuantity)
+                && Objects.equal(value, that.value)
+                && Objects.equal(partUnit, that.partUnit);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hashCode(machinePartId, partNumber, partName, warehouseNumber, partPlannedQuantity, value, partUnit);
     }
 }
