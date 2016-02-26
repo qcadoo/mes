@@ -332,6 +332,9 @@
                             <listener event="onSelectedEntityChange"
                                       method="productionLineChanged"
                                       class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectProductionLine"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="6">

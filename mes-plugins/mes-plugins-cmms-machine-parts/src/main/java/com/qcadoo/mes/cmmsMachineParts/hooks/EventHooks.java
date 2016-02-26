@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
@@ -30,25 +37,30 @@ import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.SourceCostService;
-import com.qcadoo.mes.cmmsMachineParts.constants.*;
+import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.ParameterFieldsCMP;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.roles.EventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EventHooks {
@@ -266,6 +278,7 @@ public class EventHooks {
         toggleEnabledForFactory(view, form, eventEntity, contextField);
         toggleEnabledForDivision(view, form, eventEntity, contextField);
         toggleEnabledForSubassembly(view, form, eventEntity);
+        toggleEnabledForProductionLine(view, form, eventEntity);
     }
 
     private void toggleEnabledForWorkstation(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
@@ -274,12 +287,20 @@ public class EventHooks {
         workstation.setEnabled(enabled);
     }
 
+    private void toggleEnabledForProductionLine(final ViewDefinitionState view, final FormComponent form,
+            final Entity eventEntity) {
+        boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.DIVISION) != null;
+        LookupComponent productionLine = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.PRODUCTION_LINE);
+        productionLine.setEnabled(enabled);
+    }
+
     private void toggleEnabledForFactory(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
             String contextField) {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
         }
-        boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
+        boolean enabled = eventEntity.getBelongsToField(contextField)
+                .getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
         LookupComponent factoryLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
         factoryLookup.setEnabled(enabled);
     }
@@ -289,7 +310,8 @@ public class EventHooks {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
         }
-        boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
+        boolean enabled = eventEntity.getBelongsToField(contextField)
+                .getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
         divisionLookup.setEnabled(enabled);
     }
@@ -316,6 +338,7 @@ public class EventHooks {
 
         setEventCriteriaModifier(view, event, MaintenanceEventFields.FACTORY, MaintenanceEventFields.DIVISION);
         setEventCriteriaModifier(view, event, MaintenanceEventFields.DIVISION, MaintenanceEventFields.WORKSTATION);
+        setEventCriteriaModifier(view, event, MaintenanceEventFields.DIVISION, MaintenanceEventFields.PRODUCTION_LINE);
         setEventCriteriaModifier(view, event, MaintenanceEventFields.PRODUCTION_LINE, MaintenanceEventFields.WORKSTATION);
         setEventCriteriaModifier(view, event, MaintenanceEventFields.WORKSTATION, MaintenanceEventFields.SUBASSEMBLY);
     }
@@ -405,8 +428,8 @@ public class EventHooks {
                 role.disableFieldsWhenNotInRole(view);
             }
         }
-        if(!parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)){
-            if(!securityService.hasRole(user, EventRoles.ROLE_EVENTS_CLOSE.toString())){
+        if (!parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS)) {
+            if (!securityService.hasRole(user, EventRoles.ROLE_EVENTS_CLOSE.toString())) {
                 enableCloseEvents(view, false);
             } else {
                 enableCloseEvents(view, true);
@@ -415,7 +438,7 @@ public class EventHooks {
     }
 
     private void enableCloseEvents(final ViewDefinitionState view, final boolean enable) {
-        if(eventInState(view, MaintenanceEventState.EDITED) || eventInState(view, MaintenanceEventState.ACCEPTED)){
+        if (eventInState(view, MaintenanceEventState.EDITED) || eventInState(view, MaintenanceEventState.ACCEPTED)) {
             enableFromRibbonGroup(view, enable, "status", "closeEvent");
         }
     }
@@ -427,7 +450,7 @@ public class EventHooks {
         if (eventState == null) {
             GridComponent grid = (GridComponent) view.getComponentByReference("grid");
             List<Entity> entities = grid.getSelectedEntities();
-            if (entities.isEmpty()){
+            if (entities.isEmpty()) {
                 return false;
             }
             return entities.stream().allMatch(e -> state.getStringValue().equals(e.getStringField(MaintenanceEventFields.STATE)));
@@ -435,11 +458,12 @@ public class EventHooks {
         return state.getStringValue().equals(eventState);
     }
 
-    private void enableFromRibbonGroup(final ViewDefinitionState view, final boolean enable, final String groupName, String... items) {
+    private void enableFromRibbonGroup(final ViewDefinitionState view, final boolean enable, final String groupName,
+            String... items) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup ribbonGroup = ribbon.getGroupByName(groupName);
-        if(ribbonGroup != null) {
+        if (ribbonGroup != null) {
             for (String item : items) {
                 RibbonActionItem ribbonItem = ribbonGroup.getItemByName(item);
                 if (ribbonItem != null) {
