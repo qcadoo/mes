@@ -681,7 +681,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     updateUnitsInGridByProduct(t.val());
                     if (t.val()) {
                         updateStorageLocations(t.val(), getDocumentId());
-                        if ($scope.config.suggestResource) {
+                        if ($scope.config.suggestResource && $scope.config.outDocument) {
                             updateResource(t.val());
                         }
                     } else {
