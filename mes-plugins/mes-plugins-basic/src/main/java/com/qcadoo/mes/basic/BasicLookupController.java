@@ -1,12 +1,7 @@
 package com.qcadoo.mes.basic;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.security.api.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -16,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.security.api.SecurityService;
+import java.util.*;
 
 public abstract class BasicLookupController<R> {
 
@@ -77,7 +71,9 @@ public abstract class BasicLookupController<R> {
     @RequestMapping(value = "records", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)    
     public GridResponse<R> getRecords(@RequestParam String sidx, @RequestParam String sord,
             @RequestParam(defaultValue = "1", required = false, value = "page") Integer page,
-            @RequestParam(value = "rows") int perPage, R record) {
+            @RequestParam(value = "rows") int perPage,
+            @RequestParam(defaultValue = "0", required = false, value = "context") Long context,
+            R record) {
 
         String query = getQueryForRecords();
 
