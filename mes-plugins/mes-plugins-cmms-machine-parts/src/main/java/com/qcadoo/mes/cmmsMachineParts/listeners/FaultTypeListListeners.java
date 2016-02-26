@@ -23,21 +23,17 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
-import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeAppliesTo;
-import com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeDetailsHooks;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class FaultTypeListListeners {
@@ -62,8 +58,9 @@ public class FaultTypeListListeners {
                 return;
             }
         }
-        copyButton.setEnabled(true);
-        deleteButton.setEnabled(true);
+        boolean enabled = !selectedFaults.isEmpty();
+        copyButton.setEnabled(enabled);
+        deleteButton.setEnabled(enabled);
         copyButton.requestUpdate(true);
         deleteButton.requestUpdate(true);
     }

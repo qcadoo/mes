@@ -23,7 +23,10 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -31,10 +34,6 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ActionListListeners {
@@ -59,8 +58,10 @@ public class ActionListListeners {
                 return;
             }
         }
-        copyButton.setEnabled(true);
-        deleteButton.setEnabled(true);
+
+        boolean enabled = !selectedFaults.isEmpty();
+        copyButton.setEnabled(enabled);
+        deleteButton.setEnabled(enabled);
         copyButton.requestUpdate(true);
         deleteButton.requestUpdate(true);
     }

@@ -23,10 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -34,9 +30,12 @@ import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeAppliesTo;
 import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class FaultTypeDetailsHooks {
@@ -49,7 +48,7 @@ public class FaultTypeDetailsHooks {
         Entity faultType = form.getPersistedEntityWithIncludedFormValues();
         FaultTypeAppliesTo appliesTo = FaultTypeAppliesTo.from(faultType);
         toggleGridsEnable(view, appliesTo, false);
-        if (faultType.getBooleanField("isDefault")) {
+        if (faultType.getBooleanField(FaultTypeFields.IS_DEFAULT)) {
             disableActionsWhenDefault(view);
         }
     }

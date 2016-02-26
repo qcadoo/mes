@@ -28,10 +28,15 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionAppliesTo;
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class ActionDetailsHooks {
@@ -44,6 +49,9 @@ public class ActionDetailsHooks {
         Entity action = form.getPersistedEntityWithIncludedFormValues();
         ActionAppliesTo appliesTo = ActionAppliesTo.from(action);
         toggleGridsEnable(view, appliesTo, false);
+        if (action.getBooleanField(ActionFields.IS_DEFAULT)) {
+            disableActionsWhenDefault(view);
+        }
     }
 
     public void toggleGridsEnable(final ViewDefinitionState view, final ActionAppliesTo appliesTo, final boolean shouldClear) {
@@ -77,5 +85,29 @@ public class ActionDetailsHooks {
                 workstationTypesGrid.setEntities(Lists.newArrayList());
             }
         }
+    }
+
+    public void disableActionsWhenDefault(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonGroup actions = window.getRibbon().getGroupByName("actions");
+
+        for (RibbonActionItem item : actions.getItems()) {
+            item.setEnabled(false);
+            item.requestUpdate(true);
+        }
+
+        GridComponent workstationsGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.WORKSTATIONS);
+        GridComponent subassembliesGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.SUBASSEMBLIES);
+        GridComponent workstationTypesGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.WORKSTATION_TYPES);
+
+        workstationsGrid.setEnabled(false);
+        subassembliesGrid.setEnabled(false);
+        workstationTypesGrid.setEnabled(false);
+
+        FieldComponent nameField = (FieldComponent) view.getComponentByReference(FaultTypeFields.NAME);
+        FieldComponent appliesToField = (FieldComponent) view.getComponentByReference(FaultTypeFields.APPLIES_TO);
+
+        nameField.setEnabled(false);
+        appliesToField.setEnabled(false);
     }
 }
