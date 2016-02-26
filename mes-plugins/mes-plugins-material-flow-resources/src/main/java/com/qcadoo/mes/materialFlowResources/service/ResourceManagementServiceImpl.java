@@ -499,8 +499,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity additionalCode = position.getBelongsToField(PositionFields.ADDITIONAL_CODE);
         if (resource != null) {
             resources.add(resource);
-        }
-        if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {
+        } else if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {
             resources = getResourcesForLocationAndProductFIFO(warehouse, product, additionalCode);
         } else if (WarehouseAlgorithm.LIFO.equals(warehouseAlgorithm)) {
             resources = getResourcesForLocationAndProductLIFO(warehouse, product, additionalCode);
