@@ -93,7 +93,7 @@ public class WorkstationTypeComponentHooks {
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
         Date dateFrom = entity.getDateField(WorkstationTypeComponentFields.DATE_FROM);
         Date dateTo = entity.getDateField(WorkstationTypeComponentFields.DATE_TO);
-        if (dateTo != null && dateTo.before(dateFrom)) {
+        if (dateTo != null && dateTo.compareTo(dateFrom) <= 0) {
             entity.addError(dataDefinition.getField(WorkstationTypeComponentFields.DATE_FROM),
                     "productionLines.workstationTypeComponent.validation.datesInvalid");
             return false;
