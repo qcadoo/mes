@@ -180,7 +180,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                             },
                                             beforeShowForm: function (form) {
                                                 var dlgDiv = $("#editmodgrid");
-                                                var dlgWidth = 586;
+                                                var dlgWidth = 800;
                                                 var dlgHeight = dlgDiv.height();
                                                 var parentWidth = $(window).width();
                                                 var parentHeight = $(window).height();
@@ -213,7 +213,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                                     },
                                                     beforeShowForm: function (form) {
                                                         var dlgDiv = $("#editmodgrid");
-                                                        var dlgWidth = 586;
+                                                        var dlgWidth = 800;
                                                         var dlgHeight = dlgDiv.height();
                                                         var parentWidth = $(window).width();
                                                         var parentHeight = $(window).height();

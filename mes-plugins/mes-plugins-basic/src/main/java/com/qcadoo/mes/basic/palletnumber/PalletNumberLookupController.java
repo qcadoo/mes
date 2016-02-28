@@ -14,7 +14,7 @@ import java.util.List;
 public class PalletNumberLookupController extends BasicLookupController<PalletNumberDTO> {
 
     @Override
-    protected String getQueryForRecords() {
+    protected String getQueryForRecords(final Long context) {
         String query = "SELECT %s FROM (SELECT palletnumber.id as id, palletnumber.number as code, palletnumber.number as number "
                 + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true ) q";
 

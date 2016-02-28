@@ -325,7 +325,7 @@ input[readonly]{
     top: 1px;
 }
 .ui-jqdialog-content .EditTable .FormElement .eac-square{
-    width: calc(100% - 23px);
+    width: calc(100% - 25px);
     float: left;
 }
 .DataTD .hasDatepicker + .ui-datepicker-trigger{

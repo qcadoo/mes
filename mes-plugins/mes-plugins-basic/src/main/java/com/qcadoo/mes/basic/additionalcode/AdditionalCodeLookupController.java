@@ -13,7 +13,7 @@ import java.util.List;
 public class AdditionalCodeLookupController extends BasicLookupController<AdditionalCodeDTO> {
 
     @Override
-    protected String getQueryForRecords() {
+    protected String getQueryForRecords(final Long context) {
         String query = "SELECT %s FROM (SELECT additionalcode.id as id, additionalcode.code as code, product.number as productnumber "
                 + "FROM basic_additionalcode additionalcode "
                 + "JOIN basic_product product ON (additionalcode.product_id = product.id) ) q";

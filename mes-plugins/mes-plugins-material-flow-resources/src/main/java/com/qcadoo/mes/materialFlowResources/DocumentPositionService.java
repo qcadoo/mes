@@ -35,6 +35,9 @@ public class DocumentPositionService {
     @Autowired
     private DataProvider dataProvider;
 
+    @Autowired
+    private WarehouseMethodOfDisposalService warehouseMethodOfDisposalService;
+
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
             int perPage, DocumentPositionDTO position) {
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, "
@@ -303,12 +306,13 @@ public class DocumentPositionService {
         }
     }
 
-    public ResourceDTO getResource(String product) {
+    public ResourceDTO getResource(Long document, String product) {
 
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and expirationdate = ");
-        queryBuilder.append("(select min(expirationdate) from materialflowresources_resource WHERE product_id = ");
+        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and ");
+        queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
+        queryBuilder.append(" WHERE product_id = ");
         queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product))");
 
         String query = queryBuilder.toString();
@@ -322,15 +326,16 @@ public class DocumentPositionService {
         }
     }
 
-    public List<AbstractDTO> getResources(String q, String product) {
+    public List<AbstractDTO> getResources(Long document, String q, String product) {
 
         if (Strings.isNullOrEmpty(q) || Strings.isNullOrEmpty(product)) {
             return Lists.newArrayList();
         } else {
             StringBuilder queryBuilder = new StringBuilder();
             queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
-            queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and expirationdate = ");
-            queryBuilder.append("(select min(expirationdate) from materialflowresources_resource WHERE product_id = ");
+            queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and ");
+            queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
+            queryBuilder.append(" WHERE product_id = ");
             queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product)) " + "AND number ilike :query");
 
             Map<String, Object> paramMap = new HashMap<>();
@@ -343,21 +348,22 @@ public class DocumentPositionService {
         }
     }
 
-    public DataResponse getResourcesResponse(String q, String product) {
+    public DataResponse getResourcesResponse(Long document, String q, String product) {
         if (Strings.isNullOrEmpty(product)) {
             return new DataResponse(Lists.newArrayList(), 0);
         }
 
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "') and expirationdate = ");
-        queryBuilder.append("(select min(expirationdate) from materialflowresources_resource WHERE product_id = ");
+        queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "') and ");
+        queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
+        queryBuilder.append(" WHERE product_id = ");
         queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "')) " + "AND number ilike :query");
 
         String preparedQuery = queryBuilder.toString();
 
         String query = '%' + q + '%';
-        List<AbstractDTO> entities = getResources(query, product);
+        List<AbstractDTO> entities = getResources(document, query, product);
         return dataProvider.getDataResponse(query, preparedQuery, entities);
     }
 

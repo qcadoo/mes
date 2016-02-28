@@ -75,7 +75,7 @@ public abstract class BasicLookupController<R> {
             @RequestParam(defaultValue = "0", required = false, value = "context") Long context,
             R record) {
 
-        String query = getQueryForRecords();
+        String query = getQueryForRecords(context);
 
         return lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, getQueryParameters(record));
     }
@@ -101,6 +101,5 @@ public abstract class BasicLookupController<R> {
 
     protected abstract String getRecordName();
 
-    protected abstract String getQueryForRecords();
-
+    protected abstract String getQueryForRecords(final Long context);
 }

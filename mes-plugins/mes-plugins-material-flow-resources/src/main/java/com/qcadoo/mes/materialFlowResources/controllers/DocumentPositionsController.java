@@ -87,20 +87,20 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resource/{document}/{product}")
-    public ResourceDTO getResourceForProduct(@PathVariable String document, @PathVariable String product) {
-        return documentPositionRepository.getResource(product);
+    public ResourceDTO getResourceForProduct(@PathVariable Long document, @PathVariable String product) {
+        return documentPositionRepository.getResource(document, product);
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resources")
     public DataResponse getResources(@RequestParam("query") String query, @RequestParam("product") String product,
-            @RequestParam("documentId") String document) {
-        return documentPositionRepository.getResourcesResponse(query, product);
+            @RequestParam("context") Long document) {
+        return documentPositionRepository.getResourcesResponse(document, query, product);
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resourceByNumber/{document}/{resource}")
-    public ResourceDTO getBatchForResource(@PathVariable String document, @PathVariable String resource)
+    public ResourceDTO getBatchForResource(@PathVariable Long document, @PathVariable String resource)
             throws UnsupportedEncodingException {
         String decodedResource = URLDecoder.decode(resource, "UTF-8");
         return documentPositionRepository.getResourceByNumber(decodedResource);

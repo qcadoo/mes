@@ -1,22 +1,21 @@
 package com.qcadoo.mes.materialFlowResources.storagelocation;
 
+import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.qcadoo.mes.basic.BasicLookupController;
-import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 @Controller
 @RequestMapping(value = "storageLocation")
 public class StorageLocationLookupController extends BasicLookupController<StorageLocationDTO> {
 
     @Override
-    protected String getQueryForRecords() {
+    protected String getQueryForRecords(final Long context) {
         String query = "SELECT %s FROM ( SELECT sl.id, sl.number as number, p.name as product, loc.name as location\n" + 
  "FROM materialflowresources_storagelocation sl LEFT JOIN basic_product p on p.id = sl.product_id\n"
                 +

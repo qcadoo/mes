@@ -1,20 +1,13 @@
 package com.qcadoo.mes.basic.product;
 
-import java.util.Locale;
-import java.util.Map;
-
+import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.qcadoo.mes.basic.BasicLookupController;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 @Controller
 @RequestMapping(value = "product")
@@ -56,7 +49,7 @@ public class ProductLookupController extends BasicLookupController<ProductDTO> {
     }
 
     @Override
-    protected String getQueryForRecords() {
+    protected String getQueryForRecords(final Long context) {
         String query = "SELECT %s FROM (SELECT product.id, product.number as code, product.number, product.name, product.ean, product.globaltypeofmaterial, product.category "
                 + "FROM basic_product product WHERE product.active = true ) q ";
 
