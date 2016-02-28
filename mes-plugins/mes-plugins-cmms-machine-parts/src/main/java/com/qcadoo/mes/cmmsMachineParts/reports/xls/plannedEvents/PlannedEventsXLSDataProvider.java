@@ -69,7 +69,7 @@ public class PlannedEventsXLSDataProvider {
                 .get(helperModelId);
         String _query = query;
         if (StringUtils.isNoneBlank(helperEntity.getStringField("query")) && helperEntity.getStringField("query").length() > 1) {
-            _query = query + " where " + helperEntity.getStringField("query");
+            _query = query + " where " + PlannedEventsFilterUtils.processFilter(helperEntity.getStringField("query"));
         }
         _query = _query + ORDER_BY;
         events = jdbcTemplate.query(_query, new BeanPropertyRowMapper(PlannedEventDTO.class));

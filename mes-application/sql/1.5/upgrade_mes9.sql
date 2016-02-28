@@ -1,101 +1,121 @@
+-- assignment to shift changes
+-- last touched 11.02.2016 by pako
 
--- worker to change in order
--- last touched 27.01.2016 by kama
+CREATE TABLE assignmenttoshift_multiassignmenttoshift
+(
+  id bigint NOT NULL,
+  productionline_id bigint,
+  occupationtype character varying(255),
+  occupationtypename character varying(255),
+  occupationtypeenum character varying(255),
+  masterorder_id bigint,
+  assignmenttoshift_id bigint,
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  createuser character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT assignmenttoshift_multiassignmenttoshift_pkey PRIMARY KEY (id),
+  CONSTRAINT multiassignmenttoshift_masterorder_fkey FOREIGN KEY (masterorder_id)
+      REFERENCES masterorders_masterorder (id) DEFERRABLE,
+  CONSTRAINT multiassignmenttoshift_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE,
+  CONSTRAINT multiassignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id)
+      REFERENCES assignmenttoshift_assignmenttoshift (id) DEFERRABLE
+);
 
-ALTER TABLE orders_order ADD COLUMN workertochange character varying(255);
+CREATE TABLE jointable_multiassignmenttoshift_staff
+(
+  multiassignmenttoshift_id bigint NOT NULL,
+  staff_id bigint NOT NULL,
+  CONSTRAINT jointable_multiassignmenttoshift_staff_pkey PRIMARY KEY (multiassignmenttoshift_id, staff_id),
+  CONSTRAINT staff_multiassignmenttoshift_fkey FOREIGN KEY (staff_id)
+      REFERENCES basic_staff (id) DEFERRABLE,
+  CONSTRAINT assignmenttoshift_multiassignmenttoshift_staff_fkey FOREIGN KEY (multiassignmenttoshift_id)
+      REFERENCES assignmenttoshift_multiassignmenttoshift (id) DEFERRABLE
+);
+
+ALTER TABLE assignmenttoshift_staffassignmenttoshift ADD COLUMN description character varying(255);
 
 -- end
 
--- #QCADOO-432
--- add number field
-alter table materialflowresources_resource  add column number character varying(255);
+-- cmmsmachineparts_plannedevent
+-- last touched 19.02.2016 by wesi
 
--- add functions and trigger
+drop view cmmsmachineparts_plannedEventListDto;
 
-CREATE OR REPLACE FUNCTION generate_and_set_resource_number(_time timestamp)
-  RETURNS text AS
-$$
-DECLARE
-	_pattern text;
-	_year numeric;
-	_sequence_name text;
-	_sequence_value numeric;
-	_tmp text;
-	_seq text;
-	_number text;
-BEGIN
-	_pattern := '#year/#seq';
-	_year := extract(year from _time);
+ALTER TABLE cmmsmachineparts_plannedevent ALTER COLUMN description TYPE character varying(600);
 
-	_sequence_name := 'materialflowresources_resource_number_' || _year;
-	
-	SELECT sequence_name into _tmp FROM information_schema.sequences where sequence_schema = 'public' 
-		and sequence_name = _sequence_name;
-	if _tmp is null then
-		execute 'CREATE SEQUENCE ' || _sequence_name || ';';
-	end if;
-
-	select nextval(_sequence_name) into _sequence_value;
-
-	_seq := to_char(_sequence_value, 'fm00000');
-	if _seq like '%#%' then
-		_seq := _sequence_value;
-	end if;
-	
-	_number := _pattern;
-	_number := replace(_number, '#year', _year::text);
-	_number := replace(_number, '#seq', _seq);
-	
-	RETURN _number;
-END;
-$$ LANGUAGE 'plpgsql';
+create or replace view cmmsmachineparts_plannedEventListDto as select
+    e.id, e.number, e.type,
+    owner.name || ' ' || owner.surname  as ownerName,
+    e.description, factory.number as factoryNumber,
+    factory.id ::integer as factory_id,
+    division.number as divisionNumber,
+    division.id::integer as division_id,
+    productionLine.number as productionLineNumber,
+    workstation.number as workstationNumber,
+    subassembly.number as subassemblyNumber,
+    e.date::timestamp without time zone AS date,
+    e.counter,
+    e.createUser,
+    e.createDate,
+    e.state,
+    context.id as plannedEventContext_id,
+    workstation.id AS workstation_id,
+    subassembly.id AS subassembly_id,
+    company.id AS company_id,
+    sourcecost.id AS sourcecost_id
+    from cmmsmachineparts_plannedevent e
+    left join basic_staff owner on (e.owner_id = owner.id)
+    join basic_factory factory on (e.factory_id = factory.id)
+    join basic_division division on (e.division_id = division.id)
+    left join productionLines_productionLine productionLine on (e.productionline_id = productionLine.id)
+    left join basic_workstation workstation on (e.workstation_id = workstation.id)
+    left join basic_subassembly subassembly on (e.subassembly_id = subassembly.id)
+    left join cmmsmachineparts_plannedeventcontext context on (e.plannedeventcontext_id = context.id)
+    left join basic_company company ON e.company_id = company.id
+    left join cmmsmachineparts_sourcecost sourcecost ON e.sourcecost_id = sourcecost.id;
 
 
-CREATE OR REPLACE FUNCTION generate_and_set_resource_number_trigger()
-  RETURNS trigger AS
-$$
-BEGIN
-	NEW.number := generate_and_set_resource_number(NEW.time);
+  drop view cmmsmachineparts_maintenanceEventListDto;
 
-	return NEW;
-END;
-$$ LANGUAGE 'plpgsql';
+  create or replace view cmmsmachineparts_maintenanceEventListDto as
+  select
+      e.id,
+      e.number,
+      e.type,
+      staff.name || ' ' || staff.surname  as personReceivingName,
+      e.description, faultType.name as faultTypeNumber,
+      factory.number as factoryNumber,
+      division.number as divisionNumber,
+      factory.id::integer as factory_id,
+      division.id::integer as division_id,
+      productionLine.number as productionLineNumber,
+      workstation.number as workstationNumber,
+      subassembly.number as subassemblyNumber,
+      e.createUser,
+      e.createDate,
+      e.state,
+      context.id as maintenanceEventContext_id
+      from cmmsmachineparts_maintenanceevent e
+      left join basic_staff staff on (e.personreceiving_id = staff.id)
+      join cmmsmachineparts_faulttype faultType on (e.faulttype_id = faultType.id)
+      join basic_factory factory on (e.factory_id = factory.id)
+      join basic_division division on (e.division_id = division.id)
+      left join productionLines_productionLine productionLine on (e.productionline_id = productionLine.id)
+      left join basic_workstation workstation on (e.workstation_id = workstation.id)
+      left join basic_subassembly subassembly on (e.subassembly_id = subassembly.id)
+      left join cmmsmachineparts_maintenanceeventcontext context on (e.maintenanceeventcontext_id = context.id);
+-- end
 
-CREATE TRIGGER materialflowresources_resource_trigger_number
-  BEFORE INSERT
-  ON materialflowresources_resource
-  FOR EACH ROW
-  EXECUTE PROCEDURE generate_and_set_resource_number_trigger();
+-- start
 
--- migrate old data
-CREATE OR REPLACE FUNCTION migrate_resource_numbers()
-  RETURNS void AS
-$$
-DECLARE
-	row record;
-BEGIN
-    FOR row IN (select * from materialflowresources_resource resource order by time asc, id asc)
-    LOOP
-	update materialflowresources_resource set number = generate_and_set_resource_number(row.time) where id = row.id;    
-            
-    END LOOP;
-END;
-$$ LANGUAGE 'plpgsql';
-
-select migrate_resource_numbers();
-drop function migrate_resource_numbers();
-
-
-alter table materialflowresources_resource alter column number set not null;
-alter table materialflowresources_resource alter column time set not null;
-alter table materialflowresources_resource add unique(number);
---end #QCADOO-432
-
-
--- productioncounting_productiontrackingdto
--- last touched 09.02.2016 by lupo
-
-CREATE SEQUENCE productioncounting_productiontrackingdto_id_seq;
+drop view productioncounting_productiontrackingforproductgroupeddto;
+drop view productioncounting_productiontrackingforproductdto;
+drop view productioncounting_trackingoperationproductcomponentdto;
+drop view productioncounting_trackingoperationproductoutcomponentdto;
+drop view productioncounting_trackingoperationproductincomponentdto;
+drop view productioncounting_productiontrackingdto;
 
 CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 	SELECT
@@ -136,13 +156,6 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 		ON division.id = productiontracking.division_id
 	LEFT JOIN basic_company subcontractor ON subcontractor.id = productiontracking.subcontractor_id;
 
--- end
-
-
--- productioncounting_trackingoperationproductincomponentdto
--- last touched 14.02.2016 by lupo
-
-CREATE SEQUENCE productioncounting_trackingoperationproductincomponentdto_id_seq;
 
 CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto AS
 	SELECT
@@ -184,13 +197,6 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto
 		trackingoperationproductincomponent.usedquantity,
 		productiontracking.technologyoperationcomponent_id;
 
--- end
-
-
--- productioncounting_trackingoperationproductoutcomponentdto
--- last touched 14.02.2016 by lupo
-
-CREATE SEQUENCE productioncounting_trackingoperationproductoutcomponentdto_id_seq;
 
 CREATE OR REPLACE VIEW productioncounting_trackingoperationproductoutcomponentdto AS
 	SELECT
@@ -232,13 +238,6 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductoutcomponentdt
 		trackingoperationproductoutcomponent.usedquantity,
 		productiontracking.technologyoperationcomponent_id;
 
--- end
-
-
--- productioncounting_trackingoperationproductcomponentdto
--- last touched 14.02.2016 by lupo
-
-CREATE SEQUENCE productioncounting_trackingoperationproductcomponentdto_id_seq;
 
 CREATE OR REPLACE VIEW productioncounting_trackingoperationproductcomponentdto AS
 	SELECT
@@ -269,13 +268,6 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductcomponentdto A
         FROM productioncounting_trackingoperationproductoutcomponentdto trackingoperationproductoutcomponentdto
     ) trackingoperationproductcomponentdto;
 
--- end
-
-
--- productioncounting_productiontrackingforproductdto
--- last touched 14.02.2016 by lupo
-
-CREATE SEQUENCE productioncounting_productiontrackingforproductdto_id_seq;
 
 CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductdto AS
 	SELECT
@@ -311,13 +303,6 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductdto AS
 	LEFT JOIN productioncounting_productiontrackingdto productiontrackingdto
 		ON productiontrackingdto.id = trackingoperationproductcomponentdto.productiontracking_id;
 
--- end
-
-
--- productioncounting_productiontrackingforproductgroupeddto
--- last touched 14.02.2016 by lupo
-
-CREATE SEQUENCE productioncounting_productiontrackingforproductgroupeddto_id_seq;
 
 CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductgroupeddto AS
 	SELECT
@@ -345,70 +330,5 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductgroupeddto
 		productiontrackingforproductdto.productnumber,
 		productiontrackingforproductdto.productunit,
 		productiontrackingforproductdto.plannedquantity;
-
--- end
-
-
--- qcadooview_view, qcadooview_item
--- last touched 15.02.2016 by lupo
-
-INSERT INTO qcadooview_view(pluginidentifier, name, view, entityversion)
-	VALUES (
-		'productionCounting',
-		'productionTrackingsForProductList',
-		'productionTrackingsForProductList',
-		0
-	);
-
-INSERT INTO qcadooview_item(pluginidentifier, name, active, category_id, view_id, succession, authrole, entityversion)
-	VALUES (
-		'productionCounting',
-		'productionTrackingForProduct',
-		true,
-		(SELECT id FROM qcadooview_category WHERE name = 'ordersTracking' LIMIT 1),
-		(SELECT id FROM qcadooview_view WHERE name = 'productionTrackingsForProductList' LIMIT 1),
-		(SELECT max(succession) + 1 FROM qcadooview_item WHERE category_id = (SELECT id FROM qcadooview_category WHERE name = 'ordersTracking' LIMIT 1)),
-		'ROLE_PRODUCTION_TRACKING',
-		0
-	);
-
-INSERT INTO qcadooview_view(pluginidentifier, name, view, entityversion)
-	VALUES (
-		'productionCounting',
-		'productionTrackingsForProductGroupedList',
-		'productionTrackingsForProductGroupedList',
-		0
-	);
-
-INSERT INTO qcadooview_item(pluginidentifier, name, active, category_id, view_id, succession, authrole, entityversion)
-	VALUES (
-		'productionCounting',
-		'productionTrackingForProductGrouped',
-		true,
-		(SELECT id FROM qcadooview_category WHERE name = 'ordersTracking' LIMIT 1),
-		(SELECT id FROM qcadooview_view WHERE name = 'productionTrackingsForProductGroupedList' LIMIT 1),
-		(SELECT max(succession) + 1 FROM qcadooview_item WHERE category_id = (SELECT id FROM qcadooview_category WHERE name = 'ordersTracking' LIMIT 1)),
-		'ROLE_PRODUCTION_TRACKING',
-		0
-	);
-
--- end
-
-
--- productioncounting_productiontrackingforproductgroupeddto
--- last touched 17.02.2016 by lupo
-
-CREATE SEQUENCE cmmsmachineparts_maintenanceeventxlshelper_id_seq;
-
-CREATE TABLE cmmsmachineparts_maintenanceeventxlshelper
-(
-  id bigint NOT NULL,
-  query text,
-  createdate timestamp without time zone,
-  updatedate timestamp without time zone,
-  createuser character varying(255),
-  updateuser character varying(255),
-  CONSTRAINT cmmsmachineparts_maintenanceeventxlshelper_pkey PRIMARY KEY (id)
-);
 
 -- end

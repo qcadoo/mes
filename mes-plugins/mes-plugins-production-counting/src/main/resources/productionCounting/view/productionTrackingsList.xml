@@ -92,7 +92,7 @@
 					var copyButton = #{window}.getRibbonItem("actions.copy");
 					var acceptTracking = #{window}.getRibbonItem("status.acceptTracking");
 					var cancelTracking = #{window}.getRibbonItem("status.cancelTracking");
-					
+
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							var deleteable = true;
@@ -105,7 +105,7 @@
 								cancelTracking.disable();
 							} else {
 								var noDifferentStates = true;
-								
+
 								if (selectedEntitiesArray.length > 1)
 								{
 									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
@@ -115,11 +115,11 @@
 											break;
 										}
 									}
-								} 
-								
+								}
+
 								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
 									var state = selectedEntitiesArray[0].fields.state;
-									
+
 									if (state == "01draft") {
 										acceptTracking.enable();
 										cancelTracking.enable();
@@ -141,7 +141,7 @@
 									acceptTracking.disable("#{translate(productionCounting.productionTrackingsList.ribbon.message.productionTrackingWithDifferentStatesSelected)}");
 									cancelTracking.disable("#{translate(productionCounting.productionTrackingsList.ribbon.message.productionTrackingWithDifferentStatesSelected)}");
 								}
-								
+
 								for (var i in selectedEntitiesArray) {
 									if (selectedEntitiesArray[i].fields.state == "02accepted") {
 										deleteable = false;
@@ -149,7 +149,7 @@
 										break;
 									}
 								}
-								
+
 								for (var i in selectedEntitiesArray) {;
 									if (selectedEntitiesArray[i].fields.orderState != "03inProgress") {
 										copyable = false;
@@ -157,13 +157,13 @@
 										break;
 									}
 								}
-								
+
 								if (deleteable == false) {
 									deleteButton.disable("#{translate(productionCounting.productionTrackingsList.window.mainTab.productionTrackingsList.grid.error.delete)}");
 								} else {
 									deleteButton.enable();
 								}
-								
+
 								if (copyable == false) {
 									copyButton.disable("#{translate(productionCounting.productionTrackingsList.window.mainTab.productionTrackingsList.grid.error.copy)}");
 								} else {
@@ -172,7 +172,7 @@
 							}
 						}
 					}
-					
+
 					this.addOnChangeListener(listener);
 				]]>
 			</script>

@@ -77,6 +77,10 @@
                 <bigButton name="copyStaffAssignmentToShift" icon="copyIcon24.png" state="disabled"
                            action="#{form}.fireEvent(copyStaffAssignmentToShift);"/>
             </group>
+            <group name="add">
+                <bigButton name="addManyWorkers" icon="newIcon24.png" state="enabled"
+                           action="#{form}.fireEvent(addManyWorkers);"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -111,6 +115,7 @@
 									"status.correctAssignmentToShift",
 									"status.acceptCorrectedAssignmentToShift",
 									"copy.copyStaffAssignmentToShift"
+									"add.addManyWorkers"
 								],
 
 								toggleRibbonItemsLen = toggleRibbonItems.length,
@@ -166,7 +171,7 @@
                 </script>
 
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="10">
+                           rows="5">
                     <layoutElement column="1" row="1">
                         <component type="gridLayout" name="leftColGridLayout" columns="1"
                                    rows="5">
@@ -221,7 +226,7 @@
                             </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="1" width="2" height="10">
+                    <layoutElement column="2" row="1" width="2" height="5">
                         <component type="grid" name="staffAssignmentToShifts"
                                    reference="staffAssignmentToShifts" source="#{form}.staffAssignmentToShifts">
                             <option type="column" name="occupationTypeValueForGrid"
@@ -234,6 +239,7 @@
                                     expression="#worker['surname']" link="true"/>
                             <option type="column" name="workerNumber" fields="worker"
                                     expression="#worker['number']" link="true"/>
+                            <option type="column" name="description" fields="description" link="false"/>
 
                             <option type="order" column="workerNumber" direction="desc"/>
 
@@ -243,14 +249,15 @@
                             <option type="correspondingViewInModal" value="true"/>
 
                             <option type="searchable"
-                                    value="workerNumber,workerName,workerSurname,occupationTypeValueForGrid,masterOrder"/>
+                                    value="workerNumber,workerName,workerSurname,occupationTypeValueForGrid,masterOrder,description"/>
                             <option type="orderable"
-                                    value="workerNumber,workerName,workerSurname,occupationTypeValueForGrid,masterOrder"/>
+                                    value="workerNumber,workerName,workerSurname,occupationTypeValueForGrid,masterOrder,description"/>
                             <option type="creatable" value="true"/>
                             <option type="deletable" value="true"/>
                             <option type="paginable" value="false"/>
 
                             <option type="fullscreen" value="true"/>
+                            <option type="fixedHeight" value="true" />
                             <option type="multiselect" value="true"/>
                             <listener event="select"
                                       class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftDetailsListeners"
@@ -268,6 +275,9 @@
                 <listener event="copyStaffAssignmentToShift"
                           class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftDetailsListeners"
                           method="copyStaffAssignmentToShift"/>
+                <listener event="addManyWorkers"
+                          class="com.qcadoo.mes.assignmentToShift.listeners.AssignmentToShiftDetailsListeners"
+                          method="addManyWorkers"/>
             </component>
         </windowTab>
 
@@ -343,6 +353,7 @@
 
                 <option type="searchable" value="false"/>
                 <option type="orderable" value="false"/>
+                <option type="fixedHeight" value="true"/>
             </component>
         </windowTab>
 
