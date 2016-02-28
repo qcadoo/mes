@@ -22,7 +22,7 @@ public class StorageLocationLookupController extends BasicLookupController<Stora
                 +
                 "JOIN materialflow_location loc on loc.id = sl.location_id " +
                 "WHERE loc.id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = :document)"+ 
- "AND (CASE WHEN :product != '' THEN p.name = :product OR sl.product_id IS NULL ELSE true END)) q";
+ "AND (CASE WHEN :product != '' THEN p.number = :product OR sl.product_id IS NULL ELSE true END)) q";
 
         return query;
     }

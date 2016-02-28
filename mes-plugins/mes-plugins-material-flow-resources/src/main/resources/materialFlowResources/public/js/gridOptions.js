@@ -161,34 +161,34 @@ myApp.directive('ngJqGrid', function ($window) {
                                 // the buttons to appear on the toolbar of the grid
                                         {edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
                                 // options for the Edit Dialog
-                                {
-                                    ajaxEditOptions: {contentType: "application/json"},
-                                    mtype: 'PUT',
-                                    closeAfterEdit: true,
-                                    resize: false,
-                                    viewPagerButtons: false,
-                                    serializeEditData: function (data) {
-                                        delete data.oper;
+                                        {
+                                            ajaxEditOptions: {contentType: "application/json"},
+                                            mtype: 'PUT',
+                                            closeAfterEdit: true,
+                                            resize: false,
+                                            viewPagerButtons: false,
+                                            serializeEditData: function (data) {
+                                                delete data.oper;
 
-                                        return validateSerializeData(data);
-                                    },
-                                    onclickSubmit: function (params, postdata) {
-                                        params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
-                                    },
-                                    errorTextFormat: function (response) {
-                                        return translateAndShowMessages(response);
-                                    },
-                                    beforeShowForm: function (form) {
-                                        var dlgDiv = $("#editmodgrid");
-                                        var dlgWidth = 586;
-                                        var dlgHeight = dlgDiv.height();
-                                        var parentWidth = $(window).width();
-                                        var parentHeight = $(window).height();
-                                        dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
-                                        dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
-                                        dlgDiv[0].style.width = dlgWidth + "px";
-                                    },
-                                },
+                                                return validateSerializeData(data);
+                                            },
+                                            onclickSubmit: function (params, postdata) {
+                                                params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
+                                            },
+                                            errorTextFormat: function (response) {
+                                                return translateAndShowMessages(response);
+                                            },
+                                            beforeShowForm: function (form) {
+                                                var dlgDiv = $("#editmodgrid");
+                                                var dlgWidth = 586;
+                                                var dlgHeight = dlgDiv.height();
+                                                var parentWidth = $(window).width();
+                                                var parentHeight = $(window).height();
+                                                dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
+                                                dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
+                                                dlgDiv[0].style.width = dlgWidth + "px";
+                                            },
+                                        },
                                         // options for the Add Dialog
                                                 {
                                                     ajaxEditOptions: {
@@ -383,6 +383,17 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         var lastSel;
         var firstLoad = true;
 
+        function getJsonByQuery(url, params, callback) {
+            if (params && params.query) {
+                return $.getJSON(url, params, function (data) {
+                    callback(data);
+                });
+
+            } else {
+                callback({entities: [], numberOfResults: 0});
+            }
+        }
+
         function getRowIdFromElement(el) {
             var rowId = el.attr('rowId');
             if ('_empty' === rowId) {
@@ -416,33 +427,27 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $ac.val(value);
             $ac.autoComplete({
                 minChars: 0,
-                autoCompleteResult : false,
+                autoCompleteResult: false,
                 source: function (query, response) {
-                	var parameters = getParametersFunction ? getParametersFunction() : {};
+                    var parameters = getParametersFunction ? getParametersFunction() : {};
                     try {
                         xhr.abort();
                     } catch (e) {
                     }
-
-                    xhr = $.getJSON(url, $.extend({query: query}, parameters), function (data) {
-                        console.log(data.numberOfResults);
-                        console.log(data.entities);
-                        console.log(data);
-                        if (data.numberOfResults == 0) {
+                    xhr = getJsonByQuery(url, $.extend({query: query}, parameters), function (data) {
+                        if (data.numberOfResults === 0) {
                             autoCompleteResult = false;
                             response([{
                                     id: 0,
                                     code: QCD.translate('qcadooView.autocomplete.noResults')
                                 }]);
-                        }
-                        else if (data.entities.length == 0) {
+                        } else if (data.entities.length === 0) {
                             autoCompleteResult = false;
                             response([{
                                     id: 0,
                                     code: QCD.translate('qcadooView.autocomplete.tooManyResults') + ' (' + data.numberOfResults + ')'
                                 }]);
-                        }
-                        else {
+                        } else {
                             autoCompleteResult = true;
                             response(data.entities);
                         }
@@ -456,8 +461,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
                     if (autoCompleteResult) {
                         return '<div class="autocomplete-suggestion" data-id="' + id + '" data-val="' + code + '">' + code.replace(re, "<b>$1</b>") + '</div>';
-                    }
-                    else {
+                    } else {
                         return '<div class="autocomplete-no-result" data-id="' + id + '" data-val="' + code + '">' + code.replace(re, "<b>$1</b>") + '</div>';
                     }
                 },
@@ -489,28 +493,32 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                 };
             });
-            
+
             $('input', lookup).bind('change keydown paste input', function () {
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
                 $(this).data("timeout", setTimeout(function () {
                     if (t.val()) {
-                    	$.get('/integration/rest/documentPositions/resourceByNumber/'+getDocumentId()+'/' + encodeURIComponent(t.val()).replace('%2F','%252F') + ".html", function (resource) {
-                    		updateFieldValue('batch', resource['batch'], getRowIdFromElement(t));
-                    		updateFieldValue('productiondate', resource['productionDate'], getRowIdFromElement(t));
-                    		updateFieldValue('expirationdate', resource['expirationDate'], getRowIdFromElement(t));
-                    		updateFieldValue('storageLocation', resource['storageLocation'], getRowIdFromElement(t));
-                    		updateFieldValue('palletNumber', resource['palletNumber'], getRowIdFromElement(t));
-                    		updateFieldValue('additionalCode', resource['additionalCode'], getRowIdFromElement(t));
-                    		updateFieldValue('price', resource['price'], getRowIdFromElement(t));
-                    		updateFieldValue('typeOfPallet', resource['typeOfPallet'], getRowIdFromElement(t));
-                    	});
+                        fillWithAttributesFromResource(t.val(), getRowIdFromElement(t))
                     } else {
-                    	updateFieldValue('batch', '', getRowIdFromElement(t));
+                        updateFieldValue('batch', '', getRowIdFromElement(t));
                     }
                 }, 500));
             });
             return lookup;
+        }
+
+        function fillWithAttributesFromResource(resource, rowId) {
+        	$.get('/integration/rest/documentPositions/resourceByNumber/'+getDocumentId()+'/' + encodeURIComponent(resource).replace('%2F', '%252F') + ".html", function (resource) {
+                updateFieldValue('batch', resource['batch'], rowId);
+                updateFieldValue('productiondate', resource['productionDate'], rowId);
+                updateFieldValue('expirationdate', resource['expirationDate'], rowId);
+                updateFieldValue('storageLocation', resource['storageLocation'], rowId);
+                updateFieldValue('palletNumber', resource['palletNumber'], rowId);
+                updateFieldValue('additionalCode', resource['additionalCode'], rowId);
+                updateFieldValue('price', resource['price'], rowId);
+                updateFieldValue('typeOfPallet', resource['typeOfPallet'], rowId);
+            });
         }
 
         function palletNumbersLookup_createElement(value, options) {
@@ -540,6 +548,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var available_additionalunits = null;
         function updateUnitsInGridByProduct(productNumber, additionalUnitValue) {
+            if(!productNumber){
+                return;
+            }
             $.get('/integration/rest/documentPositions/units/' + productNumber + ".html", function (units) {
                 available_additionalunits = units['available_additionalunits'];
                 var gridData = $('#grid').jqGrid('getRowData');
@@ -656,7 +667,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                                 if (productValue === productNumber) {
                                     // update input
                                     updateFieldValue('resource', resource['number'], numberOfInput);
-                                    updateFieldValue('batch', resource['batch'], numberOfInput);
+                                    fillWithAttributesFromResource(resource['number'], numberOfInput);
                                 }
                             }
                         }
@@ -676,8 +687,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     updateUnitsInGridByProduct(t.val());
                     if (t.val()) {
                         updateStorageLocations(t.val(), getDocumentId());
-                        if ($scope.config.suggestResource) {
-                        	updateResource(t.val());
+                        if ($scope.config.suggestResource && $scope.config.outDocument) {
+                            updateResource(t.val());
                         }
                     } else {
                         updateFieldValue('storageLocation', '', getRowIdFromElement(t));
@@ -695,12 +706,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var additionalCode = getFieldValue('additionalCode', rowId);
 
             var url = '/rest/additionalcodes';
-            $.getJSON(url, {query: additionalCode}, function (data) {
-
-                    var product = '';
-                    product = data.entities.filter(function (element, index) {
-                        return element.code === additionalCode;
-                    })[0];
+            getJsonByQuery(url, {query:additionalCode}, function (data) {
+                var product = '';
+                product = data.entities.filter(function (element, index) {
+                    return element.code === additionalCode;
+                })[0];
 
                 if (product) {
                     product = product.productnumber;
@@ -710,7 +720,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     var additionalCodeField = updateFieldValue('additionalCode', '', rowId);
                     additionalCodeField.trigger('change');
                 }
-
             });
         }
 
@@ -730,7 +739,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateProductByAdditionalCode(additionalCode, rowId, url) {
-            $.getJSON(url, {query: additionalCode}, function (data) {
+            getJsonByQuery(url, {query:additionalCode}, function (data) {
                 var product = '';
 
                 product = data.entities.filter(function (element, index) {
@@ -774,7 +783,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     updateFieldValue('product', newProduct, rowNumber);
                 }
 
-            });
+            }, 'json');
         }
 
         function lookup_value(elem, operation, value) {
@@ -1304,14 +1313,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                 },
                 {
-                	name: 'batch',
-                	index: 'batch',
-                	editable: true,
-                	required: true,
-                	formoptions: {
-                		rowpos: 6,
-                		colpos: 2
-                	},
+                    name: 'batch',
+                    index: 'batch',
+                    editable: true,
+                    required: true,
+                    formoptions: {
+                        rowpos: 6,
+                        colpos: 2
+                    },
                 },
                 {
                     name: 'palletNumber',
@@ -1417,16 +1426,16 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function prepareGridConfig(config) {
             var readOnlyInType = function (outDocument, columnIndex, responseDate) {
-            	if(outDocument && (columnIndex === 'conversion' || columnIndex === 'expirationdate' ||
-            			columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
-            		return true;
-            	}
-            	if(!outDocument && columnIndex === 'resource') {
-            		return true;
-            	}
-            	return false;
+                if (outDocument && (columnIndex === 'conversion' || columnIndex === 'expirationdate' ||
+                        columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
+                    return true;
+                }
+                if (!outDocument && columnIndex === 'resource') {
+                    return true;
+                }
+                return false;
             }
-        	var hideColumnInGrid = function (columnIndex, responseDate) {
+            var hideColumnInGrid = function (columnIndex, responseDate) {
                 if (columnIndex === 'storageLocation' && !responseDate.showstoragelocation) {
                     return true;
                 }
@@ -1449,7 +1458,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     return true;
                 }
                 if (columnIndex === 'batch' && !responseDate.showbatch) {
-                	return true;
+                    return true;
                 }
                 if (columnIndex === 'price' && !responseDate.showprice) {
                     return true;
