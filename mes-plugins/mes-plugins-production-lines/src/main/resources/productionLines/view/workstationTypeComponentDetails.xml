@@ -24,20 +24,21 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="workstationTypeComponentDetails" 
-	modelName="workstationTypeComponent">
-	
-	<component name="window" type="window" reference="window">
-		<ribbon>
-			<template name="standardFormTemplate" />
-		</ribbon>
-		
-		<windowTab name="mainTab" reference="mainTab">
-			<component type="form" name="form" reference="form">
-				<script>
-					<![CDATA[
+<view defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="workstationTypeComponentDetails"
+      modelName="workstationTypeComponent">
+
+    <component name="window" type="window" reference="window">
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy"/>
+        </ribbon>
+
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="form" name="form" reference="form">
+                <script>
+                    <![CDATA[
 						var listener = {
 					    	onSetValue: function() {
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
@@ -51,35 +52,51 @@
 						};
 						
 						#{form}.addOnChangeListener(listener);
-					]]>	 
-				</script>
-				<component type="gridLayout" name="workstationTypeComponentGridLayout" columns="4" rows="2" hasBorders="false">
-					<layoutElement column="1" row="1" width="3">
-						<component type="lookup" name="workstationType" field="workstationType" reference="workstationTypeLookup">
-							<option type="column" name="name" fields="name" link="true" />	
-							
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2" width="3">
-						<component type="input" name="quantity" field="quantity" reference="quantity">
-							<option type="alignment" value="right" />
-						</component>
-					</layoutElement>
-				</component>
-				
-				<option type="header" value="true" />
-				<option type="expression" value="#number" />
-			
-			</component>
-		</windowTab>
-		 
-	</component>
-	
-	<hooks>
-	</hooks>
+					]]>     
+                </script>
+                <component type="gridLayout" name="workstationTypeComponentGridLayout" columns="4" rows="4"
+                           hasBorders="false">
+                    <layoutElement column="1" row="1" width="2">
+                        <component type="lookup" name="workstationType" field="workstationType"
+                                   reference="workstationTypeLookup">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" width="2">
+                        <component type="input" name="quantity" field="quantity" reference="quantity">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="3" width="2">
+                        <component type="calendar" name="dateFrom" field="dateFrom"
+                                   reference="dateFrom">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="4" width="2">
+                        <component type="calendar" name="dateTo" field="dateTo"
+                                   reference="dateTo" defaultEnabled="false">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
+
+            </component>
+        </windowTab>
+         
+    </component>
+
+    <hooks>
+    </hooks>
 </view>
