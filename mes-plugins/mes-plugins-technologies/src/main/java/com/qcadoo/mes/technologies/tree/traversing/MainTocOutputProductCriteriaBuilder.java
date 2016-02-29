@@ -75,9 +75,8 @@ public class MainTocOutputProductCriteriaBuilder {
         SearchCriteriaBuilder tocScb = getTocDataDefinition().findWithAlias(Aliases.TOC);
         applyCriteriaIfPresent(tocScb, criteria.getTocCriteria());
 
-        SearchCriteriaBuilder opocScb = tocScb.createCriteria(
-                TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, Aliases.OPERATION_PROD_OUT_COMPONENT,
-                JoinType.INNER);
+        SearchCriteriaBuilder opocScb = tocScb.createCriteria(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
+                Aliases.OPERATION_PROD_OUT_COMPONENT, JoinType.INNER);
         applyCriteriaIfPresent(opocScb, criteria.getOpocCriteria());
 
         SearchCriteriaBuilder prodScb = opocScb.createCriteria(OperationProductOutComponentFields.PRODUCT,
@@ -94,13 +93,13 @@ public class MainTocOutputProductCriteriaBuilder {
 
         SearchCriteriaBuilder parentOpicScb = parentTocScb.createCriteria(
                 TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS, Aliases.TOC_PARENT_OPIC, JoinType.LEFT);
-
+        parentOpicScb.createCriteria(OperationProductInComponentFields.PRODUCT, Aliases.TOC_PARENT_INPUT_PRODUCT, JoinType.LEFT);
         applyCriteriaIfPresent(parentOpicScb, criteria.getParentOpicCriteria());
-
+        techScb.createCriteria(TechnologyFields.PRODUCT, Aliases.TECHNOLOGY_PRODUCT, JoinType.INNER);
         SearchCriterion productIsConsumedByParentOp = eqField(Aliases.OPERATION_OUTPUT_PRODUCT + ".id",
                 Aliases.TOC_PARENT_INPUT_PRODUCT + ".id");
-        SearchCriterion opIsRootAndItsProductMatchTechProduct = and(isNull(Aliases.TOC + "."
-                + TechnologyOperationComponentFields.PARENT),
+        SearchCriterion opIsRootAndItsProductMatchTechProduct = and(
+                isNull(Aliases.TOC + "." + TechnologyOperationComponentFields.PARENT),
                 eqField(Aliases.TECHNOLOGY_PRODUCT + ".id", Aliases.OPERATION_OUTPUT_PRODUCT + ".id"));
 
         tocScb.add(or(productIsConsumedByParentOp, opIsRootAndItsProductMatchTechProduct));
