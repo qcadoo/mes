@@ -40,8 +40,6 @@
             <option type="column" name="number" fields="number" link="true"/>
             <option type="column" name="locationNumber" fields="location"
                     expression="#location['number']" link="true" width="100"/>
-            <option type="column" name="locationName" fields="location"
-                    expression="#location['name']" link="true"/>
             <option type="column" name="productNumber" fields="product"
                     expression="#product['number']" link="true" width="100"/>
             <option type="column" name="productName" fields="product"
@@ -62,9 +60,9 @@
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number"/>
+                    value="locationNumber,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number"/>
+                    value="locationNumber,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceDetails"/>
             <option type="correspondingViewInModal" value="true"/>

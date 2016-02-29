@@ -7,4 +7,4 @@ ALTER TABLE productionlines_workstationtypecomponent ADD COLUMN dateto timestamp
 
 UPDATE productionlines_workstationtypecomponent SET datefrom = '1970-01-01 00:00:00' WHERE datefrom IS NULL;
 
--- end 
+-- end

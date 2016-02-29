@@ -127,6 +127,7 @@
  									} else {  
 										ribbonItem.enable();   
  									}   
+
      							}
 
 								if (isSaved && #{state}.getValue().content && #{state}.getValue().content.value) {
