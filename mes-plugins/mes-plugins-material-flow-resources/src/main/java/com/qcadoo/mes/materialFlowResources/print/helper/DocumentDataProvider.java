@@ -39,6 +39,10 @@ public final class DocumentDataProvider {
     private DocumentDataProvider() {
     }
 
+    public static String name(final Entity document) {
+        return document.getStringField(DocumentFields.NAME);
+    }
+
     public static String number(final Entity document) {
         return document.getStringField(DocumentFields.NUMBER);
     }
@@ -49,14 +53,16 @@ public final class DocumentDataProvider {
 
     public static String locationFrom(final Entity document) {
         Entity locationFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-        return locationFrom != null ? locationFrom.getStringField(LocationFields.NUMBER) + " - "
-                + locationFrom.getStringField(LocationFields.NAME) : StringUtils.EMPTY;
+        return locationFrom != null
+                ? locationFrom.getStringField(LocationFields.NUMBER) + " - " + locationFrom.getStringField(LocationFields.NAME)
+                : StringUtils.EMPTY;
     }
 
     public static String locationTo(final Entity document) {
         Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
-        return locationTo != null ? locationTo.getStringField(LocationFields.NUMBER) + " - "
-                + locationTo.getStringField(LocationFields.NAME) : StringUtils.EMPTY;
+        return locationTo != null
+                ? locationTo.getStringField(LocationFields.NUMBER) + " - " + locationTo.getStringField(LocationFields.NAME)
+                : StringUtils.EMPTY;
     }
 
     public static String company(final Entity document) {

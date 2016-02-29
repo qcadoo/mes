@@ -62,6 +62,9 @@
             <option type="column" name="documentNumber" fields="document"
                     width="50" expression="#document['number']"/>
 
+            <option type="column" name="documentName" fields="document"
+                    width="50" expression="#document['name']"/>
+
             <option type="column" name="company" fields="document"
                     expression="#document['company']?.get('name')"/>
 
@@ -79,9 +82,9 @@
             <option type="order" column="documentNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,company,batch,expirationDate,productionDate,storageLocation,state,documentDate"/>
+                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,documentDate"/>
             <option type="orderable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,company,batch,expirationDate,productionDate,storageLocation,state,documentDate"/>
+                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,documentDate"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

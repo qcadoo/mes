@@ -257,7 +257,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             addDocumentError(document, warehouse, errorMessage);
         } else {
             document.setField(DocumentFields.POSITIONS, generatedPositions);
-            document.getDataDefinition().save(document);
+            //document.getDataDefinition().save(document);
         }
     }
 

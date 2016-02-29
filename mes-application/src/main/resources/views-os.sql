@@ -143,3 +143,9 @@ CREATE OR REPLACE FUNCTION generate_and_set_resource_number_trigger() RETURNS tr
 CREATE TRIGGER materialflowresources_resource_trigger_number BEFORE INSERT ON materialflowresources_resource FOR EACH ROW EXECUTE PROCEDURE generate_and_set_resource_number_trigger();
 
 --end #QCADOO-432
+
+--end #QCADOO-433
+CREATE OR REPLACE FUNCTION generate_document_number(_translated_type text) RETURNS text AS $$ DECLARE _pattern text;_sequence_name text;_sequence_value numeric;_tmp text;_seq text; _number text; BEGIN _pattern := '#translated_type/#seq'; _sequence_name := 'materialflowresources_document_number_' || lower(_translated_type); SELECT sequence_name into _tmp FROM information_schema.sequences where sequence_schema = 'public' and sequence_name = _sequence_name; if _tmp is null then execute 'CREATE SEQUENCE ' || _sequence_name || ';'; end if; select nextval(_sequence_name) into _sequence_value; _seq := to_char(_sequence_value, 'fm00000'); if _seq like '%#%' then _seq := _sequence_value; end if; _number := _pattern; _number := replace(_number, '#translated_type', _translated_type); _number := replace(_number, '#seq', _seq); RETURN _number; END; $$ LANGUAGE 'plpgsql';
+CREATE OR REPLACE FUNCTION generate_and_set_document_number_trigger() RETURNS trigger AS $$ BEGIN NEW.number := generate_document_number(NEW.number); IF NEW.name is null THEN NEW.name := NEW.number; END IF; return NEW; END; $$ LANGUAGE 'plpgsql';
+CREATE TRIGGER materialflowresources_document_trigger_number BEFORE INSERT ON materialflowresources_document FOR EACH ROW EXECUTE PROCEDURE generate_and_set_document_number_trigger();
+--end #QCADOO-433
