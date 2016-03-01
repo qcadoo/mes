@@ -50,7 +50,7 @@
             <option type="column" name="user" fields="user"
                     expression="#user['firstName'] + ' ' + #user['lastName']" width="150" />
 
-            <option type="order" column="number" direction="desc" width="200" />
+            <option type="order" column="time" direction="desc" width="200" />
 
             <option type="searchable"
                     value="number,name,time,locationFrom,locationTo,user,type,state,company" />

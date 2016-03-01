@@ -79,7 +79,7 @@
 
             <option type="column" name="state" fields="state"/>
 
-            <option type="order" column="documentNumber" direction="desc"/>
+            <option type="order" column="documentDate" direction="desc"/>
 
             <option type="searchable"
                     value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,documentDate"/>
