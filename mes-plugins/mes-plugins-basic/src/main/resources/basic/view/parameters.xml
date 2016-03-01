@@ -107,8 +107,8 @@
 
         <windowTab name="reportTab" reference="reportTab">
             <component type="gridLayout" name="reportGridLayout"
-                       columns="3" rows="5">
-                <layoutElement column="1" row="1" height="5">
+                       columns="3" rows="6">
+                <layoutElement column="1" row="1" height="6">
                     <component type="grid" name="reportColumnsWidths"
                                reference="reportColumnsWidths" defaultEnabled="false"
                                source="#{form}.reportColumnWidths">
