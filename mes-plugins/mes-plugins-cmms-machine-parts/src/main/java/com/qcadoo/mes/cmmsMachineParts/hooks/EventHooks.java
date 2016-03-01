@@ -96,7 +96,6 @@ public class EventHooks {
     public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
         FieldComponent acceptanceEvents = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.ACCEPTANCE_EVENTS);
         acceptanceEvents.setFieldValue(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS));
-        setEventCriteriaModifiers(view);
         setUpFaultTypeLookup(view);
         setFieldsRequired(view);
         fillDefaultFields(view);
@@ -107,16 +106,17 @@ public class EventHooks {
         toggleOldSolutionsButton(view);
         enableShowPlannedEvent(view);
         hideAccordingToRole(view);
+        setEventCriteriaModifiers(view);
     }
 
     public void plannedEventBeforeRender(final ViewDefinitionState view) {
-        setEventCriteriaModifiers(view);
         generateNumber(view, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT, PlannedEventFields.NUMBER);
         fillDefaultFieldsFromContext(view, PlannedEventFields.PLANNED_EVENT_CONTEXT);
         toggleEnabledViewComponents(view, PlannedEventFields.PLANNED_EVENT_CONTEXT);
         toggleEnabledFromBasedOn(view);
         enableShowMaintenanceEvent(view);
         disableCopyButtonForAfterReview(view);
+        setEventCriteriaModifiers(view);
     }
 
     public void toggleEnabledFromBasedOn(final ViewDefinitionState view) {
@@ -334,7 +334,7 @@ public class EventHooks {
 
     public void setEventCriteriaModifiers(ViewDefinitionState view) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity event = formComponent.getEntity();
+        Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
 
         setEventCriteriaModifier(view, event, MaintenanceEventFields.FACTORY, MaintenanceEventFields.DIVISION);
         setEventCriteriaModifier(view, event, MaintenanceEventFields.DIVISION, MaintenanceEventFields.WORKSTATION);
