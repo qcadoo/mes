@@ -221,9 +221,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     public BigDecimal getQuantityOfProductInWarehouse(final Entity warehouse, final Entity product, Entity position) {
         BigDecimal quantity = BigDecimal.ZERO;
-        String algorithm = warehouse.getStringField(LocationFieldsMFR.ALGORITHM);
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
-        if (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && resource != null) {
+        if (resource != null) {
             quantity = resource.getDecimalField(ResourceFields.QUANTITY);
         } else {
             List<Entity> resources = dataDefinitionService
@@ -254,8 +253,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Transactional
     public void updateResourcesForReleaseDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm
-                .parseString(warehouse.getStringField(LocationFieldsMFR.ALGORITHM));
+        WarehouseAlgorithm warehouseAlgorithm;
         boolean enoughResources = true;
 
         StringBuilder errorMessage = new StringBuilder();
@@ -265,7 +263,15 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         List<Entity> generatedPositions = Lists.newArrayList();
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
             BigDecimal quantityInWarehouse;
+            if (resource != null) {
+                warehouse = resource.getBelongsToField(ResourceFields.LOCATION);
+                warehouseAlgorithm = WarehouseAlgorithm.MANUAL;
+            } else {
+                warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+                warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse.getStringField(LocationFieldsMFR.ALGORITHM));
+            }
             if (warehouseAlgorithm.equals(WarehouseAlgorithm.MANUAL)) {
                 quantityInWarehouse = getQuantityOfProductInWarehouse(warehouse, product, position);
             } else {
