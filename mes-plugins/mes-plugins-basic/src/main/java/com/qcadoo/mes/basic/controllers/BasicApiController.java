@@ -28,7 +28,7 @@ public final class BasicApiController {
 
     @ResponseBody
     @RequestMapping(value = "/additionalcodes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public DataResponse getAdditionalCodesByQuery(@RequestParam("query") String query, @RequestParam("productnumber") String productnumber) {
+    public DataResponse getAdditionalCodesByQuery(@RequestParam("query") String query, @RequestParam(required = false, value = "productnumber") String productnumber) {
         return dataProvider.getAdditionalCodesResponseByQuery(query, productnumber);
     }
 

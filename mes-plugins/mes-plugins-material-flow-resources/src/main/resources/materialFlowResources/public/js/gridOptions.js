@@ -385,8 +385,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function getJsonByQuery(url, params, callback) {
             if (params && params.query) {
-                return $.getJSON(url, params, function (data) {
-                    callback(data);
+                return $.ajax({
+                    dataType: "json",
+                    url: url,
+                    data: params,
+                    success: function (data) {
+                        callback(data);
+                    }
                 });
 
             } else {
@@ -419,7 +424,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }
             }
 
-            return 0;
+            var config = angular.element($("#GridController")).scope().config;
+
+            return config ? config.document_id : 0;
         }
 
         function createLookupElement(name, value, url, options, getParametersFunction) {
@@ -482,6 +489,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             wrapper.append($ac);
             wrapper.append(button);
 
+            var isReadonly = getColModelByIndex(name).editoptions.readonly === 'readonly';
+            $ac.attr('readonly', isReadonly);
+            button.attr('disabled', isReadonly);
+
             return wrapper;
         }
 
@@ -509,7 +520,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function fillWithAttributesFromResource(resource, rowId) {
-        	$.get('/integration/rest/documentPositions/resourceByNumber/'+getDocumentId()+'/' + encodeURIComponent(resource).replace('%2F', '%252F') + ".html", function (resource) {
+            $.get('/integration/rest/documentPositions/resourceByNumber/' + getDocumentId() + '/' + encodeURIComponent(resource).replace('%2F', '%252F') + ".html", function (resource) {
                 updateFieldValue('batch', resource['batch'], rowId);
                 updateFieldValue('productiondate', resource['productionDate'], rowId);
                 updateFieldValue('expirationdate', resource['expirationDate'], rowId);
@@ -522,7 +533,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function palletNumbersLookup_createElement(value, options) {
-            return createLookupElement('palletNumber', value, '/rest/palletnumbers', options);
+            var lookup = createLookupElement('palletNumber', value, '/rest/palletnumbers', options);
+
+            return lookup;
         }
 
         function getFieldValue(field, rowId) {
@@ -548,7 +561,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var available_additionalunits = null;
         function updateUnitsInGridByProduct(productNumber, additionalUnitValue) {
-            if(!productNumber){
+            if (!productNumber) {
                 return;
             }
             $.get('/integration/rest/documentPositions/units/' + productNumber + ".html", function (units) {
@@ -643,7 +656,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateResource(productNumber) {
-        	$.get('/integration/rest/documentPositions/resource/'+getDocumentId()+'/' + productNumber + ".html", function (resource) {
+            $.get('/integration/rest/documentPositions/resource/' + getDocumentId() + '/' + productNumber + ".html", function (resource) {
                 if (resource) {
                     var gridData = $('#grid').jqGrid('getRowData');
 
@@ -686,9 +699,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     conversionModified = false;
                     updateUnitsInGridByProduct(t.val());
                     if (t.val()) {
-                    	if(! $scope.config.outDocument) {
-                    		updateStorageLocations(t.val(), getDocumentId());
-                    	} else if ($scope.config.suggestResource) {
+                        if (!$scope.config.outDocument) {
+                            updateStorageLocations(t.val(), getDocumentId());
+                        } else if ($scope.config.suggestResource) {
                             updateResource(t.val());
                         }
                     } else {
@@ -707,7 +720,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var additionalCode = getFieldValue('additionalCode', rowId);
 
             var url = '/rest/additionalcodes';
-            getJsonByQuery(url, {query:additionalCode}, function (data) {
+            getJsonByQuery(url, {query: additionalCode}, function (data) {
                 var product = '';
                 product = data.entities.filter(function (element, index) {
                     return element.code === additionalCode;
@@ -731,7 +744,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     productnumber: getFieldValue('product', getRowIdFromElement($('input', lookup))),
                     context: getDocumentId()
                 };
-            });        
+            });
 
             $('input', lookup).bind('change keydown paste input', function () {
                 var t = $(this);
@@ -745,7 +758,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateProductByAdditionalCode(additionalCode, rowId, url) {
-            getJsonByQuery(url, {query:additionalCode}, function (data) {
+            getJsonByQuery(url, {query: additionalCode}, function (data) {
                 var product = '';
 
                 product = data.entities.filter(function (element, index) {
@@ -823,6 +836,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }
         }
 
+        function getColModelByIndex(index) {
+            return $scope.config.colModel.filter(function (element, i) {
+                return element.index === index;
+            })[0];
+        }
+
         function updateConversionByGivenUnitValue(givenUnitValue, rowId) {
             var conversion = '';
 
@@ -879,6 +898,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function price_createElement(value, options) {
             var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
+            $input.attr('readonly', getColModelByIndex('price').editoptions.readonly === 'readonly');
 
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
@@ -928,6 +948,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function conversion_createElement(value, options) {
             var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
+            $input.attr('readonly', getColModelByIndex('conversion').editoptions.readonly === 'readonly');
 
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
@@ -1268,12 +1289,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     edittype: "text",
                     editoptions: {
                         dataInit: function (element) {
-                            var options = $.datepicker.regional[window.locale];
-                            options.showOn = 'button';
-                            options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
-                            options.buttonImageOnly = true;
-                            options.buttonText = 'Wybierz';
-                            $(element).datepicker(options);
+                            if (getColModelByIndex('expirationdate').editoptions.readonly !== 'readonly') {
+                                var options = $.datepicker.regional[window.locale];
+                                options.showOn = 'button';
+                                options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
+                                options.buttonImageOnly = true;
+                                options.buttonText = 'Wybierz';
+                                $(element).datepicker(options);
+                            }
                         }
                     },
                     formoptions: {
@@ -1290,12 +1313,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     edittype: "text",
                     editoptions: {
                         dataInit: function (element) {
-                            var options = $.datepicker.regional[window.locale];
-                            options.showOn = 'button';
-                            options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
-                            options.buttonImageOnly = true;
-                            options.buttonText = 'Wybierz';
-                            $(element).datepicker(options);
+                            if (getColModelByIndex('productiondate').editoptions.readonly !== 'readonly') {
+                                var options = $.datepicker.regional[window.locale];
+                                options.showOn = 'button';
+                                options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
+                                options.buttonImageOnly = true;
+                                options.buttonText = 'Wybierz';
+                                $(element).datepicker(options);
+                            }
                         }
                     },
                     formoptions: {
@@ -1369,17 +1394,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         rowpos: 9,
                         colpos: 2
                     },
-                }/*,
-                 {
-                 name: 'resource_id',
-                 index: 'resource_id',
-                 editable: true,
-                 edittype: 'custom',
-                 editoptions: {
-                 custom_element: editProductId_createElement,
-                 custom_value: editProductId_value
-                 }
-                 }*/
+                }
             ],
             pager: "#jqGridPager",
             gridComplete: function () {
@@ -1392,20 +1407,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                     }
                 }
-                //setTimeout(function() { $scope.resize(); }, 1000);
 
             },
             onSelectRow: function (id) {
-                // gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
-
-//                if ($scope.editedRow) {
-//
-//                } else {
-//                    $scope.editedRow = id;
-//                    jQuery('#grid').editRow(id, gridEditOptions);
-//                }
-                //  jQuery('#grid').editRow(id, gridEditOptions);
-                //}
             },
             ajaxRowOptions: {
                 contentType: "application/json"
@@ -1418,21 +1422,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             beforeSubmit: function (postdata, formid) {
                 return [false, 'ble'];
             },
-//            serializeGridData: function (postData) {
-//                var queryData = {};
-//                angular.forEach(config.colModel, function (value, key) {
-//                    queryData[value.index] = postData[value.index];
-//                    delete postData[value.index];
-//                });
-//                postData.queryData = queryData;
-//                
-//                return postData;
-//            },
         };
 
         function prepareGridConfig(config) {
             var readOnlyInType = function (outDocument, columnIndex, responseDate) {
-                if (outDocument && (columnIndex === 'conversion' || columnIndex === 'expirationdate' ||
+                if (outDocument && (columnIndex === 'conversion' || columnIndex === 'expirationdate' || columnIndex === 'productiondate' ||
+                        columnIndex === 'batch' || columnIndex === 'price' ||
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
                     return true;
                 }
@@ -1440,7 +1435,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     return true;
                 }
                 return false;
-            }
+            };
+
             var hideColumnInGrid = function (columnIndex, responseDate) {
                 if (columnIndex === 'storageLocation' && !responseDate.showstoragelocation) {
                     return true;
@@ -1488,10 +1484,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         config.colModel[key].editrules = config.colModel[key].editrules || {};
                         config.colModel[key].editrules.edithidden = true;
                     }
-//                    if(readOnlyInType(config.outDocument,value.index, response.data)) {
-//                    	config.colModel[key].editoptions = config.colModel[key].editoptions || {};
-//                    	config.colModel[key].editoptions.readonly = 'readonly';
-//                    }
+                    if (readOnlyInType(config.outDocument, value.index, response.data)) {
+                        config.colModel[key].editoptions = config.colModel[key].editoptions || {};
+                        if (config.colModel[key].edittype === 'select') {
+                            config.colModel[key].editoptions.disabled = 'disabled';
+
+                        } else {
+                            config.colModel[key].editoptions.readonly = 'readonly';
+                        }
+                    }
                 });
 
                 $http({
