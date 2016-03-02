@@ -84,7 +84,10 @@ BEGIN
             WHEN type='03internalOutbound' THEN 'RW'
             WHEN type='04release' THEN 'WZ'
             WHEN type='05transfer' THEN 'MM'
-       END as translated_type,* from materialflowresources_document x where order_id is null and number in (select number from materialflowresources_document group by number having count(number)>1))
+       END as translated_type,* from materialflowresources_document x where 
+	(order_id is null and number in (select number from materialflowresources_document group by number having count(number)>1))
+	OR (number like '~~~%')
+	)
     LOOP
 	_number := generate_document_number(row.translated_type);
 	update materialflowresources_document set number = _number, name = _number where id = row.id;    
