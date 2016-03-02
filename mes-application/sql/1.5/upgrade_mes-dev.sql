@@ -109,3 +109,11 @@ alter table materialflowresources_document alter column number set not null;
 alter table materialflowresources_document add unique(number);
 
 --end #QCADOO-433
+
+-- Table: qcadooplugin_plugin
+-- by kasi
+
+ALTER TABLE qcadooplugin_plugin ADD COLUMN license character varying(255);
+update qcadooplugin_plugin set version = '1.3.0';
+
+--end
