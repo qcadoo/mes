@@ -725,7 +725,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function additionalCodeLookup_createElement(value, options) {
             var url = '/rest/additionalcodes';
-            var lookup = createLookupElement('additionalCode', value, url, options);
+            var lookup = createLookupElement('additionalCode', value, url, options, function () {
+                return  {
+                    productnumber: getFieldValue('product', getRowIdFromElement($('input', lookup))),
+                    context: getDocumentId()
+                };
+            });        
 
             $('input', lookup).bind('change keydown paste input', function () {
                 var t = $(this);

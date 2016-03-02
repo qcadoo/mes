@@ -1,5 +1,6 @@
 package com.qcadoo.mes.basic.controllers.dataProvider;
 
+import com.google.common.base.Strings;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -42,17 +43,19 @@ public class DataProvider {
                 + "FROM basic_product product WHERE product.active = true and product.number ilike :query LIMIT " + limit + ";";
     }
 
-    private String prepareAdditionalCodeQuery() {
+    private String prepareAdditionalCodeQuery(String productnumber) {
+        String productNumberCondition = Strings.isNullOrEmpty(productnumber) ? "" : "and product.number = '" + productnumber + "'";
+
         return "SELECT additionalcode.id as id, additionalcode.code as code, product.number as productnumber "
                 + "FROM basic_additionalcode additionalcode "
-                + "JOIN basic_product product ON (additionalcode.product_id = product.id)"
+                + "JOIN basic_product product ON (additionalcode.product_id = product.id " + productNumberCondition + ")"
                 + "WHERE additionalcode.code ilike :query;";
     }
 
     private String prepareAdditionalCodeQueryWithLimit(int limit) {
         return "SELECT additionalcode.id as id, additionalcode.code as code, product.number as productnumber "
                 + "FROM basic_additionalcode additionalcode "
-                + "JOIN basic_product product ON (additionalcode.product_id = product.id)"
+                + "JOIN basic_product product ON (additionalcode.product_id = product.id and (product.number = :productnumber OR COALESCE(:productnumber,'')='' ))"
                 + "WHERE additionalcode.code ilike :query LIMIT " + limit + ";";
     }
 
@@ -79,8 +82,8 @@ public class DataProvider {
         return getDataResponse(query, prepareProductsQuery(), getProductsByQuery(query));
     }
 
-    public DataResponse getAdditionalCodesResponseByQuery(String query) {
-        return getDataResponse(query, prepareAdditionalCodeQuery(), getAdditionalCodesByQuery(query));
+    public DataResponse getAdditionalCodesResponseByQuery(String query, String productnumber) {
+        return getDataResponse(query, prepareAdditionalCodeQuery(productnumber), getAdditionalCodesByQuery(query, productnumber));
     }
 
     public DataResponse getPalletNumbersResponseByQuery(String query) {
@@ -130,11 +133,12 @@ public class DataProvider {
         return codes;
     }
 
-    public List<AbstractDTO> getAdditionalCodesByQuery(String query) {
+    public List<AbstractDTO> getAdditionalCodesByQuery(String query, String productnumber) {
         String _query = prepareAdditionalCodeQueryWithLimit(MAX_RESULTS);
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("query", "%" + query + "%");
+        parameters.put("productnumber", productnumber);
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
         List<AbstractDTO> codes = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(AdditionalCodeDTO.class));

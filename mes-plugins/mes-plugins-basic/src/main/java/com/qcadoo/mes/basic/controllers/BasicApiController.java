@@ -25,28 +25,13 @@ public final class BasicApiController {
     public DataResponse getProductsByQuery(@RequestParam("query") String query) {
         return dataProvider.getProductsResponseByQuery(query);
     }
-    // @ResponseBody
-    // @RequestMapping(value = "/products", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    // public List<ProductDTO> getProductsByQuery(@RequestParam("query") String query) {
-    // return dataProvider.getProductsByQuery(query);
-    // }
 
-    // @ResponseBody
-    // @RequestMapping(value = "/additionalcodes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    // public List<AdditionalCodeDTO> getAdditionalCodesByQuery(@RequestParam("query") String query) {
-    // return dataProvider.getAdditionalCodesByQuery(query);
-    // }
     @ResponseBody
     @RequestMapping(value = "/additionalcodes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public DataResponse getAdditionalCodesByQuery(@RequestParam("query") String query) {
-        return dataProvider.getAdditionalCodesResponseByQuery(query);
+    public DataResponse getAdditionalCodesByQuery(@RequestParam("query") String query, @RequestParam("productnumber") String productnumber) {
+        return dataProvider.getAdditionalCodesResponseByQuery(query, productnumber);
     }
 
-    // @ResponseBody
-    // @RequestMapping(value = "/palletnumbers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    // public List<PalletNumberDTO> getPalletNumbersByQuery(@RequestParam("query") String query) {
-    // return dataProvider.getPalletNumbersByQuery(query);
-    // }
     @ResponseBody
     @RequestMapping(value = "/palletnumbers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public DataResponse getPalletNumbersByQuery(@RequestParam("query") String query) {
