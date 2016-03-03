@@ -1426,7 +1426,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function prepareGridConfig(config) {
             var readOnlyInType = function (outDocument, columnIndex, responseDate) {
-                if (outDocument && (columnIndex === 'conversion' || columnIndex === 'expirationdate' || columnIndex === 'productiondate' ||
+                if (outDocument && (columnIndex === 'expirationdate' || columnIndex === 'productiondate' ||
                         columnIndex === 'batch' || columnIndex === 'price' ||
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
                     return true;
