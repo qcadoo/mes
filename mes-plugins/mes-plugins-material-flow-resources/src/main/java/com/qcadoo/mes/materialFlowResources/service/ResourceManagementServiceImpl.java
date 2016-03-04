@@ -69,6 +69,15 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Autowired
     private UnitConversionService unitConversionService;
 
+    public ResourceManagementServiceImpl() {
+    }
+
+    public ResourceManagementServiceImpl(DataDefinitionService dataDefinitionService, NumberService numberService, UnitConversionService unitConversionService) {
+        this.dataDefinitionService = dataDefinitionService;
+        this.numberService = numberService;
+        this.unitConversionService = unitConversionService;
+    }
+
     @Override
     @Transactional
     public void createResourcesForReceiptDocuments(final Entity document) {
@@ -209,7 +218,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                             BigDecimal::add);
                     result.put(productAndPosition.getKey().getId(),
                             (resources.stream().map(res -> res.getDecimalField(ResourceFields.QUANTITY)).reduce(BigDecimal.ZERO,
-                                    BigDecimal::add)).add(currentQuantity));
+                            BigDecimal::add)).add(currentQuantity));
                 } else {
                     result.put(productAndPosition.getKey().getId(), resources.stream()
                             .map(res -> res.getDecimalField(ResourceFields.QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add));
@@ -383,7 +392,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (!baseUnit.equals(givenUnit)) {
             PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
                     searchCriteriaBuilder -> searchCriteriaBuilder
-                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
             if (unitConversions.isDefinedFor(givenUnit)) {
                 return unitConversions.convertTo(quantity, givenUnit);
             }
@@ -443,7 +452,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         // errorMessage.append(", ");
         // }
         // }
-
         if (!enoughResources) {
             addDocumentError(document, warehouseFrom, errorMessage);
         }
@@ -497,6 +505,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 "materialFlow.error.position.quantity.notEnough");
     }
 
+    @Override
     public List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
             WarehouseAlgorithm warehouseAlgorithm) {
         List<Entity> resources = Lists.newArrayList();
@@ -506,13 +515,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (resource != null) {
             resources.add(resource);
         } else if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductFIFO(warehouse, product, additionalCode);
+            resources = getResourcesForLocationAndProductFIFO(warehouse, product, additionalCode, position);
         } else if (WarehouseAlgorithm.LIFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductLIFO(warehouse, product, additionalCode);
+            resources = getResourcesForLocationAndProductLIFO(warehouse, product, additionalCode, position);
         } else if (WarehouseAlgorithm.FEFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductFEFO(warehouse, product, additionalCode);
+            resources = getResourcesForLocationAndProductFEFO(warehouse, product, additionalCode, position);
         } else if (WarehouseAlgorithm.LEFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductLEFO(warehouse, product, additionalCode);
+            resources = getResourcesForLocationAndProductLEFO(warehouse, product, additionalCode, position);
         } else if (WarehouseAlgorithm.MANUAL.equals(warehouseAlgorithm)) {
             resources = getResourcesForLocationAndProductMANUAL(warehouse, product, position, additionalCode);
         }
@@ -526,51 +535,57 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (resource != null) {
             return Lists.newArrayList(resource);
         } else {
-            return getResourcesForLocationAndProductFIFO(warehouse, product, additionalCode);
+            return getResourcesForLocationAndProductFIFO(warehouse, product, additionalCode, position);
         }
     }
 
     private List<Entity> getResourcesForLocationAndProductFIFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode) {
+            final Entity additionalCode, final Entity position) {
 
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
             resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
                     .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.asc(TIME)).list().getEntities();
 
             resources.addAll(getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.asc(TIME)).list().getEntities());
 
         }
         if (resources.isEmpty()) {
-            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse).addOrder(SearchOrders.asc(TIME))
+            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION))).addOrder(SearchOrders.asc(TIME))
                     .list().getEntities();
         }
         return resources;
     }
 
     private List<Entity> getResourcesForLocationAndProductLIFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode) {
+            final Entity additionalCode, final Entity position) {
 
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
             resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
                     .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.desc(TIME)).list().getEntities();
 
             resources.addAll(getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.desc(TIME)).list().getEntities());
 
         }
         if (resources.isEmpty()) {
-            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse).addOrder(SearchOrders.desc(TIME))
+            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION))).addOrder(SearchOrders.desc(TIME))
                     .list().getEntities();
         }
         return resources;
@@ -578,22 +593,25 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> getResourcesForLocationAndProductFEFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode) {
+            final Entity additionalCode, final Entity position) {
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
             resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
                     .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.asc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
 
             resources.addAll(getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.asc(ResourceFields.EXPIRATION_DATE)).list().getEntities());
 
         }
         if (resources.isEmpty()) {
             resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.asc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
         }
         return resources;
@@ -601,23 +619,26 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> getResourcesForLocationAndProductLEFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode) {
+            final Entity additionalCode, final Entity position) {
 
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
             resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
                     .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.desc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
 
             resources.addAll(getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.desc(ResourceFields.EXPIRATION_DATE)).list().getEntities());
 
         }
         if (resources.isEmpty()) {
             resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
+                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.desc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
         }
         return resources;
