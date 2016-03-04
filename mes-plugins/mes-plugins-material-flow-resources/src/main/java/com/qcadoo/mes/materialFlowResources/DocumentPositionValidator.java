@@ -93,8 +93,7 @@ public class DocumentPositionValidator {
         DocumentType documentType = DocumentType.parseString(document.getType());
         DocumentState documentState = DocumentState.parseString(document.getState());
 
-        if (documentState == DocumentState.ACCEPTED
-                && (documentType == DocumentType.RECEIPT || documentType == DocumentType.INTERNAL_INBOUND)) {
+        if (documentType == DocumentType.RECEIPT || documentType == DocumentType.INTERNAL_INBOUND) {
             LocationDTO warehouseTo = getWarehouseById(document.getLocationTo_id());
 
             return validatePositionAttributes(position,
