@@ -1,5 +1,20 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.GridResponse;
@@ -9,16 +24,6 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class DocumentPositionService {
@@ -306,7 +311,7 @@ public class DocumentPositionService {
         }
     }
 
-    public ResourceDTO getResource(Long document, String product) {
+    public ResourceDTO getResource(Long document, String product, BigDecimal conversion) {
 
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
@@ -314,10 +319,12 @@ public class DocumentPositionService {
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
         queryBuilder.append(" WHERE product_id = ");
         queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product))");
+        queryBuilder.append("AND conversion = :conversion");
 
         String query = queryBuilder.toString();
         Map<String, Object> filter = new HashMap<>();
         filter.put("product", product);
+        filter.put("conversion", conversion);
         List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
         if (batches.isEmpty()) {
             return null;
@@ -326,7 +333,7 @@ public class DocumentPositionService {
         }
     }
 
-    public List<AbstractDTO> getResources(Long document, String q, String product) {
+    public List<AbstractDTO> getResources(Long document, String q, String product, BigDecimal conversion) {
 
         if (Strings.isNullOrEmpty(q) || Strings.isNullOrEmpty(product)) {
             return Lists.newArrayList();
@@ -336,11 +343,13 @@ public class DocumentPositionService {
             queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and ");
             queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
             queryBuilder.append(" WHERE product_id = ");
-            queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product)) " + "AND number ilike :query");
+            queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product)) " + "AND number ilike :query ");
+            queryBuilder.append("AND conversion = :conversion ");
 
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("query", '%' + q + '%');
             paramMap.put("product", product);
+            paramMap.put("conversion", conversion);
 
             String query = queryBuilder.toString();
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
@@ -348,7 +357,7 @@ public class DocumentPositionService {
         }
     }
 
-    public DataResponse getResourcesResponse(Long document, String q, String product) {
+    public DataResponse getResourcesResponse(Long document, String q, String product, BigDecimal conversion) {
         if (Strings.isNullOrEmpty(product)) {
             return new DataResponse(Lists.newArrayList(), 0);
         }
@@ -358,12 +367,13 @@ public class DocumentPositionService {
         queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "') and ");
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
         queryBuilder.append(" WHERE product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "')) " + "AND number ilike :query");
+        queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "')) " + "AND number ilike :query ");
+        queryBuilder.append("AND conversion = " + conversion);
 
         String preparedQuery = queryBuilder.toString();
 
         String query = '%' + q + '%';
-        List<AbstractDTO> entities = getResources(document, query, product);
+        List<AbstractDTO> entities = getResources(document, query, product, conversion);
         return dataProvider.getDataResponse(query, preparedQuery, entities);
     }
 

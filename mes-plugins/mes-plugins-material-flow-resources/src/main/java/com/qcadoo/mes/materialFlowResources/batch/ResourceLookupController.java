@@ -1,16 +1,17 @@
 package com.qcadoo.mes.materialFlowResources.batch;
 
-import com.qcadoo.mes.basic.BasicLookupController;
-import com.qcadoo.mes.materialFlowResources.ResourceDTO;
-import com.qcadoo.mes.materialFlowResources.WarehouseMethodOfDisposalService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.materialFlowResources.ResourceDTO;
+import com.qcadoo.mes.materialFlowResources.WarehouseMethodOfDisposalService;
 
 @Controller
 @RequestMapping(value = "resource")
@@ -29,7 +30,8 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and ");
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
         queryBuilder.append(" WHERE product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product))) as resources");
+        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product))");
+        queryBuilder.append(" AND r.conversion = :conversion) as resources");
         return queryBuilder.toString();
     }
 
@@ -37,7 +39,9 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     protected Map<String, Object> getQueryParameters(ResourceDTO resourceDTO) {
         Map<String, Object> params = new HashMap<>();
         params.put("product", resourceDTO.getProduct());
+        params.put("conversion", resourceDTO.getConversion());
         resourceDTO.setProduct(null);
+        resourceDTO.setConversion(null);
         return params;
     }
 

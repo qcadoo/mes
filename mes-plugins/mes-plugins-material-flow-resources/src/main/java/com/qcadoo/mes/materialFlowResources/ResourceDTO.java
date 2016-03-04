@@ -1,9 +1,9 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 public class ResourceDTO {
@@ -19,6 +19,8 @@ public class ResourceDTO {
     private BigDecimal quantity;
 
     private BigDecimal price;
+
+    private BigDecimal conversion;
 
     private String givenUnit;
 
@@ -82,6 +84,14 @@ public class ResourceDTO {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public BigDecimal getConversion() {
+        return conversion;
+    }
+
+    public void setConversion(BigDecimal conversion) {
+        this.conversion = conversion;
     }
 
     public String getGivenUnit() {
