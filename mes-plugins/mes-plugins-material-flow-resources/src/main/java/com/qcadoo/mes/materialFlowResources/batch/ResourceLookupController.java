@@ -31,15 +31,18 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
         queryBuilder.append(" WHERE product_id = ");
         queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product))");
+        queryBuilder
+                .append(" and r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
         queryBuilder.append(" AND r.conversion = :conversion) as resources");
         return queryBuilder.toString();
     }
 
     @Override
-    protected Map<String, Object> getQueryParameters(ResourceDTO resourceDTO) {
+    protected Map<String, Object> getQueryParameters(Long context, ResourceDTO resourceDTO) {
         Map<String, Object> params = new HashMap<>();
         params.put("product", resourceDTO.getProduct());
         params.put("conversion", resourceDTO.getConversion());
+        params.put("context", context);
         resourceDTO.setProduct(null);
         resourceDTO.setConversion(null);
         return params;

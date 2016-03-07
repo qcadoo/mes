@@ -1,7 +1,12 @@
 package com.qcadoo.mes.basic;
 
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.security.api.SecurityService;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -11,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.*;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.security.api.SecurityService;
 
 public abstract class BasicLookupController<R> {
 
@@ -77,10 +83,10 @@ public abstract class BasicLookupController<R> {
 
         String query = getQueryForRecords(context);
 
-        return lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, getQueryParameters(record));
+        return lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, getQueryParameters(context, record));
     }
 
-    protected Map<String, Object> getQueryParameters(R record) {
+    protected Map<String, Object> getQueryParameters(Long context, R record) {
         return new HashMap<>();
     }
 

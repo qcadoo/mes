@@ -1,15 +1,15 @@
 package com.qcadoo.mes.basic.additionalcode;
 
-import com.google.common.base.Strings;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.qcadoo.mes.basic.BasicLookupController;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping(value = "additionalCode")
@@ -35,7 +35,7 @@ public class AdditionalCodeLookupController extends BasicLookupController<Additi
     }
 
     @Override
-    protected Map<String, Object> getQueryParameters(AdditionalCodeDTO additionalCodeDTO) {
+    protected Map<String, Object> getQueryParameters(Long context, AdditionalCodeDTO additionalCodeDTO) {
         Map<String, Object> params = new HashMap<>();
 
         params.put("productnumber", additionalCodeDTO.getProductnumber());

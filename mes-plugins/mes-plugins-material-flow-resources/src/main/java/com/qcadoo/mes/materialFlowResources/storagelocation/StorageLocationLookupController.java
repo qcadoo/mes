@@ -1,14 +1,15 @@
 package com.qcadoo.mes.materialFlowResources.storagelocation;
 
-import com.qcadoo.mes.basic.BasicLookupController;
-import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 @Controller
 @RequestMapping(value = "storageLocation")
@@ -27,7 +28,7 @@ public class StorageLocationLookupController extends BasicLookupController<Stora
     }
 
     @Override
-    protected Map<String, Object> getQueryParameters(StorageLocationDTO storageLocationDTO) {
+    protected Map<String, Object> getQueryParameters(Long context, StorageLocationDTO storageLocationDTO) {
         Map<String, Object> params = new HashMap<>();
         params.put("document", Integer.valueOf(storageLocationDTO.getLocation()));
         params.put("product", storageLocationDTO.getProduct());

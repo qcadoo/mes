@@ -319,12 +319,15 @@ public class DocumentPositionService {
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
         queryBuilder.append(" WHERE product_id = ");
         queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product))");
+        queryBuilder
+                .append("AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
         queryBuilder.append("AND conversion = :conversion");
 
         String query = queryBuilder.toString();
         Map<String, Object> filter = new HashMap<>();
         filter.put("product", product);
         filter.put("conversion", conversion);
+        filter.put("context", document);
         List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
         if (batches.isEmpty()) {
             return null;
@@ -344,12 +347,15 @@ public class DocumentPositionService {
             queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
             queryBuilder.append(" WHERE product_id = ");
             queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product)) " + "AND number ilike :query ");
+            queryBuilder
+                    .append("AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
             queryBuilder.append("AND conversion = :conversion ");
 
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("query", '%' + q + '%');
             paramMap.put("product", product);
             paramMap.put("conversion", conversion);
+            paramMap.put("context", document);
 
             String query = queryBuilder.toString();
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
@@ -368,6 +374,8 @@ public class DocumentPositionService {
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
         queryBuilder.append(" WHERE product_id = ");
         queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "')) " + "AND number ilike :query ");
+        queryBuilder
+                .append("AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
         queryBuilder.append("AND conversion = " + conversion);
 
         String preparedQuery = queryBuilder.toString();
