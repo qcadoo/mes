@@ -14,7 +14,8 @@ public class DocumentPositionResourcesHelper {
         queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
         queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and ");
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
-        queryBuilder.append(" WHERE product_id = ");
+        queryBuilder.append(" WHERE conversion = :conversion ");
+        queryBuilder.append(" AND product_id = ");
         if(query){
             queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product)) " + "AND number ilike :query ");
         } else{
