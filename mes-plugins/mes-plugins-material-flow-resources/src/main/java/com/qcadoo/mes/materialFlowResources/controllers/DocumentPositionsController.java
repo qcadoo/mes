@@ -1,5 +1,19 @@
 package com.qcadoo.mes.materialFlowResources.controllers;
 
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
+import com.qcadoo.mes.materialFlowResources.ResourceDTO;
+import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
@@ -8,28 +22,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
-import com.qcadoo.mes.materialFlowResources.ResourceDTO;
-import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 @Controller
 @RequestMapping("/integration/rest/documentPositions")
@@ -97,8 +89,8 @@ public class DocumentPositionsController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resource")
     public ResourceDTO getResourceForProduct(@RequestParam("context") Long document, @RequestParam("product") String product,
-            @RequestParam("conversion") BigDecimal conversion) {
-        return documentPositionRepository.getResource(document, product, conversion);
+            @RequestParam("conversion") BigDecimal conversion,  @RequestParam("additionalCode") String additionalCode) {
+        return documentPositionRepository.getResource(document, product, conversion, additionalCode);
     }
 
     @ResponseBody

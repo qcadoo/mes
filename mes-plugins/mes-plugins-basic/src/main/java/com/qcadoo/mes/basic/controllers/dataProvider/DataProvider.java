@@ -1,19 +1,6 @@
 package com.qcadoo.mes.basic.controllers.dataProvider;
 
 import com.google.common.base.Strings;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
@@ -21,6 +8,18 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.model.api.DictionaryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DataProvider {
@@ -70,28 +69,28 @@ public class DataProvider {
                 + limit + ";";
     }
 
-    private int countQueryResults(String preparedQuery, String query) {
+    private int countQueryResults(String preparedQuery, String query, Map<String, Object> paramMap) {
         String countQuery = "SELECT count(*) as cnt FROM (" + preparedQuery.replace(";", "") + ") sq;";
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("query", "%" + query + "%");
-        return jdbcTemplate.queryForObject(countQuery, parameters, Integer.class);
+        paramMap.put("query", "%" + query + "%");
+        return jdbcTemplate.queryForObject(countQuery, paramMap, Integer.class);
     }
 
     public DataResponse getProductsResponseByQuery(String query) {
-        return getDataResponse(query, prepareProductsQuery(), getProductsByQuery(query));
+        return getDataResponse(query, prepareProductsQuery(), getProductsByQuery(query), new HashMap<String, Object>());
     }
 
     public DataResponse getAdditionalCodesResponseByQuery(String query, String productnumber) {
-        return getDataResponse(query, prepareAdditionalCodeQuery(productnumber), getAdditionalCodesByQuery(query, productnumber));
+        return getDataResponse(query, prepareAdditionalCodeQuery(productnumber), getAdditionalCodesByQuery(query, productnumber),
+                new HashMap<String, Object>());
     }
 
     public DataResponse getPalletNumbersResponseByQuery(String query) {
-        return getDataResponse(query, preparePalletNumbersQuery(), getPalletNumbersByQuery(query));
+        return getDataResponse(query, preparePalletNumbersQuery(), getPalletNumbersByQuery(query), new HashMap<String, Object>());
     }
 
-    public DataResponse getDataResponse(String query, String preparedQuery, List<AbstractDTO> entities) {
-        int numberOfResults = countQueryResults(preparedQuery, query);
+    public DataResponse getDataResponse(String query, String preparedQuery, List<AbstractDTO> entities,
+            Map<String, Object> paramMap) {
+        int numberOfResults = countQueryResults(preparedQuery, query, paramMap);
         if (numberOfResults > MAX_RESULTS) {
             return new DataResponse(Lists.newArrayList(), numberOfResults);
         }

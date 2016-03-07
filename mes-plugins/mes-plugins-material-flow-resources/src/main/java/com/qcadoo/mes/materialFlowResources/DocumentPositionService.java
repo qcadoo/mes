@@ -1,20 +1,5 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.GridResponse;
@@ -24,6 +9,16 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class DocumentPositionService {
@@ -41,7 +36,7 @@ public class DocumentPositionService {
     private DataProvider dataProvider;
 
     @Autowired
-    private WarehouseMethodOfDisposalService warehouseMethodOfDisposalService;
+    private DocumentPositionResourcesHelper positionResourcesHelper;
 
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
             int perPage, DocumentPositionDTO position) {
@@ -134,7 +129,8 @@ public class DocumentPositionService {
                     + product + "') OR product_id IS NULL);";
         }
         List<AbstractDTO> entities = getStorageLocations(q, product, document);
-        return dataProvider.getDataResponse(q, preparedQuery, entities);
+        Map<String, Object> paramMap = new HashMap<>();
+        return dataProvider.getDataResponse(q, preparedQuery, entities, paramMap);
     }
 
     public Map<String, Object> getGridConfig(Long documentId) {
@@ -311,19 +307,8 @@ public class DocumentPositionService {
         }
     }
 
-    public ResourceDTO getResource(Long document, String product, BigDecimal conversion) {
-
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and ");
-        queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
-        queryBuilder.append(" WHERE product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product))");
-        queryBuilder
-                .append("AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
-        queryBuilder.append("AND conversion = :conversion");
-
-        String query = queryBuilder.toString();
+    public ResourceDTO getResource(Long document, String product, BigDecimal conversion, String additionalCode) {
+        String query = positionResourcesHelper.getResourceQuery(document,false, true);
         Map<String, Object> filter = new HashMap<>();
         filter.put("product", product);
         filter.put("conversion", conversion);
@@ -341,23 +326,13 @@ public class DocumentPositionService {
         if (Strings.isNullOrEmpty(q) || Strings.isNullOrEmpty(product)) {
             return Lists.newArrayList();
         } else {
-            StringBuilder queryBuilder = new StringBuilder();
-            queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
-            queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and ");
-            queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
-            queryBuilder.append(" WHERE product_id = ");
-            queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product)) " + "AND number ilike :query ");
-            queryBuilder
-                    .append("AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
-            queryBuilder.append("AND conversion = :conversion ");
-
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("query", '%' + q + '%');
             paramMap.put("product", product);
             paramMap.put("conversion", conversion);
             paramMap.put("context", document);
 
-            String query = queryBuilder.toString();
+            String query = positionResourcesHelper.getResourceQuery(document, true, true);
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
 
         }
@@ -368,21 +343,16 @@ public class DocumentPositionService {
             return new DataResponse(Lists.newArrayList(), 0);
         }
 
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "') and ");
-        queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
-        queryBuilder.append(" WHERE product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = '" + product + "')) " + "AND number ilike :query ");
-        queryBuilder
-                .append("AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
-        queryBuilder.append("AND conversion = " + conversion);
+        String preparedQuery =  positionResourcesHelper.getResourceQuery(document, true, true);
 
-        String preparedQuery = queryBuilder.toString();
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("product", product);
+        paramMap.put("conversion", conversion);
+        paramMap.put("context", document);
 
         String query = '%' + q + '%';
         List<AbstractDTO> entities = getResources(document, query, product, conversion);
-        return dataProvider.getDataResponse(query, preparedQuery, entities);
+        return dataProvider.getDataResponse(query, preparedQuery, entities, paramMap);
     }
 
     public ResourceDTO getResourceByNumber(String resource) {

@@ -502,6 +502,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 return  {
                     product: getFieldValue('product', rowId),
                     conversion: getFieldValue('conversion', rowId),
+                    additionalCode: getFieldValue('additionalCode', rowId),
                     context: getDocumentId()
 
                 };
@@ -664,10 +665,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             });
         }
 
-        function updateResource(productNumber, conversion) {
+        function updateResource(productNumber, conversion, ac) {
             var params = {
                 context: getDocumentId(),
                 product: productNumber,
+                additionalCode: ac,
                 conversion: conversion
             }
             $.get('/integration/rest/documentPositions/resource.html?' + $.param(params), function (resource) {
@@ -723,7 +725,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                             updateStorageLocations(t.val(), getDocumentId());
                         } else if ($scope.config.suggestResource) {
                             var conversion = getFieldValue('conversion', getRowIdFromElement(t))
-                            updateResource(t.val(), conversion);
+                            var ac = getFieldValue('additionalCode', getRowIdFromElement(t))
+                            updateResource(t.val(), conversion, ac);
                         }
                     } else {
                         updateFieldValue('storageLocation', '', getRowIdFromElement(t));
@@ -879,7 +882,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         updateFieldValue('conversion', conversion, rowId);
                         if ($scope.config.outDocument && $scope.config.suggestResource) {
                             var product = getFieldValue('product', rowId)
-                            updateResource(product, conversion);
+                            var ac = getFieldValue('additionalCode', rowId)
+                            updateResource(product, conversion, ac);
                         }
                     }
                 }
@@ -998,7 +1002,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     updateFieldValue('givenquantity', newGivenQuantity, rowId);
                     if ($scope.config.outDocument && $scope.config.suggestResource) {
                         var product = getFieldValue('product', getRowIdFromElement(t))
-                        updateResource(product, t.val());
+                        var ac = getFieldValue('additionalCode', getRowIdFromElement(t))
+                        updateResource(product, t.val(), ac);
                     }
                 }, 500));
 
