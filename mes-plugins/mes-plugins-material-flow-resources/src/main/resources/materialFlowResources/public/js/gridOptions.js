@@ -498,7 +498,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function resourceLookup_createElement(value, options) {
             var lookup = createLookupElement('resource', value, '/integration/rest/documentPositions/resources.html', options, function () {
-            	var rowId = getRowIdFromElement($('input', lookup));
+                var rowId = getRowIdFromElement($('input', lookup));
                 return  {
                     product: getFieldValue('product', rowId),
                     conversion: getFieldValue('conversion', rowId),
@@ -535,10 +535,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function clearResourceRelatedFields(rowId) {
-        	var fieldnames = ['resource', 'batch', 'productiondate', 'expirationdate', 'storageLocation', 'palletNumber', 'additionalCode', 'price', 'typeOfPallet'];
-        	for(var i in fieldnames) {
-        		updateFieldValue(fieldnames[i], '', rowId);
-        	}
+            var fieldnames = ['resource', 'batch', 'productiondate', 'expirationdate', 'storageLocation', 'palletNumber', 'additionalCode', 'price', 'typeOfPallet'];
+            for (var i in fieldnames) {
+                updateFieldValue(fieldnames[i], '', rowId);
+            }
         }
 
         function palletNumbersLookup_createElement(value, options) {
@@ -665,23 +665,23 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateResource(productNumber, conversion) {
-        	var params = {
-        			context: getDocumentId(),
-        			product: productNumber,
-        			conversion: conversion
-        	}
-        	$.get('/integration/rest/documentPositions/resource.html?' + $.param(params), function (resource) {
+            var params = {
+                context: getDocumentId(),
+                product: productNumber,
+                conversion: conversion
+            }
+            $.get('/integration/rest/documentPositions/resource.html?' + $.param(params), function (resource) {
                 var gridData = $('#grid').jqGrid('getRowData');
 
                 var productInput = $('#product');
 
                 if (productInput.length) {
                     // edit form
-                	if(resource) {
-                		updateFieldValue('resource', resource['number'], 0);
-                		fillWithAttributesFromResource(resource['number'], 0);
-                	} else {
-                    	clearResourceRelatedFields(0);
+                    if (resource) {
+                        updateFieldValue('resource', resource['number'], 0);
+                        fillWithAttributesFromResource(resource['number'], 0);
+                    } else {
+                        clearResourceRelatedFields(0);
                     }
 
                 } else {
@@ -696,11 +696,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                             if (productValue === productNumber) {
                                 // update input
-                            	if(resource) {
-                            		updateFieldValue('resource', resource['number'], numberOfInput);
-                            		fillWithAttributesFromResource(resource['number'], numberOfInput);
-                            	} else {
-                                	clearResourceRelatedFields(numberOfInput);
+                                if (resource) {
+                                    updateFieldValue('resource', resource['number'], numberOfInput);
+                                    fillWithAttributesFromResource(resource['number'], numberOfInput);
+                                } else {
+                                    clearResourceRelatedFields(numberOfInput);
                                 }
                             }
                         }
@@ -719,10 +719,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     conversionModified = false;
                     updateUnitsInGridByProduct(t.val());
                     if (t.val()) {
-                    	if(!$scope.config.outDocument) {
-                    		updateStorageLocations(t.val(), getDocumentId());
-                    	} else if ($scope.config.suggestResource) {
-                    		var conversion = getFieldValue('conversion', getRowIdFromElement(t))
+                        if (!$scope.config.outDocument) {
+                            updateStorageLocations(t.val(), getDocumentId());
+                        } else if ($scope.config.suggestResource) {
+                            var conversion = getFieldValue('conversion', getRowIdFromElement(t))
                             updateResource(t.val(), conversion);
                         }
                     } else {
@@ -872,15 +872,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 })[0];
                 if (entry) {
                     quantities[rowId || 0] = {from: entry.quantityfrom, to: entry.quantityto};
-                    if (!firstLoad && !conversionModified) {
-                        conversion = roundTo(parseFloat(entry.quantityto) / parseFloat(entry.quantityfrom));
-                    }
+                    conversion = roundTo(parseFloat(entry.quantityto) / parseFloat(entry.quantityfrom));
                 }
-                if (!firstLoad && !conversionModified) {
-                    updateFieldValue('conversion', conversion, rowId);
-                    if($scope.config.outDocument && $scope.config.suggestResource) {
-                		var product = getFieldValue('product', rowId)
-                        updateResource(product, conversion);
+                if (!conversionModified) {
+                    if (!firstLoad || getFieldValue('conversion', rowId) === '') {
+                        updateFieldValue('conversion', conversion, rowId);
+                        if ($scope.config.outDocument && $scope.config.suggestResource) {
+                            var product = getFieldValue('product', rowId)
+                            updateResource(product, conversion);
+                        }
                     }
                 }
                 touchManuallyQuantityField(rowId);
@@ -996,8 +996,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
 
                     updateFieldValue('givenquantity', newGivenQuantity, rowId);
-                    if($scope.config.outDocument && $scope.config.suggestResource) {
-                		var product = getFieldValue('product', getRowIdFromElement(t))
+                    if ($scope.config.outDocument && $scope.config.suggestResource) {
+                        var product = getFieldValue('product', getRowIdFromElement(t))
                         updateResource(product, t.val());
                     }
                 }, 500));
