@@ -91,7 +91,6 @@ public class DocumentPositionValidator {
 
     private List<String> checkAttributesRequirement(final DocumentPositionDTO position, final DocumentDTO document) {
         DocumentType documentType = DocumentType.parseString(document.getType());
-        DocumentState documentState = DocumentState.parseString(document.getState());
 
         if (documentType == DocumentType.RECEIPT || documentType == DocumentType.INTERNAL_INBOUND) {
             LocationDTO warehouseTo = getWarehouseById(document.getLocationTo_id());
@@ -114,7 +113,7 @@ public class DocumentPositionValidator {
         if (requirePrice && (position.getPrice() == null || BigDecimal.ZERO.compareTo(position.getPrice()) == 0)) {
             errors.add("qcadooView.error.position.price.required");
         }
-        if (requireBatch && position.getBatch() == null) {
+        if (requireBatch && Strings.isNullOrEmpty(position.getBatch())) {
             errors.add("qcadooView.error.position.batch.required");
         }
         if (requireProductionDate && position.getProductiondate() == null) {
