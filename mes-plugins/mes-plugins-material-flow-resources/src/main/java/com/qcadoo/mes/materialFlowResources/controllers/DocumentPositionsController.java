@@ -89,15 +89,16 @@ public class DocumentPositionsController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resource")
     public ResourceDTO getResourceForProduct(@RequestParam("context") Long document, @RequestParam("product") String product,
-            @RequestParam("conversion") BigDecimal conversion,  @RequestParam("additionalCode") String additionalCode) {
+            @RequestParam("conversion") BigDecimal conversion, @RequestParam("additionalCode") String additionalCode) {
         return documentPositionRepository.getResource(document, product, conversion, additionalCode);
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resources")
     public DataResponse getResources(@RequestParam("query") String query, @RequestParam("product") String product,
-            @RequestParam("conversion") BigDecimal conversion, @RequestParam("context") Long document) {
-        return documentPositionRepository.getResourcesResponse(document, query, product, conversion);
+            @RequestParam("conversion") BigDecimal conversion, @RequestParam("context") Long document,
+            @RequestParam("additionalCode") String additionalCode) {
+        return documentPositionRepository.getResourcesResponse(document, query, product, conversion, additionalCode);
     }
 
     @ResponseBody

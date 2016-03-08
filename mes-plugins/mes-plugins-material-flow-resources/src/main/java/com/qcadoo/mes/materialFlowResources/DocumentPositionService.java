@@ -169,7 +169,8 @@ public class DocumentPositionService {
 
     public void updateDocumentPositionsNumbers(final Long documentId) {
         String query = "SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, palletnumber.number as palletnumber, "
-                + "location.number as storagelocationnumber\n" + "	FROM materialflowresources_position p\n"
+                + "location.number as storagelocationnumber\n"
+                + "	FROM materialflowresources_position p\n"
                 + "	left join basic_product product on (p.product_id = product.id)\n"
                 + "	left join basic_additionalcode additionalcode on (p.additionalcode_id = additionalcode.id)\n"
                 + "	left join basic_palletnumber palletnumber on (p.palletnumber_id = palletnumber.id)\n"
@@ -308,12 +309,20 @@ public class DocumentPositionService {
     }
 
     public ResourceDTO getResource(Long document, String product, BigDecimal conversion, String additionalCode) {
-        String query = positionResourcesHelper.getResourceQuery(document,false, true);
+        boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
+        String query = positionResourcesHelper.getResourceQuery(document, false, useAdditionalCode);
         Map<String, Object> filter = new HashMap<>();
         filter.put("product", product);
         filter.put("conversion", conversion);
         filter.put("context", document);
+        if (useAdditionalCode) {
+            filter.put("additionalCode", additionalCode);
+        }
         List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
+        if (batches.isEmpty() && useAdditionalCode) {
+            query = positionResourcesHelper.getResourceQuery(document, false, false);
+            batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
+        }
         if (batches.isEmpty()) {
             return null;
         } else {
@@ -321,7 +330,8 @@ public class DocumentPositionService {
         }
     }
 
-    public List<AbstractDTO> getResources(Long document, String q, String product, BigDecimal conversion) {
+    public List<AbstractDTO> getResources(Long document, String q, String product, BigDecimal conversion,
+            boolean useAdditionalCode, String additionalCode) {
 
         if (Strings.isNullOrEmpty(q) || Strings.isNullOrEmpty(product)) {
             return Lists.newArrayList();
@@ -331,27 +341,38 @@ public class DocumentPositionService {
             paramMap.put("product", product);
             paramMap.put("conversion", conversion);
             paramMap.put("context", document);
-
-            String query = positionResourcesHelper.getResourceQuery(document, true, true);
+            if (useAdditionalCode) {
+                paramMap.put("additionalCode", additionalCode);
+            }
+            String query = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode);
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
 
         }
     }
 
-    public DataResponse getResourcesResponse(Long document, String q, String product, BigDecimal conversion) {
+    public DataResponse getResourcesResponse(Long document, String q, String product, BigDecimal conversion, String additionalCode) {
         if (Strings.isNullOrEmpty(product)) {
             return new DataResponse(Lists.newArrayList(), 0);
         }
+        boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
+        String query = '%' + q + '%';
+        List<AbstractDTO> entities = getResources(document, query, product, conversion, useAdditionalCode, additionalCode);
 
-        String preparedQuery =  positionResourcesHelper.getResourceQuery(document, true, true);
+        if(entities.isEmpty() && useAdditionalCode){
+            useAdditionalCode = false;
+            entities = getResources(document, query, product, conversion, false, additionalCode);
+        }
+        String preparedQuery = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode);
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("product", product);
         paramMap.put("conversion", conversion);
         paramMap.put("context", document);
+        if (useAdditionalCode) {
+            paramMap.put("additionalCode", additionalCode);
+        }
 
-        String query = '%' + q + '%';
-        List<AbstractDTO> entities = getResources(document, query, product, conversion);
+
         return dataProvider.getDataResponse(query, preparedQuery, entities, paramMap);
     }
 
