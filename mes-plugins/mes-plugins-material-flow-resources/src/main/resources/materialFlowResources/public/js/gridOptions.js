@@ -336,7 +336,7 @@ function openLookup(name, parameters) {
         var urlParams = $.param(parameters);
         lookupHtml = lookupHtml + "?" + urlParams;
     }
-    mainController.openModal('body', '../' + name + lookupHtml, null, function onModalClose() {
+    mainController.openModal('body', '../' + name + lookupHtml, false, function onModalClose() {
     }, function onModalRender(modalWindow) {
     }, {width: 1000, height: 560});
 }
