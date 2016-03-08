@@ -71,9 +71,9 @@
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceDetails"/>
             <option type="correspondingViewInModal" value="true"/>
