@@ -1330,6 +1330,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                                 options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
                                 options.buttonImageOnly = true;
                                 options.buttonText = 'Wybierz';
+                                options.altField = element;
                                 $(element).datepicker(options);
                             }
                         }
@@ -1354,6 +1355,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                                 options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
                                 options.buttonImageOnly = true;
                                 options.buttonText = 'Wybierz';
+                                options.altField = element;
                                 $(element).datepicker(options);
                             }
                         }
