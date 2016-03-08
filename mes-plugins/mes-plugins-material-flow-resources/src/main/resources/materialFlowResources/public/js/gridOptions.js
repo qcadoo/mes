@@ -515,7 +515,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     if (t.val()) {
                         fillWithAttributesFromResource(t.val(), getRowIdFromElement(t))
                     } else {
-                        updateFieldValue('batch', '', getRowIdFromElement(t));
+                    	clearResourceRelatedFields(getRowIdFromElement(t));
                     }
                 }, 500));
             });
