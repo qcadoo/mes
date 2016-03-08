@@ -28,14 +28,19 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         queryBuilder.append("LEFT JOIN materialflowresources_storagelocation sl on sl.id = storageLocation_id ");
         queryBuilder.append("LEFT JOIN basic_additionalcode ac on ac.id = additionalcode_id ");
         queryBuilder.append("LEFT JOIN basic_palletnumber pn on pn.id = palletnumber_id WHERE r.product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and ");
-        queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
-        queryBuilder.append(" WHERE conversion = :conversion ");
-        queryBuilder.append(" AND product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product))");
+        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product)");
         queryBuilder
-                .append(" and r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
-        queryBuilder.append(" AND r.conversion = :conversion) as resources");
+                .append(" AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
+        queryBuilder.append(" AND r.conversion = :conversion ");
+
+        queryBuilder.append(" AND ");
+        queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
+        queryBuilder.append(" WHERE product_id = (SELECT id FROM basic_product WHERE number = :product)");
+        queryBuilder
+                .append(" and location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
+        queryBuilder.append(" AND conversion = :conversion)");
+
+        queryBuilder.append(") as resources");
         return queryBuilder.toString();
     }
 
@@ -47,6 +52,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         params.put("context", context);
         resourceDTO.setProduct(null);
         resourceDTO.setConversion(null);
+        resourceDTO.setAdditionalCode(null);
         return params;
     }
 

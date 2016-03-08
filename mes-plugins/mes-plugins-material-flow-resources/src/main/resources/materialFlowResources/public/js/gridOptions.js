@@ -536,7 +536,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function clearResourceRelatedFields(rowId) {
-            var fieldnames = ['resource', 'batch', 'productiondate', 'expirationdate', 'storageLocation', 'palletNumber', 'additionalCode', 'price', 'typeOfPallet'];
+            var fieldnames = ['resource', 'batch', 'productiondate', 'expirationdate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet'];
             for (var i in fieldnames) {
                 updateFieldValue(fieldnames[i], '', rowId);
             }

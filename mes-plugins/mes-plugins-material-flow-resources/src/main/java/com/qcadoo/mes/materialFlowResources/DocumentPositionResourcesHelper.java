@@ -9,24 +9,28 @@ public class DocumentPositionResourcesHelper {
     @Autowired
     private WarehouseMethodOfDisposalService warehouseMethodOfDisposalService;
 
-    public  String getResourceQuery(final Long document, boolean query, boolean useAdditionalCode){
+    public String getResourceQuery(final Long document, boolean query, boolean useAdditionalCode) {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("select number, batch from materialflowresources_resource WHERE product_id = ");
-        queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product) and ");
+        queryBuilder.append("select number, batch from materialflowresources_resource");
+        appendWhereClause(queryBuilder, query, useAdditionalCode);
+        queryBuilder.append(" AND ");
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
-        queryBuilder.append(" WHERE conversion = :conversion ");
-        queryBuilder.append(" AND product_id = ");
-        if(query){
-            queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product)) " + "AND number ilike :query ");
-        } else{
-            queryBuilder.append("(SELECT id FROM basic_product WHERE number = :product))");
-        }
-        queryBuilder
-                .append("AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
-        queryBuilder.append("AND conversion = :conversion ");
-        if(useAdditionalCode){
-            queryBuilder.append("AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :additionalCode) ");
-        }
+        appendWhereClause(queryBuilder, query, useAdditionalCode);
+        queryBuilder.append(")");
+        
+
         return queryBuilder.toString();
+    }
+    
+    private void appendWhereClause(StringBuilder queryBuilder, boolean query, boolean useAdditionalCode) {
+        queryBuilder.append(" WHERE conversion = :conversion");
+        queryBuilder.append(" AND product_id = (SELECT id FROM basic_product WHERE number = :product)");
+        queryBuilder.append(" AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
+        if(query){
+            queryBuilder.append(" AND number ilike :query ");
+        }
+        if(useAdditionalCode){
+            queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :additionalCode) ");
+        }
     }
 }
