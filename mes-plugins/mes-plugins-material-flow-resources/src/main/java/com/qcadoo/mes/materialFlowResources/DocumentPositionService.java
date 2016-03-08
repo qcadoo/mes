@@ -1,14 +1,13 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.LookupUtils;
-import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -16,9 +15,16 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.LookupUtils;
+import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 
 @Repository
 public class DocumentPositionService {
@@ -293,14 +299,14 @@ public class DocumentPositionService {
         }
     }
 
-    public String getProductFromLocation(String location) {
+    public ProductDTO getProductFromLocation(String location) {
         if (StringUtils.isEmpty(location)) {
             return null;
         }
         String query = "SELECT p.name FROM materialflowresources_storagelocation l join basic_product p on l.product_id = p.id WHERE l.number = :location;";
         Map<String, Object> filter = new HashMap<>();
         filter.put("location", location);
-        List<String> products = jdbcTemplate.queryForList(query, filter, String.class);
+        List<ProductDTO> products = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ProductDTO.class));
         if (products.isEmpty()) {
             return null;
         } else {

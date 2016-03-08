@@ -823,7 +823,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function updateProductFromLocation(location, rowNumber) {
             $.get('/integration/rest/documentPositions/productFromLocation/' + location + ".html", function (newProduct) {
                 if (newProduct) {
-                    updateFieldValue('product', newProduct, rowNumber);
+                	var productField = updateFieldValue('product', newProduct['name'], rowNumber);
+                	productField.trigger('change');
                 }
 
             }, 'json');
