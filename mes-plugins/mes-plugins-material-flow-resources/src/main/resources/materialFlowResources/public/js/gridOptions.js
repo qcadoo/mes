@@ -123,7 +123,7 @@ myApp.directive('ngJqGrid', function ($window) {
 
             scope.$watch('config', function (newValue) {
                 if (newValue) {
-                    element.children().empty();
+                    $(element).empty();
                     table = angular.element('<table id="grid"></table>');
                     element.append(table);
                     element.append(angular.element('<div id="jqGridPager"></div>'));
