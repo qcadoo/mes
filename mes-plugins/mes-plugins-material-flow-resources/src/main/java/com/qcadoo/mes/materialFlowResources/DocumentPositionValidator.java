@@ -35,17 +35,17 @@ public class DocumentPositionValidator {
     private TranslationService translationService;
 
     public Map<String, Object> validateAndTryMapBeforeCreate(DocumentPositionDTO documentPositionDTO) {
-        return validate(documentPositionDTO);
+        return validateAndMap(documentPositionDTO);
     }
 
     public Map<String, Object> validateAndTryMapBeforeUpdate(DocumentPositionDTO documentPositionDTO) {
-        return validate(documentPositionDTO);
+        return validateAndMap(documentPositionDTO);
     }
 
     public void validateBeforeDelete(Long id) {
     }
 
-    private Map<String, Object> validate(DocumentPositionDTO position) {
+    private Map<String, Object> validateAndMap(DocumentPositionDTO position) {
         Preconditions.checkNotNull(position, "qcadooView.required.documentPosition");
         Preconditions.checkNotNull(position.getDocument(), "qcadooView.required.documentPosition.document");
 
@@ -113,7 +113,7 @@ public class DocumentPositionValidator {
         if (requirePrice && (position.getPrice() == null || BigDecimal.ZERO.compareTo(position.getPrice()) == 0)) {
             errors.add("qcadooView.error.position.price.required");
         }
-        if (requireBatch && Strings.isNullOrEmpty(position.getBatch())) {
+        if (requireBatch && (position.getBatch() == null || position.getBatch().trim().isEmpty())) {
             errors.add("qcadooView.error.position.batch.required");
         }
         if (requireProductionDate && position.getProductiondate() == null) {
@@ -209,7 +209,7 @@ public class DocumentPositionValidator {
             if (BigDecimal.ZERO.compareTo(position.getConversion()) >= 0) {
                 return Arrays.asList("qcadooView.error.position.conversion.invalid");
             }
-            
+
             return validateBigDecimal(position.getConversion(), "conversion", 5, 7);
         }
     }
@@ -232,7 +232,7 @@ public class DocumentPositionValidator {
         params.put("productiondate", vo.getProductiondate());
         params.put("price", vo.getPrice());
         params.put("resource_id", tryGetResourceIdByNumber(vo.getResource(), errors));
-        params.put("batch", vo.getBatch());
+        params.put("batch", vo.getBatch().trim());
 
         return params;
     }
@@ -323,7 +323,7 @@ public class DocumentPositionValidator {
 
     private List<String> validateBigDecimal(BigDecimal value, String field, int maxScale, int maxPrecision) {
         List<String> errors = new ArrayList<>();
-        
+
         BigDecimal noZero = value.stripTrailingZeros();
         int scale = noZero.scale();
         int precision = noZero.precision();
