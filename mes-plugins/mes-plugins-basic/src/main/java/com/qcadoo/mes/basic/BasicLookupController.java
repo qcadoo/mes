@@ -62,7 +62,13 @@ public abstract class BasicLookupController<R> {
             model.put("name", column);
             model.put("index", column);
             model.put("editable", false);
-            model.put("editoptions", Collections.singletonMap("readonly", "readonly"));
+            
+            Map<String, Object> editoptions = new HashMap<>();
+            editoptions.put("readonly", "readonly");
+            model.put("editoptions", editoptions);
+            
+            Map<String, Object> searchoptions = new HashMap<>();
+            model.put("searchoptions", searchoptions);
 
             colModel.put(column, model);
         });

@@ -861,8 +861,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }
         }
 
-        function getColModelByIndex(index) {
-            return $scope.config.colModel.filter(function (element, i) {
+        function getColModelByIndex(index, c) {
+            c = c || $scope.config;
+            return c.colModel.filter(function (element, i) {
                 return element.index === index;
             })[0];
         }
@@ -1248,7 +1249,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     name: 'unit',
                     index: 'unit',
                     editable: true,
+                    stype: 'select',
                     editoptions: {readonly: 'readonly'},
+                    searchoptions: {},
                     width: 60,
                     formoptions: {
                         rowpos: 5,
@@ -1276,10 +1279,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: true,
                     required: true,
                     edittype: 'custom',
+                    stype: 'select',
                     editoptions: {
                         custom_element: givenunit_createElement,
                         custom_value: givenunit_value
                     },
+                    searchoptions: {},
                     formoptions: {
                         rowpos: 7,
                         colpos: 1
@@ -1411,8 +1416,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: true,
                     required: true,
                     edittype: 'select',
-                    editoptions: {
-                    },
+                    stype: 'select',
+                    editoptions: {},
+                    searchoptions: {},
                     formoptions: {
                         rowpos: 8,
                         colpos: 2
@@ -1537,21 +1543,34 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     url: '../../rest/typeOfPallets'
 
                 }).then(function successCallback(response) {
-                    selectOptionsTypeOfPallets = [':' + translateMessages('qcadooView.typeOfPallet.emptyItem')];
+                    var selectOptionsTypeOfPallets = [];
                     angular.forEach(response.data, function (value, key) {
                         selectOptionsTypeOfPallets.push(value.key + ':' + value.value);
                     });
 
-                    config.colModel.filter(function (element, index) {
-                        return element.index === 'typeOfPallet';
-                    })[0].editoptions.value = selectOptionsTypeOfPallets.join(';');
+                    getColModelByIndex('typeOfPallet', config).editoptions.value = ':' + translateMessages('qcadooView.emptyItem') + ";" + selectOptionsTypeOfPallets.join(';');
+                    getColModelByIndex('typeOfPallet', config).searchoptions.value = ':' + translateMessages('qcadooView.allItem') + ";" + selectOptionsTypeOfPallets.join(';');
 
-                    var newConfig = {};
-                    newConfig = angular.merge(newConfig, config);
-                    $scope.config = newConfig;
+                    $http({
+                        method: 'GET',
+                        url: '../../rest/units'
 
-                    $('#gridWrapper').unblock();
+                    }).then(function successCallback(response) {
+                        selectOptionsUnits = [':' + translateMessages('qcadooView.allItem')];
+                        angular.forEach(response.data, function (value, key) {
+                            selectOptionsUnits.push(value.key + ':' + value.value);
+                        });
 
+                        getColModelByIndex('unit', config).searchoptions.value = selectOptionsUnits.join(';');
+                        getColModelByIndex('givenunit', config).searchoptions.value = selectOptionsUnits.join(';');
+
+                        var newConfig = {};
+                        newConfig = angular.merge(newConfig, config);
+                        $scope.config = newConfig;
+
+                        $('#gridWrapper').unblock();
+
+                    }, errorCallback);
                 }, errorCallback);
             }, errorCallback);
 
