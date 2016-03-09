@@ -502,7 +502,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 return  {
                     product: getFieldValue('product', rowId),
                     conversion: getFieldValue('conversion', rowId),
-                    additionalCode: getFieldValue('additionalCode', rowId),
+                    ac: getFieldValue('additionalCode', rowId),
                     context: getDocumentId()
 
                 };
@@ -669,7 +669,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var params = {
                 context: getDocumentId(),
                 product: productNumber,
-                additionalCode: ac,
+                ac: ac,
                 conversion: conversion
             }
             $.get('/integration/rest/documentPositions/resource.html?' + $.param(params), function (resource) {

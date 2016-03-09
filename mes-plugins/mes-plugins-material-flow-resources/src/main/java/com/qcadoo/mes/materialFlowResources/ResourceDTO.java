@@ -1,9 +1,9 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.math.BigDecimal;
 import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 public class ResourceDTO {
@@ -13,6 +13,8 @@ public class ResourceDTO {
     private String number;
 
     private String additionalCode;
+
+    private String ac;
 
     private String batch;
 
@@ -150,4 +152,11 @@ public class ResourceDTO {
         this.typeOfPallet = typeOfPallet;
     }
 
+    public String getAc() {
+        return ac;
+    }
+
+    public void setAc(String ac) {
+        this.ac = ac;
+    }
 }
