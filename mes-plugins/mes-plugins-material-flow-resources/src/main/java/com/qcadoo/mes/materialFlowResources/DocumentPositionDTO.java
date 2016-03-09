@@ -33,9 +33,11 @@ public class DocumentPositionDTO {
     private BigDecimal conversion;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "CET")
+    @JsonDeserialize(using = DateDeserializer.class)
     private Date expirationdate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "CET")
+    @JsonDeserialize(using = DateDeserializer.class)
     private Date productiondate;
 
     private String palletNumber;
