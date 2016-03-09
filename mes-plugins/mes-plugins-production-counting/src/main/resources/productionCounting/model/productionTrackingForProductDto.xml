@@ -64,6 +64,8 @@
 		<decimal name="plannedQuantity"/>
 
 		<integer name="productiontracking_id"></integer>
+
+		<string name="batchNumber"/>
 	</fields>
 
 	<masterModel plugin="productionCounting" model="productionTracking"/>
