@@ -1337,6 +1337,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                                 options.buttonText = 'Wybierz';
                                 options.altField = element;
                                 $(element).datepicker(options);
+                                $(element).mask("2999-19-39");
                             }
                         }
                     },
@@ -1362,6 +1363,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                                 options.buttonText = 'Wybierz';
                                 options.altField = element;
                                 $(element).datepicker(options);
+                                $(element).mask("2999-19-39");
                             }
                         }
                     },
