@@ -69,17 +69,20 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         queryBuilder
                 .append(" AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
         queryBuilder.append(" AND r.conversion = :conversion ");
-
+        if (useAdditionalCode) {
+            queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
+        }
         queryBuilder.append(" AND ");
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
         queryBuilder.append(" WHERE product_id = (SELECT id FROM basic_product WHERE number = :product)");
         queryBuilder
                 .append(" and location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
-        queryBuilder.append(" AND conversion = :conversion)");
-
-        if(useAdditionalCode){
+        queryBuilder.append(" AND conversion = :conversion");
+        if (useAdditionalCode) {
             queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
         }
+        queryBuilder.append(" )");
+
         queryBuilder.append(") as resources");
         return queryBuilder.toString();
     }
