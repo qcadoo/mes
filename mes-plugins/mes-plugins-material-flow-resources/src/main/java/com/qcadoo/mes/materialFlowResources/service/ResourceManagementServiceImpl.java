@@ -197,16 +197,19 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
 
                 Entity additionalCode = productAndPosition.getValue().getBelongsToField(PositionFields.ADDITIONAL_CODE);
+                BigDecimal conversion = productAndPosition.getValue().getDecimalField(PositionFields.CONVERSION);
                 List<Entity> resources = Lists.newArrayList();
                 if (additionalCode != null) {
                     resources = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse)
-                            .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode)).list()
+                            .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
+                            .add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion)).list()
                             .getEntities();
 
                     resources
                             .addAll(getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse)
                                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
+                            .add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion))
                                     .list().getEntities());
                 }
                 if (resources.isEmpty()) {
