@@ -166,21 +166,6 @@ public class DocumentDetailsHooks {
         }
     }
 
-    private void enableAttributesADL(final ViewDefinitionState view, final boolean enabled) {
-
-        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view
-                .getComponentByReference(DocumentFields.POSITIONS);
-        for (FormComponent positionForm : positionsADL.getFormComponents()) {
-            AwesomeDynamicListComponent attributeADL = (AwesomeDynamicListComponent) positionForm
-                    .findFieldComponentByName("additionalAttributes");
-            for (FormComponent innerForm : attributeADL.getFormComponents()) {
-                FieldComponent value = innerForm.findFieldComponentByName("value");
-                value.setEnabled(enabled);
-            }
-        }
-
-    }
-
     private void fillInUnit(FormComponent positionForm) {
         Entity position = positionForm.getPersistedEntityWithIncludedFormValues();
         if (!position.isValid()) {

@@ -37,7 +37,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
@@ -73,9 +72,6 @@ public class EventListeners {
     private Long factoryStructureId;
 
     @Autowired
-    private TranslationService translationService;
-
-    @Autowired
     private FactoryStructureForEventHooks factoryStructureForEventHooks;
 
     @Autowired
@@ -102,7 +98,7 @@ public class EventListeners {
 
         EntityTree tree = factoryStructureForEventHooks.getGeneratedTree();
         Optional<Entity> maybeElement = tree.stream().filter(element -> element.getId() == factoryStructureId).findFirst();
-        // getSelectedStructureElement(tree);
+       
         if (!maybeElement.isPresent()) {
             viewDefinitionState.addMessage("cmmsMachineParts.error.elementNotSelected", ComponentState.MessageType.FAILURE);
             return;
@@ -252,7 +248,7 @@ public class EventListeners {
 
     public void downloadAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("attachments");
-        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
+        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().isEmpty()) {
             state.addMessage("technologies.technologyDetails.window.ribbon.atachments.nonSelectedAtachment",
                     ComponentState.MessageType.INFO);
             return;

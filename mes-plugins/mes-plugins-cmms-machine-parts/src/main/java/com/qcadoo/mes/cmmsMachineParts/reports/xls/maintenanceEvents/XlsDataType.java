@@ -12,6 +12,8 @@ import java.util.Locale;
 
 public final class XlsDataType {
 
+    private XlsDataType(){}
+    
     public static String getValue(String value) {
         return Strings.nullToEmpty(value);
     }
@@ -29,8 +31,7 @@ public final class XlsDataType {
         }
         if (dateOnly) {
             SimpleDateFormat df = new SimpleDateFormat(DateUtils.L_DATE_FORMAT);
-            String date = df.format(value);
-            return date;
+            return df.format(value);
         } else {
             return DateUtils.toDateTimeString(value);
         }

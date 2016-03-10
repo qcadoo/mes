@@ -45,13 +45,14 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import java.util.List;
 
 @Service
 public class OrderStateReasonViewListeners {
 
     private static final String L_FORM = "form";
 
-    private static final ArrayList<String> DATE_FIELDS = Lists.newArrayList("sourceCorrectedDateFrom", "sourceCorrectedDateTo",
+    private static final List<String> DATE_FIELDS = Lists.newArrayList("sourceCorrectedDateFrom", "sourceCorrectedDateTo",
             "sourceStartDate", "sourceFinishDate", "targetCorrectedDateFrom", "targetCorrectedDateTo", "targetStartDate",
             "targetFinishDate");
 

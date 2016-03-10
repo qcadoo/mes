@@ -168,7 +168,7 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
     }
 
     private Map<String, Object> createFirstColumn(final Entity delivery) {
-        Map<String, Object> column = new LinkedHashMap<String, Object>();
+        Map<String, Object> column = new LinkedHashMap<>();
 
         String number = delivery.getStringField(DeliveryFields.NUMBER);
         String name = delivery.getStringField(DeliveryFields.NAME);
@@ -188,7 +188,7 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
     }
 
     private Map<String, Object> createSecondColumn(final Entity delivery) {
-        Map<String, Object> column = new LinkedHashMap<String, Object>();
+        Map<String, Object> column = new LinkedHashMap<>();
 
         Entity company = companyService.getCompany();
         String deliveryAddress = delivery.getStringField(DeliveryFields.DELIVERY_ADDRESS);
@@ -210,7 +210,7 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
     }
 
     private Map<String, Object> createThirdColumn(final Entity delivery) {
-        Map<String, Object> column = new LinkedHashMap<String, Object>();
+        Map<String, Object> column = new LinkedHashMap<>();
 
         Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
         String supplierAddress = deliveriesService.generateAddressFromCompany(supplier);
@@ -294,7 +294,6 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
                 addTotalRow(productsTable, locale, columnsName, delivery);
 
                 document.add(productsTable);
-                // document.add(Chunk.NEWLINE);
             }
         }
     }
@@ -316,8 +315,7 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
     }
 
     private String prepareHeaderTranslation(final String name, final Locale locale) {
-        String translatedName = translationService.translate(name, locale);
-        return translatedName;
+        return translationService.translate(name, locale);
     }
 
     private List<Entity> getOrderReportColumns(final List<Entity> columnsForOrders, final List<Entity> orderedProducts,

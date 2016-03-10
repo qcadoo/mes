@@ -10,7 +10,6 @@ public class PlannedEventMapper  implements RowMapper {
 
     @Override public PlannedEventDTO mapRow(ResultSet resultSet, int i) throws SQLException {
         PlannedEventDTO plannedEventDTO = new PlannedEventDTO();
-       // plannedEventDTO.setId();
         return plannedEventDTO;
     }
 }

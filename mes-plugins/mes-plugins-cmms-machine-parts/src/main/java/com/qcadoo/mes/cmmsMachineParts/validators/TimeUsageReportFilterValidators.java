@@ -25,19 +25,14 @@ package com.qcadoo.mes.cmmsMachineParts.validators;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.cmmsMachineParts.ActionsService;
 import com.qcadoo.mes.cmmsMachineParts.constants.TimeUsageReportFilterFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class TimeUsageReportFilterValidators {
-
-    @Autowired
-    private ActionsService actionsService;
 
     public boolean validate(final DataDefinition timeUsageReportDD, final Entity timeUsageReport) {
         Date fromDate = timeUsageReport.getDateField(TimeUsageReportFilterFields.FROM_DATE);

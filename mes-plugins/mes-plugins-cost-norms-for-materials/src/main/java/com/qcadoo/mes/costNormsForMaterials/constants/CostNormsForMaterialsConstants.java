@@ -34,8 +34,6 @@ public final class CostNormsForMaterialsConstants {
     // MODEL
     public static final String MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP = "technologyInstOperProductInComp";
 
-    // public static final String TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS = "technologyInstOperProductInComps";
-
     // OTHER
     public static final Set<String> CURRENCY_FIELDS_ORDER = Sets.newHashSet("nominalCostCurrency", "lastPurchaseCostCurrency",
             "averageCostCurrency", "costForOrderCurrency", "averageOfferCostCurrency", "lastOfferCostCurrency");

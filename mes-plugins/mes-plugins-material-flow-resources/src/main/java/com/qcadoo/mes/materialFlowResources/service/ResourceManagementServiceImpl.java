@@ -257,7 +257,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             addDocumentError(document, warehouse, errorMessage);
         } else {
             document.setField(DocumentFields.POSITIONS, generatedPositions);
-            //document.getDataDefinition().save(document);
         }
     }
 
@@ -419,6 +418,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 "materialFlow.error.position.quantity.notEnough");
     }
 
+    @Override
     public List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
             WarehouseAlgorithm warehouseAlgorithm) {
         List<Entity> resources = Lists.newArrayList();

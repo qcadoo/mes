@@ -34,7 +34,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
@@ -49,9 +48,6 @@ public class OPICDetailsListeners {
 
     @Autowired
     private UnitConversionService unitConversionService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
 

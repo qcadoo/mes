@@ -113,14 +113,12 @@ public class ProductStructureTreeService {
             boolean isMaster = technology.getBooleanField("master");
             if (isMaster) {
                 return technology;
-            } else {
-                if (result != null) {
-                    if (result.getStringField(L_NUMBER).compareTo(technology.getStringField(L_NUMBER)) < 0) {
-                        result = technology;
-                    }
-                } else {
+            } else if (result != null) {
+                if (result.getStringField(L_NUMBER).compareTo(technology.getStringField(L_NUMBER)) < 0) {
                     result = technology;
                 }
+            } else {
+                result = technology;
             }
         }
         return result;
@@ -156,7 +154,6 @@ public class ProductStructureTreeService {
             Entity subTechnology = findTechnologyForProduct(product);
 
             if (subTechnology != null) {
-                // if (subTechnology.getId() != technology.getId()) {
                 if (!usedTechnologies.contains(subTechnology.getId())) {
                     if (subOperation == null) {
                         Entity operationForTechnology = findOperationForProductAndTechnology(product, subTechnology);
@@ -190,15 +187,13 @@ public class ProductStructureTreeService {
                         }
                         generateTreeForSubproducts(subOperation, technology, tree, child, view, usedTechnologies);
                     }
-                } else {
-                    if (view != null) {
-                        FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
-                        productStructureForm
-                                .addMessage(
-                                        "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
-                                        MessageType.INFO, false,
-                                        product.getStringField("number") + " " + product.getStringField("name"));
-                    }
+                } else if (view != null) {
+                    FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
+                    productStructureForm
+                            .addMessage(
+                                    "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
+                                    MessageType.INFO, false,
+                                    product.getStringField("number") + " " + product.getStringField("name"));
                 }
             } else {
                 child.setField(L_TECHNOLOGY, technology);
@@ -235,10 +230,10 @@ public class ProductStructureTreeService {
         root.setField(L_QUANTITY, quantity);
         root.setField(L_DIVISION, operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
 
-        List<Entity> productStructureList = new ArrayList<Entity>();
+        List<Entity> productStructureList = new ArrayList<>();
         addChild(productStructureList, root, null, L_FINAL_PRODUCT);
 
-        List<Long> usedTechnologies = new ArrayList<Long>();
+        List<Long> usedTechnologies = new ArrayList<>();
         usedTechnologies.add(technology.getId());
 
         generateTreeForSubproducts(operation, technology, productStructureList, root, view, usedTechnologies);

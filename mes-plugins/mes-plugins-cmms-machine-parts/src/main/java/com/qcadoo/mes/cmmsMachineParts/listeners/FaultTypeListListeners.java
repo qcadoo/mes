@@ -38,8 +38,6 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class FaultTypeListListeners {
 
-    private static final String L_FORM = "form";
-
     public void disableActionsWhenDefault(final ViewDefinitionState view, final ComponentState state, final String args[]) {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         RibbonGroup actions = window.getRibbon().getGroupByName("actions");

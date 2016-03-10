@@ -42,16 +42,12 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class CopyOfTechnologyDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private TechnologyServiceO technologyServiceO;

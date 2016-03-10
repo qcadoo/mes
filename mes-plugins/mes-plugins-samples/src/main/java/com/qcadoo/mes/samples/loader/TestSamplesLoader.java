@@ -65,7 +65,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     @Autowired
     private NumberService numberService;
 
-    private Map<String, Entity> operationComponents = new LinkedHashMap<>();
+    private final Map<String, Entity> operationComponents = new LinkedHashMap<>();
 
     @Override
     protected void loadData(final String locale) {
@@ -602,27 +602,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     + product.getField(L_EAN) + ", name=" + product.getField(L_NAME) + ", " + L_NUMBER + "="
                     + product.getField(L_NUMBER) + ", globalTypeOfMaterial=" + product.getField("typeOfMaterial") + ", unit="
                     + product.getField(L_UNIT) + "}");
-        }
-    }
-
-    @Deprecated
-    private void addSubstitute(final String name, final String number, final Entity product, final int priority) {
-        Entity substitute = dataDefinitionService.get(L_BASIC_PLUGIN_IDENTIFIER, L_BASIC_MODEL_SUBSTITUTE).create();
-        substitute.setField(L_NAME, name);
-        substitute.setField(L_NUMBER, number);
-        substitute.setField("priority", priority);
-        substitute.setField(L_BASIC_MODEL_PRODUCT, product);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test substitute {name=" + substitute.getField(L_NAME) + ", " + L_NUMBER + "="
-                    + substitute.getField(L_NUMBER) + ", priority=" + substitute.getField("priority") + ", subsitute product="
-                    + ((Entity) substitute.getField(L_BASIC_MODEL_PRODUCT)).getField(L_NUMBER) + "}");
-        }
-
-        substitute = dataDefinitionService.get(L_BASIC_PLUGIN_IDENTIFIER, L_BASIC_MODEL_SUBSTITUTE).save(substitute);
-
-        for (int i = 0; i < 1; i++) {
-            addSubstituteComponent(substitute, getRandomProduct(), 100 * RANDOM.nextDouble());
         }
     }
 
@@ -1355,20 +1334,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private Entity getTechnologyByNumber(final String number) {
         return dataDefinitionService.get(L_TECHNOLOGIES_PLUGIN_IDENTIFIER, L_TECHNOLOGY_MODEL_TECHNOLOGY).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
-    }
-
-    private Entity getDefaultTechnologyForProduct(final Entity product) {
-        if (product == null) {
-            return null;
-        }
-        List<Entity> technologies = dataDefinitionService.get(L_TECHNOLOGIES_PLUGIN_IDENTIFIER, L_TECHNOLOGY_MODEL_TECHNOLOGY)
-                .find().add(SearchRestrictions.belongsTo(L_BASIC_MODEL_PRODUCT, product))
-                .add(SearchRestrictions.eq("master", true)).setMaxResults(1).list().getEntities();
-        if (technologies.isEmpty()) {
-            return null;
-        } else {
-            return technologies.get(0);
-        }
     }
 
     private Entity getTechnologyOperationComponentByNumber(final Entity order, final Entity operation) {

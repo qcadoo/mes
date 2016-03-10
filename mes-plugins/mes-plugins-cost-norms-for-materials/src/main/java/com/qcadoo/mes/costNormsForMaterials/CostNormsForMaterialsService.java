@@ -186,17 +186,10 @@ public class CostNormsForMaterialsService {
         grid.setEntities(inputProducts);
     }
 
-    // TODO dev_team - temporary removed 'or' function to avoid silent transaction rollback in production counting
     public void updateCostsForProductInOrder(final Entity order, final Long productId, final Optional<BigDecimal> newQuantity,
             final Optional<BigDecimal> costForOrder) {
         Optional<Entity> orderMaterialCostsOpt = orderMaterialCostsDataProvider.find(order.getId(), productId);
-        /*
-         * .or(new Supplier<Entity>() {
-         * @Override public Entity get() { throw new IllegalArgumentException(String.format(
-         * "TechnologyInstanceOperationProductInComponent (order material costs entity) not found for " + "product: %d order: %d",
-         * productId, order.getId())); } });
-         */
-
+ 
         if (orderMaterialCostsOpt.isPresent()) {
             Entity orderMaterialCosts = orderMaterialCostsOpt.get();
             orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_ORDER,

@@ -52,8 +52,6 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class MaintenanceEventToPlannedEventListeners {
 
-    private static final String L_FORM = "form";
-
     @Autowired
     private MaintenanceEventStateChangeAspect maintenanceEventStateChangeAspect;
 

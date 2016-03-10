@@ -103,21 +103,4 @@ public class MaintenanceEventValidators {
         }
         return typeCorrect;
     }
-
-    private boolean validateFactoryAndDivision(final DataDefinition eventDD, final Entity event) {
-        if (event.getId() == null) {
-            return true;
-        }
-        boolean isCorrect = true;
-        if (event.getBelongsToField(MaintenanceEventFields.DIVISION) == null) {
-            event.addError(eventDD.getField(MaintenanceEventFields.DIVISION), "cmmsMachineParts.error.divisionRequired");
-            isCorrect = false;
-        }
-        if (event.getBelongsToField(MaintenanceEventFields.FACTORY) == null) {
-            event.addError(eventDD.getField(MaintenanceEventFields.FACTORY), "cmmsMachineParts.error.factoryRequired");
-            isCorrect = false;
-        }
-        return isCorrect;
-
-    }
 }

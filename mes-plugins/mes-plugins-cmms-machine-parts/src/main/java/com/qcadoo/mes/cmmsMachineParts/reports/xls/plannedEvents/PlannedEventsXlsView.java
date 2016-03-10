@@ -18,7 +18,7 @@ public class PlannedEventsXlsView  extends AbstractXLSXView {
     private PlannedEventsXlsService plannedEventsXlsService;
 
     @Override protected void buildExcelDocument(Map<String, Object> filters, XSSFWorkbook xssfWorkbook,
-            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         XSSFSheet sheet = xssfWorkbook.createSheet( plannedEventsXlsService.getReportTitle(LocaleContextHolder.getLocale()));
         plannedEventsXlsService.buildExcelContent(xssfWorkbook, sheet,filters, LocaleContextHolder.getLocale());
     }

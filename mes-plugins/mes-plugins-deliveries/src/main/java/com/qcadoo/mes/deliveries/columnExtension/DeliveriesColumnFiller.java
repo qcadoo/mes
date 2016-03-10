@@ -44,12 +44,10 @@ import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.print.DeliveryColumnFiller;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.mes.deliveries.print.OrderColumnFiller;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
@@ -62,18 +60,15 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     @Autowired
     private NumberService numberService;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
     @Override
     public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(final List<DeliveryProduct> deliveryProducts) {
-        Map<DeliveryProduct, Map<String, String>> values = new HashMap<DeliveryProduct, Map<String, String>>();
+        Map<DeliveryProduct, Map<String, String>> values = new HashMap<>();
 
         Integer succession = 0;
         for (DeliveryProduct deliveryProduct : deliveryProducts) {
             succession++;
             if (!values.containsKey(deliveryProduct)) {
-                values.put(deliveryProduct, new HashMap<String, String>());
+                values.put(deliveryProduct, new HashMap<>());
             }
 
             fillProductNumber(values, deliveryProduct);
@@ -96,11 +91,11 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
 
     @Override
     public Map<Entity, Map<String, String>> getOrderedProductsColumnValues(final List<Entity> orderedProducts) {
-        Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
+        Map<Entity, Map<String, String>> values = new HashMap<>();
 
         for (Entity orderedProduct : orderedProducts) {
             if (!values.containsKey(orderedProduct)) {
-                values.put(orderedProduct, new HashMap<String, String>());
+                values.put(orderedProduct, new HashMap<>());
             }
 
             fillProductNumber(values, orderedProduct);

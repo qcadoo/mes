@@ -25,7 +25,6 @@ package com.qcadoo.mes.technologies.controller;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -33,7 +32,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.view.api.crud.CrudService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,27 +51,30 @@ import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 
-@Controller @RequestMapping("/techologies") public class TechnologyMultiUploadController {
+@Controller
+@RequestMapping("/techologies")
+public class TechnologyMultiUploadController {
 
     private static final Logger logger = LoggerFactory.getLogger(TechnologyMultiUploadController.class);
 
-    @Autowired private FileService fileService;
+    @Autowired
+    private FileService fileService;
 
-    @Autowired private DataDefinitionService dataDefinitionService;
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
-    @Autowired private CrudService crudController;
-
-    @Autowired private NumberService numberService;
-
-    @Autowired private TranslationService translationService;
+    @Autowired
+    private NumberService numberService;
 
     private static final Integer L_SCALE = 2;
 
-    private static final List<String> exts = Lists
+    private static final List<String> EXTS = Lists
             .newArrayList("JPG", "JPEG", "PNG", "PDF", "DOC", "DOCX", "XLS", "XLSX", "GIF", "DWG", "IPT", "IAM", "IDW", "ODT",
                     "ODS", "TIFF", "TIF");
 
-    @ResponseBody @RequestMapping(value = "/multiUploadFiles", method = RequestMethod.POST) public void upload(
+    @ResponseBody
+    @RequestMapping(value = "/multiUploadFiles", method = RequestMethod.POST)
+    public void upload(
             MultipartHttpServletRequest request, HttpServletResponse response) {
         Long technologyId = Long.parseLong(request.getParameter("techId"));
         Entity technology = dataDefinitionService
@@ -82,10 +83,9 @@ import java.util.List;
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);
 
         Iterator<String> itr = request.getFileNames();
-        MultipartFile mpf = null;
+        MultipartFile mpf;
 
         while (itr.hasNext()) {
-
             mpf = request.getFile(itr.next());
 
             String path = "";
@@ -94,7 +94,7 @@ import java.util.List;
             } catch (IOException e) {
                 logger.error("Unable to upload attachment.", e);
             }
-            if (exts.contains(Files.getFileExtension(path).toUpperCase())) {
+            if (EXTS.contains(Files.getFileExtension(path).toUpperCase())) {
                 Entity atchment = attachmentDD.create();
                 atchment.setField(TechnologyAttachmentFields.ATTACHMENT, path);
                 atchment.setField(TechnologyAttachmentFields.NAME, mpf.getOriginalFilename());
@@ -109,7 +109,8 @@ import java.util.List;
         }
     }
 
-    @RequestMapping(value = "/getAttachment.html", method = RequestMethod.GET) public final void getAttachment(
+    @RequestMapping(value = "/getAttachment.html", method = RequestMethod.GET)
+    public final void getAttachment(
             @RequestParam("id") final Long[] ids, HttpServletResponse response) {
         DataDefinition attachmentDD = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);

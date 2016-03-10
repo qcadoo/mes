@@ -59,14 +59,13 @@ public class ProductionTrackingValidators {
         isValid = isValid && checkTypeOfProductionRecording(productionTrackingDD, productionTracking, order);
         isValid = isValid && willOrderAcceptOneMore(productionTrackingDD, productionTracking, order);
         isValid = isValid && checkIfOrderIsStarted(productionTrackingDD, productionTracking, order);
-        isValid = isValid && checkTimeRange(productionTrackingDD, productionTracking, order);
-        isValid = isValid && checkIfOperationIsSet(productionTrackingDD, productionTracking, order);
+        isValid = isValid && checkTimeRange(productionTrackingDD, productionTracking);
+        isValid = isValid && checkIfOperationIsSet(productionTrackingDD, productionTracking);
 
         return isValid;
     }
 
-    private boolean checkIfOperationIsSet(final DataDefinition productionTrackingDD, final Entity productionTracking,
-            final Entity order) {
+    private boolean checkIfOperationIsSet(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         String recordingMode = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER).getStringField(
                 OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         Object orderOperation = productionTracking.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
@@ -80,8 +79,7 @@ public class ProductionTrackingValidators {
 
     }
 
-    private boolean checkTimeRange(final DataDefinition productionTrackingDD, final Entity productionTracking,
-            final Entity order) {
+    private boolean checkTimeRange(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         Date timeRangeFrom = productionTracking.getDateField(ProductionTrackingFields.TIME_RANGE_FROM);
         Date timeRangeTo = productionTracking.getDateField(ProductionTrackingFields.TIME_RANGE_TO);
 

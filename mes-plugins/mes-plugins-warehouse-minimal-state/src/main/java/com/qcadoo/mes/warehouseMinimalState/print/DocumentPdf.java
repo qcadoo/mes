@@ -227,7 +227,6 @@ public class DocumentPdf extends ReportPdfView {
     }
 
     private void addAdditionalCells(PdfPTable table, Entity product) {
-
     }
 
     public void addSmallCell(PdfPTable table, String content) {

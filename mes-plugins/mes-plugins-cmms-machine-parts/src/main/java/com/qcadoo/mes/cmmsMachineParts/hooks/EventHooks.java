@@ -171,7 +171,6 @@ public class EventHooks {
     }
 
     private void toggleRibbonButton(final ViewDefinitionState view, String groupName, String itemName, boolean enabled) {
-
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         Ribbon ribbon = window.getRibbon();
         RibbonGroup group = ribbon.getGroupByName(groupName);
@@ -274,27 +273,27 @@ public class EventHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity eventEntity = form.getPersistedEntityWithIncludedFormValues();
 
-        toggleEnabledForWorkstation(view, form, eventEntity);
-        toggleEnabledForFactory(view, form, eventEntity, contextField);
-        toggleEnabledForDivision(view, form, eventEntity, contextField);
-        toggleEnabledForSubassembly(view, form, eventEntity);
-        toggleEnabledForProductionLine(view, form, eventEntity);
+        toggleEnabledForWorkstation(view, eventEntity);
+        toggleEnabledForFactory(view, eventEntity, contextField);
+        toggleEnabledForDivision(view, eventEntity, contextField);
+        toggleEnabledForSubassembly(view, eventEntity);
+        toggleEnabledForProductionLine(view, eventEntity);
     }
 
-    private void toggleEnabledForWorkstation(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
+    private void toggleEnabledForWorkstation(final ViewDefinitionState view, final Entity eventEntity) {
         boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.PRODUCTION_LINE) != null;
         LookupComponent workstation = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.WORKSTATION);
         workstation.setEnabled(enabled);
     }
 
-    private void toggleEnabledForProductionLine(final ViewDefinitionState view, final FormComponent form,
+    private void toggleEnabledForProductionLine(final ViewDefinitionState view,
             final Entity eventEntity) {
         boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.DIVISION) != null;
         LookupComponent productionLine = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.PRODUCTION_LINE);
         productionLine.setEnabled(enabled);
     }
 
-    private void toggleEnabledForFactory(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
+    private void toggleEnabledForFactory(final ViewDefinitionState view, final Entity eventEntity,
             String contextField) {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
@@ -305,7 +304,7 @@ public class EventHooks {
         factoryLookup.setEnabled(enabled);
     }
 
-    private void toggleEnabledForDivision(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity,
+    private void toggleEnabledForDivision(final ViewDefinitionState view, final Entity eventEntity,
             String contextField) {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
@@ -316,7 +315,7 @@ public class EventHooks {
         divisionLookup.setEnabled(enabled);
     }
 
-    private void toggleEnabledForSubassembly(final ViewDefinitionState view, final FormComponent form, final Entity eventEntity) {
+    private void toggleEnabledForSubassembly(final ViewDefinitionState view, final Entity eventEntity) {
         boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.WORKSTATION) != null;
         LookupComponent subassemblyLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.SUBASSEMBLY);
         subassemblyLookup.setEnabled(enabled);

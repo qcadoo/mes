@@ -26,7 +26,6 @@ package com.qcadoo.mes.technologies.constants;
 public final class TechnologiesConstants {
 
     private TechnologiesConstants() {
-
     }
 
     public static final String PLUGIN_IDENTIFIER = "technologies";
@@ -60,10 +59,6 @@ public final class TechnologiesConstants {
     public static final String MODEL_TECHNOLOGY_OPERATION_COMPONENT_MERGE_PRODUCT_OUT = "technologyOperationComponentMergeProductOut";
 
     public static final String OPERATION_COMPONENTS = "operationComponents";
-
-    // FIXME MAKU remove if never used (prehistoric constants..)
-    // public static final String FIELD_ENTITY_TYPE = "entityType";
-    // public static final String FIELD_NAME = "name";
 
     // VIEW
 

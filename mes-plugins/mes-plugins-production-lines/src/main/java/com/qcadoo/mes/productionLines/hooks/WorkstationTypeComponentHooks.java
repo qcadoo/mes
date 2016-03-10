@@ -33,14 +33,10 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.productionLines.WorkstationTypeComponentsService;
 import com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class WorkstationTypeComponentHooks {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private WorkstationTypeComponentsService workstationTypeComponentsService;

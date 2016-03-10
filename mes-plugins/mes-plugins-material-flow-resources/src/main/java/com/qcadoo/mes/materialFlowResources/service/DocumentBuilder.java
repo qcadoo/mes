@@ -267,11 +267,11 @@ public class DocumentBuilder {
     public Entity createDocument(UserService userService, NumberGeneratorService numberGeneratorService) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
-        Entity document = documentDD.create();
-        document.setField(DocumentFields.TIME, new Date());
-        document.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
-        document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-        document.setField(DocumentFields.POSITIONS, Lists.newArrayList());
-        return document;
+        Entity newDocument = documentDD.create();
+        newDocument.setField(DocumentFields.TIME, new Date());
+        newDocument.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
+        newDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+        newDocument.setField(DocumentFields.POSITIONS, Lists.newArrayList());
+        return newDocument;
     }
 }

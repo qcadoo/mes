@@ -29,7 +29,7 @@ public class MaintenanceEventDTO {
     private Long staffworkTimeId;
     private String staffWorkTimeWorker;
     private Integer staffWorkTimeLaborTime;
-    List<WorkTimeDTO> workTimes = Lists.newArrayList();
+    private List<WorkTimeDTO> workTimes = Lists.newArrayList();
 
     //StateChangeDTO
     private Long stateChangeId;
@@ -38,7 +38,7 @@ public class MaintenanceEventDTO {
     private String stateChangeTargetState;
     private String stateStatus;
     private String stateWorker;
-    List<StateChangeDTO> stateChange = Lists.newArrayList();
+    private List<StateChangeDTO> stateChange = Lists.newArrayList();
 
     //MachinePartDTO
     private Long machinePartId;
@@ -53,7 +53,7 @@ public class MaintenanceEventDTO {
     private BigDecimal quantityFromPosition;
     private String partUnit;
 
-    List<MachinePartDTO> machineParts = Lists.newArrayList();
+    private List<MachinePartDTO> machineParts = Lists.newArrayList();
 
     public int subListSize() {
         return workTimes.size() > machineParts.size() ? workTimes.size() : machineParts.size();

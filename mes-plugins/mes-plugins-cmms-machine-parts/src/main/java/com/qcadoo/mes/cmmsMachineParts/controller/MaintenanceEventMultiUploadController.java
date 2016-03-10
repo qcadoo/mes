@@ -63,15 +63,11 @@ import com.qcadoo.view.api.crud.CrudService;
 
     @Autowired private DataDefinitionService dataDefinitionService;
 
-    @Autowired private CrudService crudController;
-
     @Autowired private NumberService numberService;
-
-    @Autowired private TranslationService translationService;
 
     private static final Integer L_SCALE = 2;
 
-    private static final List<String> exts = Lists
+    private static final List<String> EXTS = Lists
             .newArrayList("JPG", "JPEG", "PNG", "PDF", "DOC", "DOCX", "XLS", "XLSX", "GIF", "DWG", "IPT", "IAM", "IDW", "ODT",
                     "ODS");
 
@@ -95,7 +91,7 @@ import com.qcadoo.view.api.crud.CrudService;
             } catch (IOException e) {
                 logger.error("Unable to upload attachment.", e);
             }
-            if (exts.contains(Files.getFileExtension(path).toUpperCase())) {
+            if (EXTS.contains(Files.getFileExtension(path).toUpperCase())) {
                 Entity atchment = attachmentDD.create();
                 atchment.setField(TechnologyAttachmentFields.ATTACHMENT, path);
                 atchment.setField(TechnologyAttachmentFields.NAME, mpf.getOriginalFilename());

@@ -221,7 +221,7 @@ public class DocumentPdfHelper {
         return headerLabels;
     }
 
-    public class HeaderPair {
+    public static class HeaderPair {
 
         private String label;
 

@@ -18,6 +18,8 @@ public class MaintenanceEventsFilterUtils {
     private static final String FAULT_FROM = "maintenanceevent.faultTypeNumber";
     private static final String FAULT_TO = "faulttype.name";
 
+    private MaintenanceEventsFilterUtils(){}
+    
     public static String processFilter(String filter){
         if(filter.contains(FACTORY_FROM)){
             filter = filter.replace(FACTORY_FROM, FACTORY_TO);

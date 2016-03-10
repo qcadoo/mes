@@ -27,14 +27,10 @@ import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ContextEventListeners {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ContextEventListeners.class);
 
     public void factoryChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         clearSelectionOnDivision(view);

@@ -33,7 +33,6 @@ import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.utils.StaffTimeCalculator;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -63,9 +62,6 @@ public class ProductionTrackingDetailsListeners {
 
     @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private ProductionTrackingService productionTrackingService;
@@ -186,8 +182,8 @@ public class ProductionTrackingDetailsListeners {
         GridComponent productOut = (GridComponent) view
                 .getComponentByReference(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
 
-        productOut.setEntities(new ArrayList<Entity>());
-        productsIn.setEntities(new ArrayList<Entity>());
+        productOut.setEntities(new ArrayList<>());
+        productsIn.setEntities(new ArrayList<>());
     }
 
     public void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {

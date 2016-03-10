@@ -302,17 +302,6 @@ public class PlannedEventsXlsService {
         return "";
     }
 
-    private void fillSubRows(final XSSFSheet sheet, final PlannedEventDTO event, Integer rowNum, final Locale locale) {
-
-    }
-
-    private String getIntValue(Integer value) {
-        if (value == null) {
-            return "";
-        }
-        return value.toString();
-    }
-
     private String getTime(Integer value) {
         if (value == null) {
             return "";

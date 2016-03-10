@@ -113,9 +113,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
     @Override
     public void update(final Observable observable, final Object object) {
-        // FIXME mici, well, since those observers are registered on plugin startup
-        // they are registered for all tenants. Checking if the plugin is enabled seems like a viable workaround.
-        // This problem also applies to other listeners, across the system, that are implemented using observer pattern.
         if (PluginUtils.isEnabled(ProductionCountingWithCostsConstants.PLUGIN_IDENTIFIER)) {
             Entity productionBalance = (Entity) object;
 
@@ -143,9 +140,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
             productionBalanceWithFileName.getDataDefinition().save(productionBalanceWithFileName);
         } catch (IOException e) {
-            throw new IllegalStateException("Problem with saving productionBalanceWithCosts report");
+            throw new IllegalStateException("Problem with saving productionBalanceWithCosts report", e);
         } catch (DocumentException e) {
-            throw new IllegalStateException("Problem with generating productionBalanceWithCosts report");
+            throw new IllegalStateException("Problem with generating productionBalanceWithCosts report", e);
         }
     }
 

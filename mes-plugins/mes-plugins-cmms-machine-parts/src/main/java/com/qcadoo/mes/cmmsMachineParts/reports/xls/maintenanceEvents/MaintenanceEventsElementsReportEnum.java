@@ -36,13 +36,12 @@ public enum MaintenanceEventsElementsReportEnum {
     END_DATE(27, "cmmsMachineParts.maintenanceEventsList.report.endDate"),
     END_DATE_USER(28, "cmmsMachineParts.maintenanceEventsList.report.user"),
     STATE(29, "cmmsMachineParts.maintenanceEventsList.report.state"),
-    SOLUTION_DESCRIPTION(30, "cmmsMachineParts.maintenanceEventsList.report.solutionDescription"),
-    ;
+    SOLUTION_DESCRIPTION(30, "cmmsMachineParts.maintenanceEventsList.report.solutionDescription"),;
 
-    int position;
-    String label;
+    private final int position;
+    private final String label;
 
-    MaintenanceEventsElementsReportEnum(int position, String label){
+    MaintenanceEventsElementsReportEnum(int position, String label) {
         this.position = position;
         this.label = label;
     }

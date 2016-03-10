@@ -77,6 +77,14 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
     private static final String L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_BALANCE = "productionCounting.productionBalance.report.columnHeader.balance";
 
+    private static final String L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_NUMBER = "productionCounting.productionBalance.report.columnHeader.number";
+    
+    private static final String L_BASIC_PRODUCT_UNIT = "basic.product.unit.label";
+    
+    private static final String L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_PRODUCTION_NAME = "productionCounting.productionBalance.report.columnHeader.productionName";
+    
+    private static final String L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_PLANNED_QUANTITY = "productionCounting.productionBalance.report.columnHeader.plannedQuantity";
+
     @Autowired
     private TranslationService translationService;
 
@@ -144,12 +152,10 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         Object value = fieldValue;
         if (value == null) {
             cellTable.addCell(new Phrase(nullValue, valueFont));
+        } else if (value instanceof BigDecimal && df != null) {
+            cellTable.addCell(new Phrase(df.format(value), valueFont));
         } else {
-            if (value instanceof BigDecimal && df != null) {
-                cellTable.addCell(new Phrase(df.format(value), valueFont));
-            } else {
-                cellTable.addCell(new Phrase(value.toString(), valueFont));
-            }
+            cellTable.addCell(new Phrase(value.toString(), valueFont));
         }
         table.addCell(cellTable);
     }
@@ -189,17 +195,17 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                     leftPanel,
                     L_TABS + translationService.translate("productionCounting.productionBalance.report.panel.includeTPZ", locale),
                     productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_TPZ) ? translationService.translate(
-                            L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL,
+                    L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL,
                             locale), null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
 
             addTableCellAsTable(
                     leftPanel,
                     L_TABS
-                            + translationService.translate(
-                                    "productionCounting.productionBalance.report.panel.includeAdditionalTime", locale),
+                    + translationService.translate(
+                            "productionCounting.productionBalance.report.panel.includeAdditionalTime", locale),
                     productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME) ? translationService
-                            .translate(L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(
-                            L_QCADOO_VIEW_FALSE_LITERAL, locale), null, FontUtils.getDejavuBold9Dark(),
+                    .translate(L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(
+                    L_QCADOO_VIEW_FALSE_LITERAL, locale), null, FontUtils.getDejavuBold9Dark(),
                     FontUtils.getDejavuBold9Dark(), null);
         }
         return leftPanel;
@@ -217,56 +223,56 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         addTableCellAsTable(
                 rightPanel,
                 L_TABS
-                        + translationService.translate(
-                                "productionCounting.productionBalance.report.panel.typeOfProductionRecording", locale),
+                + translationService.translate(
+                        "productionCounting.productionBalance.report.panel.typeOfProductionRecording", locale),
                 translationService.translate(
                         "productionCounting.productionBalance.typeOfProductionRecording."
-                                + order.getField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING), locale), null,
+                        + order.getField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING), locale), null,
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
         rightPanel.addCell(new Phrase(L_TABS
                 + translationService.translate("productionCounting.productionBalance.report.panel.registerQuantityOutProduct",
                         locale)
                 + " "
                 + (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT) ? translationService.translate(
-                        L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)),
+                L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)),
                 FontUtils.getDejavuBold9Dark()));
         rightPanel.addCell(new Phrase(L_TABS
                 + translationService.translate("productionCounting.productionBalance.report.panel.registerQuantityInProduct",
                         locale)
                 + " "
                 + (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT) ? translationService.translate(
-                        L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)),
+                L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)),
                 FontUtils.getDejavuBold9Dark()));
         rightPanel.addCell(new Phrase(L_TABS
                 + translationService
-                        .translate("productionCounting.productionBalance.report.panel.registerProductionTime", locale)
+                .translate("productionCounting.productionBalance.report.panel.registerProductionTime", locale)
                 + " "
                 + (order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME) ? translationService.translate(
-                        L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)),
+                L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)),
                 FontUtils.getDejavuBold9Dark()));
         rightPanel.addCell(new Phrase(L_TABS
                 + translationService.translate("productionCounting.productionBalance.report.panel.registerPiecework", locale)
                 + " "
                 + (order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK) ? translationService.translate(
-                        L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)),
+                L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)),
                 FontUtils.getDejavuBold9Dark()));
         rightPanel.addCell(new Phrase(L_TABS
                 + translationService.translate("productionCounting.productionBalance.report.panel.justOne", locale)
                 + " "
                 + (order.getBooleanField(OrderFieldsPC.JUST_ONE) ? translationService.translate(L_QCADOO_VIEW_TRUE_LITERAL,
-                        locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)), FontUtils
+                locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)), FontUtils
                 .getDejavuBold9Dark()));
         rightPanel.addCell(new Phrase(L_TABS
                 + translationService.translate("productionCounting.productionBalance.report.panel.allowToClose", locale)
                 + " "
                 + (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) ? translationService.translate(L_QCADOO_VIEW_TRUE_LITERAL,
-                        locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)), FontUtils
+                locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)), FontUtils
                 .getDejavuBold9Dark()));
         rightPanel.addCell(new Phrase(L_TABS
                 + translationService.translate("productionCounting.productionBalance.report.panel.autoCloseOrder", locale)
                 + " "
                 + (order.getBooleanField(OrderFieldsPC.AUTO_CLOSE_ORDER) ? translationService.translate(
-                        L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)),
+                L_QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(L_QCADOO_VIEW_FALSE_LITERAL, locale)),
                 FontUtils.getDejavuBold9Dark()));
 
         return rightPanel;
@@ -276,31 +282,29 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             throws DocumentException {
         List<String> inputProductsTableHeader = Lists.newArrayList();
 
+        inputProductsTableHeader.add(translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_NUMBER, locale));
+        inputProductsTableHeader.add(translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_PRODUCTION_NAME, locale));
         inputProductsTableHeader.add(translationService.translate(
-                "productionCounting.productionBalance.report.columnHeader.number", locale));
-        inputProductsTableHeader.add(translationService.translate(
-                "productionCounting.productionBalance.report.columnHeader.productionName", locale));
-        inputProductsTableHeader.add(translationService.translate(
-                "productionCounting.productionBalance.report.columnHeader.plannedQuantity", locale));
+                L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_PLANNED_QUANTITY, locale));
         inputProductsTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.usedQuantity", locale));
         inputProductsTableHeader.add(translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_BALANCE, locale));
-        inputProductsTableHeader.add(translationService.translate("basic.product.unit.label", locale));
+        inputProductsTableHeader.add(translationService.translate(L_BASIC_PRODUCT_UNIT, locale));
 
         Map<String, HeaderAlignment> alignments = Maps.newHashMap();
-        alignments.put(translationService.translate("productionCounting.productionBalance.report.columnHeader.number", locale),
+        alignments.put(translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_NUMBER, locale),
                 HeaderAlignment.LEFT);
         alignments.put(
-                translationService.translate("productionCounting.productionBalance.report.columnHeader.productionName", locale),
+                translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_PRODUCTION_NAME, locale),
                 HeaderAlignment.LEFT);
         alignments.put(
-                translationService.translate("productionCounting.productionBalance.report.columnHeader.plannedQuantity", locale),
+                translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_PLANNED_QUANTITY, locale),
                 HeaderAlignment.RIGHT);
         alignments.put(
                 translationService.translate("productionCounting.productionBalance.report.columnHeader.usedQuantity", locale),
                 HeaderAlignment.RIGHT);
         alignments.put(translationService.translate(PCPBRCHB_LITERAL, locale), HeaderAlignment.RIGHT);
-        alignments.put(translationService.translate("basic.product.unit.label", locale), HeaderAlignment.LEFT);
+        alignments.put(translationService.translate(L_BASIC_PRODUCT_UNIT, locale), HeaderAlignment.LEFT);
 
         List<Entity> inputProductsList = productionBalance
                 .getHasManyField(ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_IN_COMPONENTS);
@@ -355,13 +359,12 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         outputProductsTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.number", locale));
         outputProductsTableHeader.add(translationService.translate(
-                "productionCounting.productionBalance.report.columnHeader.productionName", locale));
-        outputProductsTableHeader.add(translationService.translate(
-                "productionCounting.productionBalance.report.columnHeader.plannedQuantity", locale));
+                L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_PRODUCTION_NAME, locale));
+        outputProductsTableHeader.add(translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_PLANNED_QUANTITY, locale));
         outputProductsTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.producedQuantity", locale));
         outputProductsTableHeader.add(translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_BALANCE, locale));
-        outputProductsTableHeader.add(translationService.translate("basic.product.unit.label", locale));
+        outputProductsTableHeader.add(translationService.translate(L_BASIC_PRODUCT_UNIT, locale));
 
         Map<String, HeaderAlignment> alignments = Maps.newHashMap();
         alignments.put(translationService.translate("productionCounting.productionBalance.report.columnHeader.number", locale),
@@ -372,7 +375,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 HeaderAlignment.LEFT);
 
         alignments.put(
-                translationService.translate("productionCounting.productionBalance.report.columnHeader.plannedQuantity", locale),
+                translationService.translate(L_PRODUCTION_BALANCE_REPORT_COLUMN_HEADER_PLANNED_QUANTITY, locale),
                 HeaderAlignment.RIGHT);
 
         alignments
@@ -381,7 +384,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
         alignments.put(translationService.translate(PCPBRCHB_LITERAL, locale), HeaderAlignment.RIGHT);
 
-        alignments.put(translationService.translate("basic.product.unit.label", locale), HeaderAlignment.LEFT);
+        alignments.put(translationService.translate(L_BASIC_PRODUCT_UNIT, locale), HeaderAlignment.LEFT);
 
         List<Entity> outputProductsList = productionBalance
                 .getHasManyField(ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS);
@@ -433,7 +436,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(
                 translationService.translate("productionCounting.productionBalance.report.paragraph3", locale), FontUtils
-                        .getDejavuBold11Dark()));
+                .getDejavuBold11Dark()));
 
         List<String> operationsTimeTableHeader = Lists.newArrayList();
 
@@ -456,7 +459,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             for (Entity operationTimeComponent : operationTimeComponents) {
                 machineTimeTable.addCell(new Phrase(operationTimeComponent.getBelongsToField(
                         OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
-                        TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
+                                TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
                 machineTimeTable.addCell(new Phrase(operationTimeComponent
                         .getBelongsToField(OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT)
                         .getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER),
@@ -488,7 +491,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(
                 translationService.translate("productionCounting.productionBalance.report.paragraph4", locale), FontUtils
-                        .getDejavuBold11Dark()));
+                .getDejavuBold11Dark()));
 
         List<String> operationsTimeTableHeader = Lists.newArrayList();
 
@@ -511,7 +514,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             for (Entity operationTimeComponent : operationTimeComponents) {
                 laborTimeTable.addCell(new Phrase(operationTimeComponent.getBelongsToField(
                         OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
-                        TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
+                                TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
                 laborTimeTable.addCell(new Phrase(operationTimeComponent
                         .getBelongsToField(OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT)
                         .getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER),
@@ -543,7 +546,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(
                 translationService.translate("productionCounting.productionBalance.report.paragraph5", locale), FontUtils
-                        .getDejavuBold11Dark()));
+                .getDejavuBold11Dark()));
 
         List<String> operationsTimeTableHeader = Lists.newArrayList();
 
@@ -576,7 +579,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
                 pieceworkTable.addCell(new Phrase(operationPieceworkComponent.getBelongsToField(
                         OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getStringField(
-                        TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
+                                TechnologyOperationComponentFields.NODE_NUMBER), FontUtils.getDejavuRegular9Dark()));
                 pieceworkTable.addCell(new Phrase(operationPieceworkComponent
                         .getBelongsToField(OperationTimeComponentFields.TECHNOLOGY_OPERATION_COMPONENT)
                         .getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER),
@@ -614,14 +617,14 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 translationService.translate(
                         "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.plannedMachineTime",
                         locale)
-                        + ":", timeConverterService.convertTimeToString(productionBalance
+                + ":", timeConverterService.convertTimeToString(productionBalance
                         .getIntegerField(ProductionBalanceFields.PLANNED_MACHINE_TIME)), null, FontUtils.getDejavuRegular9Dark(),
                 FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
                         "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.machineTime", locale)
-                        + ":", timeConverterService.convertTimeToString(productionBalance
+                + ":", timeConverterService.convertTimeToString(productionBalance
                         .getIntegerField(ProductionBalanceFields.MACHINE_TIME)), null, FontUtils.getDejavuRegular9Dark(),
                 FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
@@ -629,7 +632,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 translationService.translate(
                         "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.machineTimeBalance",
                         locale)
-                        + ":", timeConverterService.convertTimeToString(productionBalance
+                + ":", timeConverterService.convertTimeToString(productionBalance
                         .getIntegerField(ProductionBalanceFields.MACHINE_TIME_BALANCE)), null, FontUtils.getDejavuRegular9Dark(),
                 FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
@@ -637,14 +640,14 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 translationService.translate(
                         "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.plannedLaborTime",
                         locale)
-                        + ":", timeConverterService.convertTimeToString(productionBalance
+                + ":", timeConverterService.convertTimeToString(productionBalance
                         .getIntegerField(ProductionBalanceFields.PLANNED_LABOR_TIME)), null, FontUtils.getDejavuRegular9Dark(),
                 FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
                         "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.laborTime", locale)
-                        + ":", timeConverterService.convertTimeToString(productionBalance
+                + ":", timeConverterService.convertTimeToString(productionBalance
                         .getIntegerField(ProductionBalanceFields.LABOR_TIME)), null, FontUtils.getDejavuRegular9Dark(),
                 FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
@@ -652,7 +655,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 translationService.translate(
                         "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.laborTimeBalance",
                         locale)
-                        + ":", timeConverterService.convertTimeToString(productionBalance
+                + ":", timeConverterService.convertTimeToString(productionBalance
                         .getIntegerField(ProductionBalanceFields.LABOR_TIME_BALANCE)), null, FontUtils.getDejavuRegular9Dark(),
                 FontUtils.getDejavuRegular9Dark(), null);
 

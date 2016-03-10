@@ -122,36 +122,12 @@ public class AssignmentToShiftHooks {
         int daysInYear = cal.getActualMaximum(Calendar.DAY_OF_YEAR);
         Iterable<Integer> daysRange = ContiguousSet.create(Range.closed(1, daysInYear), DiscreteDomain.integers());
 
-        return FluentIterable.from(daysRange).transform(new Function<Integer, LocalDate>() {
-
-            @Override
-            public LocalDate apply(final Integer numOfDay) {
-                return startDate.plusDays(numOfDay);
-            }
-        }).firstMatch(new Predicate<LocalDate>() {
-
-            @Override
-            public boolean apply(final LocalDate localDate) {
-                return !occupiedDates.contains(localDate) && shift.worksAt(localDate);
-            }
-        });
+        return FluentIterable.from(daysRange).transform(startDate::plusDays).firstMatch((final LocalDate localDate) -> !occupiedDates.contains(localDate) && shift.worksAt(localDate));
     }
 
-    private static final Function<Date, LocalDate> TO_LOCAL_DATE = new Function<Date, LocalDate>() {
+    private static final Function<Date, LocalDate> TO_LOCAL_DATE = LocalDate::fromDateFields;
 
-        @Override
-        public LocalDate apply(final Date input) {
-            return LocalDate.fromDateFields(input);
-        }
-    };
-
-    private static final Function<LocalDate, Date> TO_DATE = new Function<LocalDate, Date>() {
-
-        @Override
-        public Date apply(final LocalDate input) {
-            return input.toDate();
-        }
-    };
+    private static final Function<LocalDate, Date> TO_DATE = LocalDate::toDate;
 
     private Set<LocalDate> findNextStartDatesMatching(final DataDefinition assignmentToShiftDD, final LocalDate laterThan,
             final Shift shift, final Entity factory) {
