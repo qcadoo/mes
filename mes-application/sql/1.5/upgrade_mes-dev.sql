@@ -352,3 +352,28 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductgroupeddto
 		productiontrackingforproductdto.plannedquantity;
 
 -- end
+
+-- alerts
+-- by kasi
+CREATE TABLE qcadooview_alert
+(
+  id bigint NOT NULL,
+  message text,
+  type character varying(255) DEFAULT 'information'::character varying,
+  expirationdate timestamp without time zone,
+  sound boolean DEFAULT false,
+  CONSTRAINT qcadooview_alert_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE qcadooview_viewedalert
+(
+  id bigint NOT NULL,
+  user_id bigint,
+  alert_id bigint,
+  CONSTRAINT qcadooview_viewedalert_pkey PRIMARY KEY (id),
+  CONSTRAINT viewedalert_alert_fkey FOREIGN KEY (alert_id)
+      REFERENCES qcadooview_alert (id) DEFERRABLE,
+  CONSTRAINT alert_user_fkey FOREIGN KEY (user_id)
+      REFERENCES qcadoosecurity_user (id) DEFERRABLE
+);
+--
