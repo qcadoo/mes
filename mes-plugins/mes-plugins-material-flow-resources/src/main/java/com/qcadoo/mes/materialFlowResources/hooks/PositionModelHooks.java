@@ -38,7 +38,7 @@ import com.qcadoo.model.api.Entity;
 public class PositionModelHooks {
 
     @Autowired
-    MaterialFlowResourcesService materialFlowResourceService;
+    private MaterialFlowResourcesService materialFlowResourceService;
 
     public void onSave(final DataDefinition positionDD, final Entity position) {
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);

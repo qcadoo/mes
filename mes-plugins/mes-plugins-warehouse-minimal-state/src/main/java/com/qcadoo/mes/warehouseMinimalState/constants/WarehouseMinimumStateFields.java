@@ -24,7 +24,7 @@
 package com.qcadoo.mes.warehouseMinimalState.constants;
 
 
-public class WarehouseMinimumStateFields {
+public final class WarehouseMinimumStateFields {
 
     private WarehouseMinimumStateFields() {
     }

@@ -30,6 +30,8 @@ public final class DocumentFields {
     }
 
     public static final String NUMBER = "number";
+    
+    public static final String NAME = "name";
 
     public static final String TIME = "time";
 

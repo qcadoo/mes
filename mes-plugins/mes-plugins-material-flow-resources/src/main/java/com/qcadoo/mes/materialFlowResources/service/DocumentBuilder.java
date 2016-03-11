@@ -235,25 +235,30 @@ public class DocumentBuilder {
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
         document.setField(DocumentFields.POSITIONS, positions);
-        Entity savedDocument = documentDD.save(document);
-        if (savedDocument.isValid() && DocumentState.of(document) == DocumentState.ACCEPTED) {
-            createResources(savedDocument);
-            if (!savedDocument.isValid()) {
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            }
+        
+        if (document.isValid() && DocumentState.of(document) == DocumentState.ACCEPTED) {
+            createResources();
         }
-
+        Entity savedDocument = documentDD.save(document);
+            
+        if (!savedDocument.isValid()) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+            
         return savedDocument;
     }
 
-    private void createResources(Entity savedDocument) {
-        DocumentType documentType = DocumentType.of(savedDocument);
+    private void createResources() {
+        DocumentType documentType = DocumentType.of(document);
         if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
-            resourceManagementService.createResourcesForReceiptDocuments(savedDocument);
+            resourceManagementService.createResourcesForReceiptDocuments(document);
+            
         } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {
-            resourceManagementService.updateResourcesForReleaseDocuments(savedDocument);
+            resourceManagementService.updateResourcesForReleaseDocuments(document);
+            
         } else if (DocumentType.TRANSFER.equals(documentType)) {
-            resourceManagementService.moveResourcesForTransferDocument(savedDocument);
+            resourceManagementService.moveResourcesForTransferDocument(document);
+            
         } else {
             throw new IllegalStateException("Unsupported document type");
         }
@@ -266,8 +271,6 @@ public class DocumentBuilder {
         document.setField(DocumentFields.TIME, new Date());
         document.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
         document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-        document.setField(DocumentFields.NUMBER, numberGeneratorService.generateNumber(
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT));
         document.setField(DocumentFields.POSITIONS, Lists.newArrayList());
         return document;
     }

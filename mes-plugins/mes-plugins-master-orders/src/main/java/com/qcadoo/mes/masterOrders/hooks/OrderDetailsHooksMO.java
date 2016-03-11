@@ -133,9 +133,7 @@ public class OrderDetailsHooksMO {
 
             Entity masterOrderTechnology = masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
 
-            String number = (String) numberField.getFieldValue();
-
-            String generatedNumber = "";
+            String generatedNumber;
 
             if (parameter.getBooleanField(ParameterFieldsMO.SAME_ORDER_NUMBER)) {
                 generatedNumber = masterOrderNumber;
@@ -144,9 +142,7 @@ public class OrderDetailsHooksMO {
                         OrdersConstants.MODEL_ORDER, 3, masterOrderNumber + "-");
             }
 
-            // if (StringUtils.isEmpty(number) || generatedNumber.equals(number)) {
             numberField.setFieldValue(generatedNumber);
-            // }
 
             if ((companyLookup.getEntity() == null) && (masterOrderCompany != null)) {
                 companyLookup.setFieldValue(masterOrderCompany.getId());

@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.productionLines.constants;
 
-public class FactoryStructureElementFields {
+public final class FactoryStructureElementFields {
 
     public static final String ENTITY_TYPE = "entityType";
 

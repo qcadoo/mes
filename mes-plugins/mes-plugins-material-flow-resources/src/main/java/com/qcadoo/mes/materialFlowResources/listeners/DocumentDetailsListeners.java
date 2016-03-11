@@ -27,6 +27,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +52,7 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -92,6 +94,26 @@ public class DocumentDetailsListeners {
 
         view.redirectTo("/materialFlowResources/document." + args[0] + "?id=" + document.getId(), true, false);
 
+    }
+
+    public void onSave(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity document = form.getEntity();
+
+        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+        String documentName = document.getStringField(DocumentFields.NAME);
+        if (StringUtils.isNotEmpty(documentName)) {
+
+            SearchCriteriaBuilder scb = documentDD.find().add(SearchRestrictions.eq(DocumentFields.NAME, documentName));
+            if (document.getId() != null) {
+                scb.add(SearchRestrictions.ne("id", document.getId()));
+            }
+            boolean duplicateName = scb.list().getTotalNumberOfEntities() > 0;
+            if (duplicateName) {
+                view.addMessage("materialFlow.info.document.name.duplicate", MessageType.INFO, documentName);
+            }
+        }
     }
 
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
@@ -187,8 +209,8 @@ public class DocumentDetailsListeners {
 
     private void createNewAttributes(final ViewDefinitionState view) {
         AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
-        Entity warehouse = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity().getBelongsToField(
-                DocumentFields.LOCATION_TO);
+        Entity warehouse = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity()
+                .getBelongsToField(DocumentFields.LOCATION_TO);
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             Entity position = positionForm.getEntity();
             if (position.getId() != null) {
@@ -256,8 +278,8 @@ public class DocumentDetailsListeners {
             String algorithm = warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM);
             boolean result = true;
             for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && position
-                        .getField(PositionFields.RESOURCE) != null)
+                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue())
+                        && position.getField(PositionFields.RESOURCE) != null)
                         || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
                 if (!resultForPosition) {
                     result = false;
@@ -284,8 +306,8 @@ public class DocumentDetailsListeners {
                 return;
             }
 
-            Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse(
-                    (String) givenQuantityField.getFieldValue(), view.getLocale());
+            Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
+                    .tryParse((String) givenQuantityField.getFieldValue(), view.getLocale());
             if (maybeQuantity.isRight()) {
                 if (maybeQuantity.getRight().isPresent()) {
                     BigDecimal givenQuantity = maybeQuantity.getRight().get();
@@ -294,8 +316,8 @@ public class DocumentDetailsListeners {
                         position.setField(PositionFields.QUANTITY, givenQuantity);
                     } else {
                         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
-                                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                        UnitConversionItemFieldsB.PRODUCT, product)));
+                                searchCriteriaBuilder -> searchCriteriaBuilder
+                                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
                         if (unitConversions.isDefinedFor(baseUnit)) {
                             BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
                             position.setField(PositionFields.QUANTITY, convertedQuantity);

@@ -23,11 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.constants;
 
-public class ResourceCorrectionFields {
-
-    private ResourceCorrectionFields() {
-
-    }
+public final class ResourceCorrectionFields {
 
     public static final String NUMBER = "number";
 
@@ -48,5 +44,8 @@ public class ResourceCorrectionFields {
     public static final String TIME = "time";
 
     public static final String RESOURCE = "resource";
+
+    private ResourceCorrectionFields() {
+    }
 
 }

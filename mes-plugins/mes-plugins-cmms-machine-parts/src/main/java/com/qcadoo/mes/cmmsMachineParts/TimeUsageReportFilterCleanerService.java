@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.tenant.api.MultiTenantCallback;
 import com.qcadoo.tenant.api.MultiTenantService;
@@ -25,9 +24,6 @@ public class TimeUsageReportFilterCleanerService {
 
     @Autowired
     private MultiTenantService multiTenantService;
-
-    @Autowired
-    DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;

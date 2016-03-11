@@ -40,10 +40,10 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 public class ResourceCorrectionServiceImpl implements ResourceCorrectionService {
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    NumberGeneratorService numberGeneratorService;
+    private NumberGeneratorService numberGeneratorService;
 
     @Override
     public boolean createCorrectionForResource(final Long resourceId, final BigDecimal newQuantity, Entity newStorageLocation) {

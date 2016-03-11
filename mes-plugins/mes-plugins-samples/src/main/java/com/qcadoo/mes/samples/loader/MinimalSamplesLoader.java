@@ -37,6 +37,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_TO;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT_FROM;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT_TO;
 
+import java.util.Date;
 import java.util.Map;
 
 import org.jdom.Element;
@@ -45,6 +46,8 @@ import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.WorkstationAttachmentFields;
+import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -198,6 +201,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
                 workstationTypeComponent.setField("quantity", 1);
                 workstationTypeComponent.setField("productionLine", productionLine);
                 workstationTypeComponent.setField("workstationType", machine);
+                workstationTypeComponent.setField("dateFrom", new Date(0));
                 workstationTypeComponent.getDataDefinition().save(workstationTypeComponent);
             }
         }

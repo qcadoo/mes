@@ -35,15 +35,9 @@ import com.google.common.base.Preconditions;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
 
-public class OrderDates {
+public final class OrderDates {
 
-    private static final Function<Date, DateTime> TO_DATE_TIME = new Function<Date, DateTime>() {
-
-        @Override
-        public DateTime apply(final Date date) {
-            return new DateTime(date);
-        }
-    };
+    private static final Function<Date, DateTime> TO_DATE_TIME = (final Date date) -> new DateTime(date);
 
     private final ThreeLevelDate start;
 

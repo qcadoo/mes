@@ -24,7 +24,7 @@
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
 
-public class SourceCostFields {
+public final class SourceCostFields {
 
     private SourceCostFields() {
     }

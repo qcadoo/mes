@@ -23,10 +23,7 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
-public class MaintenanceEventContextFields {
-
-    private MaintenanceEventContextFields() {
-    }
+public final class MaintenanceEventContextFields {
 
     public static final String FACTORY = "factory";
 
@@ -37,4 +34,7 @@ public class MaintenanceEventContextFields {
     public static final String GENERATED = "generated";
 
     public static final String CONFIRMED = "confirmed";
+
+    private MaintenanceEventContextFields() {
+    }
 }

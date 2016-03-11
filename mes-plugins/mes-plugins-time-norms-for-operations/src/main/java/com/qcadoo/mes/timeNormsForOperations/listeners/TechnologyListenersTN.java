@@ -67,7 +67,7 @@ public class TechnologyListenersTN {
             StringBuilder builder = new StringBuilder();
 
             for (String message : messages) {
-                builder.append(message.toString());
+                builder.append(message);
                 builder.append(", ");
             }
 

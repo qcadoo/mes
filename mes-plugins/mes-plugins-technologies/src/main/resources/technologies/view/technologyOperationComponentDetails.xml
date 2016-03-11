@@ -142,9 +142,6 @@
                         <listener event="onSelectedEntityChange"
                                   class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners"
                                   method="setWorkstationsLookup"/>
-                        <!--<criteriaModifier-->
-                        <!--class="com.qcadoo.mes.technologies.criteriaModifiers.TOCDetailsCriteriaModifiers"-->
-                        <!--method="showProductionLinesForDivision"/>-->
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="6" width="3" height="5">

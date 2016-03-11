@@ -1,7 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
 
-public class TimeUsageReportFilterFields {
+public final class TimeUsageReportFilterFields {
 
     private TimeUsageReportFilterFields() {
 

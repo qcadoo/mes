@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
+import com.google.common.base.Strings;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 
@@ -35,6 +36,13 @@ import com.qcadoo.model.api.Entity;
 
 @Service
 public class DocumentValidators {
+
+    public boolean validate(final DataDefinition dataDefinition, final Entity entity) {
+        validateDocumentName(dataDefinition, entity);
+        hasWarehouses(dataDefinition, entity);
+
+        return entity.isValid();
+    }
 
     public boolean hasWarehouses(final DataDefinition dataDefinition, final Entity entity) {
 
@@ -63,5 +71,18 @@ public class DocumentValidators {
             return false;
         }
         return true;
+    }
+
+    private void validateDocumentName(final DataDefinition documentDD, final Entity document) {
+        if (document.getId() == null) {
+            return;
+        }
+
+        String documentName = document.getStringField(DocumentFields.NAME);
+
+        if (Strings.isNullOrEmpty(documentName)) {
+            document.addError(documentDD.getField(DocumentFields.NAME),
+                    "materialFlow.error.document.name.required");
+        }
     }
 }

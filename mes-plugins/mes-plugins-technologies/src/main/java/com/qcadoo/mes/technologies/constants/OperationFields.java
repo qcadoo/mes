@@ -35,8 +35,6 @@ public final class OperationFields {
 
     public static final String COMMENT = "comment";
 
-    // public static final String WORKSTATION_TYPE = "workstationType";
-
     public static final String OPERATION_COMPONENTS = "operationComponents";
 
     public static final String ATTACHMENT = "attachment";

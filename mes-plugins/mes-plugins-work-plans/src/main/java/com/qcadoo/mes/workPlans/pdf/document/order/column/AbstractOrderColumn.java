@@ -29,7 +29,7 @@ import java.util.Locale;
 
 public abstract class AbstractOrderColumn implements OrderColumn {
 
-    TranslationService translationService;
+    private final TranslationService translationService;
 
     public AbstractOrderColumn(TranslationService translationService) {
         this.translationService = translationService;

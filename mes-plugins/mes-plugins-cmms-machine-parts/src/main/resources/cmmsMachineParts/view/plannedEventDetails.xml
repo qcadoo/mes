@@ -375,6 +375,9 @@
                             <listener event="onSelectedEntityChange"
                                       method="productionLineChanged"
                                       class="com.qcadoo.mes.cmmsMachineParts.listeners.EventListeners"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
+                                    method="selectProductionLine"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="6">
@@ -462,20 +465,20 @@
 
                                 <layoutElement row="4" column="1">
                                     <component type="gridLayout" name="gridLayoutCounterTolerance"
-									hasBorders="false" columns="4" rows="1">
-										<layoutElement column="1" row="1" width="3">
-		                                    <component type="input" name="counterTolerance" reference="counterTolerance"
-		                                               field="counterTolerance">
-												<option type="labelWidth" value="40" />
+                                               hasBorders="false" columns="4" rows="1">
+                                        <layoutElement column="1" row="1" width="3">
+                                            <component type="input" name="counterTolerance" reference="counterTolerance"
+                                                       field="counterTolerance">
+                                                <option type="labelWidth" value="40"/>
                                             </component>
-										</layoutElement>
+                                        </layoutElement>
                                         <layoutElement column="4" row="1">
-											<component type="input" name="toleranceUnit"
-												 reference="toleranceUnit" required="false" hasLabel="false">
-                                            	<option type="textRepresentationOnDisabled" value="true"/>
-											</component>
-										</layoutElement>
-									</component>
+                                            <component type="input" name="toleranceUnit"
+                                                       reference="toleranceUnit" required="false" hasLabel="false">
+                                                <option type="textRepresentationOnDisabled" value="true"/>
+                                            </component>
+                                        </layoutElement>
+                                    </component>
                                 </layoutElement>
 
                                 <layoutElement row="5" column="1">
@@ -739,8 +742,10 @@
                 <option type="column" name="duration" fields="duration"
                         expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
                 <option type="column" name="confirmed" fields="confirmed"/>
-                <option type="searchable" value="workerName,workerSurname,action,startDate,finishDate,duration,confirmed"/>
-                <option type="orderable" value="workerName,workerSurname,action,startDate,finishDate,duration,confirmed"/>
+                <option type="searchable"
+                        value="workerName,workerSurname,action,startDate,finishDate,duration,confirmed"/>
+                <option type="orderable"
+                        value="workerName,workerSurname,action,startDate,finishDate,duration,confirmed"/>
 
                 <option type="order" column="startDate" direction="asc"/>
 
