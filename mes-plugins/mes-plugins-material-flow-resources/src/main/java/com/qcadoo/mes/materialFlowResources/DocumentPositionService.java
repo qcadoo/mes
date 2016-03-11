@@ -1,20 +1,5 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.GridResponse;
@@ -25,6 +10,16 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class DocumentPositionService {
@@ -316,7 +311,6 @@ public class DocumentPositionService {
 
     public ResourceDTO getResource(Long document, String product, BigDecimal conversion, String additionalCode) {
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
-        String query = positionResourcesHelper.getResourceQuery(document, false, useAdditionalCode);
         Map<String, Object> filter = new HashMap<>();
         filter.put("product", product);
         filter.put("conversion", conversion);
@@ -324,9 +318,13 @@ public class DocumentPositionService {
         if (useAdditionalCode) {
             filter.put("additionalCode", additionalCode);
         }
+        String query = positionResourcesHelper.getResourceQuery(document, false,
+                addMethodOfDisposalCondition(document, filter, false, useAdditionalCode, additionalCode), useAdditionalCode);
+
         List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
         if (batches.isEmpty() && useAdditionalCode) {
-            query = positionResourcesHelper.getResourceQuery(document, false, false);
+            query = positionResourcesHelper.getResourceQuery(document, false,
+                    addMethodOfDisposalCondition(document, filter, false, false, additionalCode), false);
             batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
         }
         if (batches.isEmpty()) {
@@ -350,7 +348,10 @@ public class DocumentPositionService {
             if (useAdditionalCode) {
                 paramMap.put("additionalCode", additionalCode);
             }
-            String query = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode);
+            String query = positionResourcesHelper
+                    .getResourceQuery(document, true,
+                            addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode, additionalCode),
+                            useAdditionalCode);
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
 
         }
@@ -364,11 +365,10 @@ public class DocumentPositionService {
         String query = '%' + q + '%';
         List<AbstractDTO> entities = getResources(document, query, product, conversion, useAdditionalCode, additionalCode);
 
-        if(entities.isEmpty() && useAdditionalCode){
+        if (entities.isEmpty() && useAdditionalCode) {
             useAdditionalCode = false;
             entities = getResources(document, query, product, conversion, false, additionalCode);
         }
-        String preparedQuery = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode);
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("product", product);
@@ -378,6 +378,8 @@ public class DocumentPositionService {
             paramMap.put("additionalCode", additionalCode);
         }
 
+        String preparedQuery = positionResourcesHelper.getResourceQuery(document, true,
+                addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode, additionalCode), useAdditionalCode);
 
         return dataProvider.getDataResponse(query, preparedQuery, entities, paramMap);
     }
@@ -398,4 +400,15 @@ public class DocumentPositionService {
         }
     }
 
+    private boolean addMethodOfDisposalCondition(Long document, Map<String, Object> paramMap, boolean useQuery,
+            boolean useAdditionalCode, String additionalCode) {
+        boolean addMethodOfDisposalCondition = false;
+
+        String query = positionResourcesHelper.getMethodOfDisposalQuery(document, useQuery, useAdditionalCode);
+        Date date = jdbcTemplate.queryForObject(query,paramMap,Date.class);
+        if(date != null){
+            addMethodOfDisposalCondition = true;
+        }
+        return addMethodOfDisposalCondition;
+    }
 }

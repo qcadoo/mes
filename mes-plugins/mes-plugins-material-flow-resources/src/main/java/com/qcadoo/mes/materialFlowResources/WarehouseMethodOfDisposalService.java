@@ -32,4 +32,22 @@ public class WarehouseMethodOfDisposalService {
         }
         return " expirationdate = (select min(expirationdate) from materialflowresources_resource ";
     }
+
+    public String getSqlConditionForResource(final Long documentId){
+        Entity document = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT).get(documentId);
+        String alg = document.getBelongsToField(DocumentFields.LOCATION_FROM).getStringField(LocationFieldsMFR.ALGORITHM);
+        WarehouseAlgorithm algorithm = WarehouseAlgorithm.parseString(alg);
+        switch(algorithm) {
+            case FEFO:
+                return " select min(expirationdate) from materialflowresources_resource ";
+            case FIFO:
+                return " select min(time) from materialflowresources_resource ";
+            case LEFO:
+                return " select max(expirationdate) from materialflowresources_resource ";
+            case LIFO:
+                return " select max(time) from materialflowresources_resource ";
+        }
+        return " select min(expirationdate) from materialflowresources_resource ";
+    }
 }
