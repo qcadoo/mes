@@ -76,7 +76,7 @@ function parseAndValidateInputNumber($element) {
         return counterOfEmptyElements;
     }
     var element = $element[0];
-    var rawValue = element.value.replace(/^0+(?!\.|$)/, '');
+    var rawValue = element.value.replace(/^0+(?!\.|,|$)/, '');
 
     try {
         if (!rawValue) {
