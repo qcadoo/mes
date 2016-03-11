@@ -194,7 +194,7 @@ public class DocumentPositionService {
 
     public Long findDocumentByPosition(final Long positionId) {
         String query = "SELECT p.document_id FROM materialflowresources_position p WHERE id = :id ";
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", positionId);
         Long documentId = jdbcTemplate.queryForObject(query, parameters, Long.class);
         return documentId;

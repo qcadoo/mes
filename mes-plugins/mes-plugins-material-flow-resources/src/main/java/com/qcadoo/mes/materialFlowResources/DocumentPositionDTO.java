@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.qcadoo.mes.basic.SearchAttribute;
 
 public class DocumentPositionDTO {
 
@@ -22,11 +23,13 @@ public class DocumentPositionDTO {
     @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal quantity;
 
+    @SearchAttribute(searchType = SearchAttribute.SEARCH_TYPE.EXACT_MATCH)
     private String unit;
 
     @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal givenquantity;
 
+    @SearchAttribute(searchType = SearchAttribute.SEARCH_TYPE.EXACT_MATCH)
     private String givenunit;
 
     @JsonDeserialize(using = BigDecimalDeserializer.class)
@@ -42,6 +45,7 @@ public class DocumentPositionDTO {
 
     private String palletNumber;
 
+    @SearchAttribute(searchType = SearchAttribute.SEARCH_TYPE.EXACT_MATCH)
     private String typeOfPallet;
 
     private String storageLocation;

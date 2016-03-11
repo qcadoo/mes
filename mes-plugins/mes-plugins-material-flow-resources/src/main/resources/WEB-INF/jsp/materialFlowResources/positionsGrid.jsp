@@ -64,7 +64,8 @@ String ctx = request.getContextPath();
             QCD.currentLang = '<c:out value="${locale}" />';
 
             QCD.translate = function (key) {
-                return QCD.translations[key] || '[' + key + ']';
+                var msg = QCD.translations[key];
+                return msg === undefined ? '[' + key + ']' : msg;
             };
 
             QCD.translations = {};

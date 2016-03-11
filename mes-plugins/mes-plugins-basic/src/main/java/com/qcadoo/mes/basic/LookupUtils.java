@@ -60,7 +60,14 @@ public class LookupUtils {
                             items.add(String.format("%s = :%s", field.getName(), field.getName()));
 
                         } else if (value instanceof String) {
-                            items.add(String.format("lower(%s) like lower(:%s)", field.getName(), field.getName()));
+                            SearchAttribute.SEARCH_TYPE searchType = field.isAnnotationPresent(SearchAttribute.class) ? field.getAnnotation(SearchAttribute.class).searchType() : SearchAttribute.SEARCH_TYPE.LIKE;
+
+                            if (searchType == SearchAttribute.SEARCH_TYPE.EXACT_MATCH) {
+                                items.add(String.format("lower(%s) = lower(:%s)", field.getName(), field.getName()));
+
+                            } else {
+                                items.add(String.format("lower(%s) like lower(:%s)", field.getName(), field.getName()));
+                            }
                         }
                     }
 
@@ -89,7 +96,14 @@ public class LookupUtils {
                     Object value = field.get(object);
                     if (value != null) {
                         if (value instanceof String) {
-                            parameters.put(field.getName(), "%" + value + "%");
+                            SearchAttribute.SEARCH_TYPE searchType = field.isAnnotationPresent(SearchAttribute.class) ? field.getAnnotation(SearchAttribute.class).searchType() : SearchAttribute.SEARCH_TYPE.LIKE;
+
+                            if (searchType == SearchAttribute.SEARCH_TYPE.EXACT_MATCH) {
+                                parameters.put(field.getName(), value);
+
+                            } else {
+                                parameters.put(field.getName(), "%" + value + "%");
+                            }
 
                         } else {
                             parameters.put(field.getName(), value);
