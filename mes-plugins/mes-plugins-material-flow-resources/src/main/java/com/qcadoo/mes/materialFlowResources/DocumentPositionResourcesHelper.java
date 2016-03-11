@@ -39,7 +39,7 @@ public class DocumentPositionResourcesHelper {
             queryBuilder.append(" AND number ilike :query ");
         }
         if (useAdditionalCode) {
-            queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :additionalCode) ");
+            queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
         }
     }
 }

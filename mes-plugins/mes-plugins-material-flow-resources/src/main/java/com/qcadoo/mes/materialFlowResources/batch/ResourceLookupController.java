@@ -3,6 +3,7 @@ package com.qcadoo.mes.materialFlowResources.batch;
 import com.qcadoo.mes.basic.BasicLookupController;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.LookupUtils;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
 import com.qcadoo.mes.materialFlowResources.ResourceDTO;
 import com.qcadoo.mes.materialFlowResources.WarehouseMethodOfDisposalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "resource")
 public class ResourceLookupController extends BasicLookupController<ResourceDTO> {
+
+    @Autowired
+    private DocumentPositionService documentPositionService;
 
     @Autowired
     private WarehouseMethodOfDisposalService warehouseMethodOfDisposalService;
@@ -44,20 +48,22 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
             Long context) {
         String additionalCode = record.getAc();
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
-        String query = getQuery(context, useAdditionalCode, additionalCode);
+        Map<String, Object> parameters = geParameters(context, record, useAdditionalCode, additionalCode);
 
-        GridResponse<ResourceDTO> response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record,
-                geParameters(context, record, useAdditionalCode, additionalCode));
+        String query = getQuery(context, useAdditionalCode,
+                documentPositionService.addMethodOfDisposalCondition(context, parameters, false, useAdditionalCode));
+        GridResponse<ResourceDTO> response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
 
         if (response.getRows().isEmpty() && useAdditionalCode) {
-            query = getQuery(context, false, additionalCode);
-            response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record,
-                    geParameters(context, record, false, additionalCode));
+            parameters = geParameters(context, record, false, additionalCode);
+            query = getQuery(context, false,
+                    documentPositionService.addMethodOfDisposalCondition(context, parameters, false, false));
+            response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
         }
         return response;
     }
 
-    protected String getQuery(final Long context, boolean useAdditionalCode, String additionalCode) {
+    protected String getQuery(final Long context, boolean useAdditionalCode, boolean addMethodOfDisposal) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder
                 .append("select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode ");
@@ -72,17 +78,18 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         if (useAdditionalCode) {
             queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
         }
-        queryBuilder.append(" AND ");
-        queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
-        queryBuilder.append(" WHERE product_id = (SELECT id FROM basic_product WHERE number = :product)");
-        queryBuilder
-                .append(" and location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
-        queryBuilder.append(" AND conversion = :conversion");
-        if (useAdditionalCode) {
-            queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
+        if (addMethodOfDisposal) {
+            queryBuilder.append(" AND ");
+            queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
+            queryBuilder.append(" WHERE product_id = (SELECT id FROM basic_product WHERE number = :product)");
+            queryBuilder
+                    .append(" and location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
+            queryBuilder.append(" AND conversion = :conversion");
+            if (useAdditionalCode) {
+                queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
+            }
+            queryBuilder.append(" )");
         }
-        queryBuilder.append(" )");
-
         queryBuilder.append(") as resources");
         return queryBuilder.toString();
     }

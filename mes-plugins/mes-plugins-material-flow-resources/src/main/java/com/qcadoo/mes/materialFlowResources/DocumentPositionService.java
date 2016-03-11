@@ -316,15 +316,15 @@ public class DocumentPositionService {
         filter.put("conversion", conversion);
         filter.put("context", document);
         if (useAdditionalCode) {
-            filter.put("additionalCode", additionalCode);
+            filter.put("add_code", additionalCode);
         }
         String query = positionResourcesHelper.getResourceQuery(document, false,
-                addMethodOfDisposalCondition(document, filter, false, useAdditionalCode, additionalCode), useAdditionalCode);
+                addMethodOfDisposalCondition(document, filter, false, useAdditionalCode), useAdditionalCode);
 
         List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
         if (batches.isEmpty() && useAdditionalCode) {
             query = positionResourcesHelper.getResourceQuery(document, false,
-                    addMethodOfDisposalCondition(document, filter, false, false, additionalCode), false);
+                    addMethodOfDisposalCondition(document, filter, false, false), false);
             batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
         }
         if (batches.isEmpty()) {
@@ -346,11 +346,11 @@ public class DocumentPositionService {
             paramMap.put("conversion", conversion);
             paramMap.put("context", document);
             if (useAdditionalCode) {
-                paramMap.put("additionalCode", additionalCode);
+                paramMap.put("add_code", additionalCode);
             }
             String query = positionResourcesHelper
                     .getResourceQuery(document, true,
-                            addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode, additionalCode),
+                            addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode),
                             useAdditionalCode);
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
 
@@ -375,11 +375,11 @@ public class DocumentPositionService {
         paramMap.put("conversion", conversion);
         paramMap.put("context", document);
         if (useAdditionalCode) {
-            paramMap.put("additionalCode", additionalCode);
+            paramMap.put("add_code", additionalCode);
         }
 
         String preparedQuery = positionResourcesHelper.getResourceQuery(document, true,
-                addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode, additionalCode), useAdditionalCode);
+                addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode), useAdditionalCode);
 
         return dataProvider.getDataResponse(query, preparedQuery, entities, paramMap);
     }
@@ -400,8 +400,8 @@ public class DocumentPositionService {
         }
     }
 
-    private boolean addMethodOfDisposalCondition(Long document, Map<String, Object> paramMap, boolean useQuery,
-            boolean useAdditionalCode, String additionalCode) {
+    public boolean addMethodOfDisposalCondition(Long document, Map<String, Object> paramMap, boolean useQuery,
+            boolean useAdditionalCode) {
         boolean addMethodOfDisposalCondition = false;
 
         String query = positionResourcesHelper.getMethodOfDisposalQuery(document, useQuery, useAdditionalCode);
