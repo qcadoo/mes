@@ -59,11 +59,6 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     private static final String STATE_FIELD_VALUE = "someState";
 
     @Test
-    public void test1(){        
-        assertEquals(true, false);
-    }
-    
-    @Test
     public final void checkPrecedencePointcutDefinitions() {
         assertEquals("com.qcadoo.mes.states.aop.StateChangePhaseAspect", StateChangePhaseAspect.class.getCanonicalName());
         assertEquals("com.qcadoo.mes.states.aop.RunInPhaseAspect", RunInPhaseAspect.class.getCanonicalName());
