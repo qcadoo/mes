@@ -113,6 +113,13 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
     }
 
     @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(targetState = PlannedEventStateStringValues.IN_EDITING)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onInEditing(final StateChangeContext stateChangeContext, final int phase) {
+        validationService.validationOnInEditing(stateChangeContext);
+    }
+
+    @RunInPhase(PlannedEventStateChangePhase.PRE_VALIDATION)
     @RunForStateTransition(targetState = PlannedEventStateStringValues.CANCELED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onCanceled(final StateChangeContext stateChangeContext, final int phase) {
