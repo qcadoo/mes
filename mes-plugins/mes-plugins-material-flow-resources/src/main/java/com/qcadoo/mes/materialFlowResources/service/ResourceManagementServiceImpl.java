@@ -213,7 +213,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                                     .list().getEntities());
                 }
                 if (resources.isEmpty()) {
-                    resources = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse).list()
+                    resources = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse)
+                            .add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion)).list()
                             .getEntities();
                 }
                 if (result.containsKey(productAndPosition.getKey().getId())) {
