@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import com.google.common.base.Strings;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,9 +48,13 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.roles.EventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
+import static com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks.FORM;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -93,13 +98,15 @@ public class EventHooks {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void maintenanceEventBeforeRender(final ViewDefinitionState view) {
         FieldComponent acceptanceEvents = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.ACCEPTANCE_EVENTS);
         acceptanceEvents.setFieldValue(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.ACCEPTANCE_EVENTS));
         setUpFaultTypeLookup(view);
         setFieldsRequired(view);
         fillDefaultFields(view);
-        generateNumber(view, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT, MaintenanceEventFields.NUMBER);
         fillDefaultFieldsFromContext(view, MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
         toggleEnabledViewComponents(view, MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT);
         disableFieldsForState(view);
@@ -107,6 +114,29 @@ public class EventHooks {
         enableShowPlannedEvent(view);
         hideAccordingToRole(view);
         setEventCriteriaModifiers(view);
+        lockNumberField(view);
+        fetchNumberFromDatabase(view);
+    }
+
+    private void lockNumberField(final ViewDefinitionState view) {
+        FieldComponent numberFieldComponent = (FieldComponent) view.getComponentByReference(MaintenanceEventFields.NUMBER);
+        numberFieldComponent.setEnabled(false);
+    }
+
+    private void fetchNumberFromDatabase(final ViewDefinitionState view) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
+        if (formComponent.getEntityId() != null) {
+            ComponentState numberField = view.getComponentByReference(MaintenanceEventFields.NUMBER);
+
+            String numberFieldValue = (String) numberField.getFieldValue();
+
+            if (Strings.isNullOrEmpty(numberFieldValue)) {
+                DataDefinition maintenanceEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
+                Entity maintenanceEvent = maintenanceEventDD.get(formComponent.getEntityId());
+
+                numberField.setFieldValue(maintenanceEvent.getField(MaintenanceEventFields.NUMBER));
+            }
+        }
     }
 
     public void plannedEventBeforeRender(final ViewDefinitionState view) {
