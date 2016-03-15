@@ -139,7 +139,7 @@
 
         <windowTab name="productsTab">
             <component type="gridLayout" name="gridLayout" reference="productsTabGridLayout"
-                       columns="3" rows="7">
+                       columns="3" rows="9">
                 <layoutElement column="1" row="1">
                     <component type="select" name="masterOrderType"
                                reference="masterOrderType" field="#{form}.masterOrderType">
@@ -246,7 +246,7 @@
                         <option type="label" value="productQuantityLabel"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="2" row="1" width="2" height="5">
+                <layoutElement column="2" row="1" width="2" height="9">
                     <component type="grid" name="masterOrderProducts" reference="masterOrderProducts"
                                source="#{form}.masterOrderProducts">
                         <option type="column" name="productNumber" fields="product"
