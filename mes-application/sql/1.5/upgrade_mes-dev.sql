@@ -20,7 +20,7 @@ BEGIN
 
 	select nextval('cmmsmachineparts_maintenanceevent_number_seq') into _sequence_value;
 
-	_seq := to_char(_sequence_value, 'fm00000');
+	_seq := to_char(_sequence_value, 'fm000000');
 	if _seq like '%#%' then
 		_seq := _sequence_value;
 	end if;
