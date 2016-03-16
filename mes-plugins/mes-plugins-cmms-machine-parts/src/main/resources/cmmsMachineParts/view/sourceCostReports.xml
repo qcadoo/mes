@@ -25,7 +25,7 @@
 -->
 <view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="costSourcesReports" modelName="timeUsageReportFilter" modelPlugin="cmmsMachineParts">
+      name="sourceCostReports" modelName="timeUsageReportFilter" modelPlugin="cmmsMachineParts">
 
     <component type="window" name="window" reference="window">
         <ribbon>
