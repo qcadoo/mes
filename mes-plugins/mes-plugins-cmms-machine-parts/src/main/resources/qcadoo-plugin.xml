@@ -131,7 +131,7 @@
         <menu:menu-item name="actions" category="basic" view="actionsList" defaultAuthorizationRole="ROLE_ACTIONS"/>
         <menu:menu-item name="timeUsageReport" category="maintenance" view="timeUsageReport"
                         defaultAuthorizationRole="ROLE_MAINTENANCE"/>
-        <menu:menu-item name="costSourcesReports" category="maintenance" view="costSourcesReports"
+        <menu:menu-item name="sourceCostReports" category="maintenance" view="sourceCostReports"
                         defaultAuthorizationRole="ROLE_MAINTENANCE"/>
 
         <view:view resource="view/plannedEventsList.xml"/>
@@ -143,7 +143,7 @@
 
         <view:view resource="view/timeUsageReport.xml"/>
 
-        <view:view resource="view/costSourcesReports.xml"/>
+        <view:view resource="view/sourceCostReports.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
 
