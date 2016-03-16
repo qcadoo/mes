@@ -180,6 +180,7 @@
         <model:model model="plannedEventXLSHelper" resource="model/plannedEventXLSHelper.xml"/>
         <model:model model="maintenanceEventXLSHelper" resource="model/maintenanceEventXLSHelper.xml"/>
         <model:model model="timeUsageReportFilter" resource="model/timeUsageReportFilter.xml"/>
+        <model:model model="sourceCostReportFilter" resource="model/sourceCostReportFilter.xml"/>
 
 
         <!-- model extensions -->
