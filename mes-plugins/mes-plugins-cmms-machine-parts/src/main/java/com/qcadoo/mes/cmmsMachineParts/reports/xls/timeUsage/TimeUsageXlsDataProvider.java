@@ -1,16 +1,16 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.cmmsMachineParts.constants.TimeUsageReportFilterFields;
-import com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage.dto.TimeUsageDTO;
-import com.qcadoo.model.api.DataDefinitionService;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.cmmsMachineParts.constants.TimeUsageReportFilterFields;
+import com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage.dto.TimeUsageDTO;
 
 @Service
 public class TimeUsageXlsDataProvider {

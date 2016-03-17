@@ -29,19 +29,16 @@
 
     <component type="window" name="window" reference="window">
         <ribbon>
-            <group name="actions">
-                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;" accesskey="s" />
-            </group>
             <group name="report">
                 <bigButton name="workerCosts" icon="xlsIcon24.png" state="enabled"
                            action="#{window}.fireEvent(generateReport,workerCosts);">
 
                 </bigButton>
-                <bigButton name="timeReport" icon="xlsIcon24.png" state="enabled"
+                <bigButton name="timeReport" icon="xlsIcon24.png" state="disabled"
                            action="#{window}.fireEvent(generateReport,timeReport);">
 
                 </bigButton>
-                <bigButton name="partsCosts" icon="xlsIcon24.png" state="enabled"
+                <bigButton name="partsCosts" icon="xlsIcon24.png" state="disabled"
                            action="#{window}.fireEvent(generateReport,partsCosts);">
 
                 </bigButton>

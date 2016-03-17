@@ -5,7 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.cmmsMachineParts.constants.SourceCostReportFilterFields;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.sourceCost.dto.WorkerCostsDTO;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -53,30 +56,44 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         reportStyleFactory = new ReportStyleFactory(workbook);
         List<WorkerCostsDTO> usages = workerCostsXLSDataProvider.getCosts((Map<String, Object>) filters.get("filtersMap"));
         fillSums(usages);
-        // fillHeaderData(workbook, sheet, 0, locale, (Map<String, Object>) filters.get("filtersMap"));
+        fillHeaderData(workbook, sheet, 0, locale, (Map<String, Object>) filters.get("filtersMap"));
         fillHeaderRow(workbook, sheet, 4, locale);
         int rowCounter = 5;
-        // int rowCounter = 5;
         fillUsages(workbook, sheet, usages, rowCounter++, locale);
         setColumnsWidths(sheet);
     }
 
-    private void fillSums(List<WorkerCostsDTO> usages) {
-        // TODO Auto-generated method stub
+    private void fillSums(List<WorkerCostsDTO> workerCosts) {
+        Map<String, List<WorkerCostsDTO>> groups = workerCosts.stream().collect(
+                Collectors.groupingBy(WorkerCostsDTO::getSourceCost));
+        for (String workerCost : groups.keySet()) {
+            List<WorkerCostsDTO> group = groups.get(workerCost);
+            sumGroup(group);
+            Integer sum = group.stream().filter(g -> g.getWorkerTimeSum() != null).mapToInt(WorkerCostsDTO::getWorkerTimeSum)
+                    .sum();
+            group.get(0).setCostSourceTimeSum(sum);
+        }
+    }
 
+
+    private void sumGroup(List<WorkerCostsDTO> group) {
+        Map<String, List<WorkerCostsDTO>> groups = group.stream().collect(Collectors.groupingBy(WorkerCostsDTO::getWorker));
+        for (String worker : groups.keySet()) {
+            List<WorkerCostsDTO> subGroup = groups.get(worker);
+            Integer sum = subGroup.stream().mapToInt(WorkerCostsDTO::getWorkTime).sum();
+            subGroup.get(0).setWorkerTimeSum(sum);
+        }
     }
 
     private void setColumnsWidths(HSSFSheet sheet) {
         sheet.setColumnWidth(0, 5000);
-        sheet.setColumnWidth(1, 3500);
+        sheet.setColumnWidth(1, 4000);
         sheet.setColumnWidth(2, 3500);
         sheet.setColumnWidth(3, 3500);
         sheet.setColumnWidth(4, 5000);
         sheet.setColumnWidth(5, 6000);
         sheet.setColumnWidth(6, 6000);
     }
-
-
 
     private void fillHeaderData(final HSSFWorkbook workbook, final HSSFSheet sheet, Integer rowNum, final Locale locale,
             Map<String, Object> filters) {
@@ -89,29 +106,29 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
 
         HSSFRow titleRow = sheet.createRow(0);
         HSSFCell titleCell = titleRow.createCell(0);
-        titleCell.setCellValue(translationService.translate("cmmsMachineParts.timeUsageReport.report.title", locale));
+        titleCell.setCellValue(translationService.translate("cmmsMachineParts.workerCostsReport.report.title", locale));
         titleCell.setCellStyle(style);
 
         HSSFRow datesRow = sheet.createRow(1);
         HSSFCell startingFromLabelCell = datesRow.createCell(0);
-        startingFromLabelCell.setCellValue(translationService.translate("cmmsMachineParts.timeUsageReport.report.startingFrom",
+        startingFromLabelCell.setCellValue(translationService.translate("cmmsMachineParts.workerCostsReport.report.startingFrom",
                 locale));
         startingFromLabelCell.setCellStyle(style);
-        if (filters.containsKey("fromDate")) {
+        if (filters.containsKey(SourceCostReportFilterFields.FROM_DATE)) {
             HSSFCell startingFromCell = datesRow.createCell(1);
-            startingFromCell.setCellValue(getDateOnly((Date) filters.get("fromDate")));
+            startingFromCell.setCellValue(getDateOnly((Date) filters.get(SourceCostReportFilterFields.FROM_DATE)));
         }
         HSSFCell toLabelCell = datesRow.createCell(2);
-        toLabelCell.setCellValue(translationService.translate("cmmsMachineParts.timeUsageReport.report.to", locale));
+        toLabelCell.setCellValue(translationService.translate("cmmsMachineParts.workerCostsReport.report.to", locale));
         toLabelCell.setCellStyle(style);
-        if (filters.containsKey("toDate")) {
+        if (filters.containsKey(SourceCostReportFilterFields.TO_DATE)) {
             HSSFCell toCell = datesRow.createCell(3);
-            toCell.setCellValue(getDateOnly((Date) filters.get("toDate")));
+            toCell.setCellValue(getDateOnly((Date) filters.get(SourceCostReportFilterFields.TO_DATE)));
         }
 
         HSSFRow authorRow = sheet.createRow(2);
         HSSFCell authorLabelCell = authorRow.createCell(0);
-        authorLabelCell.setCellValue(translationService.translate("cmmsMachineParts.timeUsageReport.report.generatedBy", locale));
+        authorLabelCell.setCellValue(translationService.translate("cmmsMachineParts.workerCostsReport.report.generatedBy", locale));
         authorLabelCell.setCellStyle(style);
         HSSFCell authorCell = authorRow.createCell(1);
         authorCell.setCellValue(getUserString());
@@ -157,35 +174,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         }
     }
 
-    // private int fillTimeUsageRows(final HSSFWorkbook workbook, final HSSFSheet sheet, final TimeUsageGroupDTO timeUsage,
-    // int rowCounter, final Locale locale) {
-    // Font font = workbook.createFont();
-    // font.setFontName(HSSFFont.FONT_ARIAL);
-    // font.setFontHeightInPoints((short) 10);
-    // font.setBoldweight(Font.BOLDWEIGHT_NORMAL);
-    //
-    // int usagesCounter = 0;
-    //
-    // for (WorkerCostsDTO usage : timeUsage.getTimeUsages()) {
-    // HSSFRow usageRow = sheet.createRow(rowCounter + usagesCounter);
-    // boolean isFirst = usagesCounter == 0;
-    // HSSFCellStyle style = getLeftAlignedStyle(workbook, isFirst, usage);
-    // HSSFCellStyle styleRight = getRightAlignedStyle(workbook, isFirst, usage);
-    // addNewRow(usageRow, usage, locale, style, styleRight);
-    // if (isFirst) {
-    // addNewCell(usageRow, timeUsage.getDurationSum().toString(), 10, styleRight);
-    // addNewCell(usageRow, timeUsage.getRegisteredTimeSum().toString(), 11, styleRight);
-    // } else {
-    // addNewCell(usageRow, "", 10, styleRight);
-    // addNewCell(usageRow, "", 11, styleRight);
-    // }
-    // ++usagesCounter;
-    // }
-    //
-    // return rowCounter + usagesCounter;
-    // }
-
-    private int fillUsages(final HSSFWorkbook workbook, final HSSFSheet sheet,
+    private void fillUsages(final HSSFWorkbook workbook, final HSSFSheet sheet,
  final List<WorkerCostsDTO> group,
             int rowCounter, final Locale locale) {
         Font font = workbook.createFont();
@@ -202,14 +191,15 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
                 addNewRow(usageRow, workerCost, locale, style, styleRight);
             if (workerCost.getWorkerTimeSum() != null) {
                 addNewCell(usageRow, getTime(workerCost.getWorkerTimeSum()), 5, styleRight);
-            }
-            if (workerCost.getCostSourceTimeSum() != null) {
-                addNewCell(usageRow, getTime(workerCost.getCostSourceTimeSum()), 6, styleRight);
+                if (workerCost.getCostSourceTimeSum() != null) {
+                    addNewCell(usageRow, getTime(workerCost.getCostSourceTimeSum()), 6, styleRight);
+                } else {
+                    addNewCell(usageRow, "", 6, styleRight);
                 }
+            }
                 ++usagesCounter;
             }
 
-        return rowCounter + usagesCounter;
     }
 
     private void addNewRow(HSSFRow usageRow, WorkerCostsDTO timeUsage, Locale locale, HSSFCellStyle style,
@@ -249,13 +239,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         if (value == null) {
             return "";
         }
-        int hours = value / 3600;
-        int minutes = (value % 3600) / 60;
-        int seconds = value % 60;
-
-        String timeString = String.format("%04d:%02d:%02d", hours, minutes, seconds);
-
-        return timeString;
+        return DurationFormatUtils.formatDuration(((long) value) * 1000l, "HH:mm:ss");
     }
 
     private String getDateValue(Date date) {

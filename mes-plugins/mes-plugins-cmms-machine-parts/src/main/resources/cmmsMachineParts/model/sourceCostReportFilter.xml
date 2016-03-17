@@ -31,5 +31,9 @@
         <date name="fromDate" required="true"/>
         <date name="toDate" required="true"/>
         <belongsTo name="sourceCost" model="sourceCost" />
+
+        <!-- this flag permanently block save-->
+        <boolean name="dontSave" required="true" />
+
     </fields>
 </model>

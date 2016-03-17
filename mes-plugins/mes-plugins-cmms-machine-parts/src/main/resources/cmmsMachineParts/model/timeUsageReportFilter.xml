@@ -35,10 +35,6 @@
               required="true"/>
         <manyToMany name="workers" joinField="timeUsageReportFilters" model="staff" cascade="nullify" plugin="basic"
                     copyable="false"/>
-                
-        <!-- this flag permanently block save-->
-        <boolean name="dontSave" required="true" />
-        
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.TimeUsageReportFilterHooks" method="onSave"/>
