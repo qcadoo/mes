@@ -173,3 +173,9 @@ CREATE OR REPLACE FUNCTION generate_document_number(_translated_type text) RETUR
 CREATE OR REPLACE FUNCTION generate_and_set_document_number_trigger() RETURNS trigger AS $$ BEGIN NEW.number := generate_document_number(NEW.number); IF NEW.name is null THEN NEW.name := NEW.number; END IF; return NEW; END; $$ LANGUAGE 'plpgsql';
 CREATE TRIGGER materialflowresources_document_trigger_number BEFORE INSERT ON materialflowresources_document FOR EACH ROW EXECUTE PROCEDURE generate_and_set_document_number_trigger();
 --end #QCADOO-433
+
+-- #GOODFOOD-1196
+CREATE OR REPLACE FUNCTION generate_maintenanceevent_number() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _number text; BEGIN _pattern := '#seq'; select nextval('cmmsmachineparts_maintenanceevent_number_seq') into _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; end if;	 _number := _pattern; _number := replace(_number, '#seq', _seq);	 RETURN _number; END; $$ LANGUAGE 'plpgsql';
+CREATE OR REPLACE FUNCTION generate_and_set_maintenanceevent_number_trigger() RETURNS trigger AS $$ BEGIN NEW.number := generate_maintenanceevent_number(); return NEW; END; $$ LANGUAGE 'plpgsql';
+CREATE TRIGGER cmmsmachineparts_maintenanceevent_trigger_number BEFORE INSERT ON cmmsmachineparts_maintenanceevent FOR EACH ROW EXECUTE PROCEDURE generate_and_set_maintenanceevent_number_trigger();
+-- end #GOODFOOD-1196
