@@ -1,13 +1,14 @@
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import com.qcadoo.mes.cmmsMachineParts.constants.SourceCostReportFilterFields;
-import com.qcadoo.model.api.Entity;
+import java.util.Date;
+
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.cmmsMachineParts.constants.SourceCostReportFilterFields;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import java.util.Date;
 
 @Service
 public class SourceCostReportsListeners {
@@ -26,7 +27,7 @@ public class SourceCostReportsListeners {
 
             switch (reportType) {
                 case "workerCosts":
-                    generateWorkerCostsReport(sourceCost, dateFrom, dateTo);
+                    generateWorkerCostsReport(view, sourceCost, dateFrom, dateTo);
                     break;
                 case "timeReport":
                     generateTimeReport(sourceCost, dateFrom, dateTo);
@@ -49,6 +50,7 @@ public class SourceCostReportsListeners {
     private void generateTimeReport(Entity sourceCost, Date dateFrom, Date dateTo) {
     }
 
-    private void generateWorkerCostsReport(Entity sourceCost, Date dateFrom, Date dateTo) {
+    private void generateWorkerCostsReport(ViewDefinitionState view, Entity sourceCost, Date dateFrom, Date dateTo) {
+        view.redirectTo("/cmmsMachineParts/workerCosts.xls?filterId=" + 0, true, false);
     }
 }
