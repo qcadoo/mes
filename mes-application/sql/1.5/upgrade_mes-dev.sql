@@ -72,3 +72,29 @@ drop function migrate_maintenanceevent_numbers();
 alter table cmmsmachineparts_maintenanceevent alter column number set not null;
 alter table cmmsmachineparts_maintenanceevent add unique(number);
 -- end;
+
+-- VIEW: technologies_technologydto
+-- by kasi
+
+CREATE SEQUENCE technologies_technologydto_id_seq;
+
+CREATE OR REPLACE VIEW technologies_technologydto AS
+ SELECT technology.id,
+    technology.name,
+    technology.number,
+    technology.externalsynchronized,
+    technology.master,
+    technology.state,
+    product.number AS productnumber,
+    product.globaltypeofmaterial AS productglobaltypeofmaterial,
+    tg.number AS technologygroupnumber,
+    division.name AS divisionname,
+    product.name AS productname,
+    technology.technologytype,
+    technology.active
+   FROM technologies_technology technology
+     LEFT JOIN basic_product product ON technology.product_id = product.id
+     LEFT JOIN basic_division division ON technology.division_id = division.id
+     LEFT JOIN technologies_technologygroup tg ON technology.technologygroup_id = tg.id;
+
+-- end

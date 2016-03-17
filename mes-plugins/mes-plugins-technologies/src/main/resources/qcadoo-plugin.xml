@@ -75,6 +75,7 @@
         <model:model model="operationProductInComponent" resource="model/operationProductInComponent.xml"/>
 
         <model:model model="technology" resource="model/technology.xml"/>
+        <model:model model="technologyDto" resource="model/technologyDto.xml"/>
         <model:model model="technologyOperationComponent"
                      resource="model/technologyOperationComponent.xml"/>
         <model:model model="productStructureTreeNode" resource="model/productStructureTreeNode.xml"/>
