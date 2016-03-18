@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
@@ -49,6 +38,16 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PlannedEventDetailsListeners {
@@ -104,6 +103,22 @@ public class PlannedEventDetailsListeners {
         view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
     }
 
+    public void onAddExistingResponsible(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity formEntity = form.getEntity();
+        formEntity = formEntity.getDataDefinition().get(formEntity.getId());
+        form.setEntity(formEntity);
+        view.performEvent(view, "refresh");
+    }
+
+    public void onRemoveExistingResponsible(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity formEntity = form.getEntity();
+        formEntity = formEntity.getDataDefinition().get(formEntity.getId());
+        form.setEntity(formEntity);
+        view.performEvent(view, "refresh");
+    }
+
     public void onAddExistingRelatedEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (args.length < 1) {
             return;
@@ -112,9 +127,8 @@ public class PlannedEventDetailsListeners {
         Entity currentEvent = form.getPersistedEntityWithIncludedFormValues();
         List<Long> addedRelatedEventsIds = parseIds(args[0]);
         for (Long addedRelatedEventId : addedRelatedEventsIds) {
-            Entity addedEvent = dataDefinitionService
-                    .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
-                    .get(addedRelatedEventId);
+            Entity addedEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                    CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(addedRelatedEventId);
             List<Entity> relatedEvents = Lists.newArrayList(addedEvent.getManyToManyField(PlannedEventFields.RELATED_EVENTS));
             relatedEvents.add(currentEvent);
             addedEvent.setField(PlannedEventFields.RELATED_EVENTS, relatedEvents);
@@ -123,6 +137,10 @@ public class PlannedEventDetailsListeners {
         }
         GridComponent relatedEventsGrid = (GridComponent) view.getComponentByReference(PlannedEventFields.RELATED_EVENTS);
         relatedEventsGrid.reloadEntities();
+        Entity formEntity = form.getEntity();
+        formEntity = formEntity.getDataDefinition().get(formEntity.getId());
+        form.setEntity(formEntity);
+        view.performEvent(view, "refresh");
     }
 
     private List<Long> parseIds(final String ids) {
@@ -138,15 +156,14 @@ public class PlannedEventDetailsListeners {
         GridComponent relatedEventsGrid = (GridComponent) view.getComponentByReference(PlannedEventFields.RELATED_EVENTS);
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity currentEvent = dataDefinitionService
-                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
-                .get(form.getEntityId());
-        List<Entity> relatedEventsForCurrentEvent = Lists
-                .newArrayList(currentEvent.getManyToManyField(PlannedEventFields.RELATED_EVENTS));
+        Entity currentEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(form.getEntityId());
+        List<Entity> relatedEventsForCurrentEvent = Lists.newArrayList(currentEvent
+                .getManyToManyField(PlannedEventFields.RELATED_EVENTS));
         List<Entity> relatedEventsToDelete = relatedEventsGrid.getSelectedEntities();
         for (Entity relatedEventToDelete : relatedEventsToDelete) {
-            List<Entity> relatedEvents = Lists
-                    .newArrayList(relatedEventToDelete.getManyToManyField(PlannedEventFields.RELATED_EVENTS));
+            List<Entity> relatedEvents = Lists.newArrayList(relatedEventToDelete
+                    .getManyToManyField(PlannedEventFields.RELATED_EVENTS));
             Optional<Entity> eventToDelete = relatedEvents.stream()
                     .filter(event -> event.getId().compareTo(currentEvent.getId()) == 0).findFirst();
             if (eventToDelete.isPresent()) {
@@ -164,28 +181,31 @@ public class PlannedEventDetailsListeners {
         }
         currentEvent.setField(PlannedEventFields.RELATED_EVENTS, relatedEventsForCurrentEvent);
         currentEvent.getDataDefinition().save(currentEvent);
+
+        Entity formEntity = form.getEntity();
+        formEntity = formEntity.getDataDefinition().get(formEntity.getId());
+        form.setEntity(formEntity);
+        view.performEvent(view, "refresh");
     }
 
     public void showMaintenanceEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity plannedEvent = dataDefinitionService
-                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
-                .get(form.getEntityId());
+        Entity plannedEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(form.getEntityId());
 
         Entity maintenanceEvent = plannedEvent.getBelongsToField(PlannedEventFields.MAINTENANCE_EVENT);
         if (maintenanceEvent != null) {
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.id", maintenanceEvent.getId());
-            view.redirectTo("/page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html", false, true,
-                    parameters);
+            view.redirectTo("/page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html", false,
+                    true, parameters);
         }
     }
 
     public void showRecurringEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity plannedEvent = dataDefinitionService
-                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
-                .get(form.getEntityId());
+        Entity plannedEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(form.getEntityId());
 
         Entity maintenanceEvent = plannedEvent.getBelongsToField(PlannedEventFields.MAINTENANCE_EVENT);
         if (maintenanceEvent != null) {

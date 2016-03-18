@@ -23,21 +23,16 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.states;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.cmmsMachineParts.constants.ActionForPlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PlannedEventStateValidationService {
@@ -184,5 +179,10 @@ public class PlannedEventStateValidationService {
 
     public void validationOnCanceled(StateChangeContext stateChangeContext) {
 
+    }
+
+    public void validationOnInEditing(StateChangeContext stateChangeContext) {
+        Entity event = stateChangeContext.getOwner();
+        checkIfActionsHaveStatus(event, stateChangeContext);
     }
 }

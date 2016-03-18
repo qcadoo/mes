@@ -2,7 +2,6 @@ package com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents;
 
 import com.google.common.base.Strings;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.model.api.NumberService;
 
 import java.math.BigDecimal;
@@ -11,6 +10,16 @@ import java.util.Date;
 import java.util.Locale;
 
 public final class XlsDataType {
+
+    /**
+     * Date format.
+     */
+    public static final String L_DATE_FORMAT = "yyyy-MM-dd";
+
+    /**
+     * Date-time format.
+     */
+    public static final String L_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 
     private XlsDataType(){}
     
@@ -30,10 +39,11 @@ public final class XlsDataType {
             return "";
         }
         if (dateOnly) {
-            SimpleDateFormat df = new SimpleDateFormat(DateUtils.L_DATE_FORMAT);
+            SimpleDateFormat df = new SimpleDateFormat(L_DATE_FORMAT);
             return df.format(value);
         } else {
-            return DateUtils.toDateTimeString(value);
+            SimpleDateFormat df = new SimpleDateFormat(L_DATE_TIME_FORMAT);
+            return df.format(value);
         }
     }
 
@@ -45,7 +55,7 @@ public final class XlsDataType {
         int minutes = (value % 3600) / 60;
         int seconds = value % 60;
 
-        String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        String timeString = String.format("%d:%02d:%02d", hours, minutes, seconds);
 
         return timeString;
     }
