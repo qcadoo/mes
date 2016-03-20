@@ -9,6 +9,7 @@ import com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents.dto.WorkTim
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateStringValues;
 import com.qcadoo.model.api.NumberService;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Font;
@@ -17,9 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Service
 public class MaintenanceEventsXlsService {
+
+    private static final Pattern TIME_SEPARATOR_PATTERN = Pattern.compile(":");
 
     @Autowired
     private TranslationService translationService;
@@ -37,7 +41,7 @@ public class MaintenanceEventsXlsService {
 
         DataFormat dataFormat = xssfWorkbook.createDataFormat();
         CellStyle numberStyle = xssfWorkbook.createCellStyle();
-        numberStyle.setDataFormat(dataFormat.getFormat("#.#####"));
+        numberStyle.setDataFormat(dataFormat.getFormat("0.00###"));
 
         CellStyle dateStyle = xssfWorkbook.createCellStyle();
         dateStyle.setDataFormat(dataFormat.getFormat("yyyy-mm-dd"));
@@ -45,17 +49,20 @@ public class MaintenanceEventsXlsService {
         CellStyle dateTimeStyle = xssfWorkbook.createCellStyle();
         dateTimeStyle.setDataFormat(dataFormat.getFormat("yyyy-mm-dd hh:mm"));
 
+        CellStyle timeStyle = xssfWorkbook.createCellStyle();
+        timeStyle.setDataFormat(dataFormat.getFormat("[HH]:MM:SS"));
+
         List<MaintenanceEventDTO> events = dataProvider.getEvents(filters);
         int rowCounter = 1;
         for (MaintenanceEventDTO maintenanceEventDTO : events) {
             rowCounter = fillEventsRows(xssfWorkbook, sheet, maintenanceEventDTO, rowCounter, numberStyle, dateStyle,
-                    dateTimeStyle, locale);
+                    dateTimeStyle, timeStyle, locale);
         }
 
     }
 
     private int fillEventsRows(XSSFWorkbook xssfWorkbook, XSSFSheet sheet, MaintenanceEventDTO event, int rowCounter,
-            CellStyle numberStyle, CellStyle dateStyle, CellStyle dateTimeStyle, Locale locale) {
+            CellStyle numberStyle, CellStyle dateStyle, CellStyle dateTimeStyle, CellStyle timeStyle, Locale locale) {
         int rowCounterCopy = rowCounter;
         int partsCounter = rowCounterCopy;
         int realizationsCounter = rowCounterCopy;
@@ -127,7 +134,12 @@ public class MaintenanceEventsXlsService {
 
                     XSSFCell staffWorkTimeLaborTime = eventLine
                             .createCell(MaintenanceEventsElementsReportEnum.STAFF_WORK_TIME_LABOR_TIME.getPosition());
-                    staffWorkTimeLaborTime.setCellValue(XlsDataType.getValue(workTime.getStaffWorkTimeLaborTime()));
+                    if (workTime.getStaffWorkTimeLaborTime() != null) {
+                        staffWorkTimeLaborTime.setCellStyle(timeStyle);
+                        staffWorkTimeLaborTime.setCellValue(convertTimeInternal(XlsDataType.getValue(workTime
+                                .getStaffWorkTimeLaborTime())));
+                        staffWorkTimeLaborTime.setCellType(Cell.CELL_TYPE_NUMERIC);
+                    }
                     first = false;
 
                 } else {
@@ -140,8 +152,13 @@ public class MaintenanceEventsXlsService {
 
                     XSSFCell staffWorkTimeLaborTime = subEventLine
                             .createCell(MaintenanceEventsElementsReportEnum.STAFF_WORK_TIME_LABOR_TIME.getPosition());
+                    if (workTime.getStaffWorkTimeLaborTime() != null) {
 
-                    staffWorkTimeLaborTime.setCellValue(XlsDataType.getValue(workTime.getStaffWorkTimeLaborTime()));
+                        staffWorkTimeLaborTime.setCellStyle(timeStyle);
+                        staffWorkTimeLaborTime.setCellValue(convertTimeInternal(XlsDataType.getValue(workTime
+                                .getStaffWorkTimeLaborTime())));
+                        staffWorkTimeLaborTime.setCellType(Cell.CELL_TYPE_NUMERIC);
+                    }
                 }
             }
 
@@ -161,6 +178,7 @@ public class MaintenanceEventsXlsService {
                     XSSFCell partPlannedQuantity = eventLine.createCell(MaintenanceEventsElementsReportEnum.PART_PLANNED_QUANTITY
                             .getPosition());
                     partPlannedQuantity.setCellStyle(numberStyle);
+                    partPlannedQuantity.setCellType(Cell.CELL_TYPE_NUMERIC);
                     if (part.getPartPlannedQuantity() != null) {
                         partPlannedQuantity.setCellValue(part.getPartPlannedQuantity().setScale(5).doubleValue());
                     }
@@ -169,6 +187,7 @@ public class MaintenanceEventsXlsService {
 
                     XSSFCell value = eventLine.createCell(MaintenanceEventsElementsReportEnum.VALUE.getPosition());
                     value.setCellStyle(numberStyle);
+                    value.setCellType(Cell.CELL_TYPE_NUMERIC);
                     if (part.getValue() != null) {
                         value.setCellValue(part.getValue().setScale(5).doubleValue());
                     }
@@ -191,6 +210,7 @@ public class MaintenanceEventsXlsService {
                     XSSFCell partPlannedQuantity = subEventLine
                             .createCell(MaintenanceEventsElementsReportEnum.PART_PLANNED_QUANTITY.getPosition());
                     partPlannedQuantity.setCellStyle(numberStyle);
+                    partPlannedQuantity.setCellType(Cell.CELL_TYPE_NUMERIC);
                     if (part.getPartPlannedQuantity() != null) {
                         partPlannedQuantity.setCellValue(part.getPartPlannedQuantity().setScale(5).doubleValue());
                     }
@@ -199,6 +219,7 @@ public class MaintenanceEventsXlsService {
 
                     XSSFCell value = subEventLine.createCell(MaintenanceEventsElementsReportEnum.VALUE.getPosition());
                     value.setCellStyle(numberStyle);
+                    value.setCellType(Cell.CELL_TYPE_NUMERIC);
                     if (part.getValue() != null) {
                         value.setCellValue(part.getValue().setScale(5).doubleValue());
                     }
@@ -316,5 +337,19 @@ public class MaintenanceEventsXlsService {
         XSSFCell headerCell = headerLine.createCell(e.getPosition());
         headerCell.setCellValue(e.getLabel(translationService, locale));
         headerCell.setCellStyle(style);
+    }
+
+    private double convertTimeInternal(String timeStr) {
+        int len = timeStr.length();
+        String[] parts = TIME_SEPARATOR_PATTERN.split(timeStr);
+        String secStr = parts[2];
+
+        String hourStr = parts[0];
+        String minStr = parts[1];
+        int hours = Integer.parseInt(hourStr);
+        int minutes = Integer.parseInt(minStr);
+        int seconds = Integer.parseInt(secStr);
+        double totalSeconds = (double) (seconds + (minutes + hours * 60) * 60);
+        return totalSeconds / 86400.0D;
     }
 }

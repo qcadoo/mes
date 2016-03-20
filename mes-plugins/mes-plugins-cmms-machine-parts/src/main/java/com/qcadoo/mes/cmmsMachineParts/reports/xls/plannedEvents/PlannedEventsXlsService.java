@@ -2,17 +2,17 @@ package com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents.XlsDataType;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.MachinePartForEventDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventRealizationDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventStateChangeDTO;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventStateStringValues;
 import com.qcadoo.model.api.NumberService;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -21,9 +21,12 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Service
 public class PlannedEventsXlsService {
+
+    private static final Pattern TIME_SEPARATOR_PATTERN = Pattern.compile(":");
 
     @Autowired
     private TranslationService translationService;
@@ -44,17 +47,21 @@ public class PlannedEventsXlsService {
         fillHeaderRow(workbook, sheet, 0, locale);
         DataFormat dataFormat = workbook.createDataFormat();
         CellStyle numberStyle = workbook.createCellStyle();
-        numberStyle.setDataFormat(dataFormat.getFormat("#.#####"));
+        numberStyle.setDataFormat(dataFormat.getFormat("0.00###"));
 
         CellStyle dateStyle = workbook.createCellStyle();
         dateStyle.setDataFormat(dataFormat.getFormat("yyyy-mm-dd"));
 
         CellStyle dateTimeStyle = workbook.createCellStyle();
         dateTimeStyle.setDataFormat(dataFormat.getFormat("yyyy-mm-dd hh:mm"));
+
+        CellStyle timeStyle = workbook.createCellStyle();
+        timeStyle.setDataFormat(dataFormat.getFormat("[HH]:MM:SS"));
+
         int rowCounter = 1;
         for (PlannedEventDTO plannedEventDTO : events) {
             rowCounter = fillEventsRows(workbook, sheet, plannedEventDTO, rowCounter++, numberStyle, dateStyle, dateTimeStyle,
-                    locale);
+                    timeStyle, locale);
         }
     }
 
@@ -82,7 +89,7 @@ public class PlannedEventsXlsService {
     }
 
     private int fillEventsRows(final XSSFWorkbook workbook, final XSSFSheet sheet, final PlannedEventDTO event, int rowCounter,
-            CellStyle numberStyle, CellStyle dateStyle, CellStyle dateTimeStyle, final Locale locale) {
+            CellStyle numberStyle, CellStyle dateStyle, CellStyle dateTimeStyle, CellStyle timeStyle, final Locale locale) {
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short) 10);
@@ -136,20 +143,34 @@ public class PlannedEventsXlsService {
         }
 
         XSSFCell counterCell = eventLine.createCell(13);
-        counterCell.setCellValue(getDecimalValue(event.getCounter()));
+        counterCell.setCellStyle(numberStyle);
+        counterCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        if (event.getCounter() != null) {
+            counterCell.setCellValue(event.getCounter().setScale(5).doubleValue());
+        }
 
         XSSFCell counterToleranceCell = eventLine.createCell(14);
-        counterToleranceCell.setCellValue(getDecimalValue(event.getCounterTolerance()));
+        counterToleranceCell.setCellStyle(numberStyle);
+        counterToleranceCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        if (event.getCounterTolerance() != null) {
+            counterToleranceCell.setCellValue(event.getCounterTolerance().setScale(5).doubleValue());
+        }
 
         XSSFCell sourceCostNumberCell = eventLine.createCell(15);
         sourceCostNumberCell.setCellValue(event.getSourceCostNumber());
 
         XSSFCell durationCell = eventLine.createCell(16);
-        durationCell.setCellValue(getTime(event.getDuration()));
-
+        if (event.getDuration() != null) {
+            durationCell.setCellStyle(timeStyle);
+            durationCell.setCellValue(convertTimeInternal(XlsDataType.getValue(event.getDuration())));
+            durationCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        }
         XSSFCell effectiveCounterCell = eventLine.createCell(17);
-        effectiveCounterCell.setCellValue(getDecimalValue(event.getEffectiveCounter()));
-
+        effectiveCounterCell.setCellStyle(numberStyle);
+        effectiveCounterCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        if (event.getEffectiveCounter() != null) {
+            effectiveCounterCell.setCellValue(event.getEffectiveCounter().setScale(5).doubleValue());
+        }
         XSSFCell startDateCell = eventLine.createCell(18);
         if (event.getStartDate() != null) {
             startDateCell.setCellValue(event.getStartDate());
@@ -183,7 +204,12 @@ public class PlannedEventsXlsService {
                     realizationWorkerNameCell.setCellValue(realization.getRealizationWorkerName() + " "
                             + realization.getRealizationWorkerSurname());
                     XSSFCell realizationDurationNumberCell = eventLine.createCell(22);
-                    realizationDurationNumberCell.setCellValue(getTime(realization.getRealizationDuration()));
+                    if (realization.getRealizationDuration() != null) {
+                        realizationDurationNumberCell.setCellStyle(timeStyle);
+                        realizationDurationNumberCell.setCellValue(convertTimeInternal(XlsDataType.getValue(realization
+                                .getRealizationDuration())));
+                        realizationDurationNumberCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+                    }
                     first = false;
 
                 } else {
@@ -193,7 +219,14 @@ public class PlannedEventsXlsService {
                     realizationWorkerNameCell.setCellValue(realization.getRealizationWorkerName() + " "
                             + realization.getRealizationWorkerSurname());
                     XSSFCell realizationDurationNumberCell = subEventLine.createCell(22);
-                    realizationDurationNumberCell.setCellValue(getTime(realization.getRealizationDuration()));
+                    if (realization.getRealizationDuration() != null) {
+                        realizationDurationNumberCell.setCellStyle(timeStyle);
+                        realizationDurationNumberCell.setCellValue(convertTimeInternal(XlsDataType.getValue(realization
+                                .getRealizationDuration())));
+                        realizationDurationNumberCell.setCellValue(DateUtil.convertTime(DurationFormatUtils.formatDuration(
+                                realization.getRealizationDuration() * 1000l, "HH:mm:ss")));
+                        realizationDurationNumberCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+                    }
                 }
             }
 
@@ -207,6 +240,8 @@ public class PlannedEventsXlsService {
 
                     XSSFCell machinePartQuantityCell = eventLine.createCell(25);
                     machinePartQuantityCell.setCellStyle(numberStyle);
+                    machinePartQuantityCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+
                     if (part.getMachinePartPlannedQuantity() != null) {
                         machinePartQuantityCell.setCellValue(part.getMachinePartPlannedQuantity().setScale(5).doubleValue());
                     }
@@ -215,6 +250,7 @@ public class PlannedEventsXlsService {
 
                     XSSFCell valueCell = eventLine.createCell(27);
                     valueCell.setCellStyle(numberStyle);
+                    valueCell.setCellType(Cell.CELL_TYPE_NUMERIC);
                     if (part.getMachinePartPlannedQuantity() != null) {
                         valueCell.setCellValue(part.getValue().setScale(5).doubleValue());
                     }
@@ -229,6 +265,7 @@ public class PlannedEventsXlsService {
                     machinePartNameCell.setCellValue(part.getMachinePartName());
                     XSSFCell machinePartQuantityCell = subEventLine.createCell(25);
                     machinePartQuantityCell.setCellStyle(numberStyle);
+                    machinePartQuantityCell.setCellType(Cell.CELL_TYPE_NUMERIC);
                     if (part.getMachinePartPlannedQuantity() != null) {
                         machinePartQuantityCell.setCellValue(part.getMachinePartPlannedQuantity().setScale(5).doubleValue());
                     }
@@ -236,6 +273,7 @@ public class PlannedEventsXlsService {
                     machinePartUnitCell.setCellValue(part.getMachinePartUnit());
                     XSSFCell valueCell = subEventLine.createCell(27);
                     valueCell.setCellStyle(numberStyle);
+                    valueCell.setCellType(Cell.CELL_TYPE_NUMERIC);
                     if (part.getMachinePartPlannedQuantity() != null) {
                         valueCell.setCellValue(part.getValue().setScale(5).doubleValue());
                     }
@@ -410,5 +448,19 @@ public class PlannedEventsXlsService {
             return translationService.translate("qcadooView.false", LocaleContextHolder.getLocale());
         }
 
+    }
+
+    private double convertTimeInternal(String timeStr) {
+        int len = timeStr.length();
+        String[] parts = TIME_SEPARATOR_PATTERN.split(timeStr);
+        String secStr = parts[2];
+
+        String hourStr = parts[0];
+        String minStr = parts[1];
+        int hours = Integer.parseInt(hourStr);
+        int minutes = Integer.parseInt(minStr);
+        int seconds = Integer.parseInt(secStr);
+        double totalSeconds = (double) (seconds + (minutes + hours * 60) * 60);
+        return totalSeconds / 86400.0D;
     }
 }
