@@ -1,23 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -31,6 +13,19 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service public class TimeUsageXlsService {
 
@@ -216,11 +211,11 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
             HSSFCellStyle styleRight = getRightAlignedStyle(workbook, isFirst, usage);
             addNewRow(usageRow, usage, locale, style, styleRight);
             if (isFirst) {
-                addNewCell(usageRow, timeUsage.getDurationSum().toString(), 10, styleRight);
-                addNewCell(usageRow, timeUsage.getRegisteredTimeSum().toString(), 11, styleRight);
+                addNewCell(usageRow, timeUsage.getDurationSum().toString(), 10, styleRight, true);
+                addNewCell(usageRow, timeUsage.getRegisteredTimeSum().toString(), 11, styleRight, true);
             } else {
-                addNewCell(usageRow, "", 10, styleRight);
-                addNewCell(usageRow, "", 11, styleRight);
+                addNewCell(usageRow, "", 10, styleRight, false);
+                addNewCell(usageRow, "", 11, styleRight, false);
             }
             ++usagesCounter;
         }
@@ -230,22 +225,29 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
 
     private void addNewRow(HSSFRow usageRow, TimeUsageDTO timeUsage, Locale locale, HSSFCellStyle style,
             HSSFCellStyle styleAlignRight) {
-        addNewCell(usageRow, timeUsage.getWorker(), 0, style);
-        addNewCell(usageRow, getDateOnly(timeUsage.getStartDate()), 1, styleAlignRight);
-        addNewCell(usageRow, timeUsage.getNumber(), 2, style);
-        addNewCell(usageRow, translationService.translate(timeUsage.getType(), locale), 3, style);
-        addNewCell(usageRow, translationService.translate(timeUsage.getState(), locale), 4, style);
-        addNewCell(usageRow, timeUsage.getObject(), 5, style);
-        addNewCell(usageRow, timeUsage.getParts(), 6, style);
-        addNewCell(usageRow, timeUsage.getDescription(), 7, style);
-        addNewCell(usageRow, timeUsage.getDuration().toString(), 8, styleAlignRight);
-        addNewCell(usageRow, timeUsage.getRegisteredTime().toString(), 9, styleAlignRight);
+        addNewCell(usageRow, timeUsage.getWorker(), 0, style, false);
+        addNewCell(usageRow, getDateOnly(timeUsage.getStartDate()), 1, styleAlignRight, false);
+        addNewCell(usageRow, timeUsage.getNumber(), 2, style, false);
+        addNewCell(usageRow, translationService.translate(timeUsage.getType(), locale), 3, style, false);
+        addNewCell(usageRow, translationService.translate(timeUsage.getState(), locale), 4, style, false);
+        addNewCell(usageRow, timeUsage.getObject(), 5, style, false);
+        addNewCell(usageRow, timeUsage.getParts(), 6, style, false);
+        addNewCell(usageRow, timeUsage.getDescription(), 7, style, false);
+        addNewCell(usageRow, timeUsage.getDuration().toString(), 8, styleAlignRight, true);
+        addNewCell(usageRow, timeUsage.getRegisteredTime().toString(), 9, styleAlignRight, true);
     }
 
-    private void addNewCell(HSSFRow row, String value, int column, HSSFCellStyle style) {
+    private void addNewCell(HSSFRow row, String value, int column, HSSFCellStyle style, boolean numeric) {
         HSSFCell cell = row.createCell(column);
-        cell.setCellValue(value);
         cell.setCellStyle(style);
+        if(numeric){
+            cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+            cell.setCellValue(Integer.valueOf(value));
+        } else {
+            cell.setCellValue(value);
+        }
+
+
     }
 
     private HSSFCellStyle getStyle(final HSSFWorkbook workbook, boolean isFirst, TimeUsageDTO usage, boolean isLeft) {
