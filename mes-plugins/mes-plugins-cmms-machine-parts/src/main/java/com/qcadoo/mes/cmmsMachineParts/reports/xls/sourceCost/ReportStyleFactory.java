@@ -2,6 +2,7 @@ package com.qcadoo.mes.cmmsMachineParts.reports.xls.sourceCost;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.DataFormat;
 
 public class ReportStyleFactory {
 
@@ -21,11 +22,14 @@ public class ReportStyleFactory {
 
     private HSSFCellStyle rightWhite;
 
+    private DataFormat dataFormat;
+
     public ReportStyleFactory(final HSSFWorkbook workbook) {
         init(workbook);
     }
 
     private void init(HSSFWorkbook workbook) {
+        dataFormat = workbook.createDataFormat();
         firstLeftWhite = createStyle(workbook, true, LEFT);
         firstRightWhite = createStyle(workbook, true, RIGHT);
         leftWhite = createStyle(workbook, false, LEFT);
@@ -39,6 +43,7 @@ public class ReportStyleFactory {
         }
         if (align == RIGHT) {
             style.setAlignment(RIGHT);
+            style.setDataFormat(dataFormat.getFormat("[HH]:MM:SS"));
         }
         return style;
     }

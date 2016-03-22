@@ -7,13 +7,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,9 +190,9 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
             HSSFCellStyle styleRight = getRightAlignedStyle(workbook, workerCost.getWorkerTimeSum() != null);
                 addNewRow(usageRow, workerCost, locale, style, styleRight);
             if (workerCost.getWorkerTimeSum() != null) {
-                addNewCell(usageRow, getTime(workerCost.getWorkerTimeSum()), 5, styleRight);
+                addNewCell(usageRow, workerCost.getWorkerTimeSum(), 5, styleRight);
                 if (workerCost.getCostSourceTimeSum() != null) {
-                    addNewCell(usageRow, getTime(workerCost.getCostSourceTimeSum()), 6, styleRight);
+                    addNewCell(usageRow, workerCost.getCostSourceTimeSum(), 6, styleRight);
                 } else {
                     addNewCell(usageRow, "", 6, styleRight);
                 }
@@ -208,12 +208,19 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         addNewCell(usageRow, timeUsage.getWorker(), 1, style);
         addNewCell(usageRow, timeUsage.getEvent(), 2, style);
         addNewCell(usageRow, translationService.translate(timeUsage.getType(), locale), 3, style);
-        addNewCell(usageRow, getTime(timeUsage.getWorkTime()), 4, styleAlignRight);
+        addNewCell(usageRow, timeUsage.getWorkTime(), 4, styleAlignRight);
     }
 
     private void addNewCell(HSSFRow row, String value, int column, HSSFCellStyle style) {
         HSSFCell cell = row.createCell(column);
         cell.setCellValue(value);
+        cell.setCellStyle(style);
+    }
+
+    private void addNewCell(HSSFRow row, Integer value, int column, HSSFCellStyle style) {
+        HSSFCell cell = row.createCell(column);
+        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        cell.setCellValue(value / 86400.0D);
         cell.setCellStyle(style);
     }
 
@@ -233,13 +240,6 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
 
     private HSSFCellStyle getLeftAlignedStyle(final HSSFWorkbook workbook, boolean isFirst) {
         return getStyle(workbook, isFirst, true);
-    }
-
-    private String getTime(Integer value) {
-        if (value == null) {
-            return "";
-        }
-        return DurationFormatUtils.formatDuration(((long) value) * 1000l, "HH:mm:ss");
     }
 
     private String getDateValue(Date date) {
