@@ -25,7 +25,9 @@ public class WorkerCostsXlsDataProvider {
     private final static String plannedEventQuery = "SELECT cost.id as id, cost.number as sourcecost, worker.surname || ' ' || worker.name as worker,\n"
             + "event.number, event.type, realization.duration as worktime\n"
             + "FROM (SELECT plannedEvent_id, worker_id, sum(duration) as duration FROM cmmsmachineparts_plannedeventrealization\n"
-            + "WHERE startDate >= :fromDate AND startDate < :toDate GROUP BY plannedevent_id, worker_id) AS realization\n"
+            + "WHERE (startDate >= :fromDate AND startDate < :toDate)\n"
+            + "OR (finishDate >= :fromDate AND finishDate < :toDate)\n"
+            + "GROUP BY plannedevent_id, worker_id) AS realization\n"
             + "JOIN cmmsmachineparts_plannedevent event ON event.id = realization.plannedevent_id\n"
             + "JOIN cmmsmachineparts_sourcecost cost on event.sourcecost_id = cost.id\n"
             + "JOIN basic_staff worker on realization.worker_id = worker.id WHERE event.state IN(" + allowedPlannedStates() + ")";
@@ -33,7 +35,9 @@ public class WorkerCostsXlsDataProvider {
     private final static String maintenanceEventQuery = "SELECT cost.id as id, cost.number as sourcecost, worker.surname || ' ' || worker.name as worker,\n"
             + "event.number, event.type, worktime.labortime as worktime\n"
             + "FROM (SELECT maintenanceevent_id, worker_id, sum(labortime) as labortime FROM cmmsmachineparts_staffworktime\n"
-            + "WHERE effectiveExecutionTimeStart >= :fromDate AND effectiveExecutionTimeStart < :toDate GROUP BY maintenanceevent_id, worker_id) AS worktime\n"
+            + "WHERE (effectiveExecutionTimeStart >= :fromDate AND effectiveExecutionTimeStart < :toDate)\n"
+            + "OR (effectiveExecutionTimeEnd >= :fromDate AND effectiveExecutionTimeEnd < :toDate)\n"
+            + "GROUP BY maintenanceevent_id, worker_id) AS worktime\n"
             + "JOIN cmmsmachineparts_maintenanceevent event on event.id = worktime.maintenanceevent_id\n"
             + "JOIN cmmsmachineparts_sourcecost cost on event.sourcecost_id = cost.id\n"
             + "JOIN basic_staff worker on worktime.worker_id = worker.id WHERE event.state IN("
@@ -48,7 +52,10 @@ public class WorkerCostsXlsDataProvider {
 
     private String prepareQuery(Map<String, Object> filters, String plannedEventQueryPart, String maintenanceEventQueryPart) {
         DateTime toDate = new DateTime((Date) filters.get("toDate"));
-        filters.put("toDate", toDate.plusDays(1).toDate());
+        filters.put("toDate", toDate.plusDays(1).plusHours(6).toDate());
+
+        DateTime fromDate = new DateTime((Date) filters.get("fromDate"));
+        filters.put("fromDate", fromDate.plusHours(6).toDate());
 
         StringBuilder builder = new StringBuilder("SELECT * FROM ( " + plannedEventQueryPart + " UNION ALL "
                 + maintenanceEventQueryPart + " ) AS events");
