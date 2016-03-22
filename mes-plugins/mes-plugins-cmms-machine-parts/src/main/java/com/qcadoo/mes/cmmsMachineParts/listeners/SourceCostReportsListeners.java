@@ -1,16 +1,17 @@
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import com.qcadoo.localization.api.utils.DateUtils;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.cmmsMachineParts.constants.SourceCostReportFilterFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import java.text.SimpleDateFormat;
 
 @Service
 public class SourceCostReportsListeners {
@@ -28,6 +29,10 @@ public class SourceCostReportsListeners {
                 Entity sourceCost = filter.getBelongsToField(SourceCostReportFilterFields.SOURCE_COST);
                 Date dateFrom = filter.getDateField(SourceCostReportFilterFields.FROM_DATE);
                 Date dateTo = filter.getDateField(SourceCostReportFilterFields.TO_DATE);
+                if (dateFrom.after(dateTo)) {
+                    view.addMessage("cmmsMachineParts.workerCostsReport.error.wrongDateOrder", MessageType.FAILURE);
+                    return;
+                }
                 String reportType = args[0];
 
                 switch (reportType) {
