@@ -1,4 +1,4 @@
-﻿-- #GOODFOOD-1554 i GOODFOOD-1489
+-- #GOODFOOD-1554 i GOODFOOD-1489
 ALTER TABLE cmmsmachineparts_maintenanceevent ADD entityVersion BIGINT DEFAULT 0;
 ALTER TABLE cmmsmachineparts_plannedevent ADD entityVersion BIGINT DEFAULT 0; 
 -- end;
@@ -74,3 +74,23 @@ drop function migrate_maintenanceevent_numbers();
 alter table cmmsmachineparts_maintenanceevent alter column number set not null;
 alter table cmmsmachineparts_maintenanceevent add unique(number);
 -- end;
+
+-- added source cost report filter
+-- last touched 17.03.2016 by pako
+
+CREATE TABLE cmmsmachineparts_sourcecostreportfilter
+(
+  id bigint NOT NULL,
+  fromdate date,
+  todate date,
+  sourcecost_id bigint,
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  createuser character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT cmmsmachineparts_sourcecostreportfilter_pkey PRIMARY KEY (id),
+  CONSTRAINT sourcecostreportfilter_sourcecost_fkey FOREIGN KEY (sourcecost_id)
+      REFERENCES cmmsmachineparts_sourcecost (id) DEFERRABLE
+)
+
+-- end
