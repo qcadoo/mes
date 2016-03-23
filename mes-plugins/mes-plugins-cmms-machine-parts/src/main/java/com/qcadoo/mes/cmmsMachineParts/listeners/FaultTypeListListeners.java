@@ -23,43 +23,19 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeListHooks;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class FaultTypeListListeners {
 
+    @Autowired
+    private FaultTypeListHooks faultTypeListHooks;
+
     public void disableActionsWhenDefault(final ViewDefinitionState view, final ComponentState state, final String args[]) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonGroup actions = window.getRibbon().getGroupByName("actions");
-
-        RibbonActionItem copyButton = actions.getItemByName("copy");
-        RibbonActionItem deleteButton = actions.getItemByName("delete");
-
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
-        List<Entity> selectedFaults = grid.getSelectedEntities();
-        for (Entity selectedFault : selectedFaults) {
-            if (selectedFault.getBooleanField("isDefault")) {
-                copyButton.setEnabled(false);
-                deleteButton.setEnabled(false);
-                copyButton.requestUpdate(true);
-                deleteButton.requestUpdate(true);
-                return;
-            }
-        }
-        boolean enabled = !selectedFaults.isEmpty();
-        copyButton.setEnabled(enabled);
-        deleteButton.setEnabled(enabled);
-        copyButton.requestUpdate(true);
-        deleteButton.requestUpdate(true);
+       faultTypeListHooks.onBeforeRender(view);
     }
 }
