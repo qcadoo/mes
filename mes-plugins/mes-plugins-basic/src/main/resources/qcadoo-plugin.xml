@@ -224,7 +224,7 @@
 
         <security:role identifier="ROLE_SOURCE_COST" description="Dostęp do źródeł kosztów"/>
 
-        <security:role identifier="ROLE_CMMS_SCHEDULER" description="Dostęp do kalendarza zdarzeń"/>
+        <security:role identifier="ROLE_CMMS_SCHEDULER_PREVIEW" description="Dostęp do podglądu kalendarza zdarzeń"/>
 
         <security:role identifier="ROLE_CMMS_SCHEDULER_PART_EDIT"
                        description="Dostęp do edycji kalendarza zdarzeń - edycja własnego kalendarza"/>
