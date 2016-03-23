@@ -782,7 +782,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateProductByAdditionalCode(additionalCode, rowId, url) {
-            getJsonByQuery(url, {query: additionalCode}, function (data) {
+        	var productnumber = getFieldValue('product', rowId);
+            getJsonByQuery(url, {query: additionalCode, productnumber: productnumber}, function (data) {
                 var product = '';
 
                 product = data.entities.filter(function (element, index) {
