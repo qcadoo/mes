@@ -1,5 +1,7 @@
-
-
+﻿-- #GOODFOOD-1554 i GOODFOOD-1489
+ALTER TABLE cmmsmachineparts_maintenanceevent ADD entityVersion BIGINT DEFAULT 0;
+ALTER TABLE cmmsmachineparts_plannedevent ADD entityVersion BIGINT DEFAULT 0; 
+-- end;
 
 -- #GOODFOOD-1196
 CREATE SEQUENCE cmmsmachineparts_maintenanceevent_number_seq;
@@ -96,5 +98,25 @@ CREATE OR REPLACE VIEW technologies_technologydto AS
      LEFT JOIN basic_product product ON technology.product_id = product.id
      LEFT JOIN basic_division division ON technology.division_id = division.id
      LEFT JOIN technologies_technologygroup tg ON technology.technologygroup_id = tg.id;
+
+-- end
+
+-- added source cost report filter
+-- last touched 17.03.2016 by pako
+
+CREATE TABLE cmmsmachineparts_sourcecostreportfilter
+(
+  id bigint NOT NULL,
+  fromdate date,
+  todate date,
+  sourcecost_id bigint,
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  createuser character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT cmmsmachineparts_sourcecostreportfilter_pkey PRIMARY KEY (id),
+  CONSTRAINT sourcecostreportfilter_sourcecost_fkey FOREIGN KEY (sourcecost_id)
+      REFERENCES cmmsmachineparts_sourcecost (id) DEFERRABLE
+)
 
 -- end

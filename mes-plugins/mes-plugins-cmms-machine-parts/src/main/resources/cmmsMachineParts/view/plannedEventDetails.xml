@@ -624,6 +624,13 @@
                 <option type="creatable" value="true"/>
 
                 <option type="fixedHeight" value="true"/>
+
+                <listener event="addExistingEntity"
+                          method="onAddExistingResponsible"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
+                <listener event="remove"
+                          method="onRemoveExistingResponsible"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
             </component>
         </windowTab>
         <windowTab name="actionsTab" reference="actionsTab">

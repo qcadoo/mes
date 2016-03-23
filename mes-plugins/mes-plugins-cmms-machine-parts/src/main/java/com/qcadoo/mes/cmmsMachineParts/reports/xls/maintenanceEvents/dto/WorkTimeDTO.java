@@ -6,7 +6,7 @@ public class WorkTimeDTO {
 
     private Long staffworkTimeId;
     private String staffWorkTimeWorker;
-    private int staffWorkTimeLaborTime;
+    private Integer staffWorkTimeLaborTime;
 
     public Long getStaffworkTimeId() {
         return staffworkTimeId;
@@ -24,11 +24,11 @@ public class WorkTimeDTO {
         this.staffWorkTimeWorker = staffWorkTimeWorker;
     }
 
-    public int getStaffWorkTimeLaborTime() {
+    public Integer getStaffWorkTimeLaborTime() {
         return staffWorkTimeLaborTime;
     }
 
-    public void setStaffWorkTimeLaborTime(int staffWorkTimeLaborTime) {
+    public void setStaffWorkTimeLaborTime(Integer staffWorkTimeLaborTime) {
         this.staffWorkTimeLaborTime = staffWorkTimeLaborTime;
     }
 

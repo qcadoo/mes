@@ -149,6 +149,8 @@ public class MaintenanceEventToPlannedEventListeners {
         Entity preparedContext = maintenanceEventContextService.prepareContextEntity(context);
         plannedEvent.setField(PlannedEventFields.PLANNED_EVENT_CONTEXT, preparedContext);
         Entity saved = plannedEvent.getDataDefinition().save(plannedEvent);
+        saved.setField("createUser", maintenanceEvent.getStringField("createUser"));
+        saved.getDataDefinition().save(saved);
         if (saved.isValid()) {
             return number;
         }
