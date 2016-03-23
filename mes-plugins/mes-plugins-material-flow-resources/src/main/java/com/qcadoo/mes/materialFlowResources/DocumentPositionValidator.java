@@ -17,6 +17,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -68,6 +69,7 @@ public class DocumentPositionValidator {
             }
 
             errors.addAll(validateConversion(position));
+            errors.addAll(validateAdditionalCode(position));
             errors.addAll(validatePrice(position));
             errors.addAll(validateQuantity(position));
             errors.addAll(validateGivenquantity(position));
@@ -212,6 +214,25 @@ public class DocumentPositionValidator {
 
             return validateBigDecimal(position.getConversion(), "conversion", 5, 7);
         }
+    }
+
+    private Collection<? extends String> validateAdditionalCode(DocumentPositionDTO position) {
+        String additionalCode = position.getAdditionalCode();
+        if (!StringUtils.isEmpty(additionalCode)) {
+            try {
+                Map<String, Object> filters = new HashMap<>();
+                filters.put("code", additionalCode);
+                filters.put("productNumber", position.getProduct());
+                Long additionalCodeId = jdbcTemplate.queryForObject(
+                        "SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code "
+                                        + "AND additionalcode.product_id IN (SELECT id FROM basic_product WHERE number = :productNumber)",
+                        filters, Long.class);
+
+            } catch (EmptyResultDataAccessException e) {
+                return Arrays.asList("qcadooView.error.position.additionalCode.doesntMatch");
+            }
+        }
+        return Arrays.asList();
     }
 
     private Map<String, Object> tryMapDocumentPositionVOToParams(DocumentPositionDTO vo, List<String> errors) {
