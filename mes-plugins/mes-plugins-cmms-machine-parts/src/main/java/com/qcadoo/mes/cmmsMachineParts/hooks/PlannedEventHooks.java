@@ -74,9 +74,14 @@ public class PlannedEventHooks {
         clearHiddenFields(event);
         if(event.getId() == null){
             List<Entity> actions =  event.getHasManyField(PlannedEventFields.ACTIONS);
-            actions.forEach(a -> a.setField(ActionForPlannedEventFields.STATE, null));
+            actions.forEach(a -> clearActions(a));
         }
 
+    }
+
+    private void clearActions(Entity a) {
+        a.setField(ActionForPlannedEventFields.STATE, null);
+        a.setField(ActionForPlannedEventFields.REASON, null);
     }
 
     private void clearFieldsInCopy(final Entity event) {
