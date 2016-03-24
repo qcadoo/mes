@@ -60,5 +60,8 @@
         <option type="header" value="false"/>
     </component>
 
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.ActionListHooks" method="onBeforeRender"/>
+    </hooks>
 
 </view>
