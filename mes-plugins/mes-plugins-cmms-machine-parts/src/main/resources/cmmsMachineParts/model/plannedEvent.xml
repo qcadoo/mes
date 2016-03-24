@@ -90,11 +90,11 @@
         <belongsTo name="plannedEventContext" plugin="cmmsMachineParts" model="plannedEventContext"/>
 
         <hasMany name="actions" model="actionForPlannedEvent" joinField="plannedEvent" cascade="delete"
-                 copyable="false"/>
+                 copyable="true"/>
 
         <text name="solutionDescription"/>
         <hasMany name="machinePartsForEvent" model="machinePartForEvent" joinField="plannedEvent" cascade="delete"
-                 copyable="false"/>
+                 copyable="true"/>
 
         <hasMany name="attachments" model="plannedEventAttachment" joinField="plannedEvent" cascade="delete"/>
 
