@@ -1,4 +1,4 @@
-﻿-- #GOODFOOD-1554 i GOODFOOD-1489
+-- #GOODFOOD-1554 i GOODFOOD-1489
 ALTER TABLE cmmsmachineparts_maintenanceevent ADD entityVersion BIGINT DEFAULT 0;
 ALTER TABLE cmmsmachineparts_plannedevent ADD entityVersion BIGINT DEFAULT 0; 
 -- end;
@@ -114,6 +114,7 @@ CREATE TABLE cmmsmachineparts_sourcecostreportfilter
   updatedate timestamp without time zone,
   createuser character varying(255),
   updateuser character varying(255),
+  dontsave boolean,
   CONSTRAINT cmmsmachineparts_sourcecostreportfilter_pkey PRIMARY KEY (id),
   CONSTRAINT sourcecostreportfilter_sourcecost_fkey FOREIGN KEY (sourcecost_id)
       REFERENCES cmmsmachineparts_sourcecost (id) DEFERRABLE
