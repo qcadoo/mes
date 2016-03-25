@@ -93,9 +93,7 @@ public class AssignmentToShiftReportDetailsListeners {
                 state.addMessage(
                         "assignmentToShift.assignmentToShiftReport.window.mainTab.assignmentToShiftReportDetails.generatedMessage",
                         MessageType.SUCCESS);
-            } catch (IOException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (DocumentException e) {
+            } catch (IOException | DocumentException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
         }
@@ -113,7 +111,7 @@ public class AssignmentToShiftReportDetailsListeners {
             assignmentReportXlsService.generateDocument(assignmentToShiftReportWithFileName, locale, PageSize.A3);
 
         } catch (IOException e) {
-            throw new IllegalStateException("Problem with saving report");
+            throw new IllegalStateException("Problem with saving report", e);
         }
     }
 

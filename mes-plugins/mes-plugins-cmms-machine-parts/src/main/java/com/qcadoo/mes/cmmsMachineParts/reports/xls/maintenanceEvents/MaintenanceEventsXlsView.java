@@ -18,7 +18,7 @@ public class MaintenanceEventsXlsView extends AbstractXLSXView {
 
     @Override
     protected void buildExcelDocument(Map<String, Object> filters, XSSFWorkbook xssfWorkbook, HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+            HttpServletResponse response){
         maintenanceEventsXlsService.buildExcelDocument(xssfWorkbook, filters, LocaleContextHolder.getLocale());
     }
 

@@ -131,6 +131,8 @@
         <menu:menu-item name="actions" category="basic" view="actionsList" defaultAuthorizationRole="ROLE_ACTIONS"/>
         <menu:menu-item name="timeUsageReport" category="maintenance" view="timeUsageReport"
                         defaultAuthorizationRole="ROLE_MAINTENANCE"/>
+        <menu:menu-item name="sourceCostReports" category="maintenance" view="sourceCostReports"
+                        defaultAuthorizationRole="ROLE_MAINTENANCE"/>
 
         <view:view resource="view/plannedEventsList.xml"/>
         <view:view resource="view/plannedEventDetails.xml"/>
@@ -140,6 +142,8 @@
         <view:view resource="view/plannedEventStateChangeReasonDialog.xml"/>
 
         <view:view resource="view/timeUsageReport.xml"/>
+
+        <view:view resource="view/sourceCostReports.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
 
@@ -176,6 +180,7 @@
         <model:model model="plannedEventXLSHelper" resource="model/plannedEventXLSHelper.xml"/>
         <model:model model="maintenanceEventXLSHelper" resource="model/maintenanceEventXLSHelper.xml"/>
         <model:model model="timeUsageReportFilter" resource="model/timeUsageReportFilter.xml"/>
+        <model:model model="sourceCostReportFilter" resource="model/sourceCostReportFilter.xml"/>
 
 
         <!-- model extensions -->

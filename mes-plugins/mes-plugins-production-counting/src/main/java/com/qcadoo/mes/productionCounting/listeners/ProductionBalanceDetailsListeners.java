@@ -122,9 +122,7 @@ public class ProductionBalanceDetailsListeners {
                 state.addMessage(
                         "productionCounting.productionBalanceDetails.window.mainTab.productionBalanceDetails.generatedMessage",
                         MessageType.SUCCESS);
-            } catch (IOException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (DocumentException e) {
+            } catch (IOException | DocumentException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
         }
@@ -158,9 +156,9 @@ public class ProductionBalanceDetailsListeners {
 
             generateProductionBalance.notifyObserversThatTheBalanceIsBeingGenerated(productionBalance);
         } catch (IOException e) {
-            throw new IllegalStateException("Problem with saving productionBalance report");
+            throw new IllegalStateException("Problem with saving productionBalance report", e);
         } catch (DocumentException e) {
-            throw new IllegalStateException("Problem with generating productionBalance report");
+            throw new IllegalStateException("Problem with generating productionBalance report", e);
         }
     }
 

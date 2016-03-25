@@ -35,7 +35,6 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.internal.components.grid.GridComponentFilterException;
 import com.qcadoo.view.internal.components.grid.GridComponentFilterSQLUtils;
 import org.codehaus.jettison.json.JSONObject;
@@ -51,9 +50,6 @@ public class EventsListListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private MaintenanceEventContextService maintenanceEventContextService;
@@ -131,7 +127,7 @@ public class EventsListListeners {
         filters.put("MAINTENANCE_EVENT_FILTER", maintenanceEventXLSHelper.getId());
 
         String filtersInJson = new JSONObject(filters).toString();
-        StringBuffer redirectUrl = new StringBuffer();
+        StringBuilder redirectUrl = new StringBuilder();
         redirectUrl.append("/cmmsMachineParts/maintenanceEvents.xlsx");
         redirectUrl.append("?");
         redirectUrl.append("filters=");
@@ -184,7 +180,7 @@ public class EventsListListeners {
         filters.put("PLANED_EVENT_FILTER", plannedEventXLSHelper.getId());
 
         String filtersInJson = new JSONObject(filters).toString();
-        StringBuffer redirectUrl = new StringBuffer();
+        StringBuilder redirectUrl = new StringBuilder();
         redirectUrl.append("/cmmsMachineParts/plannedEvents.xlsx");
         redirectUrl.append("?");
         redirectUrl.append("filters=");

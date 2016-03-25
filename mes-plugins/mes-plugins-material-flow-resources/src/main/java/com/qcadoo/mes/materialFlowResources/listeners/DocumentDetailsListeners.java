@@ -89,7 +89,7 @@ public class DocumentDetailsListeners {
     private static final String L_FORM = "form";
 
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = form.getEntity();
 
         view.redirectTo("/materialFlowResources/document." + args[0] + "?id=" + document.getId(), true, false);
@@ -97,7 +97,7 @@ public class DocumentDetailsListeners {
     }
 
     public void onSave(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = form.getEntity();
 
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
@@ -124,7 +124,7 @@ public class DocumentDetailsListeners {
 
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
 
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
         Entity documentToCreateResourcesFor = documentDD.save(document);
@@ -222,7 +222,7 @@ public class DocumentDetailsListeners {
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         form.performEvent(view, "refresh");
     }
 

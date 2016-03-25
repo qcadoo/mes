@@ -149,10 +149,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
         Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(orders, algorithm,
                 true);
-
-        // TODO LUPO fix comparator
-        // neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
-
+        
         List<String> headers = Lists.newLinkedList(headersWithAlignments.keySet());
         PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
                 defaultOrderHeaderColumnWidth, headersWithAlignments);

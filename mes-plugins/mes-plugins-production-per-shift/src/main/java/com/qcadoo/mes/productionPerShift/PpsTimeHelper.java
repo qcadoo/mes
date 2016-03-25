@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -42,13 +41,9 @@ import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 
 @Service
 public class PpsTimeHelper {
-
-    @Autowired
-    private NumberService numberService;
 
     public Date findFinishDate(final Entity dailyProgress, Date dateOfDay, Entity order) {
         DateTime endDate = null;

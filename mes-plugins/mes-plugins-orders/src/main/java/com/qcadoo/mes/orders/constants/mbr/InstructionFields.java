@@ -47,4 +47,5 @@ public final class InstructionFields {
 
     public static final String FORMULAS = "formulas";
 
+    private InstructionFields(){}
 }

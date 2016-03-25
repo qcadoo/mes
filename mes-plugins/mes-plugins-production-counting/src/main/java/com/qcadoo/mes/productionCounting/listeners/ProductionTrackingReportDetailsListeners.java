@@ -129,9 +129,7 @@ public class ProductionTrackingReportDetailsListeners {
                 state.addMessage(
                         "productionCounting.productionCountingDetails.window.mainTab.productionCountingDetails.generatedMessage",
                         MessageType.SUCCESS);
-            } catch (IOException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (DocumentException e) {
+            } catch (IOException | DocumentException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
         }
@@ -154,9 +152,9 @@ public class ProductionTrackingReportDetailsListeners {
         try {
             productionCountingPdfService.generateDocument(productionTrackingReportWithFileName, locale);
         } catch (IOException e) {
-            throw new IllegalStateException("Problem with saving productionTrackingReport report");
+            throw new IllegalStateException("Problem with saving productionTrackingReport report", e);
         } catch (DocumentException e) {
-            throw new IllegalStateException("Problem with generating productionTrackingReport report");
+            throw new IllegalStateException("Problem with generating productionTrackingReport report", e);
         }
     }
 

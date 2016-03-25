@@ -270,7 +270,6 @@ public class TechnologyServiceO {
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
 
         copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
-        // changeTechnologyState(copyOfTechnology, TechnologyStateStringValues.CHECKED);
         changeTechnologyStateToChecked(copyOfTechnology);
 
         return copyOfTechnology;
@@ -329,7 +328,7 @@ public class TechnologyServiceO {
     }
 
     public String generateNumberForTechnologyInOrder(final Entity order, final Entity technology) {
-        StringBuffer number = new StringBuffer();
+        StringBuilder number = new StringBuilder();
         if (technology == null) {
             number.append(numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY));

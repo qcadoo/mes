@@ -54,12 +54,12 @@ public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
         } catch (IOException e) {
             LOG.error("Reading URL stream failed", e);
         }
-        return new HashMap<String, BigDecimal>();
+        return new HashMap<>();
     }
 
     @Override
     public Map<String, BigDecimal> parse(InputStream inputStream, NbpProperties nbpProperties) {
-        Map<String, BigDecimal> exRates = new HashMap<String, BigDecimal>();
+        Map<String, BigDecimal> exRates = new HashMap<>();
         try {
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader sr = inputFactory.createXMLStreamReader(inputStream);
@@ -93,7 +93,7 @@ public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
                 sr.next();
             }
         } catch (XMLStreamException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         } finally {
             closeStream(inputStream);
         }

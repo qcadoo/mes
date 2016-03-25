@@ -30,8 +30,10 @@ import com.qcadoo.mes.orders.constants.ReasonTypeDeviationEffectiveEndFields;
 import com.qcadoo.mes.orders.constants.ReasonTypeDeviationEffectiveStartFields;
 import com.qcadoo.mes.orders.constants.TypeOfCorrectionCausesFields;
 
-public class OrderDeviationModelDescribers {
+public final class OrderDeviationModelDescribers {
 
+    private OrderDeviationModelDescribers(){}
+    
     public static final DeviationModelDescriber START_DATE_DEVIATION = new DeviationModelDescriber(
             OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_REASON_TYPE_CORRECTION_DATE_FROM,
             ReasonTypeCorrectionDateFromFields.REASON_TYPE_OF_CHANGING_ORDER_STATE);

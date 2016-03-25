@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCountingWithCosts.constants.ParameterFieldsPCWC;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -42,9 +41,6 @@ public class ParameterPBDetailsViewHooks {
 
     @Autowired
     private CurrencyService currencyService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public void fillCurrencyAndUnitFields(final ViewDefinitionState viewDefinitionState) {
         String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();

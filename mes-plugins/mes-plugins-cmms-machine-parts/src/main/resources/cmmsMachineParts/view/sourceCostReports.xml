@@ -1,0 +1,76 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_MAINTENANCE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="sourceCostReports" modelName="sourceCostReportFilter" modelPlugin="cmmsMachineParts">
+
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <group name="report">
+                <bigButton name="workerCosts" icon="xlsIcon24.png" state="enabled"
+                           action="#{window}.fireEvent(generateReport,workerCosts);">
+
+                </bigButton>
+                <bigButton name="timeReport" icon="xlsIcon24.png" state="disabled"
+                           action="#{window}.fireEvent(generateReport,timeReport);">
+
+                </bigButton>
+                <bigButton name="partsCosts" icon="xlsIcon24.png" state="disabled"
+                           action="#{window}.fireEvent(generateReport,partsCosts);">
+
+                </bigButton>
+            </group>
+        </ribbon>
+        <component type="form" name="form" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="3" rows="3" hasBorders="false">
+                <layoutElement column="1" row="1">
+                    <component type="calendar" name="fromDate" reference="fromDate" field="fromDate"/>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="calendar" name="toDate" reference="toDate" field="toDate"/>
+                
+                </layoutElement>
+                <layoutElement column="2" row="1">
+                    <component type="lookup" name="sourceCost" field="sourceCost" reference="sourceCost">
+                        <option type="column" name="name" fields="name"/>
+
+                        <option type="searchable" value="name"/>
+                        <option type="orderable" value="name"/>
+
+                        <option type="expression" value="#number + ' - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <option type="onlyActive" value="false"/>                        
+                    </component>
+                </layoutElement>
+            </component>
+            <option type="header" value="true" />
+            <option type="expression" value=""/>
+        </component>
+        <listener event="generateReport" method="generateReport"
+                  class="com.qcadoo.mes.cmmsMachineParts.listeners.SourceCostReportsListeners"/> 
+    </component>
+</view>

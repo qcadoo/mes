@@ -6,11 +6,11 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 
 public class ReportStyleFactory {
 
-    boolean isFirst = false;
+    private boolean isFirst = false;
 
-    short alignment = HSSFCellStyle.ALIGN_LEFT;
+    private short alignment = HSSFCellStyle.ALIGN_LEFT;
 
-    short color = IndexedColors.WHITE.getIndex();
+    private short color = IndexedColors.WHITE.getIndex();
 
     private static final short WHITE = IndexedColors.WHITE.getIndex();
 
@@ -22,29 +22,29 @@ public class ReportStyleFactory {
 
     private static final short RIGHT = HSSFCellStyle.ALIGN_RIGHT;
 
-    HSSFCellStyle firstLeftWhite;
+    private HSSFCellStyle firstLeftWhite;
 
-    HSSFCellStyle firstLeftRed;
+    private HSSFCellStyle firstLeftRed;
 
-    HSSFCellStyle firstLeftGreen;
+    private HSSFCellStyle firstLeftGreen;
 
-    HSSFCellStyle firstRightWhite;
+    private HSSFCellStyle firstRightWhite;
 
-    HSSFCellStyle firstRightRed;
+    private HSSFCellStyle firstRightRed;
 
-    HSSFCellStyle firstRightGreen;
+    private HSSFCellStyle firstRightGreen;
 
-    HSSFCellStyle leftWhite;
+    private HSSFCellStyle leftWhite;
 
-    HSSFCellStyle leftRed;
+    private HSSFCellStyle leftRed;
 
-    HSSFCellStyle leftGreen;
+    private HSSFCellStyle leftGreen;
 
-    HSSFCellStyle rightWhite;
+    private HSSFCellStyle rightWhite;
 
-    HSSFCellStyle rightRed;
+    private HSSFCellStyle rightRed;
 
-    HSSFCellStyle rightGreen;
+    private HSSFCellStyle rightGreen;
 
     public ReportStyleFactory(final HSSFWorkbook workbook) {
         init(workbook);
@@ -103,27 +103,25 @@ public class ReportStyleFactory {
                     return firstRightGreen;
                 }
             }
+        } else if (alignment == LEFT) {
+            if (color == WHITE) {
+                return leftWhite;
+            }
+            if (color == RED) {
+                return leftRed;
+            }
+            if (color == GREEN) {
+                return leftGreen;
+            }
         } else {
-            if (alignment == LEFT) {
-                if (color == WHITE) {
-                    return leftWhite;
-                }
-                if (color == RED) {
-                    return leftRed;
-                }
-                if (color == GREEN) {
-                    return leftGreen;
-                }
-            } else {
-                if (color == WHITE) {
-                    return rightWhite;
-                }
-                if (color == RED) {
-                    return rightRed;
-                }
-                if (color == GREEN) {
-                    return rightGreen;
-                }
+            if (color == WHITE) {
+                return rightWhite;
+            }
+            if (color == RED) {
+                return rightRed;
+            }
+            if (color == GREEN) {
+                return rightGreen;
             }
         }
         return leftWhite;

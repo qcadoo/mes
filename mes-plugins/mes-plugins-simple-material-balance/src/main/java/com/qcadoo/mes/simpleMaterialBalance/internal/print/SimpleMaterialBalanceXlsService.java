@@ -118,9 +118,6 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
         List<Entity> simpleMaterialBalanceLocationComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS);
 
-        // TODO LUPO fix comparator
-        // neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
-
         for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
 

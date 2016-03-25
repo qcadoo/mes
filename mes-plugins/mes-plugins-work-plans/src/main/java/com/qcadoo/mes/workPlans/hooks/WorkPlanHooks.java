@@ -25,7 +25,6 @@ package com.qcadoo.mes.workPlans.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.constants.ParameterOrderColumnFields;
@@ -46,9 +45,6 @@ public class WorkPlanHooks {
 
     @Autowired
     private ParameterService parameterService;
-
-    @Autowired
-    private BarcodeOperationComponentService barcodeOperationComponentService;
 
     public void onCreate(final DataDefinition workPlanDD, final Entity workPlan) {
         copyColumnForOrders(workPlan);

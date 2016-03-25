@@ -129,7 +129,7 @@ public class OrderHooks {
         copyEndDate(orderDD, order);
         copyProductQuantity(orderDD, order);
         onCorrectingTheRequestedVolume(orderDD, order);
-        auditDatesChanges(orderDD, order);
+        auditDatesChanges(order);
         technologyServiceO.createOrUpdateTechnology(orderDD, order);
     }
 
@@ -141,7 +141,7 @@ public class OrderHooks {
     }
 
     public void onDelete(final DataDefinition orderDD, final Entity order) {
-        backupTechnology(orderDD, order);
+        backupTechnology(order);
     }
 
     public boolean setDateChanged(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity order,
@@ -160,7 +160,7 @@ public class OrderHooks {
         return true;
     }
 
-    private void auditDatesChanges(final DataDefinition orderDD, final Entity order) {
+    private void auditDatesChanges(final Entity order) {
         boolean datesChanged = order.getBooleanField(OrderFields.DATES_CHANGED);
         OrderState orderState = OrderState.of(order);
         if (datesChanged && !orderState.equals(OrderState.PENDING)) {
@@ -215,7 +215,7 @@ public class OrderHooks {
         return null;
     }
 
-    private void backupTechnology(final DataDefinition orderDD, final Entity order) {
+    private void backupTechnology(final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         if (technology != null) {
             String bNumber = BACKUP_TECHNOLOGY_PREFIX + new Date().getTime() + "_"

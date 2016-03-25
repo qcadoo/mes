@@ -83,8 +83,6 @@ public class ProductionTrackingServiceImplTest {
         MockitoAnnotations.initMocks(this);
         productionTrackingService = new ProductionTrackingServiceImpl();
 
-        ReflectionTestUtils.setField(productionTrackingService, "productionCountingService", productionCountingService);
-
         given(view.getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT)).willReturn(
                 technologyOperationComponentLookup);
 

@@ -56,14 +56,6 @@ public class UnitOperationProductColumn extends AbstractOperationProductColumn {
         return ProductDirection.values();
     }
 
-    private String number(Entity product) {
-        return product.getStringField(ProductFields.NUMBER);
-    }
-
-    private String name(Entity product) {
-        return product.getStringField(ProductFields.NAME);
-    }
-
     private Entity product(Entity operationProduct) {
         return operationProduct.getBelongsToField(OperationProductInComponentFields.PRODUCT);
     }

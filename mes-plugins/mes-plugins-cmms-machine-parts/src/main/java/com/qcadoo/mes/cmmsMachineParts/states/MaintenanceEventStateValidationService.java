@@ -148,8 +148,8 @@ public class MaintenanceEventStateValidationService {
         List<Entity> staffWorkTimes = event.getHasManyField(MaintenanceEventFields.STAFF_WORK_TIMES);
         Function<Entity, Entity> toWorker = entity -> entity.getBelongsToField(StaffWorkTimeFields.WORKER);
         ToIntFunction<Entity> toInt = entity -> entity.getIntegerField(StaffWorkTimeFields.LABOR_TIME);
-        Map<Entity, Integer> map = staffWorkTimes.stream().collect(Collectors.groupingBy(toWorker, Collectors.summingInt(toInt)));
-        return map;
+        
+        return staffWorkTimes.stream().collect(Collectors.groupingBy(toWorker, Collectors.summingInt(toInt)));
     }
 
     private Optional<BigDecimal> getPossibleDeviationFromParameters() {

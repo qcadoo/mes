@@ -23,14 +23,9 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.StaffFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.ActionForPlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
@@ -40,6 +35,11 @@ import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventStateChangeD
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PlannedEventHooks {
@@ -59,7 +59,6 @@ public class PlannedEventHooks {
 
     public void onCopy(final DataDefinition eventDD, final Entity event) {
         setInitialState(event);
-
         clearFieldsInCopy(event);
     }
 
@@ -73,13 +72,22 @@ public class PlannedEventHooks {
             event.setField(PlannedEventFields.OWNER_NAME, StringUtils.EMPTY);
         }
         clearHiddenFields(event);
+        if(event.getId() == null){
+            List<Entity> actions =  event.getHasManyField(PlannedEventFields.ACTIONS);
+            actions.forEach(a -> clearActions(a));
+        }
+
+    }
+
+    private void clearActions(Entity a) {
+        a.setField(ActionForPlannedEventFields.STATE, null);
+        a.setField(ActionForPlannedEventFields.REASON, null);
     }
 
     private void clearFieldsInCopy(final Entity event) {
 
         event.setField(PlannedEventFields.MAINTENANCE_EVENT, null);
         event.setField(PlannedEventFields.RELATED_EVENTS, null);
-        event.setField(PlannedEventFields.ACTIONS, null);
         event.setField(PlannedEventFields.FINISH_DATE, null);
         event.setField(PlannedEventFields.START_DATE, null);
         event.setField(PlannedEventFields.SOLUTION_DESCRIPTION, null);
