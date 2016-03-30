@@ -58,9 +58,9 @@ public class TechnologyTreeValidators {
         boolean valid = true;
         String errorMessageKey = "technologies.operationProductInComponent.validate.error.badFormula";
         String formula = entity.getStringField(OperationProductInComponentFields.QUANTITY_FORMULA);
-        formula = formula.replace(",", ".");
         if (StringUtils.isNotBlank(formula)) {
             try {
+                formula = formula.replace(",", ".");
                 Expression expression = new ExpressionBuilder(formula).build();
                 ValidationResult result = expression.validate();
                 if (!result.isValid()) {
