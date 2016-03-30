@@ -45,12 +45,14 @@
             <validatesScale max="5"/>
         </decimal>
         <dictionary name="givenUnit" dictionary="units"/>
-
+        <string name="quantityFormula" />
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
                        method="invalidateIfBelongsToAcceptedTechnology"/>
         <validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
                        method="invalidateIfAllreadyInTheSameOperation"/>
+        <validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
+                       method="invalidateIfWrongFormula"/>
     </hooks>
 </model>
