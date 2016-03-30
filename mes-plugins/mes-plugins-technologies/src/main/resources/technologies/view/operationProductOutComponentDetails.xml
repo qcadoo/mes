@@ -75,5 +75,7 @@
     <hooks>
         <beforeRender class="com.qcadoo.mes.basic.util.UnitService"
                       method="fillProductUnitBeforeRender"/>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.OPOCDetailsHooks"
+                      method="onBeforeRender"/>
     </hooks>
 </view>
