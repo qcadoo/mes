@@ -66,13 +66,13 @@ public class TechnologyTreeValidators {
                 if (!result.isValid()) {
                     entity.addGlobalError(errorMessageKey);
                     entity.addError(entity.getDataDefinition().getField(OperationProductInComponentFields.QUANTITY_FORMULA),
-                            "technologies.operationProductInComponent.validate.error.badFormula");
+                            errorMessageKey);
                     valid = false;
                 }
 
             } catch (Exception ex) {
                 entity.addError(entity.getDataDefinition().getField(OperationProductInComponentFields.QUANTITY_FORMULA),
-                        "technologies.operationProductInComponent.validate.error.badFormula");
+                        errorMessageKey);
                 entity.addGlobalError(errorMessageKey);
                 valid = false;
             }
