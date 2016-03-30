@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="operationProductOutComponentDetails"
       modelName="operationProductOutComponent">
@@ -35,7 +36,7 @@
         </ribbon>
         <component type="form" name="form" reference="form">
             <component type="gridLayout" name="gridLayout" columns="1"
-                       rows="3">
+                       rows="4">
                 <layoutElement column="1" row="1">
                     <component type="lookup" name="product" field="product"
                                reference="product">
@@ -61,6 +62,9 @@
                 <layoutElement column="1" row="3">
                     <component type="input" name="unit" reference="unit"
                                defaultEnabled="false"/>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="checkbox" name="set" field="set" reference="set"/>
                 </layoutElement>
             </component>
             <option type="header" value="true"/>
