@@ -350,7 +350,7 @@ public class TechnologyServiceO {
         technologyStateChangeAspect.changeState(stateChangeContextT);
     }
 
-    private void changeTechnologyStateToChecked(Entity technology) {
+    public void changeTechnologyStateToChecked(Entity technology) {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("state", TechnologyStateStringValues.CHECKED);
         paramMap.put("id", technology.getId());

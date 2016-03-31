@@ -613,7 +613,7 @@ public class OrderHooks {
         copyOfTechnology.setField(TechnologyFields.NUMBER, number);
         copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
         if (OrderType.of(order) == OrderType.WITH_PATTERN_TECHNOLOGY) {
-            technologyServiceO.changeTechnologyState(copyOfTechnology, TechnologyStateStringValues.CHECKED);
+            technologyServiceO.changeTechnologyStateToChecked(technology);
         }
         return Optional.of(copyOfTechnology);
     }
