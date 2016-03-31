@@ -3,3 +3,7 @@
 ALTER TABLE technologies_operationproductincomponent ADD COLUMN quantityformula character varying(255);
 
 -- end
+
+-- #NBLS-160
+ALTER TABLE basic_parameter ADD COLUMN consumptionOfRawMaterialsBasedOnStandards boolean default false;
+-- end
