@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +34,23 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutCo
 import com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class RecordOperationProductOutComponentHooks {
 
     @Autowired
     private RecordOperationProductComponentListeners recordOperationProductComponentListeners;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     private static final String L_FORM = "form";
 
@@ -51,10 +59,12 @@ public class RecordOperationProductOutComponentHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity componentEntity = form.getPersistedEntityWithIncludedFormValues();
 
-        hideSetTab(view, componentEntity);
+        if (hideOrShowSetTab(view, componentEntity)) {
+            fillSetTab(view, componentEntity);
+        }
     }
 
-    private void hideSetTab(ViewDefinitionState view, Entity componentEntity) {
+    private boolean hideOrShowSetTab(ViewDefinitionState view, Entity componentEntity) {
         boolean isSet = false;
         Entity productionTracking = componentEntity
                 .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
@@ -70,13 +80,40 @@ public class RecordOperationProductOutComponentHooks {
                 .stream()
                 .filter(opoc -> opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
                         .equals(product.getId())).findFirst();
-        if(operationProductOutComponent.isPresent()) {
+        if (operationProductOutComponent.isPresent()) {
             isSet = operationProductOutComponent.get().getBooleanField("set");
         }
-        if(!isSet) {
+        if (!isSet) {
             view.getComponentByReference("setTab").setVisible(false);
         } else {
             view.getComponentByReference("setTab").setVisible(true);
         }
+
+        return isSet;
+    }
+
+    private void fillSetTab(ViewDefinitionState view, Entity componentEntity) {
+//        EntityList setTrackingOperationProductsInComponents = componentEntity.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+//        setTrackingOperationProductsInComponents.clear();
+
+// TODO trzeba będzie wywalać stare?
+
+        List<Entity> setTrackingOperationProductsInComponents = new ArrayList<>();
+        DataDefinition setTrackingOperationProductInComponentsDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+
+        Entity productionTracking = componentEntity.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+        EntityList trackingOperationProductsInComponents = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+
+        for (Entity trackingOperationProductInComponents : trackingOperationProductsInComponents) {
+            Entity setTrackingOperationProductInComponents = setTrackingOperationProductInComponentsDD.create();
+            setTrackingOperationProductInComponents.setField("quantityFromSets", 123);
+            setTrackingOperationProductInComponents.setField("trackingOperationProductInComponent", trackingOperationProductInComponents);
+            setTrackingOperationProductInComponents.setField("trackingOperationProductOutComponent", componentEntity);
+            
+            setTrackingOperationProductsInComponents.add(setTrackingOperationProductInComponents);
+        }
+        
+        componentEntity.setField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS, setTrackingOperationProductsInComponents);
+        componentEntity.getDataDefinition().save(componentEntity);
     }
 }

@@ -70,5 +70,7 @@ public final class ProductionCountingConstants {
     public static final String VIEW_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "trackingOperationProductInComponentDetails";
 
     public static final String VIEW_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DETAILS = "trackingOperationProductOutComponentDetails";
+    
+    public static final String MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS = "setTrackingOperationProductInComponents";
 
 }

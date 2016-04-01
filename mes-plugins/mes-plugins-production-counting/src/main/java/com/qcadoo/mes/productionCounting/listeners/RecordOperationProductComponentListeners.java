@@ -36,8 +36,10 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -45,6 +47,8 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import java.util.List;
 
 @Service
 public class RecordOperationProductComponentListeners {
@@ -88,8 +92,13 @@ public class RecordOperationProductComponentListeners {
         view.getComponentByReference(L_NAME).setFieldValue(productEntity.getField(L_NAME));
     }
 
+    
+    public void givenQuantityChanged(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        calculateQuantity(view, componentState, args);
+        calculateQuantityFromSets(view, componentState, args);
+    }
+    
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity productComponent = form.getPersistedEntityWithIncludedFormValues();
 
@@ -134,6 +143,23 @@ public class RecordOperationProductComponentListeners {
         }
         form.setEntity(productComponent);
 
+    }
+
+    private void calculateQuantityFromSets(ViewDefinitionState view, ComponentState componentState, String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity productComponent = form.getPersistedEntityWithIncludedFormValues();
+
+        FieldComponent givenQuantityField = (FieldComponent) view.getComponentByReference("givenQuantity");
+        int givenQuantity = Integer.parseInt(givenQuantityField.getFieldValue().toString());
+        
+//        EntityList setTrackingOperationProductsInComponents = productComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTrackingOperationProductsInComponents");
+        List<Entity> setTrackingOperationProductsInComponents = gridComponent.getEntities();
+        setTrackingOperationProductsInComponents.forEach(item -> {
+           
+            item.setField("quantityFromSets", givenQuantity);
+        });
+        gridComponent.setEntities(setTrackingOperationProductsInComponents);
     }
 
 }
