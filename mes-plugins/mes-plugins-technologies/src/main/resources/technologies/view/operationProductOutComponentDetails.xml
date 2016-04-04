@@ -52,6 +52,10 @@
 
                         <listener event="onSelectedEntityChange"
                                   class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit"/>
+
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.technologies.listeners.OPOCDetailsListeners"
+                                  method="clearCheckbox"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2">
