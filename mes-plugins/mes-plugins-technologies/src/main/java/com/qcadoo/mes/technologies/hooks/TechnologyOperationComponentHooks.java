@@ -217,12 +217,14 @@ public class TechnologyOperationComponentHooks {
     public void onSave(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         clearField(technologyOperationComponent);
 
-        DataDefinition opocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
-        List<Entity> opocs = technologyOperationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-        for (Entity opoc : opocs) {
-            clearSet(opocDD, opoc, technologyOperationComponent);
+        if (technologyOperationComponent.getId() != null) {
+            DataDefinition opocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
+            List<Entity> opocs = technologyOperationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+            for (Entity opoc : opocs) {
+                clearSet(opocDD, opoc, technologyOperationComponent);
+            }
         }
     }
 

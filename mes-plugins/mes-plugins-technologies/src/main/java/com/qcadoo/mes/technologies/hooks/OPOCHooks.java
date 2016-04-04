@@ -18,4 +18,11 @@ public class OPOCHooks {
             opoc.setField(OperationProductOutComponentFields.SET, false);
         }
     }
+
+    public void onCreate(final DataDefinition dataDefinition, final Entity opoc) {
+        Boolean set = (Boolean) opoc.getField(OperationProductOutComponentFields.SET);
+        if (set == null) {
+            opoc.setField(OperationProductOutComponentFields.SET, false);
+        }
+    }
 }

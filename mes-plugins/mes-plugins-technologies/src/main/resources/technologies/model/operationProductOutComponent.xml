@@ -46,5 +46,7 @@
                        method="invalidateIfAllreadyInTheSameOperation"/>
         <onSave class="com.qcadoo.mes.technologies.hooks.OPOCHooks"
                 method="onSave"/>
+        <onCreate class="com.qcadoo.mes.technologies.hooks.OPOCHooks"
+                  method="onCreate"/>
     </hooks>
 </model>
