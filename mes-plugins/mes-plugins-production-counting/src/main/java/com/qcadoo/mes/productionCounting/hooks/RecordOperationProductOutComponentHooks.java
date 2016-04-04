@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import com.google.common.base.Strings;
+import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import java.util.Optional;
 
@@ -30,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
@@ -39,7 +44,9 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,26 +100,39 @@ public class RecordOperationProductOutComponentHooks {
     }
 
     private void fillSetTab(ViewDefinitionState view, Entity componentEntity) {
-//        EntityList setTrackingOperationProductsInComponents = componentEntity.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
-//        setTrackingOperationProductsInComponents.clear();
-
-// TODO trzeba będzie wywalać stare?
-
         List<Entity> setTrackingOperationProductsInComponents = new ArrayList<>();
         DataDefinition setTrackingOperationProductInComponentsDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
 
         Entity productionTracking = componentEntity.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
         EntityList trackingOperationProductsInComponents = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
 
-        for (Entity trackingOperationProductInComponents : trackingOperationProductsInComponents) {
-            Entity setTrackingOperationProductInComponents = setTrackingOperationProductInComponentsDD.create();
-            setTrackingOperationProductInComponents.setField("quantityFromSets", 123);
-            setTrackingOperationProductInComponents.setField("trackingOperationProductInComponent", trackingOperationProductInComponents);
-            setTrackingOperationProductInComponents.setField("trackingOperationProductOutComponent", componentEntity);
-            
-            setTrackingOperationProductsInComponents.add(setTrackingOperationProductInComponents);
+        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
+
+        BigDecimal usedQuantity = BigDecimal.ZERO;
+        String usedQuantityString = usedQuantityField.getFieldValue().toString().replace(",", ".");
+        if (!Strings.isNullOrEmpty(usedQuantityString)) {
+            usedQuantity = new BigDecimal(usedQuantityString);
         }
-        
+
+        for (Entity trackingOperationProductInComponents : trackingOperationProductsInComponents) {
+            Entity product = trackingOperationProductInComponents.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+            GlobalTypeOfMaterial productGlobalTypeOfMaterial = GlobalTypeOfMaterial.parseString(product.getStringField(ProductFields.GLOBAL_TYPE_OF_MATERIAL));
+
+            if (productGlobalTypeOfMaterial == GlobalTypeOfMaterial.INTERMEDIATE) {
+                Entity setTrackingOperationProductInComponents = setTrackingOperationProductInComponentsDD.create();
+
+                BigDecimal plannedQuantity = trackingOperationProductInComponents.getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY);
+                Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+                BigDecimal plannedQuantityForOrder = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+                BigDecimal quantityFromSets = plannedQuantity.divide(plannedQuantityForOrder).multiply(usedQuantity);
+                setTrackingOperationProductInComponents.setField("quantityFromSets", quantityFromSets);
+                setTrackingOperationProductInComponents.setField("trackingOperationProductInComponent", trackingOperationProductInComponents);
+                setTrackingOperationProductInComponents.setField("trackingOperationProductOutComponent", componentEntity);
+
+                setTrackingOperationProductsInComponents.add(setTrackingOperationProductInComponents);
+            }
+        }
+
         componentEntity.setField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS, setTrackingOperationProductsInComponents);
         componentEntity.getDataDefinition().save(componentEntity);
     }

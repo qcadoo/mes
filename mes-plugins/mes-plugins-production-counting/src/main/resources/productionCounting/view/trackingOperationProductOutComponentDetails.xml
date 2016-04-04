@@ -92,18 +92,22 @@
 		
         <windowTab name="setTab" reference="setTab">                    
             <component type="grid" name="setTrackingOperationProductsInComponents"
-                               reference="setTrackingOperationProductsInComponents"
-                               source="#{form}.setTrackingOperationProductsInComponents"
-                               defaultEnabled="true">
-                <option type="column" name="x" fields="trackingOperationProductInComponent"
-                                expression="#trackingOperationProductInComponent['product']" link="true" width="100"/>
-                <option type="column" name="quantityFromSets" fields="quantityFromSets" link="true" width="200"/>
+                       reference="setTrackingOperationProductsInComponents"
+                       source="#{form}.setTrackingOperationProductsInComponents"
+                       defaultEnabled="true">
+                <option type="column" name="productName" fields="trackingOperationProductInComponent"
+                        expression="#trackingOperationProductInComponent['product']['name']" width="100"/>
+                <option type="column" name="productNumber" fields="trackingOperationProductInComponent"
+                        expression="#trackingOperationProductInComponent['product']['number']" width="100"/>
+                <option type="column" name="quantityFromSets" fields="quantityFromSets" width="50"/>
+                <option type="column" name="givenUnit" fields="trackingOperationProductOutComponent" expression="#trackingOperationProductOutComponent['givenUnit']" width="50"/>
                 <option type="order" column="quantityFromSets" direction="desc"/>
-                <option type="searchable" value="quantityFromSets,x"/>
-                <option type="orderable" value="quantityFromSets,x"/>
+                <option type="searchable" value="quantityFromSets,givenUnit"/>
+                <option type="orderable" value="quantityFromSets,givenUnit"/>
 
                 <option type="creatable" value="false"/>
                 <option type="deletable" value="false"/>
+                <option type="header" value="false" />
             </component>
         </windowTab>
 

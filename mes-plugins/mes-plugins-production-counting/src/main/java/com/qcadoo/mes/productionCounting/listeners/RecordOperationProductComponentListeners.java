@@ -35,6 +35,8 @@ import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -95,7 +97,7 @@ public class RecordOperationProductComponentListeners {
     
     public void givenQuantityChanged(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         calculateQuantity(view, componentState, args);
-        calculateQuantityFromSets(view, componentState, args);
+        calculateQuantityFromSets(view);
     }
     
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -145,19 +147,22 @@ public class RecordOperationProductComponentListeners {
 
     }
 
-    private void calculateQuantityFromSets(ViewDefinitionState view, ComponentState componentState, String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity productComponent = form.getPersistedEntityWithIncludedFormValues();
-
-        FieldComponent givenQuantityField = (FieldComponent) view.getComponentByReference("givenQuantity");
-        int givenQuantity = Integer.parseInt(givenQuantityField.getFieldValue().toString());
+    private void calculateQuantityFromSets(ViewDefinitionState view) {
+        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
+        BigDecimal usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", "."));
         
-//        EntityList setTrackingOperationProductsInComponents = productComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
         GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTrackingOperationProductsInComponents");
         List<Entity> setTrackingOperationProductsInComponents = gridComponent.getEntities();
         setTrackingOperationProductsInComponents.forEach(item -> {
-           
-            item.setField("quantityFromSets", givenQuantity);
+            Entity trackingOperationProductInComponent = item.getBelongsToField("trackingOperationProductInComponent");
+            BigDecimal plannedQuantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY);
+            Entity productionTracking = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCTION_TRACKING);
+            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+            BigDecimal plannedQuantityForOrder = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+            
+            BigDecimal quantityFromSets = plannedQuantity.divide(plannedQuantityForOrder).multiply(usedQuantity);
+            
+            item.setField("quantityFromSets", quantityFromSets);
         });
         gridComponent.setEntities(setTrackingOperationProductsInComponents);
     }
