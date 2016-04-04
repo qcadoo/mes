@@ -35,11 +35,14 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentReferenceMode;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -50,6 +53,9 @@ public class TechnologyOperationComponentHooks {
 
     @Autowired
     private TechnologyService technologyService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void onCreate(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         copyCommentAndAttachmentFromOperation(technologyOperationComponent);
@@ -106,14 +112,14 @@ public class TechnologyOperationComponentHooks {
 
     private void copyReferencedTechnology(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
-        if (!TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY.equals(technologyOperationComponent
-                .getField(TechnologyOperationComponentFields.ENTITY_TYPE))
+        if (!TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY
+                .equals(technologyOperationComponent.getField(TechnologyOperationComponentFields.ENTITY_TYPE))
                 && (technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY) == null)) {
             return;
         }
 
-        boolean isCopy = TechnologyOperationComponentReferenceMode.COPY.getStringValue().equals(
-                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.REFERENCE_MODE));
+        boolean isCopy = TechnologyOperationComponentReferenceMode.COPY.getStringValue()
+                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.REFERENCE_MODE));
 
         Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
         Entity referencedTechnology = technologyOperationComponent
@@ -193,8 +199,8 @@ public class TechnologyOperationComponentHooks {
         technologies.add(referencedTechnology.getId());
 
         for (Entity technologyOperationComponent : referencedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS)) {
-            if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
-                    technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+            if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue()
+                    .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
                 boolean isCyclic = checkForCyclicReferences(technologies,
                         technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY),
                         false);
@@ -211,6 +217,21 @@ public class TechnologyOperationComponentHooks {
     public void onSave(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         clearField(technologyOperationComponent);
 
+        DataDefinition opocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
+        List<Entity> opocs = technologyOperationComponent
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+        for (Entity opoc : opocs) {
+            clearSet(opocDD, opoc, technologyOperationComponent);
+        }
+    }
+
+    private void clearSet(final DataDefinition dataDefinition, final Entity opoc, final Entity toc) {
+        Boolean set = (Boolean) opoc.getField(OperationProductOutComponentFields.SET);
+        if (set == null || (set && toc.getBelongsToField(TechnologyOperationComponentFields.PARENT) != null)) {
+            opoc.setField(OperationProductOutComponentFields.SET, false);
+            dataDefinition.save(opoc);
+        }
     }
 
     private void clearField(final Entity technologyOperationComponent) {

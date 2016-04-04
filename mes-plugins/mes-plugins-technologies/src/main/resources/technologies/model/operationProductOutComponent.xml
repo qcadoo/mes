@@ -44,5 +44,7 @@
                        method="invalidateIfBelongsToAcceptedTechnology"/>
         <validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
                        method="invalidateIfAllreadyInTheSameOperation"/>
+        <onSave class="com.qcadoo.mes.technologies.hooks.OPOCHooks"
+                method="onSave"/>
     </hooks>
 </model>
