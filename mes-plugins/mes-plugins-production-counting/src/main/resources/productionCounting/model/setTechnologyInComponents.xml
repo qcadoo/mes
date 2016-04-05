@@ -30,8 +30,8 @@
 
 	<fields>
 		<belongsTo name="trackingOperationProductInComponent" model="trackingOperationProductInComponent" plugin="productionCounting"/>
-		<belongsTo name="operationProductInComponent" model="operationProductInComponent" plugin="technologies"/>
-                <integer name="quantityFromSets" />
+		<belongsTo name="product" model="product" plugin="basic"/>
+        <decimal name="quantityFromSets" />
 	</fields>
 
 	<hooks>

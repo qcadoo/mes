@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,11 +34,13 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.OperationProductsExtractor;
 import com.qcadoo.mes.productionCounting.states.ProductionTrackingStatesHelper;
@@ -45,7 +48,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import java.math.BigDecimal;
 
 @Service
 public class ProductionTrackingHooks {
@@ -65,6 +67,9 @@ public class ProductionTrackingHooks {
     @Autowired
     private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponents;
 
+    @Autowired
+    private SetTechnologyInComponentsService setTechnologyInComponentsService;
+
     public void onCreate(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         setInitialState(productionTracking);
     }
@@ -78,6 +83,7 @@ public class ProductionTrackingHooks {
         setTimesToZeroIfEmpty(productionTracking);
         copyProducts(productionTracking);
         generateSetTrackingOperationProductsComponents(productionTracking);
+        generateSetTechnologyInComponents(productionTracking);
     }
 
     private void copyProducts(final Entity productionTracking) {
@@ -184,9 +190,28 @@ public class ProductionTrackingHooks {
     private void generateSetTrackingOperationProductsComponents(Entity productionTracking) {
         EntityList trackingOperationProductOutComponents = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
         for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-            BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
-            trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(trackingOperationProductOutComponent, usedQuantity);
-            trackingOperationProductOutComponent = trackingOperationProductOutComponent.getDataDefinition().save(trackingOperationProductOutComponent);
+            BigDecimal usedQuantity = trackingOperationProductOutComponent
+                    .getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
+            trackingOperationProductOutComponent = setTrackingOperationProductsComponents
+                    .fillTrackingOperationProductOutComponent(trackingOperationProductOutComponent, usedQuantity);
+            trackingOperationProductOutComponent = trackingOperationProductOutComponent.getDataDefinition().save(
+                    trackingOperationProductOutComponent);
+        }
+
+    }
+
+    private void generateSetTechnologyInComponents(Entity productionTracking) {
+        EntityList trackingOperationProductInComponents = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+        for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
+            if (setTechnologyInComponentsService.isSet(trackingOperationProductInComponent)) {
+                BigDecimal usedQuantity = trackingOperationProductInComponent
+                        .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
+                trackingOperationProductInComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
+                        trackingOperationProductInComponent, usedQuantity);
+                trackingOperationProductInComponent = trackingOperationProductInComponent.getDataDefinition().save(
+                        trackingOperationProductInComponent);
+            }
         }
     }
 }

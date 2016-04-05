@@ -73,4 +73,6 @@ public final class ProductionCountingConstants {
     
     public static final String MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS = "setTrackingOperationProductInComponents";
 
+    public static final String MODEL_SET_TECHNOLOGY_IN_COMPONENTS = "setTechnologyInComponents";
+
 }
