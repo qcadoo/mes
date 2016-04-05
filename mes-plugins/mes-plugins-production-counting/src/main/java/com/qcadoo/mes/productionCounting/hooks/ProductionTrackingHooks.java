@@ -33,15 +33,19 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.OperationProductsExtractor;
 import com.qcadoo.mes.productionCounting.states.ProductionTrackingStatesHelper;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import java.math.BigDecimal;
 
 @Service
 public class ProductionTrackingHooks {
@@ -58,6 +62,9 @@ public class ProductionTrackingHooks {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponents;
+
     public void onCreate(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         setInitialState(productionTracking);
     }
@@ -70,6 +77,7 @@ public class ProductionTrackingHooks {
         generateNumberIfNeeded(productionTracking);
         setTimesToZeroIfEmpty(productionTracking);
         copyProducts(productionTracking);
+        generateSetTrackingOperationProductsComponents(productionTracking);
     }
 
     private void copyProducts(final Entity productionTracking) {
@@ -161,7 +169,7 @@ public class ProductionTrackingHooks {
     }
 
     private String getProductionRecordNumber(final String[] orderNumberSplited) {
-        StringBuffer number = new StringBuffer();
+        StringBuilder number = new StringBuilder();
         for (int i = 0; i < orderNumberSplited.length; i++) {
             if (i > 0) {
                 number.append(orderNumberSplited[i]);
@@ -173,4 +181,12 @@ public class ProductionTrackingHooks {
         return StringUtils.strip(number.toString());
     }
 
+    private void generateSetTrackingOperationProductsComponents(Entity productionTracking) {
+        EntityList trackingOperationProductOutComponents = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+        for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
+            BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
+            trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(trackingOperationProductOutComponent, usedQuantity);
+            trackingOperationProductOutComponent = trackingOperationProductOutComponent.getDataDefinition().save(trackingOperationProductOutComponent);
+        }
+    }
 }
