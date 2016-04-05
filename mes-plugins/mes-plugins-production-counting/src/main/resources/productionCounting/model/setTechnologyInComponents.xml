@@ -24,42 +24,17 @@
     ***************************************************************************
 
 -->
-<model name="trackingOperationProductInComponent"
+<model name="setTechnologyInComponents"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
 	<fields>
-		<belongsTo name="productionTracking" model="productionTracking" required="true"/>
-		<belongsTo name="product" model="product" plugin="basic" required="true"/>
-		<decimal name="plannedQuantity" persistent="false">
-			<validatesUnscaledValue max="9"/>
-			<validatesScale max="5"/>
-		</decimal>
-		<decimal name="usedQuantity">
-			<validatesRange from="0" exclusively="false"/>
-			<validatesUnscaledValue max="9"/>
-			<validatesScale max="5"/>
-		</decimal>
-		<decimal name="balance">
-			<validatesUnscaledValue max="9"/>
-			<validatesScale max="5"/>
-		</decimal>
-
-		<decimal name="givenQuantity">
-			<validatesRange from="0" exclusively="false"/>
-			<validatesUnscaledValue max="9"/>
-			<validatesScale max="5"/>
-		</decimal>
-		<dictionary name="givenUnit" dictionary="units"/>
-		<hasMany name="setTechnologyInComponents"
-                 joinField="trackingOperationProductInComponent" model="setTechnologyInComponents"
-                 cascade="delete"/>
+		<belongsTo name="trackingOperationProductInComponent" model="trackingOperationProductInComponent" plugin="productionCounting"/>
+		<belongsTo name="operationProductInComponent" model="operationProductInComponent" plugin="technologies"/>
+                <integer name="quantityFromSets" />
 	</fields>
 
 	<hooks>
-		<onView
-				class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductInComponentHooks"
-				method="onView"/>
 	</hooks>
 
 </model>

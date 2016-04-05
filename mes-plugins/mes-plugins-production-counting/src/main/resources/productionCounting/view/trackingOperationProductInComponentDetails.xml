@@ -93,13 +93,31 @@
 		</windowTab>
 		
 		<windowTab name="setTab" reference="setTab">
+ 			<component type="grid" name="setTechnologyInComponents"
+                               reference="setTechnologyInComponents"
+                               source="#{form}.setTechnologyInComponents"
+                               defaultEnabled="true">
+                <option type="column" name="productName" fields="operationProductInComponent"
+                        expression="#operationProductInComponent['product']['name']" width="100"/>
+                <option type="column" name="productNumber" fields="operationProductInComponent"
+                        expression="#operationProductInComponent['product']['number']" width="100"/>
+                <option type="column" name="quantityFromSets" fields="quantityFromSets" width="50"/>
+                <option type="column" name="givenUnit" fields="operationProductInComponent" expression="#operationProductInComponent['givenUnit']" width="50"/>
+                <option type="order" column="quantityFromSets" direction="desc"/>
+                <option type="searchable" value="quantityFromSets,givenUnit"/>
+                <option type="orderable" value="quantityFromSets,givenUnit"/>
+
+                <option type="creatable" value="false"/>
+                <option type="deletable" value="false"/>
+                <option type="header" value="false" />
+            </component>
 		</windowTab>
 
 	</component>
 
 	<hooks>
 		<beforeRender
-				class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"
+				class="com.qcadoo.mes.productionCounting.hooks.RecordOperationProductInComponentHooks"
 				method="onBeforeRender"/>
 	</hooks>
 

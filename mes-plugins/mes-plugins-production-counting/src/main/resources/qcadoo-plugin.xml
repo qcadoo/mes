@@ -108,6 +108,8 @@
                      resource="model/trackingOperationProductOutComponentDto.xml"/>
         <model:model model="setTrackingOperationProductInComponents"
                      resource="model/setTrackingOperationProductInComponents.xml"/>
+        <model:model model="setTechnologyInComponents"
+                     resource="model/setTechnologyInComponents.xml"/>
         
 
         <model:model-field model="parameter" plugin="basic">
