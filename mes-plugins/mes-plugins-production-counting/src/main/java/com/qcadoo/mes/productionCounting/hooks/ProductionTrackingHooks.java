@@ -190,14 +190,21 @@ public class ProductionTrackingHooks {
     private void generateSetTrackingOperationProductsComponents(Entity productionTracking) {
         EntityList trackingOperationProductOutComponents = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
         for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-            BigDecimal usedQuantity = trackingOperationProductOutComponent
-                    .getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
-            trackingOperationProductOutComponent = setTrackingOperationProductsComponents
-                    .fillTrackingOperationProductOutComponent(trackingOperationProductOutComponent, usedQuantity);
-            trackingOperationProductOutComponent = trackingOperationProductOutComponent.getDataDefinition().save(
-                    trackingOperationProductOutComponent);
-        }
+            BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
 
+            List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+            setTrackingOperationProductsInComponents.stream().forEach(entity -> {
+                entity.getDataDefinition().delete(entity.getId());
+            });
+
+            trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent, usedQuantity);
+
+            setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+            setTrackingOperationProductsInComponents.stream().forEach(entity -> {
+                entity.getDataDefinition().save(entity);
+            });
+
+        }
     }
 
     private void generateSetTechnologyInComponents(Entity productionTracking) {

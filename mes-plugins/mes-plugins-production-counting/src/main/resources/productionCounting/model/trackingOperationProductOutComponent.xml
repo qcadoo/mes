@@ -60,6 +60,9 @@
 		<onView
 				class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentHooks"
 				method="onView"/>
+		<onSave
+				class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentHooks"
+				method="onSave"/>
 	</hooks>
 
 </model>

@@ -157,12 +157,17 @@ public class RecordOperationProductComponentListeners {
 
     private void calculateQuantityFromSets(ViewDefinitionState view) {
         FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
-        BigDecimal usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", "."));
+        BigDecimal usedQuantity;
+        try {
+            usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", "."));
+        } catch (java.lang.NumberFormatException e) {
+            usedQuantity = BigDecimal.ZERO;
+        }
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity trackingOperationProductOutComponent = form.getPersistedEntityWithIncludedFormValues();
 
-        trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(trackingOperationProductOutComponent, usedQuantity);
+        trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(trackingOperationProductOutComponent.getBelongsToField("productionTracking"), trackingOperationProductOutComponent, usedQuantity);
 
         GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTrackingOperationProductsInComponents");
         gridComponent.setEntities(trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS));
@@ -170,7 +175,7 @@ public class RecordOperationProductComponentListeners {
 
     private void calculateQuantityFromSetsIn(ViewDefinitionState view) {
         FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
-        BigDecimal usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", "."));
+        BigDecimal usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", ".").replace(" ", ""));
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity trackingOperationProductOutComponent = form.getPersistedEntityWithIncludedFormValues();

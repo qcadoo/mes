@@ -15,6 +15,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -31,12 +32,13 @@ public class SetTrackingOperationProductsComponentsService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public Entity fillTrackingOperationProductOutComponent(Entity trackingOperationProductOutComponent, BigDecimal usedQuantity) {
-        if (isSet(trackingOperationProductOutComponent)) {
+    public Entity fillTrackingOperationProductOutComponent(Entity productionTracking, Entity trackingOperationProductOutComponent, BigDecimal usedQuantity) {
+        if (usedQuantity == null) {
+            usedQuantity = BigDecimal.ZERO;
+        }
+        if (isSet(productionTracking, trackingOperationProductOutComponent)) {
             List<Entity> setTrackingOperationProductsInComponents = new ArrayList<>();
             DataDefinition setTrackingOperationProductInComponentsDD = getSetTrackingOperationProductInComponentsDD();
-
-            Entity productionTracking = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
             Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
@@ -66,7 +68,7 @@ public class SetTrackingOperationProductsComponentsService {
                     setTrackingOperationProductInComponents.setField("product", productFromComponent);
                     setTrackingOperationProductInComponents.setField("trackingOperationProductOutComponent", trackingOperationProductOutComponent);
 
-                    setTrackingOperationProductInComponents = setTrackingOperationProductInComponents.getDataDefinition().save(setTrackingOperationProductInComponents);
+//                    setTrackingOperationProductInComponents = setTrackingOperationProductInComponents.getDataDefinition().save(setTrackingOperationProductInComponents);
 
                     setTrackingOperationProductsInComponents.add(setTrackingOperationProductInComponents);
                 }
@@ -81,10 +83,7 @@ public class SetTrackingOperationProductsComponentsService {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
     }
 
-    public boolean isSet(Entity componentEntity) {
-        Entity productionTracking = componentEntity
-                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-
+    public boolean isSet(Entity productionTracking, Entity componentEntity) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);

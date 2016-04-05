@@ -53,6 +53,6 @@ public class RecordOperationProductOutComponentHooks {
     }
 
     private void hideOrShowSetTab(ViewDefinitionState view, Entity componentEntity) {
-        view.getComponentByReference("setTab").setVisible(setTrackingOperationProductsComponents.isSet(componentEntity));
+        view.getComponentByReference("setTab").setVisible(setTrackingOperationProductsComponents.isSet(componentEntity.getBelongsToField("productionTracking"), componentEntity));
     }
 }
