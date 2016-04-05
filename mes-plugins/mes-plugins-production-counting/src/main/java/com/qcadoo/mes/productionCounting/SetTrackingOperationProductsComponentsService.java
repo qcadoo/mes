@@ -32,47 +32,48 @@ public class SetTrackingOperationProductsComponentsService {
     private DataDefinitionService dataDefinitionService;
 
     public Entity fillTrackingOperationProductOutComponent(Entity trackingOperationProductOutComponent, BigDecimal usedQuantity) {
-        List<Entity> setTrackingOperationProductsInComponents = new ArrayList<>();
-        DataDefinition setTrackingOperationProductInComponentsDD = getSetTrackingOperationProductInComponentsDD();
+        if (isSet(trackingOperationProductOutComponent)) {
+            List<Entity> setTrackingOperationProductsInComponents = new ArrayList<>();
+            DataDefinition setTrackingOperationProductInComponentsDD = getSetTrackingOperationProductInComponentsDD();
 
-        Entity productionTracking = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+            Entity productionTracking = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
-        EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        List<EntityTreeNode> children = operationComponents.getRoot().getChildren();
+            EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+            List<EntityTreeNode> children = operationComponents.getRoot().getChildren();
 
-        for (Entity technologyOperationComponent : children) {
-            Entity operationProductOutComponent = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).get(0);
+            for (Entity technologyOperationComponent : children) {
+                Entity operationProductOutComponent = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).get(0);
 
-            Entity productFromComponent = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
-            GlobalTypeOfMaterial productGlobalTypeOfMaterial = GlobalTypeOfMaterial.parseString(productFromComponent.getStringField(ProductFields.GLOBAL_TYPE_OF_MATERIAL));
+                Entity productFromComponent = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+                GlobalTypeOfMaterial productGlobalTypeOfMaterial = GlobalTypeOfMaterial.parseString(productFromComponent.getStringField(ProductFields.GLOBAL_TYPE_OF_MATERIAL));
 
-            if (productGlobalTypeOfMaterial == GlobalTypeOfMaterial.INTERMEDIATE) {
-                Entity setTrackingOperationProductInComponents = setTrackingOperationProductInComponentsDD.create();
+                if (productGlobalTypeOfMaterial == GlobalTypeOfMaterial.INTERMEDIATE) {
+                    Entity setTrackingOperationProductInComponents = setTrackingOperationProductInComponentsDD.create();
 
-                DataDefinition productionCountingQuantityDD = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY);
-                Entity productionCountingQuantity = productionCountingQuantityDD.find()
-                        .add(SearchRestrictions.and(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, productFromComponent),
-                                SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order),
-                                SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.USED.getStringValue()))).uniqueResult();
-                BigDecimal plannedQuantityFromProduct = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
+                    DataDefinition productionCountingQuantityDD = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY);
+                    Entity productionCountingQuantity = productionCountingQuantityDD.find()
+                            .add(SearchRestrictions.and(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, productFromComponent),
+                                    SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order),
+                                    SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.USED.getStringValue()))).uniqueResult();
+                    BigDecimal plannedQuantityFromProduct = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
 
-                BigDecimal plannedQuantityForOrder = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-                BigDecimal quantityFromSets = plannedQuantityFromProduct.divide(plannedQuantityForOrder, RoundingMode.HALF_UP).multiply(usedQuantity);
-                setTrackingOperationProductInComponents.setField("quantityFromSets", quantityFromSets);
-                setTrackingOperationProductInComponents.setField("product", productFromComponent);
-                setTrackingOperationProductInComponents.setField("trackingOperationProductOutComponent", trackingOperationProductOutComponent);
+                    BigDecimal plannedQuantityForOrder = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+                    BigDecimal quantityFromSets = plannedQuantityFromProduct.multiply(usedQuantity).divide(plannedQuantityForOrder, RoundingMode.HALF_UP);
+                    setTrackingOperationProductInComponents.setField("quantityFromSets", quantityFromSets);
+                    setTrackingOperationProductInComponents.setField("product", productFromComponent);
+                    setTrackingOperationProductInComponents.setField("trackingOperationProductOutComponent", trackingOperationProductOutComponent);
 
-                setTrackingOperationProductInComponents = setTrackingOperationProductInComponents.getDataDefinition().save(setTrackingOperationProductInComponents);
+                    setTrackingOperationProductInComponents = setTrackingOperationProductInComponents.getDataDefinition().save(setTrackingOperationProductInComponents);
 
-                setTrackingOperationProductsInComponents.add(setTrackingOperationProductInComponents);
+                    setTrackingOperationProductsInComponents.add(setTrackingOperationProductInComponents);
+                }
             }
+
+            trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS, setTrackingOperationProductsInComponents);
         }
-
-        trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS, setTrackingOperationProductsInComponents);
-
         return trackingOperationProductOutComponent;
     }
 
