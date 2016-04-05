@@ -148,23 +148,23 @@ public class RecordOperationProductComponentListeners {
     }
 
     private void calculateQuantityFromSets(ViewDefinitionState view) {
-        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
-        BigDecimal usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", "."));
-        
-        GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTrackingOperationProductsInComponents");
-        List<Entity> setTrackingOperationProductsInComponents = gridComponent.getEntities();
-        setTrackingOperationProductsInComponents.forEach(item -> {
-            Entity trackingOperationProductInComponent = item.getBelongsToField("trackingOperationProductInComponent");
-            BigDecimal plannedQuantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY);
-            Entity productionTracking = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCTION_TRACKING);
-            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-            BigDecimal plannedQuantityForOrder = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-            
-            BigDecimal quantityFromSets = plannedQuantity.divide(plannedQuantityForOrder).multiply(usedQuantity);
-            
-            item.setField("quantityFromSets", quantityFromSets);
-        });
-        gridComponent.setEntities(setTrackingOperationProductsInComponents);
+//        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
+//        BigDecimal usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", "."));
+//        
+//        GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTrackingOperationProductsInComponents");
+//        List<Entity> setTrackingOperationProductsInComponents = gridComponent.getEntities();
+//        setTrackingOperationProductsInComponents.forEach(item -> {
+//            Entity trackingOperationProductInComponent = item.getBelongsToField("trackingOperationProductInComponent");
+//            BigDecimal plannedQuantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY);
+//            Entity productionTracking = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCTION_TRACKING);
+//            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+//            BigDecimal plannedQuantityForOrder = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+//            
+//            BigDecimal quantityFromSets = plannedQuantity.divide(plannedQuantityForOrder).multiply(usedQuantity);
+//            
+//            item.setField("quantityFromSets", quantityFromSets);
+//        });
+//        gridComponent.setEntities(setTrackingOperationProductsInComponents);
     }
 
 }

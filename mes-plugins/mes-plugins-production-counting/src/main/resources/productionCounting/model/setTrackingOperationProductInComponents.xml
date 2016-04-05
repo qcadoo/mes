@@ -25,16 +25,16 @@
 
 -->
 <model name="setTrackingOperationProductInComponents"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-	<fields>
-		<belongsTo name="trackingOperationProductInComponent" model="trackingOperationProductInComponent" plugin="productionCounting"/>
-		<belongsTo name="trackingOperationProductOutComponent" model="trackingOperationProductOutComponent" plugin="productionCounting"/>
-                <integer name="quantityFromSets" />
-	</fields>
+    <fields>
+        <belongsTo name="trackingOperationProductOutComponent" model="trackingOperationProductOutComponent" plugin="productionCounting"/>
+        <belongsTo name="product" model="product" plugin="basic"/>
+        <decimal name="quantityFromSets" />
+    </fields>
 
-	<hooks>
-	</hooks>
+    <hooks>
+    </hooks>
 
 </model>

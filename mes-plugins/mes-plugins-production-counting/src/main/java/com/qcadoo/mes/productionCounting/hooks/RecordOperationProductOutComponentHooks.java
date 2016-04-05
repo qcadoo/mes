@@ -26,27 +26,33 @@ package com.qcadoo.mes.productionCounting.hooks;
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,24 +78,24 @@ public class RecordOperationProductOutComponentHooks {
     }
 
     private boolean hideOrShowSetTab(ViewDefinitionState view, Entity componentEntity) {
-        boolean isSet = false;
-        Entity productionTracking = componentEntity
-                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-        Entity product = componentEntity.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-
-        Entity technologyOperationComponent = productionTracking
-                .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
-
-        EntityList operationProductOutComponents = technologyOperationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-
-        Optional<Entity> operationProductOutComponent = operationProductOutComponents
-                .stream()
-                .filter(opoc -> opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
-                        .equals(product.getId())).findFirst();
-        if (operationProductOutComponent.isPresent()) {
-            isSet = operationProductOutComponent.get().getBooleanField("set");
-        }
+        boolean isSet = true;
+//        Entity productionTracking = componentEntity
+//                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+//        Entity product = componentEntity.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+//
+//        Entity technologyOperationComponent = productionTracking
+//                .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+//
+//        EntityList operationProductOutComponents = technologyOperationComponent
+//                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+//
+//        Optional<Entity> operationProductOutComponent = operationProductOutComponents
+//                .stream()
+//                .filter(opoc -> opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
+//                        .equals(product.getId())).findFirst();
+//        if (operationProductOutComponent.isPresent()) {
+//            isSet = operationProductOutComponent.get().getBooleanField("set");
+//        }
         if (!isSet) {
             view.getComponentByReference("setTab").setVisible(false);
         } else {
@@ -104,36 +110,52 @@ public class RecordOperationProductOutComponentHooks {
         DataDefinition setTrackingOperationProductInComponentsDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
 
         Entity productionTracking = componentEntity.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-        EntityList trackingOperationProductsInComponents = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        
+        EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+        List<EntityTreeNode> children = operationComponents.getRoot().getChildren();
 
         FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
 
         BigDecimal usedQuantity = BigDecimal.ZERO;
-        String usedQuantityString = usedQuantityField.getFieldValue().toString().replace(",", ".");
+        String usedQuantityString = usedQuantityField.getFieldValue().toString().replace(",", ".").replace(" ", "");
         if (!Strings.isNullOrEmpty(usedQuantityString)) {
             usedQuantity = new BigDecimal(usedQuantityString);
         }
 
-        for (Entity trackingOperationProductInComponents : trackingOperationProductsInComponents) {
-            Entity product = trackingOperationProductInComponents.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
-            GlobalTypeOfMaterial productGlobalTypeOfMaterial = GlobalTypeOfMaterial.parseString(product.getStringField(ProductFields.GLOBAL_TYPE_OF_MATERIAL));
+        for (Entity technologyOperationComponent : children) {
+            Entity operationProductOutComponent = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).get(0);
+            
+            Entity productFromComponent = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+            GlobalTypeOfMaterial productGlobalTypeOfMaterial = GlobalTypeOfMaterial.parseString(productFromComponent.getStringField(ProductFields.GLOBAL_TYPE_OF_MATERIAL));
 
             if (productGlobalTypeOfMaterial == GlobalTypeOfMaterial.INTERMEDIATE) {
                 Entity setTrackingOperationProductInComponents = setTrackingOperationProductInComponentsDD.create();
 
-                BigDecimal plannedQuantity = trackingOperationProductInComponents.getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY);
-                Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+                DataDefinition productionCountingQuantityDD = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY);
+                Entity productionCountingQuantity = productionCountingQuantityDD.find()
+                        .add(SearchRestrictions.and(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, productFromComponent),
+                                SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order),
+                                SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.USED.getStringValue()))).uniqueResult();
+                BigDecimal plannedQuantityFromProduct = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
+                
                 BigDecimal plannedQuantityForOrder = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-                BigDecimal quantityFromSets = plannedQuantity.divide(plannedQuantityForOrder).multiply(usedQuantity);
+                BigDecimal quantityFromSets = plannedQuantityFromProduct.divide(plannedQuantityForOrder, RoundingMode.HALF_UP).multiply(usedQuantity);
                 setTrackingOperationProductInComponents.setField("quantityFromSets", quantityFromSets);
-                setTrackingOperationProductInComponents.setField("trackingOperationProductInComponent", trackingOperationProductInComponents);
+                setTrackingOperationProductInComponents.setField("product", productFromComponent);
                 setTrackingOperationProductInComponents.setField("trackingOperationProductOutComponent", componentEntity);
-
+                
+                setTrackingOperationProductInComponents = setTrackingOperationProductInComponents.getDataDefinition().save(setTrackingOperationProductInComponents);
+                
                 setTrackingOperationProductsInComponents.add(setTrackingOperationProductInComponents);
             }
         }
 
         componentEntity.setField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS, setTrackingOperationProductsInComponents);
         componentEntity.getDataDefinition().save(componentEntity);
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTrackingOperationProductsInComponents");
+        gridComponent.setEntities(setTrackingOperationProductsInComponents);
     }
 }
