@@ -36,6 +36,9 @@ public class SetTechnologyInComponentsService {
 
     public Entity fillTrackingOperationProductOutComponent(Entity trackingOperationProductInComponent, Entity productionTracking,
             BigDecimal usedQuantity) {
+        if (usedQuantity == null) {
+            usedQuantity = BigDecimal.ZERO;
+        }
         List<Entity> setTechnologyInComponents = new ArrayList<>();
         DataDefinition setTechnologyInComponentsDD = getSetTechnologyInComponentsDD();
 
