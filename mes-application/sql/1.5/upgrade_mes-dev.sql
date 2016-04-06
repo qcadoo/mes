@@ -1,4 +1,4 @@
--- added set to product components
+﻿-- added set to product components
 -- last touched 30.03.2016 by kama
 
 ALTER TABLE technologies_operationproductoutcomponent ADD COLUMN set boolean;
@@ -20,7 +20,7 @@ CREATE TABLE productioncounting_settechnologyincomponents
       REFERENCES productioncounting_trackingoperationproductincomponent (id) DEFERRABLE,
   CONSTRAINT settechnologyic_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE
-)
+);
 
 CREATE TABLE productioncounting_settrackingoperationproductincomponents
 (
@@ -33,6 +33,6 @@ CREATE TABLE productioncounting_settrackingoperationproductincomponents
       REFERENCES basic_product (id) DEFERRABLE,
   CONSTRAINT settrackingoperationproductic_trackingoperationproductoc_fkey FOREIGN KEY (trackingoperationproductoutcomponent_id)
       REFERENCES productioncounting_trackingoperationproductoutcomponent (id) DEFERRABLE
-)
+);
 
 -- end
