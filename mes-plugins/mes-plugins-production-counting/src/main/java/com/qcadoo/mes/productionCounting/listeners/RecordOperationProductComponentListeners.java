@@ -174,20 +174,22 @@ public class RecordOperationProductComponentListeners {
     }
 
     private void calculateQuantityFromSetsIn(ViewDefinitionState view) {
-        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
-        BigDecimal usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", ".").replace(" ", ""));
-
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity trackingOperationProductOutComponent = form.getPersistedEntityWithIncludedFormValues();
-        Entity productionTracking = trackingOperationProductOutComponent
-                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+        if (setTechnologyInComponentsService.isSet(trackingOperationProductOutComponent)) {
+            FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
+            BigDecimal usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", ".")
+                    .replace(" ", ""));
+            Entity productionTracking = trackingOperationProductOutComponent
+                    .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
-        trackingOperationProductOutComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
-                trackingOperationProductOutComponent, productionTracking, usedQuantity);
+            trackingOperationProductOutComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
+                    trackingOperationProductOutComponent, productionTracking, usedQuantity);
 
-        GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTechnologyInComponents");
-        gridComponent.setEntities(trackingOperationProductOutComponent
-                .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS));
+            GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTechnologyInComponents");
+            gridComponent.setEntities(trackingOperationProductOutComponent
+                    .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS));
+        }
     }
 
 }

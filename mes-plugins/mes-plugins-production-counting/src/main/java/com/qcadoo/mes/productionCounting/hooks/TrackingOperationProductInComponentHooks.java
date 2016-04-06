@@ -59,18 +59,20 @@ public class TrackingOperationProductInComponentHooks extends AbstractPlannedQua
 
     public void onSave(final DataDefinition trackingOperationProductInComponentDD, Entity trackingOperationProductInComponent) {
 
-        BigDecimal usedQuantity = trackingOperationProductInComponent
-                .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
-        Entity productionTracking = trackingOperationProductInComponent
-                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+        if (setTechnologyInComponentsService.isSet(trackingOperationProductInComponent)) {
+            BigDecimal usedQuantity = trackingOperationProductInComponent
+                    .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
+            Entity productionTracking = trackingOperationProductInComponent
+                    .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
-        trackingOperationProductInComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
-                trackingOperationProductInComponent, productionTracking, usedQuantity);
+            trackingOperationProductInComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
+                    trackingOperationProductInComponent, productionTracking, usedQuantity);
 
-        List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductInComponent
-                .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
-        setTrackingOperationProductsInComponents.stream().forEach(entity -> {
-            entity.getDataDefinition().save(entity);
-        });
+            List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductInComponent
+                    .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
+            setTrackingOperationProductsInComponents.stream().forEach(entity -> {
+                entity.getDataDefinition().save(entity);
+            });
+        }
     }
 }
