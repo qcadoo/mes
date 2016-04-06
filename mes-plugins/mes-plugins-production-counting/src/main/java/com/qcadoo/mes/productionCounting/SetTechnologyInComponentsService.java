@@ -34,15 +34,13 @@ public class SetTechnologyInComponentsService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public Entity fillTrackingOperationProductOutComponent(Entity trackingOperationProductInComponent, BigDecimal usedQuantity) {
+    public Entity fillTrackingOperationProductOutComponent(Entity trackingOperationProductInComponent, Entity productionTracking,
+            BigDecimal usedQuantity) {
         List<Entity> setTechnologyInComponents = new ArrayList<>();
         DataDefinition setTechnologyInComponentsDD = getSetTechnologyInComponentsDD();
 
         Entity product = trackingOperationProductInComponent
                 .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-
-        Entity productionTracking = trackingOperationProductInComponent
-                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 

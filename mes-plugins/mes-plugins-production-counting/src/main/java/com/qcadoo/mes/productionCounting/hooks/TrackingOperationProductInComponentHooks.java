@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.AbstractPlannedQuantitiesCounter;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -60,8 +61,11 @@ public class TrackingOperationProductInComponentHooks extends AbstractPlannedQua
 
         BigDecimal usedQuantity = trackingOperationProductInComponent
                 .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
+        Entity productionTracking = trackingOperationProductInComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+
         trackingOperationProductInComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
-                trackingOperationProductInComponent, usedQuantity);
+                trackingOperationProductInComponent, productionTracking, usedQuantity);
 
         List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductInComponent
                 .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);

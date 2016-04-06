@@ -222,7 +222,7 @@ public class ProductionTrackingHooks {
                 });
 
                 trackingOperationProductInComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
-                        trackingOperationProductInComponent, usedQuantity);
+                        trackingOperationProductInComponent, productionTracking, usedQuantity);
 
                 setTechnologyInComponents = trackingOperationProductInComponent
                         .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);

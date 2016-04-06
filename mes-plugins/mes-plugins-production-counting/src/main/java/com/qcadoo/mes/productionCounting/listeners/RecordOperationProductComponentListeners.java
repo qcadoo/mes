@@ -179,9 +179,11 @@ public class RecordOperationProductComponentListeners {
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity trackingOperationProductOutComponent = form.getPersistedEntityWithIncludedFormValues();
+        Entity productionTracking = trackingOperationProductOutComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
         trackingOperationProductOutComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
-                trackingOperationProductOutComponent, usedQuantity);
+                trackingOperationProductOutComponent, productionTracking, usedQuantity);
 
         GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTechnologyInComponents");
         gridComponent.setEntities(trackingOperationProductOutComponent
