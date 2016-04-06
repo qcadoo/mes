@@ -214,10 +214,21 @@ public class ProductionTrackingHooks {
             if (setTechnologyInComponentsService.isSet(trackingOperationProductInComponent)) {
                 BigDecimal usedQuantity = trackingOperationProductInComponent
                         .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
+
+                List<Entity> setTechnologyInComponents = trackingOperationProductInComponent
+                        .getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+                setTechnologyInComponents.stream().forEach(entity -> {
+                    entity.getDataDefinition().delete(entity.getId());
+                });
+
                 trackingOperationProductInComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
                         trackingOperationProductInComponent, usedQuantity);
-                trackingOperationProductInComponent = trackingOperationProductInComponent.getDataDefinition().save(
-                        trackingOperationProductInComponent);
+
+                setTechnologyInComponents = trackingOperationProductInComponent
+                        .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
+                setTechnologyInComponents.stream().forEach(entity -> {
+                    entity.getDataDefinition().save(entity);
+                });
             }
         }
     }

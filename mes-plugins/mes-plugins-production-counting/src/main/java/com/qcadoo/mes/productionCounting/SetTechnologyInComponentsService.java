@@ -79,9 +79,6 @@ public class SetTechnologyInComponentsService {
                 setTrackingOperationProductInComponents.setField("trackingOperationProductInComponent",
                         trackingOperationProductInComponent);
 
-                setTrackingOperationProductInComponents = setTrackingOperationProductInComponents.getDataDefinition().save(
-                        setTrackingOperationProductInComponents);
-
                 setTechnologyInComponents.add(setTrackingOperationProductInComponents);
             }
         }
