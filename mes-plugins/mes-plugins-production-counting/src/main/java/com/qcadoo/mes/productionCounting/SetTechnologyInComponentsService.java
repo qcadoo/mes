@@ -26,7 +26,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
 
 @Service
 public class SetTechnologyInComponentsService {
@@ -98,17 +97,17 @@ public class SetTechnologyInComponentsService {
         boolean isSet = false;
         Entity product = componentEntity.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
 
-        DataDefinition operationProductOutComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
-        SearchResult productOutComponents = operationProductOutComponentDD.find()
-                .add(SearchRestrictions.eq(OperationProductOutComponentFields.PRODUCT + ".id", product.getId()))
-                .add(SearchRestrictions.eq(OperationProductOutComponentFields.SET, true)).list();
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+        Entity masterTechnology = technologyDD.find()
+                .add(SearchRestrictions.eq(TechnologyFields.PRODUCT + ".id", product.getId()))
+                .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).uniqueResult();
 
-        if (productOutComponents.getTotalNumberOfEntities() > 0) {
-            isSet = productOutComponents.getEntities().stream()
-                    .map(poc -> poc.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT))
-                    .map(oc -> oc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY))
-                    .anyMatch(t -> TechnologyState.ACCEPTED.getStringValue().equals(t.getStringField(TechnologyFields.STATE)));
+        if (masterTechnology != null) {
+            EntityTree operationComponents = masterTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+            isSet = operationComponents.getRoot()
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).get(0)
+                    .getBooleanField(OperationProductOutComponentFields.SET);
         }
 
         return isSet;
