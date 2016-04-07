@@ -48,6 +48,12 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 @Service
 public class ProductionTrackingHooks {
@@ -69,6 +75,9 @@ public class ProductionTrackingHooks {
 
     @Autowired
     private SetTechnologyInComponentsService setTechnologyInComponentsService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     public void onCreate(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         setInitialState(productionTracking);
@@ -193,10 +202,15 @@ public class ProductionTrackingHooks {
             BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
 
             List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
-            setTrackingOperationProductsInComponents.stream().forEach(entity -> {
-                entity.getDataDefinition().delete(entity.getId());
-            });
-
+            List<Long> ids = setTrackingOperationProductsInComponents.stream().map(entity -> entity.getId()).collect(Collectors.toList());
+            if (!ids.isEmpty()) {
+                Map<String, Object> parameters = new HashMap<String, Object>() {
+                    {
+                        put("ids", ids);
+                    }
+                };
+                jdbcTemplate.update("DELETE FROM productioncounting_settechnologyincomponents WHERE id IN (:ids)", new MapSqlParameterSource(parameters));
+            }
             trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent, usedQuantity);
 
             setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
