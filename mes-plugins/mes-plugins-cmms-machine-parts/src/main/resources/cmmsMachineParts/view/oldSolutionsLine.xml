@@ -43,15 +43,17 @@
 
         <component type="grid" name="maintenanceEvents" reference="grid" source="#{productionLine}.maintenanceEvents">
         	<option type="column" name="number" fields="number" link="false" width="20"/>
-        	<option type="column" name="createDate" fields="createDate" link="false" width="20"/>
-        	<option type="column" name="solutionDescription" fields="solutionDescription" link="false"/>
+        	<option type="column" name="createDate" fields="createDate" link="false" width="25"/>
+        	<option type="column" name="faultType" fields="faultType" expression="#faultType['name']" link="false" width="20"/>
+        	<option type="column" name="description" fields="description" link="false" width="40"/>
+        	<option type="column" name="solutionDescription" fields="solutionDescription" link="false" width="50"/>
         	
         	<option type="order" column="number" direction="asc"/>
         	
         	<option type="searchable"
-                    value="number,createDate,solutionDescription"/>
+                    value="number,createDate,faultType,description,solutionDescription"/>
             <option type="orderable"
-                    value="number,createDate,solutionDescription"/>
+                    value="number,createDate,faultType,description,solutionDescription"/>
                     
             <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.OldSolutionsCriteriaModifiers"
             	method="showSolutionsLine" />
