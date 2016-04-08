@@ -91,6 +91,14 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
     }
 
     @RunInPhase(PlannedEventStateChangePhase.LAST)
+    @RunForStateTransition(targetState = PlannedEventStateStringValues.CANCELED)
+    @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
+    public void askForRevokeReason(final StateChangeContext stateChangeContext, final int phase,
+            final ViewContextHolder viewContext) {
+        plannedEventChangeService.showReasonForm(stateChangeContext, viewContext);
+    }
+
+    @RunInPhase(PlannedEventStateChangePhase.LAST)
     @RunForStateTransition(sourceState = PlannedEventStateStringValues.IN_EDITING, targetState = PlannedEventStateStringValues.IN_REALIZATION)
     @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
     public void askForNotAcceptReason(final StateChangeContext stateChangeContext, final int phase,
@@ -132,4 +140,5 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
     public void createAfterReviewEvents(final StateChangeContext stateChangeContext, final int phase) {
         afterReviewEventsService.createAfterReviewEvents(stateChangeContext);
     }
+
 }
