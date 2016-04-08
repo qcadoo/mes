@@ -33,12 +33,14 @@ public class TechnologyValidationServicePC {
     public void validateTypeOfProductionRecordingForOrder(final StateChangeContext stateChangeContext) {
         Entity order = stateChangeContext.getOwner();
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        Entity mainProduct = technologyService.getMainOutputProductComponent(tree.getRoot());
-        String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-        if (mainProduct.getBooleanField(OperationProductOutComponentFields.SET)
-                && typeOfProductionRecording.equals("03forEach")) {
-            stateChangeContext.addValidationError("technologies.technology.technologyState.error.typeOfProductionRecording");
+        if (technology != null) {
+            EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+            Entity mainProduct = technologyService.getMainOutputProductComponent(tree.getRoot());
+            String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+            if (typeOfProductionRecording != null && mainProduct.getBooleanField(OperationProductOutComponentFields.SET)
+                    && typeOfProductionRecording.equals("03forEach")) {
+                stateChangeContext.addValidationError("technologies.technology.technologyState.error.typeOfProductionRecording");
+            }
         }
     }
 }
