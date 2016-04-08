@@ -42,7 +42,6 @@ import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.*;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
@@ -613,7 +612,7 @@ public class OrderHooks {
         copyOfTechnology.setField(TechnologyFields.NUMBER, number);
         copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
         if (OrderType.of(order) == OrderType.WITH_PATTERN_TECHNOLOGY) {
-            technologyServiceO.changeTechnologyState(copyOfTechnology, TechnologyStateStringValues.CHECKED);
+            technologyServiceO.changeTechnologyStateToChecked(copyOfTechnology);
         }
         return Optional.of(copyOfTechnology);
     }

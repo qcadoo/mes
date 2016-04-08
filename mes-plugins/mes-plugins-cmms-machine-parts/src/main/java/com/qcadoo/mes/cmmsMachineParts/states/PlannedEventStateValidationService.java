@@ -77,7 +77,7 @@ public class PlannedEventStateValidationService {
     private void checkIfSolutionDescriptionExists(Entity event, StateChangeContext stateChangeContext) {
         if (event.getStringField(PlannedEventFields.SOLUTION_DESCRIPTION) == null
                 || event.getStringField(PlannedEventFields.SOLUTION_DESCRIPTION).isEmpty()) {
-            if (solutionDescriptionIsNotHidden(event)) {
+            if (solutionDescriptionIsNotHidden(event) && hasNoActions(event)) {
                 stateChangeContext.addFieldValidationError(PlannedEventFields.SOLUTION_DESCRIPTION,
                         "cmmsMachineParts.plannedEvent.state.fieldRequired");
             }
@@ -163,6 +163,10 @@ public class PlannedEventStateValidationService {
 
     private boolean solutionDescriptionIsNotHidden(Entity plannedEvent) {
         return tabIsNotHidden(plannedEvent, PlannedEventFields.SOLUTION_DESCRIPTION_TAB);
+    }
+
+    private boolean hasNoActions(Entity event) {
+        return event.getHasManyField(PlannedEventFields.ACTIONS).isEmpty();
     }
 
     private boolean fieldIsNotHidden(Entity plannedEvent, String fieldName) {
