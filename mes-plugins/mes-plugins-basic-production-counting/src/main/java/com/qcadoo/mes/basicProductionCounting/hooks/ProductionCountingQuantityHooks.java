@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
+import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,16 @@ import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingF
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantitySet;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
@@ -44,10 +52,14 @@ public class ProductionCountingQuantityHooks {
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void onCreate(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         fillOrder(productionCountingQuantity);
         fillBasicProductionCounting(productionCountingQuantity);
         fillIsNonComponent(productionCountingQuantity);
+        fillSetField(productionCountingQuantity);
     }
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
@@ -65,6 +77,41 @@ public class ProductionCountingQuantityHooks {
                 productionCountingQuantity.setField(ProductionCountingQuantityFields.ORDER, order);
             }
         }
+    }
+
+    private Entity fillSetField(final Entity productionCountingQuantity) {
+        String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+        String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
+
+        if (GlobalTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial) && ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {
+            Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+            if (product != null) {
+                Entity technology = getTechnologyDD().find()
+                        .add(SearchRestrictions.eq(TechnologyFields.MASTER, true))
+                        .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product)).uniqueResult();
+                if (technology != null) {
+                    EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+                    Entity operationProductOutComponent = operationComponents.getRoot().getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).get(0);
+                    boolean isSet = operationProductOutComponent.getBooleanField("set");
+                    if (isSet) {
+                        productionCountingQuantity.setField(ProductionCountingQuantityFields.SET, ProductionCountingQuantitySet.SET.getStringValue());
+                    }
+                }
+            }
+
+        } else if (GlobalTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial) && ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)) {
+            Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+            Entity operationProductOutComponent = operationComponents.getRoot().getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).get(0);
+            boolean isSet = operationProductOutComponent.getBooleanField("set");
+            if (isSet) {
+                productionCountingQuantity.setField(ProductionCountingQuantityFields.SET, ProductionCountingQuantitySet.SET.getStringValue());
+            }
+        }
+
+        return productionCountingQuantity;
     }
 
     private void fillBasicProductionCounting(final Entity productionCountingQuantity) {
@@ -162,4 +209,8 @@ public class ProductionCountingQuantityHooks {
         return (basicProductionCounting.getHasManyField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES).size() == 1);
     }
 
+    private DataDefinition getTechnologyDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+    }
 }

@@ -15,7 +15,6 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -67,8 +66,6 @@ public class SetTrackingOperationProductsComponentsService {
                     setTrackingOperationProductInComponents.setField("quantityFromSets", quantityFromSets);
                     setTrackingOperationProductInComponents.setField("product", productFromComponent);
                     setTrackingOperationProductInComponents.setField("trackingOperationProductOutComponent", trackingOperationProductOutComponent);
-
-//                    setTrackingOperationProductInComponents = setTrackingOperationProductInComponents.getDataDefinition().save(setTrackingOperationProductInComponents);
 
                     setTrackingOperationProductsInComponents.add(setTrackingOperationProductInComponents);
                 }

@@ -36,3 +36,7 @@ CREATE TABLE productioncounting_settrackingoperationproductincomponents
 );
 
 -- end
+
+-- NBLS-181
+alter table basicproductioncounting_productionCountingQuantity add column set character varying(255);
+--end

@@ -23,32 +23,26 @@
  */
 package com.qcadoo.mes.basicProductionCounting.constants;
 
-public final class ProductionCountingQuantityFields {
+public enum ProductionCountingQuantitySet {
+    SET("01set"), INTERMEDIATE("02intermediate");
 
-    private ProductionCountingQuantityFields() {
+    private final String code;
 
+    private ProductionCountingQuantitySet(final String code) {
+        this.code = code;
     }
 
-    public static final String ORDER = "order";
+    public String getStringValue() {
+        return code;
+    }
 
-    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
-    public static final String PRODUCT = "product";
-
-    public static final String BASIC_PRODUCTION_COUNTING = "basicProductionCounting";
-
-    public static final String ROLE = "role";
-
-    public static final String TYPE_OF_MATERIAL = "typeOfMaterial";
-
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
-
-    public static final String USED_QUANTITY = "usedQuantity";
-
-    public static final String PRODUCED_QUANTITY = "producedQuantity";
-
-    public static final String IS_NON_COMPONENT = "isNonComponent";
-
-    public static final String SET = "set";
+    public static ProductionCountingQuantitySet parseString(final String string) {
+        for (ProductionCountingQuantitySet role : values()) {
+            if (role.getStringValue().equals(string)) {
+                return role;
+            }
+        }
+        throw new IllegalStateException("Unsupported ProductionCountingQuantitySet: " + string);
+    }
 
 }

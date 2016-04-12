@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -46,11 +47,13 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.RowStyle;
+import java.util.ArrayList;
 
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
@@ -64,6 +67,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
+    @Override
     public void createProductionCountingQuantitiesAndOperationRuns(final Entity order) {
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         final Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
@@ -102,6 +106,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     private void createProductionCountingQuantities(final Entity order,
             final OperationProductComponentWithQuantityContainer productComponentQuantities,
             final Set<OperationProductComponentHolder> nonComponents) {
+        List<Entity> productionCountingQuantities = new ArrayList<>();
+
         for (Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity : productComponentQuantities.asMap()
                 .entrySet()) {
             OperationProductComponentHolder operationProductComponentHolder = productComponentQuantity.getKey();
@@ -114,8 +120,11 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
             boolean isNonComponent = nonComponents.contains(operationProductComponentHolder);
 
-            createProductionCountingQuantity(order, technologyOperationComponent, product, role, isNonComponent, plannedQuantity);
+            Entity productionCountingQuantity = createProductionCountingQuantity(order, technologyOperationComponent, product, role, isNonComponent, plannedQuantity);
+            productionCountingQuantities.add(productionCountingQuantity);
         }
+
+        markIntermediateInProductionCountingQuantities(productionCountingQuantities);
     }
 
     @Override
@@ -153,20 +162,16 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             final String role, boolean isNonComponent) {
         if (isNonComponent) {
             return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
-        } else {
-            if (isRoleProduced(role)) {
-                if (checkIfProductIsFinalProduct(order, technologyOperationComponent, product)) {
-                    return ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue();
-                } else {
-                    if (checkIfProductAlreadyExists(technologyOperationComponent, product)) {
-                        return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
-                    } else {
-                        return ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue();
-                    }
-                }
+        } else if (isRoleProduced(role)) {
+            if (checkIfProductIsFinalProduct(order, technologyOperationComponent, product)) {
+                return ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue();
+            } else if (checkIfProductAlreadyExists(technologyOperationComponent, product)) {
+                return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
             } else {
-                return ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue();
+                return ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue();
             }
+        } else {
+            return ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue();
         }
     }
 
@@ -234,6 +239,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 .getTotalNumberOfEntities() == 1);
     }
 
+    @Override
     public void updateProductionCountingQuantitiesAndOperationRuns(final Entity order) {
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         final Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
@@ -329,9 +335,9 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                     .find()
                     .add(SearchRestrictions.or(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                             ProductionCountingQuantityRole.USED.getStringValue()), SearchRestrictions.and(SearchRestrictions.eq(
-                            ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue()),
-                            SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
-                                    ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue())))).list().getEntities();
+                                    ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue()),
+                                    SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                                            ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue())))).list().getEntities();
 
             Set<Long> alreadyAddedProducts = Sets.newHashSet();
 
@@ -497,6 +503,30 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         }
 
         return rowStyles;
+    }
+
+    private void markIntermediateInProductionCountingQuantities(List<Entity> productionCountingQuantities) {
+        for (Entity productionCountingQuantity : productionCountingQuantities) {
+            String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+            String set = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.SET);
+
+            if (GlobalTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial) && ProductionCountingQuantitySet.SET.getStringValue().equals(set)) {
+                Entity technologyOperationComponent = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+                Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+                for (Entity entity : productionCountingQuantities) {
+                    Entity entityTechnologyOperationComponent = entity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+                    Entity entityOperation = entityTechnologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+                    if (!entity.getId().equals(productionCountingQuantity.getId()) 
+                            && "1.".equals(entityTechnologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER)) 
+                            && operation.getId().equals(entityOperation.getId())) {
+                        entity.setField(ProductionCountingQuantityFields.SET, ProductionCountingQuantitySet.INTERMEDIATE.getStringValue());
+                        entity = entity.getDataDefinition().save(entity);
+                    }
+                }
+            }
+        }
     }
 
 }

@@ -53,7 +53,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 @Service
 public class ProductionTrackingHooks {
@@ -209,7 +208,7 @@ public class ProductionTrackingHooks {
                         put("ids", ids);
                     }
                 };
-                jdbcTemplate.update("DELETE FROM productioncounting_settechnologyincomponents WHERE id IN (:ids)", new MapSqlParameterSource(parameters));
+                jdbcTemplate.update("DELETE FROM productioncounting_settrackingoperationproductincomponents WHERE id IN (:ids)", new MapSqlParameterSource(parameters));
             }
             trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent, usedQuantity);
 
