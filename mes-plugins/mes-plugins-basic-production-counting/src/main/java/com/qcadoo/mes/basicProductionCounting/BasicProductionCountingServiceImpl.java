@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -47,7 +46,6 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.*;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -66,6 +64,9 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private ProductionCountingQuantitySetService productionCountingQuantitySetService;
 
     @Override
     public void createProductionCountingQuantitiesAndOperationRuns(final Entity order) {
@@ -124,7 +125,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             productionCountingQuantities.add(productionCountingQuantity);
         }
 
-        markIntermediateInProductionCountingQuantities(productionCountingQuantities);
+        productionCountingQuantitySetService.markIntermediateInProductionCountingQuantities(productionCountingQuantities);
     }
 
     @Override
@@ -503,30 +504,6 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         }
 
         return rowStyles;
-    }
-
-    private void markIntermediateInProductionCountingQuantities(List<Entity> productionCountingQuantities) {
-        for (Entity productionCountingQuantity : productionCountingQuantities) {
-            String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
-            String set = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.SET);
-
-            if (GlobalTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial) && ProductionCountingQuantitySet.SET.getStringValue().equals(set)) {
-                Entity technologyOperationComponent = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-                Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-
-                for (Entity entity : productionCountingQuantities) {
-                    Entity entityTechnologyOperationComponent = entity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-                    Entity entityOperation = entityTechnologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-
-                    if (!entity.getId().equals(productionCountingQuantity.getId()) 
-                            && "1.".equals(entityTechnologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER)) 
-                            && operation.getId().equals(entityOperation.getId())) {
-                        entity.setField(ProductionCountingQuantityFields.SET, ProductionCountingQuantitySet.INTERMEDIATE.getStringValue());
-                        entity = entity.getDataDefinition().save(entity);
-                    }
-                }
-            }
-        }
     }
 
 }
