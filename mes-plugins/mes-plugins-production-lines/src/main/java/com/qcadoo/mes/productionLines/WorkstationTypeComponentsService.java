@@ -10,6 +10,7 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +27,58 @@ public class WorkstationTypeComponentsService {
     public List<WorkstationTypeComponentQuantity> getWorkstationTypeComponentsForPeriod(final Entity productionLine,
             final Entity workstationType, final Date from, final Date to) {
         List<WorkstationTypeComponentQuantity> results = Lists.newArrayList();
-
+        List<Entity> componentsEntity = findWorkstationTypeComponentsForPeriod(productionLine, workstationType, from, to);
+        results = calculateWorkstationTypeComponentQuantity(componentsEntity, from, to);
         return results;
+    }
+
+    private List<WorkstationTypeComponentQuantity> calculateWorkstationTypeComponentQuantity(final List<Entity> componentsEntity,
+            final Date from, final Date to) {
+        List<WorkstationTypeComponentQuantity> results = Lists.newArrayList();
+        componentsEntity.forEach(entity -> createWorkstationTypeComponentQuantityEntry(entity, from, to, results));
+        return results;
+    }
+
+    private void createWorkstationTypeComponentQuantityEntry(Entity entity, Date from, Date to,
+            List<WorkstationTypeComponentQuantity> results) {
+        Date componentDateFrom = entity.getDateField(WorkstationTypeComponentFields.DATE_FROM);
+        Date componentDateTo = entity.getDateField(WorkstationTypeComponentFields.DATE_TO);
+        Integer quantity = entity.getIntegerField(WorkstationTypeComponentFields.QUANTITY);
+        WorkstationTypeComponentQuantity workstationTypeComponentQuantity = new WorkstationTypeComponentQuantity(quantity,
+                resolveDateFrom(from, componentDateFrom), resolveDateTo(to, componentDateTo));
+        results.add(workstationTypeComponentQuantity);
+    }
+
+    private DateTime resolveDateTo(Date to, Date componentDateTo) {
+        if (componentDateTo == null) {
+            return new DateTime(to);
+        }
+        if (to.before(componentDateTo)) {
+            return new DateTime(to);
+        }
+        return new DateTime(componentDateTo);
+    }
+
+    private DateTime resolveDateFrom(Date from, Date componentDateFrom) {
+        if (componentDateFrom == null) {
+            return new DateTime(from);
+        }
+        if (componentDateFrom.after(from)) {
+            return new DateTime(componentDateFrom);
+        }
+        return new DateTime(from);
+    }
+
+    private List<Entity> findWorkstationTypeComponentsForPeriod(final Entity productionLine, final Entity workstationType,
+            final Date from, final Date to) {
+        SearchCriteriaBuilder scb = dataDefinitionService
+                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_WORKSTATION_TYPE_COMPONENT)
+                .find().addOrder(SearchOrders.desc(WorkstationTypeComponentFields.DATE_FROM))
+                .add(SearchRestrictions.belongsTo(WorkstationTypeComponentFields.PRODUCTIONLINE, productionLine))
+                .add(SearchRestrictions.belongsTo(WorkstationTypeComponentFields.WORKSTATIONTYPE, workstationType))
+                .add(SearchRestrictions.gt(WorkstationTypeComponentFields.DATE_TO, from))
+                .add(SearchRestrictions.lt(WorkstationTypeComponentFields.DATE_FROM, to));
+        return scb.list().getEntities();
     }
 
     public Optional<Entity> findPreviousWorkstationTypeComponent(final Entity workstationTypeComponent) {
@@ -63,10 +114,10 @@ public class WorkstationTypeComponentsService {
                 SearchRestrictions.belongsTo(WorkstationTypeComponentFields.WORKSTATIONTYPE, workstationType));
 
         if (dateTo == null) {
-            scb = SearchRestrictions.and(scb, SearchRestrictions
-                    .or(SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_FROM, dateFrom), SearchRestrictions
-                            .and(SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
-                                    SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom))));
+            scb = SearchRestrictions.and(scb, SearchRestrictions.or(SearchRestrictions.ge(
+                    WorkstationTypeComponentFields.DATE_FROM, dateFrom), SearchRestrictions.and(
+                    SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
+                    SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom))));
         } else {
             scb = SearchRestrictions.and(scb, SearchRestrictions.and(
                     SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),

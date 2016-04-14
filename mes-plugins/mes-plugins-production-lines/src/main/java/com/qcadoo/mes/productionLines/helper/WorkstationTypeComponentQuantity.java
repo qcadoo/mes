@@ -11,6 +11,8 @@ public class WorkstationTypeComponentQuantity {
 
     private final DateTime to;
 
+    private Integer min;
+
     public Integer getDurationInMinuts(){
         return Minutes.minutesBetween(from, to).getMinutes();
     }
@@ -19,6 +21,7 @@ public class WorkstationTypeComponentQuantity {
         this.quantity = quantity;
         this.from = from;
         this.to = to;
+        min =  Minutes.minutesBetween(from, to).getMinutes();
     }
 
     public Integer getQuantity() {
@@ -31,5 +34,13 @@ public class WorkstationTypeComponentQuantity {
 
     public DateTime getTo() {
         return to;
+    }
+
+    public Integer getMin() {
+        return Minutes.minutesBetween(from, to).getMinutes();
+    }
+
+    public void setMin(Integer min) {
+        this.min = min;
     }
 }
