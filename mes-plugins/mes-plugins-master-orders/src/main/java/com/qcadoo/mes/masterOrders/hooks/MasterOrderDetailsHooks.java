@@ -120,9 +120,7 @@ public class MasterOrderDetailsHooks {
             createOrder.requestUpdate(true);
             window.requestRibbonRender();
         } else {
-            LookupComponent productLookupComponent = (LookupComponent) view.getComponentByReference("product");
             createOrder.setEnabled(true);
-
             createOrder.requestUpdate(true);
 
         }

@@ -6,7 +6,7 @@ public class WorkTimeDTO {
 
     private Long staffworkTimeId;
     private String staffWorkTimeWorker;
-    private int staffWorkTimeLaborTime;
+    private Integer staffWorkTimeLaborTime;
 
     public Long getStaffworkTimeId() {
         return staffworkTimeId;
@@ -24,26 +24,30 @@ public class WorkTimeDTO {
         this.staffWorkTimeWorker = staffWorkTimeWorker;
     }
 
-    public int getStaffWorkTimeLaborTime() {
+    public Integer getStaffWorkTimeLaborTime() {
         return staffWorkTimeLaborTime;
     }
 
-    public void setStaffWorkTimeLaborTime(int staffWorkTimeLaborTime) {
+    public void setStaffWorkTimeLaborTime(Integer staffWorkTimeLaborTime) {
         this.staffWorkTimeLaborTime = staffWorkTimeLaborTime;
     }
 
-    @Override public boolean equals(Object o) {
-        if (this == o)
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         WorkTimeDTO that = (WorkTimeDTO) o;
-        return Objects.equal(staffWorkTimeLaborTime, that.staffWorkTimeLaborTime) &&
-                Objects.equal(staffworkTimeId, that.staffworkTimeId) &&
-                Objects.equal(staffWorkTimeWorker, that.staffWorkTimeWorker);
+        return Objects.equal(staffWorkTimeLaborTime, that.staffWorkTimeLaborTime)
+                && Objects.equal(staffworkTimeId, that.staffworkTimeId)
+                && Objects.equal(staffWorkTimeWorker, that.staffWorkTimeWorker);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hashCode(staffworkTimeId, staffWorkTimeWorker, staffWorkTimeLaborTime);
     }
 }

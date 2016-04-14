@@ -49,6 +49,8 @@ public class DocumentPdfHelper {
 
     private static final String L_HEADER = "materialFlowResources.report.header";
 
+    private static final String L_NAME = "materialFlowResources.document.name.label";
+
     private static final String L_NUMBER = "materialFlowResources.document.number.label";
 
     private static final String L_TIME = "materialFlowResources.document.time.label";
@@ -94,8 +96,8 @@ public class DocumentPdfHelper {
     private TranslationService translationService;
 
     public Entity getDocumentEntity(final Long id) {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_DOCUMENT).get(id);
+        return dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT).get(id);
     }
 
     /**
@@ -172,17 +174,18 @@ public class DocumentPdfHelper {
      */
     public List<HeaderPair> getDocumentHeaderTableContent(final Entity documentEntity, final Locale locale) {
         List<HeaderPair> headerValues = Lists.newLinkedList();
-        headerValues.add(new HeaderPair(translationService.translate(L_NUMBER, locale), DocumentDataProvider
-                .number(documentEntity)));
-        headerValues.add(new HeaderPair(translationService.translate(L_LOCATION_FROM, locale), DocumentDataProvider
-                .locationFrom(documentEntity)));
-        headerValues.add(new HeaderPair(translationService.translate(L_COMPANY, locale), DocumentDataProvider
-                .company(documentEntity)));
+        headerValues.add(new HeaderPair(
+                translationService.translate(L_NUMBER, locale) + "\n" + translationService.translate(L_NAME, locale),
+                DocumentDataProvider.number(documentEntity) + "\n" + DocumentDataProvider.name(documentEntity)));
+        headerValues.add(new HeaderPair(translationService.translate(L_LOCATION_FROM, locale),
+                DocumentDataProvider.locationFrom(documentEntity)));
+        headerValues.add(
+                new HeaderPair(translationService.translate(L_COMPANY, locale), DocumentDataProvider.company(documentEntity)));
         headerValues.add(new HeaderPair(translationService.translate(L_TIME, locale), DocumentDataProvider.time(documentEntity)));
-        headerValues.add(new HeaderPair(translationService.translate(L_LOCATION_TO, locale), DocumentDataProvider
-                .locationTo(documentEntity)));
-        headerValues.add(new HeaderPair(translationService.translate(L_STATE, locale), translationService.translate(L_STATE_VALUE
-                + DocumentDataProvider.state(documentEntity), locale)));
+        headerValues.add(new HeaderPair(translationService.translate(L_LOCATION_TO, locale),
+                DocumentDataProvider.locationTo(documentEntity)));
+        headerValues.add(new HeaderPair(translationService.translate(L_STATE, locale),
+                translationService.translate(L_STATE_VALUE + DocumentDataProvider.state(documentEntity), locale)));
         return headerValues;
     }
 
@@ -218,7 +221,7 @@ public class DocumentPdfHelper {
         return headerLabels;
     }
 
-    public class HeaderPair {
+    public static class HeaderPair {
 
         private String label;
 

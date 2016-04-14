@@ -41,4 +41,6 @@ public final class OperationProductInComponentFields {
 
     public static final String UNIT = "unit";
 
+    public static final String QUANTITY_FORMULA = "quantityFormula";
+
 }

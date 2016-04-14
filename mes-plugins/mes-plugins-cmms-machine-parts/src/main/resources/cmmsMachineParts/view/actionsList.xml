@@ -49,6 +49,10 @@
 
             <option type="order" column="name" direction="asc"/>
             <option type="fullscreen" value="true"/>
+
+            <listener event="select"
+                      method="disableActionsWhenDefault"
+                      class="com.qcadoo.mes.cmmsMachineParts.listeners.ActionListListeners"/>
         </component>
 
 
@@ -56,5 +60,8 @@
         <option type="header" value="false"/>
     </component>
 
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.ActionListHooks" method="onBeforeRender"/>
+    </hooks>
 
 </view>

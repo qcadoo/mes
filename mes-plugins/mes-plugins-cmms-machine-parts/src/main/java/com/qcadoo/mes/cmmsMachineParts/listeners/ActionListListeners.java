@@ -21,21 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.states;
+package com.qcadoo.mes.cmmsMachineParts.listeners;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.states.service.StateChangeContextBuilder;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.cmmsMachineParts.hooks.ActionListHooks;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class MaintenanceEventStateChangeListenerService {
+public class ActionListListeners {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private ActionListHooks actionListHooks;
 
-    @Autowired
-    private StateChangeContextBuilder stateChangeContextBuilder;
-
+    public void disableActionsWhenDefault(final ViewDefinitionState view, final ComponentState state, final String args[]) {
+        actionListHooks.onBeforeRender(view);
+    }
 }

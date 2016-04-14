@@ -199,9 +199,9 @@ public class WorkPlanPdfForDivision {
         addOrderSummary(headerCell, order, product, operationComponent);
 
         addOperationProductsTable(inputCell,
-                addMaterialComponents(operationProductInComponents(operationComponent, order), order),
+                addMaterialComponents(operationProductInComponents(operationComponent), order),
                 inputProductColumnAlignmentMap, ProductDirection.IN, locale);
-        addOperationProductsTable(outputCell, operationProductOutComponents(operationComponent, order),
+        addOperationProductsTable(outputCell, operationProductOutComponents(operationComponent),
                 outputProductColumnAlignmentMap, ProductDirection.OUT, locale);
 
         codeCell.addElement(createBarcode(pdfWriter, operationComponent));
@@ -308,7 +308,7 @@ public class WorkPlanPdfForDivision {
 
         int columnCount = operationProductColumnAlignmentMap.size();
 
-        Map<String, HeaderAlignment> headerAlignments = new HashMap<String, HeaderAlignment>(columnCount);
+        Map<String, HeaderAlignment> headerAlignments = new HashMap<>(columnCount);
         List<String> headers = new ArrayList<String>(columnCount);
         float[] widths = fill(locale, operationProductColumnAlignmentMap, headers, headerAlignments, direction);
 
@@ -370,11 +370,11 @@ public class WorkPlanPdfForDivision {
         }
     }
 
-    private List<Entity> operationProductOutComponents(Entity operationComponent, Entity order) {
+    private List<Entity> operationProductOutComponents(Entity operationComponent) {
         return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
     }
 
-    private List<Entity> operationProductInComponents(Entity operationComponent, Entity order) {
+    private List<Entity> operationProductInComponents(Entity operationComponent) {
         return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
     }
 

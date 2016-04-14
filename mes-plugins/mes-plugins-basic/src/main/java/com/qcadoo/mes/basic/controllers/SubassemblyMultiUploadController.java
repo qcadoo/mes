@@ -45,16 +45,13 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.SubassemblyAttachmentFields;
-import com.qcadoo.mes.basic.constants.WorkstationAttachmentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.view.api.crud.CrudService;
 
 @Controller @RequestMapping("/basic") public class SubassemblyMultiUploadController {
 
@@ -64,15 +61,11 @@ import com.qcadoo.view.api.crud.CrudService;
 
     @Autowired private DataDefinitionService dataDefinitionService;
 
-    @Autowired private CrudService crudController;
-
     @Autowired private NumberService numberService;
-
-    @Autowired private TranslationService translationService;
 
     private static final Integer L_SCALE = 2;
 
-    private static final List<String> exts = Lists
+    private static final List<String> EXTS = Lists
             .newArrayList("JPG", "JPEG", "PNG", "PDF", "DOC", "DOCX", "XLS", "XLSX", "GIF", "DWG", "IPT", "IAM", "IDW", "ODT",
                     "ODS");
 
@@ -97,7 +90,7 @@ import com.qcadoo.view.api.crud.CrudService;
             } catch (IOException e) {
                 logger.error("Unable to upload attachment.", e);
             }
-            if (exts.contains(Files.getFileExtension(path).toUpperCase())) {
+            if (EXTS.contains(Files.getFileExtension(path).toUpperCase())) {
                 Entity atchment = attachmentDD.create();
                 atchment.setField(SubassemblyAttachmentFields.ATTACHMENT, path);
                 atchment.setField(SubassemblyAttachmentFields.NAME, mpf.getOriginalFilename());

@@ -30,9 +30,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
-public class OrderIdOperationNumberOperationComponentIdMap {
+public final class OrderIdOperationNumberOperationComponentIdMap {
 
-    private Map<Long, Multimap<String, Long>> map;
+    private final Map<Long, Multimap<String, Long>> map;
 
     private OrderIdOperationNumberOperationComponentIdMap() {
         this.map = Maps.newHashMap();

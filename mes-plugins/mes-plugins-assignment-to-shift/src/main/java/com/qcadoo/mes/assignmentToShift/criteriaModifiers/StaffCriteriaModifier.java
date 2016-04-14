@@ -12,7 +12,7 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class StaffCriteriaModifier {
 
-    private static String CREW_FILTER_VALUE = "crewId";
+    private static final String CREW_FILTER_VALUE = "crewId";
 
     public void filterByCrew(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
         if (filterValueHolder.has(CREW_FILTER_VALUE)) {

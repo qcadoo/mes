@@ -28,10 +28,10 @@ public class TimeUsageXlsView  extends AbstractExcelView {
     @Autowired
     private TranslationService translationService;
 
-    private String localePrefix = "cmmsMachineParts.timeUsageReport.report.filename";
+    private final String localePrefix = "cmmsMachineParts.timeUsageReport.report.filename";
 
     @Override protected void buildExcelDocument(Map<String, Object> filters, HSSFWorkbook hssfWorkbook,
-            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         String fileName = generateFilename();
         httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + ".xls\"");
         HSSFSheet sheet = hssfWorkbook.createSheet(timeUsageXlsService.getReportTitle(LocaleContextHolder.getLocale()));

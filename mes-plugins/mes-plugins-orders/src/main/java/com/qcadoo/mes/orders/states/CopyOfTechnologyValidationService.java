@@ -164,7 +164,7 @@ public class CopyOfTechnologyValidationService {
     }
 
     private Set<Entity> checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
-        Set<Entity> operations = new HashSet<Entity>();
+        Set<Entity> operations = new HashSet<>();
 
         for (Entity technologyOperation : technologyOperations) {
             final Entity parent = technologyOperation.getBelongsToField(TechnologyOperationComponentFields.PARENT);
@@ -308,7 +308,7 @@ public class CopyOfTechnologyValidationService {
             stateChangeContext.addValidationError("technologies.technology.validate.global.error.treeIsNotValid");
             StringBuilder builder = new StringBuilder();
             for (String message : messages) {
-                builder.append(message.toString());
+                builder.append(message);
                 builder.append(", ");
             }
             stateChangeContext.addMessage("technologies.technology.validate.error.invalidQuantity", StateMessageType.FAILURE,

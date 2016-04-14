@@ -23,11 +23,17 @@
  */
 package com.qcadoo.mes.orders;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
@@ -38,6 +44,7 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -46,6 +53,7 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -62,6 +70,15 @@ public class TechnologyServiceO {
 
     @Autowired
     private StateChangeContextBuilder stateChangeContextBuilder;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ShiftsService shiftsService;
+
+    @Autowired
+    private SecurityService securityService;
 
     @Transactional
     public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
@@ -253,7 +270,8 @@ public class TechnologyServiceO {
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
 
         copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
-        changeTechnologyState(copyOfTechnology, TechnologyStateStringValues.CHECKED);
+        changeTechnologyStateToChecked(copyOfTechnology);
+
         return copyOfTechnology;
     }
 
@@ -310,7 +328,7 @@ public class TechnologyServiceO {
     }
 
     public String generateNumberForTechnologyInOrder(final Entity order, final Entity technology) {
-        StringBuffer number = new StringBuffer();
+        StringBuilder number = new StringBuilder();
         if (technology == null) {
             number.append(numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY));
@@ -319,7 +337,9 @@ public class TechnologyServiceO {
         }
         number.append(" - ");
         number.append(order.getStringField(OrderFields.NUMBER));
-        return number.toString();
+        number.append(" - ");
+        return numberGeneratorService.generateNumberWithPrefix(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY, 3, number.toString());
     }
 
     public void changeTechnologyState(final Entity technology, final String targetState) {
@@ -328,7 +348,29 @@ public class TechnologyServiceO {
 
         stateChangeContextT.setStatus(StateChangeStatus.IN_PROGRESS);
         technologyStateChangeAspect.changeState(stateChangeContextT);
+    }
 
+    public void changeTechnologyStateToChecked(Entity technology) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("state", TechnologyStateStringValues.CHECKED);
+        paramMap.put("id", technology.getId());
+        jdbcTemplate.update("UPDATE technologies_technology SET " + TechnologyFields.STATE + " = :state WHERE id = :id",
+                paramMap);
+
+        DataDefinition technologyStateChangeDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_STATE_CHANGE);
+        Entity technologyStateChange = technologyStateChangeDD.create();
+        technologyStateChange.setField(TechnologyStateChangeFields.SOURCE_STATE, TechnologyStateStringValues.DRAFT);
+        technologyStateChange.setField(TechnologyStateChangeFields.TARGET_STATE, TechnologyStateStringValues.CHECKED);
+        technologyStateChange.setField(TechnologyStateChangeFields.TECHNOLOGY, technology);
+        technologyStateChange.setField(TechnologyStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL);
+        technologyStateChange.setField(technologyStateChangeAspect.getChangeEntityDescriber().getDateTimeFieldName(), new Date());
+        technologyStateChange.setField(technologyStateChangeAspect.getChangeEntityDescriber().getShiftFieldName(),
+                shiftsService.getShiftFromDateWithTime(new Date()));
+        technologyStateChange.setField(technologyStateChangeAspect.getChangeEntityDescriber().getWorkerFieldName(),
+                securityService.getCurrentUserName());
+
+        technologyStateChangeDD.save(technologyStateChange);
     }
 
     public void setTechnologyNumber(final DataDefinition orderDD, final Entity order) {

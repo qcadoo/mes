@@ -61,19 +61,6 @@ public class OperationOrderInfoWorkstation {
 
         if (workstationType != null) {
             workstationTypeName = workstationType.getStringField(WorkstationTypeFields.NAME);
-            // TODO KASI to change
-            Entity division = null;
-            // Entity division = workstationType.getBelongsToField(WorkstationTypeFields.DIVISION);
-            if (division != null) {
-                divisionName = division.getStringField(DivisionFields.NAME);
-                divisionLabel = translationService.translate("workPlans.workPlan.report.operation.division", locale);
-                Entity supervisor = division.getBelongsToField(DivisionFields.SUPERVISOR);
-                if (supervisor != null) {
-                    supervisorName = supervisor.getStringField(StaffFields.NAME) + " "
-                            + supervisor.getStringField(StaffFields.SURNAME);
-                    supervisorLabel = translationService.translate("workPlans.workPlan.report.operation.supervisor", locale);
-                }
-            }
 
             pdfHelper.addTableCellAsOneColumnTable(operationTable,
                     translationService.translate("workPlans.workPlan.report.operation.workstationType", locale),

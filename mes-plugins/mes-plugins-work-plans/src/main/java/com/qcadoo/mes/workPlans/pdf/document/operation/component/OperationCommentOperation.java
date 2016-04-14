@@ -38,8 +38,8 @@ import java.util.Locale;
 @Component
 public class OperationCommentOperation {
 
-    private TranslationService translationService;
-    private PdfHelper pdfHelper;
+    private final TranslationService translationService;
+    private final PdfHelper pdfHelper;
 
     @Autowired
     public OperationCommentOperation(TranslationService translationService, PdfHelper pdfHelper) {
@@ -49,8 +49,9 @@ public class OperationCommentOperation {
 
     public void print(Entity operationComponent, Document document, Locale locale) throws DocumentException {
         String commentContent = operationComponent.getStringField(TechnologyOperationComponentFields.COMMENT);
-        if (commentContent == null)
+        if (commentContent == null) {
             return;
+        }
 
         PdfPTable table = pdfHelper.createPanelTable(1);
         table.getDefaultCell().setBackgroundColor(null);

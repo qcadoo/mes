@@ -42,7 +42,7 @@ import java.util.List;
 public class WorkstationTypeDetailsHooks {
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     public void disableSubassemblyCheckbox(final ViewDefinitionState view) {
 

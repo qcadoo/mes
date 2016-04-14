@@ -49,6 +49,9 @@
 
             <option type="order" column="name" direction="asc"/>
             <option type="fullscreen" value="true"/>
+            <listener event="select"
+                      method="disableActionsWhenDefault"
+                      class="com.qcadoo.mes.cmmsMachineParts.listeners.FaultTypeListListeners"/>
         </component>
 
 
@@ -56,5 +59,8 @@
         <option type="header" value="false"/>
     </component>
 
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeListHooks" method="onBeforeRender"/>
+    </hooks>
 
 </view>

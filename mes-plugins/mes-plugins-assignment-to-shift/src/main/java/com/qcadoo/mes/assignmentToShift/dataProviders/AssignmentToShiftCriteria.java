@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.google.common.base.Optional;
 import com.qcadoo.model.api.search.SearchCriterion;
 
-public class AssignmentToShiftCriteria {
+public final class AssignmentToShiftCriteria {
 
     private Optional<SearchCriterion> shiftCriteria = Optional.absent();
 

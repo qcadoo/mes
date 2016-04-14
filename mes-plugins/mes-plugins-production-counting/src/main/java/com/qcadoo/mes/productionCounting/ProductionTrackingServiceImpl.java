@@ -64,9 +64,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     private static final String L_FORM = "form";
 
     @Autowired
-    private ProductionCountingService productionCountingService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Override

@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.orders.constants.mbr;
 
-public class FormulaFields {
+public final class FormulaFields {
 
     public static final String VALUE = "value";
 
@@ -38,7 +38,6 @@ public class FormulaFields {
     public static final String SUFFIX = "suffix";
 
     private FormulaFields() {
-
     }
 
 }

@@ -67,7 +67,6 @@ public class TechnologyOperationComponentHooksTNFO {
         techOperCompTimeCalculation = techOperCompTimeCalculationDD.save(techOperCompTimeCalculation);
         technologyOperationComponent.setField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION,
                 techOperCompTimeCalculation);
-        // technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
     }
 
     public void copyTimeNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {

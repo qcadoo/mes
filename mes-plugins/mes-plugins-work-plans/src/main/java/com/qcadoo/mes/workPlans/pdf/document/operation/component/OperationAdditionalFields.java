@@ -37,13 +37,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
-import java.util.NoSuchElementException;
 
 @Component
 public class OperationAdditionalFields {
 
-    private PdfHelper pdfHelper;
-    private TranslationService translationService;
+    private final PdfHelper pdfHelper;
+    private final TranslationService translationService;
 
     @Autowired
     public OperationAdditionalFields(PdfHelper pdfHelper, TranslationService translationService) {
@@ -54,8 +53,9 @@ public class OperationAdditionalFields {
     public void print(Entity operationComponent, Document document, Locale locale) throws DocumentException {
         Optional<String> imageUrlInWorkPlan = getImageUrlInWorkPlan(operationComponent);
 
-        if(!imageUrlInWorkPlan.isPresent())
+        if (!imageUrlInWorkPlan.isPresent()) {
             return;
+        }
 
         document.add(new Paragraph(title(locale), FontUtils.getDejavuBold10Dark()));
         pdfHelper.addImage(document, imageUrlInWorkPlan.get());

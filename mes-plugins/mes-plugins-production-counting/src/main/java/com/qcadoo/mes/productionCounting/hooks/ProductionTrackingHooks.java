@@ -97,10 +97,12 @@ public class ProductionTrackingHooks {
             outputs = operationProducts.getOutputComponents();
         }
 
-        if(registerQuantityInProduct)
+        if (registerQuantityInProduct) {
             productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS, inputs);
-        if(registerQuantityOutProduct)
+        }
+        if (registerQuantityOutProduct) {
             productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, outputs);
+        }
     }
 
     private boolean shouldCopyProducts(final Entity productionTracking) {

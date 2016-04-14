@@ -39,8 +39,7 @@ public class TechnologyOperationComponentCriteriaModifiersPC {
     private static final String L_TECHNOLOGY = "technology";
     private static final String DOT = ".";
 
-
-    private OperationMergeService operationMergeService;
+    private final OperationMergeService operationMergeService;
 
     @Autowired
     public TechnologyOperationComponentCriteriaModifiersPC(OperationMergeService operationMergeService) {

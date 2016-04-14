@@ -40,17 +40,19 @@ import java.util.Map;
 @Service
 public class ExchangeRatesUpdateServiceImpl implements ExchangeRatesUpdateService {
 
-    private ExchangeRatesNbpService nbpService;
-    private DataDefinitionService dataDefinitionService;
+    private final ExchangeRatesNbpService nbpService;
+    private final DataDefinitionService dataDefinitionService;
 
     @Autowired
     public ExchangeRatesUpdateServiceImpl(ExchangeRatesNbpService nbpService,
-                                          DataDefinitionService dataDefinitionService) {
+            DataDefinitionService dataDefinitionService) {
         this.nbpService = nbpService;
         this.dataDefinitionService = dataDefinitionService;
     }
 
-    @Override @Async @Scheduled(cron = ExchangeRatesNbpService.CRON_LAST_ALL)
+    @Override
+    @Async
+    @Scheduled(cron = ExchangeRatesNbpService.CRON_LAST_ALL)
     public void update() {
         updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_A));
         updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_B));
@@ -61,8 +63,9 @@ public class ExchangeRatesUpdateServiceImpl implements ExchangeRatesUpdateServic
         List<Entity> entities = getCurrencyDD().find().list().getEntities();
         for (Entity entity : entities) {
             String isoCode = (String) entity.getField(CurrencyFields.ALPHABETIC_CODE);
-            if(exRates.containsKey(isoCode))
+            if (exRates.containsKey(isoCode)) {
                 updateExchangeRate(entity, exRates.get(isoCode));
+            }
         }
     }
 

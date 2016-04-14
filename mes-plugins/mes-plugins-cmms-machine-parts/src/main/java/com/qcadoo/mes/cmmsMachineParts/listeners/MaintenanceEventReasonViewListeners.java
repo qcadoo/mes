@@ -43,8 +43,6 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class MaintenanceEventReasonViewListeners {
 
-    private static final String L_FORM = "form";
-
     @Autowired
     private MaintenanceEventStateChangeAspect maintenanceEventStateChangeAspect;
 

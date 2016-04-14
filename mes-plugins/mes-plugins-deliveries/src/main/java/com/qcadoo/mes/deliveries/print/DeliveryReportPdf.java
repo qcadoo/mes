@@ -396,8 +396,7 @@ public class DeliveryReportPdf extends ReportPdfView {
     }
 
     private String prepareHeaderTranslation(final String name, final Locale locale) {
-        String translatedName = translationService.translate(name, locale);
-        return translatedName;
+        return translationService.translate(name, locale);
     }
 
     private void prepareProductColumnAlignment(final PdfPCell cell, final ColumnAlignment columnAlignment) {

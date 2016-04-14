@@ -226,7 +226,7 @@ public class PlannedEventDetailsHooks {
         }
     }
 
-    private void lockGrids(ViewDefinitionState view, ArrayList<String> gridNames) {
+    private void lockGrids(ViewDefinitionState view, List<String> gridNames) {
         gridNames.stream().forEach(gridName -> {
             GridComponent grid = (GridComponent) view.getComponentByReference(gridName);
             grid.setEnabled(false);

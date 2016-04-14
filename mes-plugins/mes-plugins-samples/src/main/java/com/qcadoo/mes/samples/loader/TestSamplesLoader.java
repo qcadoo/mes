@@ -65,7 +65,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     @Autowired
     private NumberService numberService;
 
-    private Map<String, Entity> operationComponents = new LinkedHashMap<String, Entity>();
+    private final Map<String, Entity> operationComponents = new LinkedHashMap<>();
 
     @Override
     protected void loadData(final String locale) {
@@ -603,36 +603,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     + product.getField(L_NUMBER) + ", globalTypeOfMaterial=" + product.getField("typeOfMaterial") + ", unit="
                     + product.getField(L_UNIT) + "}");
         }
-
-        // StringBuilder stringBuilder = new StringBuilder();
-        // for (int i = 0; i < RANDOM.nextInt(5); i++) {
-        // for (int j = 0; j <= i; j++) {
-        // stringBuilder.append("#");
-        // }
-        // addSubstitute(values.get(L_NAME) + stringBuilder.toString(), values.get(L_PRODUCT_NR) + stringBuilder.toString(),
-        // product, i + 1);
-        // }
-    }
-
-    @Deprecated
-    private void addSubstitute(final String name, final String number, final Entity product, final int priority) {
-        Entity substitute = dataDefinitionService.get(L_BASIC_PLUGIN_IDENTIFIER, L_BASIC_MODEL_SUBSTITUTE).create();
-        substitute.setField(L_NAME, name);
-        substitute.setField(L_NUMBER, number);
-        substitute.setField("priority", priority);
-        substitute.setField(L_BASIC_MODEL_PRODUCT, product);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test substitute {name=" + substitute.getField(L_NAME) + ", " + L_NUMBER + "="
-                    + substitute.getField(L_NUMBER) + ", priority=" + substitute.getField("priority") + ", subsitute product="
-                    + ((Entity) substitute.getField(L_BASIC_MODEL_PRODUCT)).getField(L_NUMBER) + "}");
-        }
-
-        substitute = dataDefinitionService.get(L_BASIC_PLUGIN_IDENTIFIER, L_BASIC_MODEL_SUBSTITUTE).save(substitute);
-
-        for (int i = 0; i < 1; i++) {
-            addSubstituteComponent(substitute, getRandomProduct(), 100 * RANDOM.nextDouble());
-        }
     }
 
     @Deprecated
@@ -731,9 +701,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         order.setField(L_BASIC_MODEL_PRODUCT, product);
-        if (order.getField(L_TECHNOLOGY_MODEL_TECHNOLOGY) == null) {
-            // order.setField(L_TECHNOLOGY_MODEL_TECHNOLOGY, getDefaultTechnologyForProduct(product));
-        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test order {id="
@@ -1086,9 +1053,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             component.setField(L_LABOR_HOURLY_COST, operation.getField(L_LABOR_HOURLY_COST));
             component.setField("numberOfOperations", operation.getField("numberOfOperations"));
         }
-        // if (isEnabledOrEnabling(L_TECH_SUBCONTRACTING) && !values.get("issubcontracting").isEmpty()) {
-        // component.setField("isSubcontracting", true);
-        // }
+        
         component.setField("assignedToOperation", values.get("assignedtooperation"));
         component.setField("quantityOfWorkstations", values.get("quantityofworkstations"));
 
@@ -1369,20 +1334,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private Entity getTechnologyByNumber(final String number) {
         return dataDefinitionService.get(L_TECHNOLOGIES_PLUGIN_IDENTIFIER, L_TECHNOLOGY_MODEL_TECHNOLOGY).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
-    }
-
-    private Entity getDefaultTechnologyForProduct(final Entity product) {
-        if (product == null) {
-            return null;
-        }
-        List<Entity> technologies = dataDefinitionService.get(L_TECHNOLOGIES_PLUGIN_IDENTIFIER, L_TECHNOLOGY_MODEL_TECHNOLOGY)
-                .find().add(SearchRestrictions.belongsTo(L_BASIC_MODEL_PRODUCT, product))
-                .add(SearchRestrictions.eq("master", true)).setMaxResults(1).list().getEntities();
-        if (technologies.isEmpty()) {
-            return null;
-        } else {
-            return technologies.get(0);
-        }
     }
 
     private Entity getTechnologyOperationComponentByNumber(final Entity order, final Entity operation) {

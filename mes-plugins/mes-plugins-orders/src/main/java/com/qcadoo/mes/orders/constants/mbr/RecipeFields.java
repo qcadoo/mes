@@ -23,11 +23,7 @@
  */
 package com.qcadoo.mes.orders.constants.mbr;
 
-public class RecipeFields {
-
-    private RecipeFields() {
-
-    }
+public final class RecipeFields {
 
     public static final String RECIPE = "recipe";
 
@@ -55,4 +51,6 @@ public class RecipeFields {
 
     public static final String IS_DEFAULT = "isDefault";
 
+    private RecipeFields() {
+    }
 }

@@ -83,7 +83,6 @@ public class OperationMergeServiceImpl implements OperationMergeService {
         return mergesProductOutDD().find().add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
     }
 
-
     @Override
     public List<Long> findMergedToOperationComponentIds() {
         List<Entity> entities = mergesProductInDD().find()
@@ -221,12 +220,11 @@ public class OperationMergeServiceImpl implements OperationMergeService {
     private void adjustOperationProductOutComponentsDueMerge(Entity operationComponent) {
         Entity merge = findMergedByOperationComponent(operationComponent);
 
-
         List<Entity> operationProductOutComponents = operationProductOutComponents(operationComponent);
         List<Entity> operationProductOutComponentsNew = Lists.newArrayList();
 
         BigDecimal quantity = merge.getDecimalField(TechnologyOperationComponentMergeProductFields.QUANTITY_CHANGE);
-        if(quantity.compareTo(BigDecimal.ZERO) > 0) {
+        if (quantity.compareTo(BigDecimal.ZERO) > 0) {
             boolean modifiedExisting = false;
             for (Entity operationProductOutComponent : operationProductOutComponents) {
                 if (operationProductOutComponent.getId().equals(mergedOperationProductComponent(merge).getId())) {
@@ -236,7 +234,7 @@ public class OperationMergeServiceImpl implements OperationMergeService {
                 }
             }
 
-            if(!modifiedExisting) {
+            if (!modifiedExisting) {
                 Entity mergedOperationComponent = mergedOperationProductComponent(merge);
                 operationProductOutComponentsNew.add(mergedOperationComponent);
             }
@@ -249,18 +247,18 @@ public class OperationMergeServiceImpl implements OperationMergeService {
         return merge.getBelongsToField(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_PRODUCT_COMPONENT);
     }
 
-
     private List<Entity> operationProductOutComponents(Entity operationComponent) {
         return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
     }
 
-    private void mergeProduct(DataDefinition dataDefinition, Entity order,  Entity existingOperationComponent, Entity operationProduct, BigDecimal quantity) {
+    private void mergeProduct(DataDefinition dataDefinition, Entity order, Entity existingOperationComponent, Entity operationProduct, BigDecimal quantity) {
         Entity alreadyMergedProductComponentForOperation = findAlreadyMergedProductComponentForOperation(dataDefinition, existingOperationComponent, operationProduct);
         if (alreadyMergedProductComponentForOperation != null) {
             alreadyMergedProductComponentForOperation.setField(TechnologyOperationComponentMergeProductFields.QUANTITY_CHANGE, quantity);
             dataDefinition.save(alreadyMergedProductComponentForOperation);
-        } else
+        } else {
             persistMerge(dataDefinition, order, existingOperationComponent, existingOperationComponent, operationProduct, quantity);
+        }
     }
 
     private void persistMerge(DataDefinition dataDefinition, Entity order, Entity operationComponent, Entity mergeOperationComponent, Entity operationProduct, BigDecimal quantity) {
@@ -278,7 +276,7 @@ public class OperationMergeServiceImpl implements OperationMergeService {
         return dataDefinition.find().createAlias(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_PRODUCT_COMPONENT, "mopc", JoinType.FULL)
                 .add(SearchRestrictions.eq(TechnologyOperationComponentMergeProductFields.OPERATION_COMPONENT + ".id", existingOperationComponent.getId()))
                 .add(SearchRestrictions.eq(TechnologyOperationComponentMergeProductFields.MERGED_OPERATION_COMPONENT + ".id", existingOperationComponent.getId()))
-                .add(SearchRestrictions.eq("mopc.product.id" , product.getId())).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq("mopc.product.id", product.getId())).setMaxResults(1).uniqueResult();
     }
 
     private DataDefinition mergesProductInDD() {

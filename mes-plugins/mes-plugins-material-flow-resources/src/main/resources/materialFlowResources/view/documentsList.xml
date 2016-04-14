@@ -36,8 +36,8 @@
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
-            <option type="column" name="number" fields="number" link="true"
-                    width="50" />
+            <option type="column" name="number" fields="number" link="true" width="70" />
+            <option type="column" name="name" fields="name" link="true" width="70" />
             <option type="column" name="type" fields="type" link="true"/>
             <option type="column" name="time" fields="time" width="100"/>
             <option type="column" name="state" fields="state" width="100" />
@@ -50,12 +50,12 @@
             <option type="column" name="user" fields="user"
                     expression="#user['firstName'] + ' ' + #user['lastName']" width="150" />
 
-            <option type="order" column="number" direction="desc" width="200" />
+            <option type="order" column="time" direction="desc" width="200" />
 
             <option type="searchable"
-                    value="number,time,locationFrom,locationTo,user,type,state,company" />
+                    value="number,name,time,locationFrom,locationTo,user,type,state,company" />
             <option type="orderable"
-                    value="number,time,locationFrom,locationTo,user,type,state,company" />
+                    value="number,name,time,locationFrom,locationTo,user,type,state,company" />
 
             <option type="correspondingView" value="materialFlowResources/documentDetails" />
             <option type="correspondingComponent" value="form" />

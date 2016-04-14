@@ -1,6 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents;
 
-import com.google.common.base.Function;
 import com.google.common.collect.*;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.MachinePartForEventDTO;
@@ -31,7 +30,7 @@ public class PlannedEventsXLSDataProvider {
 
     private final static String ORDER_BY = " ORDER BY event.id";
 
-    private final static String query = "SELECT event.id as id, event.\"number\" as number, event.type as type, event.description as description, event.state as state, event.ownername as ownerName,\n"
+    private final static String QUERY = "SELECT event.id as id, event.\"number\" as number, event.type as type, event.description as description, event.state as state, event.ownername as ownerName,\n"
             + "event.plannedseparately as plannedSeparately, event.requiresshutdown as requiresShutdown, event.basedon as basedOn, event.solutiondescription as solutionDescription, \n"
             + "event.date as date, event.counter as counter, event.countertolerance as counterTolerance, event.effectivecounter as effectiveCounter, \n"
             + "event.duration as duration, event.effectiveduration as effectiveDuration, event.isdeadline as isDeadline, event.createdate as createdate, \n"
@@ -62,26 +61,19 @@ public class PlannedEventsXLSDataProvider {
             + "LEFT JOIN basic_product product ON docpos.product_id = product.id\n";
 
     public List<PlannedEventDTO> getEvents(final Map<String, Object> filters) {
-        List<PlannedEventDTO> events = Lists.newArrayList();
+        List<PlannedEventDTO> events;
         Map<String, String> _filter = (Map<String, String>) filters.get("filtersMap");
         Long helperModelId = Long.valueOf(_filter.get("PLANED_EVENT_FILTER"));
         Entity helperEntity = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "plannedEventXLSHelper")
                 .get(helperModelId);
-        String _query = query;
+        String _query = QUERY;
         if (StringUtils.isNoneBlank(helperEntity.getStringField("query")) && helperEntity.getStringField("query").length() > 1) {
-            _query = query + " where " + PlannedEventsFilterUtils.processFilter(helperEntity.getStringField("query"));
+            _query = QUERY + " where " + PlannedEventsFilterUtils.processFilter(helperEntity.getStringField("query"));
         }
         _query = _query + ORDER_BY;
         events = jdbcTemplate.query(_query, new BeanPropertyRowMapper(PlannedEventDTO.class));
 
-        Multimap<Long, PlannedEventDTO> eventsMap = ArrayListMultimap.create();
-        eventsMap = Multimaps.index(events, new Function<PlannedEventDTO, Long>() {
-
-            @Override
-            public Long apply(PlannedEventDTO plannedEventDTO) {
-                return plannedEventDTO.getId();
-            }
-        });
+        Multimap<Long, PlannedEventDTO> eventsMap = Multimaps.index(events, PlannedEventDTO::getId);
 
         Map<Long, PlannedEventDTO> _events = Maps.newHashMap();
         for (Long eID : eventsMap.keySet()) {

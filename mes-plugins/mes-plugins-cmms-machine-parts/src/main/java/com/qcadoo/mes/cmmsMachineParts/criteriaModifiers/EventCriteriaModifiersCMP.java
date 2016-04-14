@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.criteriaModifiers;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,9 +40,11 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangeFields;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventState;
+import com.qcadoo.mes.productionLines.constants.DivisionFieldsPL;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
@@ -69,7 +74,6 @@ public class EventCriteriaModifiersCMP {
 
     public void filterCanceledEvents(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.ne(PlannedEventFields.STATE, PlannedEventState.CANCELED.getStringValue()))
-                .add(SearchRestrictions.ne(PlannedEventFields.TYPE, PlannedEventType.REVIEW.getStringValue()))
                 .add(SearchRestrictions.ne(PlannedEventFields.TYPE, PlannedEventType.UDT_REVIEW.getStringValue()))
                 .add(SearchRestrictions.ne(PlannedEventFields.TYPE, PlannedEventType.METER_READING.getStringValue()));
     }
@@ -96,6 +100,21 @@ public class EventCriteriaModifiersCMP {
             Long productionLineId = filterValue.getLong(MaintenanceEventFields.PRODUCTION_LINE);
             scb.createAlias(WorkstationFieldsPL.PRODUCTION_LINE, WorkstationFieldsPL.PRODUCTION_LINE, JoinType.INNER)
                     .add(SearchRestrictions.eq(WorkstationFieldsPL.PRODUCTION_LINE + ".id", productionLineId));
+        }
+    }
+
+    public void selectProductionLine(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        if (filterValue.has(MaintenanceEventFields.DIVISION)) {
+            Long divisionId = filterValue.getLong(MaintenanceEventFields.DIVISION);
+            Entity division = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_DIVISION)
+                    .get(divisionId);
+            List<Long> productionLinesIds = division.getHasManyField(DivisionFieldsPL.PRODUCTION_LINES).stream()
+                    .map(Entity::getId).collect(Collectors.toList());
+
+            if (productionLinesIds.isEmpty()) {
+                return;
+            }
+            scb.add(SearchRestrictions.in("id", productionLinesIds));
         }
     }
 

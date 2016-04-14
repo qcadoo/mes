@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import com.google.common.base.Strings;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,14 +39,16 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class DocumentDetailsHooks {
@@ -67,7 +70,7 @@ public class DocumentDetailsHooks {
     public static final String FORM = "form";
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private UserService userService;
@@ -77,6 +80,8 @@ public class DocumentDetailsHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         initializeDocument(view);
+        lockNumberAndTypeChange(view);
+        fetchNameAndNumberFromDatabase(view);
     }
 
     // fixme: refactor
@@ -120,14 +125,13 @@ public class DocumentDetailsHooks {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
         Long documentId = formComponent.getEntityId();
+
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
         DocumentState state = DocumentState.of(document);
 
         if (documentId == null) {
             changeAcceptButtonState(window, false);
             changePrintButtonState(window, false);
-            numberGeneratorService.generateAndInsertNumber(view, MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowResourcesConstants.MODEL_DOCUMENT, FORM, DocumentFields.NUMBER);
             FieldComponent date = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
             FieldComponent user = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
             if (date.getFieldValue() == null) {
@@ -145,6 +149,7 @@ public class DocumentDetailsHooks {
 
     }
 
+        
     private void disableRibbon(final WindowComponent window) {
         for (String actionItem : RIBBON_ACTION_ITEM) {
             window.getRibbon().getGroupByName(RIBBON_GROUP).getItemByName(actionItem).setEnabled(false);
@@ -171,4 +176,45 @@ public class DocumentDetailsHooks {
         return new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault()).format(date);
     }
 
+    private void lockNumberAndTypeChange(final ViewDefinitionState view) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
+
+        ComponentState typeComponent = view.getComponentByReference(DocumentFields.TYPE);
+        if (formComponent.getEntityId() != null) {
+            typeComponent.setEnabled(false);
+
+        } else {
+            typeComponent.setEnabled(true);
+        }
+
+        FieldComponent numberFieldComponent = (FieldComponent) view.getComponentByReference(DocumentFields.NUMBER);
+        numberFieldComponent.setEnabled(false);
+    }
+
+    private void fetchNameAndNumberFromDatabase(final ViewDefinitionState view) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
+        if (formComponent.getEntityId() != null) {
+            ComponentState numberField = view.getComponentByReference(DocumentFields.NUMBER);
+            ComponentState nameField = view.getComponentByReference(DocumentFields.NAME);
+
+            String nameFieldValue = (String) nameField.getFieldValue();
+            String numberFieldValue = (String) numberField.getFieldValue();
+
+            if (!numberFieldValue.contains("/")) {
+                Entity document = getDocumentDD().get(formComponent.getEntityId());
+
+                if (!numberFieldValue.contains("/")) {
+                    numberField.setFieldValue(document.getField(DocumentFields.NUMBER));
+                }
+
+                if (Strings.isNullOrEmpty(nameFieldValue)) {
+                    nameField.setFieldValue(document.getField(DocumentFields.NAME));
+                }
+            }
+        }
+    }
+
+    private DataDefinition getDocumentDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+    }
 }

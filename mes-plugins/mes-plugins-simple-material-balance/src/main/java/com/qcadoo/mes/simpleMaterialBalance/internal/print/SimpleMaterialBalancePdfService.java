@@ -175,9 +175,6 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         List<Entity> simpleMaterialBalanceLocationComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS);
 
-        // TODO LUPO fix comparator
-        // products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
-
         for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
 

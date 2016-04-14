@@ -122,7 +122,7 @@ public class OrderDetailsHooksPPS {
                     if (ppsFinishDate == null || ppsFinishDate.before(shiftFinishDate)) {
                         ppsFinishDate = shiftFinishDate;
                     }
-                    if (progressDate.before(orderStart)) {
+                    if (shiftFinishDate == null || shiftFinishDate.before(orderStart)) {
                         areDatesCorrect = false;
                     }
                 }

@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
@@ -53,16 +42,20 @@ import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 @Service
 public class OrderHooks {
@@ -135,8 +128,7 @@ public class OrderHooks {
         copyEndDate(orderDD, order);
         copyProductQuantity(orderDD, order);
         onCorrectingTheRequestedVolume(orderDD, order);
-        auditDatesChanges(orderDD, order);
-        technologyServiceO.setTechnologyNumber(orderDD, order);
+        auditDatesChanges(order);
         technologyServiceO.createOrUpdateTechnology(orderDD, order);
     }
 
@@ -148,7 +140,7 @@ public class OrderHooks {
     }
 
     public void onDelete(final DataDefinition orderDD, final Entity order) {
-        backupTechnology(orderDD, order);
+        backupTechnology(order);
     }
 
     public boolean setDateChanged(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity order,
@@ -167,7 +159,7 @@ public class OrderHooks {
         return true;
     }
 
-    private void auditDatesChanges(final DataDefinition orderDD, final Entity order) {
+    private void auditDatesChanges(final Entity order) {
         boolean datesChanged = order.getBooleanField(OrderFields.DATES_CHANGED);
         OrderState orderState = OrderState.of(order);
         if (datesChanged && !orderState.equals(OrderState.PENDING)) {
@@ -222,7 +214,7 @@ public class OrderHooks {
         return null;
     }
 
-    private void backupTechnology(final DataDefinition orderDD, final Entity order) {
+    private void backupTechnology(final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         if (technology != null) {
             String bNumber = BACKUP_TECHNOLOGY_PREFIX + new Date().getTime() + "_"
@@ -620,7 +612,7 @@ public class OrderHooks {
         copyOfTechnology.setField(TechnologyFields.NUMBER, number);
         copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
         if (OrderType.of(order) == OrderType.WITH_PATTERN_TECHNOLOGY) {
-            technologyServiceO.changeTechnologyState(copyOfTechnology, TechnologyStateStringValues.CHECKED);
+            technologyServiceO.changeTechnologyStateToChecked(copyOfTechnology);
         }
         return Optional.of(copyOfTechnology);
     }

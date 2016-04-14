@@ -51,7 +51,7 @@ public class TechnologyStateChangeListenerServiceTNFO {
             stateChangeContext.addValidationError("technologies.technology.validate.global.error.treeIsNotValid");
             StringBuilder builder = new StringBuilder();
             for (String message : messages) {
-                builder.append(message.toString());
+                builder.append(message);
                 builder.append(", ");
             }
             stateChangeContext.addMessage("technologies.technology.validate.error.invalidQuantity", StateMessageType.FAILURE,

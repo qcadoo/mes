@@ -28,16 +28,16 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-    	<date name="fromDate" required="true"/>
-    	<date name="toDate" required="true"/>
-    	<enum name="workersSelection"
+        <date name="fromDate" required="true"/>
+        <date name="toDate" required="true"/>
+        <enum name="workersSelection"
               values="01all,02selected" default="01all"
               required="true"/>
-		<manyToMany name="workers" joinField="timeUsageReportFilters" model="staff" cascade="nullify" plugin="basic"
+        <manyToMany name="workers" joinField="timeUsageReportFilters" model="staff" cascade="nullify" plugin="basic"
                     copyable="false"/>
     </fields>
     <hooks>
-    	<onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.TimeUsageReportFilterHooks" method="onSave"/>
-    	<validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.TimeUsageReportFilterValidators" method="validate"/>
+        <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.TimeUsageReportFilterHooks" method="onSave"/>
+        <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.TimeUsageReportFilterValidators" method="validate"/>
     </hooks>
 </model>

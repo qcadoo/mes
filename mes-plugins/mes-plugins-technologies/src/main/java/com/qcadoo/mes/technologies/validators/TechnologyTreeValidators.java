@@ -23,16 +23,8 @@
  */
 package com.qcadoo.mes.technologies.validators;
 
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
-
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -41,6 +33,18 @@ import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+import net.objecthunter.exp4j.ValidationResult;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
 @Component
 public class TechnologyTreeValidators {
@@ -49,6 +53,32 @@ public class TechnologyTreeValidators {
 
     @Autowired
     private TechnologyTreeValidationService technologyTreeValidationService;
+
+    public boolean invalidateIfWrongFormula(final DataDefinition dataDefinition, final Entity entity) {
+        boolean valid = true;
+        String errorMessageKey = "technologies.operationProductInComponent.validate.error.badFormula";
+        String formula = entity.getStringField(OperationProductInComponentFields.QUANTITY_FORMULA);
+        if (StringUtils.isNotBlank(formula)) {
+            try {
+                formula = formula.replace(",", ".");
+                Expression expression = new ExpressionBuilder(formula).build();
+                ValidationResult result = expression.validate();
+                if (!result.isValid()) {
+                    entity.addGlobalError(errorMessageKey);
+                    entity.addError(entity.getDataDefinition().getField(OperationProductInComponentFields.QUANTITY_FORMULA),
+                            errorMessageKey);
+                    valid = false;
+                }
+
+            } catch (Exception ex) {
+                entity.addError(entity.getDataDefinition().getField(OperationProductInComponentFields.QUANTITY_FORMULA),
+                        errorMessageKey);
+                entity.addGlobalError(errorMessageKey);
+                valid = false;
+            }
+        }
+        return valid;
+    }
 
     public boolean checkConsumingTheSameProductFromManySubOperations(final DataDefinition technologyDD, final Entity technology,
             final boolean autoCloseMessage) {

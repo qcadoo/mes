@@ -23,12 +23,9 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
-public class CmmsMachinePartsConstants {
+public final class CmmsMachinePartsConstants {
 
     public static final String MODEL_PLANNED_EVENT_CONTEXT = "plannedEventContext";
-
-    private CmmsMachinePartsConstants() {
-    }
 
     public static final String PLUGIN_IDENTIFIER = "cmmsMachineParts";
 
@@ -59,5 +56,8 @@ public class CmmsMachinePartsConstants {
     public static final String MODEL_MACHINE_PART_FOR_EVENT = "machinePartForEvent";
 
     public static final String MODEL_TIME_USAGE_REPORT_FILTER = "timeUsageReportFilter";
+
+    private CmmsMachinePartsConstants() {
+    }
 
 }

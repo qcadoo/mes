@@ -54,12 +54,12 @@ public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
         } catch (IOException e) {
             LOG.error("Reading URL stream failed", e);
         }
-        return new HashMap<String, BigDecimal>();
+        return new HashMap<>();
     }
 
     @Override
     public Map<String, BigDecimal> parse(InputStream inputStream, NbpProperties nbpProperties) {
-        Map<String, BigDecimal> exRates = new HashMap<String, BigDecimal>();
+        Map<String, BigDecimal> exRates = new HashMap<>();
         try {
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader sr = inputFactory.createXMLStreamReader(inputStream);
@@ -71,8 +71,9 @@ public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
             BigDecimal factor = BigDecimal.ONE;
             String exchangeRateField = nbpProperties.fieldName();
             while (sr.hasNext()) {
-                if (sr.getEventType() == XMLStreamConstants.END_DOCUMENT)
+                if (sr.getEventType() == XMLStreamConstants.END_DOCUMENT) {
                     sr.close();
+                }
                 if (sr.isStartElement()) {
                     String s = sr.getLocalName();
 
@@ -80,10 +81,8 @@ public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
                         factor = new BigDecimal(sr.getElementText().replace(',', '.'));
                     } else if (s.equals("kod_waluty")) {
                         currencyCode = sr.getElementText();
-                    } else {
-                        if (s.equals(exchangeRateField)) {
-                            exRate = new BigDecimal(sr.getElementText().replace(',', '.'));
-                        }
+                    } else if (s.equals(exchangeRateField)) {
+                        exRate = new BigDecimal(sr.getElementText().replace(',', '.'));
                     }
 
                     if (exRate != null) {
@@ -94,7 +93,7 @@ public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
                 sr.next();
             }
         } catch (XMLStreamException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         } finally {
             closeStream(inputStream);
         }
@@ -103,8 +102,9 @@ public class ExchangeRatesNbpServiceImpl implements ExchangeRatesNbpService {
 
     private void closeStream(Closeable s) {
         try {
-            if (s != null)
+            if (s != null) {
                 s.close();
+            }
         } catch (IOException e) {
             LOG.error("Cannot close URL Stream");
         }

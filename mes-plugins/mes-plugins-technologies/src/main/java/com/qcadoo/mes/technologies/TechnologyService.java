@@ -99,9 +99,6 @@ public class TechnologyService {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private TranslationService translationService;
-
-    @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
@@ -347,7 +344,7 @@ public class TechnologyService {
 
     public boolean invalidateIfAllreadyInTheSameOperation(final DataDefinition operationProductComponentDD,
             final Entity operationProductComponent) {
-        // if (operationProductComponent.getId() == null) {
+        
         Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
         Entity operationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);
 
@@ -371,7 +368,6 @@ public class TechnologyService {
 
             return false;
         }
-        // }
 
         return true;
     }

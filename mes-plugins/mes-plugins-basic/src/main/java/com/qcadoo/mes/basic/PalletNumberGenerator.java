@@ -33,6 +33,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import java.util.List;
 
 @Service
 public class PalletNumberGenerator {
@@ -76,7 +77,7 @@ public class PalletNumberGenerator {
      * @return palletNumbers
      *
      */
-    public LinkedList<String> list(final String firstNumber, final int quantity) {
+    public List<String> list(final String firstNumber, final int quantity) {
         LinkedList<String> palletNumbers = Lists.newLinkedList();
 
         Integer highestNumber = Integer.valueOf(firstNumber);

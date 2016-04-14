@@ -24,7 +24,7 @@
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
 
-public class PlannedEventAttachmentFields {
+public final class PlannedEventAttachmentFields {
 
     private PlannedEventAttachmentFields() {
     }

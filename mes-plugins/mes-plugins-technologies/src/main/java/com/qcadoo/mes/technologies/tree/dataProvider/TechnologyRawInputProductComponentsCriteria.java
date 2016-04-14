@@ -32,7 +32,7 @@ import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrder;
 import com.qcadoo.model.api.search.SearchProjection;
 
-public class TechnologyRawInputProductComponentsCriteria {
+public final class TechnologyRawInputProductComponentsCriteria {
 
     public static final String PRODUCT_ALIAS = "product_alias";
 

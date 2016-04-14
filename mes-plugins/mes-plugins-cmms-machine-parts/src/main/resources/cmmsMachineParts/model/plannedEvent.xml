@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="plannedEvent" auditable="true"
+<model name="plannedEvent" auditable="true" versionable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
@@ -32,7 +32,9 @@
         <enum name="type"
               values="01review,02repairs,03externalService,04udtReview,05meterReading,06manual,07additionalWork,08afterReview"
               default="01review" required="true"/>
-        <string name="description"/>
+        <string name="description">
+            <validatesLength max="600"/>
+        </string>
         <belongsTo name="owner" model="staff" plugin="basic"/>
         <!-- only for show in grid-->
         <string name="ownerName"/>
@@ -88,11 +90,11 @@
         <belongsTo name="plannedEventContext" plugin="cmmsMachineParts" model="plannedEventContext"/>
 
         <hasMany name="actions" model="actionForPlannedEvent" joinField="plannedEvent" cascade="delete"
-                 copyable="false"/>
+                 copyable="true"/>
 
         <text name="solutionDescription"/>
         <hasMany name="machinePartsForEvent" model="machinePartForEvent" joinField="plannedEvent" cascade="delete"
-                 copyable="false"/>
+                 copyable="true"/>
 
         <hasMany name="attachments" model="plannedEventAttachment" joinField="plannedEvent" cascade="delete"/>
 

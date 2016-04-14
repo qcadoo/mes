@@ -101,16 +101,17 @@
 								#{form}.fireEvent(eventPerformer, 'changeTrackingState', [newState]);
 							}
 						}
-					
+
 						this.addOnChangeListener({
 							onSetValue: function() {
 								var itemNames = ["status.acceptTracking", "status.cancelTracking"];
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								var isDisabled = (#{isDisabled}.getValue().content.value == "1");
 								var itemsToDisable = ["actions.save","actions.saveNew","actions.saveBack"];
-								
+
 								for (var elementKey in itemNames) {
 									var ribbonItem = #{window}.getRibbonItem(itemNames[elementKey]);
+
 									if (isSaved) {
 										ribbonItem.enable();
 									} else {
@@ -119,14 +120,16 @@
 								}
  								
    								for(var elementKey in itemsToDisable){  
-   									var ribbonItem = #{window}.getRibbonItem(itemsToDisable[elementKey]);  
+   									var ribbonItem = #{window}.getRibbonItem(itemsToDisable[elementKey]);
+
    									if(isDisabled){  
    										ribbonItem.disable();  
  									} else {  
 										ribbonItem.enable();   
  									}   
-     							}  
-															
+
+     							}
+
 								if (isSaved && #{state}.getValue().content && #{state}.getValue().content.value) {
 									#{state}.updateRibbon(#{state}.getValue().content.value);
 								}
@@ -286,22 +289,23 @@
 											"productsQuantities.copyPlannedQuantityToUsedQuantity",
                                                  "workTime.calcTotalLaborTime"
 										],
+
 										toggleRibbonItemsLen = toggleRibbonItems.length,
                                              idx = 0,
 										elementKey = {},
 										ribbonItemName = "",
 										ribbonItem = {};
-										
+
 
 										for (idx = 0; idx < toggleRibbonItemsLen; idx++) {
  											ribbonItemName = toggleRibbonItems[idx];
 											ribbonItem = #{window}.getRibbonItem(ribbonItemName);
-										
+
 											if (!ribbonItem) {
 												QCD.error("Can't find ribbon item '" + ribbonItemName + "'");
 												continue;
 											}
-											
+
 											if (enabled) {
 												ribbonItem.enable();
 											} else {
@@ -317,15 +321,15 @@
 									function updateRibbon(state) {
 										var acceptState = #{window}.getRibbonItem("status.acceptTracking");
 										var cancelState = #{window}.getRibbonItem("status.cancelTracking");
-										
+
 										acceptState.disable();
 										acceptState.forState="02accepted";
 										acceptState.confirmMessage = "#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.acceptTracking.confirm)}";
-										
+
 										cancelState.disable();
 										cancelState.forState="03declined";
 										cancelState.confirmMessage = "#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.declineTracking.confirm)}";
-										
+
 										if (#{isExternalSynchronized}.getValue().content.value == 0) {
 											var msg = "#{translate(productionCounting.productionTracking.info.isWaitingForSync)}";
 											toggleEditable(false, msg);
@@ -342,7 +346,7 @@
 											toggleEditable(true);
 										}
 									}
-									
+
 									this.updateRibbon = updateRibbon;
 
 								]]>

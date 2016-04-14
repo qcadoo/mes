@@ -95,7 +95,7 @@ public class MaintenanceEventContextService {
         maintenanceEventContextEntity.setField(MaintenanceEventContextFields.CONFIRMED, true);
         maintenanceEventContextEntity = maintenanceEventContextEntity.getDataDefinition().save(maintenanceEventContextEntity);
         Long maintenanceEventContextEntityId = maintenanceEventContextEntity.getId();
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("contextId", maintenanceEventContextEntityId);
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
         if (args.length > 0 && args[0].equals(L_PLANNED_EVENT)) {
@@ -163,35 +163,12 @@ public class MaintenanceEventContextService {
     }
 
     private void setEnableOfContextTab(ViewDefinitionState view, boolean enabled) {
-        ComponentState contextTabComponent = view.getComponentByReference("contextTab");
-
         view.<FieldComponent> tryFindComponentByReference(MaintenanceEventContextFields.FACTORY).orNull().setEnabled(enabled);
         view.<FieldComponent> tryFindComponentByReference(MaintenanceEventContextFields.DIVISION).orNull().setEnabled(enabled);
     }
 
     private void setEnableOfMainTab(ViewDefinitionState view, boolean enabled) {
         view.getComponentByReference(L_GRID).setEnabled(enabled);
-    }
-
-    private Entity prepareFilteredEvents(Entity maintenanceEventContextEntity) {
-        DataDefinition maintenanceEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
-
-        SearchCriteriaBuilder searchCriteriaBuilder = maintenanceEventDD.find();
-
-        Entity divisionEntity = maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.DIVISION);
-        if (divisionEntity != null) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(MaintenanceEventFields.DIVISION, divisionEntity));
-        }
-
-        Entity factoryEntity = maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.FACTORY);
-        if (factoryEntity != null) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(MaintenanceEventFields.FACTORY, factoryEntity));
-        }
-
-        maintenanceEventContextEntity.setField(MaintenanceEventContextFields.EVENTS, searchCriteriaBuilder.list().getEntities());
-
-        return maintenanceEventContextEntity;
     }
 
     private void setEnableOfRibbonActions(ViewDefinitionState viewDefinitionState, boolean enabled) {

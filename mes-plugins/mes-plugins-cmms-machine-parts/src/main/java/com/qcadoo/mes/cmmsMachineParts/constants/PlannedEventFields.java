@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
-public class PlannedEventFields {
+public final class PlannedEventFields {
 
     public static final String STATE_CHANGES = "stateChanges";
 

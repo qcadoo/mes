@@ -37,11 +37,11 @@ public abstract class AbstractGroupingContainer implements GroupingContainer {
 
     protected String titleAppend;
 
-    private Map<OrderColumn, ColumnAlignment> orderColumnToAlignment;
-    private Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment;
-    private Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment;
-    private ListMultimap<String, OrderOperationComponent> map = LinkedListMultimap.create();
-    private Set<Entity> orders = new HashSet<Entity>();
+    private final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment;
+    private final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment;
+    private final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment;
+    private final ListMultimap<String, OrderOperationComponent> map = LinkedListMultimap.create();
+    private final Set<Entity> orders = new HashSet<>();
 
     protected AbstractGroupingContainer(Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
                                         Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
@@ -66,7 +66,7 @@ public abstract class AbstractGroupingContainer implements GroupingContainer {
 
     @Override
     public List<Entity> getOrders() {
-        return new ArrayList<Entity>(orders);
+        return new ArrayList<>(orders);
     }
 
     @Override

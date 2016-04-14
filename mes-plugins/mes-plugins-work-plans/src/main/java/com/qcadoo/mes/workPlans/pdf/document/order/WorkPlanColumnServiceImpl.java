@@ -43,10 +43,10 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class WorkPlanColumnServiceImpl implements WorkPlanColumnService{
+public class WorkPlanColumnServiceImpl implements WorkPlanColumnService {
 
-    private ApplicationContext applicationContext;
-    private EntityTreeUtilsService entityTreeUtilsService;
+    private final ApplicationContext applicationContext;
+    private final EntityTreeUtilsService entityTreeUtilsService;
 
     @Autowired
     public WorkPlanColumnServiceImpl(ApplicationContext applicationContext, EntityTreeUtilsService entityTreeUtilsService) {
@@ -90,8 +90,9 @@ public class WorkPlanColumnServiceImpl implements WorkPlanColumnService{
                 for (Entity column : columns) {
                     String identifier = identifier(column);
                     OperationProductColumn key = identifierOperationProductColumn.get(identifier);
-                    if(key != null)
+                    if (key != null) {
                         map2.put(key, columnAlignment(column));
+                    }
                 }
                 map.put(operationComponent.getId(), map2);
             }
@@ -114,6 +115,7 @@ public class WorkPlanColumnServiceImpl implements WorkPlanColumnService{
     private Entity columnForOrders(Entity workPlanOrderColumn) {
         return workPlanOrderColumn.getBelongsToField(WorkPlanOrderColumnFields.COLUMN_FOR_ORDERS);
     }
+
     private List<Entity> orderColumns(Entity workPlan) {
         return workPlanOrderColumns(workPlan).find().addOrder(bySuccessionAsc()).list().getEntities();
     }
@@ -174,6 +176,5 @@ public class WorkPlanColumnServiceImpl implements WorkPlanColumnService{
                 .getHasManyField(TechnologyOperationComponentFieldsWP.TECHNOLOGY_OPERATION_OUTPUT_COLUMNS).find()
                 .addOrder(SearchOrders.asc(TechnologyOperationInputColumnFields.SUCCESSION)).list().getEntities();
     }
-
 
 }

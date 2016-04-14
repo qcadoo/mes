@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlannedEventsFilterUtils {
 
+    private PlannedEventsFilterUtils(){}
+    
     private static final String FACTORY_FROM = "event.factoryNumber";
     private static final String FACTORY_TO = "factory.number";
     private static final String DIVISION_FROM = "event.divisionNumber";

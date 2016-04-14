@@ -53,9 +53,7 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 @Component
 public class OperationProductInTable {
 
-    private PdfHelper pdfHelper;
-
-    private static final String L_PRIORITY = "priority";
+    private final PdfHelper pdfHelper;
 
     @Autowired
     private WorkPlansService workPlansService;
@@ -73,8 +71,8 @@ public class OperationProductInTable {
 
         int columnCount = operationProductColumnAlignmentMap.size();
 
-        Map<String, HeaderAlignment> headerAlignments = new HashMap<String, HeaderAlignment>(columnCount);
-        List<String> headers = new ArrayList<String>(columnCount);
+        Map<String, HeaderAlignment> headerAlignments = new HashMap<>(columnCount);
+        List<String> headers = new ArrayList<>(columnCount);
         fill(locale, operationProductColumnAlignmentMap, headers, headerAlignments);
 
         PdfPTable table = pdfHelper.createTableWithHeader(columnCount, headers, false, headerAlignments);
@@ -84,7 +82,6 @@ public class OperationProductInTable {
                 alignColumn(defaultCell, e.getValue());
                 table.addCell(operationProductPhrase(operationProduct, e.getKey()));
             }
-
         }
 
         int additionalRows = workPlansService.getAdditionalRowsFromParameter(ParameterFieldsWP.ADDITIONAL_INPUT_ROWS);
@@ -105,15 +102,6 @@ public class OperationProductInTable {
     private List<Entity> operationProductInComponents(Entity operationComponent) {
         List<Entity> productOutComponents = operationComponent
                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-        /*
-         * TODO kama - it's unnecessary for now boolean sortProducts =
-         * operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.MANUAL_ORDER_FOR_PRODUCTS); if (sortProducts) {
-         * List<Entity> sortedProducts = new ArrayList<Entity>(productOutComponents); sortedProducts.sort(new Comparator<Entity>()
-         * {
-         * @Override public int compare(Entity product1, Entity product2) { return
-         * product1.getIntegerField(L_PRIORITY).compareTo(product2.getIntegerField(L_PRIORITY)); } }); productOutComponents =
-         * sortedProducts; }
-         */
         return productOutComponents;
     }
 
