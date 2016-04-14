@@ -75,6 +75,7 @@ public class RecordOperationProductComponentListeners {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        
         Entity componentEntity = form.getPersistedEntityWithIncludedFormValues();
         Entity productEntity = componentEntity.getBelongsToField(L_PRODUCT);
 
@@ -120,7 +121,7 @@ public class RecordOperationProductComponentListeners {
         if (product == null || givenUnit == null || givenUnit.isEmpty() || givenQuantityField.getFieldValue() == null) {
             return;
         }
-
+        
         Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse(
                 (String) givenQuantityField.getFieldValue(), view.getLocale());
         if (maybeQuantity.isRight()) {
@@ -157,17 +158,16 @@ public class RecordOperationProductComponentListeners {
 
     private void calculateQuantityFromSets(ViewDefinitionState view) {
         FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
-        BigDecimal usedQuantity;
-        try {
-            usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", "."));
-        } catch (java.lang.NumberFormatException e) {
-            usedQuantity = BigDecimal.ZERO;
-        }
+
+        Either<Exception, Optional<BigDecimal>> usedQuantity = BigDecimalUtils.tryParse(
+                (String) usedQuantityField.getFieldValue(), view.getLocale());
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity trackingOperationProductOutComponent = form.getPersistedEntityWithIncludedFormValues();
 
-        trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(trackingOperationProductOutComponent.getBelongsToField("productionTracking"), trackingOperationProductOutComponent, usedQuantity);
+        trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(
+                trackingOperationProductOutComponent.getBelongsToField("productionTracking"), trackingOperationProductOutComponent,
+                usedQuantity.getRight().or(BigDecimal.ZERO));
 
         GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTrackingOperationProductsInComponents");
         gridComponent.setEntities(trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS));
@@ -178,13 +178,15 @@ public class RecordOperationProductComponentListeners {
         Entity trackingOperationProductOutComponent = form.getPersistedEntityWithIncludedFormValues();
         if (setTechnologyInComponentsService.isSet(trackingOperationProductOutComponent)) {
             FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
-            BigDecimal usedQuantity = new BigDecimal(usedQuantityField.getFieldValue().toString().replace(",", ".")
-                    .replace(" ", ""));
+
+            Either<Exception, Optional<BigDecimal>> usedQuantity = BigDecimalUtils.tryParse(
+                    (String) usedQuantityField.getFieldValue(), view.getLocale());
+
             Entity productionTracking = trackingOperationProductOutComponent
                     .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
             trackingOperationProductOutComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
-                    trackingOperationProductOutComponent, productionTracking, usedQuantity);
+                    trackingOperationProductOutComponent, productionTracking, usedQuantity.getRight().or(BigDecimal.ZERO));
 
             GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTechnologyInComponents");
             gridComponent.setEntities(trackingOperationProductOutComponent
