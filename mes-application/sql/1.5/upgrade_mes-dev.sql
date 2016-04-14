@@ -40,3 +40,21 @@ CREATE TABLE productioncounting_settrackingoperationproductincomponents
 -- NBLS-181
 alter table basicproductioncounting_productionCountingQuantity add column set character varying(255);
 --end
+
+-- another sets tables
+-- last touched 14.04.2016 by pako
+
+CREATE TABLE productioncounting_productioncountingquantitysetcomponent
+(
+  id bigint NOT NULL,
+  productioncountingquantity_id bigint,
+  product_id bigint,
+  quantityfromsets numeric(12,5),
+  CONSTRAINT productioncounting_productioncountingquantitysetcomponent_pkey PRIMARY KEY (id),
+  CONSTRAINT productioncountingquantitysc_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id)
+      REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE,
+  CONSTRAINT productioncountingquantitysc_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE
+);
+
+-- end
