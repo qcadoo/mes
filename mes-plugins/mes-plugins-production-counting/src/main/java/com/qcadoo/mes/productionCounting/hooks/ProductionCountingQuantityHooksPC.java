@@ -187,9 +187,12 @@ public class ProductionCountingQuantityHooksPC {
                 && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial)) {
 
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            Optional<Entity> maybeTechnology = setTechnologyInComponentsService.getSetProductTechnology(product);
-            if (maybeTechnology.isPresent()) {
-                generateProductionCountingQuantities(productionCountingQuantityDD, productionCountingQuantity, maybeTechnology.get());
+            if (product != null) {
+                Optional<Entity> maybeTechnology = setTechnologyInComponentsService.getSetProductTechnology(product);
+                if (maybeTechnology.isPresent()) {
+                    generateProductionCountingQuantities(productionCountingQuantityDD, productionCountingQuantity,
+                            maybeTechnology.get());
+                }
             }
         }
 

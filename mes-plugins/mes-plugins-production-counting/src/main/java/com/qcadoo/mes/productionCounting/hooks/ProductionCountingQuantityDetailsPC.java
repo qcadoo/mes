@@ -20,14 +20,17 @@ public class ProductionCountingQuantityDetailsPC {
     SetTechnologyInComponentsService setTechnologyInComponentsService;
 
     public void beforeRender(final ViewDefinitionState view) {
-        toggleSetTab(view);
+        view.getComponentByReference("setTab").setVisible(shouldSetTabBeVisible(view));
     }
 
-    public void toggleSetTab(final ViewDefinitionState view) {
-        boolean visible = false;
+    public boolean shouldSetTabBeVisible(final ViewDefinitionState view) {
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity productionCountingQuantity = form.getPersistedEntityWithIncludedFormValues();
+
+        if (productionCountingQuantity.getId() == null) {
+            return false;
+        }
 
         String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
         String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
@@ -36,9 +39,9 @@ public class ProductionCountingQuantityDetailsPC {
                 && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial)) {
 
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            visible = setTechnologyInComponentsService.isProductASet(product);
+            return setTechnologyInComponentsService.isProductASet(product);
         }
 
-        view.getComponentByReference("setTab").setVisible(visible);
+        return false;
     }
 }
