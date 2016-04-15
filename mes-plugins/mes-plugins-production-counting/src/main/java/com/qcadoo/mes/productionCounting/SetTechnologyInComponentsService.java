@@ -1,6 +1,7 @@
 package com.qcadoo.mes.productionCounting;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingQuantityFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingQuantitySetComponentFields;
@@ -48,13 +50,15 @@ public class SetTechnologyInComponentsService {
         for (Entity productionCountingQuantity : productionCountingQuantities) {
             EntityList productionCountingQuantitySetComponents = productionCountingQuantity
                     .getHasManyField(ProductionCountingQuantityFieldsPC.PRODUCTION_COUNTING_QUANTITY_SET_COMPONENTS);
+            BigDecimal plannedQuantity = productionCountingQuantity
+                    .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
             for (Entity productionCountingQuantitySetComponent : productionCountingQuantitySetComponents) {
                 Entity setTechnologyInComponent = setTechnologyInComponentsDD.create();
 
                 BigDecimal quantityFromSets = productionCountingQuantitySetComponent
                         .getDecimalField(ProductionCountingQuantitySetComponentFields.QUANTITY_FROM_SETS);
 
-                quantityFromSets = quantityFromSets.multiply(usedQuantity);
+                quantityFromSets = quantityFromSets.multiply(usedQuantity).divide(plannedQuantity, RoundingMode.HALF_UP);
                 setTechnologyInComponent.setField(SetTechnologyInComponentsFields.QUANTITY_FROM_SETS, quantityFromSets);
                 setTechnologyInComponent.setField(SetTechnologyInComponentsFields.PRODUCT, productionCountingQuantitySetComponent
                         .getBelongsToField(ProductionCountingQuantitySetComponentFields.PRODUCT));
