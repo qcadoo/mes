@@ -25,11 +25,16 @@ package com.qcadoo.mes.productionCounting.hooks;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
@@ -48,11 +53,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @Service
 public class ProductionTrackingHooks {
@@ -229,10 +229,18 @@ public class ProductionTrackingHooks {
                         .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
 
                 List<Entity> setTechnologyInComponents = trackingOperationProductInComponent
-                        .getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
-                setTechnologyInComponents.stream().forEach(entity -> {
-                    entity.getDataDefinition().delete(entity.getId());
-                });
+                        .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
+                List<Long> ids = setTechnologyInComponents.stream().map(entity -> entity.getId()).collect(Collectors.toList());
+                if (!ids.isEmpty()) {
+                    Map<String, Object> parameters = new HashMap<String, Object>() {
+
+                        {
+                            put("ids", ids);
+                        }
+                    };
+                    jdbcTemplate.update("DELETE FROM productioncounting_settechnologyincomponents WHERE id IN (:ids)",
+                            new MapSqlParameterSource(parameters));
+                }
 
                 trackingOperationProductInComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
                         trackingOperationProductInComponent, productionTracking, usedQuantity);
