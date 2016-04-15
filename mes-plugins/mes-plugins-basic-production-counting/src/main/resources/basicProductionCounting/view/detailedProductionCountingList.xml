@@ -25,75 +25,90 @@
 
 -->
 <view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="detailedProductionCountingList" modelName="order" modelPlugin="orders">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="detailedProductionCountingList" modelName="order" modelPlugin="orders">
 
-	<component type="window" name="window">
+    <component type="window" name="window">
 
-		<ribbon>
-			<group template="navigation" />
+        <ribbon>
+            <group template="navigation" />
 
-			<template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete" />
-		</ribbon>
+            <template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete" />
+        </ribbon>
 
-		<component type="form" name="order" reference="order" />
-		<component type="form" name="basicProductionCounting"
-			reference="form">
-			<component type="grid" name="productionCountingQuantities"
-				reference="grid" source="#{order}.productionCountingQuantities">
-				<option type="column" name="productNumber" fields="product"
-					expression="#product['number']" link="true" />
-				<option type="column" name="productName" fields="product"
-					expression="#product['name']" link="true" />
-				<option type="column" name="nodeNumber" fields="technologyOperationComponent"
-					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')"
-					link="true" />
-				<option type="column" name="operationNumber" fields="technologyOperationComponent"
-					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')"
-					link="true" />
-				<option type="column" name="operationName" fields="technologyOperationComponent"
-					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')"
-					link="true" />
-				<option type="column" name="role" fields="role" link="true" />
-				<option type="column" name="typeOfMaterial" fields="typeOfMaterial"
-					link="true" />
-				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
-				<option type="column" name="productUnit" fields="product"
-					expression="#product['unit']" />
-				<option type="column" name="set" fields="set" />
+        <component type="form" name="order" reference="order" />
+        <component type="form" name="basicProductionCounting"
+                   reference="form">
+            <component type="grid" name="productionCountingQuantities"
+                       reference="grid" source="#{order}.productionCountingQuantities">
+                <script>
+                            <![CDATA[
+                                var that = this;
+                                this.onDeleteButtonClicked = function () {
+                                    var selectedEntities = #{grid}.getValue().content.selectedEntities;
+                                    if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
+                                        #{grid}.fireEvent(null,'removeSelectedProductionCountingQuantities',[selectedEntities]);
+                                    }
+                                };
+                            ]]>
+                </script>                            
+                <option type="column" name="productNumber" fields="product"
+                        expression="#product['number']" link="true" />
+                <option type="column" name="productName" fields="product"
+                        expression="#product['name']" link="true" />
+                <option type="column" name="nodeNumber" fields="technologyOperationComponent"
+                        expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')"
+                        link="true" />
+                <option type="column" name="operationNumber" fields="technologyOperationComponent"
+                        expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')"
+                        link="true" />
+                <option type="column" name="operationName" fields="technologyOperationComponent"
+                        expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')"
+                        link="true" />
+                <option type="column" name="role" fields="role" link="true" />
+                <option type="column" name="typeOfMaterial" fields="typeOfMaterial"
+                        link="true" />
+                <option type="column" name="plannedQuantity" fields="plannedQuantity" />
+                <option type="column" name="productUnit" fields="product"
+                        expression="#product['unit']" />
+                <option type="column" name="set" fields="set" />
 
-				<option type="order" column="productNumber" direction="asc" />
+                <option type="order" column="productNumber" direction="asc" />
 
-				<option type="searchable"
-					value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit,set" />
-				<option type="orderable"
-					value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit,set" />
+                <option type="searchable"
+                        value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit,set" />
+                <option type="orderable"
+                        value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit,set" />
 
-				<option type="correspondingView"
-					value="basicProductionCounting/productionCountingQuantityDetails" />
-				<option type="correspondingComponent" value="form" />
-				<option type="correspondingViewInModal" value="true" />
+                <option type="correspondingView"
+                        value="basicProductionCounting/productionCountingQuantityDetails" />
+                <option type="correspondingComponent" value="form" />
+                <option type="correspondingViewInModal" value="true" />
 
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
-				<option type="fullscreen" value="true" />
-				<option type="multiselect" value="true" />
-				<option type="fixedHeight" value="true" />
+                <option type="creatable" value="true" />
+                <option type="deletable" value="true" />
+                <option type="fullscreen" value="true" />
+                <option type="multiselect" value="true" />
+                <option type="fixedHeight" value="true" />
 
-				<rowStyleResolver
-					class="com.qcadoo.mes.basicProductionCounting.rowStyleResolvers.DetailedProductionCountingListCriteriaModifiers"
-					method="fillRowStylesDependsOfTypeOfMaterial" />
-			</component>
-		</component>
+                <rowStyleResolver
+                    class="com.qcadoo.mes.basicProductionCounting.rowStyleResolvers.DetailedProductionCountingListCriteriaModifiers"
+                    method="fillRowStylesDependsOfTypeOfMaterial" />
+                
+                <listener event="removeSelectedProductionCountingQuantities"
+                                  method="onRemoveSelectedProductionCountingQuantities"
+                                  class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingListHooks"/>
+            </component>
+        </component>
 
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-	</component>
+        <option type="fixedHeight" value="true" />
+        <option type="header" value="false" />
+    </component>
 
-	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingListHooks"
-			method="setGridEditableDependsOfOrderState" />
-	</hooks>
+    <hooks>
+        <beforeRender
+            class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingListHooks"
+            method="setGridEditableDependsOfOrderState" />
+    </hooks>
 
 </view>

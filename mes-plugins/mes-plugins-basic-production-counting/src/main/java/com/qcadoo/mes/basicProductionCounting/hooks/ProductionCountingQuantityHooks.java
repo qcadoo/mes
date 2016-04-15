@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +56,7 @@ public class ProductionCountingQuantityHooks {
     }
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-        return canDeleteProductionCountingQuantity(productionCountingQuantity) && deleteBasicProductionCounting(productionCountingQuantity);
+        return deleteBasicProductionCounting(productionCountingQuantity);
     }
 
     private void fillOrder(final Entity productionCountingQuantity) {
@@ -166,17 +165,5 @@ public class ProductionCountingQuantityHooks {
 
     private boolean checkIfItIsLastProductionCountingQuantity(final Entity basicProductionCounting) {
         return (basicProductionCounting.getHasManyField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES).size() == 1);
-    }
-
-    private boolean canDeleteProductionCountingQuantity(Entity productionCountingQuantity) {
-        String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
-
-        if (GlobalTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)) {
-            productionCountingQuantity.addGlobalError("basicProductionCounting.productionCountingQuantity.error.cantDeleteFinal");
-            return false;
-            
-        } else {
-            return true;
-        }
     }
 }
