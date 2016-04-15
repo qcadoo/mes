@@ -382,6 +382,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         var conversionModified = true;
         var lastSel;
         var firstLoad = true;
+        var hasAdditionalUnit = false;
 
         function getJsonByQuery(url, params, callback) {
             if (params && params.query) {
@@ -499,13 +500,24 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function resourceLookup_createElement(value, options) {
             var lookup = createLookupElement('resource', value, '/integration/rest/documentPositions/resources.html', options, function () {
                 var rowId = getRowIdFromElement($('input', lookup));
-                return  {
-                    product: getFieldValue('product', rowId),
-                    conversion: getFieldValue('conversion', rowId),
-                    ac: getFieldValue('additionalCode', rowId),
-                    context: getDocumentId()
-
-                };
+                var params;
+                if (hasAdditionalUnit) {
+                    params = {
+                        product: getFieldValue('product', rowId),
+                        conversion: getFieldValue('conversion', rowId),
+                        ac: getFieldValue('additionalCode', rowId),
+                        context: getDocumentId()
+                    }
+                }
+                else {
+                    params = {
+                        product: getFieldValue('product', rowId),
+                        conversion: 1,
+                        ac: getFieldValue('additionalCode', rowId),
+                        context: getDocumentId()
+                    }
+                }
+                return  params;
             });
 
             $('input', lookup).bind('change keydown paste input', function () {
@@ -592,6 +604,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     if (!additionalUnitValue) {
                         additionalUnitValue = units['additionalunit'];
                     }
+                    hasAdditionalUnit = units['additionalunit'] !== units['unit'];
+                    if (hasAdditionalUnit) {
+                        additionalUnitInput.attr('disabled', 'disabled');
+                    }
+                    else {
+                        additionalUnitInput.removeAttr('disabled');
+                    }
                     additionalUnitInput.val(additionalUnitValue);
                     updateConversionByGivenUnitValue(additionalUnitValue, rowId);
 
@@ -620,6 +639,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                                 // update additionalunit
                                 if (!additionalUnitValue) {
                                     additionalUnitValue = units['additionalunit'];
+                                }
+                                hasAdditionalUnit = units['additionalunit'] !== units['unit'];
+                                if (hasAdditionalUnit) {
+                                    additionalUnitInput.attr('disabled', 'disabled');
+                                }
+                                else {
+                                    additionalUnitInput.removeAttr('disabled');
                                 }
                                 additionalUnitInput.val(additionalUnitValue);
 
@@ -666,11 +692,22 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateResource(productNumber, conversion, ac) {
-            var params = {
-                context: getDocumentId(),
-                product: productNumber,
-                ac: ac,
-                conversion: conversion
+            var params;
+            if (hasAdditionalUnit) {
+                params = {
+                    context: getDocumentId(),
+                    product: productNumber,
+                    ac: ac,
+                    conversion: conversion
+                }
+            }
+            else {
+                params = {
+                    context: getDocumentId(),
+                    product: productNumber,
+                    ac: ac,
+                    conversion: 1
+                }
             }
             $.get('/integration/rest/documentPositions/resource.html?' + $.param(params), function (resource) {
                 var gridData = $('#grid').jqGrid('getRowData');
