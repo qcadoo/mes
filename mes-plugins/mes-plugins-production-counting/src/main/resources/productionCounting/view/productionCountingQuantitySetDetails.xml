@@ -44,9 +44,10 @@
                         <component type="lookup" name="product" field="product"
                                    reference="product">
 							<option type="column" fields="name" name="name" link="true" />
+							<option type="column" fields="globalTypeOfMaterial" name="globalTypeOfMaterial" link="true" />
 							
-							<option type="searchable" value="number,name" />
-							<option type="orderable" value="number,name" />
+							<option type="searchable" value="number,name,globalTypeOfMaterial" />
+							<option type="orderable" value="number,name,globalTypeOfMaterial" />
 							
 							<option type="expression" value="#number + ' - ' + #name" />
 							<option type="fieldCode" value="number" />
@@ -68,6 +69,8 @@
 						</component>
 					</layoutElement>
 				</component>
+				<option type="header" value="true"/>
+                <option type="expression" value="#productionCountingQuantity['product']?.get('name')"/>
             </component>
         </windowTab>
 
