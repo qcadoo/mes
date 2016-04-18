@@ -30,13 +30,15 @@
 
 	<fields>
 		<belongsTo name="productionCountingQuantity" model="productionCountingQuantity"
-			plugin="basicProductionCounting" required="true"/>
+			plugin="basicProductionCounting"/>
 		<belongsTo name="product" model="product" plugin="basic" required="true"/>
         <decimal name="quantityFromSets" required="true">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9" />
             <validatesScale max="5" />
         </decimal>
+        <decimal name="plannedQuantityFromProduct"/>
+        <decimal name="outQuantity"/>
 	</fields>
 
 	<hooks>

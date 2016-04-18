@@ -195,7 +195,10 @@ public class ProductionCountingQuantityHooksPC {
                 }
             }
         }
+    }
 
+    public void onSave(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+        recalculateProductionCountingQuantities(productionCountingQuantity);
     }
 
     private void generateProductionCountingQuantities(DataDefinition productionCountingQuantityDD, Entity productionCountingQuantity, Entity technology) {
@@ -233,13 +236,45 @@ public class ProductionCountingQuantityHooksPC {
                         productFromComponent);
                 productionCountingQuantitySetComponent.setField(
                         ProductionCountingQuantitySetComponentFields.PRODUCTION_COUNTING_QUANTITY, productionCountingQuantity);
+                productionCountingQuantitySetComponent.setField(
+                        ProductionCountingQuantitySetComponentFields.PLANNED_QUANTITY_FROM_PRODUCT, plannedQuantityFromProduct);
+                productionCountingQuantitySetComponent.setField(ProductionCountingQuantitySetComponentFields.OUT_QUANTITY,
+                        outQuantity);
 
                 productionCountingQuantitySetComponents.add(productionCountingQuantitySetComponent);
             }
         }
-
         productionCountingQuantity.setField(ProductionCountingQuantityFieldsPC.PRODUCTION_COUNTING_QUANTITY_SET_COMPONENTS,
                 productionCountingQuantitySetComponents);
+    }
+
+    private void recalculateProductionCountingQuantities(Entity productionCountingQuantity) {
+        List<Entity> productionCountingQuantitySetComponents = productionCountingQuantity
+                .getHasManyField(ProductionCountingQuantityFieldsPC.PRODUCTION_COUNTING_QUANTITY_SET_COMPONENTS);
+
+        if (productionCountingQuantitySetComponents == null) {
+            return;
+        }
+
+        BigDecimal plannedQuantity = productionCountingQuantity
+                .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
+
+        for (Entity productionCountingQuantitySetComponent : productionCountingQuantitySetComponents) {
+
+            BigDecimal plannedQuantityFromProduct = productionCountingQuantitySetComponent
+                    .getDecimalField(ProductionCountingQuantitySetComponentFields.PLANNED_QUANTITY_FROM_PRODUCT);
+            BigDecimal outQuantity = productionCountingQuantitySetComponent
+                    .getDecimalField(ProductionCountingQuantitySetComponentFields.OUT_QUANTITY);
+
+            if (plannedQuantityFromProduct != null && outQuantity != null) {
+                BigDecimal quantityFromSets = plannedQuantityFromProduct.multiply(plannedQuantity).divide(outQuantity,
+                        RoundingMode.HALF_UP);
+                productionCountingQuantitySetComponent.setField(ProductionCountingQuantitySetComponentFields.QUANTITY_FROM_SETS,
+                        quantityFromSets);
+
+                productionCountingQuantitySetComponent.getDataDefinition().save(productionCountingQuantitySetComponent);
+            }
+        }
     }
 
     private DataDefinition getProductionCountingQuantitySetComponentsDD() {

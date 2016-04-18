@@ -35,4 +35,8 @@ public class ProductionCountingQuantitySetComponentFields {
     public static final String PRODUCT = "product";
 
     public static final String QUANTITY_FROM_SETS = "quantityFromSets";
+
+    public static final String PLANNED_QUANTITY_FROM_PRODUCT = "plannedQuantityFromProduct";
+
+    public static final String OUT_QUANTITY = "outQuantity";
 }
