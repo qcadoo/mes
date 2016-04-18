@@ -38,7 +38,6 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class DetailedProductionCountingListHooks {

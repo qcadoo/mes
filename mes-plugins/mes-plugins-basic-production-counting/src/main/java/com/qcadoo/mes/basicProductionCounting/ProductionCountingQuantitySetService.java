@@ -59,7 +59,7 @@ public class ProductionCountingQuantitySetService {
                 markIntermediateInProductionCountingQuantities(entities);
             }
 
-        } else if (GlobalTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)) {
+        } else if (GlobalTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial) && ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {
             Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
             SearchCriteriaBuilder findProductionCountingQuantity = productionCountingQuantity.getDataDefinition().find();
             List<Entity> entities = findProductionCountingQuantity.add(SearchRestrictions.and(
@@ -88,33 +88,6 @@ public class ProductionCountingQuantitySetService {
         return productionCountingQuantity;
     }
 
-//    public boolean unmarkIntermediateInProductionCountingQuantities(Entity productionCountingQuantity) {
-//        String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
-//        String set = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.SET);
-//
-//        if (GlobalTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial) && ProductionCountingQuantitySet.SET.getStringValue().equals(set)) {
-//            SearchCriteriaBuilder findProductionCountingQuantity = productionCountingQuantity.getDataDefinition().find();
-//            Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-//            List<Entity> entities = findProductionCountingQuantity.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order)).list().getEntities();
-//
-//            Entity technologyOperationComponent = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-//            Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-//
-//            for (Entity entity : entities) {
-//                Entity entityTechnologyOperationComponent = entity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-//                Entity entityOperation = entityTechnologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-//
-//                if (!entity.getId().equals(productionCountingQuantity.getId())
-//                        && "1.".equals(entityTechnologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER))
-//                        && operation.getId().equals(entityOperation.getId())) {
-//                    entity.setField(ProductionCountingQuantityFields.SET, null);
-//                    entity = entity.getDataDefinition().save(entity);
-//                }
-//            }
-//        }
-//
-//        return true;
-//    }
     public void markIntermediateInProductionCountingQuantities(List<Entity> productionCountingQuantities) {
         for (Entity productionCountingQuantity : productionCountingQuantities) {
             String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
@@ -128,8 +101,10 @@ public class ProductionCountingQuantitySetService {
                     Entity entityTechnologyOperationComponent = entity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
                     Entity entityOperation = entityTechnologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
                     String entityTypeOfMaterial = entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+                    String role = entity.getStringField(ProductionCountingQuantityFields.ROLE);
 
                     if (!entity.getId().equals(productionCountingQuantity.getId())
+                            && ProductionCountingQuantityRole.USED.getStringValue().equals(role)
                             && GlobalTypeOfMaterial.INTERMEDIATE.getStringValue().equals(entityTypeOfMaterial)
                             && "1.".equals(entityTechnologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER))
                             && operation.getId().equals(entityOperation.getId())) {
